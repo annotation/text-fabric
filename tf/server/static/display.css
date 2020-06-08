@@ -29,7 +29,7 @@ div#notebook {
 /* phonetic text */
 .txtp,.txtp a:visited,.txtp a:link {
     font-family: Gentium, sans-serif;
-    font-size: large;
+    font-size: medium;
     direction: ltr;
     text-decoration: none;
     color: var(--text-color);
@@ -37,21 +37,21 @@ div#notebook {
 /* original script text */
 .txtu,.txtu a:visited,.txtu a:link {
     font-family: Gentium, sans-serif;
-    font-size: large;
+    font-size: medium;
     text-decoration: none;
     color: var(--text-color);
 }
 /* hebrew */
 .txtu.hbo,.lex.hbo {
     font-family: "Ezra SIL", "SBL Hebrew", sans-serif;
-    font-size: x-large;
+    font-size: large;
     direction: rtl ! important;
     unicode-bidi: embed;
 }
 /* syriac */
 .txtu.syc,.lex.syc {
     font-family: "Estrangelo Edessa", sans-serif;
-    font-size: large;
+    font-size: medium;
     direction: rtl ! important;
     unicode-bidi: embed;
 }
@@ -72,7 +72,7 @@ div#notebook {
 /* cuneiform */
 .txtu.akk,.lex.akk {
     font-family: Santakku, sans-serif;
-    font-size: x-large;
+    font-size: large;
     direction: ltr ! important;
     unicode-bidi: embed;
 }
@@ -170,11 +170,13 @@ span.plain {
     align-content: flex-start;
     flex-flow: column nowrap;
 }
-.nd {
+.nd, a:link.nd {
     font-family: sans-serif;
     font-size: small;
     color: var(--node);
     vertical-align: super;
+    direction: ltr ! important;
+    unicode-bidi: embed;
 }
 .lex {
   color: var(--lex-color);;
@@ -311,7 +313,7 @@ span.plain {
 .lbl.c4 {
     font-size: large;
 }
-.occs {
+.occs, a:link.occs {
     font-size: small;
 }
 

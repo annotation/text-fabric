@@ -112,8 +112,6 @@ def displayReset(app, *options):
     display = app.display
 
     display.reset(*options)
-    # if not app._browse:
-    #    app.loadCss()
 
 
 def loadCss(app):
@@ -796,7 +794,7 @@ def _renderOuter(app, isPretty, n, _inTuple, _asString, explain, **options):
     result = (
         f"""{passage}<div class="{ltr} children">{rep}</div>"""
         if isPretty else
-        f"""<div class="{ltr} children">{passage}{sep}{rep}</div>"""
+        f"""{passage}{sep}{rep}"""
     )
 
     if _browse or _asString:

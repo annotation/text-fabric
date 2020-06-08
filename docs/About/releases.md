@@ -63,6 +63,12 @@ text-fabric appName:hot
 A = use("bhsa:latest", hoist=globals()")
 ```
 
+Text-Fabric is now better in detecting if you load an incompatible app and will give
+you a useful hint.
+
+The post-incantation messages of TF are now better formatted and more modest.
+Most information is collapsed and expandible by a triangle.
+
 Under the hood improvement of the display algorithm.
 Both `plain` and `pretty` rely on the same *unravel* algorithm
 that turns a graph fragment into a tree for display.
@@ -74,8 +80,20 @@ see `tf.applib.display.unravel`.
 
 Now you can define your own rendering function, taking the unraveled tree as input.
 
-Another extra: normally, gaps are shown in plain displays.
-But the control is yours: see `plainGaps` in `tf.applib.displaysettings.
+#### New display settings
+
+See `tf.applib.displaysettings`.
+
+*   `plainGaps`: normally, gaps are shown in plain displays.
+    But the control is yours, with `plainGaps=False` gaps are suppressed.
+*   `hiddenTypes`: you can prevent node types from adding to the structure of the
+    display, which might become very cluttered. E.g. the atom types of the
+    BHSA, and also the subphrases and half verses.
+    Before, it was a binary choice: the app determines which node types are hidden
+    by default, and the user can switch them all on or all off.
+
+    Now the app still determines the default, but the user can hide/unhide all
+    combinations of node types.
 
 ### 8.2
 

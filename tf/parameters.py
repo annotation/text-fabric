@@ -151,6 +151,9 @@ APP_GITHUB = f"{GH_BASE}/annotation"
 APP_CONFIG = "config.yaml"
 """Name of the config file of a TF app."""
 
+APP_CONFIG_OLD = "config.py"
+"""Name of the config file of a an older, incompatible TF app."""
+
 APP_CODE = "code"
 """Name of the top-level directory of a TF app."""
 

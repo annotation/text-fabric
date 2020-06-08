@@ -7,7 +7,7 @@ import re
 import types
 
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
-from ..core.helpers import console, mdEsc
+from ..core.helpers import console, mdEsc, mergeDictOfSets
 from .displaysettings import INTERFACE_OPTIONS
 from .helpers import dm, parseFeatures, transitiveClosure
 
@@ -355,10 +355,17 @@ class Check:
         self.errors = []
 
 
+def _fillInDefined(template, data):
+    val = template.format(**data)
+    return None if "None" in val else val
+
+
 def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
+    if "apiVesrion" not in specs:
+        specs["apiVersion"] = None
     checker = Check(app, False)
 
     dKey = "writing"
@@ -384,7 +391,8 @@ def setAppSpecs(app, cfg, reset=False):
             val = (
                 None
                 if val is None
-                else val.format(**specs)
+                else _fillInDefined(val, specs)
+                # else val.format(**specs)
                 if type(val) is str
                 else val
             )
@@ -397,7 +405,8 @@ def setAppSpecs(app, cfg, reset=False):
                     if k in moduleSpec:
                         v = moduleSpec[k]
                         if k == "docUrl" and v is not None:
-                            v = v.format(**specs)
+                            # v = v.format(**specs)
+                            v = _fillInDefined(v, specs)
                             moduleSpec[k] = v
                     else:
                         moduleSpec[k] = (
@@ -441,8 +450,6 @@ def setAppSpecs(app, cfg, reset=False):
 def setAppSpecsApi(app, cfg):
     api = app.api
     T = api.T
-    C = api.C
-    sectionTypeSet = T.sectionTypeSet
 
     specs = app.specs
 
@@ -452,17 +459,12 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    specs["allowedBaseTypes"] = tuple(
-        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
-    )
-
-    specs["condenseTypes"] = C.levels.data
     specs["defaultFormat"] = T.defaultFormat
 
     dKey = "interfaceDefaults"
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
     dSource = cfg.get(dKey, {})
-    specific = {"lineNumbers", "showHidden", "showGraphics"}
+    specific = {"lineNumbers", "showGraphics"}
 
     allowed = {}
     for (k, v) in interfaceDefaults.items():
@@ -470,8 +472,6 @@ def setAppSpecsApi(app, cfg):
             (
                 k == "lineNumbers"
                 and specs["lineNumberFeature"]
-                or k == "showHidden"
-                and specs["isHidden"]
                 or k == "showGraphics"
                 and specs["hasGraphics"]
             )
@@ -558,6 +558,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     F = api.F
     T = api.T
     N = api.N
+    C = api.C
     otypeRank = N.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
@@ -570,7 +571,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     specs = app.specs
 
-    isHidden = set()
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
@@ -580,12 +580,14 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
     baseTypes = set()
+    hiddenTypes = set()
     condenseType = None
     templates = {}
     labels = {}
     styles = {}
     givenLevels = {}
     levels = {}
+    children = {}
     childType = {}
     exclusions = {}
     transform = {}
@@ -680,11 +682,19 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
         hidden = info.get("hidden", None)
         if hidden:
-            isHidden.add(nType)
+            hiddenTypes.add(nType)
 
         verselike = info.get("verselike", False)
         if verselike:
             verseTypes.add(nType)
+
+        if "children" in info:
+            childs = info["children"] or ()
+            if type(childs) is str:
+                childs = {childs}
+            else:
+                childs = set(childs)
+            children[nType] = set(childs or ())
 
         isBig = info.get("isBig", False)
         if isBig:
@@ -695,20 +705,34 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
             }
 
-        if "children" in info:
-            childs = info["children"] or ()
-            if type(childs) is str:
-                childs = {childs}
-            else:
-                childs = set(childs)
-            childType[nType] = set(childs or ())
-
         if "exclude" in info:
             exclusions[nType] = info["exclude"] or {}
 
         checker.report()
 
     lexTypes = set(lexMap.values())
+
+    specs["allowedBaseTypes"] = tuple(
+        e[0]
+        for e in C.levels.data[0:-1]
+        if e[0] not in sectionTypeSet and e[0] not in lexTypes
+    )
+    specs["allowedCondenseTypes"] = tuple(
+        e[0]
+        for e in C.levels.data
+        if e[0] not in lexTypes
+    )
+    specs["allowedCondenseTypesX"] = tuple(
+        e
+        for e in C.levels.data
+        if e[0] not in lexTypes
+    )
+    specs["allowedHiddenTypes"] = tuple(
+        e[0]
+        for e in C.levels.data[0:-1]
+        if e[0] not in sectionTypeSet and e[0] not in lexTypes
+    )
+
     nTypesNoLex = [n for n in nTypes if n not in lexTypes]
 
     levelTypes = [set(), set(), set(), set(), set()]
@@ -731,25 +755,33 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
 
-    children = {
+    childType = {
         nType: {nTypesNoLex[i + 1]}
         for (i, nType) in enumerate(nTypesNoLex)
-        if nType in levelTypes[2] | levelTypes[1]
+        if i < len(nTypesNoLex) - 1
+        # if nType in levelTypes[2] | levelTypes[1]
     }
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {structureTypes[i + 1]}
             for (i, nType) in enumerate(structureTypes)
             if i < len(structureTypes) - 1
-        }
+        },
     )
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {sectionTypes[i + 1]}
             for (i, nType) in enumerate(sectionTypes)
             if i < len(sectionTypes) - 1
-        }
+        },
     )
+
+    # here we override from the chlidren information in the app-config
+
+    for (nType, childInfo) in children.items():
+        childType[nType] = childInfo
 
     lowestSectionalTypes = set() | verseTypes
     if sectionTypes:
@@ -765,20 +797,20 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     smallestOtherType = remainingTypes[-1] if remainingTypes else None
 
     for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
+        if lexType in childType:
+            del childType[lexType]
 
     for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {biggestOtherType}
+        if lowestSectionalType not in childType:
+            childType[lowestSectionalType] = {biggestOtherType}
         else:
-            children[lowestSectionalType].add(biggestOtherType)
+            childType[lowestSectionalType].add(biggestOtherType)
 
     if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
+        if smallestOtherType not in childType:
+            childType[smallestOtherType] = {slotType}
         else:
-            children[smallestOtherType].add(slotType)
+            childType[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -786,10 +818,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     for (i, nTypes) in enumerate(levelTypes):
         for nType in nTypes:
             levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
-
-    for (nType, childInfo) in children.items():
-        if nType not in childType:
-            childType[nType] = childInfo
 
     levelCls = {}
 
@@ -822,7 +850,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
-        isHidden=isHidden,
+        hiddenTypes=hiddenTypes,
         labels=labels,
         levels=levels,
         levelCls=levelCls,

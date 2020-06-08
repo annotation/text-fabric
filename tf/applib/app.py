@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
@@ -42,6 +43,7 @@ class App:
         commit,
         release,
         local,
+        _browse,
         hoist=False,
         version=None,
         checkout="",
@@ -51,7 +53,6 @@ class App:
         api=None,
         setFile="",
         silent=False,
-        _browse=False,
         **configOverrides,
     ):
         """Set up the advanced TF API.
@@ -315,13 +316,9 @@ class App:
                 self.api.makeAvailableIn(hoist)
                 if not silent:
                     dh(
-                        "<div>"
-                        + outLink(
-                            "names N F E L T S C TF directly usable",
-                            APIREF,
-                            title="doc",
-                        )
-                        + "</div>"
+                        "<div><b>Text-Fabric API:</b> names "
+                        + outLink("N F E L T S C TF", APIREF, title="doc",)
+                        + " directly usable</div><hr>"
                     )
 
             silentOff = self.silentOff
@@ -396,7 +393,7 @@ The app "{appName}" will not work!
                 api.makeAvailableIn(hoist)
 
 
-def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
+def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     """Find a TF app by name and initialize an object of its main class.
 
     Parameters
@@ -444,6 +441,7 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
         appPath = appDir
     else:
         (commit, release, local, appBase, appDir) = checkoutRepo(
+            _browse,
             org=ORG,
             repo=f"app-{appName}",
             folder=APP_CODE,
@@ -470,15 +468,27 @@ def findApp(appName, checkoutApp, *args, silent=False, version=None, **kwargs):
         appPath = f"{appBaseRep}{appDir}"
 
         appClass = findAppClass(appName, appPath) or App
-    return appClass(
-        cfg,
-        appName,
-        appPath,
-        commit,
-        release,
-        local,
-        *args,
-        version=version,
-        silent=silent,
-        **kwargs,
-    )
+    try:
+        app = appClass(
+            cfg,
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            _browse,
+            *args,
+            version=version,
+            silent=silent,
+            **kwargs,
+        )
+    except Exception as e:
+        if appClass is not App:
+            console(
+                f"There was an error loading TF-app {appName} from {appPath}", error=True
+            )
+            console(repr(e), error=True)
+        traceback.print_exc()
+        console("Text-Fabric is not loaded", error=True)
+        return None
+    return app

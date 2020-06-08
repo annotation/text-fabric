@@ -8,62 +8,80 @@ from .helpers import parseFeatures, SEQ_TYPES1, SEQ_TYPES2
 
 INTERFACE_OPTIONS = (
     (
+        "condensed",
+        False,
+        "cond",
+        "condense results",
+        "Group query results into containers of the selected type.",
+        True,
+    ),
+    (
+        "hideTypes",
+        True,
+        "hidet",
+        "hide types",
+        "Do not show the outer structure of nodes of the selected types."
+        "The contents of those nodes are still shown.",
+        True,
+    ),
+    (
         "withNodes",
         False,
         "withn",
         "show nodes",
         "Show the node number for every node in the results."
         " The node number is your access to all information about that node."
-        " If you click on it, it will be copied to the <i>node pad</i>",
+        " If you click on it, it will be copied to the <i>node pad</i>.",
+        False,
     ),
     (
         "withTypes",
         False,
         "witht",
         "show types",
-        "Show the node type for every node in the results",
+        "Show the node type for every node in the results.",
+        False,
     ),
     (
         "prettyTypes",
         True,
         "withtp",
         "always show types when expanded",
-        "Show the node type for every node in the expanded view, even if <b>show types</b> is off",
+        "Show the node type for every node in the expanded view, even if <b>show types</b> is off.",
+        False,
     ),
     (
         "plainGaps",
         True,
         "plaing",
         "show gaps",
-        "In plain displays, show the gaps in nodes by means of dotted lines",
+        "In plain displays, show the gaps in nodes by means of dotted lines.",
+        False,
     ),
     (
         "standardFeatures",
         False,
         "showf",
         "show standard features",
-        "Show the standard feature values for every node in the results",
+        "Show the standard feature values for every node in the results.",
+        False,
     ),
     (
         "queryFeatures",
         True,
         "showf",
         "show query features",
-        "Show the features mentioned in the last query for every node in the results",
-    ),
-    (
-        "showHidden",
+        "Show the features mentioned in the last query for every node in the results.",
         False,
-        "showc",
-        "show hidden",
-        "Show hidden types. Only if the TF data has hidden node types",
     ),
     (
         "lineNumbers",
         False,
         "linen",
         "source lines",
-        "Show source line numbers with the nodes. Only if the TF data has a feature for line numbers.",
+        "Show source line numbers with the nodes."
+        " Only if the TF data has a feature for line numbers.",
+        False,
     ),
     (
         "showGraphics",
@@ -71,7 +89,8 @@ INTERFACE_OPTIONS = (
         "graphics",
         "graphic elements",
         "Show graphical companion elements with the nodes."
-        " Only if the data set implements the logic for it",
+        " Only if the data set implements the logic for it.",
+        False,
     ),
 )
 
@@ -87,6 +106,8 @@ DISPLAY_OPTIONS = dict(
     extraFeatures=((), {}),
     full=False,
     fmt=None,
+    hideTypes=True,
+    hiddenTypes=None,
     highlights={},
     noneValues={None},
     skipCols=set(),
@@ -145,6 +166,9 @@ class DisplaySettings:
     def normalize(self, option, value):
         app = self.app
         api = app.api
+        aContext = app.context
+        allowedBaseTypes = aContext.allowedBaseTypes
+        allowedHiddenTypes = aContext.allowedHiddenTypes
         error = app.error
 
         if option not in self.displayDefaults:
@@ -181,15 +205,24 @@ class DisplaySettings:
         elif option == "highlights":
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
-        elif option == "baseTypes":
-            value = setFromValue(value)
+        elif option in {"baseTypes", "hiddenType"}:
+            legalValues = set(
+                allowedBaseTypes
+                if option == "baseTypes"
+                else allowedHiddenTypes
+            )
+            values = setFromValue(value)
+            value = {tp for tp in values if tp in legalValues}
         return (True, value)
 
     def check(self, msg, options):
         app = self.app
         api = app.api
         Fotype = api.F.otype
-        sectionTypeSet = api.T.sectionTypeSet
+        aContext = app.context
+        allowedBaseTypes = aContext.allowedBaseTypes
+        allowedHiddenTypes = aContext.allowedHiddenTypes
+        allowedCondenseTypes = aContext.allowedCondenseTypes
         error = app.error
 
         good = True
@@ -197,11 +230,16 @@ class DisplaySettings:
             if option not in self.displaySettings:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
-            if option in {"baseTypes", "condenseType"}:
+            if option in {"baseTypes", "condenseType", "hiddenTypes"}:
+                legalValues = set(
+                    allowedBaseTypes
+                    if option == "baseTypes"
+                    else allowedCondenseTypes
+                    if option == "condenseType"
+                    else allowedHiddenTypes
+                )
                 if value is not None:
-                    legalValues = set(Fotype.all)
-                    if option == "baseTypes":
-                        legalValues -= sectionTypeSet
+                    if option in {"baseTypes", "hiddenTypes"}:
                         testVal = setFromValue(value)
                         isLegal = all(v in legalValues for v in testVal)
                     else:
@@ -210,6 +248,8 @@ class DisplaySettings:
                         error(
                             f'ERROR in {msg}(): illegal node type in "{option}={value}"'
                         )
+                        legalRep = ", ".join(sorted(legalValues))
+                        error(f"Legal values are: {legalRep}")
                         good = False
             elif option == "extraFeatures":
                 if value is not None:

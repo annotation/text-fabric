@@ -23,6 +23,64 @@ This class manages
 
 Parameters
 ----------
+baseTypes: string | iterable, optional `None`
+    **interface option**
+    Node types at the bottom of pretty displays.
+    The default is app dependent, usually the slot type of the corpus.
+
+condensed: boolean, optional `False`
+    **interface option**
+    indicates one of two modes of displaying the result list:
+
+    *   `True`: instead of showing all results one by one,
+        we show container nodes with all results in it highlighted.
+        That way, we blur the distinction between the individual results,
+        but it is easier to oversee where the results are.
+        This is how SHEBANQ displays its query results.
+        **See also the parameter `condenseType`**.
+    *   `False`: make a separate display for each result tuple.
+        This gives the best account of the exact result set.
+
+    !!! caution "mixing up highlights"
+        Condensing may mix-up the highlight coloring.
+        If a node occurs in two results, at different positions
+        in the tuple, the `colorMap` wants to assign it two colors!
+        Yet one color will be chosen, and it is unpredictable which one.
+
+condenseType: string, optional `None`
+    **interface option**
+    The type of container to be used for condensing results.
+    The default is app dependent, usually `verse` or `tablet`.
+
+fmt: string, optional `None`
+    **interface option**
+    `fmt` is the text format that will be used for the representation.
+    E.g. `text-orig-full`.
+
+    !!! hint "Text formats"
+        Use `T.formats` to inspect what text formats are available in your corpus.
+
+hideTypes: boolean | optional `True`
+    **interface option**
+    If `True`, hidden types are in fact hidden, otherwise the hiding of types
+    has no effect.
+
+hiddenTypes: string | iterable, optional `None`
+    **interface option**
+    Node types that will not be shown in displays.
+    All node types can be hidden, except the slot type and the section types.
+    Structure types can be hidden.
+
+    !!! hint "Meaning"
+        Nodes of hidden types will not be skipped, but they do not add visible
+        structure to the display. The material under those nodes will still
+        be displayed. For example, if the corpus has verses divided into half verses,
+        and you are not interested in the half verse division, you can make
+        half verses hidden. The content of the half verses is still shown,
+        but the half verse division is gone.
+
+    The default is app dependent, usually the empty set.
+
 lineNumbers: boolean, optional `False`
     **interface option**
     indicates whether line numbers should be displayed.
@@ -54,16 +112,6 @@ queryFeatures: boolean, optional `True`
     **interface option**
     indicates whether pretty displays should show the features
     mentioned in the last query and their values.
-
-showHidden: boolean, optional `False`
-    **interface option**
-    The corpus data may contain nodes of types that are marked as hidden.
-    When `showHidden` is `True`, these nodes will be shown.
-
-    !!! caution "configuration"
-        Whether a corpus has hidden types is configured in a corpus dependent app.
-
-        If the corpus has no hidden types, the default is `None`.
 
 showGraphics: boolean, optional `True`
     **interface option**
@@ -101,10 +149,6 @@ withTypes: boolean, optional `False`
     indicates whether node types should be displayed.
     The node type of slot nodes is never displayed.
 
-baseTypes: string | iterable, optional `None`
-    Node types at the bottom of pretty displays.
-    The default is app dependent, usually the slot type of the corpus.
-
 colorMap: dict, optional `None`
     Which nodes of a tuple (or list of tuples) will be highlighted.
     If `colorMap` is `None` or missing, all nodes will be highlighted with
@@ -127,28 +171,6 @@ colorMap: dict, optional `None`
 
         If you need to micro-manage, `highlights` is your thing.
         Whenever possible, use `colorMap`.
-
-condensed: boolean, optional `False`
-    indicates one of two modes of displaying the result list:
-
-    *   `True`: instead of showing all results one by one,
-        we show container nodes with all results in it highlighted.
-        That way, we blur the distinction between the individual results,
-        but it is easier to oversee where the results are.
-        This is how SHEBANQ displays its query results.
-        **See also the parameter `condenseType`**.
-    *   `False`: make a separate display for each result tuple.
-        This gives the best account of the exact result set.
-
-    !!! caution "mixing up highlights"
-        Condensing may mix-up the highlight coloring.
-        If a node occurs in two results, at different positions
-        in the tuple, the `colorMap` wants to assign it two colors!
-        Yet one color will be chosen, and it is unpredictable which one.
-
-condenseType: string, optional `None`
-    The type of container to be used for condensing results.
-    The default is app dependent, usually `verse` or `tablet`.
 
 end: int, optional `None`
     `end` is the end point in the iterable of results.
@@ -178,12 +200,6 @@ full: boolean, optional `False`
 
     !!! hint "Big objects"
         Big objects are objects of a type that is bigger than the default condense type.
-fmt: string, optional `None`
-    `fmt` is the text format that will be used for the representation.
-    E.g. `text-orig-full`.
-
-    !!! hint "Text formats"
-        Use `T.formats` to inspect what text formats are available in your corpus.
 
 highlights: dict | set, optional `{}`
     When nodes such as verses and sentences and lines and cases are displayed

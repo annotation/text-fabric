@@ -5,8 +5,9 @@ import yaml
 
 from ..parameters import (
     APP_CONFIG,
+    APP_CONFIG_OLD,
     APP_DISPLAY,
-    API_VERSION as apiVersionProvided,
+    API_VERSION as avTf,
 )
 from ..core.helpers import console
 from .helpers import getLocalDir
@@ -18,7 +19,10 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     If there is a `config.yaml` file, read it and check the compatibility
     of the config settings with the current version of Text-Fabric.
 
-    If there is no such file, fill in a few basic settings.
+    If there is no such file but a `config.py` is present,
+    conclude that this is an older app, not compatible with TF v8 or higher.
+
+    If there are no such config files, fill in a few basic settings.
 
     See Also
     --------
@@ -26,9 +30,12 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     """
 
     configPath = f"{appPath}/{APP_CONFIG}"
+    configPathOld = f"{appPath}/{APP_CONFIG_OLD}"
     cssPath = f"{appPath}/{APP_DISPLAY}"
 
     checkApiVersion = True
+
+    isCompatible = None
 
     if os.path.exists(configPath):
         with open(configPath) as fh:
@@ -36,6 +43,8 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     else:
         cfg = {}
         checkApiVersion = False
+        if os.path.exists(configPathOld):
+            isCompatible = False
     cfg.update(
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
@@ -54,20 +63,18 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     cfg["local"] = local
     cfg["localDir"] = getLocalDir(cfg, local, version)
 
-    apiVersionRequired = cfg.get("apiVersion", None)
-    isCompatible = (
-        None
-        if not checkApiVersion
-        else (
-            apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
+    avA = cfg.get("apiVersion", None)
+    if isCompatible is None and checkApiVersion:
+        isCompatible = (
+            avA is not None and avA == avTf
         )
-    )
     if not isCompatible:
         if isCompatible is None:
-            console("No app configuration found.")
-        elif apiVersionRequired is None or apiVersionRequired < apiVersionProvided:
+            pass
+        elif avA is None or avA < avTf:
             console(
                 f"""
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your copy of the TF app `{appName}` is outdated for this version of TF.
 Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
@@ -92,6 +99,7 @@ Hint: load the app in one of the following ways:
         else:
             console(
                 f"""
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your Text-Fabric is outdated and cannot use this version of the TF app `{appName}`.
 Recommendation: upgrade Text-Fabric.
 Hint:
@@ -101,13 +109,6 @@ Hint:
 """,
                 error=True,
             )
-        console(
-            f"""
-Text-Fabric will be loaded, but no app specific code will be loaded
-and app config may not be optimal.
-The corpus data may not be found.
-"""
-        )
 
     cfg["isCompatible"] = isCompatible
     return cfg

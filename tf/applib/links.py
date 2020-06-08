@@ -49,6 +49,8 @@ def linksApi(app, silent):
 
     aContext = app.context
     appName = aContext.appName
+    appPath = aContext.appPath
+    apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
     repo = aContext.repo
     version = aContext.version
@@ -60,11 +62,12 @@ def linksApi(app, silent):
 
     tutUrl = f"{APP_NB_URL}/{appName}/start.ipynb"
     extraUrl = f"{APP_URL}/app-{appName}"
+    apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataLink = (
         outLink(repo.upper(), docUrl, f"provenance of {corpus}")
         if isCompatible and repo is not None and docUrl
-        else UNSUPPORTED
+        else "/".join(x for x in (appPath, appName, version) if x)
     )
     charLink = (
         (
@@ -89,9 +92,9 @@ def linksApi(app, silent):
         else UNSUPPORTED
     )
     appLink = (
-        outLink(f"app-{appName}", extraUrl, f"{appName} TF-app")
+        outLink(f"app-{appName}{apiVersionRep}", extraUrl, f"{appName} TF-app")
         if isCompatible and repo is not None
-        else UNSUPPORTED
+        else "no app configured"
     )
     tfLink = outLink(f"Text-Fabric API {app.TF.version}", APIREF, "text-fabric-api",)
     tfsLink = (
@@ -152,12 +155,13 @@ def header(app):
             f'<img class="hdlogo" src="/server/static/icon.png"/>',
         )
     else:
+        tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
         dh(
-            "<b>Documentation:</b>"
-            f" {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}"
-            "<details open><summary><b>Loaded features</b>:</summary>\n"
+            f"<b>Text-Fabric:</b> {tfLine}<br>"
+            f"<b>Data:</b> {dataLine}<br>"
+            "<b>Features:</b><br>"
             + _featuresPerModule(app)
-            + "</details>"
         )
 
 
@@ -332,7 +336,7 @@ def _featuresPerModule(app):
     """
 
     isCompatible = app.isCompatible
-    if not isCompatible:
+    if isCompatible is not None and not isCompatible:
         return UNSUPPORTED
 
     api = app.api
@@ -442,7 +446,7 @@ def _featuresPerModule(app):
                 if type(mId) is str
                 else f"{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
             )
-        html += f"<p><b>{corpus}</b>:"
+        html += f"<details><summary><b>{corpus}</b></summary>"
 
         seen = set()
 
@@ -460,7 +464,7 @@ def _featuresPerModule(app):
             isEdge = featureInfo.isEdge
             pre = "<b><i>" if isEdge else ""
             post = "</i></b>" if isEdge else ""
-            html += f" {pre}"
+            html += f"{pre}"
             html += (
                 outLink(
                     featureRep,
@@ -470,8 +474,8 @@ def _featuresPerModule(app):
                 if docUrl
                 else f'<span title="{featurePath}">{featureRep}</span>'
             )
-            html += f"{post} "
-        html += "</p>"
+            html += f"{post}<br>"
+        html += "</details>"
     return html
 
 

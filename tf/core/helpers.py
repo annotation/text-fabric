@@ -14,6 +14,10 @@ MSG64 = """Running on 64-bit Python"""
 
 HOME_DIR = os.path.expanduser("~").replace("\\", "/")
 
+SEP_RE = re.compile(r'[ ,]+')
+VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
+MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
+
 
 def unexpanduser(path):
     return path.replace(HOME_DIR, '~')
@@ -155,17 +159,14 @@ def isClean(name):
 def flattenToSet(features):
     theseFeatures = set()
     if type(features) is str:
-        theseFeatures |= set(features.split())
+        theseFeatures |= setFromStr(features)
     else:
         for feature in features:
             if type(feature) is str:
                 theseFeatures.add(feature)
             else:
                 feature = feature[1]
-                if type(feature) is str:
-                    theseFeatures |= set(feature.split())
-                else:
-                    theseFeatures |= set(feature)
+                theseFeatures |= setFromValue(feature)
     return theseFeatures
 
 
@@ -298,7 +299,6 @@ def nbytes(by):
 
 
 def collectFormats(config):
-    varPattern = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
     featureSet = set()
 
     def collectFormat(tpl):
@@ -315,7 +315,7 @@ def collectFormats(config):
                 featureSet.add(ft)
             return "{}"
 
-        rtpl = varPattern.sub(varReplace, tpl)
+        rtpl = VAR_RE.sub(varReplace, tpl)
         return (rtpl, tuple(features))
 
     formats = {}
@@ -339,10 +339,6 @@ def project(iterableOfTuples, maxDimension):
     return {r[0:maxDimension] for r in iterableOfTuples}
 
 
-msgLinePat = "^( *[0-9]+) (.*)$"
-msgLineRe = re.compile(msgLinePat)
-
-
 def wrapMessages(messages):
     if type(messages) is str:
         messages = messages.split("\n")
@@ -350,11 +346,11 @@ def wrapMessages(messages):
     for msg in messages:
         if type(msg) is tuple:
             (error, nl, msgRep) = msg
-            match = msgLineRe.match(msgRep)
+            match = MSG_LINE_RE.match(msgRep)
             msg = msgRep + ("<br/>" if nl else "")
             clsName = "eline" if error and not match else "tline"
         else:
-            match = msgLineRe.match(msg)
+            match = MSG_LINE_RE.match(msg)
             clsName = "tline" if match else "eline"
             msg = msg.replace("\n", "<br/>")
         html.append(f'<span class="{clsName.lower()}">{msg}</span>')
@@ -375,15 +371,25 @@ def makeExamples(nodeList):
 
 
 def setFromValue(x, asInt=False):
-    return (
-        set()
-        if x is None
-        else x
-        if type(x) in {set, frozenset}
-        else {int(x) if asInt else x}
-        if type(x) is str
-        else ({int(v) for v in x} if asInt else set(x))
-    )
+    if x is None:
+        return set()
+
+    typeX = type(x)
+    if typeX in {set, frozenset}:
+        return x
+    elif typeX in {str, dict, list, tuple}:
+        if typeX is str:
+            x = SEP_RE.split(x)
+        return {int(p) for p in x if p.isdecimal()} if asInt else {p for p in x if p}
+
+    return {x}
+
+
+def setFromStr(x):
+    if x is None:
+        return set()
+
+    return {p for p in SEP_RE.split(x) if p}
 
 
 def mergeDictOfSets(d1, d2):

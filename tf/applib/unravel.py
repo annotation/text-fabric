@@ -42,7 +42,6 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     descendantType = aContext.descendantType
     exclusions = aContext.exclusions
     showVerseInTuple = aContext.showVerseInTuple
-    isHidden = aContext.isHidden
     levelCls = aContext.levelCls
     prettyCustom = aContext.prettyCustom
     styles = aContext.styles
@@ -51,8 +50,9 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     afterChild = aContext.afterChild
 
     full = dContext.full
-    showHidden = dContext.showHidden
+    hideTypes = dContext.hideTypes
     baseTypes = dContext.baseTypes
+    hiddenTypes = dContext.hiddenTypes
     highlights = dContext.highlights
     fmt = dContext.fmt
     dContext.isHtml = fmt in formatHtml
@@ -134,8 +134,8 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     else:
         iNodes = set(L.i(n))
 
-    if not showHidden:
-        iNodes -= set(m for m in iNodes if fOtypeV(m) in isHidden)
+    if hideTypes:
+        iNodes -= set(m for m in iNodes if fOtypeV(m) in hiddenTypes)
 
     iNodes.add(n)
 

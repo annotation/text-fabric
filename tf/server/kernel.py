@@ -521,12 +521,12 @@ def main(cargs=sys.argv):
     app = findApp(
         appName,
         checkoutApp,
+        True,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
         modules=modules,
         setFile=setFile,
-        _browse=True,
     )
     if app is None:
         return

@@ -67,4 +67,4 @@ def use(appName, *args, **kwargs):
         parts.append("")
     (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, *args, **kwargs)
+    return findApp(appName, checkoutApp, False, *args, **kwargs)

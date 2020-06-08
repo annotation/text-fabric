@@ -204,6 +204,7 @@ class AppData(object):
         provenance = self.provenance
         seen = self.seen
         app = self.app
+        _browse = app._browse
         aContext = app.context
 
         moduleRef = f"{org}/{repo}/{relative}"
@@ -216,6 +217,7 @@ class AppData(object):
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
+                _browse,
                 org=org,
                 repo=repo,
                 folder=relative,

@@ -729,19 +729,7 @@ const readForm = jobContent => {
 }
 
 const clearForm = () => {
-  const aName = $('#appName')
-  const jobh = $('#jobh')
-  const side = $('#side')
-
-  const appName = aName.val()
-  const jobName = jobh.val()
-  const jobPart = 'jobs'
-
-  $(`[name]`).val('')
-
-  aName.val(appName)
-  jobh.val(jobName)
-  side.val(jobPart)
+  $('#resetf').val('1')
 }
 
 const deleteForm = () => {

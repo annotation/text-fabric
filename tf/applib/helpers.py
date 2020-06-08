@@ -3,7 +3,7 @@ import os
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
-from ..core.helpers import htmlEsc
+from ..core.helpers import htmlEsc, unexpanduser
 
 
 RESULT = "result"
@@ -27,7 +27,7 @@ def dm(md):
         The formatted markdown is rendered in the output cell.
     """
 
-    display(Markdown(md))
+    display(Markdown(unexpanduser(md)))
 
 
 def dh(html):
@@ -44,7 +44,7 @@ def dh(html):
         The formatted HTML is rendered in the output cell.
     """
 
-    display(HTML(html))
+    display(HTML(unexpanduser(html)))
 
 
 # COLLECT CONFIG SETTINGS IN A DICT

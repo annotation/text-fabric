@@ -120,32 +120,38 @@ def wrapOptions(context, form):
     """
 
     interfaceDefaults = context.interfaceDefaults
-
-    options = {k for (k, v) in interfaceDefaults.items() if v is not None}
+    defaults = {k: v for (k, v) in interfaceDefaults.items() if v is not None}
+    resetForm = form["resetForm"]
 
     html = []
+    htmlMoved = {}
     helpHtml = []
-    for (option, default, acro, desc, long) in INTERFACE_OPTIONS:
-        if option not in options:
+    for (option, default, acro, desc, long, move) in INTERFACE_OPTIONS:
+        if option not in defaults:
             continue
-        value = form[option]
+        value = defaults[option] if resetForm else form[option]
         value = "checked" if value else ""
-        html.append(
-            f'<div><input class="r" type="checkbox" id="{acro}" name="{option}" {value}/>'
-            f' <span class="ilab" title="{option}">{desc}</span></div>'
+        outer = "span" if move else "div"
+        thisHtml = (
+            f'<{outer}>'
+            f'<input class="r" type="checkbox" id="{acro}" name="{option}" {value}/>'
+            f' <span class="ilab" title="{option}">{desc}</span>'
+            f'</{outer}>'
         )
-        helpHtml.append(
-            f'<p><b title="{option}">{desc}</b> {long}</p>'
-        )
-    return ("\n".join(html), "\n".join(helpHtml))
+        helpHtml.append(f'<p><b title="{option}">{desc}</b> {long}</p>')
+        if move:
+            htmlMoved[option] = thisHtml
+        else:
+            html.append(thisHtml)
+    return ("\n".join(html), htmlMoved, "\n".join(helpHtml))
 
 
-def wrapBase(allowedBaseTypes, value):
+def wrapTypes(allowedTypes, value, kind, name):
     html = []
-    for (i, otype) in enumerate(allowedBaseTypes):
+    for (i, otype) in enumerate(allowedTypes):
         checked = " checked " if otype in value else ""
         checkButton = (
-            f'<input class="r bcheck" type="checkbox" name="baseTps" value="{otype}"'
+            f'<input class="r {kind}" type="checkbox" name="{name}" value="{otype}"'
             f" {checked}/>"
         )
         html.append(
@@ -154,7 +160,7 @@ def wrapBase(allowedBaseTypes, value):
     return "\n".join(html)
 
 
-def wrapCondense(condenseTypes, value):
+def wrapCondense(allowedTypes, value):
     """Provides a radio-buttoned chooser for the condense types.
 
     See `tf.applib.displaysettings`.
@@ -163,8 +169,8 @@ def wrapCondense(condenseTypes, value):
     """
 
     html = []
-    lastType = len(condenseTypes) - 1
-    for (i, (otype, av, b, e)) in enumerate(condenseTypes):
+    lastType = len(allowedTypes) - 1
+    for (i, (otype, av, b, e)) in enumerate(allowedTypes):
         checked = " checked " if value == otype else ""
         radioButton = (
             f'<span class="cradio">{NB}</span>'

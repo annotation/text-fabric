@@ -528,41 +528,27 @@ Default:
 
 ---
 
+---
+
 ### `children`
 
 Which type of child nodes to be included in the display.
 The value should be a node type or a set of node types:
 
-```
-children: subphrase
-```
+children: aya
 
-```
 children:
-  - subphrase
-  - word
-```
+  - sura
+  - aya
 
-### `exclude`
-
-Conditions that will exclude nodes of this type from the display.
-
-All nodes that satisfy at least one of these conditions will be left out.
-
-!!! hint
-    Use this if you want to exclude particular nodes of some type, e.g. in
-    [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
-    where we want to prevent line terminator signs.
-
-The value is a dictionary of feature name - value pairs.
-
-```
-exclude:
-    type: term
-```
+!!! hint "Reductive"
+    Use this if you want to reduce the number of section levels in a display.
+    For example, in the Q'uran there are various types of sections, not very well
+    related, and we do not want to get trees of all those sections. Rather, each section
+    should unravel straight into the lowest one: the aya.
 
 Default:
-:   dict, `{}`
+:   set, `set()`
 
 ---
 
@@ -584,6 +570,27 @@ Default:
 :   boolean `true`
 
 ---
+
+### `exclude`
+
+Conditions that will exclude nodes of this type from the display.
+
+All nodes that satisfy at least one of these conditions will be left out.
+
+!!! hint
+    Use this if you want to exclude particular nodes of some type, e.g. in
+    [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
+    where we want to prevent line terminator signs.
+
+The value is a dictionary of feature name - value pairs.
+
+```
+exclude:
+    type: term
+```
+
+Default:
+:   dict, `{}`
 
 ### `features`
 
@@ -643,12 +650,51 @@ Default
 
 ---
 
+### `hidden`
+
+Plain and pretty: whether nodes of this type must be hidden by default.
+See for example the bhsa, where the `atom` types are hidden by default.
+
+The user of the app can selectively mark any node type (except the slot type)
+as hidden, by means of `hiddenTypes` in `tf.applib.displaysettings`.
+
+The user can also switch between showing and hiding hidden node types by passing
+the display option `hideTypes=False` or `hideTypes=True`.
+
+Default
+:   boolean `false`
+
+---
+
 ### `isBig`
 
 If `true`, then this type counts as a big type in plain displays.
 
 Default
 :   boolean `false`
+
+---
+
+### `label, template`
+
+Node contribution for plain and pretty displays (template is for plain displays,
+label is for pretty displays).
+
+You can have features filled in by mentioning them by name in the template, e.g.
+`{name1} - {name2}`.
+
+If you specify `true` as the template or label, the node information will be
+the result of:
+
+*   section and structure types nodes: a heading
+*   other nodes: plain text of the node
+
+Default:
+:   string
+
+    *   `true` for the slot type
+    *   `true` for the section and structure types
+    *   `""` for all other types
 
 ---
 
@@ -706,42 +752,6 @@ Default
     For some types in
     [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml)
     it is needed to deviate from the default.
-
----
-
-### `hidden`
-
-Plain and pretty: whether nodes of this type must be hidden by default.
-See for example the bhsa, where the `atom` types are hidden.
-
-Nodes that unravel to other nodes will exclude nodes of hidden types from
-the unraveling, unless you pass the display option `showHidden=True`.
-
-Default
-:   boolean `false`
-
----
-
-### `label, template`
-
-Node contribution for plain and pretty displays (template is for plain displays,
-label is for pretty displays).
-
-You can have features filled in by mentioning them by name in the template, e.g.
-`{name1} - {name2}`.
-
-If you specify `true` as the template or label, the node information will be
-the result of:
-
-*   section and structure types nodes: a heading
-*   other nodes: plain text of the node
-
-Default:
-:   string
-
-    *   `true` for the slot type
-    *   `true` for the section and structure types
-    *   `""` for all other types
 
 ---
 

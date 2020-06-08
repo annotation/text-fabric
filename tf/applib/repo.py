@@ -20,7 +20,8 @@ from ..parameters import (
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
 )
-from ..core.helpers import console
+from ..core.helpers import console, htmlEsc
+from .helpers import dh
 
 
 class Checkout(object):
@@ -91,9 +92,11 @@ class Checkout(object):
         keep,
         withPaths,
         silent,
+        _browse,
         version=None,
         label="data",
     ):
+        self._browse = _browse
         self.label = label
         self.org = org
         self.repo = repo
@@ -178,6 +181,7 @@ class Checkout(object):
                 warning(f"{indent}Will try something else")
 
     def makeSureLocal(self, attempt=False):
+        _browse = self._browse
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
@@ -310,10 +314,20 @@ class Checkout(object):
                 dest=self.dest,
                 source=self.source,
             )
-            self.log(
-                f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
-            )
-            self.log(f"\t{offString} ({state})")
+            labelEsc = htmlEsc(label)
+            stateEsc = htmlEsc(state)
+            offEsc = htmlEsc(offString)
+            locEsc = htmlEsc(f'{self.localBase}/{self.localDir}{self.versionRep}')
+            if _browse:
+                self.log(
+                    f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
+                )
+                self.log(f"\t{offString} ({state})")
+            else:
+                dh(
+                    f'<b title="{stateEsc}">{labelEsc}:</b>'
+                    f' <span title="{offEsc}">{locEsc}</span>'
+                )
 
     def download(self):
         cChk = self.commitChk
@@ -628,6 +642,7 @@ class Checkout(object):
 
 
 def checkoutRepo(
+    _browse,
     org="annotation",
     repo="tutorials",
     folder="text-fabric/examples/banks/tf",
@@ -651,6 +666,7 @@ def checkoutRepo(
             keep,
             withPaths,
             silent,
+            _browse,
             version=version,
             label=label,
         )

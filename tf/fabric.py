@@ -323,7 +323,7 @@ Api reference : {APIREF}
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
-                        warning(
+                        info(
                             f"Dataset without structure sections in {WARP[2]}:"
                             f"no structure functions in the T-API"
                         )

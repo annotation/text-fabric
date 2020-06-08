@@ -8,7 +8,7 @@ from .wrap import (
     pageLinks,
     passageLinks,
     wrapOptions,
-    wrapBase,
+    wrapTypes,
     wrapCondense,
     wrapFormats,
     wrapProvenance,
@@ -45,7 +45,8 @@ def serveTable(web, kind, getx=None, asDict=False):
             form["features"],
             opened=openedSet,
             fmt=textFormat,
-            baseTypes=form["baseTps"],
+            baseTypes=form["baseTypes"],
+            hiddenTypes=form["hiddenTypes"],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -99,10 +100,10 @@ def serveQuery(web, getx, asDict=False):
                     form["batch"],
                     position=form["position"],
                     opened=openedSet,
-                    condensed=form["condensed"],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    baseTypes=form["baseTps"],
+                    baseTypes=form["baseTypes"],
+                    hiddenTypes=form["hiddenTypes"],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -156,7 +157,8 @@ def servePassage(web, getx):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        baseTypes=form["baseTps"],
+        baseTypes=form["baseTypes"],
+        hiddenTypes=form["hiddenTypes"],
         getx=getx,
         **options,
     )
@@ -232,6 +234,7 @@ def serveDownload(web):
     wildQueries = web.wildQueries
 
     task = form["query"]
+    condensed = form["condensed"]
     condenseType = form["condenseTp"] or None
     textFormat = form["textformat"] or None
     csvs = None
@@ -248,7 +251,7 @@ def serveDownload(web):
                 task,
                 form["tuples"],
                 form["sections"],
-                condensed=form["condensed"],
+                condensed=condensed,
                 condenseType=condenseType,
                 fmt=textFormat,
             )
@@ -289,18 +292,20 @@ def serveAll(web, anything):
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
     defaultBaseTypes = aContext.baseTypes
+    defaultHiddenTypes = aContext.hiddenTypes
     defaultCondenseType = aContext.condenseType
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
     allowedBaseTypes = aContext.allowedBaseTypes
-    condenseTypes = aContext.condenseTypes
+    allowedHiddenTypes = aContext.allowedHiddenTypes
+    allowedCondenseTypesX = aContext.allowedCondenseTypesX
     defaultFormat = aContext.defaultFormat
     allFormats = aContext.allFormats
 
     kernelApi = web.kernelApi
 
     form = getFormData(interfaceDefaults)
-    condensedAtt = " checked " if form["condensed"] else ""
+    resetForm = form["resetForm"]
 
     pages = ""
     passages = ""
@@ -317,25 +322,29 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseTypes = form["baseTps"]
-    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
-    condenseType = form["condenseTp"] or defaultCondenseType
-    condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form["textformat"] or defaultFormat
+    baseTypes = defaultBaseTypes if resetForm else form["baseTypes"]
+    baseTypesOpts = wrapTypes(allowedBaseTypes, baseTypes, "bcheck", "baseTypes")
+    hiddenTypes = defaultHiddenTypes if resetForm else form["hiddenTypes"]
+    hiddenTypesOpts = wrapTypes(
+        allowedHiddenTypes, hiddenTypes, "hcheck", "hiddenTypes"
+    )
+    condenseType = defaultCondenseType if resetForm else form["condenseTp"]
+    condenseOpts = wrapCondense(allowedCondenseTypesX, condenseType)
+    textFormat = defaultFormat if resetForm else form["textformat"]
     textFormatOpts = wrapFormats(allFormats, textFormat)
-    (options, optionsHelp) = wrapOptions(aContext, form)
+    (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
 
     templateData = dict(
-        appName=appName,
         css=css,
         header=f"{appLogo}{header}{tfLogo}",
         setNames=setNameHtml,
         options=options,
         optionsHelp=optionsHelp,
-        condensedAtt=condensedAtt,
-        baseOpts=baseOpts,
-        defaultBaseTypes=defaultBaseTypes,
+        baseTypesOpts=baseTypesOpts,
+        condensedOption=optionsMoved["condensed"],
         condenseOpts=condenseOpts,
+        hideTypesOption=optionsMoved["hideTypes"],
+        hiddenTypesOpts=hiddenTypesOpts,
         defaultCondenseType=defaultCondenseType,
         textFormatOpts=textFormatOpts,
         defaultFormat=defaultFormat,
@@ -344,8 +353,9 @@ def serveAll(web, anything):
         pages=pages,
         passages=passages,
     )
-    templateData.update(form)
-    return render_template(
-        "index.html",
-        **templateData,
-    )
+    for (k, v) in form.items():
+        if not (resetForm and k in templateData):
+            templateData[k] = v
+    templateData["appName"] = appName
+    templateData["resetForm"] = ""
+    return render_template("index.html", **templateData,)

@@ -41,12 +41,14 @@ def getFormData(interfaceDefaults):
 
     form = {}
     jobName = request.form.get("jobName", "").strip()
+    form["resetForm"] = request.form.get("resetForm", "")
     if jobName:
         form["jobName"] = jobName
         form["loadJob"] = ""
     else:
         form["jobName"] = DEFAULT_NAME
         form["loadJob"] = "1"
+        form["resetForm"] = "1"
     form["query"] = request.form.get("query", "").replace("\r", "")
     form["messages"] = request.form.get("messages", "") or ""
     form["features"] = request.form.get("features", "") or ""
@@ -59,8 +61,10 @@ def getFormData(interfaceDefaults):
     form["author"] = request.form.get("author", "").strip()
     form["title"] = request.form.get("title", "").strip()
     form["description"] = request.form.get("description", "").replace("\r", "")
+    form["hideTypes"] = request.form.get("hideTypes", None)
     form["condensed"] = request.form.get("condensed", "")
-    form["baseTps"] = tuple(request.form.getlist("baseTps"))
+    form["baseTypes"] = tuple(request.form.getlist("baseTypes"))
+    form["hiddenTypes"] = tuple(request.form.getlist("hiddenTypes"))
     form["condenseTp"] = request.form.get("condenseTp", "")
     form["textformat"] = request.form.get("textformat", "")
     form["sectionsExpandAll"] = request.form.get("sectionsExpandAll", "")

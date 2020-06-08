@@ -79,7 +79,7 @@
 						> </button>
 						<button
 							class="fa fa-times" type="submit" id="jclear"
-							title="clear values of this job"
+							title="reset this job to default"
 						></button>
 						<button
 							class="fa fa-trash" type="submit" id="jdelete"
@@ -94,6 +94,7 @@
 					</div>
 				</div>
 				<div status="options">
+          <input type="hidden" id="resetf" name="resetForm" value="{{resetForm}}">
 					<div>
             <details id="options" class="dstate">
               <summary>
@@ -102,23 +103,32 @@
               {{textFormatOpts|safe}}
             </details>
 					</div>
+          <hr>
 					<div>
 						<details id="basetpd"  class="dstate">
 							<summary>
                 <span class="ilab">base types</span>
 							</summary>
-							{{baseOpts|safe}}
+							{{baseTypesOpts|safe}}
 					</div>
+          <hr>
+					<div>
+						<details id="hiddentpd"  class="dstate">
+							<summary>
+                {{hideTypesOption|safe}}
+							</summary>
+							{{hiddenTypesOpts|safe}}
+					</div>
+          <hr>
 					<div>
 						<details id="condd" class="dstate">
 							<summary>
-								<input
-									class="r" type="checkbox" id="cond" name="condensed" {{condensedAtt}}
-								/> <span class="ilab">condense results</span>
+                {{condensedOption|safe}}
 							</summary>
 							{{condenseOpts|safe}}
 						</details>
 					</div>
+          <hr>
           {{options|safe}}
 				</div>
 				<div status="export">
@@ -251,11 +261,6 @@
                of base nodes will not be broken down in pretty displays. Highlights of base nodes
                consist of coloured backgrounds, highlights of other nodes consist of coloured boxes
                around the nodes.</p>
-						<p><b title="condensed=True, condenseType='nodeType'">Condense results</b>
-               Show the results grouping all nodes in result tuples into
-						   containers, such as {{defaultCondenseType}}s.
-						   The containers are <i>pretty</i>-displayed, with the result nodes in it highlighted.
-						   Choose the container type as you wish.</p>
             {{optionsHelp|safe}}
 					</details>
 					<details id="helpExport" class="help dstate">
