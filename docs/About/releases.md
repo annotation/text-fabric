@@ -95,6 +95,19 @@ See `tf.applib.displaysettings`.
     Now the app still determines the default, but the user can hide/unhide all
     combinations of node types.
 
+#### TF browser
+
+Various fixes:
+
+*   Starting in v8, the ports through which the TF-browser communicates are no longer
+    hardwired in the app config, but are determined at run time: the first
+    available ports are choses.
+    This had the negative consequence that different corpora could use the same port in turn,
+    thereby wreaking havoc with the sessions for those corpora.
+    Now the ports are determined as a function of the arguments to `text-fabric`.
+*   Text alignment and line wrapping has improved, especially in plain displays.
+
+
 ### 8.2
 
 #### 8.2.2

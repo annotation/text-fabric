@@ -100,7 +100,7 @@
               <summary>
                 <span class="ilab">text formats</span>
 							</summary>
-              {{textFormatOpts|safe}}
+              {{chooser["textFormat"]|safe}}
             </details>
 					</div>
           <hr>
@@ -109,7 +109,7 @@
 							<summary>
                 <span class="ilab">base types</span>
 							</summary>
-							{{baseTypesOpts|safe}}
+							{{chooser["baseTypes"]|safe}}
 					</div>
           <hr>
 					<div>
@@ -117,7 +117,7 @@
 							<summary>
                 {{hideTypesOption|safe}}
 							</summary>
-							{{hiddenTypesOpts|safe}}
+							{{chooser["hiddenTypes"]|safe}}
 					</div>
           <hr>
 					<div>
@@ -125,7 +125,7 @@
 							<summary>
                 {{condensedOption|safe}}
 							</summary>
-							{{condenseOpts|safe}}
+							{{chooser["condenseType"]|safe}}
 						</details>
 					</div>
           <hr>
@@ -226,7 +226,7 @@
 					</details>
 					<details id="helpResults" class="help dstate">
 						<summary>Result list</summary>
-						<p>Show the text in the {{defaultFormat}} text format:
+						<p>Show the text in the {{defaultTextFormat}} text format:
 						   see the <i>text format</i> option.</p>
 						<p>Group results by {{defaultCondenseType}}:
 						   see the <i>condense</i> option.</p>
@@ -437,6 +437,6 @@
 		</div>
 		</form>
 		<script src="/server/static/jquery.js"></script>
-		<script src="/server/static/tf.js"/></script>
+		<script src="/server/static/tf3.0.js"/></script>
 	</body>
 </html>

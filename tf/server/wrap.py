@@ -2,7 +2,6 @@ import time
 import datetime
 
 from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
-from ..applib.helpers import NB
 from ..applib.displaysettings import INTERFACE_OPTIONS
 
 
@@ -116,7 +115,7 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 def wrapOptions(context, form):
-    """Wraps the options, including the app-specific ones, into HTML.
+    """Wraps the boolean options, including the app-specific ones, into HTML.
     """
 
     interfaceDefaults = context.interfaceDefaults
@@ -146,66 +145,50 @@ def wrapOptions(context, form):
     return ("\n".join(html), htmlMoved, "\n".join(helpHtml))
 
 
-def wrapTypes(allowedTypes, value, kind, name):
-    html = []
-    for (i, otype) in enumerate(allowedTypes):
-        checked = " checked " if otype in value else ""
-        checkButton = (
-            f'<input class="r {kind}" type="checkbox" name="{name}" value="{otype}"'
-            f" {checked}/>"
-        )
-        html.append(
-            f'<div class="cline">{checkButton} <span class="ctype">{otype}</span></div>'
-        )
-    return "\n".join(html)
+def wrapSelect(option, allowedValues, value, group, item, multiple):
+    """Provides a buttoned chooser for the node types.
 
-
-def wrapCondense(allowedTypes, value):
-    """Provides a radio-buttoned chooser for the condense types.
-
+    Some options need node types as values: `baseTypes`, `condenseType`, `hiddenType`.
     See `tf.applib.displaysettings`.
 
-    `value` is the currently chosen condense type.
+    The chooser supports single value and multiple value mode.
+
+    Parameters
+    ----------
+    option: string
+        The name of the option
+    allowedValues: dict
+        Keyed by option, the values are tuples of allowed values for that option
+        in the right order.
+    value: string | set of string
+        The current value of the option. In the case of multiple values, this
+        os a set of values.
+    group: string
+        An extra class name helping to group the relevant buttons together
+    item: string
+        An extra pair of class names for formatting each option line
+    multiple: boolean
+        If `True`, the options appear as check boxes, and multiple values
+        can be selected. Otherwise, the options appear as radio boxes, of which
+        at most one can be selected.
+
+    Returns
+    -------
+    html
+        A HTML fragment containing the options with the current value(s) selected.
     """
 
     html = []
-    lastType = len(allowedTypes) - 1
-    for (i, (otype, av, b, e)) in enumerate(allowedTypes):
-        checked = " checked " if value == otype else ""
-        radioButton = (
-            f'<span class="cradio">{NB}</span>'
-            if i == lastType
-            else (
-                f'<input class="r cradio" type="radio" name="condenseTp"'
-                f' value="{otype}" {checked}/>'
-            )
+    for val in allowedValues[option]:
+        logicValue = val in value if multiple else val == value
+        checked = " checked " if logicValue else ""
+        bType = "checkbox" if multiple else "radio"
+        button = (
+            f'<input class="r {group}" type="{bType}" name="{option}" value="{val}"'
+            f' {checked}/>'
         )
         html.append(
-            f'<div class="cline">{radioButton} <span class="ctype">{otype}</span>'
-            f' <span class="cinfo">{e - b + 1: 8.6g} x av length {av: 4.2g}</span>'
-            f"</div>"
-        )
-    return "\n".join(html)
-
-
-def wrapFormats(allFormats, value):
-    """
-    Provides a radio-buttoned chooser for the text formats.
-
-    See `tf.applib.displaysettings`.
-
-    `value` is the currently chosen format.
-    """
-
-    html = []
-    for (i, fmt) in enumerate(allFormats):
-        checked = " checked " if value == fmt else ""
-        radioButton = (
-            f'<input class="r tradio" type="radio" id="ttp{i}"'
-            f' name="textformat" value="{fmt}" {checked} "/>'
-        )
-        html.append(
-            f'<div class="tfline">{radioButton} <span class="ttext">{fmt}</span></div>'
+            f'<div class="{item[0]}">{button} <span class="{item[1]}">{val}</span></div>'
         )
     return "\n".join(html)
 

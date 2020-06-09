@@ -68,3 +68,32 @@ text-fabric -k ddd
 
 will kill all such processes as far as they are for data source `ddd`.
 
+## Implementation notes
+
+Different corpora will use different ports for the kernel and webserver communication.
+
+The ports are computed from the arguments with which text-fabric is called.
+
+That is done by the [crc32](https://docs.python.org/3.7/library/zlib.html#zlib.crc32) function.
+There is no guarantee that collisions occur, and that the ports computed this way are free.
+So we will look for the first available port after this.
+
+On the whole, the following things are fairly well taken care of:
+
+*   Invocations of text-fabric with different arguments lead to different ports
+*   Repeated invocations of text-fabric with the same arguments lead to the same ports.
+
+In particular, the following invocations lead to different ports:
+
+```sh
+text-fabric banks
+```
+
+and
+
+```
+text-fabric banks:clone
+```
+
+and likewise for all other arguments.
+

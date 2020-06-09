@@ -8,7 +8,7 @@ import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc, flattenToSet
-from .helpers import getResultsX, tupleEnum, RESULT, dh, NB
+from .helpers import getResultsX, tupleEnum, RESULT, dh
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .displaysettings import DisplaySettings
@@ -226,7 +226,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     if not display.check("table", options):
         return ""
 
-    dContext = display.get(options)
+    dContext = display.distill(options)
     fmt = dContext.fmt
     condenseType = dContext.condenseType
     tupleFeatures = dContext.tupleFeatures
@@ -284,9 +284,9 @@ def table(app, tuples, _asString=False, **options):
 
     api = app.api
     F = api.F
-    fOtype = F.otype.v
+    fOtypev = F.otype.v
 
-    dContext = display.get(options)
+    dContext = display.distill(options)
     end = dContext.end
     start = dContext.start
     withPassage = dContext.withPassage
@@ -314,7 +314,7 @@ def table(app, tuples, _asString=False, **options):
 
     for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
         if one:
-            heads = '</th><th class="tf">'.join(fOtype(n) for n in tup)
+            heads = '</th><th class="tf">'.join(fOtypev(n) for n in tup)
             html.append(
                 f'<tr class="tf">'
                 f'<th class="tf">n{passageHead}</th>'
@@ -397,10 +397,12 @@ def plainTuple(
     api = app.api
     F = api.F
     T = api.T
-    fOtype = F.otype.v
+    N = api.N
+    otypeRank = N.otypeRank
+    fOtypev = F.otype.v
     _browse = app._browse
 
-    dContext = display.get(options)
+    dContext = display.distill(options)
     condenseType = dContext.condenseType
     colorMap = dContext.colorMap
     highlights = dContext.highlights
@@ -411,7 +413,7 @@ def plainTuple(
         tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if withPassage is True:
-        passageNode = _getRefMember(app, tup, dContext)
+        passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
         passageRef = (
             ""
             if passageNode is None
@@ -497,7 +499,7 @@ def plainTuple(
     passageHead = '</th><th class="tf">p' if withPassage is True else ""
     head = (
         f'<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">'
-        + '</th><th class="tf">'.join(fOtype(n) for n in tup)
+        + '</th><th class="tf">'.join(fOtypev(n) for n in tup)
         + f"</th></tr>"
     )
     html = f"<table>" + head + "".join(html) + "</table>"
@@ -572,7 +574,7 @@ def show(app, tuples, **options):
     if not display.check("show", options):
         return ""
 
-    dContext = display.get(options)
+    dContext = display.distill(options)
     end = dContext.end
     start = dContext.start
     condensed = dContext.condensed
@@ -632,7 +634,7 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     if not display.check("prettyTuple", options):
         return ""
 
-    dContext = display.get(options)
+    dContext = display.distill(options)
     colorMap = dContext.colorMap
     highlights = dContext.highlights
     condenseType = dContext.condenseType
@@ -744,7 +746,7 @@ def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     """
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)
 
 
@@ -759,42 +761,36 @@ def _renderOuter(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     _browse = app._browse
 
-    aContext = app.context
-    formatHtml = aContext.formatHtml
-
-    dContext = display.get(options)
-    fmt = dContext.fmt
-
-    dContext.isHtml = fmt in formatHtml
+    dContext = display.distill(options)
 
     tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
-    oContext = tree[1]
+    oContext = tree[1]["oContext"]
     subTrees = tree[2]
 
     if isPretty:
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures
 
-        dContext.features = sorted(
-            flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)
+        dContext.set(
+            "features",
+            sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
         )
-        dContext.featuresIndirect = extraFeatures[1]
+        dContext.set("featuresIndirect", extraFeatures[1])
 
     html = []
 
-    passage = _getPassage(app, dContext, oContext, n)
+    passage = _getPassage(app, isPretty, dContext, oContext, n)
 
     for subTree in subTrees:
         _render(app, isPretty, subTree, True, True, 0, passage, html)
 
     rep = "".join(html)
-    sep = NB if passage and rep else ""
     ltr = oContext.ltr
 
     result = (
         f"""{passage}<div class="{ltr} children">{rep}</div>"""
-        if isPretty else
-        f"""{passage}{sep}{rep}"""
+        if isPretty
+        else f"""<div class="{ltr}">{passage}{rep}</div>"""
     )
 
     if _browse or _asString:

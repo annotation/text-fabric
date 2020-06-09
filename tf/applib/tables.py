@@ -25,7 +25,7 @@ def compose(
     """
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     condensed = dContext.condensed
     condenseType = dContext.condenseType
 
@@ -269,7 +269,7 @@ def _plainTextSFinal(
     """
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     fmt = dContext.fmt
 
     api = app.api

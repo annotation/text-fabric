@@ -3,6 +3,7 @@ import pickle
 import socket
 import errno
 from base64 import b64encode, b64decode
+from zlib import crc32
 
 from ..parameters import HOST, PORT_BASE
 
@@ -44,22 +45,14 @@ def getPort(portBase=PORT_BASE):
     return result
 
 
-def enSlug(data):
-    return str(b64encode(pickle.dumps(data)), encoding="utf8")
-
-
-def deSlug(slug):
-    return pickle.loads(b64decode(bytes(slug, encoding="utf8")))
-
-
 def repSlug(slug):
-    info = deSlug(slug)
+    info = _deSlug(slug)
     appName = info['appName']
     checkoutApp = info['checkoutApp']
     if checkoutApp:
         checkoutApp = f':{checkoutApp}'
     rep = f"{appName}{checkoutApp}"
-    args = " ".join(f"--{k}={v}" for (k, v) in sorted(info.items()) if k not in {'appName', 'checkoutApp'})
+    args = " ".join(f"--{k}={v}" for (k, v) in sorted(info.items()) if k not in {'appName', 'checkoutApp'} and v is not None)
     if args:
         args = f" {args}"
     return f"{rep}{args}"
@@ -72,7 +65,7 @@ def argApp(cargs):
     modules = argCollect('modules', cargs)
     moduleRefs = argCollect('mod', cargs)
     setFile = argCollect('sets', cargs)
-    slug = enSlug(
+    return (appName, *_enSlug(
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
@@ -82,8 +75,7 @@ def argApp(cargs):
             moduleRefs=moduleRefs,
             setFile=setFile,
         )
-    )
-    return (appName, slug)
+    ))
 
 
 def argKill(cargs):
@@ -119,7 +111,7 @@ def argKernel(cargs):
         return None
     slug = cargs[1]
     portKernel = cargs[2]
-    return (deSlug(slug), portKernel)
+    return (_deSlug(slug), portKernel)
 
 
 def argWeb(cargs):
@@ -128,7 +120,7 @@ def argWeb(cargs):
     slug = cargs[1]
     portKernel = cargs[2]
     portWeb = cargs[3]
-    return (deSlug(slug), portKernel, portWeb)
+    return (_deSlug(slug), portKernel, portWeb)
 
 
 def argParam(cargs):
@@ -149,3 +141,16 @@ def argParam(cargs):
         parts.append("")
     (appName, checkoutApp) = parts
     return (appName, checkoutApp)
+
+
+def _enSlug(data):
+    protoSlug = b64encode(pickle.dumps(tuple(sorted(data.items()))))
+    portOffset = crc32(protoSlug) % 10000
+    portKernel = PORT_BASE + portOffset
+    portWeb = portKernel + 10000
+
+    return (str(protoSlug, encoding="utf8"), portKernel, portWeb)
+
+
+def _deSlug(slug):
+    return dict(pickle.loads(b64decode(bytes(slug, encoding="utf8"))))

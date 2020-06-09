@@ -160,8 +160,7 @@ def header(app):
         dh(
             f"<b>Text-Fabric:</b> {tfLine}<br>"
             f"<b>Data:</b> {dataLine}<br>"
-            "<b>Features:</b><br>"
-            + _featuresPerModule(app)
+            "<b>Features:</b><br>" + _featuresPerModule(app)
         )
 
 
@@ -224,9 +223,9 @@ def webLink(
     nType = F.otype.v(n)
     passageText = None
 
-    if nType in lexTypes:
-        if text is None:
-            text = getText(app, False, n, nType, False, True, True, "", None, None)
+    if _noUrl:
+        href = "#"
+    elif nType in lexTypes:
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -235,31 +234,34 @@ def webLink(
                 if webLexId
                 else None
             )
-            theUrl = webUrlLex.replace("<lid>", str(lid))
+            href = webUrlLex.replace("<lid>", str(lid))
         elif webBase:
-            theUrl = webBase
+            href = webBase
         else:
-            theUrl = None
+            href = None
     else:
-        if text is None:
-            text = app.sectionStrFromNode(n)
-            passageText = text
         if webUrl:
-            theUrl = webUrl
+            href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                theUrl = theUrl.replace(f"<{i + 1}>", str(heading))
+                href = href.replace(f"<{i + 1}>", str(heading))
         else:
-            theUrl = None
+            href = None
+
+    if nType in lexTypes:
+        if text is None:
+            text = getText(app, False, n, nType, False, True, True, "", None, None)
+    else:
+        passageText = app.sectionStrFromNode(n)
+        if text is None:
+            text = passageText
 
     style = styles.get(nType, None)
     if style:
         clsName = f"{clsName or ''} {style}"
-    if theUrl is None:
+    if href is None:
         fullResult = text
-        href = None
     else:
-        href = "#" if _noUrl else theUrl
         atts = dict(target="") if _noUrl else dict(title=webHint)
         fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
     result = href if urlOnly else fullResult

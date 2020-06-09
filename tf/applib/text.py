@@ -21,4 +21,4 @@ def textApi(app):
         func = getattr(app, f"fmt_{method}", rescue)
         xFormats[fmt] = func
 
-    aContext.allFormats = T.formats
+    aContext.allowedValues["textFormat"] = T.formats

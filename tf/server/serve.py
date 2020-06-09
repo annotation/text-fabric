@@ -8,9 +8,7 @@ from .wrap import (
     pageLinks,
     passageLinks,
     wrapOptions,
-    wrapTypes,
-    wrapCondense,
-    wrapFormats,
+    wrapSelect,
     wrapProvenance,
 )
 from .servelib import getAbout, getFormData, zipData
@@ -24,7 +22,7 @@ def serveTable(web, kind, getx=None, asDict=False):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form["textformat"] or None
+    textFormat = form["textFormat"] or None
     task = form[kind].strip()
     openedKey = f"{kind}Opened"
     openedSet = (
@@ -66,9 +64,9 @@ def serveQuery(web, getx, asDict=False):
     kind = "query"
     form = getFormData(interfaceDefaults)
     task = form[kind]
-    condenseType = form["condenseTp"] or None
+    condenseType = form["condenseType"] or None
     resultKind = condenseType if form["condensed"] else RESULT
-    textFormat = form["textformat"] or None
+    textFormat = form["textFormat"] or None
     openedKey = f"{kind}Opened"
     openedSet = (
         {int(n) for n in form[openedKey].split(",")} if form[openedKey] else set()
@@ -136,7 +134,7 @@ def servePassage(web, getx):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form["textformat"] or None
+    textFormat = form["textFormat"] or None
 
     passages = ""
 
@@ -235,8 +233,8 @@ def serveDownload(web):
 
     task = form["query"]
     condensed = form["condensed"]
-    condenseType = form["condenseTp"] or None
-    textFormat = form["textformat"] or None
+    condenseType = form["condenseType"] or None
+    textFormat = form["textFormat"] or None
     csvs = None
     resultsX = None
     messages = ""
@@ -291,16 +289,11 @@ def serveAll(web, anything):
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
-    defaultBaseTypes = aContext.baseTypes
-    defaultHiddenTypes = aContext.hiddenTypes
     defaultCondenseType = aContext.condenseType
+    defaultTextFormat = aContext.textFormat
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
-    allowedBaseTypes = aContext.allowedBaseTypes
-    allowedHiddenTypes = aContext.allowedHiddenTypes
-    allowedCondenseTypesX = aContext.allowedCondenseTypesX
-    defaultFormat = aContext.defaultFormat
-    allFormats = aContext.allFormats
+    allowedValues = aContext.allowedValues
 
     kernelApi = web.kernelApi
 
@@ -322,16 +315,20 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseTypes = defaultBaseTypes if resetForm else form["baseTypes"]
-    baseTypesOpts = wrapTypes(allowedBaseTypes, baseTypes, "bcheck", "baseTypes")
-    hiddenTypes = defaultHiddenTypes if resetForm else form["hiddenTypes"]
-    hiddenTypesOpts = wrapTypes(
-        allowedHiddenTypes, hiddenTypes, "hcheck", "hiddenTypes"
-    )
-    condenseType = defaultCondenseType if resetForm else form["condenseTp"]
-    condenseOpts = wrapCondense(allowedCondenseTypesX, condenseType)
-    textFormat = defaultFormat if resetForm else form["textformat"]
-    textFormatOpts = wrapFormats(allFormats, textFormat)
+    chooser = {}
+    typeCss = ("cline", "ctype")
+    formatCss = ("tfline", "ttext")
+
+    for (option, group, item, multiple) in (
+        ("baseTypes", "bcheck", typeCss, True),
+        ("condenseType", "cradio", typeCss, False),
+        ("hiddenTypes", "hcheck", typeCss, True),
+        ("textFormat", "tradio", formatCss, False),
+    ):
+        value = aContext.get(option, None) if resetForm else form[option]
+        options = wrapSelect(option, allowedValues, value, group, item, multiple)
+        chooser[option] = options
+
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
 
     templateData = dict(
@@ -340,14 +337,11 @@ def serveAll(web, anything):
         setNames=setNameHtml,
         options=options,
         optionsHelp=optionsHelp,
-        baseTypesOpts=baseTypesOpts,
+        chooser=chooser,
         condensedOption=optionsMoved["condensed"],
-        condenseOpts=condenseOpts,
         hideTypesOption=optionsMoved["hideTypes"],
-        hiddenTypesOpts=hiddenTypesOpts,
         defaultCondenseType=defaultCondenseType,
-        textFormatOpts=textFormatOpts,
-        defaultFormat=defaultFormat,
+        defaultTextFormat=defaultTextFormat,
         exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
         pages=pages,

@@ -96,22 +96,6 @@ a:hover {
 span.plain {
     display: inline-block;
     white-space: pre-wrap;
-    text-align: start;
-}
-.gr,.gl {
-    white-space: pre-wrap;
-    border-color: var(--border-color-gap);
-    border-width: var(--border-width-gap);
-    border-top-style: none;
-    border-bottom-style: none;
-}
-.gr {
-    border-right-style: solid;
-    border-left-style: dashed;
-}
-.gl {
-    border-right-style: dashed;
-    border-left-style: solid;
 }
 .features {
     font-family: monospace;
@@ -156,12 +140,16 @@ span.plain {
     font-size: small;
     font-weight: bold;
     color: var(--section);
+    unicode-bidi: embed;
+    text-align: start;
 }
 .structure {
     font-family: sans-serif;
     font-size: small;
     font-weight: bold;
     color: var(--structure);
+    unicode-bidi: embed;
+    text-align: start;
 }
 .comments {
     display: flex;
@@ -363,14 +351,12 @@ div.pval {
   --meta-color:         hsla(  0,   0%,  90%, 0.7  );
   --meta-width:         0.15rem;
   --border-color-nul:   hsla(  0,   0%,  90%, 0.5  );
-  --border-color-gap:   hsla(  0,  50%,  70%, 1.0  );
   --border-color0:      hsla(  0,   0%,  90%, 0.9  );
   --border-color1:      hsla(  0,   0%,  80%, 0.9  );
   --border-color2:      hsla(  0,   0%,  70%, 0.9  );
   --border-color3:      hsla(  0,   0%,  80%, 0.8  );
   --border-color4:      hsla(  0,   0%,  60%, 0.9  );
   --border-width-nul:   0.1rem;
-  --border-width-gap:   0.1rem;
   --border-width0:      0.1rem;
   --border-width1:      0.15rem;
   --border-width2:      0.2rem;

@@ -517,7 +517,7 @@ def main(cargs=sys.argv):
     if checkout is None:
         checkout = ""
 
-    console(f"Setting up TF kernel for {appName} {moduleRefs} {setFile}")
+    console(f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}")
     app = findApp(
         appName,
         checkoutApp,

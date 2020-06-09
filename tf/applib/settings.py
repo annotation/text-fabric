@@ -216,9 +216,9 @@ class Check:
                 if v not in allNodeFeatures:
                     errors.append(f"{k}: feature {v} not loaded")
             elif k == "browseNavLevel":
-                allowedValues = set(range(len(sectionTypes)))
-                if v not in allowedValues:
-                    allowed = ",".join(sorted(allowedValues))
+                legalValues = set(range(len(sectionTypes)))
+                if v not in legalValues:
+                    allowed = ",".join(sorted(legalValues))
                     errors.append(f"{k} must be an integer in {allowed}")
             elif k == "children":
                 if type(v) is not str and type(v) is not list:
@@ -281,14 +281,14 @@ class Check:
                 if type(v) is not str:
                     errors.append(f"{k} must be a string")
             elif k == "writing":
-                allowedValues = set(WRITING_DEFAULTS)
-                if v not in allowedValues:
-                    allowed = ",".join(allowedValues - {""})
+                legalValues = set(WRITING_DEFAULTS)
+                if v not in legalValues:
+                    allowed = ",".join(legalValues - {""})
                     errors.append(f"{k} must be the empty string or one of {allowed}")
             elif k in {"direction", "language"}:
-                allowedValues = {w[k] for w in WRITING_DEFAULTS}
-                if v not in allowedValues:
-                    allowed = ",".join(allowedValues)
+                legalValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in legalValues:
+                    allowed = ",".join(legalValues)
                     errors.append(f"{k} must be one of {allowed}")
             elif k in {
                 "browseContentPretty",
@@ -302,19 +302,19 @@ class Check:
                 "verselike",
                 "wrap",
             }:
-                allowedValues = {True, False}
-                if v not in allowedValues:
+                legalValues = {True, False}
+                if v not in legalValues:
                     allowed = "true,false"
                     errors.append(f"{k} must be a boolean in {allowed}")
             elif k == "flow":
-                allowedValues = {"hor", "ver"}
-                if v not in allowedValues:
-                    allowed = ",".join(allowedValues)
+                legalValues = {"hor", "ver"}
+                if v not in legalValues:
+                    allowed = ",".join(legalValues)
                     errors.append(f"{k} must be a value in {allowed}")
             elif k == "level":
-                allowedValues = set(range(len(4)))
-                if v not in allowedValues:
-                    allowed = ",".join(sorted(allowedValues))
+                legalValues = set(range(len(4)))
+                if v not in legalValues:
+                    allowed = ",".join(sorted(legalValues))
                     errors.append(f"{k} must be an integer in {allowed}")
 
     def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
@@ -459,7 +459,7 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    specs["defaultFormat"] = T.defaultFormat
+    specs["textFormat"] = T.defaultFormat
 
     dKey = "interfaceDefaults"
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
@@ -512,8 +512,8 @@ def getDataDefaults(app, cfg, dKey, withApi):
         formatStyle[ORIG] = specs["defaultClsOrig"]
         specs["formatStyle"] = formatStyle
 
-    allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
-    checker.checkGroup(cfg, allowedKeys, dKey)
+    legalKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
+    checker.checkGroup(cfg, legalKeys, dKey)
     checker.report()
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
@@ -558,7 +558,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     F = api.F
     T = api.T
     N = api.N
-    C = api.C
     otypeRank = N.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
@@ -711,29 +710,13 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         checker.report()
 
     lexTypes = set(lexMap.values())
-
-    specs["allowedBaseTypes"] = tuple(
-        e[0]
-        for e in C.levels.data[0:-1]
-        if e[0] not in sectionTypeSet and e[0] not in lexTypes
-    )
-    specs["allowedCondenseTypes"] = tuple(
-        e[0]
-        for e in C.levels.data
-        if e[0] not in lexTypes
-    )
-    specs["allowedCondenseTypesX"] = tuple(
-        e
-        for e in C.levels.data
-        if e[0] not in lexTypes
-    )
-    specs["allowedHiddenTypes"] = tuple(
-        e[0]
-        for e in C.levels.data[0:-1]
-        if e[0] not in sectionTypeSet and e[0] not in lexTypes
-    )
-
     nTypesNoLex = [n for n in nTypes if n not in lexTypes]
+
+    specs["allowedValues"] = dict(
+        baseTypes=tuple(e for e in nTypesNoLex if e not in sectionTypeSet),
+        condenseType=tuple(nTypesNoLex[0:-1]),
+        hiddenTypes=tuple(e for e in nTypesNoLex[0:-1] if e not in sectionTypeSet),
+    )
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes

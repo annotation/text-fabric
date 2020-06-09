@@ -4,13 +4,12 @@
 
 from itertools import chain
 from ..core.helpers import rangesFromList, console
+from ..core.text import DEFAULT_FORMAT
+from .settings import ORIG
 from .highlight import getHlAtt
 from .displaylib import (
     NodeContext,
     OuterContext,
-    _getBigType,
-    _getLtr,
-    _getTextCls,
     QUAD,
 )
 
@@ -18,6 +17,10 @@ from .displaylib import (
 def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     """Unravels a node in a tree of fragments dressed up with formatting properties.
     """
+
+    _browse = app._browse
+    webLink = app.webLink
+    getGraphics = getattr(app, "getGraphics", None)
 
     api = app.api
     N = api.N
@@ -39,6 +42,10 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     aContext = app.context
     verseTypes = aContext.verseTypes
     lexTypes = aContext.lexTypes
+    lexMap = aContext.lexMap
+    lineNumberFeature = aContext.lineNumberFeature
+    featuresBare = aContext.featuresBare
+    features = aContext.features
     descendantType = aContext.descendantType
     exclusions = aContext.exclusions
     showVerseInTuple = aContext.showVerseInTuple
@@ -48,6 +55,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     formatHtml = aContext.formatHtml
     hasGraphics = aContext.hasGraphics
     afterChild = aContext.afterChild
+    plainCustom = aContext.plainCustom
 
     full = dContext.full
     hideTypes = dContext.hideTypes
@@ -55,10 +63,12 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     hiddenTypes = dContext.hiddenTypes
     highlights = dContext.highlights
     fmt = dContext.fmt
-    dContext.isHtml = fmt in formatHtml
+    dContext.set("isHtml", fmt in formatHtml)
     ltr = _getLtr(app, dContext)
-    textCls = _getTextCls(app, fmt)
+    textClsDefault = _getTextCls(app, fmt)
     descendType = T.formats.get(fmt, slotType)
+    textMethod = T.text
+    upMethod = L.u
 
     startCls = "r" if ltr == "rtl" else "l"
     endCls = "l" if ltr == "rtl" else "r"
@@ -80,7 +90,19 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
             if bt in descendantType:
                 subBaseTypes |= descendantType[bt]
 
-    oContext = OuterContext(slotType, ltr, fmt, textCls)
+    oContext = OuterContext(
+        slotType,
+        ltr,
+        fmt,
+        textClsDefault,
+        textMethod,
+        upMethod,
+        eOslots,
+        Fs,
+        _browse,
+        webLink,
+        getGraphics,
+    )
 
     nodeInfo = {}
 
@@ -97,7 +119,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
                 cls.update(levelCls[mType])
             if mType in prettyCustom:
                 prettyCustom[mType](app, m, mType, cls)
-        textCls = styles.get(mType, oContext.textCls)
+        textCls = styles.get(mType, oContext.textClsDefault)
         isBaseNonSlot = not isSlot and (mType in baseTypes or mType in subBaseTypes)
         nodeInfoM = nodeInfo.setdefault(
             m,
@@ -107,12 +129,18 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
                 isSlot or mType == descendType,
                 False if descendType == mType or mType in lexTypes else None,
                 isBaseNonSlot,
+                mType in lexTypes,
+                lexMap.get(mType, None),
+                lineNumberFeature.get(mType, None),
+                featuresBare.get(nType, ((), {})),
+                features.get(nType, ((), {})),
                 textCls,
                 hlCls,
                 hlStyle,
                 cls,
                 mType in hasGraphics,
                 afterChild.get(mType, None),
+                plainCustom.get(mType, None) if plainCustom else None,
             ),
         )
         chunkInfo.update(
@@ -199,7 +227,9 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         for (i, pChunk) in enumerate(pSortedChunks):
             for j in range(i + 1, pChunksLen):
                 p2Chunk = pSortedChunks[j]
-                splits.setdefault(p2Chunk, set()).update(_getSplitPoints(pChunk, p2Chunk))
+                splits.setdefault(p2Chunk, set()).update(
+                    _getSplitPoints(pChunk, p2Chunk)
+                )
 
         # apply the splits for nodes of this type
 
@@ -252,7 +282,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     # stack the chunks hierarchically
 
-    tree = (None, oContext, [])
+    tree = (None, dict(dContext=dContext, oContext=oContext), [])
     parent = {}
     rightmost = tree
 
@@ -306,9 +336,9 @@ def _getSplitPoints(pChunk, qChunk):
     if b2 == e2 or (b1 <= b2 and e1 >= e2):
         return []
     splitPoints = set()
-    if (b2 < b1 <= e2):
+    if b2 < b1 <= e2:
         splitPoints.add(b1)
-    if (b2 <= e1 < e2):
+    if b2 <= e1 < e2:
         splitPoints.add(e1 + 1)
     return splitPoints
 
@@ -336,11 +366,68 @@ def _applySplits(chunks, splits):
         chunks.add((m, (prevB, e)))
 
 
+def _getTextCls(app, fmt):
+    aContext = app.context
+    formatCls = aContext.formatCls
+    defaultClsOrig = aContext.defaultClsOrig
+
+    return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
+
+
+def _getLtr(app, dContext):
+    aContext = app.context
+    direction = aContext.direction
+
+    fmt = dContext.fmt or DEFAULT_FORMAT
+
+    return (
+        "rtl"
+        if direction == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
+        else ("" if direction == "ltr" else "ltr")
+    )
+
+
+def _getBigType(app, isPretty, dContext, nType):
+    api = app.api
+    T = api.T
+    N = api.N
+
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+    otypeRank = N.otypeRank
+
+    aContext = app.context
+    bigTypes = aContext.bigTypes
+    isBigOverride = nType in bigTypes
+
+    full = dContext.full
+    condenseType = dContext.condenseType
+
+    isBig = False
+    if not full:
+        if not isPretty and isBigOverride:
+            isBig = True
+        elif sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+            if condenseType is None or otypeRank[nType] > otypeRank[condenseType]:
+                isBig = True
+        elif condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
+            isBig = True
+    return isBig
+
+
 def _showTree(tree, level, details=False):
     indent = QUAD * level
     (chunk, info, children) = tree
     if chunk is None:
         console(f"{indent}<{level}> TOP")
+        oContext = info["oContext"]
+        dContext = info["dContext"]
+        if details:
+            _showItems(
+                indent,
+                oContext._asdict().items(),
+                ((k, dContext.get(k)) for k in dContext.allKeys),
+            )
     else:
         (n, (b, e)) = chunk
         rangeRep = "{" + (str(b) if b == e else f"{b}-{e}") + "}"
@@ -351,7 +438,21 @@ def _showTree(tree, level, details=False):
         boundaryCls = info["boundaryCls"]
         console(f"{indent}<{level}> {nType}{base} {n} {rangeRep} {boundaryCls}")
         if details:
-            for (k, v) in sorted(nContext._asdict().items(), key=lambda x: x[0]):
-                console(f"{indent}{QUAD * 4}{k:<10} = {v}")
+            _showItems(indent, nContext._asdict().items())
     for subTree in children:
         _showTree(subTree, level + 1, details=details)
+
+
+def _showItems(indent, *iterables):
+    for (k, v) in sorted(chain(*iterables), key=lambda x: x[0],):
+        if (
+            k == "nType"
+            or v is None
+            or v == []
+            or v == ""
+            or v == {}
+            or v == ()
+            or v == set()
+        ):
+            continue
+        console(f"{indent}{QUAD * 4}{k:<20} = {v}")

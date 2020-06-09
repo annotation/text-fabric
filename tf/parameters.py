@@ -122,7 +122,7 @@ EXPRESS_SYNC_LEGACY = [
 
 PROTOCOL = "http://"
 HOST = "localhost"
-PORT_BASE = 8976
+PORT_BASE = 10000
 
 URL_TFDOC = f"https://{ORG}.github.io/{REPO}"
 """Base url of the online Text-Fabric documentation."""

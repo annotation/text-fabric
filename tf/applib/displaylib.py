@@ -1,9 +1,7 @@
 from collections import namedtuple
 
-from .helpers import getText, htmlSafe
-from ..core.text import DEFAULT_FORMAT
+from .helpers import getText, htmlSafe, NB
 from ..core.helpers import htmlEsc
-from .settings import ORIG
 
 QUAD = "  "
 
@@ -23,13 +21,43 @@ OuterContext = namedtuple(  # noqa: F811
     slotType
     ltr
     fmt
-    textCls
+    textClsDefault
+    textMethod
+    upMethod
+    slotsMethod
+    lookupMethod
+    browsing
+    webLink
+    getGraphics
 """.strip().split(),
 )
 __pdoc__["OuterContext.slotType"] = "The slot type of the dataset."
 __pdoc__["OuterContext.ltr"] = "writing direction."
 __pdoc__["OuterContext.fmt"] = "the currently selected text format."
-__pdoc__["OuterContext.textCls"] = "Css class for full text."
+__pdoc__["OuterContext.textClsDefault"] = "Default css class for full text."
+__pdoc__["OuterContext.textMethod"] = (
+    "Method to print text of a node according to a text format: "
+    "`tf.core.text.Text.text`"
+)
+__pdoc__[
+    "OuterContext.upMethod"
+] = "Method to move from a node to its first embedder: `tf.core.locality.Locality.u`"
+__pdoc__[
+    "OuterContext.slotsMethod"
+] = "Method to get the slots of a node: `tf.core.oslotsfeature.OslotsFeature.s`"
+__pdoc__[
+    "OuterContext.lookupMethod"
+] = "Method to get the value of a node feature: `tf.core.api.Api.Fs`"
+__pdoc__[
+    "OuterContext.browsing"
+] = "whether we work for the Text-Fabric browser or for a Jupyter notebook"
+__pdoc__[
+    "OuterContext.webLink"
+] = "Method to produce a web link to a node: `tf.applib.links.webLink`"
+__pdoc__["OuterContext.getGraphics"] = (
+    "Method to fetch graphics for a node. App-dependent."
+    "See `tf.applib.settings` under **graphics**."
+)
 
 
 class NodeContext:
@@ -47,12 +75,18 @@ NodeContext = namedtuple(  # noqa: F811
     isSlotOrDescend
     descend
     isBaseNonSlot
+    isLexType
+    lexType
+    lineNumberFeature
+    featuresBare
+    features
     textCls
     hlCls
     hlStyle
     cls
     hasGraphics
     after
+    plainCustom
 """.strip().split(),
 )
 __pdoc__["NodeContext.nType"] = "The node type of the current node."
@@ -70,6 +104,19 @@ __pdoc__["NodeContext.isBaseNonSlot"] = (
     "Whether the current node has a type that is currently a baseType,"
     " i.e. a type where a pretty display should stop unfolding."
 )
+__pdoc__["NodeContext.isLexType"] = "Whether nodes of type are lexemes."
+__pdoc__[
+    "NodeContext.lexType"
+] = "If nodes of this type have lexemes in another type, this is that type."
+__pdoc__[
+    "NodeContext.lineNumberFeature"
+] = "Feature with source line numbers of nodes of this type."
+__pdoc__[
+    "NodeContext.featuresBare"
+] = "Features to display in the labels of pretty displays without their names"
+__pdoc__[
+    "NodeContext.features"
+] = "Features to display in the labels of pretty displays with their names"
 __pdoc__["NodeContext.textCls"] = "The text Css class of the current node."
 __pdoc__["NodeContext.hlCls"] = "The highlight Css class of the current node."
 __pdoc__["NodeContext.hlStyle"] = "The highlight style attribute of the current node."
@@ -79,9 +126,13 @@ __pdoc__["NodeContext.cls"] = (
     " might be set by prettyCustom"
 )
 __pdoc__["NodeContext.hasGraphics"] = "Whether this node type has graphics."
-__pdoc__[
-    "NodeContext.after"
-] = "Whether the app defines a custom method to generate material after a child."
+__pdoc__["NodeContext.after"] = (
+    "Whether the app defines a custom method to generate material after a child."
+    "It is a dict keyed by node type whose values are the custom methods."
+)
+__pdoc__["NodeContext.plainCustom"] = (
+    "Whether the app defines a custom method to plain displays."
+)
 
 
 # RENDER and  FRIENDS
@@ -99,8 +150,6 @@ def _render(
     switched=False,
     _asString=False,
 ):
-    aContext = app.context
-
     outer = level == 0
     (chunk, info, children) = tree
     (n, (b, e)) = chunk
@@ -109,12 +158,9 @@ def _render(
     nContext = info["nContext"]
     boundaryCls = info["boundaryCls"]
 
-    plainCustom = aContext.plainCustom
     ltr = oContext.ltr
-    nType = nContext.nType
     isBaseNonSlot = nContext.isBaseNonSlot
-
-    custom = plainCustom and nType in plainCustom
+    plainCustom = nContext.plainCustom
 
     if isPretty:
         nodePlain = None
@@ -131,7 +177,7 @@ def _render(
                 switched=True,
                 _asString=True,
             )
-        (label, featurePart) = _doPrettyNode(
+        (label, featurePart) = _prettyNode(
             app,
             dContext,
             oContext,
@@ -143,7 +189,7 @@ def _render(
             level,
             nodePlain,
         )
-        (containerB, containerE) = _doPrettyWrapPre(
+        (containerB, containerE) = _prettyPre(
             app,
             tree,
             outer,
@@ -152,6 +198,7 @@ def _render(
             boundaryCls,
             html,
             dContext,
+            oContext,
             nContext,
             ltr,
         )
@@ -162,7 +209,10 @@ def _render(
             html.append(f'<div class="{childCls} {ltr}">')
             after = nContext.after
     else:
-        contrib = _doPlainNode(
+        (contribB, contribE) = _plainPre(
+            app, dContext, oContext, nContext, n, boundaryCls, outer, switched, ltr
+        )
+        contrib = _plainNode(
             app,
             dContext,
             oContext,
@@ -175,14 +225,14 @@ def _render(
             boundaryCls,
             passage,
         )
-        _doPlainWrapPre(
-            app, dContext, nContext, n, boundaryCls, outer, switched, ltr, html
-        )
-        html.append(contrib)
+        if contribB:
+            html.append(contribB)
+        if contrib:
+            html.append(contrib)
 
     lastCh = len(children) - 1
 
-    if not ((isPretty and isBaseNonSlot) or (not isPretty and custom)):
+    if not ((isPretty and isBaseNonSlot) or (not isPretty and plainCustom)):
         for (i, subTree) in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
@@ -193,9 +243,9 @@ def _render(
     if isPretty:
         if children and not isBaseNonSlot:
             html.append("</div>")
-        _doPrettyWrapPost(label, featurePart, html, containerB, containerE)
+        _prettyPost(label, featurePart, html, containerB, containerE)
     else:
-        _doPlainWrapPost(html)
+        _plainPost(contribE, html)
 
     return "".join(html) if outer or _asString else None
 
@@ -203,27 +253,35 @@ def _render(
 # PLAIN LOW-LEVEL
 
 
-def _doPlainWrapPre(
-    app, dContext, nContext, n, boundaryCls, outer, switched, ltr, html
-):
+def _plainPre(app, dContext, oContext, nContext, n, boundaryCls, outer, switched, ltr):
     plainGaps = dContext.plainGaps
 
     hlCls = nContext.hlCls
     hlStyle = nContext.hlStyle
 
-    nodePart = _getNodePart(app, False, dContext, nContext, n, outer, switched)
+    nodePart = _getNodePart(
+        app, False, dContext, oContext, nContext, n, outer, switched
+    )
 
-    outerCls = f"outer" if outer else ""
     boundary = boundaryCls if plainGaps else ""
-    clses = f"plain {outerCls} {ltr} {boundary} {hlCls}"
-    html.append(f'<span class="{clses}" {hlStyle}>{nodePart}')
+    if boundary in {"r", "l"} or hlCls or hlStyle or nodePart:
+        clses = f"plain {ltr} {boundary} {hlCls}"
+        contribB = f'<span class="{clses}" {hlStyle}>'
+        contribE = "</span>"
+    else:
+        contribB = ""
+        contribE = ""
+    if nodePart:
+        contribB += nodePart
+    return (contribB, contribE)
 
 
-def _doPlainWrapPost(html):
-    html.append("</span>")
+def _plainPost(contribE, html):
+    if contribE:
+        html.append(contribE)
 
 
-def _doPlainNode(
+def _plainNode(
     app,
     dContext,
     oContext,
@@ -236,50 +294,45 @@ def _doPlainNode(
     boundaryCls,
     passage,
 ):
-    api = app.api
-    T = api.T
-
-    aContext = app.context
-    plainCustom = aContext.plainCustom
-
     isHtml = dContext.isHtml
     fmt = dContext.fmt
     showGraphics = dContext.showGraphics
 
+    textMethod = oContext.textMethod
     ltr = oContext.ltr
+    getGraphics = oContext.getGraphics
 
     hasGraphics = nContext.hasGraphics
     textCls = nContext.textCls
     nType = nContext.nType
     isSlotOrDescend = nContext.isSlotOrDescend
     descend = nContext.descend
+    plainCustom = nContext.plainCustom
 
     chunk = tree[0]
     n = chunk[0]
 
     graphics = (
-        app.getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else ""
+        getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else ""
     )
+    contrib = ""
 
-    if nType in plainCustom:
-        method = plainCustom[nType]
-        contrib = method(app, dContext, chunk, nType, outer)
+    if plainCustom is not None:
+        contrib = plainCustom(app, dContext, chunk, nType, outer)
         return contrib + graphics
 
     if isSlotOrDescend:
-        text = htmlSafe(
-            T.text(
-                n,
-                fmt=fmt,
-                descend=descend,
-                outer=outer,
-                first=first,
-                last=last,
-                level=level,
-            ),
-            isHtml,
+        text = textMethod(
+            n,
+            fmt=fmt,
+            descend=descend,
+            outer=outer,
+            first=first,
+            last=last,
+            level=level,
         )
-        contrib = f'<span class="{textCls}">{text}</span>'
+        if text:
+            contrib = f'<span class="{textCls}">{htmlSafe(text, isHtml)}</span>'
     else:
         tplFilled = getText(
             app,
@@ -294,7 +347,8 @@ def _doPlainNode(
             descend,
             dContext=dContext,
         )
-        contrib = f'<span class="plain {textCls} {ltr}">{tplFilled}</span>'
+        if tplFilled:
+            contrib = f'<span class="{textCls} {ltr}">{tplFilled}</span>'
 
     return contrib + graphics
 
@@ -302,10 +356,23 @@ def _doPlainNode(
 # PRETTY LOW-LEVEL
 
 
-def _doPrettyWrapPre(
-    app, tree, outer, label, featurePart, boundaryCls, html, dContext, nContext, ltr,
+def _prettyPre(
+    app,
+    tree,
+    outer,
+    label,
+    featurePart,
+    boundaryCls,
+    html,
+    dContext,
+    oContext,
+    nContext,
+    ltr,
 ):
+    getGraphics = oContext.getGraphics
+
     showGraphics = dContext.showGraphics
+
     hasGraphics = nContext.hasGraphics
     nType = nContext.nType
     cls = nContext.cls
@@ -332,12 +399,12 @@ def _doPrettyWrapPre(
         html.append(f"{containerB.format(trm)}{label0}{material}")
 
     if showGraphics and hasGraphics:
-        html.append(app.getGraphics(True, n, nType, outer))
+        html.append(getGraphics(True, n, nType, outer))
 
     return (containerB, containerE)
 
 
-def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
+def _prettyPost(label, featurePart, html, containerB, containerE):
     label0 = label.get("", None)
     labelE = label.get("e", None)
 
@@ -347,18 +414,13 @@ def _doPrettyWrapPost(label, featurePart, html, containerB, containerE):
         html.append(f"{containerB}{labelE} {featurePart}{containerE}")
 
 
-def _doPrettyNode(
+def _prettyNode(
     app, dContext, oContext, nContext, tree, outer, first, last, level, nodePlain
 ):
-    api = app.api
-    L = api.L
-    E = api.E
 
-    aContext = app.context
-    lexTypes = aContext.lexTypes
-    lexMap = aContext.lexMap
-
-    textCls = nContext.textCls
+    upMethod = oContext.upMethod
+    slotsMethod = oContext.slotsMethod
+    webLink = oContext.webLink
 
     nType = nContext.nType
     cls = nContext.cls
@@ -366,11 +428,14 @@ def _doPrettyNode(
     hlStyle = nContext.hlStyle
     descend = nContext.descend
     isBaseNonSlot = nContext.isBaseNonSlot
+    isLexType = nContext.isLexType
+    lexType = nContext.lexType
+    textCls = nContext.textCls
 
     n = tree[0][0]
     children = tree[2]
 
-    nodePart = _getNodePart(app, True, dContext, nContext, n, outer, False)
+    nodePart = _getNodePart(app, True, dContext, oContext, nContext, n, outer, False)
     labelHlCls = hlCls
     labelHlStyle = hlStyle
 
@@ -393,17 +458,17 @@ def _doPrettyNode(
 
     heading = f'<span class="{textCls}">{heading}</span>' if heading else ""
 
-    featurePart = _getFeatures(app, dContext, n, nType)
+    featurePart = _getFeatures(app, dContext, oContext, nContext, n, nType)
 
-    if nType in lexTypes:
-        slots = E.oslots.s(n)
+    if isLexType:
+        slots = slotsMethod(n)
         extremeOccs = (slots[0],) if len(slots) == 1 else (slots[0], slots[-1])
-        linkOccs = " - ".join(app.webLink(lo, _asString=True) for lo in extremeOccs)
+        linkOccs = " - ".join(webLink(lo, _asString=True) for lo in extremeOccs)
         featurePart += f'<div class="occs">{linkOccs}</div>'
-    if nType in lexMap:
-        lx = L.u(n, otype=lexMap[nType])
+    if lexType:
+        lx = upMethod(n, otype=lexType)
         if lx:
-            heading = app.webLink(lx[0], heading, _asString=True)
+            heading = webLink(lx[0], heading, _asString=True)
 
     label = {}
     for x in ("", "b", "e"):
@@ -423,93 +488,36 @@ def _doPrettyNode(
     return (label, featurePart)
 
 
-def _setSubBaseTypes(aContext, dContext, slotType):
-    descendantType = aContext.descendantType
-    baseTypes = dContext.baseTypes
-
-    subBaseTypes = set()
-
-    if baseTypes and baseTypes != {slotType}:
-        for bt in baseTypes:
-            if bt in descendantType:
-                subBaseTypes |= descendantType[bt]
-    dContext.subBaseTypes = subBaseTypes - baseTypes
-
-
 def _doPassage(dContext, i):
     withPassage = dContext.withPassage
     return withPassage is not True and withPassage and i + 1 in withPassage
 
 
-def _getPassage(app, dContext, oContext, n):
+def _getPassage(app, isPretty, dContext, oContext, n):
     withPassage = dContext.withPassage
+
+    webLink = oContext.webLink
 
     if not withPassage:
         return ""
 
-    passage = app.webLink(n, _asString=True)
-    return f'<span class="section ltr">{passage}</span>'
+    ltr = oContext.ltr
+
+    passage = webLink(n, _asString=True)
+    wrap = "div" if isPretty else "span"
+    sep = "" if isPretty else NB * 2
+    return f'<{wrap} class="section {ltr}">{passage}</{wrap}>{sep}'
 
 
-def _getTextCls(app, fmt):
-    aContext = app.context
-    formatCls = aContext.formatCls
-    defaultClsOrig = aContext.defaultClsOrig
+def _getNodePart(app, isPretty, dContext, oContext, nContext, n, outer, switched):
+    browsing = oContext.browsing
+    lookupMethod = oContext.lookupMethod
 
-    return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
-
-
-def _getLtr(app, dContext):
-    aContext = app.context
-    direction = aContext.direction
-
-    fmt = dContext.fmt or DEFAULT_FORMAT
-
-    return (
-        "rtl"
-        if direction == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
-        else ("" if direction == "ltr" else "ltr")
-    )
-
-
-def _getBigType(app, isPretty, dContext, nType):
-    api = app.api
-    T = api.T
-    N = api.N
-
-    sectionTypeSet = T.sectionTypeSet
-    structureTypeSet = T.structureTypeSet
-    otypeRank = N.otypeRank
-
-    aContext = app.context
-    bigTypes = aContext.bigTypes
-    isBigOverride = nType in bigTypes
-
-    full = dContext.full
-    condenseType = dContext.condenseType
-
-    isBig = False
-    if not full:
-        if not isPretty and isBigOverride:
-            isBig = True
-        elif sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
-            if condenseType is None or otypeRank[nType] > otypeRank[condenseType]:
-                isBig = True
-        elif condenseType is not None and otypeRank[nType] > otypeRank[condenseType]:
-            isBig = True
-    return isBig
-
-
-def _getNodePart(app, isPretty, dContext, nContext, n, outer, switched):
-    _browse = app._browse
     nType = nContext.nType
     isSlot = nContext.isSlot
     hlCls = nContext.hlCls
+    lineNumberFeature = nContext.lineNumberFeature
 
-    Fs = app.api.Fs
-
-    aContext = app.context
-    lineNumberFeature = aContext.lineNumberFeature
     allowInfo = isPretty or (outer and not switched) or hlCls != ""
 
     withNodes = dContext.withNodes and not switched
@@ -527,14 +535,13 @@ def _getNodePart(app, isPretty, dContext, nContext, n, outer, switched):
 
     line = ""
     if lineNumbers and allowInfo:
-        feat = lineNumberFeature.get(nType, None)
-        if feat:
-            line = Fs(feat).v(n)
+        if lineNumberFeature:
+            line = lookupMethod(lineNumberFeature).v(n)
         if line:
             line = f"@{line}" if line else ""
 
-    elemb = 'a href="#"' if _browse else "span"
-    eleme = "a" if _browse else "span"
+    elemb = 'a href="#"' if browsing else "span"
+    eleme = "a" if browsing else "span"
     sep = ":" if ntp and num else ""
 
     return (
@@ -544,20 +551,15 @@ def _getNodePart(app, isPretty, dContext, nContext, n, outer, switched):
     )
 
 
-def _getFeatures(app, dContext, n, nType):
+def _getFeatures(app, dContext, oContext, nContext, n, nType):
     """Feature fetcher.
 
     Helper for `pretty` that wraps the requested features and their values for
     *node* in HTML for pretty display.
     """
 
-    api = app.api
-    L = api.L
-    Fs = api.Fs
-
-    aContext = app.context
-    featuresBare = aContext.featuresBare
-    features = aContext.features
+    upMethod = oContext.upMethod
+    lookupMethod = oContext.lookupMethod
 
     dFeatures = dContext.features
     dFeaturesIndirect = dContext.featuresIndirect
@@ -566,26 +568,26 @@ def _getFeatures(app, dContext, n, nType):
     suppress = dContext.suppress
     noneValues = dContext.noneValues
 
-    (theseFeatures, indirect) = features.get(nType, ((), {}))
-    (theseFeaturesBare, indirectBare) = featuresBare.get(nType, ((), {}))
+    (features, indirect) = nContext.features
+    (featuresBare, indirectBare) = nContext.featuresBare
 
     # a feature can be nType:feature
-    # do a L.u(n, otype=nType)[0] and take the feature from there
+    # do a upMethod(n, otype=nType)[0] and take the feature from there
 
-    givenFeatureSet = set(theseFeatures) | set(theseFeaturesBare)
+    givenFeatureSet = set(features) | set(featuresBare)
     xFeatures = tuple(
         f for f in dFeatures if not standardFeatures or f not in givenFeatureSet
     )
-    featureList = tuple(theseFeaturesBare + theseFeatures) + xFeatures
-    bFeatures = len(theseFeaturesBare)
-    nbFeatures = len(theseFeaturesBare) + len(theseFeatures)
+    featureList = tuple(featuresBare + features) + xFeatures
+    bFeatures = len(featuresBare)
+    nbFeatures = len(featuresBare) + len(features)
 
     featurePart = ""
 
     if standardFeatures or queryFeatures:
         for (i, name) in enumerate(featureList):
             if name not in suppress:
-                fsName = Fs(name)
+                fsName = lookupMethod(name)
                 if fsName is None:
                     continue
                 fsNamev = fsName.v
@@ -603,7 +605,7 @@ def _getFeatures(app, dContext, n, nType):
                         if name in indirectBare
                         else indirect[name]
                     )
-                    refNode = L.u(n, otype=refType)
+                    refNode = upMethod(n, otype=refType)
                     refNode = refNode[0] if refNode else None
                 else:
                     refNode = n
@@ -635,12 +637,7 @@ def _getFeatures(app, dContext, n, nType):
     return f"<div class='features'>{featurePart}</div>"
 
 
-def _getRefMember(app, tup, dContext):
-    api = app.api
-    N = api.N
-    otypeRank = N.otypeRank
-    fOtypev = api.F.otype.v
-
+def _getRefMember(otypeRank, fOtypev, tup, dContext):
     minRank = None
     minN = None
     for n in tup:

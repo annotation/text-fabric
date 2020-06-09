@@ -165,14 +165,17 @@ def filterProcess(proc):
             parts = parts[1:]
         if parts and parts[0] == "-m":
             parts = parts[1:]
+        if not parts:
+            return False
         (call, *args) = parts
+
         trigger = "text-fabric"
         if call.endswith(trigger) or call.endswith(f"{trigger}.exe"):
-            if all(arg not in {"-k", "-p"} for arg in args):
+            if any(arg in {"-k", "-p"} for arg in args):
                 return False
-            slug = argApp(args)
+            slug = argApp(parts)[1]
             ports = ()
-            kind = "tf"
+            kind = "text-fabric"
         else:
             if call == "tf.server.kernel":
                 kind = "kernel"
@@ -184,11 +187,7 @@ def filterProcess(proc):
                 return False
             (slug, *ports) = args
 
-        if kind == "tf":
-            if any(arg in {"-k", "-p"} for arg in args):
-                return False
-        else:
-            return (kind, slug, *ports)
+        return (kind, slug, *ports)
     return False
 
 
@@ -211,14 +210,17 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
     myself = os.getpid()
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
-            checkKinds = ("kernel", "web", "tf")
+            checkKinds = ("kernel", "web", "text-fabric")
             rSlug = repSlug(pSlug)
             for kind in checkKinds:
                 pidPorts = kinds.get(kind, [])
                 for pidPort in pidPorts:
                     pid = pidPort[0]
+                    port = pidPort[-1] if len(pidPort) > 1 else None
+                    portRep = "" if port is None else f": {port:>5}"
                     if pid == myself:
                         continue
+                    processRep = f"{kind:<12} % {pid:>5}{portRep:>7}"
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -226,11 +228,11 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                                 proc.kill()
                             else:
                                 proc.terminate()
-                        console(f"{kind} {rSlug}{item}")
+                        console(f"{processRep} {rSlug}{item}")
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f"{kind} {rSlug}: already {item}", error=True,
+                                f"{processRep} {rSlug}: already {item}", error=True,
                             )
 
 
@@ -256,7 +258,7 @@ def main(cargs=sys.argv):
     kill = argKill(cargs)
     show = argShow(cargs)
 
-    (appName, slug) = argApp(cargs)
+    (appName, slug, newPortKernel, newPortWeb) = argApp(cargs)
 
     if appName is None and not kill and not show:
         return
@@ -272,15 +274,19 @@ def main(cargs=sys.argv):
         return
 
     stopped = False
-    console(slug)
     portKernel = connectPort(tfProcesses, "kernel", 1, slug)
     portWeb = None
 
     processKernel = None
     processWeb = None
 
-    if not portKernel:
-        portKernel = getPort()
+    if portKernel:
+        console(f"Connecting to running kernel via {portKernel}")
+    else:
+        portKernel = getPort(portBase=newPortKernel)
+        console(f"Starting new kernel listening on {portKernel}")
+        if portKernel != newPortKernel:
+            console(f"\twhich is the first free port after {newPortKernel}")
         pythonExe = "python" if isWin else "python3"
 
         processKernel = Popen(
@@ -301,8 +307,13 @@ def main(cargs=sys.argv):
 
     if not stopped:
         portWeb = connectPort(tfProcesses, "web", 2, slug)
-        if not portWeb:
-            portWeb = getPort(portBase=portKernel + 1)
+        if portWeb:
+            console(f"Connecting to running webserver via {portWeb}")
+        else:
+            portWeb = getPort(portBase=newPortWeb)
+            console(f"Starting new webserver listening on {portWeb}")
+            if portWeb != newPortWeb:
+                console(f"\twhich is the first free port after {newPortWeb}")
             processWeb = Popen(
                 [
                     pythonExe,

@@ -122,8 +122,16 @@ DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})
 
 class DisplayCurrent:
     def __init__(self, options):
+        self.allKeys = set(options)
         for (k, v) in options.items():
             setattr(self, k, v)
+
+    def get(self, k, v=None):
+        return getattr(self, k, v)
+
+    def set(self, k, v):
+        self.allKeys.add(k)
+        setattr(self, k, v)
 
 
 class DisplaySettings:
@@ -167,8 +175,7 @@ class DisplaySettings:
         app = self.app
         api = app.api
         aContext = app.context
-        allowedBaseTypes = aContext.allowedBaseTypes
-        allowedHiddenTypes = aContext.allowedHiddenTypes
+        allowedValues = aContext.allowedValues
         error = app.error
 
         if option not in self.displayDefaults:
@@ -205,12 +212,8 @@ class DisplaySettings:
         elif option == "highlights":
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
-        elif option in {"baseTypes", "hiddenType"}:
-            legalValues = set(
-                allowedBaseTypes
-                if option == "baseTypes"
-                else allowedHiddenTypes
-            )
+        elif option in {"baseTypes", "hiddenTypes"}:
+            legalValues = set(allowedValues[option])
             values = setFromValue(value)
             value = {tp for tp in values if tp in legalValues}
         return (True, value)
@@ -220,9 +223,7 @@ class DisplaySettings:
         api = app.api
         Fotype = api.F.otype
         aContext = app.context
-        allowedBaseTypes = aContext.allowedBaseTypes
-        allowedHiddenTypes = aContext.allowedHiddenTypes
-        allowedCondenseTypes = aContext.allowedCondenseTypes
+        allowedValues = aContext.allowedValues
         error = app.error
 
         good = True
@@ -231,13 +232,7 @@ class DisplaySettings:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
             if option in {"baseTypes", "condenseType", "hiddenTypes"}:
-                legalValues = set(
-                    allowedBaseTypes
-                    if option == "baseTypes"
-                    else allowedCondenseTypes
-                    if option == "condenseType"
-                    else allowedHiddenTypes
-                )
+                legalValues = set(allowedValues[option])
                 if value is not None:
                     if option in {"baseTypes", "hiddenTypes"}:
                         testVal = setFromValue(value)
@@ -270,7 +265,7 @@ class DisplaySettings:
                             good = False
         return good
 
-    def get(self, options):
+    def distill(self, options):
         displayDefaults = self.displayDefaults
         displaySettings = self.displaySettings
 
