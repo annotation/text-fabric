@@ -25,21 +25,19 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L0-L350" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L0-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import pickle
 import markdown
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
-from ..applib.helpers import RESULT
+from ..advanced.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,
     wrapOptions,
-    wrapBase,
-    wrapCondense,
-    wrapFormats,
+    wrapSelect,
     wrapProvenance,
 )
 from .servelib import getAbout, getFormData, zipData
@@ -53,7 +51,7 @@ def serveTable(web, kind, getx=None, asDict=False):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     task = form[kind].strip()
     openedKey = f&#34;{kind}Opened&#34;
     openedSet = (
@@ -74,7 +72,8 @@ def serveTable(web, kind, getx=None, asDict=False):
             form[&#34;features&#34;],
             opened=openedSet,
             fmt=textFormat,
-            baseTypes=form[&#34;baseTps&#34;],
+            baseTypes=form[&#34;baseTypes&#34;],
+            hiddenTypes=form[&#34;hiddenTypes&#34;],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -94,9 +93,9 @@ def serveQuery(web, getx, asDict=False):
     kind = &#34;query&#34;
     form = getFormData(interfaceDefaults)
     task = form[kind]
-    condenseType = form[&#34;condenseTp&#34;] or None
+    condenseType = form[&#34;condenseType&#34;] or None
     resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     openedKey = f&#34;{kind}Opened&#34;
     openedSet = (
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
@@ -128,10 +127,10 @@ def serveQuery(web, getx, asDict=False):
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
                     opened=openedSet,
-                    condensed=form[&#34;condensed&#34;],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    baseTypes=form[&#34;baseTps&#34;],
+                    baseTypes=form[&#34;baseTypes&#34;],
+                    hiddenTypes=form[&#34;hiddenTypes&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -164,7 +163,7 @@ def servePassage(web, getx):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
 
     passages = &#34;&#34;
 
@@ -185,7 +184,8 @@ def servePassage(web, getx):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        baseTypes=form[&#34;baseTps&#34;],
+        baseTypes=form[&#34;baseTypes&#34;],
+        hiddenTypes=form[&#34;hiddenTypes&#34;],
         getx=getx,
         **options,
     )
@@ -261,8 +261,9 @@ def serveDownload(web):
     wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
-    condenseType = form[&#34;condenseTp&#34;] or None
-    textFormat = form[&#34;textformat&#34;] or None
+    condensed = form[&#34;condensed&#34;]
+    condenseType = form[&#34;condenseType&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
     resultsX = None
     messages = &#34;&#34;
@@ -277,7 +278,7 @@ def serveDownload(web):
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
-                condensed=form[&#34;condensed&#34;],
+                condensed=condensed,
                 condenseType=condenseType,
                 fmt=textFormat,
             )
@@ -317,19 +318,16 @@ def serveAll(web, anything):
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
-    defaultBaseTypes = aContext.baseTypes
     defaultCondenseType = aContext.condenseType
+    defaultTextFormat = aContext.textFormat
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
-    allowedBaseTypes = aContext.allowedBaseTypes
-    condenseTypes = aContext.condenseTypes
-    defaultFormat = aContext.defaultFormat
-    allFormats = aContext.allFormats
+    allowedValues = aContext.allowedValues
 
     kernelApi = web.kernelApi
 
     form = getFormData(interfaceDefaults)
-    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
+    resetForm = form[&#34;resetForm&#34;]
 
     pages = &#34;&#34;
     passages = &#34;&#34;
@@ -346,38 +344,44 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseTypes = form[&#34;baseTps&#34;]
-    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
-    condenseType = form[&#34;condenseTp&#34;] or defaultCondenseType
-    condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form[&#34;textformat&#34;] or defaultFormat
-    textFormatOpts = wrapFormats(allFormats, textFormat)
-    (options, optionsHelp) = wrapOptions(aContext, form)
+    chooser = {}
+    typeCss = (&#34;cline&#34;, &#34;ctype&#34;)
+    formatCss = (&#34;tfline&#34;, &#34;ttext&#34;)
+
+    for (option, group, item, multiple) in (
+        (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
+        (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
+        (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
+    ):
+        value = aContext.get(option, None) if resetForm else form[option]
+        options = wrapSelect(option, allowedValues, value, group, item, multiple)
+        chooser[option] = options
+
+    (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
 
     templateData = dict(
-        appName=appName,
         css=css,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
         options=options,
         optionsHelp=optionsHelp,
-        condensedAtt=condensedAtt,
-        baseOpts=baseOpts,
-        defaultBaseTypes=defaultBaseTypes,
-        condenseOpts=condenseOpts,
+        chooser=chooser,
+        condensedOption=optionsMoved[&#34;condensed&#34;],
+        hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
         defaultCondenseType=defaultCondenseType,
-        textFormatOpts=textFormatOpts,
-        defaultFormat=defaultFormat,
+        defaultTextFormat=defaultTextFormat,
         exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
     )
-    templateData.update(form)
-    return render_template(
-        &#34;index.html&#34;,
-        **templateData,
-    )</code></pre>
+    for (k, v) in form.items():
+        if not (resetForm and k in templateData):
+            templateData[k] = v
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    return render_template(&#34;index.html&#34;, **templateData,)</code></pre>
 </details>
 </section>
 <section>
@@ -395,25 +399,22 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L287-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L288-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
-    defaultBaseTypes = aContext.baseTypes
     defaultCondenseType = aContext.condenseType
+    defaultTextFormat = aContext.textFormat
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
-    allowedBaseTypes = aContext.allowedBaseTypes
-    condenseTypes = aContext.condenseTypes
-    defaultFormat = aContext.defaultFormat
-    allFormats = aContext.allFormats
+    allowedValues = aContext.allowedValues
 
     kernelApi = web.kernelApi
 
     form = getFormData(interfaceDefaults)
-    condensedAtt = &#34; checked &#34; if form[&#34;condensed&#34;] else &#34;&#34;
+    resetForm = form[&#34;resetForm&#34;]
 
     pages = &#34;&#34;
     passages = &#34;&#34;
@@ -430,38 +431,44 @@ def serveAll(web, anything):
     )
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    baseTypes = form[&#34;baseTps&#34;]
-    baseOpts = wrapBase(allowedBaseTypes, baseTypes)
-    condenseType = form[&#34;condenseTp&#34;] or defaultCondenseType
-    condenseOpts = wrapCondense(condenseTypes, condenseType)
-    textFormat = form[&#34;textformat&#34;] or defaultFormat
-    textFormatOpts = wrapFormats(allFormats, textFormat)
-    (options, optionsHelp) = wrapOptions(aContext, form)
+    chooser = {}
+    typeCss = (&#34;cline&#34;, &#34;ctype&#34;)
+    formatCss = (&#34;tfline&#34;, &#34;ttext&#34;)
+
+    for (option, group, item, multiple) in (
+        (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
+        (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
+        (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
+    ):
+        value = aContext.get(option, None) if resetForm else form[option]
+        options = wrapSelect(option, allowedValues, value, group, item, multiple)
+        chooser[option] = options
+
+    (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
 
     templateData = dict(
-        appName=appName,
         css=css,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
         options=options,
         optionsHelp=optionsHelp,
-        condensedAtt=condensedAtt,
-        baseOpts=baseOpts,
-        defaultBaseTypes=defaultBaseTypes,
-        condenseOpts=condenseOpts,
+        chooser=chooser,
+        condensedOption=optionsMoved[&#34;condensed&#34;],
+        hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
         defaultCondenseType=defaultCondenseType,
-        textFormatOpts=textFormatOpts,
-        defaultFormat=defaultFormat,
+        defaultTextFormat=defaultTextFormat,
         exampleSectionHtml=exampleSectionHtml,
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
     )
-    templateData.update(form)
-    return render_template(
-        &#34;index.html&#34;,
-        **templateData,
-    )</code></pre>
+    for (k, v) in form.items():
+        if not (resetForm and k in templateData):
+            templateData[k] = v
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    return render_template(&#34;index.html&#34;, **templateData,)</code></pre>
 </details>
 </dd>
 <dt id="tf.server.serve.serveDownload"><code class="name flex">
@@ -472,7 +479,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L227-L284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L227-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     aContext = web.context
@@ -482,8 +489,9 @@ def serveAll(web, anything):
     wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
-    condenseType = form[&#34;condenseTp&#34;] or None
-    textFormat = form[&#34;textformat&#34;] or None
+    condensed = form[&#34;condensed&#34;]
+    condenseType = form[&#34;condenseType&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
     resultsX = None
     messages = &#34;&#34;
@@ -498,7 +506,7 @@ def serveAll(web, anything):
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
-                condensed=form[&#34;condensed&#34;],
+                condensed=condensed,
                 condenseType=condenseType,
                 fmt=textFormat,
             )
@@ -542,7 +550,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L168-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L168-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -611,7 +619,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L132-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L131-L165" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -619,7 +627,7 @@ def serveAll(web, anything):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
 
     passages = &#34;&#34;
 
@@ -640,7 +648,8 @@ def serveAll(web, anything):
         sec2=sec2,
         opened=openedSet,
         fmt=textFormat,
-        baseTypes=form[&#34;baseTps&#34;],
+        baseTypes=form[&#34;baseTypes&#34;],
+        hiddenTypes=form[&#34;hiddenTypes&#34;],
         getx=getx,
         **options,
     )
@@ -657,7 +666,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L59-L129" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L58-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -668,9 +677,9 @@ def serveAll(web, anything):
     kind = &#34;query&#34;
     form = getFormData(interfaceDefaults)
     task = form[kind]
-    condenseType = form[&#34;condenseTp&#34;] or None
+    condenseType = form[&#34;condenseType&#34;] or None
     resultKind = condenseType if form[&#34;condensed&#34;] else RESULT
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     openedKey = f&#34;{kind}Opened&#34;
     openedSet = (
         {int(n) for n in form[openedKey].split(&#34;,&#34;)} if form[openedKey] else set()
@@ -702,10 +711,10 @@ def serveAll(web, anything):
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
                     opened=openedSet,
-                    condensed=form[&#34;condensed&#34;],
                     condenseType=condenseType,
                     fmt=textFormat,
-                    baseTypes=form[&#34;baseTps&#34;],
+                    baseTypes=form[&#34;baseTypes&#34;],
+                    hiddenTypes=form[&#34;hiddenTypes&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -740,7 +749,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/serve.py#L21-L56" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/serve.py#L19-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi
@@ -748,7 +757,7 @@ def serveAll(web, anything):
     interfaceDefaults = aContext.interfaceDefaults
 
     form = getFormData(interfaceDefaults)
-    textFormat = form[&#34;textformat&#34;] or None
+    textFormat = form[&#34;textFormat&#34;] or None
     task = form[kind].strip()
     openedKey = f&#34;{kind}Opened&#34;
     openedSet = (
@@ -769,7 +778,8 @@ def serveAll(web, anything):
             form[&#34;features&#34;],
             opened=openedSet,
             fmt=textFormat,
-            baseTypes=form[&#34;baseTps&#34;],
+            baseTypes=form[&#34;baseTypes&#34;],
+            hiddenTypes=form[&#34;hiddenTypes&#34;],
             getx=int(getx) if getx else None,
             **options,
         )

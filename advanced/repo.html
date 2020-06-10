@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.repo API documentation</title>
+<title>tf.advanced.repo API documentation</title>
 <meta name="description" content="Auto downloading from GitHub …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,11 +19,11 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.repo</code></h1>
+<h1 class="title">Module <code>tf.advanced.repo</code></h1>
 </header>
 <section id="section-intro">
 <h2 id="auto-downloading-from-github">Auto downloading from GitHub</h2>
-<pre><code class="python">from tf.applib.repo import checkoutRepo
+<pre><code class="python">from tf.advanced.repo import checkoutRepo
 
 checkoutRepo(
   org='annotation'
@@ -98,7 +98,7 @@ you can increase the limit to 5000 calls per hour by making yourself known.</p>
 <li>Copy your token and put it in an environment variable named <code>GHPERS</code>
 on the system where your app runs.
 See below how to do that.</li>
-<li>If <code><a title="tf.applib.repo.checkoutRepo" href="#tf.applib.repo.checkoutRepo">checkoutRepo()</a></code> finds this variable, it will add the
+<li>If <code><a title="tf.advanced.repo.checkoutRepo" href="#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code> finds this variable, it will add the
 token to every GitHub API call it makes, and that will
 increase the rate.</li>
 <li>Never pass your personal credentials on to others, let them obtain their own!</li>
@@ -233,7 +233,7 @@ if you used the autoload of Text-Fabric it is in your <code>~/text-fabric-data</
 <p>or, in a program,</p>
 <pre><code class="python">A = use('corpus', hoist=globals())
 </code></pre>
-<p>See also <code><a title="tf.applib.app.App" href="app.html#tf.applib.app.App">App</a></code>.</p>
+<p>See also <code><a title="tf.advanced.app.App" href="app.html#tf.advanced.app.App">App</a></code>.</p>
 <h3 id="updating-a-corpus-that-you-already-have">Updating a corpus that you already have</h3>
 <p>If you cloned it from GitHub (or created it yourself in your <code>~/github</code> tree):</p>
 <p>In your terminal:</p>
@@ -267,10 +267,10 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L0-L673" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L0-L689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/applib/repo.md
+.. include:: ../../docs/advanced/repo.md
 &#34;&#34;&#34;
 
 import os
@@ -291,7 +291,8 @@ from ..parameters import (
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
 )
-from ..core.helpers import console
+from ..core.helpers import console, htmlEsc
+from .helpers import dh
 
 
 class Checkout(object):
@@ -362,9 +363,11 @@ class Checkout(object):
         keep,
         withPaths,
         silent,
+        _browse,
         version=None,
         label=&#34;data&#34;,
     ):
+        self._browse = _browse
         self.label = label
         self.org = org
         self.repo = repo
@@ -449,6 +452,7 @@ class Checkout(object):
                 warning(f&#34;{indent}Will try something else&#34;)
 
     def makeSureLocal(self, attempt=False):
+        _browse = self._browse
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
@@ -581,10 +585,20 @@ class Checkout(object):
                 dest=self.dest,
                 source=self.source,
             )
-            self.log(
-                f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
-            )
-            self.log(f&#34;\t{offString} ({state})&#34;)
+            labelEsc = htmlEsc(label)
+            stateEsc = htmlEsc(state)
+            offEsc = htmlEsc(offString)
+            locEsc = htmlEsc(f&#39;{self.localBase}/{self.localDir}{self.versionRep}&#39;)
+            if _browse:
+                self.log(
+                    f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+                )
+                self.log(f&#34;\t{offString} ({state})&#34;)
+            else:
+                dh(
+                    f&#39;&lt;b title=&#34;{stateEsc}&#34;&gt;{labelEsc}:&lt;/b&gt;&#39;
+                    f&#39; &lt;span title=&#34;{offEsc}&#34;&gt;{locEsc}&lt;/span&gt;&#39;
+                )
 
     def download(self):
         cChk = self.commitChk
@@ -882,7 +896,7 @@ class Checkout(object):
             if rate.limit &lt; 100:
                 warning(
                     f&#34;To increase the rate,&#34;
-                    f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
+                    f&#34;see {URL_TFDOC}/advanced/repo.html/&#34;
                 )
 
             self.log(
@@ -899,6 +913,7 @@ class Checkout(object):
 
 
 def checkoutRepo(
+    _browse=False,
     org=&#34;annotation&#34;,
     repo=&#34;tutorials&#34;,
     folder=&#34;text-fabric/examples/banks/tf&#34;,
@@ -922,6 +937,7 @@ def checkoutRepo(
             keep,
             withPaths,
             silent,
+            _browse,
             version=version,
             label=label,
         )
@@ -952,7 +968,7 @@ def checkoutRepo(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.repo.checkoutRepo"><code class="name flex">
+<dt id="tf.advanced.repo.checkoutRepo"><code class="name flex">
 <span>def <span class="ident">checkoutRepo</span></span>(<span>org='annotation', repo='tutorials', folder='text-fabric/examples/banks/tf', version='', checkout='', source='~/github', dest='~/text-fabric-data', withPaths=True, keep=True, silent=False, label='data')</span>
 </code></dt>
 <dd>
@@ -960,9 +976,10 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L630-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L644-L690" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkoutRepo(
+    _browse=False,
     org=&#34;annotation&#34;,
     repo=&#34;tutorials&#34;,
     folder=&#34;text-fabric/examples/banks/tf&#34;,
@@ -986,6 +1003,7 @@ def checkoutRepo(
             keep,
             withPaths,
             silent,
+            _browse,
             version=version,
             label=label,
         )
@@ -1014,16 +1032,16 @@ def checkoutRepo(
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.applib.repo.Checkout"><code class="flex name class">
+<dt id="tf.advanced.repo.Checkout"><code class="flex name class">
 <span>class <span class="ident">Checkout</span></span>
-<span>(</span><span>org, repo, relative, checkout, source, dest, keep, withPaths, silent, version=None, label='data')</span>
+<span>(</span><span>org, repo, relative, checkout, source, dest, keep, withPaths, silent, _browse, version=None, label='data')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L26-L627" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L27-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout(object):
     @staticmethod
@@ -1093,9 +1111,11 @@ def checkoutRepo(
         keep,
         withPaths,
         silent,
+        _browse,
         version=None,
         label=&#34;data&#34;,
     ):
+        self._browse = _browse
         self.label = label
         self.org = org
         self.repo = repo
@@ -1180,6 +1200,7 @@ def checkoutRepo(
                 warning(f&#34;{indent}Will try something else&#34;)
 
     def makeSureLocal(self, attempt=False):
+        _browse = self._browse
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
@@ -1312,10 +1333,20 @@ def checkoutRepo(
                 dest=self.dest,
                 source=self.source,
             )
-            self.log(
-                f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
-            )
-            self.log(f&#34;\t{offString} ({state})&#34;)
+            labelEsc = htmlEsc(label)
+            stateEsc = htmlEsc(state)
+            offEsc = htmlEsc(offString)
+            locEsc = htmlEsc(f&#39;{self.localBase}/{self.localDir}{self.versionRep}&#39;)
+            if _browse:
+                self.log(
+                    f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+                )
+                self.log(f&#34;\t{offString} ({state})&#34;)
+            else:
+                dh(
+                    f&#39;&lt;b title=&#34;{stateEsc}&#34;&gt;{labelEsc}:&lt;/b&gt;&#39;
+                    f&#39; &lt;span title=&#34;{offEsc}&#34;&gt;{locEsc}&lt;/span&gt;&#39;
+                )
 
     def download(self):
         cChk = self.commitChk
@@ -1613,7 +1644,7 @@ def checkoutRepo(
             if rate.limit &lt; 100:
                 warning(
                     f&#34;To increase the rate,&#34;
-                    f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
+                    f&#34;see {URL_TFDOC}/advanced/repo.html/&#34;
                 )
 
             self.log(
@@ -1630,7 +1661,7 @@ def checkoutRepo(
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="tf.applib.repo.Checkout.fromString"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.fromString"><code class="name flex">
 <span>def <span class="ident">fromString</span></span>(<span>string)</span>
 </code></dt>
 <dd>
@@ -1638,7 +1669,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L27-L51" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L28-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def fromString(string):
@@ -1667,7 +1698,7 @@ def fromString(string):
     return (commit, release, local)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.toString"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.toString"><code class="name flex">
 <span>def <span class="ident">toString</span></span>(<span>commit, release, local, source='~/github', dest='~/text-fabric-data')</span>
 </code></dt>
 <dd>
@@ -1675,7 +1706,7 @@ def fromString(string):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L53-L75" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L54-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
@@ -1705,7 +1736,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.applib.repo.Checkout.connect"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.connect"><code class="name flex">
 <span>def <span class="ident">connect</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1713,7 +1744,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L591-L627" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L605-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connect(self):
     warning = self.warning
@@ -1738,7 +1769,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         if rate.limit &lt; 100:
             warning(
                 f&#34;To increase the rate,&#34;
-                f&#34;see {URL_TFDOC}/applib/repo.html/&#34;
+                f&#34;see {URL_TFDOC}/advanced/repo.html/&#34;
             )
 
         self.log(
@@ -1754,7 +1785,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         warning(f&#34;no internet&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.download"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.download"><code class="name flex">
 <span>def <span class="ident">download</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1762,7 +1793,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L318-L330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L332-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def download(self):
     cChk = self.commitChk
@@ -1779,7 +1810,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return fetched</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.downloadCommit"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.downloadCommit"><code class="name flex">
 <span>def <span class="ident">downloadCommit</span></span>(<span>self, commit, showErrors=True)</span>
 </code></dt>
 <dd>
@@ -1787,7 +1818,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L364-L373" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L378-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadCommit(self, commit, showErrors=True):
     c = self.getCommitObj(commit)
@@ -1801,7 +1832,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return fetched</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.downloadDir"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.downloadDir"><code class="name flex">
 <span>def <span class="ident">downloadDir</span></span>(<span>self, commit, exclude=None, showErrors=False)</span>
 </code></dt>
 <dd>
@@ -1809,7 +1840,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L418-L477" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L432-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadDir(self, commit, exclude=None, showErrors=False):
     g = self.repoOnline
@@ -1873,7 +1904,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return good</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.downloadRelease"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.downloadRelease"><code class="name flex">
 <span>def <span class="ident">downloadRelease</span></span>(<span>self, release, showErrors=True)</span>
 </code></dt>
 <dd>
@@ -1881,7 +1912,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L332-L362" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L346-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadRelease(self, release, showErrors=True):
     cChk = self.commitChk
@@ -1916,7 +1947,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return fetched</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.downloadZip"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.downloadZip"><code class="name flex">
 <span>def <span class="ident">downloadZip</span></span>(<span>self, dataUrl, showErrors=True)</span>
 </code></dt>
 <dd>
@@ -1924,7 +1955,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L375-L416" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L389-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadZip(self, dataUrl, showErrors=True):
     label = self.label
@@ -1970,7 +2001,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return True</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.error"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.error"><code class="name flex">
 <span>def <span class="ident">error</span></span>(<span>self, msg, newline=True)</span>
 </code></dt>
 <dd>
@@ -1978,13 +2009,13 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L166-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L169-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, newline=True):
     console(msg, error=True, newline=newline)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.fetchInfo"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.fetchInfo"><code class="name flex">
 <span>def <span class="ident">fetchInfo</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1992,7 +2023,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L542-L556" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L556-L570" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetchInfo(self):
     g = self.repoOnline
@@ -2011,7 +2042,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             self.commitOn = result</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.fixInfo"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.fixInfo"><code class="name flex">
 <span>def <span class="ident">fixInfo</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2019,7 +2050,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L558-L569" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L572-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fixInfo(self):
     sDir = self.dirPathLocal
@@ -2035,7 +2066,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                 os.rename(sPath, goodPath)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getCommit"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getCommit"><code class="name flex">
 <span>def <span class="ident">getCommit</span></span>(<span>self, commit)</span>
 </code></dt>
 <dd>
@@ -2043,7 +2074,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L485-L489" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L499-L503" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommit(self, commit):
     c = self.getCommitObj(commit)
@@ -2052,7 +2083,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return self.getCommitFromObj(c)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getCommitFromObj"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getCommitFromObj"><code class="name flex">
 <span>def <span class="ident">getCommitFromObj</span></span>(<span>self, c)</span>
 </code></dt>
 <dd>
@@ -2060,7 +2091,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L536-L540" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L550-L554" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitFromObj(self, c):
     g = self.repoOnline
@@ -2069,7 +2100,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return c.sha</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getCommitObj"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getCommitObj"><code class="name flex">
 <span>def <span class="ident">getCommitObj</span></span>(<span>self, commit)</span>
 </code></dt>
 <dd>
@@ -2077,7 +2108,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L507-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L521-L539" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitObj(self, commit):
     error = self.error
@@ -2100,7 +2131,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return c</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getRelease"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getRelease"><code class="name flex">
 <span>def <span class="ident">getRelease</span></span>(<span>self, release, showErrors=True)</span>
 </code></dt>
 <dd>
@@ -2108,7 +2139,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L479-L483" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L493-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRelease(self, release, showErrors=True):
     r = self.getReleaseObj(release, showErrors=showErrors)
@@ -2117,7 +2148,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return self.getReleaseFromObj(r)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getReleaseFromObj"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getReleaseFromObj"><code class="name flex">
 <span>def <span class="ident">getReleaseFromObj</span></span>(<span>self, r)</span>
 </code></dt>
 <dd>
@@ -2125,7 +2156,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L527-L534" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L541-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseFromObj(self, r):
     g = self.repoOnline
@@ -2137,7 +2168,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return (commit, release)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.getReleaseObj"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.getReleaseObj"><code class="name flex">
 <span>def <span class="ident">getReleaseObj</span></span>(<span>self, release, showErrors=True)</span>
 </code></dt>
 <dd>
@@ -2145,7 +2176,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L491-L505" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L505-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseObj(self, release, showErrors=True):
     g = self.repoOnline
@@ -2164,7 +2195,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     return r</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.isClone"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.isClone"><code class="name flex">
 <span>def <span class="ident">isClone</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2172,13 +2203,13 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L77-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L78-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClone(self):
     return self.local == &#34;clone&#34;</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.isOffline"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.isOffline"><code class="name flex">
 <span>def <span class="ident">isOffline</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2186,13 +2217,13 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L80-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L81-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isOffline(self):
     return self.local in {&#34;clone&#34;, &#34;local&#34;}</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.log"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.log"><code class="name flex">
 <span>def <span class="ident">log</span></span>(<span>self, msg, newline=True)</span>
 </code></dt>
 <dd>
@@ -2200,7 +2231,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L156-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L159-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def log(self, msg, newline=True):
     silent = self.silent
@@ -2208,7 +2239,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         console(msg, newline=newline)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.makeSureLocal"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.makeSureLocal"><code class="name flex">
 <span>def <span class="ident">makeSureLocal</span></span>(<span>self, attempt=False)</span>
 </code></dt>
 <dd>
@@ -2216,9 +2247,10 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L180-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L183-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSureLocal(self, attempt=False):
+    _browse = self._browse
     label = self.label
     offline = self.isOffline()
     clone = self.isClone()
@@ -2351,13 +2383,23 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             dest=self.dest,
             source=self.source,
         )
-        self.log(
-            f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
-        )
-        self.log(f&#34;\t{offString} ({state})&#34;)</code></pre>
+        labelEsc = htmlEsc(label)
+        stateEsc = htmlEsc(state)
+        offEsc = htmlEsc(offString)
+        locEsc = htmlEsc(f&#39;{self.localBase}/{self.localDir}{self.versionRep}&#39;)
+        if _browse:
+            self.log(
+                f&#34;Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:&#34;
+            )
+            self.log(f&#34;\t{offString} ({state})&#34;)
+        else:
+            dh(
+                f&#39;&lt;b title=&#34;{stateEsc}&#34;&gt;{labelEsc}:&lt;/b&gt;&#39;
+                f&#39; &lt;span title=&#34;{offEsc}&#34;&gt;{locEsc}&lt;/span&gt;&#39;
+            )</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.possibleError"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.possibleError"><code class="name flex">
 <span>def <span class="ident">possibleError</span></span>(<span>self, msg, showErrors, again=False, indent='\t', newline=False)</span>
 </code></dt>
 <dd>
@@ -2365,7 +2407,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L169-L178" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L172-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
     error = self.error
@@ -2379,7 +2421,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             warning(f&#34;{indent}Will try something else&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.readInfo"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.readInfo"><code class="name flex">
 <span>def <span class="ident">readInfo</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2387,7 +2429,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L571-L580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L585-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInfo(self):
     if os.path.exists(self.filePathLocal):
@@ -2401,7 +2443,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                     self.releaseOff = release</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.warning"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.warning"><code class="name flex">
 <span>def <span class="ident">warning</span></span>(<span>self, msg, newline=True)</span>
 </code></dt>
 <dd>
@@ -2409,7 +2451,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L161-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L164-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, newline=True):
     silent = self.silent
@@ -2417,7 +2459,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         console(msg, newline=newline)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.repo.Checkout.writeInfo"><code class="name flex">
+<dt id="tf.advanced.repo.Checkout.writeInfo"><code class="name flex">
 <span>def <span class="ident">writeInfo</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -2425,7 +2467,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/repo.py#L582-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/repo.py#L596-L603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeInfo(self):
     if not os.path.exists(self.dirPathLocal):
@@ -2447,7 +2489,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.repo">
+data-gaCategoryParameter="tf.advanced.repo">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -2479,44 +2521,44 @@ data-gaCategoryParameter="tf.applib.repo">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.repo.checkoutRepo" href="#tf.applib.repo.checkoutRepo">checkoutRepo</a></code></li>
+<li><code><a title="tf.advanced.repo.checkoutRepo" href="#tf.advanced.repo.checkoutRepo">checkoutRepo</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.applib.repo.Checkout" href="#tf.applib.repo.Checkout">Checkout</a></code></h4>
+<h4><code><a title="tf.advanced.repo.Checkout" href="#tf.advanced.repo.Checkout">Checkout</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.applib.repo.Checkout.connect" href="#tf.applib.repo.Checkout.connect">connect</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.download" href="#tf.applib.repo.Checkout.download">download</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.downloadCommit" href="#tf.applib.repo.Checkout.downloadCommit">downloadCommit</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.downloadDir" href="#tf.applib.repo.Checkout.downloadDir">downloadDir</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.downloadRelease" href="#tf.applib.repo.Checkout.downloadRelease">downloadRelease</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.downloadZip" href="#tf.applib.repo.Checkout.downloadZip">downloadZip</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.error" href="#tf.applib.repo.Checkout.error">error</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.fetchInfo" href="#tf.applib.repo.Checkout.fetchInfo">fetchInfo</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.fixInfo" href="#tf.applib.repo.Checkout.fixInfo">fixInfo</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.fromString" href="#tf.applib.repo.Checkout.fromString">fromString</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getCommit" href="#tf.applib.repo.Checkout.getCommit">getCommit</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getCommitFromObj" href="#tf.applib.repo.Checkout.getCommitFromObj">getCommitFromObj</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getCommitObj" href="#tf.applib.repo.Checkout.getCommitObj">getCommitObj</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getRelease" href="#tf.applib.repo.Checkout.getRelease">getRelease</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getReleaseFromObj" href="#tf.applib.repo.Checkout.getReleaseFromObj">getReleaseFromObj</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.getReleaseObj" href="#tf.applib.repo.Checkout.getReleaseObj">getReleaseObj</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.isClone" href="#tf.applib.repo.Checkout.isClone">isClone</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.isOffline" href="#tf.applib.repo.Checkout.isOffline">isOffline</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.log" href="#tf.applib.repo.Checkout.log">log</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.makeSureLocal" href="#tf.applib.repo.Checkout.makeSureLocal">makeSureLocal</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.possibleError" href="#tf.applib.repo.Checkout.possibleError">possibleError</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.readInfo" href="#tf.applib.repo.Checkout.readInfo">readInfo</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.toString" href="#tf.applib.repo.Checkout.toString">toString</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.warning" href="#tf.applib.repo.Checkout.warning">warning</a></code></li>
-<li><code><a title="tf.applib.repo.Checkout.writeInfo" href="#tf.applib.repo.Checkout.writeInfo">writeInfo</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.connect" href="#tf.advanced.repo.Checkout.connect">connect</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.download" href="#tf.advanced.repo.Checkout.download">download</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.downloadCommit" href="#tf.advanced.repo.Checkout.downloadCommit">downloadCommit</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.downloadDir" href="#tf.advanced.repo.Checkout.downloadDir">downloadDir</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.downloadRelease" href="#tf.advanced.repo.Checkout.downloadRelease">downloadRelease</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.downloadZip" href="#tf.advanced.repo.Checkout.downloadZip">downloadZip</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.error" href="#tf.advanced.repo.Checkout.error">error</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.fetchInfo" href="#tf.advanced.repo.Checkout.fetchInfo">fetchInfo</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.fixInfo" href="#tf.advanced.repo.Checkout.fixInfo">fixInfo</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.fromString" href="#tf.advanced.repo.Checkout.fromString">fromString</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getCommit" href="#tf.advanced.repo.Checkout.getCommit">getCommit</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getCommitFromObj" href="#tf.advanced.repo.Checkout.getCommitFromObj">getCommitFromObj</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getCommitObj" href="#tf.advanced.repo.Checkout.getCommitObj">getCommitObj</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getRelease" href="#tf.advanced.repo.Checkout.getRelease">getRelease</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getReleaseFromObj" href="#tf.advanced.repo.Checkout.getReleaseFromObj">getReleaseFromObj</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.getReleaseObj" href="#tf.advanced.repo.Checkout.getReleaseObj">getReleaseObj</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.isClone" href="#tf.advanced.repo.Checkout.isClone">isClone</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.isOffline" href="#tf.advanced.repo.Checkout.isOffline">isOffline</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.log" href="#tf.advanced.repo.Checkout.log">log</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.makeSureLocal" href="#tf.advanced.repo.Checkout.makeSureLocal">makeSureLocal</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.possibleError" href="#tf.advanced.repo.Checkout.possibleError">possibleError</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.readInfo" href="#tf.advanced.repo.Checkout.readInfo">readInfo</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.toString" href="#tf.advanced.repo.Checkout.toString">toString</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.warning" href="#tf.advanced.repo.Checkout.warning">warning</a></code></li>
+<li><code><a title="tf.advanced.repo.Checkout.writeInfo" href="#tf.advanced.repo.Checkout.writeInfo">writeInfo</a></code></li>
 </ul>
 </li>
 </ul>

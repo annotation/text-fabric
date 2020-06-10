@@ -25,13 +25,14 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L0-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L0-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import pickle
 import socket
 import errno
 from base64 import b64encode, b64decode
+from zlib import crc32
 
 from ..parameters import HOST, PORT_BASE
 
@@ -73,22 +74,14 @@ def getPort(portBase=PORT_BASE):
     return result
 
 
-def enSlug(data):
-    return str(b64encode(pickle.dumps(data)), encoding=&#34;utf8&#34;)
-
-
-def deSlug(slug):
-    return pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;)))
-
-
 def repSlug(slug):
-    info = deSlug(slug)
+    info = _deSlug(slug)
     appName = info[&#39;appName&#39;]
     checkoutApp = info[&#39;checkoutApp&#39;]
     if checkoutApp:
         checkoutApp = f&#39;:{checkoutApp}&#39;
     rep = f&#34;{appName}{checkoutApp}&#34;
-    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;})
+    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;} and v is not None)
     if args:
         args = f&#34; {args}&#34;
     return f&#34;{rep}{args}&#34;
@@ -101,7 +94,7 @@ def argApp(cargs):
     modules = argCollect(&#39;modules&#39;, cargs)
     moduleRefs = argCollect(&#39;mod&#39;, cargs)
     setFile = argCollect(&#39;sets&#39;, cargs)
-    slug = enSlug(
+    return (appName, *_enSlug(
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
@@ -111,8 +104,7 @@ def argApp(cargs):
             moduleRefs=moduleRefs,
             setFile=setFile,
         )
-    )
-    return (appName, slug)
+    ))
 
 
 def argKill(cargs):
@@ -148,7 +140,7 @@ def argKernel(cargs):
         return None
     slug = cargs[1]
     portKernel = cargs[2]
-    return (deSlug(slug), portKernel)
+    return (_deSlug(slug), portKernel)
 
 
 def argWeb(cargs):
@@ -157,7 +149,7 @@ def argWeb(cargs):
     slug = cargs[1]
     portKernel = cargs[2]
     portWeb = cargs[3]
-    return (deSlug(slug), portKernel, portWeb)
+    return (_deSlug(slug), portKernel, portWeb)
 
 
 def argParam(cargs):
@@ -177,7 +169,20 @@ def argParam(cargs):
     if len(parts) == 1:
         parts.append(&#34;&#34;)
     (appName, checkoutApp) = parts
-    return (appName, checkoutApp)</code></pre>
+    return (appName, checkoutApp)
+
+
+def _enSlug(data):
+    protoSlug = b64encode(pickle.dumps(tuple(sorted(data.items()))))
+    portOffset = crc32(protoSlug) % 10000
+    portKernel = PORT_BASE + portOffset
+    portWeb = portKernel + 10000
+
+    return (str(protoSlug, encoding=&#34;utf8&#34;), portKernel, portWeb)
+
+
+def _deSlug(slug):
+    return dict(pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;))))</code></pre>
 </details>
 </section>
 <section>
@@ -195,7 +200,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L68-L86" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L61-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
@@ -204,7 +209,7 @@ def argParam(cargs):
     modules = argCollect(&#39;modules&#39;, cargs)
     moduleRefs = argCollect(&#39;mod&#39;, cargs)
     setFile = argCollect(&#39;sets&#39;, cargs)
-    slug = enSlug(
+    return (appName, *_enSlug(
         dict(
             appName=appName,
             checkoutApp=checkoutApp,
@@ -214,8 +219,7 @@ def argParam(cargs):
             moduleRefs=moduleRefs,
             setFile=setFile,
         )
-    )
-    return (appName, slug)</code></pre>
+    ))</code></pre>
 </details>
 </dd>
 <dt id="tf.server.command.argCollect"><code class="name flex">
@@ -226,7 +230,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L110-L114" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L102-L106" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argCollect(prefix, cargs):
     for arg in cargs[1:]:
@@ -243,14 +247,14 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L117-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L109-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argKernel(cargs):
     if len(cargs) != 3:
         return None
     slug = cargs[1]
     portKernel = cargs[2]
-    return (deSlug(slug), portKernel)</code></pre>
+    return (_deSlug(slug), portKernel)</code></pre>
 </details>
 </dd>
 <dt id="tf.server.command.argKill"><code class="name flex">
@@ -261,7 +265,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L89-L93" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L81-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argKill(cargs):
     for arg in cargs[1:]:
@@ -278,7 +282,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L103-L107" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L95-L99" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argNoweb(cargs):
     for arg in cargs[1:]:
@@ -295,7 +299,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L134-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L126-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argParam(cargs):
     appName = None
@@ -325,7 +329,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L96-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L88-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argShow(cargs):
     for arg in cargs[1:]:
@@ -342,7 +346,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L125-L131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L117-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argWeb(cargs):
     if len(cargs) != 4:
@@ -350,46 +354,18 @@ def argParam(cargs):
     slug = cargs[1]
     portKernel = cargs[2]
     portWeb = cargs[3]
-    return (deSlug(slug), portKernel, portWeb)</code></pre>
-</details>
-</dd>
-<dt id="tf.server.command.deSlug"><code class="name flex">
-<span>def <span class="ident">deSlug</span></span>(<span>slug)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L51-L52" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def deSlug(slug):
-    return pickle.loads(b64decode(bytes(slug, encoding=&#34;utf8&#34;)))</code></pre>
-</details>
-</dd>
-<dt id="tf.server.command.enSlug"><code class="name flex">
-<span>def <span class="ident">enSlug</span></span>(<span>data)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L47-L48" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def enSlug(data):
-    return str(b64encode(pickle.dumps(data)), encoding=&#34;utf8&#34;)</code></pre>
+    return (_deSlug(slug), portKernel, portWeb)</code></pre>
 </details>
 </dd>
 <dt id="tf.server.command.getPort"><code class="name flex">
-<span>def <span class="ident">getPort</span></span>(<span>portBase=8976)</span>
+<span>def <span class="ident">getPort</span></span>(<span>portBase=10000)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L33-L44" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L34-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPort(portBase=PORT_BASE):
     result = None
@@ -413,7 +389,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L15-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L16-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def portIsInUse(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -441,16 +417,16 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/command.py#L55-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/command.py#L48-L58" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repSlug(slug):
-    info = deSlug(slug)
+    info = _deSlug(slug)
     appName = info[&#39;appName&#39;]
     checkoutApp = info[&#39;checkoutApp&#39;]
     if checkoutApp:
         checkoutApp = f&#39;:{checkoutApp}&#39;
     rep = f&#34;{appName}{checkoutApp}&#34;
-    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;})
+    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;} and v is not None)
     if args:
         args = f&#34; {args}&#34;
     return f&#34;{rep}{args}&#34;</code></pre>
@@ -488,8 +464,6 @@ data-gaCategoryParameter="tf.server.command">
 <li><code><a title="tf.server.command.argParam" href="#tf.server.command.argParam">argParam</a></code></li>
 <li><code><a title="tf.server.command.argShow" href="#tf.server.command.argShow">argShow</a></code></li>
 <li><code><a title="tf.server.command.argWeb" href="#tf.server.command.argWeb">argWeb</a></code></li>
-<li><code><a title="tf.server.command.deSlug" href="#tf.server.command.deSlug">deSlug</a></code></li>
-<li><code><a title="tf.server.command.enSlug" href="#tf.server.command.enSlug">enSlug</a></code></li>
 <li><code><a title="tf.server.command.getPort" href="#tf.server.command.getPort">getPort</a></code></li>
 <li><code><a title="tf.server.command.portIsInUse" href="#tf.server.command.portIsInUse">portIsInUse</a></code></li>
 <li><code><a title="tf.server.command.repSlug" href="#tf.server.command.repSlug">repSlug</a></code></li>

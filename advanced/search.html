@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.search API documentation</title>
+<title>tf.advanced.search API documentation</title>
 <meta name="description" content="Calls from the advanced API to the Search API." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,14 +19,14 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.search</code></h1>
+<h1 class="title">Module <code>tf.advanced.search</code></h1>
 </header>
 <section id="section-intro">
 <p>Calls from the advanced API to the Search API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/search.py#L0-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/search.py#L0-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -53,7 +53,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     It then reports the number of results.
 
     It will also set the display parameter `tupleFeatures` (see below)
-    in such a way that subsequent calls to `tf.applib.display.export` emit
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
 
     Parameters
@@ -116,7 +116,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     !!! note &#34;Context Jupyter&#34;
         The intended context of this function is: an ordinary Python program (including
         the Jupyter notebook).
-        Web apps can better use `tf.applib.search.runSearch`.
+        Web apps can better use `tf.advanced.search.runSearch`.
     &#34;&#34;&#34;
 
     info = app.info
@@ -235,7 +235,7 @@ def runSearchCondensed(app, query, cache, condenseType):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.search.runSearch"><code class="name flex">
+<dt id="tf.advanced.search.runSearch"><code class="name flex">
 <span>def <span class="ident">runSearch</span></span>(<span>app, query, cache)</span>
 </code></dt>
 <dd>
@@ -251,7 +251,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/search.py#L141-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/search.py#L141-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -289,7 +289,7 @@ and returned.</p>
     return (queryResults, messages, features)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.search.runSearchCondensed"><code class="name flex">
+<dt id="tf.advanced.search.runSearchCondensed"><code class="name flex">
 <span>def <span class="ident">runSearchCondensed</span></span>(<span>app, query, cache, condenseType)</span>
 </code></dt>
 <dd>
@@ -307,7 +307,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/search.py#L177-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/search.py#L177-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -333,7 +333,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
     return (queryResults, messages, features)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.search.search"><code class="name flex">
+<dt id="tf.advanced.search.search"><code class="name flex">
 <span>def <span class="ident">search</span></span>(<span>app, query, silent=False, sets=None, shallow=False, sort=True)</span>
 </code></dt>
 <dd>
@@ -345,7 +345,7 @@ canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.cor
 (but you can change the sorting, see the <code>sort</code> parameter).
 It then reports the number of results.</p>
 <p>It will also set the display parameter <code>tupleFeatures</code> (see below)
-in such a way that subsequent calls to <code><a title="tf.applib.display.export" href="display.html#tf.applib.display.export">export()</a></code> emit
+in such a way that subsequent calls to <code><a title="tf.advanced.display.export" href="display.html#tf.advanced.display.export">export()</a></code> emit
 the features that have been used in the query.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -400,12 +400,12 @@ returning values, then this key will be used to sort the results.</p>
 <p class="admonition-title">Context Jupyter</p>
 <p>The intended context of this function is: an ordinary Python program (including
 the Jupyter notebook).
-Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.applib.search.runSearch">runSearch()</a></code>.</p>
+Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.advanced.search.runSearch">runSearch()</a></code>.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/search.py#L15-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/search.py#L15-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     &#34;&#34;&#34;Search with some high-level features.
@@ -418,7 +418,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
     It then reports the number of results.
 
     It will also set the display parameter `tupleFeatures` (see below)
-    in such a way that subsequent calls to `tf.applib.display.export` emit
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
 
     Parameters
@@ -481,7 +481,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
     !!! note &#34;Context Jupyter&#34;
         The intended context of this function is: an ordinary Python program (including
         the Jupyter notebook).
-        Web apps can better use `tf.applib.search.runSearch`.
+        Web apps can better use `tf.advanced.search.runSearch`.
     &#34;&#34;&#34;
 
     info = app.info
@@ -533,7 +533,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
     return results</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.search.searchApi"><code class="name flex">
+<dt id="tf.advanced.search.searchApi"><code class="name flex">
 <span>def <span class="ident">searchApi</span></span>(<span>app)</span>
 </code></dt>
 <dd>
@@ -541,7 +541,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/search.py#L11-L12" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/search.py#L11-L12" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>
@@ -557,7 +557,7 @@ Web apps can better use <code><a title="tf.applib.search.runSearch" href="#tf.ap
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.search">
+data-gaCategoryParameter="tf.advanced.search">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -566,15 +566,15 @@ data-gaCategoryParameter="tf.applib.search">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.search.runSearch" href="#tf.applib.search.runSearch">runSearch</a></code></li>
-<li><code><a title="tf.applib.search.runSearchCondensed" href="#tf.applib.search.runSearchCondensed">runSearchCondensed</a></code></li>
-<li><code><a title="tf.applib.search.search" href="#tf.applib.search.search">search</a></code></li>
-<li><code><a title="tf.applib.search.searchApi" href="#tf.applib.search.searchApi">searchApi</a></code></li>
+<li><code><a title="tf.advanced.search.runSearch" href="#tf.advanced.search.runSearch">runSearch</a></code></li>
+<li><code><a title="tf.advanced.search.runSearchCondensed" href="#tf.advanced.search.runSearchCondensed">runSearchCondensed</a></code></li>
+<li><code><a title="tf.advanced.search.search" href="#tf.advanced.search.search">search</a></code></li>
+<li><code><a title="tf.advanced.search.searchApi" href="#tf.advanced.search.searchApi">searchApi</a></code></li>
 </ul>
 </li>
 </ul>

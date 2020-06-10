@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.find API documentation</title>
+<title>tf.advanced.find API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,13 +19,13 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.find</code></h1>
+<h1 class="title">Module <code>tf.advanced.find</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/find.py#L0-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/find.py#L0-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -34,8 +34,9 @@ import yaml
 
 from ..parameters import (
     APP_CONFIG,
+    APP_CONFIG_OLD,
     APP_DISPLAY,
-    API_VERSION as apiVersionProvided,
+    API_VERSION as avTf,
 )
 from ..core.helpers import console
 from .helpers import getLocalDir
@@ -47,17 +48,23 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     If there is a `config.yaml` file, read it and check the compatibility
     of the config settings with the current version of Text-Fabric.
 
-    If there is no such file, fill in a few basic settings.
+    If there is no such file but a `config.py` is present,
+    conclude that this is an older app, not compatible with TF v8 or higher.
+
+    If there are no such config files, fill in a few basic settings.
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     configPath = f&#34;{appPath}/{APP_CONFIG}&#34;
+    configPathOld = f&#34;{appPath}/{APP_CONFIG_OLD}&#34;
     cssPath = f&#34;{appPath}/{APP_DISPLAY}&#34;
 
     checkApiVersion = True
+
+    isCompatible = None
 
     if os.path.exists(configPath):
         with open(configPath) as fh:
@@ -65,6 +72,8 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     else:
         cfg = {}
         checkApiVersion = False
+        if os.path.exists(configPathOld):
+            isCompatible = False
     cfg.update(
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
@@ -83,20 +92,18 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     cfg[&#34;local&#34;] = local
     cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
 
-    apiVersionRequired = cfg.get(&#34;apiVersion&#34;, None)
-    isCompatible = (
-        None
-        if not checkApiVersion
-        else (
-            apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
+    avA = cfg.get(&#34;apiVersion&#34;, None)
+    if isCompatible is None and checkApiVersion:
+        isCompatible = (
+            avA is not None and avA == avTf
         )
-    )
     if not isCompatible:
         if isCompatible is None:
-            console(&#34;No app configuration found.&#34;)
-        elif apiVersionRequired is None or apiVersionRequired &lt; apiVersionProvided:
+            pass
+        elif avA is None or avA &lt; avTf:
             console(
                 f&#34;&#34;&#34;
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your copy of the TF app `{appName}` is outdated for this version of TF.
 Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
@@ -121,6 +128,7 @@ Hint: load the app in one of the following ways:
         else:
             console(
                 f&#34;&#34;&#34;
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your Text-Fabric is outdated and cannot use this version of the TF app `{appName}`.
 Recommendation: upgrade Text-Fabric.
 Hint:
@@ -130,13 +138,6 @@ Hint:
 &#34;&#34;&#34;,
                 error=True,
             )
-        console(
-            f&#34;&#34;&#34;
-Text-Fabric will be loaded, but no app specific code will be loaded
-and app config may not be optimal.
-The corpus data may not be found.
-&#34;&#34;&#34;
-        )
 
     cfg[&#34;isCompatible&#34;] = isCompatible
     return cfg
@@ -184,7 +185,7 @@ def loadModule(moduleName, *args):
     moduleName: string
         Name of a module under a TF-app that needs to be imported.
     args: mixed
-        The same list of arguments that is passed to `tf.applib.app.App`
+        The same list of arguments that is passed to `tf.advanced.app.App`
         of which only the `appName` and the `appPath` are used.
     &#34;&#34;&#34;
 
@@ -208,7 +209,7 @@ def loadModule(moduleName, *args):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.find.findAppClass"><code class="name flex">
+<dt id="tf.advanced.find.findAppClass"><code class="name flex">
 <span>def <span class="ident">findAppClass</span></span>(<span>appName, appPath)</span>
 </code></dt>
 <dd>
@@ -225,7 +226,7 @@ Otherwise we return <code>none</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/find.py#L116-L147" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/find.py#L117-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
     &#34;&#34;&#34;Find the class definition of an app.
@@ -261,23 +262,25 @@ Otherwise we return <code>none</code>.</dd>
     return appClass</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.find.findAppConfig"><code class="name flex">
+<dt id="tf.advanced.find.findAppConfig"><code class="name flex">
 <span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, version=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find the config information of an app.</p>
 <p>If there is a <code>config.yaml</code> file, read it and check the compatibility
 of the config settings with the current version of Text-Fabric.</p>
-<p>If there is no such file, fill in a few basic settings.</p>
+<p>If there is no such file but a <code>config.py</code> is present,
+conclude that this is an older app, not compatible with TF v8 or higher.</p>
+<p>If there are no such config files, fill in a few basic settings.</p>
 <h2 id="see-also">See Also</h2>
 <dl>
-<dt><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/find.py#L15-L113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/find.py#L16-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(appName, appPath, commit, release, local, version=None):
     &#34;&#34;&#34;Find the config information of an app.
@@ -285,17 +288,23 @@ of the config settings with the current version of Text-Fabric.</p>
     If there is a `config.yaml` file, read it and check the compatibility
     of the config settings with the current version of Text-Fabric.
 
-    If there is no such file, fill in a few basic settings.
+    If there is no such file but a `config.py` is present,
+    conclude that this is an older app, not compatible with TF v8 or higher.
+
+    If there are no such config files, fill in a few basic settings.
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     configPath = f&#34;{appPath}/{APP_CONFIG}&#34;
+    configPathOld = f&#34;{appPath}/{APP_CONFIG_OLD}&#34;
     cssPath = f&#34;{appPath}/{APP_DISPLAY}&#34;
 
     checkApiVersion = True
+
+    isCompatible = None
 
     if os.path.exists(configPath):
         with open(configPath) as fh:
@@ -303,6 +312,8 @@ of the config settings with the current version of Text-Fabric.</p>
     else:
         cfg = {}
         checkApiVersion = False
+        if os.path.exists(configPathOld):
+            isCompatible = False
     cfg.update(
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
@@ -321,20 +332,18 @@ of the config settings with the current version of Text-Fabric.</p>
     cfg[&#34;local&#34;] = local
     cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
 
-    apiVersionRequired = cfg.get(&#34;apiVersion&#34;, None)
-    isCompatible = (
-        None
-        if not checkApiVersion
-        else (
-            apiVersionRequired is not None and apiVersionRequired == apiVersionProvided
+    avA = cfg.get(&#34;apiVersion&#34;, None)
+    if isCompatible is None and checkApiVersion:
+        isCompatible = (
+            avA is not None and avA == avTf
         )
-    )
     if not isCompatible:
         if isCompatible is None:
-            console(&#34;No app configuration found.&#34;)
-        elif apiVersionRequired is None or apiVersionRequired &lt; apiVersionProvided:
+            pass
+        elif avA is None or avA &lt; avTf:
             console(
                 f&#34;&#34;&#34;
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your copy of the TF app `{appName}` is outdated for this version of TF.
 Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
@@ -359,6 +368,7 @@ Hint: load the app in one of the following ways:
         else:
             console(
                 f&#34;&#34;&#34;
+App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
 Your Text-Fabric is outdated and cannot use this version of the TF app `{appName}`.
 Recommendation: upgrade Text-Fabric.
 Hint:
@@ -368,19 +378,12 @@ Hint:
 &#34;&#34;&#34;,
                 error=True,
             )
-        console(
-            f&#34;&#34;&#34;
-Text-Fabric will be loaded, but no app specific code will be loaded
-and app config may not be optimal.
-The corpus data may not be found.
-&#34;&#34;&#34;
-        )
 
     cfg[&#34;isCompatible&#34;] = isCompatible
     return cfg</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.find.loadModule"><code class="name flex">
+<dt id="tf.advanced.find.loadModule"><code class="name flex">
 <span>def <span class="ident">loadModule</span></span>(<span>moduleName, *args)</span>
 </code></dt>
 <dd>
@@ -390,13 +393,13 @@ The corpus data may not be found.
 <dt><strong><code>moduleName</code></strong> :&ensp;<code>string</code></dt>
 <dd>Name of a module under a TF-app that needs to be imported.</dd>
 <dt><strong><code>args</code></strong> :&ensp;<code>mixed</code></dt>
-<dd>The same list of arguments that is passed to <code><a title="tf.applib.app.App" href="app.html#tf.applib.app.App">App</a></code>
+<dd>The same list of arguments that is passed to <code><a title="tf.advanced.app.App" href="app.html#tf.advanced.app.App">App</a></code>
 of which only the <code>appName</code> and the <code>appPath</code> are used.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/find.py#L150-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/find.py#L151-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
     &#34;&#34;&#34;Load a module dynamically, by name.
@@ -406,7 +409,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
     moduleName: string
         Name of a module under a TF-app that needs to be imported.
     args: mixed
-        The same list of arguments that is passed to `tf.applib.app.App`
+        The same list of arguments that is passed to `tf.advanced.app.App`
         of which only the `appName` and the `appPath` are used.
     &#34;&#34;&#34;
 
@@ -433,7 +436,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.find">
+data-gaCategoryParameter="tf.advanced.find">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -442,14 +445,14 @@ data-gaCategoryParameter="tf.applib.find">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.find.findAppClass" href="#tf.applib.find.findAppClass">findAppClass</a></code></li>
-<li><code><a title="tf.applib.find.findAppConfig" href="#tf.applib.find.findAppConfig">findAppConfig</a></code></li>
-<li><code><a title="tf.applib.find.loadModule" href="#tf.applib.find.loadModule">loadModule</a></code></li>
+<li><code><a title="tf.advanced.find.findAppClass" href="#tf.advanced.find.findAppClass">findAppClass</a></code></li>
+<li><code><a title="tf.advanced.find.findAppConfig" href="#tf.advanced.find.findAppConfig">findAppConfig</a></code></li>
+<li><code><a title="tf.advanced.find.loadModule" href="#tf.advanced.find.loadModule">loadModule</a></code></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib API documentation</title>
+<title>tf.advanced API documentation</title>
 <meta name="description" content="Advanced API …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib</code></h1>
+<h1 class="title">Module <code>tf.advanced</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="advanced-api">Advanced API</h1>
@@ -34,110 +34,114 @@ much like how webserver communicates with a database.</p>
 <p>The advanced API supports all these scenarios and is divided into these parts:</p>
 <ul>
 <li>Start up, see <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> (call up a corpus)</li>
-<li>App, see <code><a title="tf.applib.app" href="app.html">tf.applib.app</a></code> (the API of a corpus)</li>
-<li>Display, see <code><a title="tf.applib.display" href="display.html">tf.applib.display</a></code> (displaying material)</li>
-<li>Linking, see <code><a title="tf.applib.links" href="links.html">tf.applib.links</a></code> (generating useful links)</li>
-<li>Search, see <code><a title="tf.applib.search" href="search.html">tf.applib.search</a></code> (control the search engine)</li>
-<li>Sections, see <code><a title="tf.applib.sections" href="sections.html">tf.applib.sections</a></code> (headings for sections and structure)</li>
+<li>App, see <code><a title="tf.advanced.app" href="app.html">tf.advanced.app</a></code> (the API of a corpus)</li>
+<li>Display, see <code><a title="tf.advanced.display" href="display.html">tf.advanced.display</a></code> (displaying material)</li>
+<li>Linking, see <code><a title="tf.advanced.links" href="links.html">tf.advanced.links</a></code> (generating useful links)</li>
+<li>Search, see <code><a title="tf.advanced.search" href="search.html">tf.advanced.search</a></code> (control the search engine)</li>
+<li>Sections, see <code><a title="tf.advanced.sections" href="sections.html">tf.advanced.sections</a></code> (headings for sections and structure)</li>
 </ul>
 <p>Working behind the scenes:</p>
 <ul>
-<li>Settings, see <code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code> (configure an app)</li>
-<li>Display Settings, see <code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code> (tweak the display)</li>
-<li>Data, see <code><a title="tf.applib.data" href="data.html">tf.applib.data</a></code> (load data)</li>
-<li>Repo, see <code><a title="tf.applib.repo" href="repo.html">tf.applib.repo</a></code> (negotiate with the data back-end)</li>
+<li>Settings, see <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code> (configure an app)</li>
+<li>Options for display, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code> (tweak the display)</li>
+<li>Data, see <code><a title="tf.advanced.data" href="data.html">tf.advanced.data</a></code> (load data)</li>
+<li>Repo, see <code><a title="tf.advanced.repo" href="repo.html">tf.advanced.repo</a></code> (negotiate with the data back-end)</li>
 </ul>
 <p>Lower level:</p>
 <ul>
-<li>Condense, see <code><a title="tf.applib.condense" href="condense.html">tf.applib.condense</a></code> (distribute query results over containers)</li>
-<li>Find, see <code><a title="tf.applib.find" href="find.html">tf.applib.find</a></code> (finding TF apps)</li>
-<li>Highlight, see <code><a title="tf.applib.highlight" href="highlight.html">tf.applib.highlight</a></code> (highlight nodes in displays)</li>
-<li>Tables, see <code><a title="tf.applib.tables" href="tables.html">tf.applib.tables</a></code> (tabular structures)</li>
-<li>Text, see <code><a title="tf.applib.text" href="text.html">tf.applib.text</a></code> (text formats)</li>
-<li>ZipData, see <code><a title="tf.applib.zipdata" href="zipdata.html">tf.applib.zipdata</a></code> (package and zip TF datasets for sharing)</li>
+<li>Condense, see <code><a title="tf.advanced.condense" href="condense.html">tf.advanced.condense</a></code> (distribute query results over containers)</li>
+<li>Find, see <code><a title="tf.advanced.find" href="find.html">tf.advanced.find</a></code> (finding TF apps)</li>
+<li>Highlight, see <code><a title="tf.advanced.highlight" href="highlight.html">tf.advanced.highlight</a></code> (highlight nodes in displays)</li>
+<li>Tables, see <code><a title="tf.advanced.tables" href="tables.html">tf.advanced.tables</a></code> (tabular structures)</li>
+<li>Text, see <code><a title="tf.advanced.text" href="text.html">tf.advanced.text</a></code> (text formats)</li>
+<li>ZipData, see <code><a title="tf.advanced.zipdata" href="zipdata.html">tf.advanced.zipdata</a></code> (package and zip TF datasets for sharing)</li>
 </ul>
 <p>Lowest level:</p>
 <ul>
-<li>Helpers, see <code><a title="tf.applib.helpers" href="helpers.html">tf.applib.helpers</a></code> (the usual riff-raff)</li>
+<li>Helpers, see <code><a title="tf.advanced.helpers" href="helpers.html">tf.advanced.helpers</a></code> (the usual riff-raff)</li>
 </ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/__init__.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/__init__.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/applib/top.md
+.. include:: ../../docs/advanced/top.md
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="tf.applib.app" href="app.html">tf.applib.app</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.app" href="app.html">tf.advanced.app</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.condense" href="condense.html">tf.applib.condense</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.condense" href="condense.html">tf.advanced.condense</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.data" href="data.html">tf.applib.data</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.data" href="data.html">tf.advanced.data</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.display" href="display.html">tf.applib.display</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.display" href="display.html">tf.advanced.display</a></code></dt>
 <dd>
 <div class="desc"><p>Display …</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.displaylib" href="displaylib.html">tf.applib.displaylib</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.find" href="find.html">tf.advanced.find</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code></dt>
-<dd>
-<div class="desc"><p>Display Settings …</p></div>
-</dd>
-<dt><code class="name"><a title="tf.applib.find" href="find.html">tf.applib.find</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.helpers" href="helpers.html">tf.advanced.helpers</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.helpers" href="helpers.html">tf.applib.helpers</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.highlight" href="highlight.html">tf.advanced.highlight</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.highlight" href="highlight.html">tf.applib.highlight</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="tf.applib.links" href="links.html">tf.applib.links</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.links" href="links.html">tf.advanced.links</a></code></dt>
 <dd>
 <div class="desc"><p>Produce links to Text-Fabric data and links from nodes to web resources.</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.repo" href="repo.html">tf.applib.repo</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code></dt>
+<dd>
+<div class="desc"><p>Display Settings …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.advanced.render" href="render.html">tf.advanced.render</a></code></dt>
+<dd>
+<div class="desc"><p>Render …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.advanced.repo" href="repo.html">tf.advanced.repo</a></code></dt>
 <dd>
 <div class="desc"><p>Auto downloading from GitHub …</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.search" href="search.html">tf.applib.search</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.search" href="search.html">tf.advanced.search</a></code></dt>
 <dd>
 <div class="desc"><p>Calls from the advanced API to the Search API.</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.sections" href="sections.html">tf.applib.sections</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.sections" href="sections.html">tf.advanced.sections</a></code></dt>
 <dd>
 <div class="desc"><p>Section …</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>
 <div class="desc"><p>App settings …</p></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.tables" href="tables.html">tf.applib.tables</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.tables" href="tables.html">tf.advanced.tables</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.text" href="text.html">tf.applib.text</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.text" href="text.html">tf.advanced.text</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="tf.applib.zipdata" href="zipdata.html">tf.applib.zipdata</a></code></dt>
+<dt><code class="name"><a title="tf.advanced.unravel" href="unravel.html">tf.advanced.unravel</a></code></dt>
+<dd>
+<div class="desc"><p>Unravel …</p></div>
+</dd>
+<dt><code class="name"><a title="tf.advanced.zipdata" href="zipdata.html">tf.advanced.zipdata</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -155,7 +159,7 @@ much like how webserver communicates with a database.</p>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib">
+data-gaCategoryParameter="tf.advanced">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -171,23 +175,24 @@ data-gaCategoryParameter="tf.applib">
 </li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="tf.applib.app" href="app.html">tf.applib.app</a></code></li>
-<li><code><a title="tf.applib.condense" href="condense.html">tf.applib.condense</a></code></li>
-<li><code><a title="tf.applib.data" href="data.html">tf.applib.data</a></code></li>
-<li><code><a title="tf.applib.display" href="display.html">tf.applib.display</a></code></li>
-<li><code><a title="tf.applib.displaylib" href="displaylib.html">tf.applib.displaylib</a></code></li>
-<li><code><a title="tf.applib.displaysettings" href="displaysettings.html">tf.applib.displaysettings</a></code></li>
-<li><code><a title="tf.applib.find" href="find.html">tf.applib.find</a></code></li>
-<li><code><a title="tf.applib.helpers" href="helpers.html">tf.applib.helpers</a></code></li>
-<li><code><a title="tf.applib.highlight" href="highlight.html">tf.applib.highlight</a></code></li>
-<li><code><a title="tf.applib.links" href="links.html">tf.applib.links</a></code></li>
-<li><code><a title="tf.applib.repo" href="repo.html">tf.applib.repo</a></code></li>
-<li><code><a title="tf.applib.search" href="search.html">tf.applib.search</a></code></li>
-<li><code><a title="tf.applib.sections" href="sections.html">tf.applib.sections</a></code></li>
-<li><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></li>
-<li><code><a title="tf.applib.tables" href="tables.html">tf.applib.tables</a></code></li>
-<li><code><a title="tf.applib.text" href="text.html">tf.applib.text</a></code></li>
-<li><code><a title="tf.applib.zipdata" href="zipdata.html">tf.applib.zipdata</a></code></li>
+<li><code><a title="tf.advanced.app" href="app.html">tf.advanced.app</a></code></li>
+<li><code><a title="tf.advanced.condense" href="condense.html">tf.advanced.condense</a></code></li>
+<li><code><a title="tf.advanced.data" href="data.html">tf.advanced.data</a></code></li>
+<li><code><a title="tf.advanced.display" href="display.html">tf.advanced.display</a></code></li>
+<li><code><a title="tf.advanced.find" href="find.html">tf.advanced.find</a></code></li>
+<li><code><a title="tf.advanced.helpers" href="helpers.html">tf.advanced.helpers</a></code></li>
+<li><code><a title="tf.advanced.highlight" href="highlight.html">tf.advanced.highlight</a></code></li>
+<li><code><a title="tf.advanced.links" href="links.html">tf.advanced.links</a></code></li>
+<li><code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code></li>
+<li><code><a title="tf.advanced.render" href="render.html">tf.advanced.render</a></code></li>
+<li><code><a title="tf.advanced.repo" href="repo.html">tf.advanced.repo</a></code></li>
+<li><code><a title="tf.advanced.search" href="search.html">tf.advanced.search</a></code></li>
+<li><code><a title="tf.advanced.sections" href="sections.html">tf.advanced.sections</a></code></li>
+<li><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></li>
+<li><code><a title="tf.advanced.tables" href="tables.html">tf.advanced.tables</a></code></li>
+<li><code><a title="tf.advanced.text" href="text.html">tf.advanced.text</a></code></li>
+<li><code><a title="tf.advanced.unravel" href="unravel.html">tf.advanced.unravel</a></code></li>
+<li><code><a title="tf.advanced.zipdata" href="zipdata.html">tf.advanced.zipdata</a></code></li>
 </ul>
 </li>
 </ul>

@@ -75,17 +75,13 @@ post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L0-L180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/nodes.py#L0-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/core/nodes.md
 &#34;&#34;&#34;
 
 import functools
-
-
-GAP_START = &#34;_gapStart_&#34;
-GAP_END = &#34;_gapEnd_&#34;
 
 
 class Nodes:
@@ -134,7 +130,9 @@ class Nodes:
         tf.core.nodes: canonical ordering
         &#34;&#34;&#34;
 
-        self.sortKeyChunk = self.makeSortKeyChunk()
+        (sortKeyChunk, sortKeyChunkLength) = self.makeSortKeyChunk()
+
+        self.sortKeyChunk = sortKeyChunk
         &#34;&#34;&#34;Sort key function for the canonical ordering between chunks of nodes.
 
             sorted(chunks, key=sortKeyChunk)
@@ -157,69 +155,79 @@ class Nodes:
         tf.core.nodes: canonical ordering
         &#34;&#34;&#34;
 
+        self.sortKeyChunkLength = sortKeyChunkLength
+
     def makeSortKeyChunk(self):
         api = self.api
 
         fOtype = api.F.otype
         otypeRank = self.otypeRank
         fOtypev = fOtype.v
-        maxNode = fOtype.maxNode
-        upperRank = len(otypeRank)
 
-        def before(chunkA, chunkB):
-            &#34;&#34;&#34;Determines the order between two chunks
-
-            Parameters
-            ----------
-            chunkA: tuple of string, set of int
-            chunkB: tuple of string, set of int
-
-            Notes
-            -----
-            The slot sets in both parameters will be compared.
-            If they are equal, then the rank of the types of the nodes
-            will be used to force a decision.
-            &#34;&#34;&#34;
-
-            (nodeA, slotsA) = chunkA
-            (nodeB, slotsB) = chunkB
-            rankA = None
-            rankB = None
-            if nodeA == GAP_START:
-                nodeA = 0
-                rankA = -1
-            elif nodeA == GAP_END:
-                nodeA = maxNode + 1
-                rankA = upperRank
-            if nodeB == GAP_START:
-                nodeB = 0
-                rankB = -1
-            elif nodeB == GAP_END:
-                nodeB = maxNode + 1
-                rankB = upperRank
-
-            if rankA is None:
-                rankA = otypeRank[fOtypev(nodeA)]
-            if rankB is None:
-                rankB = otypeRank[fOtypev(nodeB)]
-
-            if slotsA == slotsB:
-                return (
-                    (-1 if nodeA &lt; nodeB else 1 if nodeA &gt; nodeB else 0)
-                    if rankA == rankB
-                    else -1
-                    if rankA &gt; rankB
-                    else 1
-                )
-            if slotsA &gt; slotsB:
+        def beforePosition(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+            if b1 &lt; b2:
                 return -1
-            if slotsA &lt; slotsB:
+            elif b1 &gt; b2:
                 return 1
-            minA = min(slotsA - slotsB)
-            minB = min(slotsB - slotsA)
-            return -1 if minA &lt; minB else 1 if minB &lt; minA else None
 
-        return functools.cmp_to_key(before)
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
+
+            if r1 &gt; r2:
+                return -1
+            elif r1 &lt; r2:
+                return 1
+
+            return (
+                -1
+                if e1 &gt; e2
+                else 1
+                if e1 &lt; e2
+                else -1
+                if n1 &lt; n2
+                else 1
+                if n1 &gt; n2
+                else 0
+            )
+
+        def beforeLength(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+
+            size1 = e1 - b1
+            size2 = e2 - b2
+
+            if size1 &gt; size2:
+                return -1
+            elif size2 &gt; size1:
+                return 1
+            elif b1 &lt; b2:
+                return -1
+            elif b1 &gt; b2:
+                return 1
+
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
+
+            if r2 &gt; r1:
+                return -1
+            elif r1 &gt; r2:
+                return 1
+
+            return (
+                -1
+                if n1 &lt; n2
+                else 1
+                if n1 &gt; n2
+                else 0
+            )
+
+        return (
+            functools.cmp_to_key(beforePosition),
+            functools.cmp_to_key(beforeLength),
+        )
 
     def sortNodes(self, nodeSet):
         &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -278,7 +286,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L12-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/nodes.py#L8-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -326,7 +334,9 @@ class Nodes:
         tf.core.nodes: canonical ordering
         &#34;&#34;&#34;
 
-        self.sortKeyChunk = self.makeSortKeyChunk()
+        (sortKeyChunk, sortKeyChunkLength) = self.makeSortKeyChunk()
+
+        self.sortKeyChunk = sortKeyChunk
         &#34;&#34;&#34;Sort key function for the canonical ordering between chunks of nodes.
 
             sorted(chunks, key=sortKeyChunk)
@@ -349,69 +359,79 @@ class Nodes:
         tf.core.nodes: canonical ordering
         &#34;&#34;&#34;
 
+        self.sortKeyChunkLength = sortKeyChunkLength
+
     def makeSortKeyChunk(self):
         api = self.api
 
         fOtype = api.F.otype
         otypeRank = self.otypeRank
         fOtypev = fOtype.v
-        maxNode = fOtype.maxNode
-        upperRank = len(otypeRank)
 
-        def before(chunkA, chunkB):
-            &#34;&#34;&#34;Determines the order between two chunks
-
-            Parameters
-            ----------
-            chunkA: tuple of string, set of int
-            chunkB: tuple of string, set of int
-
-            Notes
-            -----
-            The slot sets in both parameters will be compared.
-            If they are equal, then the rank of the types of the nodes
-            will be used to force a decision.
-            &#34;&#34;&#34;
-
-            (nodeA, slotsA) = chunkA
-            (nodeB, slotsB) = chunkB
-            rankA = None
-            rankB = None
-            if nodeA == GAP_START:
-                nodeA = 0
-                rankA = -1
-            elif nodeA == GAP_END:
-                nodeA = maxNode + 1
-                rankA = upperRank
-            if nodeB == GAP_START:
-                nodeB = 0
-                rankB = -1
-            elif nodeB == GAP_END:
-                nodeB = maxNode + 1
-                rankB = upperRank
-
-            if rankA is None:
-                rankA = otypeRank[fOtypev(nodeA)]
-            if rankB is None:
-                rankB = otypeRank[fOtypev(nodeB)]
-
-            if slotsA == slotsB:
-                return (
-                    (-1 if nodeA &lt; nodeB else 1 if nodeA &gt; nodeB else 0)
-                    if rankA == rankB
-                    else -1
-                    if rankA &gt; rankB
-                    else 1
-                )
-            if slotsA &gt; slotsB:
+        def beforePosition(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+            if b1 &lt; b2:
                 return -1
-            if slotsA &lt; slotsB:
+            elif b1 &gt; b2:
                 return 1
-            minA = min(slotsA - slotsB)
-            minB = min(slotsB - slotsA)
-            return -1 if minA &lt; minB else 1 if minB &lt; minA else None
 
-        return functools.cmp_to_key(before)
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
+
+            if r1 &gt; r2:
+                return -1
+            elif r1 &lt; r2:
+                return 1
+
+            return (
+                -1
+                if e1 &gt; e2
+                else 1
+                if e1 &lt; e2
+                else -1
+                if n1 &lt; n2
+                else 1
+                if n1 &gt; n2
+                else 0
+            )
+
+        def beforeLength(chunk1, chunk2):
+            (n1, (b1, e1)) = chunk1
+            (n2, (b2, e2)) = chunk2
+
+            size1 = e1 - b1
+            size2 = e2 - b2
+
+            if size1 &gt; size2:
+                return -1
+            elif size2 &gt; size1:
+                return 1
+            elif b1 &lt; b2:
+                return -1
+            elif b1 &gt; b2:
+                return 1
+
+            r1 = otypeRank[fOtypev(n1)]
+            r2 = otypeRank[fOtypev(n2)]
+
+            if r2 &gt; r1:
+                return -1
+            elif r1 &gt; r2:
+                return 1
+
+            return (
+                -1
+                if n1 &lt; n2
+                else 1
+                if n1 &gt; n2
+                else 0
+            )
+
+        return (
+            functools.cmp_to_key(beforePosition),
+            functools.cmp_to_key(beforeLength),
+        )
 
     def sortNodes(self, nodeSet):
         &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -524,7 +544,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L81-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/nodes.py#L81-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSortKeyChunk(self):
     api = self.api
@@ -532,63 +552,71 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
     fOtype = api.F.otype
     otypeRank = self.otypeRank
     fOtypev = fOtype.v
-    maxNode = fOtype.maxNode
-    upperRank = len(otypeRank)
 
-    def before(chunkA, chunkB):
-        &#34;&#34;&#34;Determines the order between two chunks
-
-        Parameters
-        ----------
-        chunkA: tuple of string, set of int
-        chunkB: tuple of string, set of int
-
-        Notes
-        -----
-        The slot sets in both parameters will be compared.
-        If they are equal, then the rank of the types of the nodes
-        will be used to force a decision.
-        &#34;&#34;&#34;
-
-        (nodeA, slotsA) = chunkA
-        (nodeB, slotsB) = chunkB
-        rankA = None
-        rankB = None
-        if nodeA == GAP_START:
-            nodeA = 0
-            rankA = -1
-        elif nodeA == GAP_END:
-            nodeA = maxNode + 1
-            rankA = upperRank
-        if nodeB == GAP_START:
-            nodeB = 0
-            rankB = -1
-        elif nodeB == GAP_END:
-            nodeB = maxNode + 1
-            rankB = upperRank
-
-        if rankA is None:
-            rankA = otypeRank[fOtypev(nodeA)]
-        if rankB is None:
-            rankB = otypeRank[fOtypev(nodeB)]
-
-        if slotsA == slotsB:
-            return (
-                (-1 if nodeA &lt; nodeB else 1 if nodeA &gt; nodeB else 0)
-                if rankA == rankB
-                else -1
-                if rankA &gt; rankB
-                else 1
-            )
-        if slotsA &gt; slotsB:
+    def beforePosition(chunk1, chunk2):
+        (n1, (b1, e1)) = chunk1
+        (n2, (b2, e2)) = chunk2
+        if b1 &lt; b2:
             return -1
-        if slotsA &lt; slotsB:
+        elif b1 &gt; b2:
             return 1
-        minA = min(slotsA - slotsB)
-        minB = min(slotsB - slotsA)
-        return -1 if minA &lt; minB else 1 if minB &lt; minA else None
 
-    return functools.cmp_to_key(before)</code></pre>
+        r1 = otypeRank[fOtypev(n1)]
+        r2 = otypeRank[fOtypev(n2)]
+
+        if r1 &gt; r2:
+            return -1
+        elif r1 &lt; r2:
+            return 1
+
+        return (
+            -1
+            if e1 &gt; e2
+            else 1
+            if e1 &lt; e2
+            else -1
+            if n1 &lt; n2
+            else 1
+            if n1 &gt; n2
+            else 0
+        )
+
+    def beforeLength(chunk1, chunk2):
+        (n1, (b1, e1)) = chunk1
+        (n2, (b2, e2)) = chunk2
+
+        size1 = e1 - b1
+        size2 = e2 - b2
+
+        if size1 &gt; size2:
+            return -1
+        elif size2 &gt; size1:
+            return 1
+        elif b1 &lt; b2:
+            return -1
+        elif b1 &gt; b2:
+            return 1
+
+        r1 = otypeRank[fOtypev(n1)]
+        r2 = otypeRank[fOtypev(n2)]
+
+        if r2 &gt; r1:
+            return -1
+        elif r1 &gt; r2:
+            return 1
+
+        return (
+            -1
+            if n1 &lt; n2
+            else 1
+            if n1 &gt; n2
+            else 0
+        )
+
+    return (
+        functools.cmp_to_key(beforePosition),
+        functools.cmp_to_key(beforeLength),
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.core.nodes.Nodes.sortNodes"><code class="name flex">
@@ -606,7 +634,7 @@ An iterable of nodes to be sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L145-L159" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/nodes.py#L153-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
     &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -646,7 +674,7 @@ to walk through subsets of nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/nodes.py#L161-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/nodes.py#L169-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(self):
     &#34;&#34;&#34;Generates all nodes in the *canonical order*.

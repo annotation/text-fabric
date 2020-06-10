@@ -72,7 +72,7 @@ This also holds for all data that is created during executions of a query:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L0-L506" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L0-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/search/search.md
@@ -249,7 +249,7 @@ class Search(object):
     ):
         &#34;&#34;&#34;Searches for combinations of nodes that together match a search template.
 
-        If you can, you should use `tf.applib.search.search` instead.
+        If you can, you should use `tf.advanced.search.search` instead.
 
         Parameters
         ----------
@@ -541,7 +541,7 @@ class Search(object):
             This
 
                 for result in S.fetch(limit=10):
-                    print(S.glean(result))
+                    TF.info(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 
@@ -551,7 +551,7 @@ class Search(object):
 
         !!! hint &#34;More ways of showing results&#34;
             The advanced API offers much better ways of showing results.
-            See `tf.applib.display.show` and `tf.applib.display.table`.
+            See `tf.advanced.display.show` and `tf.advanced.display.table`.
         &#34;&#34;&#34;
 
         T = self.api.T
@@ -601,7 +601,7 @@ class Search(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34;
@@ -769,7 +769,7 @@ class Search(object):
     ):
         &#34;&#34;&#34;Searches for combinations of nodes that together match a search template.
 
-        If you can, you should use `tf.applib.search.search` instead.
+        If you can, you should use `tf.advanced.search.search` instead.
 
         Parameters
         ----------
@@ -1061,7 +1061,7 @@ class Search(object):
             This
 
                 for result in S.fetch(limit=10):
-                    print(S.glean(result))
+                    TF.info(S.glean(result))
 
             is a handy way to get an impression of the first bunch of results.
 
@@ -1071,7 +1071,7 @@ class Search(object):
 
         !!! hint &#34;More ways of showing results&#34;
             The advanced API offers much better ways of showing results.
-            See `tf.applib.display.show` and `tf.applib.display.table`.
+            See `tf.advanced.display.show` and `tf.advanced.display.table`.
         &#34;&#34;&#34;
 
         T = self.api.T
@@ -1140,7 +1140,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1228,7 +1228,7 @@ returned as a tuple.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1313,7 +1313,7 @@ and what text is associated with the tuple.</dd>
 <p class="admonition-title">Inspecting results</p>
 <p>This</p>
 <pre><code>for result in S.fetch(limit=10):
-    print(S.glean(result))
+    TF.info(S.glean(result))
 </code></pre>
 <p>is a handy way to get an impression of the first bunch of results.</p>
 </div>
@@ -1325,12 +1325,12 @@ obtained by search or not.</p>
 <div class="admonition hint">
 <p class="admonition-title">More ways of showing results</p>
 <p>The advanced API offers much better ways of showing results.
-See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.applib.display.show">show()</a></code> and <code><a title="tf.applib.display.table" href="../applib/display.html#tf.applib.display.table">table()</a></code>.</p>
+See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.advanced.display.show">show()</a></code> and <code><a title="tf.advanced.display.table" href="../advanced/display.html#tf.advanced.display.table">table()</a></code>.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1358,7 +1358,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
         This
 
             for result in S.fetch(limit=10):
-                print(S.glean(result))
+                TF.info(S.glean(result))
 
         is a handy way to get an impression of the first bunch of results.
 
@@ -1368,7 +1368,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 
     !!! hint &#34;More ways of showing results&#34;
         The advanced API offers much better ways of showing results.
-        See `tf.applib.display.show` and `tf.applib.display.table`.
+        See `tf.advanced.display.show` and `tf.advanced.display.table`.
     &#34;&#34;&#34;
 
     T = self.api.T
@@ -1414,7 +1414,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1438,7 +1438,7 @@ See <code><a title="tf.applib.display.show" href="../applib/display.html#tf.appl
 </code></dt>
 <dd>
 <div class="desc"><p>Searches for combinations of nodes that together match a search template.</p>
-<p>If you can, you should use <code><a title="tf.applib.search.search" href="../applib/search.html#tf.applib.search.search">search()</a></code> instead.</p>
+<p>If you can, you should use <code><a title="tf.advanced.search.search" href="../advanced/search.html#tf.advanced.search.search">search()</a></code> instead.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>searchTemplate</code></strong> :&ensp;<code>string</code></dt>
@@ -1476,7 +1476,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1490,7 +1490,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 ):
     &#34;&#34;&#34;Searches for combinations of nodes that together match a search template.
 
-    If you can, you should use `tf.applib.search.search` instead.
+    If you can, you should use `tf.advanced.search.search` instead.
 
     Parameters
     ----------
@@ -1573,7 +1573,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1650,7 +1650,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
@@ -1824,7 +1824,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.

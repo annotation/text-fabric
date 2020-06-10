@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.tables API documentation</title>
+<title>tf.advanced.tables API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,13 +19,13 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.tables</code></h1>
+<h1 class="title">Module <code>tf.advanced.tables</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/tables.py#L0-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/tables.py#L0-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import RESULT
@@ -54,7 +54,7 @@ def compose(
     &#34;&#34;&#34;
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     condensed = dContext.condensed
     condenseType = dContext.condenseType
 
@@ -298,7 +298,7 @@ def _plainTextSFinal(
     &#34;&#34;&#34;
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     fmt = dContext.fmt
 
     api = app.api
@@ -349,7 +349,7 @@ def _plainTextSFinal(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.tables.compose"><code class="name flex">
+<dt id="tf.advanced.tables.compose"><code class="name flex">
 <span>def <span class="ident">compose</span></span>(<span>app, tuples, features, position, opened, getx=None, **options)</span>
 </code></dt>
 <dd>
@@ -368,7 +368,7 @@ it.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/tables.py#L6-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app, tuples, features, position, opened, getx=None, **options,
@@ -392,7 +392,7 @@ it.</p></div>
     &#34;&#34;&#34;
 
     display = app.display
-    dContext = display.get(options)
+    dContext = display.distill(options)
     condensed = dContext.condensed
     condenseType = dContext.condenseType
 
@@ -464,19 +464,19 @@ it.</p></div>
     return &#34;\n&#34;.join(tuplesHtml)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.tables.composeP"><code class="name flex">
+<dt id="tf.advanced.tables.composeP"><code class="name flex">
 <span>def <span class="ident">composeP</span></span>(<span>app, browseNavLevel, finalSecType, features, items, opened, secFinal, getx=None, **options)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Takes a list of tuples and composes it into an HTML table.</p>
-<p>Like <code><a title="tf.applib.tables.composeT" href="#tf.applib.tables.composeT">composeT()</a></code>, but this is meant to compose the items at section level 2 (verses) within
+<p>Like <code><a title="tf.advanced.tables.composeT" href="#tf.advanced.tables.composeT">composeT()</a></code>, but this is meant to compose the items at section level 2 (verses) within
 an item of section level 1 (chapter) within an item of section level 0 (a book).</p>
 <p>Typically invoked when a user of the TF-browser is browsing passages.
 The query is used to highlight its results in the passages that the user is browsing.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/tables.py#L182-L258" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/tables.py#L182-L258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -557,18 +557,18 @@ The query is used to highlight its results in the passages that the user is brow
     return &#34;\n&#34;.join(passageHtml)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.tables.composeT"><code class="name flex">
+<dt id="tf.advanced.tables.composeT"><code class="name flex">
 <span>def <span class="ident">composeT</span></span>(<span>app, features, tuples, opened, getx=None, **options)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Takes a list of tuples and composes it into an HTML table.</p>
-<p>Very much like <code><a title="tf.applib.tables.compose" href="#tf.applib.tables.compose">compose()</a></code>,
+<p>Very much like <code><a title="tf.advanced.tables.compose" href="#tf.advanced.tables.compose">compose()</a></code>,
 but here the tuples come from a sections and/or tuples specification
 in the TF-browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/tables.py#L103-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app, features, tuples, opened, getx=None, **options,
@@ -656,7 +656,7 @@ in the TF-browser.</p></div>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.tables">
+data-gaCategoryParameter="tf.advanced.tables">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -665,14 +665,14 @@ data-gaCategoryParameter="tf.applib.tables">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.tables.compose" href="#tf.applib.tables.compose">compose</a></code></li>
-<li><code><a title="tf.applib.tables.composeP" href="#tf.applib.tables.composeP">composeP</a></code></li>
-<li><code><a title="tf.applib.tables.composeT" href="#tf.applib.tables.composeT">composeT</a></code></li>
+<li><code><a title="tf.advanced.tables.compose" href="#tf.advanced.tables.compose">compose</a></code></li>
+<li><code><a title="tf.advanced.tables.composeP" href="#tf.advanced.tables.composeP">composeP</a></code></li>
+<li><code><a title="tf.advanced.tables.composeT" href="#tf.advanced.tables.composeT">composeT</a></code></li>
 </ul>
 </li>
 </ul>

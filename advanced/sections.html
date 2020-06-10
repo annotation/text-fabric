@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.sections API documentation</title>
+<title>tf.advanced.sections API documentation</title>
 <meta name="description" content="Section …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.sections</code></h1>
+<h1 class="title">Module <code>tf.advanced.sections</code></h1>
 </header>
 <section id="section-intro">
 <p>Section</p>
@@ -43,7 +43,7 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/sections.py#L0-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/sections.py#L0-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
@@ -252,7 +252,7 @@ def _sectionLink(app, n, text=None, clsName=None):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.sections.nodeFromSectionStr"><code class="name flex">
+<dt id="tf.advanced.sections.nodeFromSectionStr"><code class="name flex">
 <span>def <span class="ident">nodeFromSectionStr</span></span>(<span>app, sectionStr, lang='en')</span>
 </code></dt>
 <dd>
@@ -295,7 +295,7 @@ Must be a 2-letter language code.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/sections.py#L37-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/sections.py#L37-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     &#34;&#34;&#34;Find the node of a section string.
@@ -380,7 +380,7 @@ Must be a 2-letter language code.</dd>
     return sectionNode</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.sections.sectionStrFromNode"><code class="name flex">
+<dt id="tf.advanced.sections.sectionStrFromNode"><code class="name flex">
 <span>def <span class="ident">sectionStrFromNode</span></span>(<span>app, n, lang='en', lastSlot=False, fillup=False)</span>
 </code></dt>
 <dd>
@@ -408,7 +408,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/sections.py#L120-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/sections.py#L120-L158" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     &#34;&#34;&#34;The heading of a section to which a node belongs.
@@ -451,7 +451,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.sections.sectionsApi"><code class="name flex">
+<dt id="tf.advanced.sections.sectionsApi"><code class="name flex">
 <span>def <span class="ident">sectionsApi</span></span>(<span>app)</span>
 </code></dt>
 <dd>
@@ -459,7 +459,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/sections.py#L30-L34" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionsApi(app):
     app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
@@ -468,7 +468,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
     app._sectionLink = types.MethodType(_sectionLink, app)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.sections.structureStrFromNode"><code class="name flex">
+<dt id="tf.advanced.sections.structureStrFromNode"><code class="name flex">
 <span>def <span class="ident">structureStrFromNode</span></span>(<span>app, n)</span>
 </code></dt>
 <dd>
@@ -485,7 +485,7 @@ The result is built from the labels of the individual section levels.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/sections.py#L161-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/sections.py#L161-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structureStrFromNode(app, n):
     &#34;&#34;&#34;The heading of a structure to which a node belongs.
@@ -530,7 +530,7 @@ The result is built from the labels of the individual section levels.</dd>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.sections">
+data-gaCategoryParameter="tf.advanced.sections">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -542,15 +542,15 @@ data-gaCategoryParameter="tf.applib.sections">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.sections.nodeFromSectionStr" href="#tf.applib.sections.nodeFromSectionStr">nodeFromSectionStr</a></code></li>
-<li><code><a title="tf.applib.sections.sectionStrFromNode" href="#tf.applib.sections.sectionStrFromNode">sectionStrFromNode</a></code></li>
-<li><code><a title="tf.applib.sections.sectionsApi" href="#tf.applib.sections.sectionsApi">sectionsApi</a></code></li>
-<li><code><a title="tf.applib.sections.structureStrFromNode" href="#tf.applib.sections.structureStrFromNode">structureStrFromNode</a></code></li>
+<li><code><a title="tf.advanced.sections.nodeFromSectionStr" href="#tf.advanced.sections.nodeFromSectionStr">nodeFromSectionStr</a></code></li>
+<li><code><a title="tf.advanced.sections.sectionStrFromNode" href="#tf.advanced.sections.sectionStrFromNode">sectionStrFromNode</a></code></li>
+<li><code><a title="tf.advanced.sections.sectionsApi" href="#tf.advanced.sections.sectionsApi">sectionsApi</a></code></li>
+<li><code><a title="tf.advanced.sections.structureStrFromNode" href="#tf.advanced.sections.structureStrFromNode">structureStrFromNode</a></code></li>
 </ul>
 </li>
 </ul>

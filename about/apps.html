@@ -48,7 +48,7 @@ These styles will be programmatically combined with other styles,
 to deliver them to the TF browser on the one hand, and to Jupyter notebooks
 on the other hand.</p>
 <h3 id="configyaml">config.yaml</h3>
-<p>Settings to feed the advanced API for this app. See <code><a title="tf.applib.settings" href="../applib/settings.html">tf.applib.settings</a></code>.</p>
+<p>Settings to feed the advanced API for this app. See <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>.</p>
 <h3 id="apppy">app.py</h3>
 <p>Corpus dependent helpers for the advanced API.</p>
 <h3 id="other-modules">other modules</h3>
@@ -76,7 +76,7 @@ two modules, <code>atf</code> and <code>image</code>.</p>
 The <code>atf</code> module contains a function that adds all these functions
 to an object:
 <a href="https://github.com/annotation/app-uruk/blob/master/code/atf.py"><code>atfApi</code></a></p>
-<pre><code class="python">from tf.applib.app import loadModule
+<pre><code class="python">from tf.advanced.app import loadModule
 
 class TfApp(App):
     def __init__(app, *args, silent=False, **kwargs):
@@ -110,7 +110,7 @@ a bunch of functions defined in that module as methods to the TfApp object.</p>
 so that all its methods can retrieve all names defined by the <code>image</code> module.</p>
 <h2 id="implementation">Implementation</h2>
 <p>Most parts of the advanced API are implemented in the
-<a href="https://github.com/annotation/text-fabric/blob/master/tf/applib">api</a>
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/advanced">api</a>
 modules of TF.</p>
 <h3 id="two-contexts">Two contexts</h3>
 <p>Most functions with the <code>app</code> argument are meant to perform their duty
@@ -132,7 +132,7 @@ by a call to an IPython display method, or by returning raw HTML.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/about/apps.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/about/apps.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/apps.md

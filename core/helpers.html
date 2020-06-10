@@ -25,7 +25,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L0-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L0-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -42,6 +42,10 @@ Consider installing a 64-bit Python.
 MSG64 = &#34;&#34;&#34;Running on 64-bit Python&#34;&#34;&#34;
 
 HOME_DIR = os.path.expanduser(&#34;~&#34;).replace(&#34;\\&#34;, &#34;/&#34;)
+
+SEP_RE = re.compile(r&#39;[ ,]+&#39;)
+VAR_RE = re.compile(r&#34;\{([^}]+?)(:[^}]+)?\}&#34;)
+MSG_LINE_RE = re.compile(r&#34;^( *[0-9]+) (.*)$&#34;)
 
 
 def unexpanduser(path):
@@ -184,17 +188,14 @@ def isClean(name):
 def flattenToSet(features):
     theseFeatures = set()
     if type(features) is str:
-        theseFeatures |= set(features.split())
+        theseFeatures |= setFromStr(features)
     else:
         for feature in features:
             if type(feature) is str:
                 theseFeatures.add(feature)
             else:
                 feature = feature[1]
-                if type(feature) is str:
-                    theseFeatures |= set(feature.split())
-                else:
-                    theseFeatures |= set(feature)
+                theseFeatures |= setFromValue(feature)
     return theseFeatures
 
 
@@ -327,7 +328,6 @@ def nbytes(by):
 
 
 def collectFormats(config):
-    varPattern = re.compile(r&#34;\{([^}]+?)(:[^}]+)?\}&#34;)
     featureSet = set()
 
     def collectFormat(tpl):
@@ -344,7 +344,7 @@ def collectFormats(config):
                 featureSet.add(ft)
             return &#34;{}&#34;
 
-        rtpl = varPattern.sub(varReplace, tpl)
+        rtpl = VAR_RE.sub(varReplace, tpl)
         return (rtpl, tuple(features))
 
     formats = {}
@@ -368,10 +368,6 @@ def project(iterableOfTuples, maxDimension):
     return {r[0:maxDimension] for r in iterableOfTuples}
 
 
-msgLinePat = &#34;^( *[0-9]+) (.*)$&#34;
-msgLineRe = re.compile(msgLinePat)
-
-
 def wrapMessages(messages):
     if type(messages) is str:
         messages = messages.split(&#34;\n&#34;)
@@ -379,11 +375,11 @@ def wrapMessages(messages):
     for msg in messages:
         if type(msg) is tuple:
             (error, nl, msgRep) = msg
-            match = msgLineRe.match(msgRep)
+            match = MSG_LINE_RE.match(msgRep)
             msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
             clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
         else:
-            match = msgLineRe.match(msg)
+            match = MSG_LINE_RE.match(msg)
             clsName = &#34;tline&#34; if match else &#34;eline&#34;
             msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
         html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
@@ -404,15 +400,25 @@ def makeExamples(nodeList):
 
 
 def setFromValue(x, asInt=False):
-    return (
-        set()
-        if x is None
-        else x
-        if type(x) in {set, frozenset}
-        else {int(x) if asInt else x}
-        if type(x) is str
-        else ({int(v) for v in x} if asInt else set(x))
-    )
+    if x is None:
+        return set()
+
+    typeX = type(x)
+    if typeX in {set, frozenset}:
+        return x
+    elif typeX in {str, dict, list, tuple}:
+        if typeX is str:
+            x = SEP_RE.split(x)
+        return {int(p) for p in x if p.isdecimal()} if asInt else {p for p in x if p}
+
+    return {x}
+
+
+def setFromStr(x):
+    if x is None:
+        return set()
+
+    return {p for p in SEP_RE.split(x) if p}
 
 
 def mergeDictOfSets(d1, d2):
@@ -449,7 +455,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L113-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L117-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel(name):
     if not name:
@@ -466,7 +472,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L120-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L124-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check32():
     warn = &#34;&#34;
@@ -487,7 +493,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L142-L146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L146-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanName(name):
     clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
@@ -504,10 +510,9 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L300-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L301-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFormats(config):
-    varPattern = re.compile(r&#34;\{([^}]+?)(:[^}]+)?\}&#34;)
     featureSet = set()
 
     def collectFormat(tpl):
@@ -524,7 +529,7 @@ def mergeDict(source, overrides):
                 featureSet.add(ft)
             return &#34;{}&#34;
 
-        rtpl = varPattern.sub(varReplace, tpl)
+        rtpl = VAR_RE.sub(varReplace, tpl)
         return (rtpl, tuple(features))
 
     formats = {}
@@ -542,7 +547,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L131-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L135-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*msg, error=False, newline=True):
     msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
@@ -563,7 +568,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L22-L23" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L26-L27" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     return not os.path.exists(target) or not os.listdir(target)</code></pre>
@@ -577,7 +582,7 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L178-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L179-L186" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -597,22 +602,19 @@ def mergeDict(source, overrides):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L155-L169" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L159-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flattenToSet(features):
     theseFeatures = set()
     if type(features) is str:
-        theseFeatures |= set(features.split())
+        theseFeatures |= setFromStr(features)
     else:
         for feature in features:
             if type(feature) is str:
                 theseFeatures.add(feature)
             else:
                 feature = feature[1]
-                if type(feature) is str:
-                    theseFeatures |= set(feature.split())
-                else:
-                    theseFeatures |= set(feature)
+                theseFeatures |= setFromValue(feature)
     return theseFeatures</code></pre>
 </details>
 </dd>
@@ -626,7 +628,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L52-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L56-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlEsc(val):
     &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
@@ -655,7 +657,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L149-L152" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L153-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClean(name):
     if name is None or len(name) == 0 or name[0] not in LETTER:
@@ -671,7 +673,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L26-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L30-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isInt(val):
     try:
@@ -689,7 +691,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L328-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L328-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def itemize(string, sep=None):
     if not string:
@@ -707,7 +709,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L364-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L360-L370" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeExamples(nodeList):
     lN = len(nodeList)
@@ -730,7 +732,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L268-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L269-L273" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(data):
     inv = {}
@@ -747,7 +749,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L275-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L276-L281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverse(data):
     inverse = {}
@@ -765,7 +767,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L283-L288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L284-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverseVal(data):
     inverse = {}
@@ -785,7 +787,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L34-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L38-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mathEsc(val):
     &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
@@ -805,7 +807,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L44-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L48-L53" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdEsc(val):
     return (
@@ -825,7 +827,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L71-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L75-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val):
     &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
@@ -855,7 +857,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L397-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L403-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDict(source, overrides):
     &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
@@ -876,7 +878,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L389-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L395-L400" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDictOfSets(d1, d2):
     for (n, ms) in d2.items():
@@ -894,7 +896,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L291-L297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L292-L298" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nbytes(by):
     units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
@@ -913,7 +915,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L336-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L336-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
@@ -929,7 +931,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L225-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L226-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
     curstart = None
@@ -956,7 +958,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L204-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L205-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromSet(nodeSet):
     # ranges = []
@@ -985,7 +987,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L172-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L173-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = os.path.expanduser(&#34;~&#34;).replace(&#34;\\&#34;, &#34;/&#34;)
@@ -1001,7 +1003,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L188-L201" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L189-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromSpec(spec):
     covered = set()
@@ -1019,6 +1021,23 @@ in cases where you need them literally.</p></div>
     return covered</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.setFromStr"><code class="name flex">
+<span>def <span class="ident">setFromStr</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L388-L392" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setFromStr(x):
+    if x is None:
+        return set()
+
+    return {p for p in SEP_RE.split(x) if p}</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.setFromValue"><code class="name flex">
 <span>def <span class="ident">setFromValue</span></span>(<span>x, asInt=False)</span>
 </code></dt>
@@ -1027,18 +1046,21 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L377-L386" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L373-L385" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromValue(x, asInt=False):
-    return (
-        set()
-        if x is None
-        else x
-        if type(x) in {set, frozenset}
-        else {int(x) if asInt else x}
-        if type(x) is str
-        else ({int(v) for v in x} if asInt else set(x))
-    )</code></pre>
+    if x is None:
+        return set()
+
+    typeX = type(x)
+    if typeX in {set, frozenset}:
+        return x
+    elif typeX in {str, dict, list, tuple}:
+        if typeX is str:
+            x = SEP_RE.split(x)
+        return {int(p) for p in x if p.isdecimal()} if asInt else {p for p in x if p}
+
+    return {x}</code></pre>
 </details>
 </dd>
 <dt id="tf.core.helpers.specFromRanges"><code class="name flex">
@@ -1049,7 +1071,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L242-L245" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L243-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
     return &#34;,&#34;.join(
@@ -1065,7 +1087,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L91-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L95-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitModRef(moduleRef):
     parts = moduleRef.split(&#34;:&#34;, 1)
@@ -1097,7 +1119,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L254-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L255-L266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromValue(val):
     valTp = type(val)
@@ -1121,7 +1143,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L18-L19" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L22-L23" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     return path.replace(HOME_DIR, &#39;~&#39;)</code></pre>
@@ -1135,7 +1157,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L248-L251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L249-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valueFromTf(tf):
     return &#34;\\&#34;.join(
@@ -1151,7 +1173,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/core/helpers.py#L346-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/core/helpers.py#L342-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     if type(messages) is str:
@@ -1160,11 +1182,11 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
     for msg in messages:
         if type(msg) is tuple:
             (error, nl, msgRep) = msg
-            match = msgLineRe.match(msgRep)
+            match = MSG_LINE_RE.match(msgRep)
             msg = msgRep + (&#34;&lt;br/&gt;&#34; if nl else &#34;&#34;)
             clsName = &#34;eline&#34; if error and not match else &#34;tline&#34;
         else:
-            match = msgLineRe.match(msg)
+            match = MSG_LINE_RE.match(msg)
             clsName = &#34;tline&#34; if match else &#34;eline&#34;
             msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
         html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
@@ -1222,6 +1244,7 @@ data-gaCategoryParameter="tf.core.helpers">
 <li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
 <li><code><a title="tf.core.helpers.setDir" href="#tf.core.helpers.setDir">setDir</a></code></li>
 <li><code><a title="tf.core.helpers.setFromSpec" href="#tf.core.helpers.setFromSpec">setFromSpec</a></code></li>
+<li><code><a title="tf.core.helpers.setFromStr" href="#tf.core.helpers.setFromStr">setFromStr</a></code></li>
 <li><code><a title="tf.core.helpers.setFromValue" href="#tf.core.helpers.setFromValue">setFromValue</a></code></li>
 <li><code><a title="tf.core.helpers.specFromRanges" href="#tf.core.helpers.specFromRanges">specFromRanges</a></code></li>
 <li><code><a title="tf.core.helpers.splitModRef" href="#tf.core.helpers.splitModRef">splitModRef</a></code></li>

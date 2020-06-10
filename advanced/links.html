@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.links API documentation</title>
+<title>tf.advanced.links API documentation</title>
 <meta name="description" content="Produce links to Text-Fabric data and links from nodes to web resources." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,14 +19,14 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.links</code></h1>
+<h1 class="title">Module <code>tf.advanced.links</code></h1>
 </header>
 <section id="section-intro">
 <p>Produce links to Text-Fabric data and links from nodes to web resources.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L0-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L0-L520" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -45,11 +45,11 @@ from ..parameters import (
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
 from .repo import Checkout
-from .helpers import getText, dh
+from .helpers import dh
 from ..server.wrap import wrapProvenance
 
 
-UNSUPPORTED = &#34;not online&#34;
+UNSUPPORTED = &#34;&#34;
 
 pathRe = re.compile(
     r&#34;^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$&#34;, flags=re.I
@@ -79,6 +79,8 @@ def linksApi(app, silent):
 
     aContext = app.context
     appName = aContext.appName
+    appPath = aContext.appPath
+    apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
     repo = aContext.repo
     version = aContext.version
@@ -90,11 +92,12 @@ def linksApi(app, silent):
 
     tutUrl = f&#34;{APP_NB_URL}/{appName}/start.ipynb&#34;
     extraUrl = f&#34;{APP_URL}/app-{appName}&#34;
+    apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataLink = (
         outLink(repo.upper(), docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
-        else UNSUPPORTED
+        else &#34;/&#34;.join(x for x in (appPath, appName, version) if x)
     )
     charLink = (
         (
@@ -118,22 +121,12 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
-    appLink = outLink(
-        f&#34;{appName} API&#34;,
-        extraUrl,
-        f&#34;{appName} API documentation&#34;
+    appLink = (
+        outLink(f&#34;app-{appName}{apiVersionRep}&#34;, extraUrl, f&#34;{appName} TF-app&#34;)
         if isCompatible and repo is not None
-        else UNSUPPORTED,
+        else &#34;no app configured&#34;
     )
-    tfLink = (
-        outLink(
-            f&#34;Text-Fabric API {app.TF.version}&#34;,
-            APIREF,
-            &#34;text-fabric-api&#34;,
-        )
-        if isCompatible
-        else UNSUPPORTED
-    )
+    tfLink = outLink(f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;,)
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
@@ -192,12 +185,12 @@ def header(app):
             f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
         )
     else:
+        tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
         dh(
-            &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
-            f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
-            &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-            + _featuresPerModule(app)
-            + &#34;&lt;/details&gt;&#34;
+            f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+            f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app)
         )
 
 
@@ -239,7 +232,7 @@ def webLink(
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     api = app.api
@@ -260,9 +253,9 @@ def webLink(
     nType = F.otype.v(n)
     passageText = None
 
-    if nType in lexTypes:
-        if text is None:
-            text = getText(app, False, n, nType, False, True, True, &#34;&#34;, None, None)
+    if _noUrl:
+        href = &#34;#&#34;
+    elif nType in lexTypes:
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -271,31 +264,34 @@ def webLink(
                 if webLexId
                 else None
             )
-            theUrl = webUrlLex.replace(&#34;&lt;lid&gt;&#34;, str(lid))
+            href = webUrlLex.replace(&#34;&lt;lid&gt;&#34;, str(lid))
         elif webBase:
-            theUrl = webBase
+            href = webBase
         else:
-            theUrl = None
+            href = None
     else:
-        if text is None:
-            text = app.sectionStrFromNode(n)
-            passageText = text
         if webUrl:
-            theUrl = webUrl
+            href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                theUrl = theUrl.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
+                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
         else:
-            theUrl = None
+            href = None
+
+    if nType in lexTypes:
+        if text is None:
+            text = app.getText(False, n, nType, False, True, True, &#34;&#34;, None, None)
+    else:
+        passageText = app.sectionStrFromNode(n)
+        if text is None:
+            text = passageText
 
     style = styles.get(nType, None)
     if style:
         clsName = f&#34;{clsName or &#39;&#39;} {style}&#34;
-    if theUrl is None:
+    if href is None:
         fullResult = text
-        href = None
     else:
-        href = &#34;#&#34; if _noUrl else theUrl
         atts = dict(target=&#34;&#34;) if _noUrl else dict(title=webHint)
         fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
     result = href if urlOnly else fullResult
@@ -372,7 +368,7 @@ def _featuresPerModule(app):
     &#34;&#34;&#34;
 
     isCompatible = app.isCompatible
-    if not isCompatible:
+    if isCompatible is not None and not isCompatible:
         return UNSUPPORTED
 
     api = app.api
@@ -482,7 +478,7 @@ def _featuresPerModule(app):
                 if type(mId) is str
                 else f&#34;{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}&#34;
             )
-        html += f&#34;&lt;p&gt;&lt;b&gt;{corpus}&lt;/b&gt;:&#34;
+        html += f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{corpus}&lt;/b&gt;&lt;/summary&gt;&#34;
 
         seen = set()
 
@@ -500,7 +496,7 @@ def _featuresPerModule(app):
             isEdge = featureInfo.isEdge
             pre = &#34;&lt;b&gt;&lt;i&gt;&#34; if isEdge else &#34;&#34;
             post = &#34;&lt;/i&gt;&lt;/b&gt;&#34; if isEdge else &#34;&#34;
-            html += f&#34; {pre}&#34;
+            html += f&#34;{pre}&#34;
             html += (
                 outLink(
                     featureRep,
@@ -510,8 +506,8 @@ def _featuresPerModule(app):
                 if docUrl
                 else f&#39;&lt;span title=&#34;{featurePath}&#34;&gt;{featureRep}&lt;/span&gt;&#39;
             )
-            html += f&#34;{post} &#34;
-        html += &#34;&lt;/p&gt;&#34;
+            html += f&#34;{post}&lt;br&gt;&#34;
+        html += &#34;&lt;/details&gt;&#34;
     return html
 
 
@@ -562,7 +558,7 @@ def provenanceLink(org, repo, version, commit, release, local, relative):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.links.header"><code class="name flex">
+<dt id="tf.advanced.links.header"><code class="name flex">
 <span>def <span class="ident">header</span></span>(<span>app)</span>
 </code></dt>
 <dd>
@@ -572,7 +568,7 @@ and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L135-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L128-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -604,16 +600,16 @@ and it is packed with provenance and documentation links.</p></div>
             f&#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
         )
     else:
+        tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
         dh(
-            &#34;&lt;b&gt;Documentation:&lt;/b&gt;&#34;
-            f&#34; {dataLink} {charLink} {featureLink} {appLink} {tfLink} {tfsLink}&#34;
-            &#34;&lt;details open&gt;&lt;summary&gt;&lt;b&gt;Loaded features&lt;/b&gt;:&lt;/summary&gt;\n&#34;
-            + _featuresPerModule(app)
-            + &#34;&lt;/details&gt;&#34;
+            f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+            f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app)
         )</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.links.linksApi"><code class="name flex">
+<dt id="tf.advanced.links.linksApi"><code class="name flex">
 <span>def <span class="ident">linksApi</span></span>(<span>app, silent)</span>
 </code></dt>
 <dd>
@@ -633,7 +629,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L29-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L29-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent):
     &#34;&#34;&#34;Produce the link API.
@@ -658,6 +654,8 @@ we force <code>silent=True</code>.</p></div>
 
     aContext = app.context
     appName = aContext.appName
+    appPath = aContext.appPath
+    apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
     repo = aContext.repo
     version = aContext.version
@@ -669,11 +667,12 @@ we force <code>silent=True</code>.</p></div>
 
     tutUrl = f&#34;{APP_NB_URL}/{appName}/start.ipynb&#34;
     extraUrl = f&#34;{APP_URL}/app-{appName}&#34;
+    apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataLink = (
         outLink(repo.upper(), docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
-        else UNSUPPORTED
+        else &#34;/&#34;.join(x for x in (appPath, appName, version) if x)
     )
     charLink = (
         (
@@ -697,22 +696,12 @@ we force <code>silent=True</code>.</p></div>
         if isCompatible
         else UNSUPPORTED
     )
-    appLink = outLink(
-        f&#34;{appName} API&#34;,
-        extraUrl,
-        f&#34;{appName} API documentation&#34;
+    appLink = (
+        outLink(f&#34;app-{appName}{apiVersionRep}&#34;, extraUrl, f&#34;{appName} TF-app&#34;)
         if isCompatible and repo is not None
-        else UNSUPPORTED,
+        else &#34;no app configured&#34;
     )
-    tfLink = (
-        outLink(
-            f&#34;Text-Fabric API {app.TF.version}&#34;,
-            APIREF,
-            &#34;text-fabric-api&#34;,
-        )
-        if isCompatible
-        else UNSUPPORTED
-    )
+    tfLink = outLink(f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;,)
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
@@ -741,7 +730,7 @@ we force <code>silent=True</code>.</p></div>
             header(app)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.links.outLink"><code class="name flex">
+<dt id="tf.advanced.links.outLink"><code class="name flex">
 <span>def <span class="ident">outLink</span></span>(<span>text, href, title=None, passage=None, clsName=None, target='_blank')</span>
 </code></dt>
 <dd>
@@ -765,7 +754,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L310-L337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L306-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -797,7 +786,7 @@ link element. Used by the TF-browser.</dd>
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.links.provenanceLink"><code class="name flex">
+<dt id="tf.advanced.links.provenanceLink"><code class="name flex">
 <span>def <span class="ident">provenanceLink</span></span>(<span>org, repo, version, commit, release, local, relative)</span>
 </code></dt>
 <dd>
@@ -819,7 +808,7 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L488-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L484-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(org, repo, version, commit, release, local, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -861,7 +850,7 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
     return (text, url)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.links.showProvenance"><code class="name flex">
+<dt id="tf.advanced.links.showProvenance"><code class="name flex">
 <span>def <span class="ident">showProvenance</span></span>(<span>app, jobName='program code', author='program author')</span>
 </code></dt>
 <dd>
@@ -882,7 +871,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L277-L307" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L273-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -917,7 +906,7 @@ This item will be displayed together with the rest of the provenance.</dd>
     dh(wrapProvenance(form, provenance, setNames)[0])</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.links.webLink"><code class="name flex">
+<dt id="tf.advanced.links.webLink"><code class="name flex">
 <span>def <span class="ident">webLink</span></span>(<span>app, n, text=None, clsName=None, urlOnly=False)</span>
 </code></dt>
 <dd>
@@ -928,7 +917,7 @@ section nodes and lexeme nodes, dependent on how they are configured in
 the app's <code>config.yaml</code>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Customizable</p>
-<p>You can customize the behaviour of <code><a title="tf.applib.links.webLink" href="#tf.applib.links.webLink">webLink()</a></code> to the needs of your corpus
+<p>You can customize the behaviour of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
 by providing appropriate values in its <code>config.yaml</code>, especially for
 <code>webBase</code>, <code>webLang</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
 </div>
@@ -954,13 +943,13 @@ other attributes.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
 <dl>
-<dt><code><a title="tf.applib.settings" href="settings.html">tf.applib.settings</a></code></dt>
+<dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
 <dd>options allowed in <code>config.yaml</code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/links.py#L174-L274" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/links.py#L167-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1000,7 +989,7 @@ other attributes.</dd>
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
     api = app.api
@@ -1021,9 +1010,9 @@ other attributes.</dd>
     nType = F.otype.v(n)
     passageText = None
 
-    if nType in lexTypes:
-        if text is None:
-            text = getText(app, False, n, nType, False, True, True, &#34;&#34;, None, None)
+    if _noUrl:
+        href = &#34;#&#34;
+    elif nType in lexTypes:
         if webUrlLex and webLexId:
             lid = (
                 app.getLexId(n)
@@ -1032,31 +1021,34 @@ other attributes.</dd>
                 if webLexId
                 else None
             )
-            theUrl = webUrlLex.replace(&#34;&lt;lid&gt;&#34;, str(lid))
+            href = webUrlLex.replace(&#34;&lt;lid&gt;&#34;, str(lid))
         elif webBase:
-            theUrl = webBase
+            href = webBase
         else:
-            theUrl = None
+            href = None
     else:
-        if text is None:
-            text = app.sectionStrFromNode(n)
-            passageText = text
         if webUrl:
-            theUrl = webUrl
+            href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                theUrl = theUrl.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
+                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
         else:
-            theUrl = None
+            href = None
+
+    if nType in lexTypes:
+        if text is None:
+            text = app.getText(False, n, nType, False, True, True, &#34;&#34;, None, None)
+    else:
+        passageText = app.sectionStrFromNode(n)
+        if text is None:
+            text = passageText
 
     style = styles.get(nType, None)
     if style:
         clsName = f&#34;{clsName or &#39;&#39;} {style}&#34;
-    if theUrl is None:
+    if href is None:
         fullResult = text
-        href = None
     else:
-        href = &#34;#&#34; if _noUrl else theUrl
         atts = dict(target=&#34;&#34;) if _noUrl else dict(title=webHint)
         fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
     result = href if urlOnly else fullResult
@@ -1075,7 +1067,7 @@ other attributes.</dd>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.links">
+data-gaCategoryParameter="tf.advanced.links">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -1084,17 +1076,17 @@ data-gaCategoryParameter="tf.applib.links">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="tf.applib.links.header" href="#tf.applib.links.header">header</a></code></li>
-<li><code><a title="tf.applib.links.linksApi" href="#tf.applib.links.linksApi">linksApi</a></code></li>
-<li><code><a title="tf.applib.links.outLink" href="#tf.applib.links.outLink">outLink</a></code></li>
-<li><code><a title="tf.applib.links.provenanceLink" href="#tf.applib.links.provenanceLink">provenanceLink</a></code></li>
-<li><code><a title="tf.applib.links.showProvenance" href="#tf.applib.links.showProvenance">showProvenance</a></code></li>
-<li><code><a title="tf.applib.links.webLink" href="#tf.applib.links.webLink">webLink</a></code></li>
+<li><code><a title="tf.advanced.links.header" href="#tf.advanced.links.header">header</a></code></li>
+<li><code><a title="tf.advanced.links.linksApi" href="#tf.advanced.links.linksApi">linksApi</a></code></li>
+<li><code><a title="tf.advanced.links.outLink" href="#tf.advanced.links.outLink">outLink</a></code></li>
+<li><code><a title="tf.advanced.links.provenanceLink" href="#tf.advanced.links.provenanceLink">provenanceLink</a></code></li>
+<li><code><a title="tf.advanced.links.showProvenance" href="#tf.advanced.links.showProvenance">showProvenance</a></code></li>
+<li><code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink</a></code></li>
 </ul>
 </li>
 </ul>

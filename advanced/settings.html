@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.settings API documentation</title>
+<title>tf.advanced.settings API documentation</title>
 <meta name="description" content="App settings …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,13 +19,13 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.settings</code></h1>
+<h1 class="title">Module <code>tf.advanced.settings</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="app-settings">App settings</h1>
 <p>Developers can create TF-apps by specifying a <code>config.yaml</code> with settings.
 These settings will be read, checked, and transformed into configuration data
-that is read by the app, see <code><a title="tf.applib.settings.showContext" href="#tf.applib.settings.showContext">showContext()</a></code></p>
+that is read by the app, see <code><a title="tf.advanced.settings.showContext" href="#tf.advanced.settings.showContext">showContext()</a></code></p>
 <p>See for examples:
 * <a href="https://github.com/annotation/app-bhsa/blob/master/code/config.yaml">bhsa</a>.
 * <a href="https://github.com/annotation/app-uruk/blob/master/code/config.yaml">uruk</a>.</p>
@@ -114,7 +114,7 @@ e.g. the <code>:</code> in <code>Genesis 1:1</code></p>
 <hr>
 <h3 id="showverseintuple"><code>showVerseInTuple</code></h3>
 <p>Show the full text of verselike nodes in tables and tuples
-(in <code><a title="tf.applib.display.plainTuple" href="display.html#tf.applib.display.plainTuple">plainTuple()</a></code> and <code><a title="tf.applib.display.table" href="display.html#tf.applib.display.table">table()</a></code>)</p>
+(in <code><a title="tf.advanced.display.plainTuple" href="display.html#tf.advanced.display.plainTuple">plainTuple()</a></code> and <code><a title="tf.advanced.display.table" href="display.html#tf.advanced.display.table">table()</a></code>)</p>
 <dl>
 <dt>Default:</dt>
 <dd>boolean <code>false</code></dd>
@@ -224,78 +224,18 @@ will be filled in into <code>featureBase</code> for the variable <code>&lt;featu
 <hr>
 <h2 id="interfacedefaults"><code>interfaceDefaults</code></h2>
 <p>The following options can be passed to the display functions
-<code><a title="tf.applib.display.plain" href="display.html#tf.applib.display.plain">plain()</a></code> and <code><a title="tf.applib.display.pretty" href="display.html#tf.applib.display.pretty">pretty()</a></code>.
+<code><a title="tf.advanced.display.plain" href="display.html#tf.advanced.display.plain">plain()</a></code> and <code><a title="tf.advanced.display.pretty" href="display.html#tf.advanced.display.pretty">pretty()</a></code>.
 They can also be set in the Text-Fabric Browser.
 The values set here are the defaults as given by this app.
-Not all options work for all corpora.</p>
+Not all options are relevant for all corpora.
+Only relevant options should be included.
+By setting the default to <code>None</code>, the option will not be shown
+on the TF-browser interface.</p>
+<p>These options are described in <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>: all options
+marked as <strong>interface option</strong>.</p>
 <dl>
 <dt>Default:</dt>
 <dd>dict <code>{}</code></dd>
-</dl>
-<hr>
-<h3 id="linenumbers"><code>lineNumbers</code></h3>
-<p>Whether to show the line numbers within the source files of the corpus.
-The line numbers come from the source files from which the TF dataset
-has been generated.</p>
-<p>Those types for which <code>lineNumber="feat"</code> has been configured in <code>typeDisplay</code> below
-will cause plain and pretty to display a source line number, which will
-come from the feature <code>feat</code>.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>false</code> for apps that define line numbers, else <code>null</code>.</dd>
-</dl>
-<hr>
-<h3 id="prettytypes"><code>prettyTypes</code></h3>
-<p>If <code>withTypes</code> is <code>true</code>, you can set <code>prettyTypes</code> to <code>false</code> to prevent
-showing the types in pretty displays.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>true</code> (all apps)</dd>
-</dl>
-<hr>
-<h3 id="queryfeatures"><code>queryFeatures</code></h3>
-<p>Whether to show the features mentioned in the last query in pretty displays.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>true</code> (all apps)</dd>
-</dl>
-<hr>
-<h3 id="showhidden"><code>showHidden</code></h3>
-<p>Whether to use nodes of hidden types when unraveling nodes.</p>
-<p>Showing hidden types may clutter the displays, but sometimes you need that information.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>false</code> for apps that define hidden node types, else <code>null</code>.</dd>
-</dl>
-<hr>
-<h3 id="standardfeatures"><code>standardFeatures</code></h3>
-<p>Whether to show the standard features and their values in pretty displays.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>true</code></dd>
-</dl>
-<hr>
-<h3 id="showgraphics"><code>showGraphics</code></h3>
-<p>Whether to show additional graphics.
-Applies only to nodes of types for which <code>graphics=true</code> has been configured in
-<code>typeDisplay</code> below.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>true</code> for apps that have graphics data, else <code>null</code>.</dd>
-</dl>
-<hr>
-<h3 id="withnodes"><code>withNodes</code></h3>
-<p>Whether to show the node numbers.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolen <code>false</code></dd>
-</dl>
-<hr>
-<h3 id="withtypes-false"><code>withTypes: false</code></h3>
-<p>Whether to show the node type.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolen <code>false</code></dd>
 </dl>
 <hr>
 <h2 id="provenancespec"><code>provenanceSpec</code></h2>
@@ -501,13 +441,6 @@ The value for each key is a dictionary with the following possible contents
 <h3 id="base"><code>base</code></h3>
 <p>If present and <code>true</code>: this type acts as the base type.</p>
 <dl>
-<dt>plain display</dt>
-<dd>if the node needs to be highlighted, it gets a coloured background.
-Nodes of other types receive their highlights as coloured borders
-around their boxes.</dd>
-<dt>pretty</dt>
-<dd>children of these nodes are not expanded further, but displayed in
-plain mode (with highlighting).</dd>
 <dt>Default:</dt>
 <dd>boolean <code>true</code> for the slot type, <code>false</code> for other types.</dd>
 </dl>
@@ -524,50 +457,24 @@ without wrapping its descendants in a new box.</p>
 <dd>boolean <code>false</code></dd>
 </dl>
 <hr>
+<hr>
 <h3 id="children"><code>children</code></h3>
 <p>Which type of child nodes to be included in the display.
 The value should be a node type or a set of node types:</p>
-<pre><code>children: subphrase
-</code></pre>
-<pre><code>children:
-  - subphrase
-  - word
-</code></pre>
-<h3 id="xchildren"><code>xChildren</code></h3>
-<p>Which type of child nodes to be excluded in the display.</p>
+<p>children: aya</p>
+<p>children:
+- sura
+- aya</p>
 <div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Use this if you want to exclude some types of nodes directly appearing
-inside other nodes, e.g. in
-<a href="https://github.com/annotation/app-dss/blob/master/code/config.yaml">dss</a>.
-where we want to prevent signs to be directly displayed below lines, because
-there should always be a word around the signs.
-The DSS has end-of-line tokens, outside any word, but inside the lines.</p>
+<p class="admonition-title">Reductive</p>
+<p>Use this if you want to reduce the number of section levels in a display.
+For example, in the Q'uran there are various types of sections, not very well
+related, and we do not want to get trees of all those sections. Rather, each section
+should unravel straight into the lowest one: the aya.</p>
 </div>
-<div class="admonition caution">
-<p class="admonition-title">Loss of material</p>
-<p>By excluding certain child types you may loose slots in the display.
-This might be intentional, as in the DSS, but it could lead to
-unwanted omissions.</p>
-</div>
-<p>The value should be a node type or a set of node types:</p>
-<pre><code>xChildren: sign
-</code></pre>
-<pre><code>xChildren:
-  - sign
-</code></pre>
 <dl>
 <dt>Default:</dt>
-<dd>string | list, <code>[]</code></dd>
-</dl>
-<hr>
-<h3 id="childrenplain"><code>childrenPlain</code></h3>
-<p>Some types correspond to long sections. Such big types will not be expanded
-in pretty displays. If you also want to generate abreviated plain displays
-you can say <code>childrenPlain: false</code>.</p>
-<dl>
-<dt>Default:</dt>
-<dd>boolean <code>true</code></dd>
+<dd>set, <code>set()</code></dd>
 </dl>
 <hr>
 <h3 id="condense"><code>condense</code></h3>
@@ -583,6 +490,23 @@ If there are no such node types, we pick the slot type, but this is pathological
 <dd>boolean <code>true</code></dd>
 </dl>
 <hr>
+<h3 id="exclude"><code>exclude</code></h3>
+<p>Conditions that will exclude nodes of this type from the display.</p>
+<p>All nodes that satisfy at least one of these conditions will be left out.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Use this if you want to exclude particular nodes of some type, e.g. in
+<a href="https://github.com/annotation/app-dss/blob/master/code/config.yaml">dss</a>.
+where we want to prevent line terminator signs.</p>
+</div>
+<p>The value is a dictionary of feature name - value pairs.</p>
+<pre><code>exclude:
+    type: term
+</code></pre>
+<dl>
+<dt>Default:</dt>
+<dd>dict, <code>{}</code></dd>
+</dl>
 <h3 id="features"><code>features</code></h3>
 <p>Pretty displays: which node features to display as <code>name=value</code>.</p>
 <p>You can also specify lookup feature values for upper nodes, e.g. <code>{lex:gloss}</code>
@@ -621,12 +545,54 @@ for the verselike types</li>
 <p>If <code>true</code>, then there is additional graphics available for nodes of this
 type.</p>
 <p>The app needs to define a function</p>
-<pre><code>getGraphics(node, nodeType, isOuter) =&gt; HTML code for sourcing the graphics
+<pre><code>getGraphics(isPretty, node, nodeType, isOuter) =&gt; HTML code for sourcing the graphics
 </code></pre>
 <p>See <a href="https://github.com/annotation/app-uruk/blob/master/code/app.py">uruk</a>.</p>
 <dl>
 <dt>Default</dt>
 <dd>boolean <code>null</code></dd>
+</dl>
+<hr>
+<h3 id="hidden"><code>hidden</code></h3>
+<p>Plain and pretty: whether nodes of this type must be hidden by default.
+See for example the bhsa, where the <code>atom</code> types are hidden by default.</p>
+<p>The user of the app can selectively mark any node type (except the slot type)
+as hidden, by means of <code>hiddenTypes</code> in <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p>
+<p>The user can also switch between showing and hiding hidden node types by passing
+the display option <code>hideTypes=False</code> or <code>hideTypes=True</code>.</p>
+<dl>
+<dt>Default</dt>
+<dd>boolean <code>false</code></dd>
+</dl>
+<hr>
+<h3 id="isbig"><code>isBig</code></h3>
+<p>If <code>true</code>, then this type counts as a big type in plain displays.</p>
+<dl>
+<dt>Default</dt>
+<dd>boolean <code>false</code></dd>
+</dl>
+<hr>
+<h3 id="label-template"><code>label, template</code></h3>
+<p>Node contribution for plain and pretty displays (template is for plain displays,
+label is for pretty displays).</p>
+<p>You can have features filled in by mentioning them by name in the template, e.g.
+<code>{name1} - {name2}</code>.</p>
+<p>If you specify <code>true</code> as the template or label, the node information will be
+the result of:</p>
+<ul>
+<li>section and structure types nodes: a heading</li>
+<li>other nodes: plain text of the node</li>
+</ul>
+<dl>
+<dt>Default:</dt>
+<dd>
+<p>string</p>
+<ul>
+<li><code>true</code> for the slot type</li>
+<li><code>true</code> for the section and structure types</li>
+<li><code>""</code> for all other types</li>
+</ul>
+</dd>
 </dl>
 <hr>
 <h3 id="level"><code>level</code></h3>
@@ -678,39 +644,6 @@ to their stacking.</p>
 <a href="https://github.com/annotation/app-uruk/blob/master/code/config.yaml">uruk</a>
 it is needed to deviate from the default.</p>
 </div>
-<hr>
-<h3 id="hidden"><code>hidden</code></h3>
-<p>Plain and pretty: whether nodes of this type must be hidden by default.
-See for example the bhsa, where the <code>atom</code> types are hidden.</p>
-<p>Nodes that unravel to other nodes will exclude nodes of hidden types from
-the unraveling, unless you pass the display option <code>showHidden=True</code>.</p>
-<dl>
-<dt>Default</dt>
-<dd>boolean <code>false</code></dd>
-</dl>
-<hr>
-<h3 id="label-template"><code>label, template</code></h3>
-<p>Node contribution for plain and pretty displays (template is for plain displays,
-label is for pretty displays).</p>
-<p>You can have features filled in by mentioning them by name in the template, e.g.
-<code>{name1} - {name2}</code>.</p>
-<p>If you specify <code>true</code> as the template or label, the node information will be
-the result of:</p>
-<ul>
-<li>section and structure types nodes: a heading</li>
-<li>other nodes: plain text of the node</li>
-</ul>
-<dl>
-<dt>Default:</dt>
-<dd>
-<p>string</p>
-<ul>
-<li><code>true</code> for the slot type</li>
-<li><code>true</code> for the section and structure types</li>
-<li><code>""</code> for all other types</li>
-</ul>
-</dd>
-</dl>
 <hr>
 <h3 id="style"><code>style</code></h3>
 <p>Formatting key for plain and pretty displays.</p>
@@ -824,10 +757,10 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L0-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L0-L917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/applib/settings.md
+.. include:: ../../docs/advanced/settings.md
 &#34;&#34;&#34;
 
 
@@ -835,9 +768,9 @@ import re
 import types
 
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
-from ..core.helpers import console, mdEsc
-from .displaysettings import INTERFACE_OPTIONS
-from .helpers import dm, parseFeatures, transitiveClosure
+from ..core.helpers import console, mergeDictOfSets
+from .options import INTERFACE_OPTIONS
+from .helpers import parseFeatures, transitiveClosure, showDict
 
 
 VAR_PATTERN = re.compile(r&#34;\{([^}]+)\}&#34;)
@@ -954,13 +887,13 @@ TYPE_KEYS = set(
     &#34;&#34;&#34;
     base
     children
-    childrenPlain
     condense
     features
     featuresBare
     flow
     graphics
     hidden
+    isBig
     label
     level
     lexOcc
@@ -975,7 +908,6 @@ TYPE_KEYS = set(
 
 HOOKS = &#34;&#34;&#34;
     afterChild
-    childrenCustom
     plainCustom
     prettyCustom
 &#34;&#34;&#34;.strip().split()
@@ -1005,6 +937,7 @@ class Check:
         errors = self.errors
         dKey = self.dKey
         specs = app.specs
+        interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
 
         if withApi:
             api = app.api
@@ -1032,17 +965,23 @@ class Check:
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;exclude&#34;:
+                if type(v) is not dict():
+                    errors.append(f&#34;{k}: must be a dict of features and values&#34;)
+                    for feat in v:
+                        if feat not in allNodeFeatures:
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
             elif k == &#34;base&#34;:
                 pass
             elif k == &#34;lineNumber&#34;:
                 if v not in allNodeFeatures:
                     errors.append(f&#34;{k}: feature {v} not loaded&#34;)
             elif k == &#34;browseNavLevel&#34;:
-                allowedValues = set(range(len(sectionTypes)))
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                legalValues = set(range(len(sectionTypes)))
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(sorted(legalValues))
                     errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
-            elif k in {&#34;children&#34;, &#34;xChildren&#34;}:
+            elif k == &#34;children&#34;:
                 if type(v) is not str and type(v) is not list:
                     errors.append(f&#34;{k} must be a (list of) node types&#34;)
                 else:
@@ -1060,16 +999,7 @@ class Check:
             elif k == &#34;style&#34;:
                 if type(v) is not str or v.lower() != v:
                     errors.append(f&#34;{k} must be an all lowercase string&#34;)
-            elif k in {
-                &#34;lineNumbers&#34;,
-                &#34;prettyTypes&#34;,
-                &#34;queryFeatures&#34;,
-                &#34;showHidden&#34;,
-                &#34;showGraphics&#34;,
-                &#34;standardFeatures&#34;,
-                &#34;withNodes&#34;,
-                &#34;withTypes&#34;,
-            }:
+            elif k in interfaceDefaults:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
                     errors.append(
@@ -1112,40 +1042,40 @@ class Check:
                 if type(v) is not str:
                     errors.append(f&#34;{k} must be a string&#34;)
             elif k == &#34;writing&#34;:
-                allowedValues = set(WRITING_DEFAULTS)
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+                legalValues = set(WRITING_DEFAULTS)
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues - {&#34;&#34;})
                     errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
             elif k in {&#34;direction&#34;, &#34;language&#34;}:
-                allowedValues = {w[k] for w in WRITING_DEFAULTS}
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues)
+                legalValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues)
                     errors.append(f&#34;{k} must be one of {allowed}&#34;)
             elif k in {
                 &#34;browseContentPretty&#34;,
                 &#34;base&#34;,
-                &#34;childrenPlain&#34;,
                 &#34;condense&#34;,
                 &#34;graphics&#34;,
                 &#34;hidden&#34;,
+                &#34;isBig&#34;,
                 &#34;showVerseInTuple&#34;,
                 &#34;stretch&#34;,
                 &#34;verselike&#34;,
                 &#34;wrap&#34;,
             }:
-                allowedValues = {True, False}
-                if v not in allowedValues:
+                legalValues = {True, False}
+                if v not in legalValues:
                     allowed = &#34;true,false&#34;
                     errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
             elif k == &#34;flow&#34;:
-                allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues)
+                legalValues = {&#34;hor&#34;, &#34;ver&#34;}
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues)
                     errors.append(f&#34;{k} must be a value in {allowed}&#34;)
             elif k == &#34;level&#34;:
-                allowedValues = set(range(len(4)))
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                legalValues = set(range(len(4)))
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(sorted(legalValues))
                     errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
 
     def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
@@ -1186,10 +1116,17 @@ class Check:
         self.errors = []
 
 
+def _fillInDefined(template, data):
+    val = template.format(**data)
+    return None if &#34;None&#34; in val else val
+
+
 def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
+    if &#34;apiVesrion&#34; not in specs:
+        specs[&#34;apiVersion&#34;] = None
     checker = Check(app, False)
 
     dKey = &#34;writing&#34;
@@ -1215,7 +1152,8 @@ def setAppSpecs(app, cfg, reset=False):
             val = (
                 None
                 if val is None
-                else val.format(**specs)
+                else _fillInDefined(val, specs)
+                # else val.format(**specs)
                 if type(val) is str
                 else val
             )
@@ -1228,7 +1166,8 @@ def setAppSpecs(app, cfg, reset=False):
                     if k in moduleSpec:
                         v = moduleSpec[k]
                         if k == &#34;docUrl&#34; and v is not None:
-                            v = v.format(**specs)
+                            # v = v.format(**specs)
+                            v = _fillInDefined(v, specs)
                             moduleSpec[k] = v
                     else:
                         moduleSpec[k] = (
@@ -1272,8 +1211,6 @@ def setAppSpecs(app, cfg, reset=False):
 def setAppSpecsApi(app, cfg):
     api = app.api
     T = api.T
-    C = api.C
-    sectionTypeSet = T.sectionTypeSet
 
     specs = app.specs
 
@@ -1283,17 +1220,12 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    specs[&#34;allowedBaseTypes&#34;] = tuple(
-        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
-    )
-
-    specs[&#34;condenseTypes&#34;] = C.levels.data
-    specs[&#34;defaultFormat&#34;] = T.defaultFormat
+    specs[&#34;textFormat&#34;] = T.defaultFormat
 
     dKey = &#34;interfaceDefaults&#34;
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
     dSource = cfg.get(dKey, {})
-    specific = {&#34;lineNumbers&#34;, &#34;showHidden&#34;, &#34;showGraphics&#34;}
+    specific = {&#34;lineNumbers&#34;, &#34;showGraphics&#34;}
 
     allowed = {}
     for (k, v) in interfaceDefaults.items():
@@ -1301,8 +1233,6 @@ def setAppSpecsApi(app, cfg):
             (
                 k == &#34;lineNumbers&#34;
                 and specs[&#34;lineNumberFeature&#34;]
-                or k == &#34;showHidden&#34;
-                and specs[&#34;isHidden&#34;]
                 or k == &#34;showGraphics&#34;
                 and specs[&#34;hasGraphics&#34;]
             )
@@ -1343,8 +1273,8 @@ def getDataDefaults(app, cfg, dKey, withApi):
         formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
         specs[&#34;formatStyle&#34;] = formatStyle
 
-    allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
-    checker.checkGroup(cfg, allowedKeys, dKey)
+    legalKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
+    checker.checkGroup(cfg, legalKeys, dKey)
     checker.report()
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
@@ -1401,24 +1331,25 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     specs = app.specs
 
-    noChildren = set()
-    isHidden = set()
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    bigTypes = set()
     verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
     baseTypes = set()
+    hiddenTypes = set()
     condenseType = None
     templates = {}
     labels = {}
     styles = {}
     givenLevels = {}
     levels = {}
+    children = {}
     childType = {}
-    xChildType = {}
+    exclusions = {}
     transform = {}
 
     specs[&#34;transform&#34;] = transform
@@ -1509,21 +1440,13 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         if graphics:
             hasGraphics.add(nType)
 
-        if not info.get(&#34;childrenPlain&#34;, True):
-            noChildren.add(nType)
-
         hidden = info.get(&#34;hidden&#34;, None)
         if hidden:
-            isHidden.add(nType)
+            hiddenTypes.add(nType)
 
         verselike = info.get(&#34;verselike&#34;, False)
         if verselike:
             verseTypes.add(nType)
-
-        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
-            givenLevels[nType] = {
-                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
-            }
 
         if &#34;children&#34; in info:
             childs = info[&#34;children&#34;] or ()
@@ -1531,20 +1454,30 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = {childs}
             else:
                 childs = set(childs)
-            childType[nType] = set(childs or ())
+            children[nType] = set(childs or ())
 
-        if &#34;xChildren&#34; in info:
-            xChilds = info[&#34;xChildren&#34;] or ()
-            if type(xChilds) is str:
-                xChilds = {xChilds}
-            else:
-                xChilds = set(xChilds)
-            xChildType[nType] = set(xChilds or ())
+        isBig = info.get(&#34;isBig&#34;, False)
+        if isBig:
+            bigTypes.add(nType)
+
+        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
+            givenLevels[nType] = {
+                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
+            }
+
+        if &#34;exclude&#34; in info:
+            exclusions[nType] = info[&#34;exclude&#34;] or {}
 
         checker.report()
 
     lexTypes = set(lexMap.values())
     nTypesNoLex = [n for n in nTypes if n not in lexTypes]
+
+    specs[&#34;allowedValues&#34;] = dict(
+        baseTypes=tuple(e for e in nTypesNoLex if e not in sectionTypeSet),
+        condenseType=tuple(nTypesNoLex[0:-1]),
+        hiddenTypes=tuple(e for e in nTypesNoLex[0:-1] if e not in sectionTypeSet),
+    )
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes
@@ -1566,25 +1499,33 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
 
-    children = {
+    childType = {
         nType: {nTypesNoLex[i + 1]}
         for (i, nType) in enumerate(nTypesNoLex)
-        if nType in levelTypes[2] | levelTypes[1]
+        if i &lt; len(nTypesNoLex) - 1
+        # if nType in levelTypes[2] | levelTypes[1]
     }
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {structureTypes[i + 1]}
             for (i, nType) in enumerate(structureTypes)
             if i &lt; len(structureTypes) - 1
-        }
+        },
     )
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {sectionTypes[i + 1]}
             for (i, nType) in enumerate(sectionTypes)
             if i &lt; len(sectionTypes) - 1
-        }
+        },
     )
+
+    # here we override from the chlidren information in the app-config
+
+    for (nType, childInfo) in children.items():
+        childType[nType] = childInfo
 
     lowestSectionalTypes = set() | verseTypes
     if sectionTypes:
@@ -1600,20 +1541,20 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     smallestOtherType = remainingTypes[-1] if remainingTypes else None
 
     for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
+        if lexType in childType:
+            del childType[lexType]
 
     for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {biggestOtherType}
+        if lowestSectionalType not in childType:
+            childType[lowestSectionalType] = {biggestOtherType}
         else:
-            children[lowestSectionalType].add(biggestOtherType)
+            childType[lowestSectionalType].add(biggestOtherType)
 
     if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
+        if smallestOtherType not in childType:
+            childType[smallestOtherType] = {slotType}
         else:
-            children[smallestOtherType].add(slotType)
+            childType[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -1621,10 +1562,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     for (i, nTypes) in enumerate(levelTypes):
         for nType in nTypes:
             levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
-
-    for (nType, childInfo) in children.items():
-        if nType not in childType:
-            childType[nType] = childInfo
 
     levelCls = {}
 
@@ -1647,29 +1584,23 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
     descendantType = transitiveClosure(childType, {slotType})
 
-    for (parent, xChildren) in xChildType.items():
-        if parent in descendantType:
-            descendants = descendantType[parent]
-            for xChild in xChildren:
-                descendants.discard(xChild)
-
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
+        bigTypes=bigTypes,
         childType=childType,
-        xChildType=xChildType,
         condenseType=condenseType,
         descendantType=descendantType,
+        exclusions=exclusions,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
-        isHidden=isHidden,
+        hiddenTypes=hiddenTypes,
         labels=labels,
         levels=levels,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
-        noChildren=noChildren,
         noDescendTypes=lexTypes,
         styles=styles,
         templates=templates,
@@ -1679,7 +1610,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
 
 def showContext(app, *keys):
-    &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
+    &#34;&#34;&#34;Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
 
     The context is the result of computing sensible defaults for the corpus
     combined with configuration settings in the app&#39;s `config.yaml`.
@@ -1697,75 +1628,11 @@ def showContext(app, *keys):
 
     See Also
     --------
-    tf.applib.app.App.reuse
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.app.App.reuse
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
-    EM = &#34;*empty*&#34;
-    block = &#34;    &#34;
-    keys = set(keys)
-
-    def eScalar(x, level):
-        if type(x) is str and &#34;\n&#34; in x:
-            indent = block * level
-            return (
-                f&#34;\n{indent}```\n{indent}&#34;
-                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
-                + f&#34;\n{indent}```\n&#34;
-            )
-        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
-
-    def eEmpty(x):
-        return EM if type(x) is str else str(x)
-
-    def eList(x, level):
-        tpv = type(x)
-        indent = block * level
-        md = &#34;\n&#34;
-        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
-            item = f&#34;{i + 1}.&#34; if level == 0 else &#34;*&#34;
-            md += f&#34;{indent}{item:&lt;4}{eData(v, level + 1)}&#34;
-        return md
-
-    def eDict(x, level):
-        indent = block * level
-        md = &#34;\n&#34;
-        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
-            item = &#34;*&#34;
-            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
-        return md
-
-    def eRest(x, level):
-        indent = block * level
-        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
-
-    def eData(x, level):
-        if not x:
-            return eEmpty(x) + &#34;\n&#34;
-        tpv = type(x)
-        if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x, level) + &#34;\n&#34;
-        if tpv is list or tpv is tuple or tpv is set:
-            return eList(x, level)
-        if tpv is dict:
-            return eDict(x, level)
-        return eRest(x, level)
-
-    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
-    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
-    md = [
-        f&#34;&lt;details {openRep1}&gt;&#34;
-        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
-    ]
-    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if len(keys) and k not in keys:
-            continue
-        md.append(
-            f&#34;&lt;details {openRep2}&gt;&#34;
-            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
-        )
-    md.append(&#34;&lt;/details&gt;\n&#34;)
-    dm(&#34;&#34;.join(md))
+    showDict(f&#34;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&#34;, app.specs, *keys)
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):
@@ -1819,7 +1686,7 @@ def compileFormatCls(app, specs, givenStyles):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.settings.compileFormatCls"><code class="name flex">
+<dt id="tf.advanced.settings.compileFormatCls"><code class="name flex">
 <span>def <span class="ident">compileFormatCls</span></span>(<span>app, specs, givenStyles)</span>
 </code></dt>
 <dd>
@@ -1827,7 +1694,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L953-L984" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L887-L918" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
@@ -1863,7 +1730,7 @@ def compileFormatCls(app, specs, givenStyles):
     specs[&#34;formatCls&#34;] = result</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.getDataDefaults"><code class="name flex">
+<dt id="tf.advanced.settings.getDataDefaults"><code class="name flex">
 <span>def <span class="ident">getDataDefaults</span></span>(<span>app, cfg, dKey, withApi)</span>
 </code></dt>
 <dd>
@@ -1871,7 +1738,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L500-L550" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L497-L547" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDataDefaults(app, cfg, dKey, withApi):
     checker = Check(app, withApi)
@@ -1891,8 +1758,8 @@ def compileFormatCls(app, specs, givenStyles):
         formatStyle[ORIG] = specs[&#34;defaultClsOrig&#34;]
         specs[&#34;formatStyle&#34;] = formatStyle
 
-    allowedKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
-    checker.checkGroup(cfg, allowedKeys, dKey)
+    legalKeys = {d[0] for d in DATA_DISPLAY_DEFAULTS}
+    checker.checkGroup(cfg, legalKeys, dKey)
     checker.report()
 
     for (attr, default, needsApi) in DATA_DISPLAY_DEFAULTS:
@@ -1926,7 +1793,7 @@ def compileFormatCls(app, specs, givenStyles):
             specs[attr] = value</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.getLevel"><code class="name flex">
+<dt id="tf.advanced.settings.getLevel"><code class="name flex">
 <span>def <span class="ident">getLevel</span></span>(<span>defaultLevel, givenInfo, isVerse)</span>
 </code></dt>
 <dd>
@@ -1934,7 +1801,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L943-L950" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L877-L884" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get(&#34;level&#34;, defaultLevel)
@@ -1946,7 +1813,7 @@ def compileFormatCls(app, specs, givenStyles):
     return dict(level=level, flow=flow, wrap=wrap, stretch=stretch)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.getTypeDefaults"><code class="name flex">
+<dt id="tf.advanced.settings.getTypeDefaults"><code class="name flex">
 <span>def <span class="ident">getTypeDefaults</span></span>(<span>app, cfg, dKey, withApi)</span>
 </code></dt>
 <dd>
@@ -1954,7 +1821,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L553-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L550-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTypeDefaults(app, cfg, dKey, withApi):
     if not withApi:
@@ -1979,24 +1846,25 @@ def compileFormatCls(app, specs, givenStyles):
 
     specs = app.specs
 
-    noChildren = set()
-    isHidden = set()
     featuresBare = {}
     features = {}
     lineNumberFeature = {}
     hasGraphics = set()
     verseTypes = {sectionTypes[-1]} if sectionTypes else set()
+    bigTypes = set()
     verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
     baseTypes = set()
+    hiddenTypes = set()
     condenseType = None
     templates = {}
     labels = {}
     styles = {}
     givenLevels = {}
     levels = {}
+    children = {}
     childType = {}
-    xChildType = {}
+    exclusions = {}
     transform = {}
 
     specs[&#34;transform&#34;] = transform
@@ -2087,21 +1955,13 @@ def compileFormatCls(app, specs, givenStyles):
         if graphics:
             hasGraphics.add(nType)
 
-        if not info.get(&#34;childrenPlain&#34;, True):
-            noChildren.add(nType)
-
         hidden = info.get(&#34;hidden&#34;, None)
         if hidden:
-            isHidden.add(nType)
+            hiddenTypes.add(nType)
 
         verselike = info.get(&#34;verselike&#34;, False)
         if verselike:
             verseTypes.add(nType)
-
-        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
-            givenLevels[nType] = {
-                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
-            }
 
         if &#34;children&#34; in info:
             childs = info[&#34;children&#34;] or ()
@@ -2109,20 +1969,30 @@ def compileFormatCls(app, specs, givenStyles):
                 childs = {childs}
             else:
                 childs = set(childs)
-            childType[nType] = set(childs or ())
+            children[nType] = set(childs or ())
 
-        if &#34;xChildren&#34; in info:
-            xChilds = info[&#34;xChildren&#34;] or ()
-            if type(xChilds) is str:
-                xChilds = {xChilds}
-            else:
-                xChilds = set(xChilds)
-            xChildType[nType] = set(xChilds or ())
+        isBig = info.get(&#34;isBig&#34;, False)
+        if isBig:
+            bigTypes.add(nType)
+
+        if &#34;level&#34; in info or &#34;flow&#34; in info or &#34;wrap&#34; in info or &#34;stretch&#34; in info:
+            givenLevels[nType] = {
+                k: v for (k, v) in info.items() if k in LEVEL_DEFAULTS
+            }
+
+        if &#34;exclude&#34; in info:
+            exclusions[nType] = info[&#34;exclude&#34;] or {}
 
         checker.report()
 
     lexTypes = set(lexMap.values())
     nTypesNoLex = [n for n in nTypes if n not in lexTypes]
+
+    specs[&#34;allowedValues&#34;] = dict(
+        baseTypes=tuple(e for e in nTypesNoLex if e not in sectionTypeSet),
+        condenseType=tuple(nTypesNoLex[0:-1]),
+        hiddenTypes=tuple(e for e in nTypesNoLex[0:-1] if e not in sectionTypeSet),
+    )
 
     levelTypes = [set(), set(), set(), set(), set()]
     levelTypes[4] = sectionalTypeSet - verseTypes
@@ -2144,25 +2014,33 @@ def compileFormatCls(app, specs, givenStyles):
         levelTypes[2] = set(remainingTypes[0:mid])
         levelTypes[1] = set(remainingTypes[mid:])
 
-    children = {
+    childType = {
         nType: {nTypesNoLex[i + 1]}
         for (i, nType) in enumerate(nTypesNoLex)
-        if nType in levelTypes[2] | levelTypes[1]
+        if i &lt; len(nTypesNoLex) - 1
+        # if nType in levelTypes[2] | levelTypes[1]
     }
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {structureTypes[i + 1]}
             for (i, nType) in enumerate(structureTypes)
             if i &lt; len(structureTypes) - 1
-        }
+        },
     )
-    children.update(
+    mergeDictOfSets(
+        childType,
         {
-            nType: {nTypesNoLex[i + 1]}
+            nType: {sectionTypes[i + 1]}
             for (i, nType) in enumerate(sectionTypes)
             if i &lt; len(sectionTypes) - 1
-        }
+        },
     )
+
+    # here we override from the chlidren information in the app-config
+
+    for (nType, childInfo) in children.items():
+        childType[nType] = childInfo
 
     lowestSectionalTypes = set() | verseTypes
     if sectionTypes:
@@ -2178,20 +2056,20 @@ def compileFormatCls(app, specs, givenStyles):
     smallestOtherType = remainingTypes[-1] if remainingTypes else None
 
     for lexType in lexTypes:
-        if lexType in children:
-            del children[lexType]
+        if lexType in childType:
+            del childType[lexType]
 
     for lowestSectionalType in lowestSectionalTypes:
-        if lowestSectionalType not in children:
-            children[lowestSectionalType] = {biggestOtherType}
+        if lowestSectionalType not in childType:
+            childType[lowestSectionalType] = {biggestOtherType}
         else:
-            children[lowestSectionalType].add(biggestOtherType)
+            childType[lowestSectionalType].add(biggestOtherType)
 
     if smallestOtherType is not None and smallestOtherType != slotType:
-        if smallestOtherType not in children:
-            children[smallestOtherType] = {slotType}
+        if smallestOtherType not in childType:
+            childType[smallestOtherType] = {slotType}
         else:
-            children[smallestOtherType].add(slotType)
+            childType[smallestOtherType].add(slotType)
 
     if condenseType is None:
         condenseType = sectionTypes[-1] if sectionTypes else midType
@@ -2199,10 +2077,6 @@ def compileFormatCls(app, specs, givenStyles):
     for (i, nTypes) in enumerate(levelTypes):
         for nType in nTypes:
             levels[nType] = getLevel(i, givenLevels.get(nType, {}), nType in verseTypes)
-
-    for (nType, childInfo) in children.items():
-        if nType not in childType:
-            childType[nType] = childInfo
 
     levelCls = {}
 
@@ -2225,29 +2099,23 @@ def compileFormatCls(app, specs, givenStyles):
 
     descendantType = transitiveClosure(childType, {slotType})
 
-    for (parent, xChildren) in xChildType.items():
-        if parent in descendantType:
-            descendants = descendantType[parent]
-            for xChild in xChildren:
-                descendants.discard(xChild)
-
     specs.update(
         baseTypes=baseTypes if baseTypes else {slotType},
+        bigTypes=bigTypes,
         childType=childType,
-        xChildType=xChildType,
         condenseType=condenseType,
         descendantType=descendantType,
+        exclusions=exclusions,
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
-        isHidden=isHidden,
+        hiddenTypes=hiddenTypes,
         labels=labels,
         levels=levels,
         levelCls=levelCls,
         lexMap=lexMap,
         lexTypes=lexTypes,
         lineNumberFeature=lineNumberFeature,
-        noChildren=noChildren,
         noDescendTypes=lexTypes,
         styles=styles,
         templates=templates,
@@ -2256,7 +2124,7 @@ def compileFormatCls(app, specs, givenStyles):
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.setAppSpecs"><code class="name flex">
+<dt id="tf.advanced.settings.setAppSpecs"><code class="name flex">
 <span>def <span class="ident">setAppSpecs</span></span>(<span>app, cfg, reset=False)</span>
 </code></dt>
 <dd>
@@ -2264,12 +2132,14 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L361-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L363-L447" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
+    if &#34;apiVesrion&#34; not in specs:
+        specs[&#34;apiVersion&#34;] = None
     checker = Check(app, False)
 
     dKey = &#34;writing&#34;
@@ -2295,7 +2165,8 @@ def compileFormatCls(app, specs, givenStyles):
             val = (
                 None
                 if val is None
-                else val.format(**specs)
+                else _fillInDefined(val, specs)
+                # else val.format(**specs)
                 if type(val) is str
                 else val
             )
@@ -2308,7 +2179,8 @@ def compileFormatCls(app, specs, givenStyles):
                     if k in moduleSpec:
                         v = moduleSpec[k]
                         if k == &#34;docUrl&#34; and v is not None:
-                            v = v.format(**specs)
+                            # v = v.format(**specs)
+                            v = _fillInDefined(v, specs)
                             moduleSpec[k] = v
                     else:
                         moduleSpec[k] = (
@@ -2349,7 +2221,7 @@ def compileFormatCls(app, specs, givenStyles):
     app.context = AppCurrent(specs)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.setAppSpecsApi"><code class="name flex">
+<dt id="tf.advanced.settings.setAppSpecsApi"><code class="name flex">
 <span>def <span class="ident">setAppSpecsApi</span></span>(<span>app, cfg)</span>
 </code></dt>
 <dd>
@@ -2357,13 +2229,11 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L444-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L450-L494" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecsApi(app, cfg):
     api = app.api
     T = api.T
-    C = api.C
-    sectionTypeSet = T.sectionTypeSet
 
     specs = app.specs
 
@@ -2373,17 +2243,12 @@ def compileFormatCls(app, specs, givenStyles):
     ):
         method(app, cfg, dKey, True)
 
-    specs[&#34;allowedBaseTypes&#34;] = tuple(
-        e[0] for e in C.levels.data[0:-1] if e[0] not in sectionTypeSet
-    )
-
-    specs[&#34;condenseTypes&#34;] = C.levels.data
-    specs[&#34;defaultFormat&#34;] = T.defaultFormat
+    specs[&#34;textFormat&#34;] = T.defaultFormat
 
     dKey = &#34;interfaceDefaults&#34;
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
     dSource = cfg.get(dKey, {})
-    specific = {&#34;lineNumbers&#34;, &#34;showHidden&#34;, &#34;showGraphics&#34;}
+    specific = {&#34;lineNumbers&#34;, &#34;showGraphics&#34;}
 
     allowed = {}
     for (k, v) in interfaceDefaults.items():
@@ -2391,8 +2256,6 @@ def compileFormatCls(app, specs, givenStyles):
             (
                 k == &#34;lineNumbers&#34;
                 and specs[&#34;lineNumberFeature&#34;]
-                or k == &#34;showHidden&#34;
-                and specs[&#34;isHidden&#34;]
                 or k == &#34;showGraphics&#34;
                 and specs[&#34;hasGraphics&#34;]
             )
@@ -2415,11 +2278,11 @@ def compileFormatCls(app, specs, givenStyles):
     app.showContext = types.MethodType(showContext, app)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.showContext"><code class="name flex">
+<dt id="tf.advanced.settings.showContext"><code class="name flex">
 <span>def <span class="ident">showContext</span></span>(<span>app, *keys)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Shows the <em>context</em> of the app <code><a title="tf.applib.app.App.context" href="app.html#tf.applib.app.App.context">App.context</a></code> in a pretty way.</p>
+<div class="desc"><p>Shows the <em>context</em> of the app <code><a title="tf.advanced.app.App.context" href="app.html#tf.advanced.app.App.context">App.context</a></code> in a pretty way.</p>
 <p>The context is the result of computing sensible defaults for the corpus
 combined with configuration settings in the app's <code>config.yaml</code>.</p>
 <h2 id="parameters">Parameters</h2>
@@ -2434,15 +2297,15 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <dd>An expandable list of the key-value pair for the requested keys.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="tf.applib.app.App.reuse" href="app.html#tf.applib.app.App.reuse">App.reuse()</a></code>
-<code>tf.applib.settings: options allowed in</code>config.yaml``</p></div>
+<p><code><a title="tf.advanced.app.App.reuse" href="app.html#tf.advanced.app.App.reuse">App.reuse()</a></code>
+<code>tf.advanced.settings: options allowed in</code>config.yaml``</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L853-L940" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L851-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
-    &#34;&#34;&#34;Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
+    &#34;&#34;&#34;Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
 
     The context is the result of computing sensible defaults for the corpus
     combined with configuration settings in the app&#39;s `config.yaml`.
@@ -2460,75 +2323,11 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 
     See Also
     --------
-    tf.applib.app.App.reuse
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.app.App.reuse
+    tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
-    EM = &#34;*empty*&#34;
-    block = &#34;    &#34;
-    keys = set(keys)
-
-    def eScalar(x, level):
-        if type(x) is str and &#34;\n&#34; in x:
-            indent = block * level
-            return (
-                f&#34;\n{indent}```\n{indent}&#34;
-                + f&#34;\n{indent}&#34;.join(x.split(&#34;\n&#34;))
-                + f&#34;\n{indent}```\n&#34;
-            )
-        return f&#34;`{mdEsc(str(x))}`&#34; if x else EM
-
-    def eEmpty(x):
-        return EM if type(x) is str else str(x)
-
-    def eList(x, level):
-        tpv = type(x)
-        indent = block * level
-        md = &#34;\n&#34;
-        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
-            item = f&#34;{i + 1}.&#34; if level == 0 else &#34;*&#34;
-            md += f&#34;{indent}{item:&lt;4}{eData(v, level + 1)}&#34;
-        return md
-
-    def eDict(x, level):
-        indent = block * level
-        md = &#34;\n&#34;
-        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
-            item = &#34;*&#34;
-            md += f&#34;{indent}{item:&lt;4}**{eScalar(k, level)}**:&#34; f&#34; {eData(v, level + 1)}&#34;
-        return md
-
-    def eRest(x, level):
-        indent = block * level
-        return &#34;\n&#34; + indent + eScalar(x, level) + &#34;\n&#34;
-
-    def eData(x, level):
-        if not x:
-            return eEmpty(x) + &#34;\n&#34;
-        tpv = type(x)
-        if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x, level) + &#34;\n&#34;
-        if tpv is list or tpv is tuple or tpv is set:
-            return eList(x, level)
-        if tpv is dict:
-            return eDict(x, level)
-        return eRest(x, level)
-
-    openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
-    openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
-    md = [
-        f&#34;&lt;details {openRep1}&gt;&#34;
-        f&#34;&lt;summary&gt;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&lt;/summary&gt;\n\n&#34;
-    ]
-    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if len(keys) and k not in keys:
-            continue
-        md.append(
-            f&#34;&lt;details {openRep2}&gt;&#34;
-            f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
-        )
-    md.append(&#34;&lt;/details&gt;\n&#34;)
-    dm(&#34;&#34;.join(md))</code></pre>
+    showDict(f&#34;&lt;b&gt;{(app.appName)}&lt;/b&gt; &lt;i&gt;app context&lt;/i&gt;&#34;, app.specs, *keys)</code></pre>
 </details>
 </dd>
 </dl>
@@ -2536,7 +2335,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.applib.settings.AppCurrent"><code class="flex name class">
+<dt id="tf.advanced.settings.AppCurrent"><code class="flex name class">
 <span>class <span class="ident">AppCurrent</span></span>
 <span>(</span><span>specs)</span>
 </code></dt>
@@ -2545,7 +2344,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L156-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L155-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppCurrent:
     def __init__(self, specs):
@@ -2560,7 +2359,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.applib.settings.AppCurrent.get"><code class="name flex">
+<dt id="tf.advanced.settings.AppCurrent.get"><code class="name flex">
 <span>def <span class="ident">get</span></span>(<span>self, k, v)</span>
 </code></dt>
 <dd>
@@ -2568,13 +2367,13 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L164-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L163-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.AppCurrent.update"><code class="name flex">
+<dt id="tf.advanced.settings.AppCurrent.update"><code class="name flex">
 <span>def <span class="ident">update</span></span>(<span>self, specs)</span>
 </code></dt>
 <dd>
@@ -2582,7 +2381,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L160-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L159-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, specs):
     for (k, v) in specs.items():
@@ -2591,7 +2390,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 </dd>
 </dl>
 </dd>
-<dt id="tf.applib.settings.Check"><code class="flex name class">
+<dt id="tf.advanced.settings.Check"><code class="flex name class">
 <span>class <span class="ident">Check</span></span>
 <span>(</span><span>app, withApi)</span>
 </code></dt>
@@ -2600,7 +2399,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L168-L358" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L167-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Check:
     def __init__(self, app, withApi):
@@ -2614,6 +2413,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
         errors = self.errors
         dKey = self.dKey
         specs = app.specs
+        interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
 
         if withApi:
             api = app.api
@@ -2641,17 +2441,23 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
                 for tp in tps:
                     if tp not in nTypes:
                         errors.append(f&#34;{k}: node type {tp} not present&#34;)
+            elif k == &#34;exclude&#34;:
+                if type(v) is not dict():
+                    errors.append(f&#34;{k}: must be a dict of features and values&#34;)
+                    for feat in v:
+                        if feat not in allNodeFeatures:
+                            errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
             elif k == &#34;base&#34;:
                 pass
             elif k == &#34;lineNumber&#34;:
                 if v not in allNodeFeatures:
                     errors.append(f&#34;{k}: feature {v} not loaded&#34;)
             elif k == &#34;browseNavLevel&#34;:
-                allowedValues = set(range(len(sectionTypes)))
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                legalValues = set(range(len(sectionTypes)))
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(sorted(legalValues))
                     errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
-            elif k in {&#34;children&#34;, &#34;xChildren&#34;}:
+            elif k == &#34;children&#34;:
                 if type(v) is not str and type(v) is not list:
                     errors.append(f&#34;{k} must be a (list of) node types&#34;)
                 else:
@@ -2669,16 +2475,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
             elif k == &#34;style&#34;:
                 if type(v) is not str or v.lower() != v:
                     errors.append(f&#34;{k} must be an all lowercase string&#34;)
-            elif k in {
-                &#34;lineNumbers&#34;,
-                &#34;prettyTypes&#34;,
-                &#34;queryFeatures&#34;,
-                &#34;showHidden&#34;,
-                &#34;showGraphics&#34;,
-                &#34;standardFeatures&#34;,
-                &#34;withNodes&#34;,
-                &#34;withTypes&#34;,
-            }:
+            elif k in interfaceDefaults:
                 allowed = self.extra[k]
                 if not allowed and v is not None:
                     errors.append(
@@ -2721,40 +2518,40 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
                 if type(v) is not str:
                     errors.append(f&#34;{k} must be a string&#34;)
             elif k == &#34;writing&#34;:
-                allowedValues = set(WRITING_DEFAULTS)
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+                legalValues = set(WRITING_DEFAULTS)
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues - {&#34;&#34;})
                     errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
             elif k in {&#34;direction&#34;, &#34;language&#34;}:
-                allowedValues = {w[k] for w in WRITING_DEFAULTS}
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues)
+                legalValues = {w[k] for w in WRITING_DEFAULTS}
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues)
                     errors.append(f&#34;{k} must be one of {allowed}&#34;)
             elif k in {
                 &#34;browseContentPretty&#34;,
                 &#34;base&#34;,
-                &#34;childrenPlain&#34;,
                 &#34;condense&#34;,
                 &#34;graphics&#34;,
                 &#34;hidden&#34;,
+                &#34;isBig&#34;,
                 &#34;showVerseInTuple&#34;,
                 &#34;stretch&#34;,
                 &#34;verselike&#34;,
                 &#34;wrap&#34;,
             }:
-                allowedValues = {True, False}
-                if v not in allowedValues:
+                legalValues = {True, False}
+                if v not in legalValues:
                     allowed = &#34;true,false&#34;
                     errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
             elif k == &#34;flow&#34;:
-                allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(allowedValues)
+                legalValues = {&#34;hor&#34;, &#34;ver&#34;}
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(legalValues)
                     errors.append(f&#34;{k} must be a value in {allowed}&#34;)
             elif k == &#34;level&#34;:
-                allowedValues = set(range(len(4)))
-                if v not in allowedValues:
-                    allowed = &#34;,&#34;.join(sorted(allowedValues))
+                legalValues = set(range(len(4)))
+                if v not in legalValues:
+                    allowed = &#34;,&#34;.join(sorted(legalValues))
                     errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
 
     def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
@@ -2796,7 +2593,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.applib.settings.Check.checkGroup"><code class="name flex">
+<dt id="tf.advanced.settings.Check.checkGroup"><code class="name flex">
 <span>def <span class="ident">checkGroup</span></span>(<span>self, cfg, defaults, dKey, postpone=set(), extra=None)</span>
 </code></dt>
 <dd>
@@ -2804,7 +2601,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L323-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L320-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
     self.cfg = cfg
@@ -2824,7 +2621,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
             errors.append(f&#34;Illegal parameter `{k}` with value {v}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.Check.checkItem"><code class="name flex">
+<dt id="tf.advanced.settings.Check.checkItem"><code class="name flex">
 <span>def <span class="ident">checkItem</span></span>(<span>self, cfg, dKey)</span>
 </code></dt>
 <dd>
@@ -2832,7 +2629,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L340-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L337-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkItem(self, cfg, dKey):
     self.cfg = cfg
@@ -2844,7 +2641,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
         self.checkSetting(dKey, cfg[dKey])</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.Check.checkSetting"><code class="name flex">
+<dt id="tf.advanced.settings.Check.checkSetting"><code class="name flex">
 <span>def <span class="ident">checkSetting</span></span>(<span>self, k, v, extra=None)</span>
 </code></dt>
 <dd>
@@ -2852,7 +2649,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L174-L321" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L173-L318" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSetting(self, k, v, extra=None):
     app = self.app
@@ -2860,6 +2657,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
     errors = self.errors
     dKey = self.dKey
     specs = app.specs
+    interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
 
     if withApi:
         api = app.api
@@ -2887,17 +2685,23 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
             for tp in tps:
                 if tp not in nTypes:
                     errors.append(f&#34;{k}: node type {tp} not present&#34;)
+        elif k == &#34;exclude&#34;:
+            if type(v) is not dict():
+                errors.append(f&#34;{k}: must be a dict of features and values&#34;)
+                for feat in v:
+                    if feat not in allNodeFeatures:
+                        errors.append(f&#34;{k}: feature {feat} not loaded&#34;)
         elif k == &#34;base&#34;:
             pass
         elif k == &#34;lineNumber&#34;:
             if v not in allNodeFeatures:
                 errors.append(f&#34;{k}: feature {v} not loaded&#34;)
         elif k == &#34;browseNavLevel&#34;:
-            allowedValues = set(range(len(sectionTypes)))
-            if v not in allowedValues:
-                allowed = &#34;,&#34;.join(sorted(allowedValues))
+            legalValues = set(range(len(sectionTypes)))
+            if v not in legalValues:
+                allowed = &#34;,&#34;.join(sorted(legalValues))
                 errors.append(f&#34;{k} must be an integer in {allowed}&#34;)
-        elif k in {&#34;children&#34;, &#34;xChildren&#34;}:
+        elif k == &#34;children&#34;:
             if type(v) is not str and type(v) is not list:
                 errors.append(f&#34;{k} must be a (list of) node types&#34;)
             else:
@@ -2915,16 +2719,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
         elif k == &#34;style&#34;:
             if type(v) is not str or v.lower() != v:
                 errors.append(f&#34;{k} must be an all lowercase string&#34;)
-        elif k in {
-            &#34;lineNumbers&#34;,
-            &#34;prettyTypes&#34;,
-            &#34;queryFeatures&#34;,
-            &#34;showHidden&#34;,
-            &#34;showGraphics&#34;,
-            &#34;standardFeatures&#34;,
-            &#34;withNodes&#34;,
-            &#34;withTypes&#34;,
-        }:
+        elif k in interfaceDefaults:
             allowed = self.extra[k]
             if not allowed and v is not None:
                 errors.append(
@@ -2967,44 +2762,44 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
             if type(v) is not str:
                 errors.append(f&#34;{k} must be a string&#34;)
         elif k == &#34;writing&#34;:
-            allowedValues = set(WRITING_DEFAULTS)
-            if v not in allowedValues:
-                allowed = &#34;,&#34;.join(allowedValues - {&#34;&#34;})
+            legalValues = set(WRITING_DEFAULTS)
+            if v not in legalValues:
+                allowed = &#34;,&#34;.join(legalValues - {&#34;&#34;})
                 errors.append(f&#34;{k} must be the empty string or one of {allowed}&#34;)
         elif k in {&#34;direction&#34;, &#34;language&#34;}:
-            allowedValues = {w[k] for w in WRITING_DEFAULTS}
-            if v not in allowedValues:
-                allowed = &#34;,&#34;.join(allowedValues)
+            legalValues = {w[k] for w in WRITING_DEFAULTS}
+            if v not in legalValues:
+                allowed = &#34;,&#34;.join(legalValues)
                 errors.append(f&#34;{k} must be one of {allowed}&#34;)
         elif k in {
             &#34;browseContentPretty&#34;,
             &#34;base&#34;,
-            &#34;childrenPlain&#34;,
             &#34;condense&#34;,
             &#34;graphics&#34;,
             &#34;hidden&#34;,
+            &#34;isBig&#34;,
             &#34;showVerseInTuple&#34;,
             &#34;stretch&#34;,
             &#34;verselike&#34;,
             &#34;wrap&#34;,
         }:
-            allowedValues = {True, False}
-            if v not in allowedValues:
+            legalValues = {True, False}
+            if v not in legalValues:
                 allowed = &#34;true,false&#34;
                 errors.append(f&#34;{k} must be a boolean in {allowed}&#34;)
         elif k == &#34;flow&#34;:
-            allowedValues = {&#34;hor&#34;, &#34;ver&#34;}
-            if v not in allowedValues:
-                allowed = &#34;,&#34;.join(allowedValues)
+            legalValues = {&#34;hor&#34;, &#34;ver&#34;}
+            if v not in legalValues:
+                allowed = &#34;,&#34;.join(legalValues)
                 errors.append(f&#34;{k} must be a value in {allowed}&#34;)
         elif k == &#34;level&#34;:
-            allowedValues = set(range(len(4)))
-            if v not in allowedValues:
-                allowed = &#34;,&#34;.join(sorted(allowedValues))
+            legalValues = set(range(len(4)))
+            if v not in legalValues:
+                allowed = &#34;,&#34;.join(sorted(legalValues))
                 errors.append(f&#34;{k} must be an integer in {allowed}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.settings.Check.report"><code class="name flex">
+<dt id="tf.advanced.settings.Check.report"><code class="name flex">
 <span>def <span class="ident">report</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -3012,7 +2807,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/settings.py#L349-L358" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/settings.py#L346-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def report(self):
     errors = self.errors
@@ -3036,7 +2831,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.settings">
+data-gaCategoryParameter="tf.advanced.settings">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -3068,17 +2863,7 @@ data-gaCategoryParameter="tf.applib.settings">
 <li><a href="#featurepage">featurePage</a></li>
 </ul>
 </li>
-<li><a href="#interfacedefaults">interfaceDefaults</a><ul>
-<li><a href="#linenumbers">lineNumbers</a></li>
-<li><a href="#prettytypes">prettyTypes</a></li>
-<li><a href="#queryfeatures">queryFeatures</a></li>
-<li><a href="#showhidden">showHidden</a></li>
-<li><a href="#standardfeatures">standardFeatures</a></li>
-<li><a href="#showgraphics">showGraphics</a></li>
-<li><a href="#withnodes">withNodes</a></li>
-<li><a href="#withtypes-false">withTypes: false</a></li>
-</ul>
-</li>
+<li><a href="#interfacedefaults">interfaceDefaults</a></li>
 <li><a href="#provenancespec">provenanceSpec</a><ul>
 <li><a href="#corpus">corpus</a></li>
 <li><a href="#doi">doi</a></li>
@@ -3101,19 +2886,19 @@ data-gaCategoryParameter="tf.applib.settings">
 <li><a href="#base">base</a></li>
 <li><a href="#boundary">boundary</a></li>
 <li><a href="#children">children</a></li>
-<li><a href="#xchildren">xChildren</a></li>
-<li><a href="#childrenplain">childrenPlain</a></li>
 <li><a href="#condense">condense</a></li>
+<li><a href="#exclude">exclude</a></li>
 <li><a href="#features">features</a></li>
 <li><a href="#featuresbare-feat1-feat2">featuresBare: feat1 feat2</a></li>
 <li><a href="#flow">flow:</a></li>
 <li><a href="#graphics">graphics</a></li>
+<li><a href="#hidden">hidden</a></li>
+<li><a href="#isbig">isBig</a></li>
+<li><a href="#label-template">label, template</a></li>
 <li><a href="#level">level</a></li>
 <li><a href="#lexocc">lexOcc</a></li>
 <li><a href="#linenumber">lineNumber</a></li>
 <li><a href="#stretch">stretch</a></li>
-<li><a href="#hidden">hidden</a></li>
-<li><a href="#label-template">label, template</a></li>
 <li><a href="#style">style</a></li>
 <li><a href="#transform">transform</a></li>
 <li><a href="#verselike">verselike</a></li>
@@ -3128,36 +2913,36 @@ data-gaCategoryParameter="tf.applib.settings">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="tf.applib.settings.compileFormatCls" href="#tf.applib.settings.compileFormatCls">compileFormatCls</a></code></li>
-<li><code><a title="tf.applib.settings.getDataDefaults" href="#tf.applib.settings.getDataDefaults">getDataDefaults</a></code></li>
-<li><code><a title="tf.applib.settings.getLevel" href="#tf.applib.settings.getLevel">getLevel</a></code></li>
-<li><code><a title="tf.applib.settings.getTypeDefaults" href="#tf.applib.settings.getTypeDefaults">getTypeDefaults</a></code></li>
-<li><code><a title="tf.applib.settings.setAppSpecs" href="#tf.applib.settings.setAppSpecs">setAppSpecs</a></code></li>
-<li><code><a title="tf.applib.settings.setAppSpecsApi" href="#tf.applib.settings.setAppSpecsApi">setAppSpecsApi</a></code></li>
-<li><code><a title="tf.applib.settings.showContext" href="#tf.applib.settings.showContext">showContext</a></code></li>
+<li><code><a title="tf.advanced.settings.compileFormatCls" href="#tf.advanced.settings.compileFormatCls">compileFormatCls</a></code></li>
+<li><code><a title="tf.advanced.settings.getDataDefaults" href="#tf.advanced.settings.getDataDefaults">getDataDefaults</a></code></li>
+<li><code><a title="tf.advanced.settings.getLevel" href="#tf.advanced.settings.getLevel">getLevel</a></code></li>
+<li><code><a title="tf.advanced.settings.getTypeDefaults" href="#tf.advanced.settings.getTypeDefaults">getTypeDefaults</a></code></li>
+<li><code><a title="tf.advanced.settings.setAppSpecs" href="#tf.advanced.settings.setAppSpecs">setAppSpecs</a></code></li>
+<li><code><a title="tf.advanced.settings.setAppSpecsApi" href="#tf.advanced.settings.setAppSpecsApi">setAppSpecsApi</a></code></li>
+<li><code><a title="tf.advanced.settings.showContext" href="#tf.advanced.settings.showContext">showContext</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.applib.settings.AppCurrent" href="#tf.applib.settings.AppCurrent">AppCurrent</a></code></h4>
+<h4><code><a title="tf.advanced.settings.AppCurrent" href="#tf.advanced.settings.AppCurrent">AppCurrent</a></code></h4>
 <ul class="">
-<li><code><a title="tf.applib.settings.AppCurrent.get" href="#tf.applib.settings.AppCurrent.get">get</a></code></li>
-<li><code><a title="tf.applib.settings.AppCurrent.update" href="#tf.applib.settings.AppCurrent.update">update</a></code></li>
+<li><code><a title="tf.advanced.settings.AppCurrent.get" href="#tf.advanced.settings.AppCurrent.get">get</a></code></li>
+<li><code><a title="tf.advanced.settings.AppCurrent.update" href="#tf.advanced.settings.AppCurrent.update">update</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="tf.applib.settings.Check" href="#tf.applib.settings.Check">Check</a></code></h4>
+<h4><code><a title="tf.advanced.settings.Check" href="#tf.advanced.settings.Check">Check</a></code></h4>
 <ul class="">
-<li><code><a title="tf.applib.settings.Check.checkGroup" href="#tf.applib.settings.Check.checkGroup">checkGroup</a></code></li>
-<li><code><a title="tf.applib.settings.Check.checkItem" href="#tf.applib.settings.Check.checkItem">checkItem</a></code></li>
-<li><code><a title="tf.applib.settings.Check.checkSetting" href="#tf.applib.settings.Check.checkSetting">checkSetting</a></code></li>
-<li><code><a title="tf.applib.settings.Check.report" href="#tf.applib.settings.Check.report">report</a></code></li>
+<li><code><a title="tf.advanced.settings.Check.checkGroup" href="#tf.advanced.settings.Check.checkGroup">checkGroup</a></code></li>
+<li><code><a title="tf.advanced.settings.Check.checkItem" href="#tf.advanced.settings.Check.checkItem">checkItem</a></code></li>
+<li><code><a title="tf.advanced.settings.Check.checkSetting" href="#tf.advanced.settings.Check.checkSetting">checkSetting</a></code></li>
+<li><code><a title="tf.advanced.settings.Check.report" href="#tf.advanced.settings.Check.report">report</a></code></li>
 </ul>
 </li>
 </ul>

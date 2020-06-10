@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>tf.applib.highlight API documentation</title>
+<title>tf.advanced.highlight API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -19,21 +19,21 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.applib.highlight</code></h1>
+<h1 class="title">Module <code>tf.advanced.highlight</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/highlight.py#L0-L142" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/highlight.py#L0-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from itertools import chain
 
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights, baseTypes, isPlain):
-    &#34;&#34;&#34;Get the highlight attribute for a node.
+def getHlAtt(app, n, highlights, isSlot):
+    &#34;&#34;&#34;Get the highlight attribute and style for a node for both pretty and plain modes.
 
     Parameters
     ----------
@@ -48,14 +48,21 @@ def getHlAtt(app, n, highlights, baseTypes, isPlain):
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
-    baseTypes: set
-        Which node types acts as a base type.
-    isPlain:
-        Whether we are highlighting for plain() or for pretty().
+    isSlot: boolean
+        Whether the node has the slotType
+
+    Returns
+    -------
+    hlCls: dict
+        Highlight attribute, keyed by boolean &#39;is pretty&#39;
+    hlStyle: dict
+        Highlight color as css style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
+    noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
+
     if highlights is None:
-        return (&#34;&#34;, &#34;&#34;)
+        return noResult
 
     color = (
         highlights.get(n, None)
@@ -66,16 +73,15 @@ def getHlAtt(app, n, highlights, baseTypes, isPlain):
     )
 
     if color is None:
-        return (&#34;&#34;, &#34;&#34;)
+        return noResult
 
-    api = app.api
-    F = api.F
-
-    isBaseType = F.otype.v(n) in baseTypes
-
-    hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
-    hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
-    hlStyle = f&#39; style=&#34;{hlObject}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
+    hlCls = {True: &#34;hl&#34;, False: &#34;hl&#34; if isSlot else &#34;hlbx&#34;}
+    hlObject = {True: &#34;background&#34;, False: &#34;background&#34; if isSlot else &#34;border&#34;}
+    hlCls = {b: hlCls[b] for b in (True, False)}
+    hlStyle = {
+        b: f&#39; style=&#34;{hlObject[b]}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
+        for b in (True, False)
+    }
 
     return (hlCls, hlStyle)
 
@@ -179,11 +185,11 @@ def getPassageHighlights(app, node, query, cache):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.applib.highlight.getHlAtt"><code class="name flex">
-<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights, baseTypes, isPlain)</span>
+<dt id="tf.advanced.highlight.getHlAtt"><code class="name flex">
+<span>def <span class="ident">getHlAtt</span></span>(<span>app, n, highlights, isSlot)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the highlight attribute for a node.</p>
+<div class="desc"><p>Get the highlight attribute and style for a node for both pretty and plain modes.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
@@ -197,18 +203,23 @@ This function is only interested in whether <code>n</code> is in it,
 and if so, what the value is (in case of a dict).
 If given as set: use the default highlight color.
 If given as dict: use the value as color.</dd>
-<dt><strong><code>baseTypes</code></strong> :&ensp;<code>set</code></dt>
-<dd>Which node types acts as a base type.</dd>
+<dt><strong><code>isSlot</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether the node has the slotType</dd>
 </dl>
-<p>isPlain:
-Whether we are highlighting for plain() or for pretty().</p></div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>hlCls</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Highlight attribute, keyed by boolean 'is pretty'</dd>
+<dt><strong><code>hlStyle</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Highlight color as css style, keyed by boolean 'is pretty'</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/highlight.py#L6-L51" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/highlight.py#L6-L57" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getHlAtt(app, n, highlights, baseTypes, isPlain):
-    &#34;&#34;&#34;Get the highlight attribute for a node.
+<pre><code class="python">def getHlAtt(app, n, highlights, isSlot):
+    &#34;&#34;&#34;Get the highlight attribute and style for a node for both pretty and plain modes.
 
     Parameters
     ----------
@@ -223,14 +234,21 @@ Whether we are highlighting for plain() or for pretty().</p></div>
         and if so, what the value is (in case of a dict).
         If given as set: use the default highlight color.
         If given as dict: use the value as color.
-    baseTypes: set
-        Which node types acts as a base type.
-    isPlain:
-        Whether we are highlighting for plain() or for pretty().
+    isSlot: boolean
+        Whether the node has the slotType
+
+    Returns
+    -------
+    hlCls: dict
+        Highlight attribute, keyed by boolean &#39;is pretty&#39;
+    hlStyle: dict
+        Highlight color as css style, keyed by boolean &#39;is pretty&#39;
     &#34;&#34;&#34;
 
+    noResult = ({True: &#34;&#34;, False: &#34;&#34;}, {True: &#34;&#34;, False: &#34;&#34;})
+
     if highlights is None:
-        return (&#34;&#34;, &#34;&#34;)
+        return noResult
 
     color = (
         highlights.get(n, None)
@@ -241,21 +259,20 @@ Whether we are highlighting for plain() or for pretty().</p></div>
     )
 
     if color is None:
-        return (&#34;&#34;, &#34;&#34;)
+        return noResult
 
-    api = app.api
-    F = api.F
-
-    isBaseType = F.otype.v(n) in baseTypes
-
-    hlCls = (&#34;hl&#34; if isBaseType else &#34;hlbx&#34;) if isPlain else &#34;hl&#34;
-    hlObject = (&#34;background&#34; if isBaseType else &#34;border&#34;) if isPlain else &#34;background&#34;
-    hlStyle = f&#39; style=&#34;{hlObject}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
+    hlCls = {True: &#34;hl&#34;, False: &#34;hl&#34; if isSlot else &#34;hlbx&#34;}
+    hlObject = {True: &#34;background&#34;, False: &#34;background&#34; if isSlot else &#34;border&#34;}
+    hlCls = {b: hlCls[b] for b in (True, False)}
+    hlStyle = {
+        b: f&#39; style=&#34;{hlObject[b]}-color: {color};&#34; &#39; if color != &#34;&#34; else &#34;&#34;
+        for b in (True, False)
+    }
 
     return (hlCls, hlStyle)</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.highlight.getPassageHighlights"><code class="name flex">
+<dt id="tf.advanced.highlight.getPassageHighlights"><code class="name flex">
 <span>def <span class="ident">getPassageHighlights</span></span>(<span>app, node, query, cache)</span>
 </code></dt>
 <dd>
@@ -278,7 +295,7 @@ the same query.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/highlight.py#L111-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/highlight.py#L117-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPassageHighlights(app, node, query, cache):
     &#34;&#34;&#34;Get the highlights for a whole passage.
@@ -315,7 +332,7 @@ the same query.</dd>
     return resultSet &amp; passageSet</code></pre>
 </details>
 </dd>
-<dt id="tf.applib.highlight.getTupleHighlights"><code class="name flex">
+<dt id="tf.advanced.highlight.getTupleHighlights"><code class="name flex">
 <span>def <span class="ident">getTupleHighlights</span></span>(<span>api, tup, highlights, colorMap, condenseType)</span>
 </code></dt>
 <dd>
@@ -349,7 +366,7 @@ If given as dict: use the value as color.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/applib/highlight.py#L54-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/highlight.py#L60-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     &#34;&#34;&#34;Get the highlights for a tuple of nodes.
@@ -418,7 +435,7 @@ If given as dict: use the value as color.</dd>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
-data-gaCategoryParameter="tf.applib.highlight">
+data-gaCategoryParameter="tf.advanced.highlight">
 </div>
 <h1>Index</h1>
 <div class="toc">
@@ -427,14 +444,14 @@ data-gaCategoryParameter="tf.applib.highlight">
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.applib" href="index.html">tf.applib</a></code></li>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.applib.highlight.getHlAtt" href="#tf.applib.highlight.getHlAtt">getHlAtt</a></code></li>
-<li><code><a title="tf.applib.highlight.getPassageHighlights" href="#tf.applib.highlight.getPassageHighlights">getPassageHighlights</a></code></li>
-<li><code><a title="tf.applib.highlight.getTupleHighlights" href="#tf.applib.highlight.getTupleHighlights">getTupleHighlights</a></code></li>
+<li><code><a title="tf.advanced.highlight.getHlAtt" href="#tf.advanced.highlight.getHlAtt">getHlAtt</a></code></li>
+<li><code><a title="tf.advanced.highlight.getPassageHighlights" href="#tf.advanced.highlight.getPassageHighlights">getPassageHighlights</a></code></li>
+<li><code><a title="tf.advanced.highlight.getTupleHighlights" href="#tf.advanced.highlight.getTupleHighlights">getTupleHighlights</a></code></li>
 </ul>
 </li>
 </ul>

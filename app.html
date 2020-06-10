@@ -33,7 +33,7 @@ and can be invoked by a simple incantation: <code><a title="tf.app.use" href="#t
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/app.py#L0-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/app.py#L0-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Start the advanced API of TF.
@@ -49,7 +49,7 @@ Depending on the settings, the advanced-API knows how to download the data,
 and can be invoked by a simple incantation: `use`.
 &#34;&#34;&#34;
 
-from .applib.app import findApp
+from .advanced.app import findApp
 
 # START AN APP
 
@@ -83,9 +83,10 @@ def use(appName, *args, **kwargs):
         Do not pass any other positional argument!
 
     **kwargs:
-        See `tf.applib.app.App`.
-        In any case, either an object of class `tf.applib.app.App` or a corpus-specific
-        derived class `TfAPP` of it is initialized with the remaining parameters.
+        See `tf.advanced.app.App`.
+        In any case, either an object of class `tf.advanced.app.App`
+        or a corpus-specific derived class `TfAPP` of it is initialized
+        with the remaining parameters.
         Head over to there for a discription of those parameters, including more
         about *appName*.
 
@@ -96,7 +97,7 @@ def use(appName, *args, **kwargs):
 
     See Also
     --------
-    tf.applib.app.App.reuse
+    tf.advanced.app.App.reuse
     &#34;&#34;&#34;
 
     parts = appName.split(&#34;:&#34;, maxsplit=1)
@@ -104,7 +105,7 @@ def use(appName, *args, **kwargs):
         parts.append(&#34;&#34;)
     (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, *args, **kwargs)</code></pre>
+    return findApp(appName, checkoutApp, False, *args, **kwargs)</code></pre>
 </details>
 </section>
 <section>
@@ -144,9 +145,10 @@ Used to find the appropriate TF app, if there is one.</dd>
 <p>*args:
 Do not pass any other positional argument!</p>
 <p><em><em>kwargs:
-See <code><a title="tf.applib.app.App" href="applib/app.html#tf.applib.app.App">App</a></code>.
-In any case, either an object of class <code><a title="tf.applib.app.App" href="applib/app.html#tf.applib.app.App">App</a></code> or a corpus-specific
-derived class <code>TfAPP</code> of it is initialized with the remaining parameters.
+See <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>.
+In any case, either an object of class <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>
+or a corpus-specific derived class <code>TfAPP</code> of it is initialized
+with the remaining parameters.
 Head over to there for a discription of those parameters, including more
 about </em>appName</em>.</p>
 <h2 id="returns">Returns</h2>
@@ -155,11 +157,11 @@ about </em>appName</em>.</p>
 <dd>The object whose attributes and methods constitute the advanced API.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="tf.applib.app.App.reuse" href="applib/app.html#tf.applib.app.App.reuse">App.reuse()</a></code></p></div>
+<p><code><a title="tf.advanced.app.App.reuse" href="advanced/app.html#tf.advanced.app.App.reuse">App.reuse()</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/app.py#L20-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/app.py#L20-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, **kwargs):
     &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
@@ -190,9 +192,10 @@ about </em>appName</em>.</p>
         Do not pass any other positional argument!
 
     **kwargs:
-        See `tf.applib.app.App`.
-        In any case, either an object of class `tf.applib.app.App` or a corpus-specific
-        derived class `TfAPP` of it is initialized with the remaining parameters.
+        See `tf.advanced.app.App`.
+        In any case, either an object of class `tf.advanced.app.App`
+        or a corpus-specific derived class `TfAPP` of it is initialized
+        with the remaining parameters.
         Head over to there for a discription of those parameters, including more
         about *appName*.
 
@@ -203,7 +206,7 @@ about </em>appName</em>.</p>
 
     See Also
     --------
-    tf.applib.app.App.reuse
+    tf.advanced.app.App.reuse
     &#34;&#34;&#34;
 
     parts = appName.split(&#34;:&#34;, maxsplit=1)
@@ -211,7 +214,7 @@ about </em>appName</em>.</p>
         parts.append(&#34;&#34;)
     (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, *args, **kwargs)</code></pre>
+    return findApp(appName, checkoutApp, False, *args, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>

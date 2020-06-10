@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>tf.advanced.unravel API documentation</title>
+<meta name="description" content="Unravel …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cse.google.com/cse.js?cx=017837193012385208679:pey8ky8gdqw"></script>
+<style>.gsc-control-cse {padding:0 !important;margin-top:1em}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.unravel</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="unravel">Unravel</h1>
+<p>Whatever we want to display, we have to display in HTML, which is basically a
+hierarchically organized set of presentation elements.</p>
+<p>But a node and its constellation of all relevant nodes that share slots with it,
+does not have a hiererchical structure.</p>
+<p>The unravel algorithm solves the problem of turning a node and its associated piece
+of the textual graph into a tree of node fragments in such a way that the order
+of the slots is preserved.</p>
+<p>When nodes violate the hierarchy, they are <em>chunked</em> and <em>fragmentized</em> until the
+resulting fragments can be <em>stacked</em> into a tree.</p>
+<p>This tree of fragments can then be transformed in various kinds of HTML with rather
+straightforward code, see <code><a title="tf.advanced.render.render" href="render.html#tf.advanced.render.render">render()</a></code>.</p>
+<h3 id="intersecting-nodes">Intersecting nodes</h3>
+<p>Nodes or chunks whose slot sets intersect, are intersecting nodes, except the node itself.</p>
+<h3 id="descendant-types">Descendant types</h3>
+<p>Node types are ranked: node types whose nodes occupy more slots on average have a higher rank
+than types whose nodes occupy less slots on average.
+You can inspect the ranking of the types in your dataset by <code><a title="tf.core.nodes.Nodes.otypeRank" href="../core/nodes.html#tf.core.nodes.Nodes.otypeRank">Nodes.otypeRank</a></code>.</p>
+<p>For each node type, we collect the set of descendant types: the types with lower or equal rank.
+So each type is its own descendant. But we prevent the slot type from being its own
+descendant.</p>
+<h3 id="chunkify">Chunkify</h3>
+<p>Every node is linked to a set of slots. These slots may or may not form a contiguous chunk.
+For the purposes of displaying nodes, we divide each node into maximal contiguous chunks.
+Such a chunk is specified by a tuple <code>(n, slots)</code>, where <code>n</code> is the node (an integer),
+and <code>slots</code> is a frozen set of slots (also integers).</p>
+<h3 id="fragmentize">Fragmentize</h3>
+<p>Node chunks can be grouped by node types. The chunk boundaries of nodes of higher ranked
+types are used to break up the chunks of nodes of lower ranked types.</p>
+<p>We end up with a rather fine partition of all nodes in fragments, in such a way
+that no fragment crosses the boundaries of enclosing fragments.</p>
+<h3 id="canonical-order">Canonical order</h3>
+<p>Before we feed fragments to the display, we sort them in <em>canonical order</em>, based on their
+slots and node type. The following criteria will be checked <em>in that order</em>:</p>
+<ul>
+<li>Chunks have different begin slots: those with earlier first slots have precedence;</li>
+<li>Chunks with nodes with higher ranked types have precedence;</li>
+<li>Look at the slots the chunks do <em>not</em> have in common.
+The chunk with the earlier such slot has precedence.</li>
+<li>Chunks with nodes that are smaller as integer have precedence.</li>
+</ul>
+<p>See <code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>.</p>
+<h3 id="stacking">Stacking</h3>
+<p>When we have a list of canonically ordered fragments, we can stack them into a tree.
+Each new fragment is tried against the right-most branch of the tree under construction,
+from bottom to top.
+If there is no place on that branch, a new right-most branch is started.</p>
+<h3 id="output">Output</h3>
+<p>When we render a tree of fragments, we produce output for the fragments, one by one.
+For each fragment, the output consists of a contribution by the node of the fragment.</p>
+<h3 id="notes">Notes</h3>
+<p>When nodes represent textual objects that intersect with each other, it is possible that
+slots are contained in several of such objects.
+The algorithm takes care that they will not be output multiple times.</p>
+<p>When textual objects have gaps, it is wrong to process each object completely before
+going to the next one. Because then the slots will be displayed in the wrong order.</p>
+<p>By chunkifying, fragmentizing and sorting the chunks in canonical order, this is prevented.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L0-L656" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/advanced/unravel.md
+&#34;&#34;&#34;
+
+from collections import namedtuple
+from itertools import chain
+from ..core.helpers import rangesFromList, console
+from ..core.text import DEFAULT_FORMAT
+from .settings import ORIG
+from .highlight import getHlAtt
+
+
+QUAD = &#34;  &#34;
+
+__pdoc__ = {}
+
+
+class OuterSettings:
+    &#34;&#34;&#34;Common properties during plain() and pretty().
+    &#34;&#34;&#34;
+
+    pass
+
+
+OuterSettings = namedtuple(  # noqa: F811
+    &#34;OuterSettings&#34;,
+    &#34;&#34;&#34;
+    slotType
+    ltr
+    fmt
+    textClsDefault
+    textMethod
+    getText
+    upMethod
+    slotsMethod
+    lookupMethod
+    browsing
+    webLink
+    getGraphics
+&#34;&#34;&#34;.strip().split(),
+)
+__pdoc__[&#34;OuterSettings.slotType&#34;] = &#34;The slot type of the dataset.&#34;
+__pdoc__[&#34;OuterSettings.ltr&#34;] = &#34;writing direction.&#34;
+__pdoc__[&#34;OuterSettings.fmt&#34;] = &#34;the currently selected text format.&#34;
+__pdoc__[&#34;OuterSettings.textClsDefault&#34;] = &#34;Default css class for full text.&#34;
+__pdoc__[&#34;OuterSettings.textMethod&#34;] = (
+    &#34;Method to print text of a node according to a text format: &#34;
+    &#34;`tf.core.text.Text.text`&#34;
+)
+__pdoc__[&#34;OuterSettings.getText&#34;] = (
+    &#34;Method to get the text for a node according to a template: &#34;
+    &#34;`tf.advanced.helpers.getText`&#34;
+)
+__pdoc__[
+    &#34;OuterSettings.upMethod&#34;
+] = &#34;Method to move from a node to its first embedder: `tf.core.locality.Locality.u`&#34;
+__pdoc__[
+    &#34;OuterSettings.slotsMethod&#34;
+] = &#34;Method to get the slots of a node: `tf.core.oslotsfeature.OslotsFeature.s`&#34;
+__pdoc__[
+    &#34;OuterSettings.lookupMethod&#34;
+] = &#34;Method to get the value of a node feature: `tf.core.api.Api.Fs`&#34;
+__pdoc__[
+    &#34;OuterSettings.browsing&#34;
+] = &#34;whether we work for the Text-Fabric browser or for a Jupyter notebook&#34;
+__pdoc__[
+    &#34;OuterSettings.webLink&#34;
+] = &#34;Method to produce a web link to a node: `tf.advanced.links.webLink`&#34;
+__pdoc__[&#34;OuterSettings.getGraphics&#34;] = (
+    &#34;Method to fetch graphics for a node. App-dependent.&#34;
+    &#34;See `tf.advanced.settings` under **graphics**.&#34;
+)
+
+
+class NodeProps:
+    &#34;&#34;&#34;Node properties during plain() or pretty().
+    &#34;&#34;&#34;
+
+    pass
+
+
+NodeProps = namedtuple(  # noqa: F811
+    &#34;NodeProps&#34;,
+    &#34;&#34;&#34;
+    nType
+    isSlot
+    isSlotOrDescend
+    descend
+    isBaseNonSlot
+    isLexType
+    lexType
+    lineNumberFeature
+    featuresBare
+    features
+    textCls
+    hlCls
+    hlStyle
+    cls
+    hasGraphics
+    after
+    plainCustom
+&#34;&#34;&#34;.strip().split(),
+)
+__pdoc__[&#34;NodeProps.nType&#34;] = &#34;The node type of the current node.&#34;
+__pdoc__[&#34;NodeProps.isSlot&#34;] = &#34;Whether the current node is a slot node.&#34;
+__pdoc__[&#34;NodeProps.isSlotOrDescend&#34;] = (
+    &#34;Whether the current node is a slot node or&#34;
+    &#34; has a type to which the current text format should descend.&#34;
+    &#34; This type is determined by the current text format.&#34;
+)
+__pdoc__[&#34;NodeProps.descend&#34;] = (
+    &#34;When calling T.text(n, descend=??) for this node, what should we&#34;
+    &#34; substitute for the ?? ?&#34;
+)
+__pdoc__[&#34;NodeProps.isBaseNonSlot&#34;] = (
+    &#34;Whether the current node has a type that is currently a baseType,&#34;
+    &#34; i.e. a type where a pretty display should stop unfolding.&#34;
+)
+__pdoc__[&#34;NodeProps.isLexType&#34;] = &#34;Whether nodes of type are lexemes.&#34;
+__pdoc__[
+    &#34;NodeProps.lexType&#34;
+] = &#34;If nodes of this type have lexemes in another type, this is that type.&#34;
+__pdoc__[
+    &#34;NodeProps.lineNumberFeature&#34;
+] = &#34;Feature with source line numbers of nodes of this type.&#34;
+__pdoc__[
+    &#34;NodeProps.featuresBare&#34;
+] = &#34;Features to display in the labels of pretty displays without their names&#34;
+__pdoc__[
+    &#34;NodeProps.features&#34;
+] = &#34;Features to display in the labels of pretty displays with their names&#34;
+__pdoc__[&#34;NodeProps.textCls&#34;] = &#34;The text Css class of the current node.&#34;
+__pdoc__[&#34;NodeProps.hlCls&#34;] = (
+    &#34;The highlight Css class of the current node, &#34;
+    &#34;both for pretty and plain modes, keyed by boolean &#39;is pretty&#39;&#34;
+)
+__pdoc__[&#34;NodeProps.hlStyle&#34;] = (
+    &#34;The highlight Css color style of the current node, &#34;
+    &#34;both for pretty and plain modes, keyed by boolean &#39;is pretty&#39;&#34;
+)
+__pdoc__[&#34;NodeProps.cls&#34;] = (
+    &#34;A dict of several classes for the display of the node:&#34;
+    &#34; for the container, the label, and the children of the node;&#34;
+    &#34; might be set by prettyCustom&#34;
+)
+__pdoc__[&#34;NodeProps.hasGraphics&#34;] = &#34;Whether this node type has graphics.&#34;
+__pdoc__[&#34;NodeProps.after&#34;] = (
+    &#34;Whether the app defines a custom method to generate material after a child.&#34;
+    &#34;It is a dict keyed by node type whose values are the custom methods.&#34;
+)
+__pdoc__[
+    &#34;NodeProps.plainCustom&#34;
+] = &#34;Whether the app defines a custom method to plain displays for this node type.&#34;
+
+
+class TreeInfo:
+    &#34;&#34;&#34;Tree properties during plain() or pretty().
+
+    Collects `NodeProps`, `OuterSettings`, and `tf.advanced.options`.
+    &#34;&#34;&#34;
+
+    def __init__(self, **specs):
+        self.update(**specs)
+
+    def update(self, **specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)
+
+
+def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
+    &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
+
+    Parameters
+    ----------
+    n: integer
+        The node to unravel.
+    isPlain: boolean, optional `True`
+        Whether to unravel for plain display. Otherwise it is for pretty display.
+        The tree structure is the same for both, but the tree is also dressed up
+        with formatting information, which may differ for both modes.
+    explain: boolean or `&#39;details&#39;`:
+        Whether to pretty-print the tree.
+        If the value `details` is passed, most of the dressing information of the tree
+        is also shown.
+    **options:
+        Any amount of legal display options.
+        These will influence the dressing information.
+
+    Returns
+    -------
+    chunk: tuple
+        `(node, (begin slot, end slot))`
+        The top of the tree has `None`
+    info: TreeInfo
+        dressing information in the form of key value pairs, among which:
+        `options` (the display options that are in force), `settings` (properties
+        of node independent properties), `props` (properties
+        of the node of the chunk), `boundaryCls` (css info for the boundaries of
+        the chunk). The top of the tree has only has options and settings.
+    children: list
+        subtrees where each subtree is again a tuple of chunk, info and children.
+    &#34;&#34;&#34;
+
+    display = app.display
+    dContext = display.distill(options)
+    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)
+
+
+def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
+    &#34;&#34;&#34;Unravels a node in a tree of fragments dressed up with formatting properties.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+    webLink = app.webLink
+    getText = app.getText
+    getGraphics = getattr(app, &#34;getGraphics&#34;, None)
+
+    api = app.api
+    N = api.N
+    E = api.E
+    F = api.F
+    Fs = api.Fs
+    L = api.L
+    T = api.T
+
+    eOslots = E.oslots.s
+    fOtype = F.otype
+    fOtypeV = fOtype.v
+    fOtypeAll = fOtype.all
+    slotType = fOtype.slotType
+    nType = fOtypeV(n)
+
+    aContext = app.context
+    lexTypes = aContext.lexTypes
+    lexMap = aContext.lexMap
+    lineNumberFeature = aContext.lineNumberFeature
+    featuresBare = aContext.featuresBare
+    features = aContext.features
+    descendantType = aContext.descendantType
+    levelCls = aContext.levelCls
+    styles = aContext.styles
+    formatHtml = aContext.formatHtml
+    hasGraphics = aContext.hasGraphics
+    afterChild = aContext.afterChild
+    plainCustom = aContext.plainCustom
+    prettyCustom = aContext.prettyCustom
+
+    baseTypes = options.baseTypes
+    highlights = options.highlights
+    fmt = options.fmt
+    options.set(&#34;isHtml&#34;, fmt in formatHtml)
+    ltr = _getLtr(app, options)
+    textClsDefault = _getTextCls(app, fmt)
+    descendType = T.formats.get(fmt, slotType)
+    textMethod = T.text
+    upMethod = L.u
+
+    subBaseTypes = set()
+
+    if baseTypes and baseTypes != {slotType}:
+        for bt in baseTypes:
+            if bt in descendantType:
+                subBaseTypes |= descendantType[bt]
+
+    settings = OuterSettings(
+        slotType,
+        ltr,
+        fmt,
+        textClsDefault,
+        textMethod,
+        getText,
+        upMethod,
+        eOslots,
+        Fs,
+        _browse,
+        webLink,
+        getGraphics,
+    )
+
+    nodeInfo = {}
+
+    def distillChunkInfo(m, chunkInfo):
+        &#34;&#34;&#34;Gather all the dressing info for a chunk.
+        &#34;&#34;&#34;
+
+        mType = fOtypeV(m)
+        isSlot = mType == slotType
+        isBaseNonSlot = not isSlot and (mType in baseTypes or mType in subBaseTypes)
+        (hlCls, hlStyle) = getHlAtt(app, m, highlights, isSlot)
+        cls = {}
+        if mType in levelCls:
+            cls.update(levelCls[mType])
+        if mType in prettyCustom:
+            prettyCustom[mType](m, mType, cls)
+        textCls = styles.get(mType, settings.textClsDefault)
+        nodeInfoM = nodeInfo.setdefault(
+            m,
+            NodeProps(
+                mType,
+                isSlot,
+                isSlot or mType == descendType,
+                False if descendType == mType or mType in lexTypes else None,
+                isBaseNonSlot,
+                mType in lexTypes,
+                lexMap.get(mType, None),
+                lineNumberFeature.get(mType, None),
+                featuresBare.get(mType, ((), {})),
+                features.get(mType, ((), {})),
+                textCls,
+                hlCls,
+                hlStyle,
+                cls,
+                mType in hasGraphics,
+                afterChild.get(mType, None),
+                plainCustom.get(mType, None) if plainCustom else None,
+            ),
+        )
+        chunkInfo.update(
+            options=options,
+            settings=settings,
+            props=nodeInfoM,
+            boundaryCls=chunkBoundaries[chunk],
+        )
+
+    # determine intersecting nodes
+
+    hideTypes = options.hideTypes
+    hiddenTypes = options.hiddenTypes
+    verseTypes = aContext.verseTypes
+    showVerseInTuple = aContext.showVerseInTuple
+    full = options.full
+
+    isBigType = (
+        _inTuple
+        if not isPretty and nType in verseTypes and not showVerseInTuple
+        else _getBigType(app, isPretty, options, nType)
+    )
+
+    if isBigType and not full:
+        iNodes = set()
+    elif nType in descendantType:
+        myDescendantType = descendantType[nType]
+        iNodes = set(L.i(n, otype=myDescendantType))
+    elif nType in lexTypes:
+        iNodes = {n}
+    else:
+        iNodes = set(L.i(n))
+
+    if hideTypes:
+        iNodes -= set(m for m in iNodes if fOtypeV(m) in hiddenTypes)
+
+    iNodes.add(n)
+
+    # chunkify all nodes and determine all true boundaries:
+    # of nodes and of their maximal contiguous chunks
+
+    exclusions = aContext.exclusions
+    nSlots = eOslots(n)
+    if nType in lexTypes:
+        nSlots = (nSlots[0],)
+    nSlots = set(nSlots)
+
+    chunks = {}
+    boundaries = {}
+
+    for m in iNodes:
+        mType = fOtypeV(m)
+        if mType in exclusions:
+            skip = False
+            conditions = exclusions[mType]
+            for (feat, value) in conditions.items():
+                if Fs(feat).v(m) == value:
+                    skip = True
+                    break
+            if skip:
+                continue
+
+        slots = eOslots(m)
+        if nType in lexTypes:
+            slots = (slots[0],)
+        if m != n and mType == nType and nSlots &lt;= set(slots):
+            continue
+        ranges = rangesFromList(slots)
+        bounds = {}
+        minSlot = min(slots)
+        maxSlot = max(slots)
+
+        # for each node m the boundaries value is a dict keyed by slots
+        # and valued by a tuple: (left bound, right bound)
+        # where bound is:
+        # None if there is no left resp. right boundary there
+        # True if the left resp. right node boundary is there
+        # False if a left resp. right inner chunk boundary is there
+
+        for r in ranges:
+            (b, e) = r
+            chunks.setdefault(mType, set()).add((m, r))
+            bounds[b] = ((b == minSlot), (None if b != e else e == maxSlot))
+            bounds[e] = ((b == minSlot if b == e else None), (e == maxSlot))
+        boundaries[m] = bounds
+
+    # fragmentize all chunks
+
+    sortKeyChunk = N.sortKeyChunk
+    sortKeyChunkLength = N.sortKeyChunkLength
+
+    typeLen = len(fOtypeAll) - 1  # exclude the slot type
+
+    for (p, pType) in enumerate(fOtypeAll):
+        pChunks = chunks.get(pType, ())
+        if not pChunks:
+            continue
+
+        # fragmentize nodes of the same type, largest first
+
+        splits = {}
+
+        pChunksLen = len(pChunks)
+        pSortedChunks = sorted(pChunks, key=sortKeyChunkLength)
+        for (i, pChunk) in enumerate(pSortedChunks):
+            for j in range(i + 1, pChunksLen):
+                p2Chunk = pSortedChunks[j]
+                splits.setdefault(p2Chunk, set()).update(
+                    _getSplitPoints(pChunk, p2Chunk)
+                )
+
+        # apply the splits for nodes of this type
+
+        _applySplits(pChunks, splits)
+
+        # fragmentize nodes of other types
+
+        for q in range(p + 1, typeLen):
+            qType = fOtypeAll[q]
+            qChunks = chunks.get(qType, ())
+            if not qChunks:
+                continue
+            splits = {}
+            for qChunk in qChunks:
+                for pChunk in pChunks:
+                    splits.setdefault(qChunk, set()).update(
+                        _getSplitPoints(pChunk, qChunk)
+                    )
+            _applySplits(qChunks, splits)
+
+    # collect all fragments for all types in one list, ordered canonically
+    # theorem: each fragment is either contained in the top node or completely
+    # outside the top node.
+    # We leave out the fragments that are outside the top node.
+    # In order to test that, it is sufficient to test only one slot of
+    # the fragment. We take the begin slot/
+
+    chunks = sorted(
+        (c for c in chain.from_iterable(chunks.values()) if c[1][0] in nSlots),
+        key=sortKeyChunk,
+    )
+
+    # determine boundary classes
+
+    startCls = &#34;r&#34; if ltr == &#34;rtl&#34; else &#34;l&#34;
+    endCls = &#34;l&#34; if ltr == &#34;rtl&#34; else &#34;r&#34;
+
+    chunkBoundaries = {}
+
+    for (m, (b, e)) in chunks:
+        bounds = boundaries[m]
+        css = []
+        code = bounds[b][0] if b in bounds else None
+        cls = f&#34;{startCls}no&#34; if code is None else &#34;&#34; if code else startCls
+        if cls:
+            css.append(cls)
+        code = bounds[e][1] if e in bounds else None
+        cls = f&#34;{endCls}no&#34; if code is None else &#34;&#34; if code else endCls
+        if cls:
+            css.append(cls)
+
+        chunkBoundaries[(m, (b, e))] = &#34; &#34;.join(css)
+
+    # stack the chunks hierarchically
+
+    tree = (None, TreeInfo(options=options, settings=settings), [])
+    parent = {}
+    rightmost = tree
+
+    for chunk in chunks:
+        rightnode = rightmost
+        added = False
+        m = chunk[0]
+        e = chunk[1][1]
+        chunkInfo = TreeInfo()
+
+        while rightnode is not tree:
+            (br, er) = rightnode[0][1]
+            cr = rightnode[2]
+            if e &lt;= er:
+                rightmost = (chunk, chunkInfo, [])
+                cr.append(rightmost)
+                parent[chunk] = rightnode
+                added = True
+                break
+
+            rightnode = parent[rightnode[0]]
+
+        if not added:
+            rightmost = (chunk, chunkInfo, [])
+            tree[2].append(rightmost)
+            parent[chunk] = tree
+
+        distillChunkInfo(m, chunkInfo)
+
+    if explain:
+        details = False if explain is True else True if explain == &#34;details&#34; else None
+        if details is None:
+            console(
+                &#34;Illegal value for parameter explain: `{explain}`.\n&#34;
+                &#34;Must be `True` or `&#39;details&#39;`&#34;,
+                error=True,
+            )
+        _showTree(tree, 0, details=details)
+    return tree
+
+
+def _getSplitPoints(pChunk, qChunk):
+    &#34;&#34;&#34;Determines where the boundaries of one chunk cut through another chunk.
+
+    The splitpoint is the index where the second part starts.
+    So the split point is always greater than the start point.
+    &#34;&#34;&#34;
+
+    (b1, e1) = pChunk[1]
+    (b2, e2) = qChunk[1]
+    if b2 == e2 or (b1 &lt;= b2 and e1 &gt;= e2):
+        return []
+    splitPoints = set()
+    if b2 &lt; b1 &lt;= e2:
+        splitPoints.add(b1)
+    if b2 &lt;= e1 &lt; e2:
+        splitPoints.add(e1 + 1)
+    return splitPoints
+
+
+def _applySplits(chunks, splits):
+    &#34;&#34;&#34;Splits a chunk in multiple pieces marked by a given sets of points.
+    &#34;&#34;&#34;
+
+    if not splits:
+        return
+
+    for (target, splitPoints) in splits.items():
+        if not splitPoints:
+            continue
+        chunks.remove(target)
+        (m, (b, e)) = target
+        prevB = b
+        # invariant: sp &gt; prevB
+        # initially true because it is the result of _getSPlitPoint
+        # after each iteration: the new split point cannot be the old one
+        # and the new start is the old split point.
+        for sp in sorted(splitPoints):
+            chunks.add((m, (prevB, sp - 1)))
+            prevB = sp
+        chunks.add((m, (prevB, e)))
+
+
+def _getTextCls(app, fmt):
+    aContext = app.context
+    formatCls = aContext.formatCls
+    defaultClsOrig = aContext.defaultClsOrig
+
+    return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
+
+
+def _getLtr(app, options):
+    aContext = app.context
+    direction = aContext.direction
+
+    fmt = options.fmt or DEFAULT_FORMAT
+
+    return (
+        &#34;rtl&#34;
+        if direction == &#34;rtl&#34; and (f&#34;{ORIG}-&#34; in fmt or f&#34;-{ORIG}&#34; in fmt)
+        else (&#34;&#34; if direction == &#34;ltr&#34; else &#34;ltr&#34;)
+    )
+
+
+def _getBigType(app, isPretty, options, nType):
+    api = app.api
+    T = api.T
+    N = api.N
+
+    sectionTypeSet = T.sectionTypeSet
+    structureTypeSet = T.structureTypeSet
+    otypeRank = N.otypeRank
+
+    aContext = app.context
+    bigTypes = aContext.bigTypes
+    isBigOverride = nType in bigTypes
+
+    full = options.full
+    condenseType = options.condenseType
+
+    isBig = False
+    if not full:
+        if not isPretty and isBigOverride:
+            isBig = True
+        elif sectionTypeSet and nType in sectionTypeSet | structureTypeSet:
+            if condenseType is None or otypeRank[nType] &gt; otypeRank[condenseType]:
+                isBig = True
+        elif condenseType is not None and otypeRank[nType] &gt; otypeRank[condenseType]:
+            isBig = True
+    return isBig
+
+
+def _showTree(tree, level, details=False):
+    indent = QUAD * level
+    (chunk, info, subTrees) = tree
+    if chunk is None:
+        console(f&#34;{indent}&lt;{level}&gt; TOP&#34;)
+        settings = info.settings
+        options = info.options
+        if details:
+            _showItems(
+                indent,
+                settings._asdict().items(),
+                ((k, options.get(k)) for k in options.allKeys),
+            )
+    else:
+        (n, (b, e)) = chunk
+        rangeRep = &#34;{&#34; + (str(b) if b == e else f&#34;{b}-{e}&#34;) + &#34;}&#34;
+        props = info.props
+        nType = props.nType
+        isBaseNonSlot = props.isBaseNonSlot
+        base = &#34;*&#34; if isBaseNonSlot else &#34;&#34;
+        boundaryCls = info.boundaryCls
+        console(f&#34;{indent}&lt;{level}&gt; {nType}{base} {n} {rangeRep} {boundaryCls}&#34;)
+        if details:
+            _showItems(indent, props._asdict().items())
+    for subTree in subTrees:
+        _showTree(subTree, level + 1, details=details)
+
+
+def _showItems(indent, *iterables):
+    for (k, v) in sorted(chain(*iterables), key=lambda x: x[0],):
+        if (
+            k == &#34;nType&#34;
+            or v is None
+            or v == []
+            or v == &#34;&#34;
+            or v == {}
+            or v == ()
+            or v == set()
+        ):
+            continue
+        console(f&#34;{indent}{QUAD * 4}{k:&lt;20} = {v}&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.advanced.unravel.unravel"><code class="name flex">
+<span>def <span class="ident">unravel</span></span>(<span>app, n, isPlain=True, explain=False, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Unravels a node and its graph-neighbourhood into a tree of fragments.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node to unravel.</dd>
+<dt><strong><code>isPlain</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether to unravel for plain display. Otherwise it is for pretty display.
+The tree structure is the same for both, but the tree is also dressed up
+with formatting information, which may differ for both modes.</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code> or <code>`'details'</code>:`</dt>
+<dd>Whether to pretty-print the tree.
+If the value <code>details</code> is passed, most of the dressing information of the tree
+is also shown.</dd>
+</dl>
+<p>**options:
+Any amount of legal display options.
+These will influence the dressing information.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>chunk</code></strong> :&ensp;<code>tuple</code></dt>
+<dd><code>(node, (begin slot, end slot))</code>
+The top of the tree has <code>None</code></dd>
+<dt><strong><code>info</code></strong> :&ensp;<code><a title="tf.advanced.unravel.TreeInfo" href="#tf.advanced.unravel.TreeInfo">TreeInfo</a></code></dt>
+<dd>dressing information in the form of key value pairs, among which:
+<code>options</code> (the display options that are in force), <code>settings</code> (properties
+of node independent properties), <code>props</code> (properties
+of the node of the chunk), <code>boundaryCls</code> (css info for the boundaries of
+the chunk). The top of the tree has only has options and settings.</dd>
+<dt><strong><code>children</code></strong> :&ensp;<code>list</code></dt>
+<dd>subtrees where each subtree is again a tuple of chunk, info and children.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L173-L209" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
+    &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
+
+    Parameters
+    ----------
+    n: integer
+        The node to unravel.
+    isPlain: boolean, optional `True`
+        Whether to unravel for plain display. Otherwise it is for pretty display.
+        The tree structure is the same for both, but the tree is also dressed up
+        with formatting information, which may differ for both modes.
+    explain: boolean or `&#39;details&#39;`:
+        Whether to pretty-print the tree.
+        If the value `details` is passed, most of the dressing information of the tree
+        is also shown.
+    **options:
+        Any amount of legal display options.
+        These will influence the dressing information.
+
+    Returns
+    -------
+    chunk: tuple
+        `(node, (begin slot, end slot))`
+        The top of the tree has `None`
+    info: TreeInfo
+        dressing information in the form of key value pairs, among which:
+        `options` (the display options that are in force), `settings` (properties
+        of node independent properties), `props` (properties
+        of the node of the chunk), `boundaryCls` (css info for the boundaries of
+        the chunk). The top of the tree has only has options and settings.
+    children: list
+        subtrees where each subtree is again a tuple of chunk, info and children.
+    &#34;&#34;&#34;
+
+    display = app.display
+    dContext = display.distill(options)
+    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.advanced.unravel.NodeProps"><code class="flex name class">
+<span>class <span class="ident">NodeProps</span></span>
+<span>(</span><span>nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, isLexType, lexType, lineNumberFeature, featuresBare, features, textCls, hlCls, hlStyle, cls, hasGraphics, after, plainCustom)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>NodeProps(nType, isSlot, isSlotOrDescend, descend, isBaseNonSlot, isLexType, lexType, lineNumberFeature, featuresBare, features, textCls, hlCls, hlStyle, cls, hasGraphics, after, plainCustom)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L75-L79" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class NodeProps:
+    &#34;&#34;&#34;Node properties during plain() or pretty().
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.advanced.unravel.NodeProps.after"><code class="name">var <span class="ident">after</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the app defines a custom method to generate material after a child.It is a dict keyed by node type whose values are the custom methods.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.cls"><code class="name">var <span class="ident">cls</span></code></dt>
+<dd>
+<div class="desc"><p>A dict of several classes for the display of the node: for the container, the label, and the children of the node; might be set by prettyCustom</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.descend"><code class="name">var <span class="ident">descend</span></code></dt>
+<dd>
+<div class="desc"><p>When calling T.text(n, descend=??) for this node, what should we substitute for the ?? ?</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.features"><code class="name">var <span class="ident">features</span></code></dt>
+<dd>
+<div class="desc"><p>Features to display in the labels of pretty displays with their names</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.featuresBare"><code class="name">var <span class="ident">featuresBare</span></code></dt>
+<dd>
+<div class="desc"><p>Features to display in the labels of pretty displays without their names</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hasGraphics"><code class="name">var <span class="ident">hasGraphics</span></code></dt>
+<dd>
+<div class="desc"><p>Whether this node type has graphics.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hlCls"><code class="name">var <span class="ident">hlCls</span></code></dt>
+<dd>
+<div class="desc"><p>The highlight Css class of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.hlStyle"><code class="name">var <span class="ident">hlStyle</span></code></dt>
+<dd>
+<div class="desc"><p>The highlight Css color style of the current node, both for pretty and plain modes, keyed by boolean 'is pretty'</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isBaseNonSlot"><code class="name">var <span class="ident">isBaseNonSlot</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node has a type that is currently a baseType, i.e. a type where a pretty display should stop unfolding.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isLexType"><code class="name">var <span class="ident">isLexType</span></code></dt>
+<dd>
+<div class="desc"><p>Whether nodes of type are lexemes.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isSlot"><code class="name">var <span class="ident">isSlot</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node is a slot node.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.isSlotOrDescend"><code class="name">var <span class="ident">isSlotOrDescend</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the current node is a slot node or has a type to which the current text format should descend. This type is determined by the current text format.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.lexType"><code class="name">var <span class="ident">lexType</span></code></dt>
+<dd>
+<div class="desc"><p>If nodes of this type have lexemes in another type, this is that type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.lineNumberFeature"><code class="name">var <span class="ident">lineNumberFeature</span></code></dt>
+<dd>
+<div class="desc"><p>Feature with source line numbers of nodes of this type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.nType"><code class="name">var <span class="ident">nType</span></code></dt>
+<dd>
+<div class="desc"><p>The node type of the current node.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.plainCustom"><code class="name">var <span class="ident">plainCustom</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the app defines a custom method to plain displays for this node type.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.NodeProps.textCls"><code class="name">var <span class="ident">textCls</span></code></dt>
+<dd>
+<div class="desc"><p>The text Css class of the current node.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings"><code class="flex name class">
+<span>class <span class="ident">OuterSettings</span></span>
+<span>(</span><span>slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, lookupMethod, browsing, webLink, getGraphics)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>OuterSettings(slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, lookupMethod, browsing, webLink, getGraphics)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L18-L22" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class OuterSettings:
+    &#34;&#34;&#34;Common properties during plain() and pretty().
+    &#34;&#34;&#34;
+
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="tf.advanced.unravel.OuterSettings.browsing"><code class="name">var <span class="ident">browsing</span></code></dt>
+<dd>
+<div class="desc"><p>whether we work for the Text-Fabric browser or for a Jupyter notebook</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.fmt"><code class="name">var <span class="ident">fmt</span></code></dt>
+<dd>
+<div class="desc"><p>the currently selected text format.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.getGraphics"><code class="name">var <span class="ident">getGraphics</span></code></dt>
+<dd>
+<div class="desc"><p>Method to fetch graphics for a node. App-dependent.See <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code> under <strong>graphics</strong>.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.getText"><code class="name">var <span class="ident">getText</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the text for a node according to a template: <code><a title="tf.advanced.helpers.getText" href="helpers.html#tf.advanced.helpers.getText">getText()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.lookupMethod"><code class="name">var <span class="ident">lookupMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the value of a node feature: <code><a title="tf.core.api.Api.Fs" href="../core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
+<dd>
+<div class="desc"><p>writing direction.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.slotType"><code class="name">var <span class="ident">slotType</span></code></dt>
+<dd>
+<div class="desc"><p>The slot type of the dataset.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.slotsMethod"><code class="name">var <span class="ident">slotsMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the slots of a node: <code><a title="tf.core.oslotsfeature.OslotsFeature.s" href="../core/oslotsfeature.html#tf.core.oslotsfeature.OslotsFeature.s">OslotsFeature.s()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.textClsDefault"><code class="name">var <span class="ident">textClsDefault</span></code></dt>
+<dd>
+<div class="desc"><p>Default css class for full text.</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.textMethod"><code class="name">var <span class="ident">textMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to print text of a node according to a text format: <code><a title="tf.core.text.Text.text" href="../core/text.html#tf.core.text.Text.text">Text.text()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.upMethod"><code class="name">var <span class="ident">upMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to move from a node to its first embedder: <code><a title="tf.core.locality.Locality.u" href="../core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.webLink"><code class="name">var <span class="ident">webLink</span></code></dt>
+<dd>
+<div class="desc"><p>Method to produce a web link to a node: <code><a title="tf.advanced.links.webLink" href="links.html#tf.advanced.links.webLink">webLink()</a></code></p></div>
+</dd>
+</dl>
+</dd>
+<dt id="tf.advanced.unravel.TreeInfo"><code class="flex name class">
+<span>class <span class="ident">TreeInfo</span></span>
+<span>(</span><span>**specs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Tree properties during plain() or pretty().</p>
+<p>Collects <code><a title="tf.advanced.unravel.NodeProps" href="#tf.advanced.unravel.NodeProps">NodeProps</a></code>, <code><a title="tf.advanced.unravel.OuterSettings" href="#tf.advanced.unravel.OuterSettings">OuterSettings</a></code>, and <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L156-L170" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class TreeInfo:
+    &#34;&#34;&#34;Tree properties during plain() or pretty().
+
+    Collects `NodeProps`, `OuterSettings`, and `tf.advanced.options`.
+    &#34;&#34;&#34;
+
+    def __init__(self, **specs):
+        self.update(**specs)
+
+    def update(self, **specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.advanced.unravel.TreeInfo.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, k, v)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L169-L170" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get(self, k, v):
+    return getattr(self, k, v)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.unravel.TreeInfo.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, **specs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L165-L167" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def update(self, **specs):
+    for (k, v) in specs.items():
+        setattr(self, k, v)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
+<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
+<div class="gcse-search" style="height: 70px"
+data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
+data-gaCategoryParameter="tf.advanced.unravel">
+</div>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#unravel">Unravel</a><ul>
+<li><a href="#intersecting-nodes">Intersecting nodes</a></li>
+<li><a href="#descendant-types">Descendant types</a></li>
+<li><a href="#chunkify">Chunkify</a></li>
+<li><a href="#fragmentize">Fragmentize</a></li>
+<li><a href="#canonical-order">Canonical order</a></li>
+<li><a href="#stacking">Stacking</a></li>
+<li><a href="#output">Output</a></li>
+<li><a href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.advanced.unravel.unravel" href="#tf.advanced.unravel.unravel">unravel</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.advanced.unravel.NodeProps" href="#tf.advanced.unravel.NodeProps">NodeProps</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.advanced.unravel.NodeProps.after" href="#tf.advanced.unravel.NodeProps.after">after</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.cls" href="#tf.advanced.unravel.NodeProps.cls">cls</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.descend" href="#tf.advanced.unravel.NodeProps.descend">descend</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.features" href="#tf.advanced.unravel.NodeProps.features">features</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.featuresBare" href="#tf.advanced.unravel.NodeProps.featuresBare">featuresBare</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hasGraphics" href="#tf.advanced.unravel.NodeProps.hasGraphics">hasGraphics</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hlCls" href="#tf.advanced.unravel.NodeProps.hlCls">hlCls</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.hlStyle" href="#tf.advanced.unravel.NodeProps.hlStyle">hlStyle</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isBaseNonSlot" href="#tf.advanced.unravel.NodeProps.isBaseNonSlot">isBaseNonSlot</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isLexType" href="#tf.advanced.unravel.NodeProps.isLexType">isLexType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isSlot" href="#tf.advanced.unravel.NodeProps.isSlot">isSlot</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.isSlotOrDescend" href="#tf.advanced.unravel.NodeProps.isSlotOrDescend">isSlotOrDescend</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.lexType" href="#tf.advanced.unravel.NodeProps.lexType">lexType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.lineNumberFeature" href="#tf.advanced.unravel.NodeProps.lineNumberFeature">lineNumberFeature</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.nType" href="#tf.advanced.unravel.NodeProps.nType">nType</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.plainCustom" href="#tf.advanced.unravel.NodeProps.plainCustom">plainCustom</a></code></li>
+<li><code><a title="tf.advanced.unravel.NodeProps.textCls" href="#tf.advanced.unravel.NodeProps.textCls">textCls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.advanced.unravel.OuterSettings" href="#tf.advanced.unravel.OuterSettings">OuterSettings</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.advanced.unravel.OuterSettings.browsing" href="#tf.advanced.unravel.OuterSettings.browsing">browsing</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.fmt" href="#tf.advanced.unravel.OuterSettings.fmt">fmt</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.getGraphics" href="#tf.advanced.unravel.OuterSettings.getGraphics">getGraphics</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.getText" href="#tf.advanced.unravel.OuterSettings.getText">getText</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.lookupMethod" href="#tf.advanced.unravel.OuterSettings.lookupMethod">lookupMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.ltr" href="#tf.advanced.unravel.OuterSettings.ltr">ltr</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.slotType" href="#tf.advanced.unravel.OuterSettings.slotType">slotType</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.slotsMethod" href="#tf.advanced.unravel.OuterSettings.slotsMethod">slotsMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.textClsDefault" href="#tf.advanced.unravel.OuterSettings.textClsDefault">textClsDefault</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.textMethod" href="#tf.advanced.unravel.OuterSettings.textMethod">textMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.upMethod" href="#tf.advanced.unravel.OuterSettings.upMethod">upMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.webLink" href="#tf.advanced.unravel.OuterSettings.webLink">webLink</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.advanced.unravel.TreeInfo" href="#tf.advanced.unravel.TreeInfo">TreeInfo</a></code></h4>
+<ul class="">
+<li><code><a title="tf.advanced.unravel.TreeInfo.get" href="#tf.advanced.unravel.TreeInfo.get">get</a></code></li>
+<li><code><a title="tf.advanced.unravel.TreeInfo.update" href="#tf.advanced.unravel.TreeInfo.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://www.annotation.nl">Dirk Roorda</a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="/text-fabric/images/DANS-logo.png" width=200></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

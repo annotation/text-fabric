@@ -78,7 +78,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/kernel.py#L0-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/kernel.py#L0-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/kernel.md
@@ -92,11 +92,11 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.app import findApp
-from ..applib.highlight import getPassageHighlights
-from ..applib.search import runSearch, runSearchCondensed
-from ..applib.helpers import getResultsX
-from ..applib.tables import compose, composeP, composeT
+from ..advanced.app import findApp
+from ..advanced.highlight import getPassageHighlights
+from ..advanced.search import runSearch, runSearchCondensed
+from ..advanced.helpers import getResultsX
+from ..advanced.tables import compose, composeP, composeT
 
 from .command import argKernel
 
@@ -243,7 +243,7 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
             app = self.app
@@ -362,7 +362,7 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
             app = self.app
@@ -599,16 +599,16 @@ def main(cargs=sys.argv):
     if checkout is None:
         checkout = &#34;&#34;
 
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs} {setFile}&#34;)
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}&#34;)
     app = findApp(
         appName,
         checkoutApp,
+        True,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
         modules=modules,
         setFile=setFile,
-        _browse=True,
     )
     if app is None:
         return
@@ -660,7 +660,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/kernel.py#L503-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/kernel.py#L503-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -679,16 +679,16 @@ if __name__ == &#34;__main__&#34;:
     if checkout is None:
         checkout = &#34;&#34;
 
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs} {setFile}&#34;)
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}&#34;)
     app = findApp(
         appName,
         checkoutApp,
+        True,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
         modules=modules,
         setFile=setFile,
-        _browse=True,
     )
     if app is None:
         return
@@ -714,7 +714,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/kernel.py#L484-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/kernel.py#L484-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -740,7 +740,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/kernel.py#L28-L478" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/kernel.py#L28-L478" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -878,7 +878,7 @@ if __name__ == &#34;__main__&#34;:
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
             app = self.app
@@ -997,7 +997,7 @@ if __name__ == &#34;__main__&#34;:
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
             app = self.app

@@ -81,10 +81,28 @@ It will be terminated next time you call the <code>text-fabric</code>.</p>
 <pre><code class="sh">text-fabric -k ddd
 </code></pre>
 <p>will kill all such processes as far as they are for data source <code>ddd</code>.</p>
+<h2 id="implementation-notes">Implementation notes</h2>
+<p>Different corpora will use different ports for the kernel and webserver communication.</p>
+<p>The ports are computed from the arguments with which text-fabric is called.</p>
+<p>That is done by the <a href="https://docs.python.org/3.7/library/zlib.html#zlib.crc32">crc32</a> function.
+There is no guarantee that collisions occur, and that the ports computed this way are free.
+So we will look for the first available port after this.</p>
+<p>On the whole, the following things are fairly well taken care of:</p>
+<ul>
+<li>Invocations of text-fabric with different arguments lead to different ports</li>
+<li>Repeated invocations of text-fabric with the same arguments lead to the same ports.</li>
+</ul>
+<p>In particular, the following invocations lead to different ports:</p>
+<pre><code class="sh">text-fabric banks
+</code></pre>
+<p>and</p>
+<pre><code>text-fabric banks:clone
+</code></pre>
+<p>and likewise for all other arguments.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L0-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L0-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/start.md
@@ -253,14 +271,17 @@ def filterProcess(proc):
             parts = parts[1:]
         if parts and parts[0] == &#34;-m&#34;:
             parts = parts[1:]
+        if not parts:
+            return False
         (call, *args) = parts
+
         trigger = &#34;text-fabric&#34;
         if call.endswith(trigger) or call.endswith(f&#34;{trigger}.exe&#34;):
-            if all(arg not in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
+            if any(arg in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
                 return False
-            slug = argApp(args)
+            slug = argApp(parts)[1]
             ports = ()
-            kind = &#34;tf&#34;
+            kind = &#34;text-fabric&#34;
         else:
             if call == &#34;tf.server.kernel&#34;:
                 kind = &#34;kernel&#34;
@@ -272,11 +293,7 @@ def filterProcess(proc):
                 return False
             (slug, *ports) = args
 
-        if kind == &#34;tf&#34;:
-            if any(arg in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
-                return False
-        else:
-            return (kind, slug, *ports)
+        return (kind, slug, *ports)
     return False
 
 
@@ -299,14 +316,17 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
     myself = os.getpid()
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
-            checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;tf&#34;)
+            checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;text-fabric&#34;)
             rSlug = repSlug(pSlug)
             for kind in checkKinds:
                 pidPorts = kinds.get(kind, [])
                 for pidPort in pidPorts:
                     pid = pidPort[0]
+                    port = pidPort[-1] if len(pidPort) &gt; 1 else None
+                    portRep = &#34;&#34; if port is None else f&#34;: {port:&gt;5}&#34;
                     if pid == myself:
                         continue
+                    processRep = f&#34;{kind:&lt;12} % {pid:&gt;5}{portRep:&gt;7}&#34;
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -314,11 +334,11 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                                 proc.kill()
                             else:
                                 proc.terminate()
-                        console(f&#34;{kind} {rSlug}{item}&#34;)
+                        console(f&#34;{processRep} {rSlug}{item}&#34;)
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f&#34;{kind} {rSlug}: already {item}&#34;, error=True,
+                                f&#34;{processRep} {rSlug}: already {item}&#34;, error=True,
                             )
 
 
@@ -344,7 +364,7 @@ def main(cargs=sys.argv):
     kill = argKill(cargs)
     show = argShow(cargs)
 
-    (appName, slug) = argApp(cargs)
+    (appName, slug, newPortKernel, newPortWeb) = argApp(cargs)
 
     if appName is None and not kill and not show:
         return
@@ -360,15 +380,19 @@ def main(cargs=sys.argv):
         return
 
     stopped = False
-    console(slug)
     portKernel = connectPort(tfProcesses, &#34;kernel&#34;, 1, slug)
     portWeb = None
 
     processKernel = None
     processWeb = None
 
-    if not portKernel:
-        portKernel = getPort()
+    if portKernel:
+        console(f&#34;Connecting to running kernel via {portKernel}&#34;)
+    else:
+        portKernel = getPort(portBase=newPortKernel)
+        console(f&#34;Starting new kernel listening on {portKernel}&#34;)
+        if portKernel != newPortKernel:
+            console(f&#34;\twhich is the first free port after {newPortKernel}&#34;)
         pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
 
         processKernel = Popen(
@@ -389,8 +413,13 @@ def main(cargs=sys.argv):
 
     if not stopped:
         portWeb = connectPort(tfProcesses, &#34;web&#34;, 2, slug)
-        if not portWeb:
-            portWeb = getPort(portBase=portKernel + 1)
+        if portWeb:
+            console(f&#34;Connecting to running webserver via {portWeb}&#34;)
+        else:
+            portWeb = getPort(portBase=newPortWeb)
+            console(f&#34;Starting new webserver listening on {portWeb}&#34;)
+            if portWeb != newPortWeb:
+                console(f&#34;\twhich is the first free port after {newPortWeb}&#34;)
             processWeb = Popen(
                 [
                     pythonExe,
@@ -453,7 +482,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L237-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L239-L241" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -468,7 +497,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L154-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L154-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -484,14 +513,17 @@ if __name__ == &#34;__main__&#34;:
             parts = parts[1:]
         if parts and parts[0] == &#34;-m&#34;:
             parts = parts[1:]
+        if not parts:
+            return False
         (call, *args) = parts
+
         trigger = &#34;text-fabric&#34;
         if call.endswith(trigger) or call.endswith(f&#34;{trigger}.exe&#34;):
-            if all(arg not in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
+            if any(arg in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
                 return False
-            slug = argApp(args)
+            slug = argApp(parts)[1]
             ports = ()
-            kind = &#34;tf&#34;
+            kind = &#34;text-fabric&#34;
         else:
             if call == &#34;tf.server.kernel&#34;:
                 kind = &#34;kernel&#34;
@@ -503,11 +535,7 @@ if __name__ == &#34;__main__&#34;:
                 return False
             (slug, *ports) = args
 
-        if kind == &#34;tf&#34;:
-            if any(arg in {&#34;-k&#34;, &#34;-p&#34;} for arg in args):
-                return False
-        else:
-            return (kind, slug, *ports)
+        return (kind, slug, *ports)
     return False</code></pre>
 </details>
 </dd>
@@ -519,7 +547,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L195-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L194-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
@@ -541,7 +569,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L242-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L244-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -560,7 +588,7 @@ if __name__ == &#34;__main__&#34;:
     kill = argKill(cargs)
     show = argShow(cargs)
 
-    (appName, slug) = argApp(cargs)
+    (appName, slug, newPortKernel, newPortWeb) = argApp(cargs)
 
     if appName is None and not kill and not show:
         return
@@ -576,15 +604,19 @@ if __name__ == &#34;__main__&#34;:
         return
 
     stopped = False
-    console(slug)
     portKernel = connectPort(tfProcesses, &#34;kernel&#34;, 1, slug)
     portWeb = None
 
     processKernel = None
     processWeb = None
 
-    if not portKernel:
-        portKernel = getPort()
+    if portKernel:
+        console(f&#34;Connecting to running kernel via {portKernel}&#34;)
+    else:
+        portKernel = getPort(portBase=newPortKernel)
+        console(f&#34;Starting new kernel listening on {portKernel}&#34;)
+        if portKernel != newPortKernel:
+            console(f&#34;\twhich is the first free port after {newPortKernel}&#34;)
         pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
 
         processKernel = Popen(
@@ -605,8 +637,13 @@ if __name__ == &#34;__main__&#34;:
 
     if not stopped:
         portWeb = connectPort(tfProcesses, &#34;web&#34;, 2, slug)
-        if not portWeb:
-            portWeb = getPort(portBase=portKernel + 1)
+        if portWeb:
+            console(f&#34;Connecting to running webserver via {portWeb}&#34;)
+        else:
+            portWeb = getPort(portBase=newPortWeb)
+            console(f&#34;Starting new webserver listening on {portWeb}&#34;)
+            if portWeb != newPortWeb:
+                console(f&#34;\twhich is the first free port after {newPortWeb}&#34;)
             processWeb = Popen(
                 [
                     pythonExe,
@@ -658,7 +695,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/server/start.py#L207-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/server/start.py#L206-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;
@@ -667,14 +704,17 @@ if __name__ == &#34;__main__&#34;:
     myself = os.getpid()
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
-            checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;tf&#34;)
+            checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;text-fabric&#34;)
             rSlug = repSlug(pSlug)
             for kind in checkKinds:
                 pidPorts = kinds.get(kind, [])
                 for pidPort in pidPorts:
                     pid = pidPort[0]
+                    port = pidPort[-1] if len(pidPort) &gt; 1 else None
+                    portRep = &#34;&#34; if port is None else f&#34;: {port:&gt;5}&#34;
                     if pid == myself:
                         continue
+                    processRep = f&#34;{kind:&lt;12} % {pid:&gt;5}{portRep:&gt;7}&#34;
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -682,11 +722,11 @@ if __name__ == &#34;__main__&#34;:
                                 proc.kill()
                             else:
                                 proc.terminate()
-                        console(f&#34;{kind} {rSlug}{item}&#34;)
+                        console(f&#34;{processRep} {rSlug}{item}&#34;)
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f&#34;{kind} {rSlug}: already {item}&#34;, error=True,
+                                f&#34;{processRep} {rSlug}: already {item}&#34;, error=True,
                             )</code></pre>
 </details>
 </dd>
@@ -705,7 +745,10 @@ data-gaCategoryParameter="tf.server.start">
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#start-kernel-and-webserver">Start kernel and webserver</a></li>
+<li><a href="#start-kernel-and-webserver">Start kernel and webserver</a><ul>
+<li><a href="#implementation-notes">Implementation notes</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <ul id="index">

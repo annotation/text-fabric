@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/63b63841dad123283aba68d8c9afca203f26bb51/tf/parameters.py#L0-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/parameters.py#L0-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Fixed values for the whole program.
 &#34;&#34;&#34;
@@ -35,7 +35,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;8.2.2&#39;
+VERSION = &#39;8.3.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -66,7 +66,7 @@ See Also
 tf.clean
 &#34;&#34;&#34;
 
-API_VERSION = 2
+API_VERSION = 3
 &#34;&#34;&#34;TF API version.
 
 Text-Fabric offers and API to TF apps.
@@ -152,7 +152,7 @@ EXPRESS_SYNC_LEGACY = [
 
 PROTOCOL = &#34;http://&#34;
 HOST = &#34;localhost&#34;
-PORT_BASE = 8976
+PORT_BASE = 10000
 
 URL_TFDOC = f&#34;https://{ORG}.github.io/{REPO}&#34;
 &#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
@@ -180,6 +180,9 @@ APP_GITHUB = f&#34;{GH_BASE}/annotation&#34;
 
 APP_CONFIG = &#34;config.yaml&#34;
 &#34;&#34;&#34;Name of the config file of a TF app.&#34;&#34;&#34;
+
+APP_CONFIG_OLD = &#34;config.py&#34;
+&#34;&#34;&#34;Name of the config file of a an older, incompatible TF app.&#34;&#34;&#34;
 
 APP_CODE = &#34;code&#34;
 &#34;&#34;&#34;Name of the top-level directory of a TF app.&#34;&#34;&#34;
@@ -279,6 +282,10 @@ downgrade Text-Fabric</dd>
 <dt id="tf.parameters.APP_CONFIG"><code class="name">var <span class="ident">APP_CONFIG</span></code></dt>
 <dd>
 <div class="desc"><p>Name of the config file of a TF app.</p></div>
+</dd>
+<dt id="tf.parameters.APP_CONFIG_OLD"><code class="name">var <span class="ident">APP_CONFIG_OLD</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the config file of a an older, incompatible TF app.</p></div>
 </dd>
 <dt id="tf.parameters.APP_DISPLAY"><code class="name">var <span class="ident">APP_DISPLAY</span></code></dt>
 <dd>
@@ -474,6 +481,7 @@ data-gaCategoryParameter="tf.parameters">
 <li><code><a title="tf.parameters.API_VERSION" href="#tf.parameters.API_VERSION">API_VERSION</a></code></li>
 <li><code><a title="tf.parameters.APP_CODE" href="#tf.parameters.APP_CODE">APP_CODE</a></code></li>
 <li><code><a title="tf.parameters.APP_CONFIG" href="#tf.parameters.APP_CONFIG">APP_CONFIG</a></code></li>
+<li><code><a title="tf.parameters.APP_CONFIG_OLD" href="#tf.parameters.APP_CONFIG_OLD">APP_CONFIG_OLD</a></code></li>
 <li><code><a title="tf.parameters.APP_DISPLAY" href="#tf.parameters.APP_DISPLAY">APP_DISPLAY</a></code></li>
 <li><code><a title="tf.parameters.APP_GITHUB" href="#tf.parameters.APP_GITHUB">APP_GITHUB</a></code></li>
 <li><code><a title="tf.parameters.APP_NB_URL" href="#tf.parameters.APP_NB_URL">APP_NB_URL</a></code></li>
