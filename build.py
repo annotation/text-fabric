@@ -13,8 +13,6 @@ import unicodedata
 
 from tf.core.helpers import console
 
-# from tf.applib.find import findApp, findAppConfig
-
 DIST = "dist"
 
 VERSION_CONFIG = dict(

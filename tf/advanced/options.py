@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/applib/displaysettings.md
+.. include:: ../../docs/advanced/options.md
 """
 
 from ..core.helpers import setFromValue
@@ -120,7 +120,7 @@ DISPLAY_OPTIONS = dict(
 DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})
 
 
-class DisplayCurrent:
+class OptionsCurrent:
     def __init__(self, options):
         self.allKeys = set(options)
         for (k, v) in options.items():
@@ -134,42 +134,47 @@ class DisplayCurrent:
         setattr(self, k, v)
 
 
-class DisplaySettings:
+class Options:
     def __init__(self, app):
         self.app = app
 
         aContext = app.context
         interfaceDefaults = aContext.interfaceDefaults
 
-        self.displayDefaults = {}
-        displayDefaults = self.displayDefaults
+        self.defaults = {}
+        defaults = self.defaults
 
         for (k, v) in DISPLAY_OPTIONS.items():
             value = (
                 interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
             )
-            displayDefaults[k] = value
+            defaults[k] = value
 
         self.reset()
 
     def reset(self, *options):
         app = self.app
         error = app.error
+        defaults = self.defaults
 
-        for option in options:
-            if option not in self.displayDefaults:
-                error(f'WARNING: unknown display option "{option}" will be ignored')
-                continue
-            self.displaySettings[option] = self.displayDefaults[option]
-        if not options:
-            self.displaySettings = {k: v for (k, v) in self.displayDefaults.items()}
+        if options:
+            current = self.current
+            for option in options:
+                if option not in defaults:
+                    error(f'WARNING: unknown display option "{option}" will be ignored')
+                    continue
+                current[option] = defaults[option]
+        else:
+            self.current = {k: v for (k, v) in defaults.items()}
 
-    def setup(self, **options):
-        for (option, value) in options.items():
+    def setup(self, *options, **overrides):
+        current = self.current
+
+        for (option, value) in overrides.items():
             normValue = self.normalize(option, value)
             if not normValue:
                 continue
-            self.displaySettings[option] = normValue[1]
+            current[option] = normValue[1]
 
     def normalize(self, option, value):
         app = self.app
@@ -177,8 +182,9 @@ class DisplaySettings:
         aContext = app.context
         allowedValues = aContext.allowedValues
         error = app.error
+        defaults = self.defaults
 
-        if option not in self.displayDefaults:
+        if option not in defaults:
             error(f'WARNING: unknown display option "{option}" will be ignored')
             return None
 
@@ -225,10 +231,11 @@ class DisplaySettings:
         aContext = app.context
         allowedValues = aContext.allowedValues
         error = app.error
+        current = self.current
 
         good = True
         for (option, value) in options.items():
-            if option not in self.displaySettings:
+            if option not in current:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
             if option in {"baseTypes", "condenseType", "hiddenTypes"}:
@@ -266,20 +273,20 @@ class DisplaySettings:
         return good
 
     def distill(self, options):
-        displayDefaults = self.displayDefaults
-        displaySettings = self.displaySettings
+        defaults = self.defaults
+        current = self.current
 
         normOptions = {}
 
-        for option in displayDefaults:
+        for option in defaults:
             value = options.get(
-                option, displaySettings.get(option, displayDefaults[option])
+                option, current.get(option, defaults[option])
             )
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]
 
-        return DisplayCurrent(normOptions)
+        return OptionsCurrent(normOptions)
 
     def consume(self, options, *remove):
         return {o: options[o] for o in options if o not in remove}

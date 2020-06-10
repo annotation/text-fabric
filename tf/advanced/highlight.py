@@ -3,8 +3,8 @@ from itertools import chain
 from .search import runSearch
 
 
-def getHlAtt(app, n, highlights, isSlot, isPlain):
-    """Get the highlight attribute for a node.
+def getHlAtt(app, n, highlights, isSlot):
+    """Get the highlight attribute and style for a node for both pretty and plain modes.
 
     Parameters
     ----------
@@ -21,12 +21,19 @@ def getHlAtt(app, n, highlights, isSlot, isPlain):
         If given as dict: use the value as color.
     isSlot: boolean
         Whether the node has the slotType
-    isPlain:
-        Whether we are highlighting for plain() or for pretty().
+
+    Returns
+    -------
+    hlCls: dict
+        Highlight attribute, keyed by boolean 'is pretty'
+    hlStyle: dict
+        Highlight color as css style, keyed by boolean 'is pretty'
     """
 
+    noResult = ({True: "", False: ""}, {True: "", False: ""})
+
     if highlights is None:
-        return ("", "")
+        return noResult
 
     color = (
         highlights.get(n, None)
@@ -37,11 +44,15 @@ def getHlAtt(app, n, highlights, isSlot, isPlain):
     )
 
     if color is None:
-        return ("", "")
+        return noResult
 
-    hlCls = ("hl" if isSlot else "hlbx") if isPlain else "hl"
-    hlObject = ("background" if isSlot else "border") if isPlain else "background"
-    hlStyle = f' style="{hlObject}-color: {color};" ' if color != "" else ""
+    hlCls = {True: "hl", False: "hl" if isSlot else "hlbx"}
+    hlObject = {True: "background", False: "background" if isSlot else "border"}
+    hlCls = {b: hlCls[b] for b in (True, False)}
+    hlStyle = {
+        b: f' style="{hlObject[b]}-color: {color};" ' if color != "" else ""
+        for b in (True, False)
+    }
 
     return (hlCls, hlStyle)
 

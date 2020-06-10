@@ -1,7 +1,7 @@
 ## Auto downloading from GitHub
 
 ```python
-from tf.applib.repo import checkoutRepo
+from tf.advanced.repo import checkoutRepo
 
 checkoutRepo(
   org='annotation'
@@ -306,7 +306,7 @@ or, in a program,
 A = use('corpus', hoist=globals())
 ```
 
-See also `tf.applib.app.App`.
+See also `tf.advanced.app.App`.
 
 ### Updating a corpus that you already have
 

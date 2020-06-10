@@ -2,7 +2,7 @@ import time
 import datetime
 
 from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
-from ..applib.displaysettings import INTERFACE_OPTIONS
+from ..advanced.options import INTERFACE_OPTIONS
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -149,7 +149,7 @@ def wrapSelect(option, allowedValues, value, group, item, multiple):
     """Provides a buttoned chooser for the node types.
 
     Some options need node types as values: `baseTypes`, `condenseType`, `hiddenType`.
-    See `tf.applib.displaysettings`.
+    See `tf.advanced.options`.
 
     The chooser supports single value and multiple value mode.
 

@@ -8,19 +8,19 @@
 
 ```A.showContext(...)```
 :   show app settings
-:   `tf.applib.settings.showContext`
+:   `tf.advanced.settings.showContext`
 
 ```A.header()```
 :   show colofon
-:   `tf.applib.links.header`
+:   `tf.advanced.links.header`
 
 ```A.showProvenance(...)```
 :   show provenance of code and data
-:   `tf.applib.links.showProvenance`
+:   `tf.advanced.links.showProvenance`
 
 ```A.webLink(n, ...)```
 :   hyperlink to node n on the web
-:   `tf.applib.links.webLink`
+:   `tf.advanced.links.webLink`
 
 ---
 
@@ -28,51 +28,59 @@
 
 ```A.dm(markdownString)```
 :   display markdown string in notebook
-:   `tf.applib.helpers.dm`
+:   `tf.advanced.helpers.dm`
 
 ```A.dh(htmlString)```
 :   display HTML string in notebook
-:   `tf.applib.helpers.dh`
+:   `tf.advanced.helpers.dh`
 
 ```A.method(option1=value1, option2=value2, ...)```
 :   Many of the following methods accept these options as keyword arguments: 
-:   `tf.applib.displaysettings`
+:   `tf.advanced.options`
 
-```A.displaySetup(...)```
-:   set up display options
-:   `tf.applib.display.displaySetup`
+```A.displayShow(...)```
+:   show display options
+:   `tf.advanced.display.displayShow`
 
 ```A.displayReset(...)```
 :   resetdisplay options
-:   `tf.applib.display.displayReset`
+:   `tf.advanced.display.displayReset`
+
+```A.displaySetup(...)```
+:   set up display options
+:   `tf.advanced.display.displaySetup`
+
+```A.displayReset(...)```
+:   resetdisplay options
+:   `tf.advanced.display.displayReset`
 
 ```A.table(results, ...)```
 :   plain rendering of tuple of tuples of node
-:   `tf.applib.display.table`
+:   `tf.advanced.display.table`
 
 ```A.plainTuple(tup, ith, ...)```
 :   plain rendering of tuple of node
-:   `tf.applib.display.plainTuple`
+:   `tf.advanced.display.plainTuple`
 
 ```A.plain(node, ...)```
 :   plain rendering of node
-:   `tf.applib.display.plain`
+:   `tf.advanced.display.plain`
 
 ```A.show(results, ...)```
 :   pretty rendering of tuple of tuples of node
-:   `tf.applib.display.show`
+:   `tf.advanced.display.show`
 
 ```A.prettyTuple(tup, ith, ...)```
 :   pretty rendering of tuple of node
-:   `tf.applib.display.prettyTuple`
+:   `tf.advanced.display.prettyTuple`
 
 ```A.pretty(node, ...)```
 :   pretty rendering of node
-:   `tf.applib.display.pretty`
+:   `tf.advanced.display.pretty`
 
 ```A.unravel(node, ...)```
 :   convert a graph to a tree
-:   `tf.applib.display.unravel`
+:   `tf.advanced.unravel.unravel`
 
 ---
 
@@ -80,7 +88,7 @@
 
 ```A.search(...)```
 :   search, collect and deliver results, report number of results
-:   `tf.applib.search.search`
+:   `tf.advanced.search.search`
 
 ---
 
@@ -88,15 +96,15 @@
 
 ```A.nodeFromSectionStr(...)```
 :   lookup node for sectionheading
-:   `tf.applib.sections.nodeFromSectionStr`
+:   `tf.advanced.sections.nodeFromSectionStr`
 
 ```A.sectionStrFromNode(...)```
 :   lookup section heading for node
-:   `tf.applib.sections.sectionStrFromNode`
+:   `tf.advanced.sections.sectionStrFromNode`
 
 ```A.structureStrFromNode(...)```
 :   lookup structure heading for node
-:   `tf.applib.sections.structureStrFromNode`
+:   `tf.advanced.sections.structureStrFromNode`
 
 ---
 
@@ -104,7 +112,7 @@
 
 ```A.export(results, ...)```
 :   export formatted data
-:   `tf.applib.display.export`
+:   `tf.advanced.display.export`
 
 ---
 
@@ -112,11 +120,11 @@
 
 ```A.dm(markdownString)```
 :   display markdown string in notebook
-:   `tf.applib.helpers.dm`
+:   `tf.advanced.helpers.dm`
 
 ```A.dh(htmlString)```
 :   display HTML string in notebook
-:   `tf.applib.helpers.dh`
+:   `tf.advanced.helpers.dh`
 
 ```A.version```
 :   version number of data of the corpus.
@@ -613,7 +621,7 @@ from tf.lib import writeSets
 
 ```A.export(results, ...)```
 :   export formatted data
-:   `tf.applib.display.export`
+:   `tf.advanced.display.export`
 
 ---
 
@@ -657,18 +665,18 @@ from tf.convert.walker import CV
 
 ```A.reuse()```
 :   reload config data
-:   `tf.applib.app.App.reuse`
+:   `tf.advanced.app.App.reuse`
 
 ```python
-from tf.applib.find import loadModule
+from tf.advanced.find import loadModule
 ```
 
 ```mmm = loadModule("mmm", *args)```
 :   load supporting TF-app specific module
-:   `tf.applib.find.loadModule`
+:   `tf.advanced.find.loadModule`
 
 ```~/mypath/app-myname/code/config.yaml```
 :   settings for a TF-App
-:   `tf.applib.settings`
+:   `tf.advanced.settings`
     e.g. [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
 

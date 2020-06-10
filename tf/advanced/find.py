@@ -26,7 +26,7 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     """
 
     configPath = f"{appPath}/{APP_CONFIG}"
@@ -156,7 +156,7 @@ def loadModule(moduleName, *args):
     moduleName: string
         Name of a module under a TF-app that needs to be imported.
     args: mixed
-        The same list of arguments that is passed to `tf.applib.app.App`
+        The same list of arguments that is passed to `tf.advanced.app.App`
         of which only the `appName` and the `appPath` are used.
     """
 

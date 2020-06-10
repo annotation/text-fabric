@@ -4,29 +4,7 @@
 
 Text-Fabric is a core engine with an app infrastructure.
 Here is a quick overview of the
-[main parts of the code](https://annotation.github.io/text-fabric/Code/Overview/):
-
-* The [core API](https://annotation.github.io/text-fabric/Api/Fabric/)
-  of TF:
-  [TF core code](https://github.com/annotation/text-fabric/tree/master/tf/core)
-* The [search API](https://annotation.github.io/text-fabric/Use/Search/)
-  of TF:
-  [TF search code](https://github.com/annotation/text-fabric/tree/master/tf/search)
-* [Writing system functions](https://annotation.github.io/text-fabric/Writing/Transcription/)
-  to deal with complext writing systems and transcriptions:
-  [TF writing code](https://github.com/annotation/text-fabric/tree/master/tf/writing)
-* [Conversion functions](https://annotation.github.io/text-fabric/Create/Convert/)
-  to convert to and from the Text-Fabric format:
-  [TF conversion code](https://github.com/annotation/text-fabric/tree/master/tf/convert)
-* An app-API offered by TF that TF-apps can use:
-  [TF applib code](https://github.com/annotation/text-fabric/tree/master/tf/applib)
-* A
-  [web interface](https://annotation.github.io/text-fabric/Server/Web/)
-  and
-  [data kernel](https://annotation.github.io/text-fabric/Server/Kernel/):
-  [TF server code](https://github.com/annotation/text-fabric/tree/master/tf/server)
-* The TF-apps themselves. They are outside the this text-fabric repo, you find them under the same
-  [organization](https://github.com/ammotation) as the repos whose names start with `-app`.
+[main parts of the code](https://annotation.github.io/text-fabric/about/code.html).
 
 ## Paradigm
 

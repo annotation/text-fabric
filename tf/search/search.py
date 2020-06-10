@@ -173,7 +173,7 @@ class Search(object):
     ):
         """Searches for combinations of nodes that together match a search template.
 
-        If you can, you should use `tf.applib.search.search` instead.
+        If you can, you should use `tf.advanced.search.search` instead.
 
         Parameters
         ----------
@@ -475,7 +475,7 @@ class Search(object):
 
         !!! hint "More ways of showing results"
             The advanced API offers much better ways of showing results.
-            See `tf.applib.display.show` and `tf.applib.display.table`.
+            See `tf.advanced.display.show` and `tf.advanced.display.table`.
         """
 
         T = self.api.T

@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/applib/repo.md
+.. include:: ../../docs/advanced/repo.md
 """
 
 import os
@@ -625,7 +625,7 @@ class Checkout(object):
             if rate.limit < 100:
                 warning(
                     f"To increase the rate,"
-                    f"see {URL_TFDOC}/applib/repo.html/"
+                    f"see {URL_TFDOC}/advanced/repo.html/"
                 )
 
             self.log(
@@ -642,7 +642,7 @@ class Checkout(object):
 
 
 def checkoutRepo(
-    _browse,
+    _browse=False,
     org="annotation",
     repo="tutorials",
     folder="text-fabric/examples/banks/tf",

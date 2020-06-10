@@ -8,7 +8,7 @@ research results.
 ### Share data
 
 When using the TF browser, results can be
-exported, see `tf.applib.display.export`.
+exported, see `tf.advanced.display.export`.
 
 When programming in a notebook, TF generates many useful links after having been
 invoked. In this way the provenance of your data will be shared wherever you
@@ -48,7 +48,7 @@ of all data sources that are being used for a corpus, and takes care of an optim
 of the patterns in the corpus.
 
 * Corpora: `tf.about.corpora`
-* advanced: API: `tf.applib`
+* advanced: API: `tf.advanced`
 * core API: `tf.core`
 
 ## Design principles

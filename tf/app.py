@@ -12,7 +12,7 @@ Depending on the settings, the advanced-API knows how to download the data,
 and can be invoked by a simple incantation: `use`.
 """
 
-from .applib.app import findApp
+from .advanced.app import findApp
 
 # START AN APP
 
@@ -46,9 +46,10 @@ def use(appName, *args, **kwargs):
         Do not pass any other positional argument!
 
     **kwargs:
-        See `tf.applib.app.App`.
-        In any case, either an object of class `tf.applib.app.App` or a corpus-specific
-        derived class `TfAPP` of it is initialized with the remaining parameters.
+        See `tf.advanced.app.App`.
+        In any case, either an object of class `tf.advanced.app.App`
+        or a corpus-specific derived class `TfAPP` of it is initialized
+        with the remaining parameters.
         Head over to there for a discription of those parameters, including more
         about *appName*.
 
@@ -59,7 +60,7 @@ def use(appName, *args, **kwargs):
 
     See Also
     --------
-    tf.applib.app.App.reuse
+    tf.advanced.app.App.reuse
     """
 
     parts = appName.split(":", maxsplit=1)

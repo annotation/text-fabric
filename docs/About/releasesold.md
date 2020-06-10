@@ -1,4 +1,4 @@
-Newer releases: `tf.app.about.releases`
+Newer releases: `tf.about.releases`
 
 # Older releases
 
@@ -78,7 +78,7 @@ were advised to create a pair of client-id and client-token strings.
 
 The advise is now: create a personal access token.
 
-See Rate limiting in (`tf.applib.repo`).
+See Rate limiting in (`tf.advanced.repo`).
 
 Also: a bug fix to the walker conversion, again: thanks Ernst for spotting it.
 
@@ -305,7 +305,7 @@ a confusion between `sections` and `structure`
 If a TF-app needs to import its own modules, there is the risk of conflicts
 when several TF-apps get loaded in the same program and they import modules
 with the same name.
-TF offers a function `tf.applib.find.loadModule`
+TF offers a function `tf.advanced.find.loadModule`
 by which an app can dynamically load
 a module, and this function makes sure that the imported module gets
 an app-dependent internal name.
@@ -500,7 +500,7 @@ See also the
 
 Small but important fix in the display logic of the `pretty()` function.
 The bug is not in the particular TF-apps that partly implementt `pretty()`,
-but in the generic `tf.applib.display` library that implements the other part.
+but in the generic `tf.advanced.display` library that implements the other part.
 
 Thanks to Gyusang Jin, Christiaan Erwich and Cody Kingham for spottting it.
 
@@ -585,7 +585,7 @@ more efficient for the users.
 There is a new utility function `checkoutRepo()`, by which you can
 maintain a local copy of any subdirectory of any repo on Github.
 
-See `tf.applib.repo`.
+See `tf.advanced.repo`.
 
 This is yet another step in making your scholarly work reproducible.
 
@@ -631,7 +631,7 @@ Small fix in Excel export when called by the TF kernel.
 2019-03-26
 
 Small fix: a TF app that did not define its own text-formats caused an error.
-Now the generic TF applib is robust against this.
+Now the generic TF advanced is robust against this.
 
 #### 7.5.1
 
@@ -688,7 +688,7 @@ that have an incoming edge from `m` and the nodes that have an outgoing edge to 
 
 * Changes in font handling
 * New flag in `pretty()`: `full=False`.
-  See `tf.applib.display`
+  See `tf.advanced.display`
 
 #### 7.4.8
 

@@ -52,7 +52,7 @@ class AppData(object):
 
         See Also
         --------
-        tf.applib.settings: options allowed in `config.yaml`
+        tf.advanced.settings: options allowed in `config.yaml`
         """
 
         app = self.app
@@ -79,7 +79,7 @@ class AppData(object):
 
         See Also
         --------
-        tf.applib.settings: options allowed in `config.yaml`
+        tf.advanced.settings: options allowed in `config.yaml`
         """
 
         app = self.app
@@ -217,7 +217,7 @@ class AppData(object):
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
-                _browse,
+                _browse=_browse,
                 org=org,
                 repo=repo,
                 folder=relative,

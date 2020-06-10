@@ -185,4 +185,4 @@ need to pass different parameters than the subsequent times.
 All in all, the second solution requires confidence with cloning and pulling
 from GitHub and familiarity with all the ways that Text-Fabric can obtain its data.
 
-See `tf.applib.repo` for instructions to follow both solutions.
+See `tf.advanced.repo` for instructions to follow both solutions.

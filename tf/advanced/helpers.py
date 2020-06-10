@@ -3,7 +3,7 @@ import os
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
-from ..core.helpers import htmlEsc, unexpanduser
+from ..core.helpers import mdEsc, htmlEsc, unexpanduser
 
 
 RESULT = "result"
@@ -175,7 +175,7 @@ def transitiveClosure(relation, reflexiveExceptions):
 
     See also
     --------
-    tf.applib.display: Display algorithm
+    tf.advanced.display: Display algorithm
     """
 
     descendants = {parent: set(children) for (parent, children) in relation.items()}
@@ -201,7 +201,7 @@ def htmlSafe(text, isHtml):
 
 
 def getText(
-    app, isPretty, n, nType, outer, first, last, level, passage, descend, dContext=None
+    app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None
 ):
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
@@ -210,10 +210,10 @@ def getText(
     aContext = app.context
     templates = aContext.labels if isPretty else aContext.templates
 
-    fmt = None if dContext is None else dContext.fmt
-    standardFeatures = True if dContext is None else dContext.standardFeatures
-    isHtml = False if dContext is None else dContext.isHtml
-    suppress = set() if dContext is None else dContext.suppress
+    fmt = None if options is None else options.fmt
+    standardFeatures = True if options is None else options.standardFeatures
+    isHtml = False if options is None else options.isHtml
+    suppress = set() if options is None else options.suppress
 
     (tpl, feats) = templates[nType]
 
@@ -335,3 +335,85 @@ def getResultsX(app, results, features, condenseType, fmt=None):
             row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
         rows.append(tuple(row))
     return tuple(rows)
+
+
+def showDict(title, data, *keys):
+    """Shows selected keys of a dictionary in a pretty way.
+
+    Parameters
+    ----------
+    keys: iterable of string
+        For each key passed to this function, the information for that key
+        will be displayed. If no keys are passed, all keys will be displayed.
+
+    Returns
+    -------
+    displayed HTML
+        An expandable list of the key-value pair for the requested keys.
+    """
+
+    EM = "*empty*"
+    block = "    "
+    keys = set(keys)
+
+    def eScalar(x, level):
+        if type(x) is str and "\n" in x:
+            indent = block * level
+            return (
+                f"\n{indent}```\n{indent}"
+                + f"\n{indent}".join(x.split("\n"))
+                + f"\n{indent}```\n"
+            )
+        return f"`{mdEsc(str(x))}`" if x else EM
+
+    def eEmpty(x):
+        return EM if type(x) is str else str(x)
+
+    def eList(x, level):
+        tpv = type(x)
+        indent = block * level
+        md = "\n"
+        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
+            item = f"{i + 1}." if level == 0 else "*"
+            md += f"{indent}{item:<4}{eData(v, level + 1)}"
+        return md
+
+    def eDict(x, level):
+        indent = block * level
+        md = "\n"
+        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+            item = "*"
+            md += f"{indent}{item:<4}**{eScalar(k, level)}**:" f" {eData(v, level + 1)}"
+        return md
+
+    def eRest(x, level):
+        indent = block * level
+        return "\n" + indent + eScalar(x, level) + "\n"
+
+    def eData(x, level):
+        if not x:
+            return eEmpty(x) + "\n"
+        tpv = type(x)
+        if tpv is str or tpv is float or tpv is int or tpv is bool:
+            return eScalar(x, level) + "\n"
+        if tpv is list or tpv is tuple or tpv is set:
+            return eList(x, level)
+        if tpv is dict:
+            return eDict(x, level)
+        return eRest(x, level)
+
+    openRep1 = "open" if len(keys) else ""
+    openRep2 = "open" if len(keys) == 1 else ""
+    md = [
+        f"<details {openRep1}>"
+        f"<summary>{title}</summary>\n\n"
+    ]
+    for (i, (k, v)) in enumerate(sorted(data.items(), key=lambda y: str(y))):
+        if len(keys) and k not in keys:
+            continue
+        md.append(
+            f"<details {openRep2}>"
+            f"<summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
+        )
+    md.append("</details>\n")
+    dm("".join(md))

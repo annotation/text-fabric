@@ -48,7 +48,7 @@ text-fabric appName:hot
 
 #### 8.3.0
 
-2020-06-05
+2020-06-10
 
 #### Backward incompatibility
 
@@ -73,16 +73,16 @@ Under the hood improvement of the display algorithm.
 Both `plain` and `pretty` rely on the same *unravel* algorithm
 that turns a graph fragment into a tree for display.
 
-See `tf.applib.unravel`.
+See `tf.advanced.unravel`.
 
 The unravel function is also exposed as `A.unravel(node)`,
-see `tf.applib.display.unravel`.
+see `tf.advanced.unravel.unravel`.
 
 Now you can define your own rendering function, taking the unraveled tree as input.
 
 #### New display settings
 
-See `tf.applib.displaysettings`.
+See `tf.advanced.options`.
 
 *   `plainGaps`: normally, gaps are shown in plain displays.
     But the control is yours, with `plainGaps=False` gaps are suppressed.
@@ -115,7 +115,7 @@ Various fixes:
 2020-06-02
 
 When you load a corpus by means of `use`, you can now also override the config settings of the
-app on the fly. See `tf.applib.app.App`
+app on the fly. See `tf.advanced.app.App`
 
 #### 8.2.1
 
@@ -133,7 +133,7 @@ to generate good displays.
 In particular, the atom types of the BHSA are now handled without
 tricky branches in the code.
 
-See `tf.applib.display`.
+See `tf.advanced.display`.
 
 Core API: a bit of streamlining:
 all exposed methods now fall under one of `A TF N F E L T S`.
@@ -142,7 +142,7 @@ all exposed methods now fall under one of `A TF N F E L T S`.
     If you want to talk to yourself in markdown or HTML you can use
     `A.dm(markdownString)` and `A.dh(htmlString)`.
 
-    See `tf.applib.helpers.dm` and `tf.applib.helpers.dh`.
+    See `tf.advanced.helpers.dm` and `tf.advanced.helpers.dh`.
 
 #### Backward incompatibility
 
@@ -215,7 +215,7 @@ See `tf`.
   rest of `pretty`.
 * More improvements in the display logic where things refuse to be hierarchical.
 * To the display option `extraFeatures` you may also pass values like `type:feature`,
-  see displaysettings (`tf.applib.displaysettings`) under list of display parameters.
+  see options (`tf.advanced.options`) under list of display parameters.
 
 
 ### 8.0
@@ -301,4 +301,4 @@ As a consequence, if you have not upgraded Text-Fabric, it will fail.**
 
 ## Older releases
 
-See `tf.applib.releasesold`
+See `tf.about.releasesold`

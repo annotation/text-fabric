@@ -1,25 +1,221 @@
 """
-.. include:: ../../docs/applib/unravel.md
+.. include:: ../../docs/advanced/unravel.md
 """
 
+from collections import namedtuple
 from itertools import chain
 from ..core.helpers import rangesFromList, console
 from ..core.text import DEFAULT_FORMAT
 from .settings import ORIG
 from .highlight import getHlAtt
-from .displaylib import (
-    NodeContext,
-    OuterContext,
-    QUAD,
+
+
+QUAD = "  "
+
+__pdoc__ = {}
+
+
+class OuterSettings:
+    """Common properties during plain() and pretty().
+    """
+
+    pass
+
+
+OuterSettings = namedtuple(  # noqa: F811
+    "OuterSettings",
+    """
+    slotType
+    ltr
+    fmt
+    textClsDefault
+    textMethod
+    getText
+    upMethod
+    slotsMethod
+    lookupMethod
+    browsing
+    webLink
+    getGraphics
+""".strip().split(),
+)
+__pdoc__["OuterSettings.slotType"] = "The slot type of the dataset."
+__pdoc__["OuterSettings.ltr"] = "writing direction."
+__pdoc__["OuterSettings.fmt"] = "the currently selected text format."
+__pdoc__["OuterSettings.textClsDefault"] = "Default css class for full text."
+__pdoc__["OuterSettings.textMethod"] = (
+    "Method to print text of a node according to a text format: "
+    "`tf.core.text.Text.text`"
+)
+__pdoc__["OuterSettings.getText"] = (
+    "Method to get the text for a node according to a template: "
+    "`tf.advanced.helpers.getText`"
+)
+__pdoc__[
+    "OuterSettings.upMethod"
+] = "Method to move from a node to its first embedder: `tf.core.locality.Locality.u`"
+__pdoc__[
+    "OuterSettings.slotsMethod"
+] = "Method to get the slots of a node: `tf.core.oslotsfeature.OslotsFeature.s`"
+__pdoc__[
+    "OuterSettings.lookupMethod"
+] = "Method to get the value of a node feature: `tf.core.api.Api.Fs`"
+__pdoc__[
+    "OuterSettings.browsing"
+] = "whether we work for the Text-Fabric browser or for a Jupyter notebook"
+__pdoc__[
+    "OuterSettings.webLink"
+] = "Method to produce a web link to a node: `tf.advanced.links.webLink`"
+__pdoc__["OuterSettings.getGraphics"] = (
+    "Method to fetch graphics for a node. App-dependent."
+    "See `tf.advanced.settings` under **graphics**."
 )
 
 
-def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
+class NodeProps:
+    """Node properties during plain() or pretty().
+    """
+
+    pass
+
+
+NodeProps = namedtuple(  # noqa: F811
+    "NodeProps",
+    """
+    nType
+    isSlot
+    isSlotOrDescend
+    descend
+    isBaseNonSlot
+    isLexType
+    lexType
+    lineNumberFeature
+    featuresBare
+    features
+    textCls
+    hlCls
+    hlStyle
+    cls
+    hasGraphics
+    after
+    plainCustom
+""".strip().split(),
+)
+__pdoc__["NodeProps.nType"] = "The node type of the current node."
+__pdoc__["NodeProps.isSlot"] = "Whether the current node is a slot node."
+__pdoc__["NodeProps.isSlotOrDescend"] = (
+    "Whether the current node is a slot node or"
+    " has a type to which the current text format should descend."
+    " This type is determined by the current text format."
+)
+__pdoc__["NodeProps.descend"] = (
+    "When calling T.text(n, descend=??) for this node, what should we"
+    " substitute for the ?? ?"
+)
+__pdoc__["NodeProps.isBaseNonSlot"] = (
+    "Whether the current node has a type that is currently a baseType,"
+    " i.e. a type where a pretty display should stop unfolding."
+)
+__pdoc__["NodeProps.isLexType"] = "Whether nodes of type are lexemes."
+__pdoc__[
+    "NodeProps.lexType"
+] = "If nodes of this type have lexemes in another type, this is that type."
+__pdoc__[
+    "NodeProps.lineNumberFeature"
+] = "Feature with source line numbers of nodes of this type."
+__pdoc__[
+    "NodeProps.featuresBare"
+] = "Features to display in the labels of pretty displays without their names"
+__pdoc__[
+    "NodeProps.features"
+] = "Features to display in the labels of pretty displays with their names"
+__pdoc__["NodeProps.textCls"] = "The text Css class of the current node."
+__pdoc__["NodeProps.hlCls"] = (
+    "The highlight Css class of the current node, "
+    "both for pretty and plain modes, keyed by boolean 'is pretty'"
+)
+__pdoc__["NodeProps.hlStyle"] = (
+    "The highlight Css color style of the current node, "
+    "both for pretty and plain modes, keyed by boolean 'is pretty'"
+)
+__pdoc__["NodeProps.cls"] = (
+    "A dict of several classes for the display of the node:"
+    " for the container, the label, and the children of the node;"
+    " might be set by prettyCustom"
+)
+__pdoc__["NodeProps.hasGraphics"] = "Whether this node type has graphics."
+__pdoc__["NodeProps.after"] = (
+    "Whether the app defines a custom method to generate material after a child."
+    "It is a dict keyed by node type whose values are the custom methods."
+)
+__pdoc__[
+    "NodeProps.plainCustom"
+] = "Whether the app defines a custom method to plain displays for this node type."
+
+
+class TreeInfo:
+    """Tree properties during plain() or pretty().
+
+    Collects `NodeProps`, `OuterSettings`, and `tf.advanced.options`.
+    """
+
+    def __init__(self, **specs):
+        self.update(**specs)
+
+    def update(self, **specs):
+        for (k, v) in specs.items():
+            setattr(self, k, v)
+
+    def get(self, k, v):
+        return getattr(self, k, v)
+
+
+def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
+    """Unravels a node and its graph-neighbourhood into a tree of fragments.
+
+    Parameters
+    ----------
+    n: integer
+        The node to unravel.
+    isPlain: boolean, optional `True`
+        Whether to unravel for plain display. Otherwise it is for pretty display.
+        The tree structure is the same for both, but the tree is also dressed up
+        with formatting information, which may differ for both modes.
+    explain: boolean or `'details'`:
+        Whether to pretty-print the tree.
+        If the value `details` is passed, most of the dressing information of the tree
+        is also shown.
+    **options:
+        Any amount of legal display options.
+        These will influence the dressing information.
+
+    Returns
+    -------
+    chunk: tuple
+        `(node, (begin slot, end slot))`
+        The top of the tree has `None`
+    info: TreeInfo
+        dressing information in the form of key value pairs, among which:
+        `options` (the display options that are in force), `settings` (properties
+        of node independent properties), `props` (properties
+        of the node of the chunk), `boundaryCls` (css info for the boundaries of
+        the chunk). The top of the tree has only has options and settings.
+    children: list
+        subtrees where each subtree is again a tuple of chunk, info and children.
+    """
+
+    display = app.display
+    dContext = display.distill(options)
+    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)
+
+
+def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
     """Unravels a node in a tree of fragments dressed up with formatting properties.
     """
 
     _browse = app._browse
     webLink = app.webLink
+    getText = app.getText
     getGraphics = getattr(app, "getGraphics", None)
 
     api = app.api
@@ -30,8 +226,6 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     L = api.L
     T = api.T
 
-    sortKeyChunk = N.sortKeyChunk
-    sortKeyChunkLength = N.sortKeyChunkLength
     eOslots = E.oslots.s
     fOtype = F.otype
     fOtypeV = fOtype.v
@@ -40,48 +234,29 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
     nType = fOtypeV(n)
 
     aContext = app.context
-    verseTypes = aContext.verseTypes
     lexTypes = aContext.lexTypes
     lexMap = aContext.lexMap
     lineNumberFeature = aContext.lineNumberFeature
     featuresBare = aContext.featuresBare
     features = aContext.features
     descendantType = aContext.descendantType
-    exclusions = aContext.exclusions
-    showVerseInTuple = aContext.showVerseInTuple
     levelCls = aContext.levelCls
-    prettyCustom = aContext.prettyCustom
     styles = aContext.styles
     formatHtml = aContext.formatHtml
     hasGraphics = aContext.hasGraphics
     afterChild = aContext.afterChild
     plainCustom = aContext.plainCustom
+    prettyCustom = aContext.prettyCustom
 
-    full = dContext.full
-    hideTypes = dContext.hideTypes
-    baseTypes = dContext.baseTypes
-    hiddenTypes = dContext.hiddenTypes
-    highlights = dContext.highlights
-    fmt = dContext.fmt
-    dContext.set("isHtml", fmt in formatHtml)
-    ltr = _getLtr(app, dContext)
+    baseTypes = options.baseTypes
+    highlights = options.highlights
+    fmt = options.fmt
+    options.set("isHtml", fmt in formatHtml)
+    ltr = _getLtr(app, options)
     textClsDefault = _getTextCls(app, fmt)
     descendType = T.formats.get(fmt, slotType)
     textMethod = T.text
     upMethod = L.u
-
-    startCls = "r" if ltr == "rtl" else "l"
-    endCls = "l" if ltr == "rtl" else "r"
-
-    nSlots = eOslots(n)
-    if nType in lexTypes:
-        nSlots = (nSlots[0],)
-    nSlots = set(nSlots)
-    isBigType = (
-        _inTuple
-        if not isPretty and nType in verseTypes and not showVerseInTuple
-        else _getBigType(app, isPretty, dContext, nType)
-    )
 
     subBaseTypes = set()
 
@@ -90,12 +265,13 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
             if bt in descendantType:
                 subBaseTypes |= descendantType[bt]
 
-    oContext = OuterContext(
+    settings = OuterSettings(
         slotType,
         ltr,
         fmt,
         textClsDefault,
         textMethod,
+        getText,
         upMethod,
         eOslots,
         Fs,
@@ -112,18 +288,17 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
         mType = fOtypeV(m)
         isSlot = mType == slotType
-        (hlCls, hlStyle) = getHlAtt(app, m, highlights, isSlot, not isPretty)
-        cls = {}
-        if isPretty:
-            if mType in levelCls:
-                cls.update(levelCls[mType])
-            if mType in prettyCustom:
-                prettyCustom[mType](app, m, mType, cls)
-        textCls = styles.get(mType, oContext.textClsDefault)
         isBaseNonSlot = not isSlot and (mType in baseTypes or mType in subBaseTypes)
+        (hlCls, hlStyle) = getHlAtt(app, m, highlights, isSlot)
+        cls = {}
+        if mType in levelCls:
+            cls.update(levelCls[mType])
+        if mType in prettyCustom:
+            prettyCustom[mType](m, mType, cls)
+        textCls = styles.get(mType, settings.textClsDefault)
         nodeInfoM = nodeInfo.setdefault(
             m,
-            NodeContext(
+            NodeProps(
                 mType,
                 isSlot,
                 isSlot or mType == descendType,
@@ -132,8 +307,8 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
                 mType in lexTypes,
                 lexMap.get(mType, None),
                 lineNumberFeature.get(mType, None),
-                featuresBare.get(nType, ((), {})),
-                features.get(nType, ((), {})),
+                featuresBare.get(mType, ((), {})),
+                features.get(mType, ((), {})),
                 textCls,
                 hlCls,
                 hlStyle,
@@ -144,13 +319,25 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
             ),
         )
         chunkInfo.update(
-            dContext=dContext,
-            oContext=oContext,
-            nContext=nodeInfoM,
+            options=options,
+            settings=settings,
+            props=nodeInfoM,
             boundaryCls=chunkBoundaries[chunk],
         )
 
     # determine intersecting nodes
+
+    hideTypes = options.hideTypes
+    hiddenTypes = options.hiddenTypes
+    verseTypes = aContext.verseTypes
+    showVerseInTuple = aContext.showVerseInTuple
+    full = options.full
+
+    isBigType = (
+        _inTuple
+        if not isPretty and nType in verseTypes and not showVerseInTuple
+        else _getBigType(app, isPretty, options, nType)
+    )
 
     if isBigType and not full:
         iNodes = set()
@@ -169,6 +356,12 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     # chunkify all nodes and determine all true boundaries:
     # of nodes and of their maximal contiguous chunks
+
+    exclusions = aContext.exclusions
+    nSlots = eOslots(n)
+    if nType in lexTypes:
+        nSlots = (nSlots[0],)
+    nSlots = set(nSlots)
 
     chunks = {}
     boundaries = {}
@@ -210,6 +403,9 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         boundaries[m] = bounds
 
     # fragmentize all chunks
+
+    sortKeyChunk = N.sortKeyChunk
+    sortKeyChunkLength = N.sortKeyChunkLength
 
     typeLen = len(fOtypeAll) - 1  # exclude the slot type
 
@@ -264,6 +460,9 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     # determine boundary classes
 
+    startCls = "r" if ltr == "rtl" else "l"
+    endCls = "l" if ltr == "rtl" else "r"
+
     chunkBoundaries = {}
 
     for (m, (b, e)) in chunks:
@@ -282,7 +481,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
 
     # stack the chunks hierarchically
 
-    tree = (None, dict(dContext=dContext, oContext=oContext), [])
+    tree = (None, TreeInfo(options=options, settings=settings), [])
     parent = {}
     rightmost = tree
 
@@ -291,7 +490,7 @@ def _unravel(app, isPretty, dContext, n, _inTuple=False, explain=False):
         added = False
         m = chunk[0]
         e = chunk[1][1]
-        chunkInfo = {}
+        chunkInfo = TreeInfo()
 
         while rightnode is not tree:
             (br, er) = rightnode[0][1]
@@ -374,11 +573,11 @@ def _getTextCls(app, fmt):
     return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
 
 
-def _getLtr(app, dContext):
+def _getLtr(app, options):
     aContext = app.context
     direction = aContext.direction
 
-    fmt = dContext.fmt or DEFAULT_FORMAT
+    fmt = options.fmt or DEFAULT_FORMAT
 
     return (
         "rtl"
@@ -387,7 +586,7 @@ def _getLtr(app, dContext):
     )
 
 
-def _getBigType(app, isPretty, dContext, nType):
+def _getBigType(app, isPretty, options, nType):
     api = app.api
     T = api.T
     N = api.N
@@ -400,8 +599,8 @@ def _getBigType(app, isPretty, dContext, nType):
     bigTypes = aContext.bigTypes
     isBigOverride = nType in bigTypes
 
-    full = dContext.full
-    condenseType = dContext.condenseType
+    full = options.full
+    condenseType = options.condenseType
 
     isBig = False
     if not full:
@@ -417,29 +616,29 @@ def _getBigType(app, isPretty, dContext, nType):
 
 def _showTree(tree, level, details=False):
     indent = QUAD * level
-    (chunk, info, children) = tree
+    (chunk, info, subTrees) = tree
     if chunk is None:
         console(f"{indent}<{level}> TOP")
-        oContext = info["oContext"]
-        dContext = info["dContext"]
+        settings = info.settings
+        options = info.options
         if details:
             _showItems(
                 indent,
-                oContext._asdict().items(),
-                ((k, dContext.get(k)) for k in dContext.allKeys),
+                settings._asdict().items(),
+                ((k, options.get(k)) for k in options.allKeys),
             )
     else:
         (n, (b, e)) = chunk
         rangeRep = "{" + (str(b) if b == e else f"{b}-{e}") + "}"
-        nContext = info["nContext"]
-        nType = nContext.nType
-        isBaseNonSlot = nContext.isBaseNonSlot
+        props = info.props
+        nType = props.nType
+        isBaseNonSlot = props.isBaseNonSlot
         base = "*" if isBaseNonSlot else ""
-        boundaryCls = info["boundaryCls"]
+        boundaryCls = info.boundaryCls
         console(f"{indent}<{level}> {nType}{base} {n} {rangeRep} {boundaryCls}")
         if details:
-            _showItems(indent, nContext._asdict().items())
-    for subTree in children:
+            _showItems(indent, props._asdict().items())
+    for subTree in subTrees:
         _showTree(subTree, level + 1, details=details)
 
 

@@ -10,11 +10,11 @@ import rpyc
 from rpyc.utils.server import ThreadedServer
 
 from ..core.helpers import console
-from ..applib.app import findApp
-from ..applib.highlight import getPassageHighlights
-from ..applib.search import runSearch, runSearchCondensed
-from ..applib.helpers import getResultsX
-from ..applib.tables import compose, composeP, composeT
+from ..advanced.app import findApp
+from ..advanced.highlight import getPassageHighlights
+from ..advanced.search import runSearch, runSearchCondensed
+from ..advanced.helpers import getResultsX
+from ..advanced.tables import compose, composeP, composeT
 
 from .command import argKernel
 
@@ -161,7 +161,7 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             """
 
             app = self.app
@@ -280,7 +280,7 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
 
             options: dict
-                Additional, optional display options, see `tf.applib.displaysettings`.
+                Additional, optional display options, see `tf.advanced.options`.
             """
 
             app = self.app

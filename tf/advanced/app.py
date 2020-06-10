@@ -1,4 +1,5 @@
 import os
+import types
 import traceback
 
 from ..parameters import ORG, APP_CODE
@@ -7,7 +8,7 @@ from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir, mergeDict
 from .find import findAppConfig, findAppClass
-from .helpers import dm, dh
+from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .links import linksApi, outLink
 from .text import textApi
@@ -235,12 +236,12 @@ class App:
             All values here will be used to override configuration settings
             that are specified in the app's `config.yaml` file.
             The list of those settings is spelled out in
-            `tf.applib.settings`.
+            `tf.advanced.settings`.
 
         See Also
         --------
         tf.about.corpora: list of corpora with an official TF app
-        tf.applib.settings: description of what can go in a `config.yaml`
+        tf.advanced.settings: description of what can go in a `config.yaml`
         """
 
         self.context = None
@@ -248,7 +249,7 @@ class App:
 
         See Also
         --------
-        tf.applib.settings.showContext
+        tf.advanced.settings.showContext
         """
 
         mergeDict(cfg, configOverrides)
@@ -305,6 +306,7 @@ class App:
         if self.api:
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
+            self.getText = types.MethodType(getText, self)
             linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
@@ -360,7 +362,7 @@ The app "{appName}" will not work!
         !!! hint "the effect of the config settings"
             If you are developing a TF app and need to see the effects of
             the configuration settings in detail, you can conveniently
-            call `reuse` and `tf.applib.settings.showContext` in tandem.
+            call `reuse` and `tf.advanced.settings.showContext` in tandem.
         """
 
         aContext = self.context
@@ -412,15 +414,15 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
             be loaded.
 
     checkoutApp: string
-        The checkout specifier for the app code. See `tf.applib.app.App`.
+        The checkout specifier for the app code. See `tf.advanced.app.App`.
 
     args: mixed
-        Arguments that will be passed to the initializer of the `tf.applib.app.App`
+        Arguments that will be passed to the initializer of the `tf.advanced.app.App`
         class.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
-        `tf.applib.app.App` class.
+        `tf.advanced.app.App` class.
 
     """
 
@@ -441,7 +443,7 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appPath = appDir
     else:
         (commit, release, local, appBase, appDir) = checkoutRepo(
-            _browse,
+            _browse=_browse,
             org=ORG,
             repo=f"app-{appName}",
             folder=APP_CODE,

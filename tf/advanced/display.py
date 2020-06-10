@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/applib/display.md
+.. include:: ../../docs/advanced/display.md
 """
 
 
@@ -7,13 +7,13 @@ import os
 import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.helpers import mdEsc, flattenToSet
-from .helpers import getResultsX, tupleEnum, RESULT, dh
+from ..core.helpers import mdEsc
+from .helpers import getResultsX, tupleEnum, RESULT, dh, showDict
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
-from .displaysettings import DisplaySettings
-from .unravel import _unravel
-from .displaylib import _render, _getRefMember, _getPassage, _doPassage
+from .options import Options
+from .render import render
+from .unravel import unravel, _getLtr
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -54,18 +54,42 @@ def displayApi(app, silent):
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
+    app.displayShow = types.MethodType(displayShow, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
 
-    app.display = DisplaySettings(app)
+    app.display = Options(app)
     if not app._browse:
         app.loadCss()
+
+
+def displayShow(app, *options):
+    """Show display parameters.
+
+    Shows current values of all or selected display parameters.
+
+    Parameters
+    ----------
+    options: keys
+        Options of which the current value will be shown.
+        If no option is passes, all options will be shown.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    """
+
+    display = app.display
+    display.setup()
+    data = display.current
+    showDict("<b>current display options</b>", data, *options)
 
 
 def displaySetup(app, **options):
     """Set up all display parameters.
 
-    Assigns working values to display parameters.
+    Shows current values of display parameters and/or
+    assigns working values to display parameters.
     All subsequent calls to display functions such as `plain` and `pretty`
     will use these values, unless they themselves are passed overriding
     values as arguments.
@@ -74,19 +98,22 @@ def displaySetup(app, **options):
     assigns new values, or a call to `displayReset()` resets the values to the
     defaults.
 
-    !!! hint "corpus settings"
+    !!! hint "show current values"
         The defaults themselves come from the corpus settings, which are influenced
-        by its `config.yaml` file, if it exists. See `tf.applib.settings`.
+        by its `config.yaml` file, if it exists. See `tf.advanced.settings`.
+        You can show the current values by means of `displayShow`.
 
     Parameters
     ----------
-    options: dict
+    show: keys
+        Options of which the current value will be shown.
+    options: key-values
         Explicit values for selected options that act as overrides of the defaults.
-        A list of all available options is in `tf.applib.displaysettings`.
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
+    tf.advanced.options: all available display options
     """
 
     display = app.display
@@ -136,7 +163,10 @@ def loadCss(app):
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
             genericCss += fh.read()
 
-    tableCss = "tr.tf, td.tf, th.tf { text-align: left ! important;}"
+    tableCss = (
+        "tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n"
+        "tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n"
+    )
     dh(f"<style>" + tableCss + genericCss + css + "</style>")
 
 
@@ -162,7 +192,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     toFile: boolean, optional `results.tsv`
         The name of the exported file.
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
 
         !!! note "details"
             * `condensed`
@@ -263,14 +293,14 @@ def table(app, tuples, _asString=False, **options):
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
-        See `tf.applib.displaysettings`.
+        See `tf.advanced.options`.
 
     Parameters
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -294,6 +324,8 @@ def table(app, tuples, _asString=False, **options):
     condenseType = dContext.condenseType
     skipCols = dContext.skipCols
 
+    ltr = _getLtr(app, dContext) or "ltr"
+
     if skipCols:
         tuples = tuple(
             tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
@@ -305,7 +337,7 @@ def table(app, tuples, _asString=False, **options):
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
 
-    passageHead = '</th><th class="tf">p' if withPassage is True else ""
+    passageHead = f'</th><th class="tf {ltr}">p' if withPassage is True else ""
 
     html = []
     one = True
@@ -316,9 +348,9 @@ def table(app, tuples, _asString=False, **options):
         if one:
             heads = '</th><th class="tf">'.join(fOtypev(n) for n in tup)
             html.append(
-                f'<tr class="tf">'
-                f'<th class="tf">n{passageHead}</th>'
-                f'<th class="tf">{heads}</th>'
+                f'<tr class="tf {ltr}">'
+                f'<th class="tf {ltr}">n{passageHead}</th>'
+                f'<th class="tf {ltr}">{heads}</th>'
                 f"</tr>"
             )
             one = False
@@ -377,7 +409,7 @@ def plainTuple(
         !!! caution
             This option has only effect when used in the TF browser.
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
     _asString: boolean, optional `False`
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
@@ -408,6 +440,8 @@ def plainTuple(
     highlights = dContext.highlights
     withPassage = dContext.withPassage
     skipCols = dContext.skipCols
+
+    ltr = _getLtr(app, dContext) or "ltr"
 
     if skipCols:
         tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
@@ -489,17 +523,20 @@ def plainTuple(
             )
         )
     html = (
-        f'<tr class="tf"><td class="tf">'
-        + '</td><td class="tf">'.join(html)
+        f'<tr class="tf {ltr}"><td class="tf {ltr}">'
+        + f'</td><td class="tf {ltr}">'.join(html)
         + "</td></tr>"
     )
     if _asString:
         return html
 
-    passageHead = '</th><th class="tf">p' if withPassage is True else ""
+    passageHead = f'</th><th class="tf {ltr}">p' if withPassage is True else ""
     head = (
-        f'<tr class="tf"><th class="tf">n{passageHead}</th><th class="tf">'
-        + '</th><th class="tf">'.join(fOtypev(n) for n in tup)
+        (
+            f'<tr class="tf {ltr}"><th class="tf {ltr}">n{passageHead}</th>'
+            f'<th class="tf {ltr}">'
+        )
+        + f'</th><th class="tf {ltr}">'.join(fOtypev(n) for n in tup)
         + f"</th></tr>"
     )
     html = f"<table>" + head + "".join(html) + "</table>"
@@ -519,7 +556,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     n: integer
         Node
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
     _inTuple: boolean, optional `False`
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
@@ -538,7 +575,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Depending on *asString* above.
     """
 
-    return _renderOuter(app, False, n, _inTuple, _asString, explain, **options)
+    return render(app, False, n, _inTuple, _asString, explain, **options)
 
 
 # PRETTY and FRIENDS
@@ -553,14 +590,14 @@ def show(app, tuples, **options):
         You can condense the list first to containers of `condenseType`,
         before displaying the list.
         Pass the display parameters `condense` and `condenseType`.
-        See `tf.applib.displaysettings`.
+        See `tf.advanced.options`.
 
     Parameters
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
 
     Result
     ------
@@ -620,7 +657,7 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
 
     Result
     ------
@@ -680,7 +717,7 @@ def pretty(app, n, explain=False, **options):
     In addition, extra features and their values are displayed with the nodes.
 
     !!! hint "Controlling pretty displays"
-        The following `tf.applib.displaysettings`
+        The following `tf.advanced.options`
         are particularly relevant to pretty displays:
 
         * `condenseType`: the standard container to display nodes in;
@@ -693,7 +730,7 @@ def pretty(app, n, explain=False, **options):
     n: integer
         Node
     options: dict
-        Display options, see `tf.applib.displaysettings`.
+        Display options, see `tf.advanced.options`.
     explain: boolean, optional `False`
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
@@ -705,94 +742,24 @@ def pretty(app, n, explain=False, **options):
         as HTML. Otherwise the result is directly displayed in a notebook.
     """
 
-    return _renderOuter(app, True, n, False, False, explain, **options)
+    return render(app, True, n, False, False, explain, **options)
 
 
-# RENDER
+def _getRefMember(otypeRank, fOtypev, tup, dContext):
+    minRank = None
+    minN = None
+    for n in tup:
+        nType = fOtypev(n)
+        rank = otypeRank[nType]
+        if minRank is None or rank < minRank:
+            minRank = rank
+            minN = n
+            if minRank == 0:
+                break
+
+    return (tup[0] if tup else None) if minN is None else minN
 
 
-def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
-    """Unravels a node and its graph-neighbourhood into a tree of fragments.
-
-    Parameters
-    ----------
-    n: integer
-        The node to unravel.
-    isPlain: boolean, optional `True`
-        Whether to unravel for plain display. Otherwise it is for pretty display.
-        The tree structure is the same for both, but the tree is also dressed up
-        with formatting information, which may differ for both modes.
-    explain: boolean or `'details'`:
-        Whether to pretty-print the tree.
-        If the value `details` is passed, most of the dressing information of the tree
-        is also shown.
-    **options:
-        Any amount of legal display options.
-        These will influence the dressing information.
-
-    Returns
-    -------
-    chunk: tuple
-        `(node, (begin slot, end slot))`
-        The top of the tree has `None`
-    info: dict
-        dressing information in the form of key value pairs, among which:
-        `dContext` (the display options that are in force), `oContext` (properties
-        of the outer node and node independent properties), `nContext` (properties
-        of the node of the chunk), `boundaryCls` (css info for the boundaries of
-        the chunk). The top of the tree has only has oContext.
-    children: list
-        subtrees where each subtree is again a tuple of chunk, info and children.
-    """
-
-    display = app.display
-    dContext = display.distill(options)
-    return _unravel(app, not isPlain, dContext, n, _inTuple=_inTuple, explain=explain)
-
-
-def _renderOuter(app, isPretty, n, _inTuple, _asString, explain, **options):
-    """Renders a node, in plain or pretty mode.
-    """
-
-    display = app.display
-
-    if not display.check("pretty" if isPretty else "plain", options):
-        return ""
-
-    _browse = app._browse
-
-    dContext = display.distill(options)
-
-    tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
-    oContext = tree[1]["oContext"]
-    subTrees = tree[2]
-
-    if isPretty:
-        tupleFeatures = dContext.tupleFeatures
-        extraFeatures = dContext.extraFeatures
-
-        dContext.set(
-            "features",
-            sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
-        )
-        dContext.set("featuresIndirect", extraFeatures[1])
-
-    html = []
-
-    passage = _getPassage(app, isPretty, dContext, oContext, n)
-
-    for subTree in subTrees:
-        _render(app, isPretty, subTree, True, True, 0, passage, html)
-
-    rep = "".join(html)
-    ltr = oContext.ltr
-
-    result = (
-        f"""{passage}<div class="{ltr} children">{rep}</div>"""
-        if isPretty
-        else f"""<div class="{ltr}">{passage}{rep}</div>"""
-    )
-
-    if _browse or _asString:
-        return result
-    dh(result)
+def _doPassage(dContext, i):
+    withPassage = dContext.withPassage
+    return withPassage is not True and withPassage and i + 1 in withPassage

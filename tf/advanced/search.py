@@ -23,7 +23,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     It then reports the number of results.
 
     It will also set the display parameter `tupleFeatures` (see below)
-    in such a way that subsequent calls to `tf.applib.display.export` emit
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
 
     Parameters
@@ -86,7 +86,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
     !!! note "Context Jupyter"
         The intended context of this function is: an ordinary Python program (including
         the Jupyter notebook).
-        Web apps can better use `tf.applib.search.runSearch`.
+        Web apps can better use `tf.advanced.search.runSearch`.
     """
 
     info = app.info

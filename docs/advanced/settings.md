@@ -2,7 +2,7 @@
 
 Developers can create TF-apps by specifying a `config.yaml` with settings.
 These settings will be read, checked, and transformed into configuration data
-that is read by the app, see `tf.applib.settings.showContext`
+that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
 * [bhsa](https://github.com/annotation/app-bhsa/blob/master/code/config.yaml).
@@ -119,7 +119,7 @@ Default:
 ### `showVerseInTuple`
 
 Show the full text of verselike nodes in tables and tuples
-(in `tf.applib.display.plainTuple` and `tf.applib.display.table`)
+(in `tf.advanced.display.plainTuple` and `tf.advanced.display.table`)
 
 Default:
 :   boolean `false`
@@ -256,7 +256,7 @@ Default:
 ## `interfaceDefaults`
 
 The following options can be passed to the display functions
-`tf.applib.display.plain` and `tf.applib.display.pretty`.
+`tf.advanced.display.plain` and `tf.advanced.display.pretty`.
 They can also be set in the Text-Fabric Browser.
 The values set here are the defaults as given by this app.
 Not all options are relevant for all corpora.
@@ -264,7 +264,7 @@ Only relevant options should be included.
 By setting the default to `None`, the option will not be shown
 on the TF-browser interface.
 
-These options are described in `tf.applib.displaysettings`: all options
+These options are described in `tf.advanced.options`: all options
 marked as **interface option**.
 
 
@@ -656,7 +656,7 @@ Plain and pretty: whether nodes of this type must be hidden by default.
 See for example the bhsa, where the `atom` types are hidden by default.
 
 The user of the app can selectively mark any node type (except the slot type)
-as hidden, by means of `hiddenTypes` in `tf.applib.displaysettings`.
+as hidden, by means of `hiddenTypes` in `tf.advanced.options`.
 
 The user can also switch between showing and hiding hidden node types by passing
 the display option `hideTypes=False` or `hideTypes=True`.

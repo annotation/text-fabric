@@ -14,7 +14,7 @@ When nodes violate the hierarchy, they are *chunked* and *fragmentized* until th
 resulting fragments can be *stacked* into a tree.
 
 This tree of fragments can then be transformed in various kinds of HTML with rather
-straightforward code, see `tf.applib.display.render`.
+straightforward code, see `tf.advanced.render.render`.
 
 ### Intersecting nodes
 

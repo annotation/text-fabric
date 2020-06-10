@@ -36,7 +36,7 @@ A = use("xxx")
 ```
 
 This `A` is your handle to the 
-advanced API functions (`tf.applib`).
+advanced API functions (`tf.advanced`).
 
 ## Search templates
 
@@ -79,7 +79,7 @@ aya\n",
 ## Text-Fabric API
 
 Beyond searching, you can program your own analytical methods.
-You can "talk" to your corpus through the high-level API (`tf.applib`)
+You can "talk" to your corpus through the high-level API (`tf.advanced`)
 dedicated to your corpus which can download its data and display its material.
 
 You can use it together with the core API (`tf.core`) to

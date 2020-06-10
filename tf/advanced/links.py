@@ -15,7 +15,7 @@ from ..parameters import (
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
 from .repo import Checkout
-from .helpers import getText, dh
+from .helpers import dh
 from ..server.wrap import wrapProvenance
 
 
@@ -202,7 +202,7 @@ def webLink(
 
     See Also
     --------
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.settings: options allowed in `config.yaml`
     """
 
     api = app.api
@@ -250,7 +250,7 @@ def webLink(
 
     if nType in lexTypes:
         if text is None:
-            text = getText(app, False, n, nType, False, True, True, "", None, None)
+            text = app.getText(False, n, nType, False, True, True, "", None, None)
     else:
         passageText = app.sectionStrFromNode(n)
         if text is None:

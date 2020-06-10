@@ -3,7 +3,7 @@ import markdown
 from flask import jsonify, redirect, render_template, make_response
 
 from ..core.helpers import console, wrapMessages
-from ..applib.helpers import RESULT
+from ..advanced.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,

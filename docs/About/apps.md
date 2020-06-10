@@ -39,7 +39,7 @@ on the other hand.
 
 ### config.yaml
 
-Settings to feed the advanced API for this app. See `tf.applib.settings`.
+Settings to feed the advanced API for this app. See `tf.advanced.settings`.
 
 ### app.py
 
@@ -73,7 +73,7 @@ to an object:
 [`atfApi`](https://github.com/annotation/app-uruk/blob/master/code/atf.py)
 
 ```python
-from tf.applib.app import loadModule
+from tf.advanced.app import loadModule
 
 class TfApp(App):
     def __init__(app, *args, silent=False, **kwargs):
@@ -115,7 +115,7 @@ so that all its methods can retrieve all names defined by the `image` module.
 ## Implementation
 
 Most parts of the advanced API are implemented in the
-[api](https://github.com/annotation/text-fabric/blob/master/tf/applib)
+[api](https://github.com/annotation/text-fabric/blob/master/tf/advanced)
 modules of TF.
 
 ### Two contexts

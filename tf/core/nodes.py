@@ -51,7 +51,9 @@ class Nodes:
         tf.core.nodes: canonical ordering
         """
 
-        (self.sortKeyChunk, self.sortKeyChunkLength) = self.makeSortKeyChunk()
+        (sortKeyChunk, sortKeyChunkLength) = self.makeSortKeyChunk()
+
+        self.sortKeyChunk = sortKeyChunk
         """Sort key function for the canonical ordering between chunks of nodes.
 
             sorted(chunks, key=sortKeyChunk)
@@ -73,6 +75,8 @@ class Nodes:
         --------
         tf.core.nodes: canonical ordering
         """
+
+        self.sortKeyChunkLength = sortKeyChunkLength
 
     def makeSortKeyChunk(self):
         api = self.api

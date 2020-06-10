@@ -1,4 +1,4 @@
 [console_scripts]
 text-fabric = tf.server.start:main
-text-fabric-zip = tf.applib.zipdata:main
+text-fabric-zip = tf.advanced.zipdata:main
 

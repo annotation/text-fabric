@@ -454,8 +454,8 @@ provided you have run a query using them before.
 
 Alternatively, you can
 tell which features you want to add to the display.
-That can be done by `tf.applib.display.displaySetup` and
-`tf.applib.display.displayReset` using the parameter `extraFeatures`.
+That can be done by `tf.advanced.display.displaySetup` and
+`tf.advanced.display.displayReset` using the parameter `extraFeatures`.
 
 ### More modules at the same time
 

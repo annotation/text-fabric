@@ -33,13 +33,9 @@ following order:
 * values as set up by previous calls to `displaySetup()`,
 * corpus dependent default values configured by the advanced API.
 
-See `tf.applib.displaysettings` for a list of display parameters.
+See `tf.advanced.options` for a list of display parameters.
 
-## Display algorithm
+## Rendering
 
-Both `pretty` and `plain` depend on an algorithm to *unravel* nodes to other nodes.
-
-For example, when we display a sentence, we also display its clauses and phrases and words,
-which all correspond to nodes.
-
-See `tf.applib.unravel`.
+Both `pretty` and `plain` are implemented as a call to the
+`tf.advanced.render.render` function.

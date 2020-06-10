@@ -5,7 +5,7 @@ setup(
     packages=[
         "tf",
         "tf.about",
-        "tf.applib",
+        "tf.advanced",
         "tf.convert",
         "tf.compose",
         "tf.core",
@@ -30,7 +30,7 @@ setup(
     entry_points={
         "console_scripts": [
             "text-fabric = tf.server.start:main",
-            "text-fabric-zip = tf.applib.zipdata:main",
+            "text-fabric-zip = tf.advanced.zipdata:main",
         ]
     },
     version='8.3.0',

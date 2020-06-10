@@ -2,11 +2,11 @@
 
 Display options are used by
 
-    tf.applib.display.plain
+    tf.advanced.display.plain
 
 and
 
-    tf.applib.display.pretty
+    tf.advanced.display.pretty
 
 and other display functions.
 

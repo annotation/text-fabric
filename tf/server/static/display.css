@@ -93,10 +93,6 @@ a:hover {
 .rtl {
     direction: rtl ! important;
 }
-span.plain {
-    display: inline-block;
-    white-space: pre-wrap;
-}
 .features {
     font-family: monospace;
     font-size: medium;
@@ -243,6 +239,13 @@ span.plain {
     border-color: var(--border-color4);
     border-width: var(--border-width4);
     border-radius: var(--border-width4);
+}
+span.plain {
+    display: inline-block;
+    white-space: pre-wrap;
+}
+.plain {
+    background-color: #ffffff;
 }
 .plain.l,.contnr.l,.contnr.l>.lbl {
     border-left-style: dotted

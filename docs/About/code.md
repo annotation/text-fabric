@@ -42,7 +42,7 @@ Search vs hand coding
 
 ## Advanced
 
-(`tf.applib`) TF contains an advanced API geared to autodownloading
+(`tf.advanced`) TF contains an advanced API geared to autodownloading
 corpus data and displaying corpus materials in useful ways.
 
 ## Web interface

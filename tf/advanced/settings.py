@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/applib/settings.md
+.. include:: ../../docs/advanced/settings.md
 """
 
 
@@ -7,9 +7,9 @@ import re
 import types
 
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
-from ..core.helpers import console, mdEsc, mergeDictOfSets
-from .displaysettings import INTERFACE_OPTIONS
-from .helpers import dm, parseFeatures, transitiveClosure
+from ..core.helpers import console, mergeDictOfSets
+from .options import INTERFACE_OPTIONS
+from .helpers import parseFeatures, transitiveClosure, showDict
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -849,7 +849,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
 
 
 def showContext(app, *keys):
-    """Shows the *context* of the app `tf.applib.app.App.context` in a pretty way.
+    """Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
 
     The context is the result of computing sensible defaults for the corpus
     combined with configuration settings in the app's `config.yaml`.
@@ -867,75 +867,11 @@ def showContext(app, *keys):
 
     See Also
     --------
-    tf.applib.app.App.reuse
-    tf.applib.settings: options allowed in `config.yaml`
+    tf.advanced.app.App.reuse
+    tf.advanced.settings: options allowed in `config.yaml`
     """
 
-    EM = "*empty*"
-    block = "    "
-    keys = set(keys)
-
-    def eScalar(x, level):
-        if type(x) is str and "\n" in x:
-            indent = block * level
-            return (
-                f"\n{indent}```\n{indent}"
-                + f"\n{indent}".join(x.split("\n"))
-                + f"\n{indent}```\n"
-            )
-        return f"`{mdEsc(str(x))}`" if x else EM
-
-    def eEmpty(x):
-        return EM if type(x) is str else str(x)
-
-    def eList(x, level):
-        tpv = type(x)
-        indent = block * level
-        md = "\n"
-        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
-            item = f"{i + 1}." if level == 0 else "*"
-            md += f"{indent}{item:<4}{eData(v, level + 1)}"
-        return md
-
-    def eDict(x, level):
-        indent = block * level
-        md = "\n"
-        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
-            item = "*"
-            md += f"{indent}{item:<4}**{eScalar(k, level)}**:" f" {eData(v, level + 1)}"
-        return md
-
-    def eRest(x, level):
-        indent = block * level
-        return "\n" + indent + eScalar(x, level) + "\n"
-
-    def eData(x, level):
-        if not x:
-            return eEmpty(x) + "\n"
-        tpv = type(x)
-        if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x, level) + "\n"
-        if tpv is list or tpv is tuple or tpv is set:
-            return eList(x, level)
-        if tpv is dict:
-            return eDict(x, level)
-        return eRest(x, level)
-
-    openRep1 = "open" if len(keys) else ""
-    openRep2 = "open" if len(keys) == 1 else ""
-    md = [
-        f"<details {openRep1}>"
-        f"<summary><b>{(app.appName)}</b> <i>app context</i></summary>\n\n"
-    ]
-    for (i, (k, v)) in enumerate(sorted(app.specs.items(), key=lambda y: str(y))):
-        if len(keys) and k not in keys:
-            continue
-        md.append(
-            f"<details {openRep2}>"
-            f"<summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
-        )
-    md.append("</details>\n")
-    dm("".join(md))
+    showDict(f"<b>{(app.appName)}</b> <i>app context</i>", app.specs, *keys)
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):
