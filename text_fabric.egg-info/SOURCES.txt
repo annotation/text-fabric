@@ -147,6 +147,7 @@ tf/server/templates/export.html
 tf/server/templates/index.html
 tf/writing/__init__.py
 tf/writing/arabic.py
+tf/writing/greek.py
 tf/writing/hebrew.py
 tf/writing/syriac.py
 tf/writing/transcription.py

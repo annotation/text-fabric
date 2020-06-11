@@ -3,11 +3,12 @@ import os
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
-from ..core.helpers import mdEsc, htmlEsc, unexpanduser
+from ..core.helpers import mdEsc, htmlEsc, unexpanduser, QUAD
 
 
 RESULT = "result"
 NB = "\u00a0"
+EM = "*empty*"
 
 SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
@@ -337,6 +338,58 @@ def getResultsX(app, results, features, condenseType, fmt=None):
     return tuple(rows)
 
 
+def eScalar(x, level):
+    if type(x) is str and "\n" in x:
+        indent = QUAD * level
+        return (
+            f"\n{indent}```\n{indent}"
+            + f"\n{indent}".join(x.split("\n"))
+            + f"\n{indent}```\n"
+        )
+    return f"`{mdEsc(str(x))}`" if x else EM
+
+
+def eEmpty(x):
+    return EM if type(x) is str else str(x)
+
+
+def eList(x, level):
+    tpv = type(x)
+    indent = QUAD * level
+    md = "\n"
+    for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
+        item = f"{i + 1}." if level == 0 else "*"
+        md += f"{indent}{item:<4}{eData(v, level + 1)}"
+    return md
+
+
+def eDict(x, level):
+    indent = QUAD * level
+    md = "\n"
+    for (k, v) in sorted(x.items(), key=lambda y: str(y)):
+        item = "*"
+        md += f"{indent}{item:<4}**{eScalar(k, level)}**:" f" {eData(v, level + 1)}"
+    return md
+
+
+def eRest(x, level):
+    indent = QUAD * level
+    return "\n" + indent + eScalar(x, level) + "\n"
+
+
+def eData(x, level):
+    if not x:
+        return eEmpty(x) + "\n"
+    tpv = type(x)
+    if tpv is str or tpv is float or tpv is int or tpv is bool:
+        return eScalar(x, level) + "\n"
+    if tpv is list or tpv is tuple or tpv is set:
+        return eList(x, level)
+    if tpv is dict:
+        return eDict(x, level)
+    return eRest(x, level)
+
+
 def showDict(title, data, *keys):
     """Shows selected keys of a dictionary in a pretty way.
 
@@ -352,55 +405,7 @@ def showDict(title, data, *keys):
         An expandable list of the key-value pair for the requested keys.
     """
 
-    EM = "*empty*"
-    block = "    "
     keys = set(keys)
-
-    def eScalar(x, level):
-        if type(x) is str and "\n" in x:
-            indent = block * level
-            return (
-                f"\n{indent}```\n{indent}"
-                + f"\n{indent}".join(x.split("\n"))
-                + f"\n{indent}```\n"
-            )
-        return f"`{mdEsc(str(x))}`" if x else EM
-
-    def eEmpty(x):
-        return EM if type(x) is str else str(x)
-
-    def eList(x, level):
-        tpv = type(x)
-        indent = block * level
-        md = "\n"
-        for (i, v) in enumerate(sorted(x, key=lambda y: str(y)) if tpv is set else x):
-            item = f"{i + 1}." if level == 0 else "*"
-            md += f"{indent}{item:<4}{eData(v, level + 1)}"
-        return md
-
-    def eDict(x, level):
-        indent = block * level
-        md = "\n"
-        for (k, v) in sorted(x.items(), key=lambda y: str(y)):
-            item = "*"
-            md += f"{indent}{item:<4}**{eScalar(k, level)}**:" f" {eData(v, level + 1)}"
-        return md
-
-    def eRest(x, level):
-        indent = block * level
-        return "\n" + indent + eScalar(x, level) + "\n"
-
-    def eData(x, level):
-        if not x:
-            return eEmpty(x) + "\n"
-        tpv = type(x)
-        if tpv is str or tpv is float or tpv is int or tpv is bool:
-            return eScalar(x, level) + "\n"
-        if tpv is list or tpv is tuple or tpv is set:
-            return eList(x, level)
-        if tpv is dict:
-            return eDict(x, level)
-        return eRest(x, level)
 
     openRep1 = "open" if len(keys) else ""
     openRep2 = "open" if len(keys) == 1 else ""

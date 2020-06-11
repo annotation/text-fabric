@@ -8,9 +8,8 @@ from ..core.helpers import rangesFromList, console
 from ..core.text import DEFAULT_FORMAT
 from .settings import ORIG
 from .highlight import getHlAtt
+from .helpers import QUAD
 
-
-QUAD = "  "
 
 __pdoc__ = {}
 

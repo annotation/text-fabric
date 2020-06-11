@@ -18,6 +18,8 @@ SEP_RE = re.compile(r'[ ,]+')
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
+QUAD = "  "
+
 
 def unexpanduser(path):
     return path.replace(HOME_DIR, '~')
