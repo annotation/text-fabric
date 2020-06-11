@@ -82,7 +82,7 @@ going to the next one. Because then the slots will be displayed in the wrong ord
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L0-L656" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L0-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/unravel.md
@@ -94,9 +94,8 @@ from ..core.helpers import rangesFromList, console
 from ..core.text import DEFAULT_FORMAT
 from .settings import ORIG
 from .highlight import getHlAtt
+from .helpers import QUAD
 
-
-QUAD = &#34;  &#34;
 
 __pdoc__ = {}
 
@@ -788,7 +787,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L173-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L172-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
@@ -843,7 +842,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L75-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L74-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NodeProps:
     &#34;&#34;&#34;Node properties during plain() or pretty().
@@ -936,7 +935,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L18-L22" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L17-L21" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OuterSettings:
     &#34;&#34;&#34;Common properties during plain() and pretty().
@@ -1010,7 +1009,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L156-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L155-L169" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TreeInfo:
     &#34;&#34;&#34;Tree properties during plain() or pretty().
@@ -1038,7 +1037,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L169-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L168-L169" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -1052,7 +1051,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c6314515c3c9ea0d97ff3f8b39fb6d2f9604786/tf/advanced/unravel.py#L165-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf8ac1a9dfd3413d28ad1d691c644c76cfcf0876/tf/advanced/unravel.py#L164-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, **specs):
     for (k, v) in specs.items():
