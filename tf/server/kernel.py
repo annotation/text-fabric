@@ -356,7 +356,7 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             display = app.display
-            dContext = display.get(options)
+            dContext = display.distill(options)
             condensed = dContext.condensed
             condenseType = dContext.condenseType
 
@@ -414,7 +414,7 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             display = app.display
-            dContext = display.get(options)
+            dContext = display.distill(options)
             fmt = dContext.fmt
             condensed = dContext.condensed
             condenseType = dContext.condenseType

@@ -46,13 +46,13 @@ text-fabric appName:hot
 
 ### 8.3
 
-#### 8.3.1
+#### 8.3.1, 8.3.2
 
 2020-06-11
 
 Gentium Plus font installed.
 Greek Character table added.
-Small fixes.
+Small fixes, one blocking for the Text-Fabric browser.
 
 #### 8.3.0
 
