@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>tf API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="![logo](images/tf.png) …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -22,13 +22,93 @@
 <h1 class="title">Package <code>tf</code></h1>
 </header>
 <section id="section-intro">
+<p><img alt="logo" src="images/tf.png"></p>
+<h1 id="text-fabric">Text-Fabric</h1>
+<p>A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+Text-Fabric makes that knowledge accessible to programmers and non-programmers.</p>
+<p>Text-Fabric is a piece of machinery for processing such corpora as annotated graphs.</p>
+<h2 id="straight-to">Straight to &hellip;</h2>
+<ul>
+<li>Release notes (<code><a title="tf.about.releases" href="about/releases.html">tf.about.releases</a></code>)</li>
+<li>Install (<code><a title="tf.about.install" href="about/install.html">tf.about.install</a></code>)</li>
+<li>Browser (<code><a title="tf.about.browser" href="about/browser.html">tf.about.browser</a></code>)</li>
+<li>Use (<code><a title="tf.about.use" href="about/use.html">tf.about.use</a></code>)</li>
+<li>Search (<code><a title="tf.about.searchusage" href="about/searchusage.html">tf.about.searchusage</a></code>)</li>
+<li>API (<code><a title="tf.cheatsheet" href="cheatsheet.html">tf.cheatsheet</a></code>)</li>
+<li>Corpora (<code><a title="tf.about.corpora" href="about/corpora.html">tf.about.corpora</a></code>)</li>
+<li>Data Model (<code><a title="tf.about.datamodel" href="about/datamodel.html">tf.about.datamodel</a></code>)</li>
+<li>File Format (<code><a title="tf.about.fileformats" href="about/fileformats.html">tf.about.fileformats</a></code>, <code><a title="tf.about.optimizations" href="about/optimizations.html">tf.about.optimizations</a></code>)</li>
+<li>Code Organisation (<code><a title="tf.about.code" href="about/code.html">tf.about.code</a></code>)</li>
+</ul>
+<h2 id="author">Author</h2>
+<p><strong>Author</strong>:
+<a href="https://www.annotation.nl">Dirk Roorda</a></p>
+<p>Cite Text-Fabric as
+<a href="https://doi.org/10.5281/zenodo.592193">DOI: 10.5281/zenodo.592193</a>.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Text-Fabric is a matter of putting a few good ideas by others into practice.</p>
+<p>While I wrote most of the code,
+a product like Text-Fabric is unthinkable without the contributions
+of avid users that take the trouble to give feedback and file issues,
+and have the zeal and stamina to hold on
+when things are frustrating and bugs overwhelming,
+and give encouragement when they are happy.</p>
+<p>In particular thanks to</p>
+<ul>
+<li>Andrea Scharnhorst</li>
+<li>Cale Johnson</li>
+<li>Camil Staps</li>
+<li>Christian Høygaard-Jensen</li>
+<li>Christiaan Erwich</li>
+<li>Cody Kingham</li>
+<li>Ernst Boogert</li>
+<li>Eliran Wong</li>
+<li>Gyusang Jin</li>
+<li>Henk Harmsen</li>
+<li>James Cuénod</li>
+<li>Johan de Joode</li>
+<li>Kyoungsik Kim</li>
+<li>Martijn Naaijer</li>
+<li>Stephen Ku</li>
+<li>Wido van Peursen</li>
+</ul>
+<p><img src="images/DANS-logo.png" width="200"></p>
+<h2 id="more-resources">More resources</h2>
+<p>Tutorials:</p>
+<ul>
+<li><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/start.ipynb">BHSA</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/dss/start.ipynb">DSS</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/start.ipynb">OldBabylonian</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/uruk/start.ipynb">Uruk</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/quran/start.ipynb">Q'uran</a></li>
+<li>and more: <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master/">all tutorials</a></li>
+</ul>
+<hr>
+<p>Papers:</p>
+<ul>
+<li><a href="https://doi.org/10.1163/24523666-01000011">Coding the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1603.01541">Parallel Texts in the Hebrew Bible, New Methods and Visualizations </a></li>
+<li><a href="https://www.ubiquitypress.com/site/chapters/10.5334/bbi.18/">The Hebrew Bible as Data: Laboratory - Sharing - Experiences</a>
+(preprint: <a href="https://arxiv.org/abs/1501.01866">arxiv</a>)</li>
+<li><a href="https://arxiv.org/abs/1410.0286">LAF-Fabric: a data analysis tool for Linguistic Annotation Framework with an application to the Hebrew Bible</a></li>
+<li><a href="https://arxiv.org/abs/1412.6069">Annotation as a New Paradigm in Research Archiving</a></li>
+</ul>
+<hr>
+<p>Presentations:</p>
+<p><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/lorentz2020/start.ipynb">Hands on with Dead Sea Scrolls, Old Babylonian Tablets, and the Q'uran</a>
+(Lorentz Leiden 2020)</p>
+<p><a href="https://www.slideshare.net/dirkroorda/tf-incontext">Text-Fabric in Context</a> (Lorentz Leiden 2020)</p>
+<p><a href="https://www.slideshare.net/dirkroorda/ancient-corpora-analysis">Data Analysis in Ancient Corpora</a> (Cambridge 2019, with Cody Kingham)</p>
+<p><a href="https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb">Text-Fabric as IKEA logistics</a> (Copenhagen 2017)</p>
+<p>Here is a motivational <a href="http://www.slideshare.net/dirkroorda/text-fabric">presentation</a>, given just before <a href="https://global-learning.org/mod/forum/discuss.php?d=22">SBL 2016</a>
+in the Lutheran Church of San Antonio.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/52d11ae74373e3aeff998baf73976baae6e43e96/tf/__init__.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29df2353a2e2b0e87aa53be0c953ff3529602b83/tf/__init__.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../docs/writing/top.md
+.. include:: ../docs/main/top.md
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
@@ -113,7 +193,15 @@ data-gaCategoryParameter="tf">
 </div>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#text-fabric">Text-Fabric</a><ul>
+<li><a href="#straight-to">Straight to &hellip;</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#more-resources">More resources</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
