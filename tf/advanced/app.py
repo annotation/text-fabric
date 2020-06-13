@@ -287,7 +287,6 @@ class App:
                 (locations, modules) = specs
                 self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
                 TF = Fabric(locations=locations, modules=modules, silent=silent or True)
-                self.TF = TF
                 api = TF.load("", silent=silent or True)
                 if api:
                     self.api = api
