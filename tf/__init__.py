@@ -1,3 +1,3 @@
 """
-.. include:: ../docs/writing/top.md
+.. include:: ../docs/main/top.md
 """
