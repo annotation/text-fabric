@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.3
 
+#### 8.3.3
+
+Small fix by Cody Kingham: when calling `use(api=...)` with an TF api constructed
+before, the `TF` attribute of this api is not transported to the app object.
+
+2020-06-11
+
 #### 8.3.1, 8.3.2
 
 2020-06-11
