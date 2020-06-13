@@ -53,6 +53,10 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="8">8</h2>
 <h3 id="83">8.3</h3>
+<h4 id="833">8.3.3</h4>
+<p>Small fix by Cody Kingham: when calling <code>use(api=...)</code> with an TF api constructed
+before, the <code>TF</code> attribute of this api is not transported to the app object.</p>
+<p>2020-06-11</p>
 <h4 id="831-832">8.3.1, 8.3.2</h4>
 <p>2020-06-11</p>
 <p>Gentium Plus font installed.
@@ -267,7 +271,7 @@ Note that if you use Text-Fabric prior version 8, there will be no graceful fall
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29df2353a2e2b0e87aa53be0c953ff3529602b83/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0d40f613f4963e3b358fbc7d460c4080f309be20/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/releases.md
@@ -296,6 +300,7 @@ data-gaCategoryParameter="tf.about.releases">
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#8">8</a><ul>
 <li><a href="#83">8.3</a><ul>
+<li><a href="#833">8.3.3</a></li>
 <li><a href="#831-832">8.3.1, 8.3.2</a></li>
 <li><a href="#830">8.3.0</a></li>
 <li><a href="#backward-incompatibility">Backward incompatibility</a></li>
