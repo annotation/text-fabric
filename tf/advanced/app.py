@@ -287,7 +287,6 @@ class App:
                 (locations, modules) = specs
                 self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
                 TF = Fabric(locations=locations, modules=modules, silent=silent or True)
-                self.TF = TF
                 api = TF.load("", silent=silent or True)
                 if api:
                     self.api = api
@@ -304,6 +303,7 @@ class App:
                 self.api = None
 
         if self.api:
+            self.TF = self.api.TF
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
             self.getText = types.MethodType(getText, self)
