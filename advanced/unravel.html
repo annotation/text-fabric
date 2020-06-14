@@ -23,62 +23,9 @@
 </header>
 <section id="section-intro">
 <h1 id="unravel">Unravel</h1>
-<p>Whatever we want to display, we have to display in HTML, which is basically a
-hierarchically organized set of presentation elements.</p>
-<p>But a node and its constellation of all relevant nodes that share slots with it,
-does not have a hiererchical structure.</p>
-<p>The unravel algorithm solves the problem of turning a node and its associated piece
-of the textual graph into a tree of node fragments in such a way that the order
-of the slots is preserved.</p>
-<p>When nodes violate the hierarchy, they are <em>chunked</em> and <em>fragmentized</em> until the
-resulting fragments can be <em>stacked</em> into a tree.</p>
-<p>This tree of fragments can then be transformed in various kinds of HTML with rather
-straightforward code, see <code><a title="tf.advanced.render.render" href="render.html#tf.advanced.render.render">render()</a></code>.</p>
-<h3 id="intersecting-nodes">Intersecting nodes</h3>
-<p>Nodes or chunks whose slot sets intersect, are intersecting nodes, except the node itself.</p>
-<h3 id="descendant-types">Descendant types</h3>
-<p>Node types are ranked: node types whose nodes occupy more slots on average have a higher rank
-than types whose nodes occupy less slots on average.
-You can inspect the ranking of the types in your dataset by <code><a title="tf.core.nodes.Nodes.otypeRank" href="../core/nodes.html#tf.core.nodes.Nodes.otypeRank">Nodes.otypeRank</a></code>.</p>
-<p>For each node type, we collect the set of descendant types: the types with lower or equal rank.
-So each type is its own descendant. But we prevent the slot type from being its own
-descendant.</p>
-<h3 id="chunkify">Chunkify</h3>
-<p>Every node is linked to a set of slots. These slots may or may not form a contiguous chunk.
-For the purposes of displaying nodes, we divide each node into maximal contiguous chunks.
-Such a chunk is specified by a tuple <code>(n, slots)</code>, where <code>n</code> is the node (an integer),
-and <code>slots</code> is a frozen set of slots (also integers).</p>
-<h3 id="fragmentize">Fragmentize</h3>
-<p>Node chunks can be grouped by node types. The chunk boundaries of nodes of higher ranked
-types are used to break up the chunks of nodes of lower ranked types.</p>
-<p>We end up with a rather fine partition of all nodes in fragments, in such a way
-that no fragment crosses the boundaries of enclosing fragments.</p>
-<h3 id="canonical-order">Canonical order</h3>
-<p>Before we feed fragments to the display, we sort them in <em>canonical order</em>, based on their
-slots and node type. The following criteria will be checked <em>in that order</em>:</p>
-<ul>
-<li>Chunks have different begin slots: those with earlier first slots have precedence;</li>
-<li>Chunks with nodes with higher ranked types have precedence;</li>
-<li>Look at the slots the chunks do <em>not</em> have in common.
-The chunk with the earlier such slot has precedence.</li>
-<li>Chunks with nodes that are smaller as integer have precedence.</li>
-</ul>
-<p>See <code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>.</p>
-<h3 id="stacking">Stacking</h3>
-<p>When we have a list of canonically ordered fragments, we can stack them into a tree.
-Each new fragment is tried against the right-most branch of the tree under construction,
-from bottom to top.
-If there is no place on that branch, a new right-most branch is started.</p>
-<h3 id="output">Output</h3>
-<p>When we render a tree of fragments, we produce output for the fragments, one by one.
-For each fragment, the output consists of a contribution by the node of the fragment.</p>
-<h3 id="notes">Notes</h3>
-<p>When nodes represent textual objects that intersect with each other, it is possible that
-slots are contained in several of such objects.
-The algorithm takes care that they will not be output multiple times.</p>
-<p>When textual objects have gaps, it is wrong to process each object completely before
-going to the next one. Because then the slots will be displayed in the wrong order.</p>
-<p>By chunkifying, fragmentizing and sorting the chunks in canonical order, this is prevented.</p>
+<p>Unraveling means to transform a neighbourhood of nodes into a tree of node fragment.
+That sounds simple, but quite a few ideas have to work together to make it work.</p>
+<p>It is described at length in <code><a title="tf.about.displaydesign" href="../about/displaydesign.html">tf.about.displaydesign</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1073,17 +1020,7 @@ data-gaCategoryParameter="tf.advanced.unravel">
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#unravel">Unravel</a><ul>
-<li><a href="#intersecting-nodes">Intersecting nodes</a></li>
-<li><a href="#descendant-types">Descendant types</a></li>
-<li><a href="#chunkify">Chunkify</a></li>
-<li><a href="#fragmentize">Fragmentize</a></li>
-<li><a href="#canonical-order">Canonical order</a></li>
-<li><a href="#stacking">Stacking</a></li>
-<li><a href="#output">Output</a></li>
-<li><a href="#notes">Notes</a></li>
-</ul>
-</li>
+<li><a href="#unravel">Unravel</a></li>
 </ul>
 </div>
 <ul id="index">
