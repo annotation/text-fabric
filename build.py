@@ -3,7 +3,6 @@ import os
 import re
 from glob import glob
 
-from time import sleep
 from shutil import rmtree
 from subprocess import run, call, Popen, PIPE
 
@@ -11,7 +10,13 @@ import errno
 import time
 import unicodedata
 
-from tf.core.helpers import console
+from pdocs import console, pdoc3serve, pdoc3, shipDocs
+
+ORG = "annotation"
+REPO = "text-fabric"
+PKG = "tf"
+PACKAGE = "text-fabric"
+SCRIPT = "/Library/Frameworks/Python.framework/Versions/3.7/bin/{PACKAGE}"
 
 DIST = "dist"
 
@@ -28,14 +33,11 @@ VERSION_CONFIG = dict(
     ),
 )
 
-URL = "https://annotation.github.io/text-fabric/"
-AN_BASE = os.path.expanduser("~/github/annotation")
+AN_BASE = os.path.expanduser(f"~/github/{ORG}")
 TUT_BASE = f"{AN_BASE}/tutorials"
-TF_BASE = f"{AN_BASE}/text-fabric"
+TF_BASE = f"{AN_BASE}/{REPO}"
 TEST_BASE = f"{TF_BASE}/test"
 APP_BASE = f"{TF_BASE}/apps"
-PACKAGE = "text-fabric"
-SCRIPT = "/Library/Frameworks/Python.framework/Versions/3.7/bin/text-fabric"
 
 SRC = "site"
 REMOTE = "origin"
@@ -78,7 +80,7 @@ r3    : version becomes r1.r2.r3+1
 ship  : build for shipping
 apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
-a     : open text-fabric browser on specific dataset
+a     : open {PACKAGE} browser on specific dataset
         ({appStr})
 t     : run test suite (relations, qperf)
 data  : build data files for github release
@@ -379,73 +381,12 @@ def ghp_import():
     return result, dec(err)
 
 
-def gh_deploy():
-    (result, error) = ghp_import()
-    if not result:
-        print("Failed to deploy to GitHub with error: \n%s", error)
-        raise SystemExit(1)
-    else:
-        print("Your documentation should shortly be available at: " + URL)
-
-
 # END COPIED FROM MKDOCS AND MODIFIED
-
-
-PDOC3 = [
-    "pdoc3",
-    "--force",
-    "--html",
-    "--output-dir",
-    "site",
-    "--template-dir",
-    "docs/templates",
-]
-PDOC3STR = " ".join(PDOC3)
-
-
-def pdoc3serve():
-    """Build the docs into site and serve them.
-    """
-
-    proc = Popen([*PDOC3, "--http", ":", "tf"])
-    sleep(1)
-    run("open http://localhost:8080/tf", shell=True)
-    try:
-        proc.wait()
-    except KeyboardInterrupt:
-        pass
-    proc.terminate()
-
-
-def pdoc3():
-    """Build the docs into site.
-    """
-
-    cmdLines = [
-        "rm -rf site",
-        f"{PDOC3STR} tf",
-        "mv site/tf/* site",
-        "rmdir site/tf",
-        "cp -r docs/images site",
-        "touch site/.nojekyll",
-    ]
-    console("Build docs")
-    for cmdLine in cmdLines:
-        print(cmdLine)
-        run(cmdLine, shell=True)
-
-
-def shipDocs():
-    """Build the docs into site and ship them.
-    """
-
-    pdoc3()
-    gh_deploy()
 
 
 def tfbrowse(dataset, remaining):
     rargs = " ".join(remaining)
-    cmdLine = f"text-fabric {dataset} {rargs}"
+    cmdLine = f"{PACKAGE} {dataset} {rargs}"
     try:
         run(cmdLine, shell=True)
     except KeyboardInterrupt:
@@ -478,7 +419,7 @@ def clean():
     run(["python3", "setup.py", "develop", "-u"])
     if os.path.exists(SCRIPT):
         os.unlink(SCRIPT)
-    run(["pip3", "uninstall", "-y", "text-fabric"])
+    run(["pip3", "uninstall", "-y", PACKAGE])
 
 
 def main():
@@ -490,11 +431,11 @@ def main():
     elif task == "t":
         tftest(msg, remaining)
     elif task == "docs":
-        pdoc3serve()
+        pdoc3serve(PKG)
     elif task == "pdocs":
-        pdoc3()
+        pdoc3(PKG)
     elif task == "sdocs":
-        shipDocs()
+        shipDocs(ORG, REPO, PKG)
     elif task == "clean":
         clean()
     elif task == "l":
@@ -503,7 +444,7 @@ def main():
     elif task == "lp":
         clean()
         run(["python3", "setup.py", "sdist"])
-        distFiles = glob("dist/text-fabric-*.tar.gz")
+        distFiles = glob(f"dist/{PACKAGE}-*.tar.gz")
         run(["pip3", "install", distFiles[0]])
     elif task == "i":
         clean
@@ -516,11 +457,11 @@ def main():
                 "--no-index",
                 "--find-links",
                 f'file://{TF_BASE}/dist"',
-                "text-fabric",
+                PACKAGE,
             ]
         )
     elif task == "g":
-        shipDocs()
+        shipDocs(ORG, REPO, PKG)
         commit(task, msg)
     elif task == "apps":
         commitApps(msg)
@@ -539,7 +480,7 @@ def main():
         answer = input("right version ? [yn]")
         if answer != "y":
             return
-        shipDocs()
+        shipDocs(ORG, REPO, PKG)
         makeDist()
         commit(task, msg)
 

@@ -249,7 +249,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f"Preparing metadata... ")
+        info("Preparing metadata... ")
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -348,10 +348,10 @@ class CV(object):
                     textFormats[k[4:]] = featureSet
                     textFeatures |= featureSet
             if not textFormats:
-                errors['No text formats in "otext"'].append(f'add "fmt:text-orig-full"')
+                errors['No text formats in "otext"'].append('add "fmt:text-orig-full"')
             elif "text-orig-full" not in textFormats:
                 errors["No default text format in otext"].append(
-                    f'add "fmt:text-orig-full"'
+                    'add "fmt:text-orig-full"'
                 )
             self.textFormats = textFormats
             self.textFeatures = textFeatures
@@ -360,7 +360,7 @@ class CV(object):
         info(f'SECTION   FEATURES: {", ".join(self.sectionFeatures)}', tm=False)
         info(f'STRUCTURE TYPES:    {", ".join(self.structureTypes)}', tm=False)
         info(f'STRUCTURE FEATURES: {", ".join(self.structureFeatures)}', tm=False)
-        info(f"TEXT      FEATURES:", tm=False)
+        info("TEXT      FEATURES:", tm=False)
         indent(level=2)
         for (fmt, feats) in sorted(textFormats.items()):
             info(f'{fmt:<20} {", ".join(sorted(feats))}', tm=False)
@@ -408,7 +408,7 @@ class CV(object):
             if feat in WARP[0:3] + ("",):
                 if feat == "":
                     errors["featureMeta"].append(
-                        f'Specify the generic feature meta data in "generic"'
+                        'Specify the generic feature meta data in "generic"'
                     )
                     good = False
                 elif feat == WARP[2]:
@@ -428,7 +428,7 @@ class CV(object):
                 )
                 good = False
             elif featMeta["valueType"] not in {"int", "str"}:
-                errors["featureMeta"].append(f'valueType must be "int" or "str"')
+                errors["featureMeta"].append('valueType must be "int" or "str"')
                 good = False
 
         for (e, eData) in errors.items():
@@ -438,6 +438,16 @@ class CV(object):
         return good
 
     def stop(self, msg):
+        """Stops the director. No further input will be read.
+
+            cv.stop(msg)
+
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause termination
+        nevertheless.
+        """
+
         tmObj = self.TF.tmObj
         error = tmObj.error
 
@@ -447,6 +457,19 @@ class CV(object):
         self.forcedStop = True
 
     def slot(self):
+        """Make a slot node and return the handle to it in `n`.
+
+            n = cv.slot()
+
+
+        No further information is needed.
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        """
+
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
@@ -471,6 +494,21 @@ class CV(object):
         return (nType, seq)
 
     def node(self, nType):
+        """Make a non-slot node and return the handle to it in `n`.
+
+            n = cv.node(nodeType)
+
+        You have to pass its *node type*, i.e. a string.
+        Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+        Non slot nodes will be automatically added to the set of embedders.
+
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        """
+
         slotType = self.slotType
         errors = self.errors
 
@@ -493,12 +531,32 @@ class CV(object):
         return node
 
     def terminate(self, node):
+        """**terminate** a node.
+
+            cv.terminate(n)
+
+        The node `n` will be removed from the set of current embedders.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+        """
+
         self.stats[self.T] += 1
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
 
     def resume(self, node):
+        """**resume** a node.
+
+            cv.resume(n)
+
+
+        If you resume a non-slot node, you add it again to the set of embedders.
+        No new node will be created.
+
+        If you resume a slot node, it will be added to the set of current embedders.
+        No new slot will be created.
+        """
+
         curEmbedders = self.curEmbedders
         oslots = self.oslots
 
@@ -513,6 +571,21 @@ class CV(object):
             curEmbedders.add(node)
 
     def feature(self, node, **features):
+        """Add **node features**.
+
+            cv.feature(n, name=value, ... , name=value)
+
+
+        The features are passed as a list of keyword arguments.
+
+        These features are added to node `n`.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        **If a feature value is `None` it will not be added!**
+
+        The features are passed as a list of keyword arguments.
+        """
+
         nodeFeatures = self.nodeFeatures
 
         self.stats[self.F] += 1
@@ -524,6 +597,23 @@ class CV(object):
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
+        """Add **edge features**.
+
+            cv.edge(nf, nt, name=value, ... , name=value)
+
+
+        You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
+        Together these specify an edge, and the features will be applied
+        to this edge.
+
+        You may pass values that are `None`, and a corresponding edge will be created.
+        If for all pairs `nf`, `nt` the value is `None`,
+        an edge without values will be created. For every `nf`, such a feature
+        essentially specifies a set of nodes `{ nt }`.
+
+        The features are passed as a list of keyword arguments.
+        """
+
         edgeFeatures = self.edgeFeatures
 
         self.stats[self.E] += 1
@@ -533,6 +623,26 @@ class CV(object):
             edgeFeatures[k][nodeFrom][nodeTo] = v
 
     def occurs(self, feat):
+        """Returns True if the feature with name `featureName` occurs in the
+
+            occurs = cv.occurs(featureName)
+
+        resulting data, else False.
+        If you have assigned None values to a feature, that will count, i.e.
+        that feature occurs in the data.
+
+        If you add feature values conditionally, it might happen that some
+        features will not be used at all.
+        For example, if your conversion produces errors, you might
+        add the error information to the result in the form of error features.
+
+        Later on, when the errors have been weeded out, these features will
+        not occur any more in the result, but then TF will complain that
+        such is feature is declared but not used.
+        At the end of your director you can remove unused features
+        conditionally, using this function.
+        """
+
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         if feat in nodeFeatures or feat in edgeFeatures:
@@ -540,6 +650,22 @@ class CV(object):
         return False
 
     def meta(self, feat, **metadata):
+        """Add, modify, delete metadata fields of features.
+
+            cv.meta(feature, name=value, ... , name=value)
+
+
+        `feature` is the feature name.
+
+        If a `value` is `None`, that `name` will be deleted from the metadata fields.
+
+        A bare `cv.meta(feature)` will remove the feature from the metadata.
+
+        If you modify the field `valueType` of a feature, that feature will be added
+        or removed from the set of `intFeatures`.
+        It will be checked whether you specify either `int` or `str`.
+        """
+
         errors = self.errors
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -555,7 +681,7 @@ class CV(object):
         for (field, text) in metadata.items():
             if text is None:
                 if field == "valueType":
-                    errors[f'did not delete metadata field "valueType"'].append(feat)
+                    errors['did not delete metadata field "valueType"'].append(feat)
                     good = False
                 else:
                     if feat in metaData and field in metaData[feat]:
@@ -571,22 +697,67 @@ class CV(object):
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def linked(self, node):
+        """Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+        """
+
         oslots = self.oslots
         return tuple(oslots.get(node, []))
 
     def active(self, node):
+        """Returns whether the node `n` is currently active, i.e. in the set
+
+            isActive = cv.active(n)
+
+        of embedders.
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know whether a node is active.
+        """
+
         return node in self.curEmbedders
 
     def activeTypes(self):
+        """Returns the node types of the currently active nodes, i.e. the embedders.
+
+            nTypes = cv.activeTypes()
+        """
+
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
+        """Retrieve feature values.
+
+            cv.get(feature, n)` and `cv.get(feature, nf, nt)
+
+
+        `feature` is the name of the feature.
+
+        For node features, `n` is the node which carries the value.
+
+        For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+        """
+
         errors = self.errors
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         nArgs = len(args)
         if nArgs == 0 or nArgs > 2:
-            errors[f"use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`"].append(None)
+            errors["use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`"].append(None)
             return None
 
         return (
@@ -649,7 +820,7 @@ class CV(object):
         if not self.good:
             return
 
-        info(f"Following director... ")
+        info("Following director... ")
 
         slotType = self.slotType
         errors = self.errors
@@ -728,7 +899,7 @@ class CV(object):
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info(f"Removing unlinked nodes ... ")
+            info("Removing unlinked nodes ... ")
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -763,7 +934,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f"checking for nodes and edges ... ")
+        info("checking for nodes and edges ... ")
 
         nodes = self.nodes
         errors = self.errors
@@ -795,7 +966,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f"checking features ... ")
+        info("checking features ... ")
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -915,14 +1086,20 @@ class CV(object):
                 featData = nodeFeatures[feat]
                 for (k, v) in featData.items():
                     if not isInt(v):
-                        errors[f"Not a number"].append(f'"node feature "{k}": "{v}"')
+                        (nType, node) = k
+                        errors["Not a number"].append(
+                            f'"node feature "{feat}": {nType} {node} => "{v}"'
+                        )
             if feat in edgeFeatures and metaData[feat]["edgeValues"]:
                 featData = edgeFeatures[feat]
                 for (fromNode, toValues) in featData.items():
-                    for v in toValues.values():
+                    (fType, fNode) = fromNode
+                    for (toNode, v) in toValues.items():
+                        (tType, tNode) = toNode
                         if not isInt(v):
-                            errors[f"Not a number"].append(
-                                f'"edge feature "{k}": "{v}"'
+                            errors["Not a number"].append(
+                                f'"edge feature "{feat}":'
+                                f' {fType} {fNode} ="{v}"=> {tType} {tNode}'
                             )
 
         self._showErrors()

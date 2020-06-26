@@ -156,7 +156,7 @@ def composeT(
         if doHeader:
             doHeader = False
             tuplesHtml.append(
-                f'<div class="dtheadrow"><span>n</span><span>'
+                '<div class="dtheadrow"><span>n</span><span>'
                 + "</span><span>".join(fOtype(n) for n in tup)
                 + "</span></div>"
             )

@@ -39,3 +39,8 @@ See `tf.advanced.options` for a list of display parameters.
 
 Both `pretty` and `plain` are implemented as a call to the
 `tf.advanced.render.render` function.
+
+## See also
+
+All about the nature and implementation of the display algorithm is in
+`tf.about.displaydesign`.

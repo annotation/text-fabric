@@ -167,7 +167,7 @@ def loadCss(app):
         "tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n"
         "tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n"
     )
-    dh(f"<style>" + tableCss + genericCss + css + "</style>")
+    dh("<style>" + tableCss + genericCss + css + "</style>")
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):
@@ -537,9 +537,9 @@ def plainTuple(
             f'<th class="tf {ltr}">'
         )
         + f'</th><th class="tf {ltr}">'.join(fOtypev(n) for n in tup)
-        + f"</th></tr>"
+        + "</th></tr>"
     )
-    html = f"<table>" + head + "".join(html) + "</table>"
+    html = "<table>" + head + "".join(html) + "</table>"
 
     dh(html)
 

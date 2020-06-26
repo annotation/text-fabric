@@ -46,12 +46,23 @@ text-fabric appName:hot
 
 ### 8.3
 
+#### 8.3.4
+
+2020-06-26
+
+Various small fixes:
+
+*   Fix in result display in TF browser: the members of a result
+    form a row again instead of a column.
+*   Better error message in some cases in `tf.convert.walker`.
+*   Moved documentation of the walker functions into the docstrings of those functions.
+
 #### 8.3.3
 
 Small fix by Cody Kingham: when calling `use(api=...)` with an TF api constructed
 before, the `TF` attribute of this api is not transported to the app object.
 
-2020-06-11
+2020-06-13
 
 #### 8.3.1, 8.3.2
 

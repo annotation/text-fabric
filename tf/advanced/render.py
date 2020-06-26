@@ -43,10 +43,11 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     rep = "".join(html)
     ltr = settings.ltr
 
+    elem = "span" if _inTuple else "div"
     result = (
-        f"""{passage}<div class="{ltr} children">{rep}</div>"""
+        f"""{passage}<{elem} class="{ltr} children">{rep}</{elem}>"""
         if isPretty
-        else f"""<div class="{ltr}">{passage}{rep}</div>"""
+        else f"""<{elem} class="{ltr}">{passage}{rep}</{elem}>"""
     )
 
     if _browse or _asString:
@@ -246,7 +247,7 @@ def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
     n = tree[0][0]
 
     containerB = f'<div class="{contCls} {{}} {ltr} {boundaryCls} {hlCls}" {hlStyle}>'
-    containerE = f"</div>"
+    containerE = "</div>"
 
     terminalCls = "trm"
     material = featurePart

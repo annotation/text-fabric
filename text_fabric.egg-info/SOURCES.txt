@@ -23,6 +23,7 @@ tf/about/code.py
 tf/about/corpora.py
 tf/about/datamodel.py
 tf/about/datasharing.py
+tf/about/displaydesign.py
 tf/about/faq.py
 tf/about/fileformats.py
 tf/about/install.py
