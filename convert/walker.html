@@ -108,125 +108,22 @@ before running the director.</p>
 by issuing <code>cv.meta()</code> actions from within your director, see below.</p>
 <h2 id="action-methods">Action methods</h2>
 <p>The <code>cv</code> class contains methods that are responsible for particular <em>actions</em>
-that steer the graph building.</p>
-<dl>
-<dt><code>n = cv.slot()</code></dt>
-<dd>
-<p>Make a slot node and return the handle to it in <code>n</code>.</p>
-<p>No further information is needed.
-Remember that you can add features to the node by later</p>
-<pre><code>cv.feature(n, key=value, ...)
-</code></pre>
-<p>calls.</p>
-</dd>
-<dt><code>n = cv.node(nodeType)</code></dt>
-<dd>
-<p>Make a non-slot node and return the handle to it in <code>n</code>.
-You have to pass its <em>node type</em>, i.e. a string.
-Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.
-Non slot nodes will be automatically added to the set of embedders.</p>
-<p>Remember that you can add features to the node by later</p>
-<pre><code>cv.feature(n, key=value, ...)
-</code></pre>
-<p>calls.</p>
-</dd>
-<dt><code>cv.terminate(n) </code></dt>
-<dd>
-<p><strong>terminate</strong> a node.</p>
-<p>The node <code>n</code> will be removed from the set of current embedders.
-This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
-</dd>
-<dt><code>cv.resume(n)</code></dt>
-<dd>
-<p><strong>resume</strong> a node.</p>
-<p>If you resume a non-slot node, you add it again to the set of embedders.
-No new node will be created.</p>
-<p>If you resume a slot node, it will be added to the set of current embedders.
-No new slot will be created.</p>
-</dd>
-<dt><code>cv.feature(n, name=value, ... , name=value)</code></dt>
-<dd>
-<p>Add <strong>node features</strong>.</p>
-<p>The features are passed as a list of keyword arguments.</p>
-<p>These features are added to node <code>n</code>.
-This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
-<p><strong>If a feature value is <code>None</code> it will not be added!</strong></p>
-<p>The features are passed as a list of keyword arguments.</p>
-</dd>
-<dt><code>cv.edge(nf, nt, name=value, ... , name=value)</code></dt>
-<dd>
-<p>Add <strong>edge features</strong>.</p>
-<p>You need to pass two nodes, <code>nf</code> (<em>from</em>) and <code>nt</code> (<em>to</em>).
-Together these specify an edge, and the features will be applied
-to this edge.</p>
-<p>You may pass values that are <code>None</code>, and a corresponding edge will be created.
-If for all pairs <code>nf</code>, <code>nt</code> the value is <code>None</code>,
-an edge without values will be created. For every <code>nf</code>, such a feature
-essentially specifies a set of nodes <code>{ nt }</code>.</p>
-<p>The features are passed as a list of keyword arguments.</p>
-</dd>
-<dt><code>cv.meta(feature, name=value, ... , name=value)</code></dt>
-<dd>
-<p>Add, modify, delete metadata fields of features.</p>
-<p><code>feature</code> is the feature name.</p>
-<p>If a <code>value</code> is <code>None</code>, that <code>name</code> will be deleted from the metadata fields.</p>
-<p>A bare <code>cv.meta(feature)</code> will remove the feature from the metadata.</p>
-<p>If you modify the field <code>valueType</code> of a feature, that feature will be added
-or removed from the set of <code>intFeatures</code>.
-It will be checked whether you specify either <code>int</code> or <code>str</code>.</p>
-</dd>
-<dt><code>occurs = cv.occurs(featureName)</code></dt>
-<dd>
-<p>Returns True if the feature with name <code>featureName</code> occurs in the
-resulting data, else False.
-If you have assigned None values to a feature, that will count, i.e.
-that feature occurs in the data.</p>
-<p>If you add feature values conditionally, it might happen that some
-features will not be used at all.
-For example, if your conversion produces errors, you might
-add the error information to the result in the form of error features.</p>
-<p>Later on, when the errors have been weeded out, these features will
-not occur any more in the result, but then TF will complain that
-such is feature is declared but not used.
-At the end of your director you can remove unused features
-conditionally, using this function.</p>
-</dd>
-<dt><code>ss = cv.linked(n)</code></dt>
-<dd>
-<p>Returns the slots <code>ss</code> to which a node is currently linked.</p>
-<p>If you construct non-slot nodes without linking them to slots,
-they will be removed when TF validates the collective result
-of the action methods.</p>
-<p>If you want to prevent that, you can insert an extra slot, but in order
-to do so, you have to detect that a node is still unlinked.</p>
-<p>This action is precisely meant for that.</p>
-</dd>
-<dt><code>isActive = cv.active(n)</code></dt>
-<dd>
-<p>Returns whether the node <code>n</code> is currently active, i.e. in the set
-of embedders. </p>
-<p>If you construct your nodes in a very dynamic way, it might be
-hard to keep track for each node whether it has been created, terminated,
-or resumed, in other words, whether it is active or not.</p>
-<p>This action is provides a direct and precise way to know whether a node is active.</p>
-</dd>
-<dt><code>nTypes = cv.activeTypes()</code></dt>
-<dd>Returns the node types of the currently active nodes, i.e. the embedders.</dd>
-<dt><code>cv.get(feature, n)</code> and <code>cv.get(feature, nf, nt)</code></dt>
-<dd>
-<p>Retrieve feature values.</p>
-<p><code>feature</code> is the name of the feature.</p>
-<p>For node features, <code>n</code> is the node which carries the value.</p>
-<p>For edge features, <code>nf, nt</code> is the pair of from-to nodes which carries the value.</p>
-</dd>
-<dt><code>cv.stop(msg)</code></dt>
-<dd>Stops the director. No further input will be read.
-The director will exit with a non-good status
-and issue the message <code>msg</code>.
-If you have called <code>walk()</code> with <code>force=True</code>, indicating that the
-director must proceed after errors, then this stop command will cause termination
-nevertheless.</dd>
-</dl>
+that steer the graph building:</p>
+<ul>
+<li><code><a title="tf.convert.walker.CV.slot" href="#tf.convert.walker.CV.slot">CV.slot()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.node" href="#tf.convert.walker.CV.node">CV.node()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.terminate" href="#tf.convert.walker.CV.terminate">CV.terminate()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.resume" href="#tf.convert.walker.CV.resume">CV.resume()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">CV.feature()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">CV.edge()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.meta" href="#tf.convert.walker.CV.meta">CV.meta()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.occurs" href="#tf.convert.walker.CV.occurs">CV.occurs()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">CV.linked()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.active" href="#tf.convert.walker.CV.active">CV.active()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.activeTypes" href="#tf.convert.walker.CV.activeTypes">CV.activeTypes()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.get" href="#tf.convert.walker.CV.get">CV.get()</a></code> and <code>cv.get(feature, nf, nt)</code></li>
+<li><code><a title="tf.convert.walker.CV.stop" href="#tf.convert.walker.CV.stop">CV.stop()</a></code></li>
+</ul>
 <div class="admonition hint">
 <p class="admonition-title">Example</p>
 <p>Follow the
@@ -237,7 +134,7 @@ nevertheless.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L0-L1056" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L0-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/walker.md
@@ -490,7 +387,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;Preparing metadata... &#34;)
+        info(&#34;Preparing metadata... &#34;)
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -589,10 +486,10 @@ class CV(object):
                     textFormats[k[4:]] = featureSet
                     textFeatures |= featureSet
             if not textFormats:
-                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(f&#39;add &#34;fmt:text-orig-full&#34;&#39;)
+                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(&#39;add &#34;fmt:text-orig-full&#34;&#39;)
             elif &#34;text-orig-full&#34; not in textFormats:
                 errors[&#34;No default text format in otext&#34;].append(
-                    f&#39;add &#34;fmt:text-orig-full&#34;&#39;
+                    &#39;add &#34;fmt:text-orig-full&#34;&#39;
                 )
             self.textFormats = textFormats
             self.textFeatures = textFeatures
@@ -601,7 +498,7 @@ class CV(object):
         info(f&#39;SECTION   FEATURES: {&#34;, &#34;.join(self.sectionFeatures)}&#39;, tm=False)
         info(f&#39;STRUCTURE TYPES:    {&#34;, &#34;.join(self.structureTypes)}&#39;, tm=False)
         info(f&#39;STRUCTURE FEATURES: {&#34;, &#34;.join(self.structureFeatures)}&#39;, tm=False)
-        info(f&#34;TEXT      FEATURES:&#34;, tm=False)
+        info(&#34;TEXT      FEATURES:&#34;, tm=False)
         indent(level=2)
         for (fmt, feats) in sorted(textFormats.items()):
             info(f&#39;{fmt:&lt;20} {&#34;, &#34;.join(sorted(feats))}&#39;, tm=False)
@@ -649,7 +546,7 @@ class CV(object):
             if feat in WARP[0:3] + (&#34;&#34;,):
                 if feat == &#34;&#34;:
                     errors[&#34;featureMeta&#34;].append(
-                        f&#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
+                        &#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
                     )
                     good = False
                 elif feat == WARP[2]:
@@ -669,7 +566,7 @@ class CV(object):
                 )
                 good = False
             elif featMeta[&#34;valueType&#34;] not in {&#34;int&#34;, &#34;str&#34;}:
-                errors[&#34;featureMeta&#34;].append(f&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
+                errors[&#34;featureMeta&#34;].append(&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
                 good = False
 
         for (e, eData) in errors.items():
@@ -679,6 +576,16 @@ class CV(object):
         return good
 
     def stop(self, msg):
+        &#34;&#34;&#34;Stops the director. No further input will be read.
+
+            cv.stop(msg)
+
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause termination
+        nevertheless.
+        &#34;&#34;&#34;
+
         tmObj = self.TF.tmObj
         error = tmObj.error
 
@@ -688,6 +595,19 @@ class CV(object):
         self.forcedStop = True
 
     def slot(self):
+        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+            n = cv.slot()
+
+
+        No further information is needed.
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        &#34;&#34;&#34;
+
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
@@ -712,6 +632,21 @@ class CV(object):
         return (nType, seq)
 
     def node(self, nType):
+        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+            n = cv.node(nodeType)
+
+        You have to pass its *node type*, i.e. a string.
+        Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+        Non slot nodes will be automatically added to the set of embedders.
+
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        &#34;&#34;&#34;
+
         slotType = self.slotType
         errors = self.errors
 
@@ -734,12 +669,32 @@ class CV(object):
         return node
 
     def terminate(self, node):
+        &#34;&#34;&#34;**terminate** a node.
+
+            cv.terminate(n)
+
+        The node `n` will be removed from the set of current embedders.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+        &#34;&#34;&#34;
+
         self.stats[self.T] += 1
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
 
     def resume(self, node):
+        &#34;&#34;&#34;**resume** a node.
+
+            cv.resume(n)
+
+
+        If you resume a non-slot node, you add it again to the set of embedders.
+        No new node will be created.
+
+        If you resume a slot node, it will be added to the set of current embedders.
+        No new slot will be created.
+        &#34;&#34;&#34;
+
         curEmbedders = self.curEmbedders
         oslots = self.oslots
 
@@ -754,6 +709,21 @@ class CV(object):
             curEmbedders.add(node)
 
     def feature(self, node, **features):
+        &#34;&#34;&#34;Add **node features**.
+
+            cv.feature(n, name=value, ... , name=value)
+
+
+        The features are passed as a list of keyword arguments.
+
+        These features are added to node `n`.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        **If a feature value is `None` it will not be added!**
+
+        The features are passed as a list of keyword arguments.
+        &#34;&#34;&#34;
+
         nodeFeatures = self.nodeFeatures
 
         self.stats[self.F] += 1
@@ -765,6 +735,23 @@ class CV(object):
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
+        &#34;&#34;&#34;Add **edge features**.
+
+            cv.edge(nf, nt, name=value, ... , name=value)
+
+
+        You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
+        Together these specify an edge, and the features will be applied
+        to this edge.
+
+        You may pass values that are `None`, and a corresponding edge will be created.
+        If for all pairs `nf`, `nt` the value is `None`,
+        an edge without values will be created. For every `nf`, such a feature
+        essentially specifies a set of nodes `{ nt }`.
+
+        The features are passed as a list of keyword arguments.
+        &#34;&#34;&#34;
+
         edgeFeatures = self.edgeFeatures
 
         self.stats[self.E] += 1
@@ -774,6 +761,26 @@ class CV(object):
             edgeFeatures[k][nodeFrom][nodeTo] = v
 
     def occurs(self, feat):
+        &#34;&#34;&#34;Returns True if the feature with name `featureName` occurs in the
+
+            occurs = cv.occurs(featureName)
+
+        resulting data, else False.
+        If you have assigned None values to a feature, that will count, i.e.
+        that feature occurs in the data.
+
+        If you add feature values conditionally, it might happen that some
+        features will not be used at all.
+        For example, if your conversion produces errors, you might
+        add the error information to the result in the form of error features.
+
+        Later on, when the errors have been weeded out, these features will
+        not occur any more in the result, but then TF will complain that
+        such is feature is declared but not used.
+        At the end of your director you can remove unused features
+        conditionally, using this function.
+        &#34;&#34;&#34;
+
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         if feat in nodeFeatures or feat in edgeFeatures:
@@ -781,6 +788,22 @@ class CV(object):
         return False
 
     def meta(self, feat, **metadata):
+        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+            cv.meta(feature, name=value, ... , name=value)
+
+
+        `feature` is the feature name.
+
+        If a `value` is `None`, that `name` will be deleted from the metadata fields.
+
+        A bare `cv.meta(feature)` will remove the feature from the metadata.
+
+        If you modify the field `valueType` of a feature, that feature will be added
+        or removed from the set of `intFeatures`.
+        It will be checked whether you specify either `int` or `str`.
+        &#34;&#34;&#34;
+
         errors = self.errors
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -796,7 +819,7 @@ class CV(object):
         for (field, text) in metadata.items():
             if text is None:
                 if field == &#34;valueType&#34;:
-                    errors[f&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                    errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
                     good = False
                 else:
                     if feat in metaData and field in metaData[feat]:
@@ -812,22 +835,67 @@ class CV(object):
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+        &#34;&#34;&#34;
+
         oslots = self.oslots
         return tuple(oslots.get(node, []))
 
     def active(self, node):
+        &#34;&#34;&#34;Returns whether the node `n` is currently active, i.e. in the set
+
+            isActive = cv.active(n)
+
+        of embedders.
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know whether a node is active.
+        &#34;&#34;&#34;
+
         return node in self.curEmbedders
 
     def activeTypes(self):
+        &#34;&#34;&#34;Returns the node types of the currently active nodes, i.e. the embedders.
+
+            nTypes = cv.activeTypes()
+        &#34;&#34;&#34;
+
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
+        &#34;&#34;&#34;Retrieve feature values.
+
+            cv.get(feature, n)` and `cv.get(feature, nf, nt)
+
+
+        `feature` is the name of the feature.
+
+        For node features, `n` is the node which carries the value.
+
+        For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+        &#34;&#34;&#34;
+
         errors = self.errors
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         nArgs = len(args)
         if nArgs == 0 or nArgs &gt; 2:
-            errors[f&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+            errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
             return None
 
         return (
@@ -890,7 +958,7 @@ class CV(object):
         if not self.good:
             return
 
-        info(f&#34;Following director... &#34;)
+        info(&#34;Following director... &#34;)
 
         slotType = self.slotType
         errors = self.errors
@@ -969,7 +1037,7 @@ class CV(object):
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info(f&#34;Removing unlinked nodes ... &#34;)
+            info(&#34;Removing unlinked nodes ... &#34;)
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -1004,7 +1072,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;checking for nodes and edges ... &#34;)
+        info(&#34;checking for nodes and edges ... &#34;)
 
         nodes = self.nodes
         errors = self.errors
@@ -1036,7 +1104,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;checking features ... &#34;)
+        info(&#34;checking features ... &#34;)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1156,14 +1224,20 @@ class CV(object):
                 featData = nodeFeatures[feat]
                 for (k, v) in featData.items():
                     if not isInt(v):
-                        errors[f&#34;Not a number&#34;].append(f&#39;&#34;node feature &#34;{k}&#34;: &#34;{v}&#34;&#39;)
+                        (nType, node) = k
+                        errors[&#34;Not a number&#34;].append(
+                            f&#39;&#34;node feature &#34;{feat}&#34;: {nType} {node} =&gt; &#34;{v}&#34;&#39;
+                        )
             if feat in edgeFeatures and metaData[feat][&#34;edgeValues&#34;]:
                 featData = edgeFeatures[feat]
                 for (fromNode, toValues) in featData.items():
-                    for v in toValues.values():
+                    (fType, fNode) = fromNode
+                    for (toNode, v) in toValues.items():
+                        (tType, tNode) = toNode
                         if not isInt(v):
-                            errors[f&#34;Not a number&#34;].append(
-                                f&#39;&#34;edge feature &#34;{k}&#34;: &#34;{v}&#34;&#39;
+                            errors[&#34;Not a number&#34;].append(
+                                f&#39;&#34;edge feature &#34;{feat}&#34;:&#39;
+                                f&#39; {fType} {fNode} =&#34;{v}&#34;=&gt; {tType} {tNode}&#39;
                             )
 
         self._showErrors()
@@ -1316,7 +1390,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L13-L1057" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L13-L1234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -1557,7 +1631,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;Preparing metadata... &#34;)
+        info(&#34;Preparing metadata... &#34;)
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -1656,10 +1730,10 @@ class CV(object):
                     textFormats[k[4:]] = featureSet
                     textFeatures |= featureSet
             if not textFormats:
-                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(f&#39;add &#34;fmt:text-orig-full&#34;&#39;)
+                errors[&#39;No text formats in &#34;otext&#34;&#39;].append(&#39;add &#34;fmt:text-orig-full&#34;&#39;)
             elif &#34;text-orig-full&#34; not in textFormats:
                 errors[&#34;No default text format in otext&#34;].append(
-                    f&#39;add &#34;fmt:text-orig-full&#34;&#39;
+                    &#39;add &#34;fmt:text-orig-full&#34;&#39;
                 )
             self.textFormats = textFormats
             self.textFeatures = textFeatures
@@ -1668,7 +1742,7 @@ class CV(object):
         info(f&#39;SECTION   FEATURES: {&#34;, &#34;.join(self.sectionFeatures)}&#39;, tm=False)
         info(f&#39;STRUCTURE TYPES:    {&#34;, &#34;.join(self.structureTypes)}&#39;, tm=False)
         info(f&#39;STRUCTURE FEATURES: {&#34;, &#34;.join(self.structureFeatures)}&#39;, tm=False)
-        info(f&#34;TEXT      FEATURES:&#34;, tm=False)
+        info(&#34;TEXT      FEATURES:&#34;, tm=False)
         indent(level=2)
         for (fmt, feats) in sorted(textFormats.items()):
             info(f&#39;{fmt:&lt;20} {&#34;, &#34;.join(sorted(feats))}&#39;, tm=False)
@@ -1716,7 +1790,7 @@ class CV(object):
             if feat in WARP[0:3] + (&#34;&#34;,):
                 if feat == &#34;&#34;:
                     errors[&#34;featureMeta&#34;].append(
-                        f&#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
+                        &#39;Specify the generic feature meta data in &#34;generic&#34;&#39;
                     )
                     good = False
                 elif feat == WARP[2]:
@@ -1736,7 +1810,7 @@ class CV(object):
                 )
                 good = False
             elif featMeta[&#34;valueType&#34;] not in {&#34;int&#34;, &#34;str&#34;}:
-                errors[&#34;featureMeta&#34;].append(f&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
+                errors[&#34;featureMeta&#34;].append(&#39;valueType must be &#34;int&#34; or &#34;str&#34;&#39;)
                 good = False
 
         for (e, eData) in errors.items():
@@ -1746,6 +1820,16 @@ class CV(object):
         return good
 
     def stop(self, msg):
+        &#34;&#34;&#34;Stops the director. No further input will be read.
+
+            cv.stop(msg)
+
+        The director will exit with a non-good status  and issue the message `msg`.
+        If you have called `walk()` with `force=True`, indicating that the
+        director must proceed after errors, then this stop command will cause termination
+        nevertheless.
+        &#34;&#34;&#34;
+
         tmObj = self.TF.tmObj
         error = tmObj.error
 
@@ -1755,6 +1839,19 @@ class CV(object):
         self.forcedStop = True
 
     def slot(self):
+        &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+            n = cv.slot()
+
+
+        No further information is needed.
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        &#34;&#34;&#34;
+
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
@@ -1779,6 +1876,21 @@ class CV(object):
         return (nType, seq)
 
     def node(self, nType):
+        &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+            n = cv.node(nodeType)
+
+        You have to pass its *node type*, i.e. a string.
+        Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+        Non slot nodes will be automatically added to the set of embedders.
+
+        Remember that you can add features to the node by later
+
+            cv.feature(n, key=value, ...)
+
+        calls.
+        &#34;&#34;&#34;
+
         slotType = self.slotType
         errors = self.errors
 
@@ -1801,12 +1913,32 @@ class CV(object):
         return node
 
     def terminate(self, node):
+        &#34;&#34;&#34;**terminate** a node.
+
+            cv.terminate(n)
+
+        The node `n` will be removed from the set of current embedders.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+        &#34;&#34;&#34;
+
         self.stats[self.T] += 1
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
 
     def resume(self, node):
+        &#34;&#34;&#34;**resume** a node.
+
+            cv.resume(n)
+
+
+        If you resume a non-slot node, you add it again to the set of embedders.
+        No new node will be created.
+
+        If you resume a slot node, it will be added to the set of current embedders.
+        No new slot will be created.
+        &#34;&#34;&#34;
+
         curEmbedders = self.curEmbedders
         oslots = self.oslots
 
@@ -1821,6 +1953,21 @@ class CV(object):
             curEmbedders.add(node)
 
     def feature(self, node, **features):
+        &#34;&#34;&#34;Add **node features**.
+
+            cv.feature(n, name=value, ... , name=value)
+
+
+        The features are passed as a list of keyword arguments.
+
+        These features are added to node `n`.
+        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        **If a feature value is `None` it will not be added!**
+
+        The features are passed as a list of keyword arguments.
+        &#34;&#34;&#34;
+
         nodeFeatures = self.nodeFeatures
 
         self.stats[self.F] += 1
@@ -1832,6 +1979,23 @@ class CV(object):
             nodeFeatures[k][node] = v
 
     def edge(self, nodeFrom, nodeTo, **features):
+        &#34;&#34;&#34;Add **edge features**.
+
+            cv.edge(nf, nt, name=value, ... , name=value)
+
+
+        You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
+        Together these specify an edge, and the features will be applied
+        to this edge.
+
+        You may pass values that are `None`, and a corresponding edge will be created.
+        If for all pairs `nf`, `nt` the value is `None`,
+        an edge without values will be created. For every `nf`, such a feature
+        essentially specifies a set of nodes `{ nt }`.
+
+        The features are passed as a list of keyword arguments.
+        &#34;&#34;&#34;
+
         edgeFeatures = self.edgeFeatures
 
         self.stats[self.E] += 1
@@ -1841,6 +2005,26 @@ class CV(object):
             edgeFeatures[k][nodeFrom][nodeTo] = v
 
     def occurs(self, feat):
+        &#34;&#34;&#34;Returns True if the feature with name `featureName` occurs in the
+
+            occurs = cv.occurs(featureName)
+
+        resulting data, else False.
+        If you have assigned None values to a feature, that will count, i.e.
+        that feature occurs in the data.
+
+        If you add feature values conditionally, it might happen that some
+        features will not be used at all.
+        For example, if your conversion produces errors, you might
+        add the error information to the result in the form of error features.
+
+        Later on, when the errors have been weeded out, these features will
+        not occur any more in the result, but then TF will complain that
+        such is feature is declared but not used.
+        At the end of your director you can remove unused features
+        conditionally, using this function.
+        &#34;&#34;&#34;
+
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         if feat in nodeFeatures or feat in edgeFeatures:
@@ -1848,6 +2032,22 @@ class CV(object):
         return False
 
     def meta(self, feat, **metadata):
+        &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+            cv.meta(feature, name=value, ... , name=value)
+
+
+        `feature` is the feature name.
+
+        If a `value` is `None`, that `name` will be deleted from the metadata fields.
+
+        A bare `cv.meta(feature)` will remove the feature from the metadata.
+
+        If you modify the field `valueType` of a feature, that feature will be added
+        or removed from the set of `intFeatures`.
+        It will be checked whether you specify either `int` or `str`.
+        &#34;&#34;&#34;
+
         errors = self.errors
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1863,7 +2063,7 @@ class CV(object):
         for (field, text) in metadata.items():
             if text is None:
                 if field == &#34;valueType&#34;:
-                    errors[f&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                    errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
                     good = False
                 else:
                     if feat in metaData and field in metaData[feat]:
@@ -1879,22 +2079,67 @@ class CV(object):
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
     def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+        &#34;&#34;&#34;
+
         oslots = self.oslots
         return tuple(oslots.get(node, []))
 
     def active(self, node):
+        &#34;&#34;&#34;Returns whether the node `n` is currently active, i.e. in the set
+
+            isActive = cv.active(n)
+
+        of embedders.
+
+        If you construct your nodes in a very dynamic way, it might be
+        hard to keep track for each node whether it has been created, terminated,
+        or resumed, in other words, whether it is active or not.
+
+        This action is provides a direct and precise way to know whether a node is active.
+        &#34;&#34;&#34;
+
         return node in self.curEmbedders
 
     def activeTypes(self):
+        &#34;&#34;&#34;Returns the node types of the currently active nodes, i.e. the embedders.
+
+            nTypes = cv.activeTypes()
+        &#34;&#34;&#34;
+
         return {node[0] for node in self.curEmbedders}
 
     def get(self, feature, *args):
+        &#34;&#34;&#34;Retrieve feature values.
+
+            cv.get(feature, n)` and `cv.get(feature, nf, nt)
+
+
+        `feature` is the name of the feature.
+
+        For node features, `n` is the node which carries the value.
+
+        For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+        &#34;&#34;&#34;
+
         errors = self.errors
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
         nArgs = len(args)
         if nArgs == 0 or nArgs &gt; 2:
-            errors[f&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+            errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
             return None
 
         return (
@@ -1957,7 +2202,7 @@ class CV(object):
         if not self.good:
             return
 
-        info(f&#34;Following director... &#34;)
+        info(&#34;Following director... &#34;)
 
         slotType = self.slotType
         errors = self.errors
@@ -2036,7 +2281,7 @@ class CV(object):
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info(f&#34;Removing unlinked nodes ... &#34;)
+            info(&#34;Removing unlinked nodes ... &#34;)
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -2071,7 +2316,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;checking for nodes and edges ... &#34;)
+        info(&#34;checking for nodes and edges ... &#34;)
 
         nodes = self.nodes
         errors = self.errors
@@ -2103,7 +2348,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(f&#34;checking features ... &#34;)
+        info(&#34;checking features ... &#34;)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -2223,14 +2468,20 @@ class CV(object):
                 featData = nodeFeatures[feat]
                 for (k, v) in featData.items():
                     if not isInt(v):
-                        errors[f&#34;Not a number&#34;].append(f&#39;&#34;node feature &#34;{k}&#34;: &#34;{v}&#34;&#39;)
+                        (nType, node) = k
+                        errors[&#34;Not a number&#34;].append(
+                            f&#39;&#34;node feature &#34;{feat}&#34;: {nType} {node} =&gt; &#34;{v}&#34;&#39;
+                        )
             if feat in edgeFeatures and metaData[feat][&#34;edgeValues&#34;]:
                 featData = edgeFeatures[feat]
                 for (fromNode, toValues) in featData.items():
-                    for v in toValues.values():
+                    (fType, fNode) = fromNode
+                    for (toNode, v) in toValues.items():
+                        (tType, tNode) = toNode
                         if not isInt(v):
-                            errors[f&#34;Not a number&#34;].append(
-                                f&#39;&#34;edge feature &#34;{k}&#34;: &#34;{v}&#34;&#39;
+                            errors[&#34;Not a number&#34;].append(
+                                f&#39;&#34;edge feature &#34;{feat}&#34;:&#39;
+                                f&#39; {fType} {fNode} =&#34;{v}&#34;=&gt; {tType} {tNode}&#39;
                             )
 
         self._showErrors()
@@ -2397,13 +2648,33 @@ class CV(object):
 <span>def <span class="ident">active</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns whether the node <code>n</code> is currently active, i.e. in the set</p>
+<pre><code>isActive = cv.active(n)
+</code></pre>
+<p>of embedders.</p>
+<p>If you construct your nodes in a very dynamic way, it might be
+hard to keep track for each node whether it has been created, terminated,
+or resumed, in other words, whether it is active or not.</p>
+<p>This action is provides a direct and precise way to know whether a node is active.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L577-L578" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L718-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
+    &#34;&#34;&#34;Returns whether the node `n` is currently active, i.e. in the set
+
+        isActive = cv.active(n)
+
+    of embedders.
+
+    If you construct your nodes in a very dynamic way, it might be
+    hard to keep track for each node whether it has been created, terminated,
+    or resumed, in other words, whether it is active or not.
+
+    This action is provides a direct and precise way to know whether a node is active.
+    &#34;&#34;&#34;
+
     return node in self.curEmbedders</code></pre>
 </details>
 </dd>
@@ -2411,13 +2682,19 @@ class CV(object):
 <span>def <span class="ident">activeTypes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the node types of the currently active nodes, i.e. the embedders.</p>
+<p>nTypes = cv.activeTypes()</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L580-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L734-L740" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
+    &#34;&#34;&#34;Returns the node types of the currently active nodes, i.e. the embedders.
+
+        nTypes = cv.activeTypes()
+    &#34;&#34;&#34;
+
     return {node[0] for node in self.curEmbedders}</code></pre>
 </details>
 </dd>
@@ -2425,13 +2702,40 @@ class CV(object):
 <span>def <span class="ident">edge</span></span>(<span>self, nodeFrom, nodeTo, **features)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Add <strong>edge features</strong>.</p>
+<pre><code>cv.edge(nf, nt, name=value, ... , name=value)
+</code></pre>
+<p>You need to pass two nodes, <code>nf</code> (<em>from</em>) and <code>nt</code> (<em>to</em>).
+Together these specify an edge, and the features will be applied
+to this edge.</p>
+<p>You may pass values that are <code>None</code>, and a corresponding edge will be created.
+If for all pairs <code>nf</code>, <code>nt</code> the value is <code>None</code>,
+an edge without values will be created. For every <code>nf</code>, such a feature
+essentially specifies a set of nodes <code>{ nt }</code>.</p>
+<p>The features are passed as a list of keyword arguments.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L526-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L599-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
+    &#34;&#34;&#34;Add **edge features**.
+
+        cv.edge(nf, nt, name=value, ... , name=value)
+
+
+    You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
+    Together these specify an edge, and the features will be applied
+    to this edge.
+
+    You may pass values that are `None`, and a corresponding edge will be created.
+    If for all pairs `nf`, `nt` the value is `None`,
+    an edge without values will be created. For every `nf`, such a feature
+    essentially specifies a set of nodes `{ nt }`.
+
+    The features are passed as a list of keyword arguments.
+    &#34;&#34;&#34;
+
     edgeFeatures = self.edgeFeatures
 
     self.stats[self.E] += 1
@@ -2445,13 +2749,35 @@ class CV(object):
 <span>def <span class="ident">feature</span></span>(<span>self, node, **features)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Add <strong>node features</strong>.</p>
+<pre><code>cv.feature(n, name=value, ... , name=value)
+</code></pre>
+<p>The features are passed as a list of keyword arguments.</p>
+<p>These features are added to node <code>n</code>.
+This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p>
+<p><strong>If a feature value is <code>None</code> it will not be added!</strong></p>
+<p>The features are passed as a list of keyword arguments.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L515-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L573-L597" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
+    &#34;&#34;&#34;Add **node features**.
+
+        cv.feature(n, name=value, ... , name=value)
+
+
+    The features are passed as a list of keyword arguments.
+
+    These features are added to node `n`.
+    This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+    **If a feature value is `None` it will not be added!**
+
+    The features are passed as a list of keyword arguments.
+    &#34;&#34;&#34;
+
     nodeFeatures = self.nodeFeatures
 
     self.stats[self.F] += 1
@@ -2467,19 +2793,36 @@ class CV(object):
 <span>def <span class="ident">get</span></span>(<span>self, feature, *args)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieve feature values.</p>
+<pre><code>cv.get(feature, n)&lt;code&gt; and &lt;/code&gt;cv.get(feature, nf, nt)
+</code></pre>
+<p><code>feature</code> is the name of the feature.</p>
+<p>For node features, <code>n</code> is the node which carries the value.</p>
+<p>For edge features, <code>nf, nt</code> is the pair of from-to nodes which carries the value.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L583-L596" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L742-L767" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
+    &#34;&#34;&#34;Retrieve feature values.
+
+        cv.get(feature, n)` and `cv.get(feature, nf, nt)
+
+
+    `feature` is the name of the feature.
+
+    For node features, `n` is the node which carries the value.
+
+    For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+    &#34;&#34;&#34;
+
     errors = self.errors
     nodeFeatures = self.nodeFeatures
     edgeFeatures = self.edgeFeatures
     nArgs = len(args)
     if nArgs == 0 or nArgs &gt; 2:
-        errors[f&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
+        errors[&#34;use `cv.get(ft, n)` or `cv.get(ft, nf, nt)`&#34;].append(None)
         return None
 
     return (
@@ -2493,13 +2836,36 @@ class CV(object):
 <span>def <span class="ident">linked</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns the slots <code>ss</code> to which a node is currently linked.</p>
+<pre><code>ss = cv.linked(n)
+</code></pre>
+<p>If you construct non-slot nodes without linking them to slots,
+they will be removed when TF validates the collective result
+of the action methods.</p>
+<p>If you want to prevent that, you can insert an extra slot, but in order
+to do so, you have to detect that a node is still unlinked.</p>
+<p>This action is precisely meant for that.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L573-L575" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L699-L716" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
+    &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+        ss = cv.linked(n)
+
+
+    If you construct non-slot nodes without linking them to slots,
+    they will be removed when TF validates the collective result
+    of the action methods.
+
+    If you want to prevent that, you can insert an extra slot, but in order
+    to do so, you have to detect that a node is still unlinked.
+
+    This action is precisely meant for that.
+    &#34;&#34;&#34;
+
     oslots = self.oslots
     return tuple(oslots.get(node, []))</code></pre>
 </details>
@@ -2508,13 +2874,37 @@ class CV(object):
 <span>def <span class="ident">meta</span></span>(<span>self, feat, **metadata)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Add, modify, delete metadata fields of features.</p>
+<pre><code>cv.meta(feature, name=value, ... , name=value)
+</code></pre>
+<p><code>feature</code> is the feature name.</p>
+<p>If a <code>value</code> is <code>None</code>, that <code>name</code> will be deleted from the metadata fields.</p>
+<p>A bare <code>cv.meta(feature)</code> will remove the feature from the metadata.</p>
+<p>If you modify the field <code>valueType</code> of a feature, that feature will be added
+or removed from the set of <code>intFeatures</code>.
+It will be checked whether you specify either <code>int</code> or <code>str</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L542-L571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L652-L697" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
+    &#34;&#34;&#34;Add, modify, delete metadata fields of features.
+
+        cv.meta(feature, name=value, ... , name=value)
+
+
+    `feature` is the feature name.
+
+    If a `value` is `None`, that `name` will be deleted from the metadata fields.
+
+    A bare `cv.meta(feature)` will remove the feature from the metadata.
+
+    If you modify the field `valueType` of a feature, that feature will be added
+    or removed from the set of `intFeatures`.
+    It will be checked whether you specify either `int` or `str`.
+    &#34;&#34;&#34;
+
     errors = self.errors
     intFeatures = self.intFeatures
     metaData = self.metaData
@@ -2530,7 +2920,7 @@ class CV(object):
     for (field, text) in metadata.items():
         if text is None:
             if field == &#34;valueType&#34;:
-                errors[f&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
+                errors[&#39;did not delete metadata field &#34;valueType&#34;&#39;].append(feat)
                 good = False
             else:
                 if feat in metaData and field in metaData[feat]:
@@ -2550,13 +2940,37 @@ class CV(object):
 <span>def <span class="ident">node</span></span>(<span>self, nType)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a non-slot node and return the handle to it in <code>n</code>.</p>
+<pre><code>n = cv.node(nodeType)
+</code></pre>
+<p>You have to pass its <em>node type</em>, i.e. a string.
+Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.
+Non slot nodes will be automatically added to the set of embedders.</p>
+<p>Remember that you can add features to the node by later</p>
+<pre><code>cv.feature(n, key=value, ...)
+</code></pre>
+<p>calls.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L473-L493" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L496-L531" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType):
+    &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
+
+        n = cv.node(nodeType)
+
+    You have to pass its *node type*, i.e. a string.
+    Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
+    Non slot nodes will be automatically added to the set of embedders.
+
+    Remember that you can add features to the node by later
+
+        cv.feature(n, key=value, ...)
+
+    calls.
+    &#34;&#34;&#34;
+
     slotType = self.slotType
     errors = self.errors
 
@@ -2583,13 +2997,47 @@ class CV(object):
 <span>def <span class="ident">occurs</span></span>(<span>self, feat)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Returns True if the feature with name <code>featureName</code> occurs in the</p>
+<pre><code>occurs = cv.occurs(featureName)
+</code></pre>
+<p>resulting data, else False.
+If you have assigned None values to a feature, that will count, i.e.
+that feature occurs in the data.</p>
+<p>If you add feature values conditionally, it might happen that some
+features will not be used at all.
+For example, if your conversion produces errors, you might
+add the error information to the result in the form of error features.</p>
+<p>Later on, when the errors have been weeded out, these features will
+not occur any more in the result, but then TF will complain that
+such is feature is declared but not used.
+At the end of your director you can remove unused features
+conditionally, using this function.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L535-L540" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L625-L650" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
+    &#34;&#34;&#34;Returns True if the feature with name `featureName` occurs in the
+
+        occurs = cv.occurs(featureName)
+
+    resulting data, else False.
+    If you have assigned None values to a feature, that will count, i.e.
+    that feature occurs in the data.
+
+    If you add feature values conditionally, it might happen that some
+    features will not be used at all.
+    For example, if your conversion produces errors, you might
+    add the error information to the result in the form of error features.
+
+    Later on, when the errors have been weeded out, these features will
+    not occur any more in the result, but then TF will complain that
+    such is feature is declared but not used.
+    At the end of your director you can remove unused features
+    conditionally, using this function.
+    &#34;&#34;&#34;
+
     nodeFeatures = self.nodeFeatures
     edgeFeatures = self.edgeFeatures
     if feat in nodeFeatures or feat in edgeFeatures:
@@ -2601,13 +3049,31 @@ class CV(object):
 <span>def <span class="ident">resume</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p><strong>resume</strong> a node.</p>
+<pre><code>cv.resume(n)
+</code></pre>
+<p>If you resume a non-slot node, you add it again to the set of embedders.
+No new node will be created.</p>
+<p>If you resume a slot node, it will be added to the set of current embedders.
+No new slot will be created.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L501-L513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L547-L571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
+    &#34;&#34;&#34;**resume** a node.
+
+        cv.resume(n)
+
+
+    If you resume a non-slot node, you add it again to the set of embedders.
+    No new node will be created.
+
+    If you resume a slot node, it will be added to the set of current embedders.
+    No new slot will be created.
+    &#34;&#34;&#34;
+
     curEmbedders = self.curEmbedders
     oslots = self.oslots
 
@@ -2626,13 +3092,33 @@ class CV(object):
 <span>def <span class="ident">slot</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Make a slot node and return the handle to it in <code>n</code>.</p>
+<pre><code>n = cv.slot()
+</code></pre>
+<p>No further information is needed.
+Remember that you can add features to the node by later</p>
+<pre><code>cv.feature(n, key=value, ...)
+</code></pre>
+<p>calls.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L449-L471" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L459-L494" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
+    &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
+
+        n = cv.slot()
+
+
+    No further information is needed.
+    Remember that you can add features to the node by later
+
+        cv.feature(n, key=value, ...)
+
+    calls.
+    &#34;&#34;&#34;
+
     curSeq = self.curSeq
     curEmbedders = self.curEmbedders
     oslots = self.oslots
@@ -2661,13 +3147,30 @@ class CV(object):
 <span>def <span class="ident">stop</span></span>(<span>self, msg)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Stops the director. No further input will be read.</p>
+<pre><code>cv.stop(msg)
+</code></pre>
+<p>The director will exit with a non-good status
+and issue the message <code>msg</code>.
+If you have called <code>walk()</code> with <code>force=True</code>, indicating that the
+director must proceed after errors, then this stop command will cause termination
+nevertheless.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L440-L447" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L440-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
+    &#34;&#34;&#34;Stops the director. No further input will be read.
+
+        cv.stop(msg)
+
+    The director will exit with a non-good status  and issue the message `msg`.
+    If you have called `walk()` with `force=True`, indicating that the
+    director must proceed after errors, then this stop command will cause termination
+    nevertheless.
+    &#34;&#34;&#34;
+
     tmObj = self.TF.tmObj
     error = tmObj.error
 
@@ -2681,13 +3184,25 @@ class CV(object):
 <span>def <span class="ident">terminate</span></span>(<span>self, node)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p><strong>terminate</strong> a node.</p>
+<pre><code>cv.terminate(n)
+</code></pre>
+<p>The node <code>n</code> will be removed from the set of current embedders.
+This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <code>cv.node()</code> action.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L495-L499" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/convert/walker.py#L533-L545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
+    &#34;&#34;&#34;**terminate** a node.
+
+        cv.terminate(n)
+
+    The node `n` will be removed from the set of current embedders.
+    This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+    &#34;&#34;&#34;
+
     self.stats[self.T] += 1
     if node is not None:
         self.curEmbedders.discard(node)

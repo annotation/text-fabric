@@ -234,7 +234,7 @@ def loadCss(app):
         &#34;tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n&#34;
         &#34;tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n&#34;
     )
-    dh(f&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)
+    dh(&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)
 
 
 def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
@@ -604,9 +604,9 @@ def plainTuple(
             f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;
         )
         + f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
-        + f&#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
     )
-    html = f&#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+    html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
 
     dh(html)
 
@@ -1306,7 +1306,7 @@ else the CSS is returned.</p></div>
         &#34;tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n&#34;
         &#34;tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n&#34;
     )
-    dh(f&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)</code></pre>
+    dh(&#34;&lt;style&gt;&#34; + tableCss + genericCss + css + &#34;&lt;/style&gt;&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.plain"><code class="name flex">
@@ -1591,9 +1591,9 @@ Depending on <em>asString</em> above.</p></div>
             f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;
         )
         + f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
-        + f&#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
     )
-    html = f&#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+    html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
 
     dh(html)</code></pre>
 </details>

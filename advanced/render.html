@@ -39,7 +39,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/advanced/render.py#L0-L491" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/advanced/render.py#L0-L492" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/render.md
@@ -86,10 +86,11 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     rep = &#34;&#34;.join(html)
     ltr = settings.ltr
 
+    elem = &#34;span&#34; if _inTuple else &#34;div&#34;
     result = (
-        f&#34;&#34;&#34;{passage}&lt;div class=&#34;{ltr} children&#34;&gt;{rep}&lt;/div&gt;&#34;&#34;&#34;
+        f&#34;&#34;&#34;{passage}&lt;{elem} class=&#34;{ltr} children&#34;&gt;{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
         if isPretty
-        else f&#34;&#34;&#34;&lt;div class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/div&gt;&#34;&#34;&#34;
+        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
     )
 
     if _browse or _asString:
@@ -289,7 +290,7 @@ def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
     n = tree[0][0]
 
     containerB = f&#39;&lt;div class=&#34;{contCls} {{}} {ltr} {boundaryCls} {hlCls}&#34; {hlStyle}&gt;&#39;
-    containerE = f&#34;&lt;/div&gt;&#34;
+    containerE = &#34;&lt;/div&gt;&#34;
 
     terminalCls = &#34;trm&#34;
     material = featurePart
@@ -550,7 +551,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/advanced/render.py#L10-L54" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0f9f6354a8b71b029bf9e87bb4c5306751ddddfe/tf/advanced/render.py#L10-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.
@@ -588,10 +589,11 @@ def _getFeatures(info, n, nType):
     rep = &#34;&#34;.join(html)
     ltr = settings.ltr
 
+    elem = &#34;span&#34; if _inTuple else &#34;div&#34;
     result = (
-        f&#34;&#34;&#34;{passage}&lt;div class=&#34;{ltr} children&#34;&gt;{rep}&lt;/div&gt;&#34;&#34;&#34;
+        f&#34;&#34;&#34;{passage}&lt;{elem} class=&#34;{ltr} children&#34;&gt;{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
         if isPretty
-        else f&#34;&#34;&#34;&lt;div class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/div&gt;&#34;&#34;&#34;
+        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
     )
 
     if _browse or _asString:
