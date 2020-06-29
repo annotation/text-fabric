@@ -78,7 +78,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L0-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L0-L564" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/kernel.md
@@ -196,6 +196,8 @@ def makeTfKernel(app, appName, port):
         def exposed_context(self):
             &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
             &#34;&#34;&#34;
+
+            app = self.app
 
             return pickle.dumps(app.context)
 
@@ -660,7 +662,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L503-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L505-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -714,7 +716,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L484-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L486-L499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -740,7 +742,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L28-L478" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/kernel.py#L28-L480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -831,6 +833,8 @@ if __name__ == &#34;__main__&#34;:
         def exposed_context(self):
             &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
             &#34;&#34;&#34;
+
+            app = self.app
 
             return pickle.dumps(app.context)
 

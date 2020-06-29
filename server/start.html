@@ -102,7 +102,7 @@ So we will look for the first available port after this.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/start.py#L0-L360" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/start.py#L0-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/start.md
@@ -360,6 +360,7 @@ def main(cargs=sys.argv):
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
+    pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
 
     kill = argKill(cargs)
     show = argShow(cargs)
@@ -393,8 +394,6 @@ def main(cargs=sys.argv):
         console(f&#34;Starting new kernel listening on {portKernel}&#34;)
         if portKernel != newPortKernel:
             console(f&#34;\twhich is the first free port after {newPortKernel}&#34;)
-        pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
-
         processKernel = Popen(
             [pythonExe, &#34;-m&#34;, &#34;tf.server.kernel&#34;, slug, str(portKernel)],
             stdout=PIPE,
@@ -424,7 +423,7 @@ def main(cargs=sys.argv):
                 [
                     pythonExe,
                     &#34;-m&#34;,
-                    f&#34;tf.server.web&#34;,
+                    &#34;tf.server.web&#34;,
                     slug,
                     str(portKernel),
                     str(portWeb),
@@ -569,7 +568,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/start.py#L244-L357" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/server/start.py#L244-L356" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -584,6 +583,7 @@ if __name__ == &#34;__main__&#34;:
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
+    pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
 
     kill = argKill(cargs)
     show = argShow(cargs)
@@ -617,8 +617,6 @@ if __name__ == &#34;__main__&#34;:
         console(f&#34;Starting new kernel listening on {portKernel}&#34;)
         if portKernel != newPortKernel:
             console(f&#34;\twhich is the first free port after {newPortKernel}&#34;)
-        pythonExe = &#34;python&#34; if isWin else &#34;python3&#34;
-
         processKernel = Popen(
             [pythonExe, &#34;-m&#34;, &#34;tf.server.kernel&#34;, slug, str(portKernel)],
             stdout=PIPE,
@@ -648,7 +646,7 @@ if __name__ == &#34;__main__&#34;:
                 [
                     pythonExe,
                     &#34;-m&#34;,
-                    f&#34;tf.server.web&#34;,
+                    &#34;tf.server.web&#34;,
                     slug,
                     str(portKernel),
                     str(portWeb),

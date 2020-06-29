@@ -29,7 +29,7 @@ That sounds simple, but quite a few ideas have to work together to make it work.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/advanced/unravel.py#L0-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/advanced/unravel.py#L0-L657" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/unravel.md
@@ -276,9 +276,11 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
     styles = aContext.styles
     formatHtml = aContext.formatHtml
     hasGraphics = aContext.hasGraphics
-    afterChild = aContext.afterChild
-    plainCustom = aContext.plainCustom
-    prettyCustom = aContext.prettyCustom
+
+    customMethods = app.customMethods
+    afterChild = customMethods.afterChild
+    plainCustom = customMethods.plainCustom
+    prettyCustom = customMethods.prettyCustom
 
     baseTypes = options.baseTypes
     highlights = options.highlights
