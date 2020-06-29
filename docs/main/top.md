@@ -69,6 +69,7 @@ Tutorials:
 * [BHSA](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/start.ipynb)
 * [DSS](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/dss/start.ipynb)
 * [OldBabylonian](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/start.ipynb)
+* [OldAssyrian](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldassyrian/start.ipynb)
 * [Uruk](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/uruk/start.ipynb)
 * [Q'uran](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/quran/start.ipynb)
 * and more: [all tutorials](https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master/)

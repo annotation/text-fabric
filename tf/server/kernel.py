@@ -115,6 +115,8 @@ def makeTfKernel(app, appName, port):
             """Fetches the TF app context settings for the corpus.
             """
 
+            app = self.app
+
             return pickle.dumps(app.context)
 
         def exposed_passage(

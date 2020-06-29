@@ -257,8 +257,8 @@ def getValue(app, n, nType, feat, suppress):
     F = app.api.F
     Fs = app.api.Fs
 
-    aContext = app.context
-    transform = aContext.transform
+    customMethods = app.customMethods
+    transform = customMethods.transform
     if feat in suppress:
         val = ""
     else:

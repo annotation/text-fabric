@@ -46,6 +46,12 @@ text-fabric appName:hot
 
 ### 8.3
 
+#### 8.3.5
+
+2020-06-29
+
+Fixed an error when opening the Uruk corpus in the Text-Fabric browser.
+
 #### 8.3.4
 
 2020-06-26

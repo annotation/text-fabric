@@ -254,6 +254,7 @@ def main(cargs=sys.argv):
         return
 
     isWin = system().lower().startswith("win")
+    pythonExe = "python" if isWin else "python3"
 
     kill = argKill(cargs)
     show = argShow(cargs)
@@ -287,8 +288,6 @@ def main(cargs=sys.argv):
         console(f"Starting new kernel listening on {portKernel}")
         if portKernel != newPortKernel:
             console(f"\twhich is the first free port after {newPortKernel}")
-        pythonExe = "python" if isWin else "python3"
-
         processKernel = Popen(
             [pythonExe, "-m", "tf.server.kernel", slug, str(portKernel)],
             stdout=PIPE,
@@ -318,7 +317,7 @@ def main(cargs=sys.argv):
                 [
                     pythonExe,
                     "-m",
-                    f"tf.server.web",
+                    "tf.server.web",
                     slug,
                     str(portKernel),
                     str(portWeb),

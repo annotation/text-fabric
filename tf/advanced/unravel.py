@@ -243,9 +243,11 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
     styles = aContext.styles
     formatHtml = aContext.formatHtml
     hasGraphics = aContext.hasGraphics
-    afterChild = aContext.afterChild
-    plainCustom = aContext.plainCustom
-    prettyCustom = aContext.prettyCustom
+
+    customMethods = app.customMethods
+    afterChild = customMethods.afterChild
+    plainCustom = customMethods.plainCustom
+    prettyCustom = customMethods.prettyCustom
 
     baseTypes = options.baseTypes
     highlights = options.highlights

@@ -43,6 +43,12 @@ A TF app can also download and update the corpus *data*.
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
     Cody Kingham
 
+[oldassyrian](https://github.com/annotation/app-oldassyrian)
+:   *Akkadian / cuneiform*
+    Old Assyrian documents, 2000 - 1600 BC,
+    **[Documents from Ashur](https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md)**
+    Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
+
 [oldbabylonian](https://github.com/annotation/app-oldbabylonian)
 :   *Akkadian / cuneiform*
     Old Babylonian letters, 1900 - 1600 BC,
@@ -92,12 +98,6 @@ Each repo named `app-`*appName* hosts the app named *appName*.
 
 
 ### Intentions
-
-[oldassyrian](https://github.com/annotation/app-oldassyrian)
-:   *Akkadian / cuneiform*
-    Old Assyrian documents, 2000 - 1900,
-    **see [About](https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md)**,
-    Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
 
 oldroyal
 :   *Akkadian-Sumerian cuneiform*

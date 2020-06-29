@@ -146,6 +146,7 @@ TYPE_KEYS = set(
 )
 
 HOOKS = """
+    transform
     afterChild
     plainCustom
     prettyCustom
@@ -154,14 +155,21 @@ HOOKS = """
 
 class AppCurrent:
     def __init__(self, specs):
+        self.allKeys = set()
         self.update(specs)
 
     def update(self, specs):
+        allKeys = self.allKeys
         for (k, v) in specs.items():
+            allKeys.add(k)
             setattr(self, k, v)
 
     def get(self, k, v):
         return getattr(self, k, v)
+
+    def set(self, k, v):
+        self.allKeys.add(k)
+        setattr(self, k, v)
 
 
 class Check:
@@ -179,6 +187,7 @@ class Check:
         interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
 
         if withApi:
+            customMethods = app.customMethods
             api = app.api
             F = api.F
             T = api.T
@@ -193,7 +202,7 @@ class Check:
                     errors.append(f"{k} must be `true` or a string")
                 for feat in feats:
                     if feat not in allNodeFeatures:
-                        if feat not in specs["transform"].get(dKey, {}):
+                        if feat not in customMethods.transform.get(dKey, {}):
                             errors.append(f"{k}: feature {feat} not loaded")
             elif k in {"featuresBare", "features"}:
                 feats = extra[0]
@@ -361,6 +370,8 @@ def _fillInDefined(template, data):
 
 
 def setAppSpecs(app, cfg, reset=False):
+    if not reset:
+        app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
@@ -436,14 +447,6 @@ def setAppSpecs(app, cfg, reset=False):
     ):
         method(app, cfg, dKey, False)
 
-    if reset:
-        aContext = getattr(app, "context", None)
-        if aContext:
-            for key in HOOKS:
-                specs[key] = aContext.get(key, {})
-    else:
-        for key in HOOKS:
-            specs[key] = {}
     app.context = AppCurrent(specs)
 
 
@@ -554,6 +557,8 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     checker = Check(app, withApi)
     givenInfo = cfg.get(dKey, {})
 
+    customMethods = app.customMethods
+
     api = app.api
     F = api.F
     T = api.T
@@ -591,7 +596,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     exclusions = {}
     transform = {}
 
-    specs["transform"] = transform
+    customMethods.set("transform", transform)
     formatStyle = specs["formatStyle"]
 
     for nType in nTypes:
@@ -843,7 +848,6 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         noDescendTypes=lexTypes,
         styles=styles,
         templates=templates,
-        transform=transform,
         verseTypes=verseTypes,
     )
 
