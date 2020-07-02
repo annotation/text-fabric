@@ -66,6 +66,7 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     if specific is not None:
         bases = [os.path.expanduser(specific)]
     else:
+        bases = []
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
                 out(f"skipped {root}\n")

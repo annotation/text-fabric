@@ -439,7 +439,7 @@ class Transcription(object):
         b
     """
 
-    arabic_mappingi = dict((v, k) for (k, v) in arabic_mapping.items())
+    arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
     def __init__(self):
         self.hebrew_consonants = {

@@ -723,7 +723,7 @@ def _stitchResults(searchExe):
                 else:
                     sN = stitch[f]
                     if nparams == 1:
-                        if sM in r(sN):
+                        if sM in r(sN) or ():
                             for s in stitchOn(e + 1):
                                 yield s
                     else:
@@ -748,7 +748,7 @@ def _stitchResults(searchExe):
             else:
                 sN = stitch[f]
                 if nparams == 1:
-                    for m in r(sN):
+                    for m in r(sN) or ():
                         if m in yarnT:
                             stitch[t] = m
                             for s in stitchOn(e + 1):
