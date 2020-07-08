@@ -36,6 +36,22 @@ It should run Linux, Macos, or Windows.</p>
 make sure that most of that minimum of 3GB RAM is actually available,
 and not in use by other programs.</p>
 </div>
+<h4 id="on-macos">On MacOs</h4>
+<p>You need the so-called <em>command line tools</em> of XCode. You do not need the full XCode (several GB).
+First check whether you already have them. Open a Terminal and give the command</p>
+<pre><code>which gcc
+</code></pre>
+<p>If the answer is </p>
+<pre><code>/usr/bin/gcc
+</code></pre>
+<p>or something like that, you're all set. Otherwise, in the same terminal, say</p>
+<pre><code>xcode-select --install
+</code></pre>
+<p>You'll get a prompt, ask in the affirmative, agree to the license, and wait a little.
+After the installation is completed, check whether</p>
+<pre><code>which gccc
+</code></pre>
+<p>works.</p>
 <h3 id="python">Python</h3>
 <p>Install or upgrade Python on your system to at least version 3.6.3.</p>
 <p>Go for the 64-bit version. Otherwise Python may not be able to address
@@ -117,7 +133,7 @@ Python world and the Javascript world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3bdc0a7b5dac444452b98c3912bf378c6d76145c/tf/about/install.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3da3c7e6b7f52982a61fedf3e1dbb7314cb8873c/tf/about/install.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/install.md
@@ -145,7 +161,10 @@ data-gaCategoryParameter="tf.about.install">
 <ul>
 <li><a href="#install">Install</a><ul>
 <li><a href="#prerequisites">Prerequisites</a><ul>
-<li><a href="#computer">Computer</a></li>
+<li><a href="#computer">Computer</a><ul>
+<li><a href="#on-macos">On MacOs</a></li>
+</ul>
+</li>
 <li><a href="#python">Python</a><ul>
 <li><a href="#on-windows">On Windows?</a></li>
 <li><a href="#on-linux">On Linux?</a></li>
