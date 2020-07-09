@@ -44,6 +44,15 @@ text-fabric appName:hot
 
 ## 8
 
+### 8.4
+
+#### 8.4.0
+
+2020-07-09
+
+Added the `tf.convert.tf.explode` function, by which you can *explode* feature files
+into TF files without optimizations. 
+
 ### 8.3
 
 #### 8.3.5

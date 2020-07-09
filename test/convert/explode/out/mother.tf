@@ -1,0 +1,14 @@
+1	5	apo
+1	6	apo
+1	7	apo
+1	8	apo
+1	9	apo
+1	10	apo
+2	5	epi
+2	6	epi
+2	7	epi
+2	8	epi
+10	12	dia
+10	14	dia
+11	13	pros
+11	15	pros

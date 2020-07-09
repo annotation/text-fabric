@@ -16,6 +16,36 @@ It should run Linux, Macos, or Windows.
     make sure that most of that minimum of 3GB RAM is actually available,
     and not in use by other programs.
 
+#### On MacOs
+
+You need the so-called *command line tools* of XCode. You do not need the full XCode (several GB).
+First check whether you already have them. Open a Terminal and give the command
+
+```
+which gcc
+```
+
+If the answer is 
+
+```
+/usr/bin/gcc
+```
+
+or something like that, you're all set. Otherwise, in the same terminal, say
+
+```
+xcode-select --install
+```
+
+You'll get a prompt, ask in the affirmative, agree to the license, and wait a little.
+After the installation is completed, check whether
+
+```
+which gccc
+```
+
+works.
+
 ### Python
 
 Install or upgrade Python on your system to at least version 3.6.3.

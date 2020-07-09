@@ -661,6 +661,18 @@ from tf.convert.walker import CV
 
 ---
 
+## Exploding
+
+```python
+from tf.convert.tf import explode
+```
+
+```explode(inLocation, outLocation```
+:   explode TF feature files to straight data files without optimizations
+:   `tf.convert.tf.explode`
+
+---
+
 # TF-App development
 
 ```A.reuse()```

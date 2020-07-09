@@ -1,0 +1,11 @@
+100	Genesis
+101	Exodus
+102	Leviticus
+103	Numeri
+104	Deuteronomium
+200	Josua
+201	Judices
+202	Samuel_I
+203	Samuel_II
+204	Reges_I
+205	Reges_II

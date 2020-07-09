@@ -1,0 +1,10 @@
+1	word
+2	word
+3	word
+5	word
+6	phrase
+7	phrase
+8	phrase
+9	clause
+10	clause
+11	sentence
