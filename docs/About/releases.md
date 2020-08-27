@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.1
+
+2020-07-14
+
+Better error message if a standard module of a data set cannot be found.
+E.g. the parallels modules for the BHSA, DSS.
+
 #### 8.4.0
 
 2020-07-09

@@ -45,7 +45,7 @@
     # If set, insert Google Custom Search search bar widget above the sidebar index.
     # The whitespace-separated tokens represent arbitrary extra queries (at least one
     # must match) passed to regular Google search. Example:
-    search_query = 'inurl:github.com/annotation  site:annotation.github.io  site:www.annotation.nl'
+    search_query = 'inurl:github.com/annotation  site:annotation.github.io'
     #search_query = ''
 
     # If set, render LaTeX math syntax within \(...\) (inline equations),

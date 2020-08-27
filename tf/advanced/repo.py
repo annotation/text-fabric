@@ -58,7 +58,7 @@ class Checkout(object):
             baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
         if local == "clone":
-            result = f"repo clone"
+            result = "repo clone"
         elif commit and release:
             result = f"r{release}=#{commit}"
         elif commit:
@@ -66,13 +66,13 @@ class Checkout(object):
         elif release:
             result = f"r{release}"
         elif commit is None and release is None:
-            result = f"unknown release or commit"
+            result = "unknown release or commit"
         elif commit is None:
-            result = f"latest release"
+            result = "latest release"
         elif release is None:
-            result = f"latest commit"
+            result = "latest commit"
         else:
-            result = f"latest release or commit"
+            result = "latest release or commit"
         return f"{result}{extra}"
 
     def isClone(self):
@@ -265,6 +265,8 @@ class Checkout(object):
             if not self.localBase:
                 method = self.warning if attempt else self.error
                 method(f"The requested {label} is not available offline")
+                base = self.baseClone if clone else self.baseLocal
+                method(f"\t{base}/{self.dataPath} not found")
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -280,7 +282,7 @@ class Checkout(object):
                             )
                     else:
                         warning(f"The requested {label} is not available offline")
-                        error(f"No online connection")
+                        error("No online connection")
                 elif not isOnline:
                     error(f"The requested {label} is not available online")
                 else:
@@ -391,7 +393,7 @@ class Checkout(object):
         self.log(f"\tdownloading {dataUrl} ... ")
         try:
             r = requests.get(dataUrl, allow_redirects=True)
-            self.log(f"\tunzipping ... ")
+            self.log("\tunzipping ... ")
             zf = io.BytesIO(r.content)
         except Exception as e:
             msg = f"\t{str(e)}\n\tcould not download {dataUrl}"
@@ -633,12 +635,12 @@ class Checkout(object):
                 newline=False,
             )
             self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
-            self.log(f"connected")
+            self.log("connected")
         except GithubException as why:
-            warning(f"failed")
+            warning("failed")
             warning(f"GitHub says: {why}")
         except IOError:
-            warning(f"no internet")
+            warning("no internet")
 
 
 def checkoutRepo(
@@ -687,4 +689,5 @@ def checkoutRepo(
         rData = resolve("local", attempt=True)
         if rData[3]:
             return rData
+
     return resolve(checkout)

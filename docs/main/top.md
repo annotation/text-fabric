@@ -25,7 +25,7 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 ## Author
 
 **Author**:
-[Dirk Roorda](https://www.annotation.nl)
+[Dirk Roorda](https://pure.knaw.nl/portal/en/persons/dirk-roorda)
 
 Cite Text-Fabric as
 [DOI: 10.5281/zenodo.592193](https://doi.org/10.5281/zenodo.592193).

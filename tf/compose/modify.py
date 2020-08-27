@@ -89,7 +89,7 @@ def modify(
     *   delete any number of node types with their nodes;
     *   add any number of new node types, with nodes and features.
 
-    The last two action lead to a shifting of nodes, and all features that map
+    The last two actions lead to a shifting of nodes, and all features that map
     them, will be shifted accordingly.
 
     You can also pass meta data to be merged in.
@@ -506,7 +506,7 @@ def modify(
 
             inFeats = _itemize(inFeats)
             if outFeat in WARP:
-                err(f"Can not merge into standard features")
+                err("Can not merge into standard features")
                 continue
 
             if not inFeats:
@@ -533,13 +533,13 @@ def modify(
             outIsEdge = outExists and outFeat in origEdgeFeatures
 
             if outIsNode and not allInIsNode:
-                err(f"Node Feature can not be merged from an edge feature")
+                err("Node Feature can not be merged from an edge feature")
 
             if outIsEdge and not allInIsEdge:
-                err(f"Edge Feature can not be merged from a node feature")
+                err("Edge Feature can not be merged from a node feature")
 
             if not allInIsNode and not allInIsEdge:
-                err(f"Feature can not be merged from both node and edge features")
+                err("Feature can not be merged from both node and edge features")
 
             allInIsInt = all(valTp(f) == "int" for f in inFeats)
             correctTp = "int" if allInIsInt else "str"
@@ -553,10 +553,10 @@ def modify(
             eItem = f"{feat}: "
 
             if feat in WARP:
-                err(f"Can not delete standard features")
+                err("Can not delete standard features")
                 continue
             if feat not in origFeatures:
-                err(f"Not in data set")
+                err("Not in data set")
 
             deletedFt.add(feat)
 
@@ -581,7 +581,7 @@ def modify(
                 eItem = f"{feat}: "
 
                 if feat in WARP:
-                    err(f"Cannot add standard features")
+                    err("Cannot add standard features")
                     continue
                 if feat in origSetOther:
                     err(f"{kind} feature already exists as {otherKind} feature")
@@ -600,7 +600,7 @@ def modify(
             eItem = f"{outType}: "
 
             if outType == slotType:
-                err(f"Result cannot be the slot type")
+                err("Result cannot be the slot type")
 
             withFeatures = type(inTypes) is dict
 
@@ -634,7 +634,7 @@ def modify(
             eItem = f"{nodeType}: "
 
             if nodeType not in origNodeTypes:
-                err(f"Not in data set")
+                err("Not in data set")
                 continue
 
             deletedTp.add(nodeType)
@@ -652,20 +652,20 @@ def modify(
                 continue
 
             if nodeType in origNodeTypes:
-                err(f"Already occurs")
+                err("Already occurs")
                 continue
 
             addedTp.add(nodeType)
 
             nodeSlots = typeInfo.get(NS, {})
             if not nodeSlots:
-                err(f"No slot information given")
+                err("No slot information given")
             nF = typeInfo.get(NF, None)
             if not nF:
-                err(f"No lower bound given")
+                err("No lower bound given")
             nT = typeInfo.get(NT, None)
             if not nT:
-                err(f"No upper bound given")
+                err("No upper bound given")
             if nF is not None and nT is not None:
                 unlinked = 0
                 badlinked = 0
@@ -723,7 +723,7 @@ def modify(
         if not dirEmpty(targetLocation):
             ePrefix = "Output directory: "
             eItem = "not empty: "
-            err(f"Clean it or remove it or choose another location")
+            err("Clean it or remove it or choose another location")
 
         if not good:
             return False
@@ -746,7 +746,7 @@ def modify(
             featureMeta.setdefault(feat, {})[VALTP] = newTp
 
         if customTp and customTp != correctTp and customTp == "int":
-            err(f"feature values are declared to be int but some values are not int")
+            err("feature values are declared to be int but some values are not int")
 
         if assignedTp != newTp:
             rep1 = f"feature of type {newTp}"

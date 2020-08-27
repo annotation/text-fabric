@@ -3,7 +3,7 @@
 ## Usage
 
 ```python
-from tf.compose import compose
+from tf.compose import modify
 modify(
     location,
     targetLocation,
