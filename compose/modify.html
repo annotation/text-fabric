@@ -24,7 +24,7 @@
 <section id="section-intro">
 <h1 id="modify">Modify</h1>
 <h2 id="usage">Usage</h2>
-<pre><code class="python">from tf.compose import compose
+<pre><code class="python">from tf.compose import modify
 modify(
     location,
     targetLocation,
@@ -41,7 +41,7 @@ modify(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/compose/modify.py#L0-L1082" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/compose/modify.py#L0-L1082" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/compose/modify.md
@@ -134,7 +134,7 @@ def modify(
     *   delete any number of node types with their nodes;
     *   add any number of new node types, with nodes and features.
 
-    The last two action lead to a shifting of nodes, and all features that map
+    The last two actions lead to a shifting of nodes, and all features that map
     them, will be shifted accordingly.
 
     You can also pass meta data to be merged in.
@@ -551,7 +551,7 @@ def modify(
 
             inFeats = _itemize(inFeats)
             if outFeat in WARP:
-                err(f&#34;Can not merge into standard features&#34;)
+                err(&#34;Can not merge into standard features&#34;)
                 continue
 
             if not inFeats:
@@ -578,13 +578,13 @@ def modify(
             outIsEdge = outExists and outFeat in origEdgeFeatures
 
             if outIsNode and not allInIsNode:
-                err(f&#34;Node Feature can not be merged from an edge feature&#34;)
+                err(&#34;Node Feature can not be merged from an edge feature&#34;)
 
             if outIsEdge and not allInIsEdge:
-                err(f&#34;Edge Feature can not be merged from a node feature&#34;)
+                err(&#34;Edge Feature can not be merged from a node feature&#34;)
 
             if not allInIsNode and not allInIsEdge:
-                err(f&#34;Feature can not be merged from both node and edge features&#34;)
+                err(&#34;Feature can not be merged from both node and edge features&#34;)
 
             allInIsInt = all(valTp(f) == &#34;int&#34; for f in inFeats)
             correctTp = &#34;int&#34; if allInIsInt else &#34;str&#34;
@@ -598,10 +598,10 @@ def modify(
             eItem = f&#34;{feat}: &#34;
 
             if feat in WARP:
-                err(f&#34;Can not delete standard features&#34;)
+                err(&#34;Can not delete standard features&#34;)
                 continue
             if feat not in origFeatures:
-                err(f&#34;Not in data set&#34;)
+                err(&#34;Not in data set&#34;)
 
             deletedFt.add(feat)
 
@@ -626,7 +626,7 @@ def modify(
                 eItem = f&#34;{feat}: &#34;
 
                 if feat in WARP:
-                    err(f&#34;Cannot add standard features&#34;)
+                    err(&#34;Cannot add standard features&#34;)
                     continue
                 if feat in origSetOther:
                     err(f&#34;{kind} feature already exists as {otherKind} feature&#34;)
@@ -645,7 +645,7 @@ def modify(
             eItem = f&#34;{outType}: &#34;
 
             if outType == slotType:
-                err(f&#34;Result cannot be the slot type&#34;)
+                err(&#34;Result cannot be the slot type&#34;)
 
             withFeatures = type(inTypes) is dict
 
@@ -679,7 +679,7 @@ def modify(
             eItem = f&#34;{nodeType}: &#34;
 
             if nodeType not in origNodeTypes:
-                err(f&#34;Not in data set&#34;)
+                err(&#34;Not in data set&#34;)
                 continue
 
             deletedTp.add(nodeType)
@@ -697,20 +697,20 @@ def modify(
                 continue
 
             if nodeType in origNodeTypes:
-                err(f&#34;Already occurs&#34;)
+                err(&#34;Already occurs&#34;)
                 continue
 
             addedTp.add(nodeType)
 
             nodeSlots = typeInfo.get(NS, {})
             if not nodeSlots:
-                err(f&#34;No slot information given&#34;)
+                err(&#34;No slot information given&#34;)
             nF = typeInfo.get(NF, None)
             if not nF:
-                err(f&#34;No lower bound given&#34;)
+                err(&#34;No lower bound given&#34;)
             nT = typeInfo.get(NT, None)
             if not nT:
-                err(f&#34;No upper bound given&#34;)
+                err(&#34;No upper bound given&#34;)
             if nF is not None and nT is not None:
                 unlinked = 0
                 badlinked = 0
@@ -768,7 +768,7 @@ def modify(
         if not dirEmpty(targetLocation):
             ePrefix = &#34;Output directory: &#34;
             eItem = &#34;not empty: &#34;
-            err(f&#34;Clean it or remove it or choose another location&#34;)
+            err(&#34;Clean it or remove it or choose another location&#34;)
 
         if not good:
             return False
@@ -791,7 +791,7 @@ def modify(
             featureMeta.setdefault(feat, {})[VALTP] = newTp
 
         if customTp and customTp != correctTp and customTp == &#34;int&#34;:
-            err(f&#34;feature values are declared to be int but some values are not int&#34;)
+            err(&#34;feature values are declared to be int but some values are not int&#34;)
 
         if assignedTp != newTp:
             rep1 = f&#34;feature of type {newTp}&#34;
@@ -1155,7 +1155,7 @@ types that went in, without loss of nodes;</li>
 <li>delete any number of node types with their nodes;</li>
 <li>add any number of new node types, with nodes and features.</li>
 </ul>
-<p>The last two action lead to a shifting of nodes, and all features that map
+<p>The last two actions lead to a shifting of nodes, and all features that map
 them, will be shifted accordingly.</p>
 <p>You can also pass meta data to be merged in.</p>
 <p>Finally, the resulting features will be written to disk.</p>
@@ -1419,7 +1419,7 @@ parameter will be merged into existing meta data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/compose/modify.py#L63-L1083" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/compose/modify.py#L63-L1083" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def modify(
     location,
@@ -1450,7 +1450,7 @@ parameter will be merged into existing meta data.</p>
     *   delete any number of node types with their nodes;
     *   add any number of new node types, with nodes and features.
 
-    The last two action lead to a shifting of nodes, and all features that map
+    The last two actions lead to a shifting of nodes, and all features that map
     them, will be shifted accordingly.
 
     You can also pass meta data to be merged in.
@@ -1867,7 +1867,7 @@ parameter will be merged into existing meta data.</p>
 
             inFeats = _itemize(inFeats)
             if outFeat in WARP:
-                err(f&#34;Can not merge into standard features&#34;)
+                err(&#34;Can not merge into standard features&#34;)
                 continue
 
             if not inFeats:
@@ -1894,13 +1894,13 @@ parameter will be merged into existing meta data.</p>
             outIsEdge = outExists and outFeat in origEdgeFeatures
 
             if outIsNode and not allInIsNode:
-                err(f&#34;Node Feature can not be merged from an edge feature&#34;)
+                err(&#34;Node Feature can not be merged from an edge feature&#34;)
 
             if outIsEdge and not allInIsEdge:
-                err(f&#34;Edge Feature can not be merged from a node feature&#34;)
+                err(&#34;Edge Feature can not be merged from a node feature&#34;)
 
             if not allInIsNode and not allInIsEdge:
-                err(f&#34;Feature can not be merged from both node and edge features&#34;)
+                err(&#34;Feature can not be merged from both node and edge features&#34;)
 
             allInIsInt = all(valTp(f) == &#34;int&#34; for f in inFeats)
             correctTp = &#34;int&#34; if allInIsInt else &#34;str&#34;
@@ -1914,10 +1914,10 @@ parameter will be merged into existing meta data.</p>
             eItem = f&#34;{feat}: &#34;
 
             if feat in WARP:
-                err(f&#34;Can not delete standard features&#34;)
+                err(&#34;Can not delete standard features&#34;)
                 continue
             if feat not in origFeatures:
-                err(f&#34;Not in data set&#34;)
+                err(&#34;Not in data set&#34;)
 
             deletedFt.add(feat)
 
@@ -1942,7 +1942,7 @@ parameter will be merged into existing meta data.</p>
                 eItem = f&#34;{feat}: &#34;
 
                 if feat in WARP:
-                    err(f&#34;Cannot add standard features&#34;)
+                    err(&#34;Cannot add standard features&#34;)
                     continue
                 if feat in origSetOther:
                     err(f&#34;{kind} feature already exists as {otherKind} feature&#34;)
@@ -1961,7 +1961,7 @@ parameter will be merged into existing meta data.</p>
             eItem = f&#34;{outType}: &#34;
 
             if outType == slotType:
-                err(f&#34;Result cannot be the slot type&#34;)
+                err(&#34;Result cannot be the slot type&#34;)
 
             withFeatures = type(inTypes) is dict
 
@@ -1995,7 +1995,7 @@ parameter will be merged into existing meta data.</p>
             eItem = f&#34;{nodeType}: &#34;
 
             if nodeType not in origNodeTypes:
-                err(f&#34;Not in data set&#34;)
+                err(&#34;Not in data set&#34;)
                 continue
 
             deletedTp.add(nodeType)
@@ -2013,20 +2013,20 @@ parameter will be merged into existing meta data.</p>
                 continue
 
             if nodeType in origNodeTypes:
-                err(f&#34;Already occurs&#34;)
+                err(&#34;Already occurs&#34;)
                 continue
 
             addedTp.add(nodeType)
 
             nodeSlots = typeInfo.get(NS, {})
             if not nodeSlots:
-                err(f&#34;No slot information given&#34;)
+                err(&#34;No slot information given&#34;)
             nF = typeInfo.get(NF, None)
             if not nF:
-                err(f&#34;No lower bound given&#34;)
+                err(&#34;No lower bound given&#34;)
             nT = typeInfo.get(NT, None)
             if not nT:
-                err(f&#34;No upper bound given&#34;)
+                err(&#34;No upper bound given&#34;)
             if nF is not None and nT is not None:
                 unlinked = 0
                 badlinked = 0
@@ -2084,7 +2084,7 @@ parameter will be merged into existing meta data.</p>
         if not dirEmpty(targetLocation):
             ePrefix = &#34;Output directory: &#34;
             eItem = &#34;not empty: &#34;
-            err(f&#34;Clean it or remove it or choose another location&#34;)
+            err(&#34;Clean it or remove it or choose another location&#34;)
 
         if not good:
             return False
@@ -2107,7 +2107,7 @@ parameter will be merged into existing meta data.</p>
             featureMeta.setdefault(feat, {})[VALTP] = newTp
 
         if customTp and customTp != correctTp and customTp == &#34;int&#34;:
-            err(f&#34;feature values are declared to be int but some values are not int&#34;)
+            err(&#34;feature values are declared to be int but some values are not int&#34;)
 
         if assignedTp != newTp:
             rep1 = f&#34;feature of type {newTp}&#34;
@@ -2453,7 +2453,7 @@ parameter will be merged into existing meta data.</p>
 <p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
-data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
+data-as_oq="inurl:github.com/annotation site:annotation.github.io"
 data-gaCategoryParameter="tf.compose.modify">
 </div>
 <h1>Index</h1>
@@ -2480,7 +2480,7 @@ data-gaCategoryParameter="tf.compose.modify">
 </nav>
 </main>
 <footer id="footer">
-<a href="https://www.annotation.nl">Dirk Roorda</a>
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://www.dans.knaw.nl"><img alt="DANS" src="/text-fabric/images/DANS-logo.png" width=200></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>

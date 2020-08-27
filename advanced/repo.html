@@ -267,7 +267,7 @@ is being obtained.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L0-L689" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L0-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/repo.md
@@ -329,7 +329,7 @@ class Checkout(object):
             baseRep = source if local == &#34;clone&#34; else dest
             extra = f&#34; offline under {baseRep}&#34;
         if local == &#34;clone&#34;:
-            result = f&#34;repo clone&#34;
+            result = &#34;repo clone&#34;
         elif commit and release:
             result = f&#34;r{release}=#{commit}&#34;
         elif commit:
@@ -337,13 +337,13 @@ class Checkout(object):
         elif release:
             result = f&#34;r{release}&#34;
         elif commit is None and release is None:
-            result = f&#34;unknown release or commit&#34;
+            result = &#34;unknown release or commit&#34;
         elif commit is None:
-            result = f&#34;latest release&#34;
+            result = &#34;latest release&#34;
         elif release is None:
-            result = f&#34;latest commit&#34;
+            result = &#34;latest commit&#34;
         else:
-            result = f&#34;latest release or commit&#34;
+            result = &#34;latest release or commit&#34;
         return f&#34;{result}{extra}&#34;
 
     def isClone(self):
@@ -536,6 +536,8 @@ class Checkout(object):
             if not self.localBase:
                 method = self.warning if attempt else self.error
                 method(f&#34;The requested {label} is not available offline&#34;)
+                base = self.baseClone if clone else self.baseLocal
+                method(f&#34;\t{base}/{self.dataPath} not found&#34;)
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -551,7 +553,7 @@ class Checkout(object):
                             )
                     else:
                         warning(f&#34;The requested {label} is not available offline&#34;)
-                        error(f&#34;No online connection&#34;)
+                        error(&#34;No online connection&#34;)
                 elif not isOnline:
                     error(f&#34;The requested {label} is not available online&#34;)
                 else:
@@ -662,7 +664,7 @@ class Checkout(object):
         self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
         try:
             r = requests.get(dataUrl, allow_redirects=True)
-            self.log(f&#34;\tunzipping ... &#34;)
+            self.log(&#34;\tunzipping ... &#34;)
             zf = io.BytesIO(r.content)
         except Exception as e:
             msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
@@ -904,12 +906,12 @@ class Checkout(object):
                 newline=False,
             )
             self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
-            self.log(f&#34;connected&#34;)
+            self.log(&#34;connected&#34;)
         except GithubException as why:
-            warning(f&#34;failed&#34;)
+            warning(&#34;failed&#34;)
             warning(f&#34;GitHub says: {why}&#34;)
         except IOError:
-            warning(f&#34;no internet&#34;)
+            warning(&#34;no internet&#34;)
 
 
 def checkoutRepo(
@@ -958,6 +960,7 @@ def checkoutRepo(
         rData = resolve(&#34;local&#34;, attempt=True)
         if rData[3]:
             return rData
+
     return resolve(checkout)</code></pre>
 </details>
 </section>
@@ -976,7 +979,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L644-L690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L646-L693" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkoutRepo(
     _browse=False,
@@ -1024,6 +1027,7 @@ def checkoutRepo(
         rData = resolve(&#34;local&#34;, attempt=True)
         if rData[3]:
             return rData
+
     return resolve(checkout)</code></pre>
 </details>
 </dd>
@@ -1041,7 +1045,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L27-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L27-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Checkout(object):
     @staticmethod
@@ -1077,7 +1081,7 @@ def checkoutRepo(
             baseRep = source if local == &#34;clone&#34; else dest
             extra = f&#34; offline under {baseRep}&#34;
         if local == &#34;clone&#34;:
-            result = f&#34;repo clone&#34;
+            result = &#34;repo clone&#34;
         elif commit and release:
             result = f&#34;r{release}=#{commit}&#34;
         elif commit:
@@ -1085,13 +1089,13 @@ def checkoutRepo(
         elif release:
             result = f&#34;r{release}&#34;
         elif commit is None and release is None:
-            result = f&#34;unknown release or commit&#34;
+            result = &#34;unknown release or commit&#34;
         elif commit is None:
-            result = f&#34;latest release&#34;
+            result = &#34;latest release&#34;
         elif release is None:
-            result = f&#34;latest commit&#34;
+            result = &#34;latest commit&#34;
         else:
-            result = f&#34;latest release or commit&#34;
+            result = &#34;latest release or commit&#34;
         return f&#34;{result}{extra}&#34;
 
     def isClone(self):
@@ -1284,6 +1288,8 @@ def checkoutRepo(
             if not self.localBase:
                 method = self.warning if attempt else self.error
                 method(f&#34;The requested {label} is not available offline&#34;)
+                base = self.baseClone if clone else self.baseLocal
+                method(f&#34;\t{base}/{self.dataPath} not found&#34;)
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -1299,7 +1305,7 @@ def checkoutRepo(
                             )
                     else:
                         warning(f&#34;The requested {label} is not available offline&#34;)
-                        error(f&#34;No online connection&#34;)
+                        error(&#34;No online connection&#34;)
                 elif not isOnline:
                     error(f&#34;The requested {label} is not available online&#34;)
                 else:
@@ -1410,7 +1416,7 @@ def checkoutRepo(
         self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
         try:
             r = requests.get(dataUrl, allow_redirects=True)
-            self.log(f&#34;\tunzipping ... &#34;)
+            self.log(&#34;\tunzipping ... &#34;)
             zf = io.BytesIO(r.content)
         except Exception as e:
             msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
@@ -1652,12 +1658,12 @@ def checkoutRepo(
                 newline=False,
             )
             self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
-            self.log(f&#34;connected&#34;)
+            self.log(&#34;connected&#34;)
         except GithubException as why:
-            warning(f&#34;failed&#34;)
+            warning(&#34;failed&#34;)
             warning(f&#34;GitHub says: {why}&#34;)
         except IOError:
-            warning(f&#34;no internet&#34;)</code></pre>
+            warning(&#34;no internet&#34;)</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -1669,7 +1675,7 @@ def checkoutRepo(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L28-L52" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L28-L52" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def fromString(string):
@@ -1706,7 +1712,7 @@ def fromString(string):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L54-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L54-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
@@ -1715,7 +1721,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         baseRep = source if local == &#34;clone&#34; else dest
         extra = f&#34; offline under {baseRep}&#34;
     if local == &#34;clone&#34;:
-        result = f&#34;repo clone&#34;
+        result = &#34;repo clone&#34;
     elif commit and release:
         result = f&#34;r{release}=#{commit}&#34;
     elif commit:
@@ -1723,13 +1729,13 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
     elif release:
         result = f&#34;r{release}&#34;
     elif commit is None and release is None:
-        result = f&#34;unknown release or commit&#34;
+        result = &#34;unknown release or commit&#34;
     elif commit is None:
-        result = f&#34;latest release&#34;
+        result = &#34;latest release&#34;
     elif release is None:
-        result = f&#34;latest commit&#34;
+        result = &#34;latest commit&#34;
     else:
-        result = f&#34;latest release or commit&#34;
+        result = &#34;latest release or commit&#34;
     return f&#34;{result}{extra}&#34;</code></pre>
 </details>
 </dd>
@@ -1744,7 +1750,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L605-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L607-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connect(self):
     warning = self.warning
@@ -1777,12 +1783,12 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
             newline=False,
         )
         self.repoOnline = self.ghConn.get_repo(f&#34;{self.org}/{self.repo}&#34;)
-        self.log(f&#34;connected&#34;)
+        self.log(&#34;connected&#34;)
     except GithubException as why:
-        warning(f&#34;failed&#34;)
+        warning(&#34;failed&#34;)
         warning(f&#34;GitHub says: {why}&#34;)
     except IOError:
-        warning(f&#34;no internet&#34;)</code></pre>
+        warning(&#34;no internet&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.repo.Checkout.download"><code class="name flex">
@@ -1793,7 +1799,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L332-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L334-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def download(self):
     cChk = self.commitChk
@@ -1818,7 +1824,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L378-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L380-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadCommit(self, commit, showErrors=True):
     c = self.getCommitObj(commit)
@@ -1840,7 +1846,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L432-L491" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L434-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadDir(self, commit, exclude=None, showErrors=False):
     g = self.repoOnline
@@ -1912,7 +1918,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L346-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L348-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadRelease(self, release, showErrors=True):
     cChk = self.commitChk
@@ -1955,14 +1961,14 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L389-L430" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L391-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def downloadZip(self, dataUrl, showErrors=True):
     label = self.label
     self.log(f&#34;\tdownloading {dataUrl} ... &#34;)
     try:
         r = requests.get(dataUrl, allow_redirects=True)
-        self.log(f&#34;\tunzipping ... &#34;)
+        self.log(&#34;\tunzipping ... &#34;)
         zf = io.BytesIO(r.content)
     except Exception as e:
         msg = f&#34;\t{str(e)}\n\tcould not download {dataUrl}&#34;
@@ -2009,7 +2015,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L169-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L169-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, newline=True):
     console(msg, error=True, newline=newline)</code></pre>
@@ -2023,7 +2029,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L556-L570" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L558-L572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetchInfo(self):
     g = self.repoOnline
@@ -2050,7 +2056,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L572-L583" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L574-L585" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fixInfo(self):
     sDir = self.dirPathLocal
@@ -2074,7 +2080,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L499-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L501-L505" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommit(self, commit):
     c = self.getCommitObj(commit)
@@ -2091,7 +2097,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L550-L554" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L552-L556" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitFromObj(self, c):
     g = self.repoOnline
@@ -2108,7 +2114,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L521-L539" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L523-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCommitObj(self, commit):
     error = self.error
@@ -2139,7 +2145,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L493-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L495-L499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRelease(self, release, showErrors=True):
     r = self.getReleaseObj(release, showErrors=showErrors)
@@ -2156,7 +2162,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L541-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L543-L550" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseFromObj(self, r):
     g = self.repoOnline
@@ -2176,7 +2182,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L505-L519" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L507-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getReleaseObj(self, release, showErrors=True):
     g = self.repoOnline
@@ -2203,7 +2209,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L78-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L78-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClone(self):
     return self.local == &#34;clone&#34;</code></pre>
@@ -2217,7 +2223,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L81-L82" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L81-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isOffline(self):
     return self.local in {&#34;clone&#34;, &#34;local&#34;}</code></pre>
@@ -2231,7 +2237,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L159-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L159-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def log(self, msg, newline=True):
     silent = self.silent
@@ -2247,7 +2253,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L183-L330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L183-L332" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSureLocal(self, attempt=False):
     _browse = self._browse
@@ -2334,6 +2340,8 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         if not self.localBase:
             method = self.warning if attempt else self.error
             method(f&#34;The requested {label} is not available offline&#34;)
+            base = self.baseClone if clone else self.baseLocal
+            method(f&#34;\t{base}/{self.dataPath} not found&#34;)
     else:
         if isLocal:
             self.localBase = self.baseLocal
@@ -2349,7 +2357,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
                         )
                 else:
                     warning(f&#34;The requested {label} is not available offline&#34;)
-                    error(f&#34;No online connection&#34;)
+                    error(&#34;No online connection&#34;)
             elif not isOnline:
                 error(f&#34;The requested {label} is not available online&#34;)
             else:
@@ -2407,7 +2415,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L172-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L172-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def possibleError(self, msg, showErrors, again=False, indent=&#34;\t&#34;, newline=False):
     error = self.error
@@ -2429,7 +2437,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L585-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L587-L596" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readInfo(self):
     if os.path.exists(self.filePathLocal):
@@ -2451,7 +2459,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L164-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L164-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, newline=True):
     silent = self.silent
@@ -2467,7 +2475,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/97d16bad097ef9d5f369af3113f332aa5421b770/tf/advanced/repo.py#L596-L603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/35e293200e1f62edb93d89c5d34f4a7a9eaf4c53/tf/advanced/repo.py#L598-L605" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeInfo(self):
     if not os.path.exists(self.dirPathLocal):
@@ -2488,7 +2496,7 @@ def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
 <p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
 <p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
 <div class="gcse-search" style="height: 70px"
-data-as_oq="inurl:github.com/annotation site:annotation.github.io site:www.annotation.nl"
+data-as_oq="inurl:github.com/annotation site:annotation.github.io"
 data-gaCategoryParameter="tf.advanced.repo">
 </div>
 <h1>Index</h1>
@@ -2567,7 +2575,7 @@ data-gaCategoryParameter="tf.advanced.repo">
 </nav>
 </main>
 <footer id="footer">
-<a href="https://www.annotation.nl">Dirk Roorda</a>
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://www.dans.knaw.nl"><img alt="DANS" src="/text-fabric/images/DANS-logo.png" width=200></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
