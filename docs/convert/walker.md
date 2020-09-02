@@ -75,7 +75,7 @@ curPara = cv.node('para')
 ```
 
 To add features to nodes, use a `cv.feature()` action.
-It will apply to the last node added, or you can pass it a node as argument.
+It will apply to a node passed as argument.
 
 To add features to edges, issue a `cv.edge()` action.
 It will require two node arguments: the *from* node and the *to* node.

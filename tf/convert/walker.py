@@ -446,6 +446,15 @@ class CV(object):
         If you have called `walk()` with `force=True`, indicating that the
         director must proceed after errors, then this stop command will cause termination
         nevertheless.
+
+        Parameters
+        ----------
+        msg: string
+            A message to display upon stopping.
+
+        Returns
+        -------
+        None
         """
 
         tmObj = self.TF.tmObj
@@ -468,6 +477,17 @@ class CV(object):
             cv.feature(n, key=value, ...)
 
         calls.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        node reference: tuple
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
         """
 
         curSeq = self.curSeq
@@ -507,6 +527,19 @@ class CV(object):
             cv.feature(n, key=value, ...)
 
         calls.
+
+        Parameters
+        ----------
+        nType: string
+            A node type, not the slot type
+
+        Returns
+        -------
+        node reference or None
+            If an error occurred, `None` is returned.
+            The node reference consists of a node type and a sequence number,
+            but normally you do not have to dig these out.
+            Just pass the tuple as a whole to actions that require a node argument.
         """
 
         slotType = self.slotType
@@ -537,6 +570,15 @@ class CV(object):
 
         The node `n` will be removed from the set of current embedders.
         This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
         """
 
         self.stats[self.T] += 1
@@ -549,12 +591,20 @@ class CV(object):
 
             cv.resume(n)
 
-
         If you resume a non-slot node, you add it again to the set of embedders.
         No new node will be created.
 
         If you resume a slot node, it will be added to the set of current embedders.
         No new slot will be created.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        None
         """
 
         curEmbedders = self.curEmbedders
@@ -575,15 +625,19 @@ class CV(object):
 
             cv.feature(n, name=value, ... , name=value)
 
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this node.
 
-        The features are passed as a list of keyword arguments.
+        Returns
+        -------
+        None
 
-        These features are added to node `n`.
-        This `n` must be the result of a previous `cv.slot()` or `cv.node()` action.
-
-        **If a feature value is `None` it will not be added!**
-
-        The features are passed as a list of keyword arguments.
+        !!! caution "None values"
+            If a feature value is `None` it will not be added!
         """
 
         nodeFeatures = self.nodeFeatures
@@ -601,17 +655,25 @@ class CV(object):
 
             cv.edge(nf, nt, name=value, ... , name=value)
 
+        Parameters
+        ----------
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+        **features: keyword arguments
+            The names and values of features to assign to this edge
+            (i.e. pair of nodes).
 
-        You need to pass two nodes, `nf` (*from*) and `nt` (*to*).
-        Together these specify an edge, and the features will be applied
-        to this edge.
+        Returns
+        -------
+        None
 
-        You may pass values that are `None`, and a corresponding edge will be created.
-        If for all pairs `nf`, `nt` the value is `None`,
-        an edge without values will be created. For every `nf`, such a feature
-        essentially specifies a set of nodes `{ nt }`.
-
-        The features are passed as a list of keyword arguments.
+        !!! note "None values"
+            You may pass values that are `None`,
+            and a corresponding edge will be created.
+            If for all edges the value is `None`,
+            an edge without values will be created.
+            For every `nodeFrom`, such a feature
+            essentially specifies a set of nodes `{ nodeTo }`.
         """
 
         edgeFeatures = self.edgeFeatures
@@ -623,11 +685,10 @@ class CV(object):
             edgeFeatures[k][nodeFrom][nodeTo] = v
 
     def occurs(self, feat):
-        """Returns True if the feature with name `featureName` occurs in the
+        """Whether the feature `featureName` occurs in the resulting data so far.
 
             occurs = cv.occurs(featureName)
 
-        resulting data, else False.
         If you have assigned None values to a feature, that will count, i.e.
         that feature occurs in the data.
 
@@ -641,6 +702,15 @@ class CV(object):
         such is feature is declared but not used.
         At the end of your director you can remove unused features
         conditionally, using this function.
+
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+
+        Returns
+        -------
+        boolean
         """
 
         nodeFeatures = self.nodeFeatures
@@ -654,16 +724,22 @@ class CV(object):
 
             cv.meta(feature, name=value, ... , name=value)
 
+        Parameters
+        ----------
+        feat: string
+            The name of a feature
+        **metaData: pairs of name and value
+            If a `value` is `None`, that `name` will be deleted from the
+            metadata fields of the feature.
+            A bare `cv.meta(feature)` will remove the all metadata from the feature.
+            If you modify the field `valueType` of a feature, that feature will be
+            added or removed from the set of `intFeatures`.
+            It will be checked whether you specify either `int` or `str`.
 
-        `feature` is the feature name.
 
-        If a `value` is `None`, that `name` will be deleted from the metadata fields.
-
-        A bare `cv.meta(feature)` will remove the feature from the metadata.
-
-        If you modify the field `valueType` of a feature, that feature will be added
-        or removed from the set of `intFeatures`.
-        It will be checked whether you specify either `int` or `str`.
+        Returns
+        -------
+        None
         """
 
         errors = self.errors
@@ -710,31 +786,58 @@ class CV(object):
         to do so, you have to detect that a node is still unlinked.
 
         This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        boolean
         """
 
         oslots = self.oslots
         return tuple(oslots.get(node, []))
 
     def active(self, node):
-        """Returns whether the node `n` is currently active, i.e. in the set
+        """Returns whether a node is currently active.
+
+        Active nodes are the nodes in the set of current embedders.
 
             isActive = cv.active(n)
-
-        of embedders.
 
         If you construct your nodes in a very dynamic way, it might be
         hard to keep track for each node whether it has been created, terminated,
         or resumed, in other words, whether it is active or not.
 
-        This action is provides a direct and precise way to know whether a node is active.
+        This action is provides a direct and precise way to know
+        whether a node is active.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        boolean
         """
 
         return node in self.curEmbedders
 
     def activeTypes(self):
-        """Returns the node types of the currently active nodes, i.e. the embedders.
+        """The node types of the currently active nodes, i.e. the embedders.
 
             nTypes = cv.activeTypes()
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        set
         """
 
         return {node[0] for node in self.curEmbedders}
@@ -750,6 +853,21 @@ class CV(object):
         For node features, `n` is the node which carries the value.
 
         For edge features, `nf, nt` is the pair of from-to nodes which carries the value.
+
+        Parameters
+        ----------
+        feature: string
+            The name of a feature
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+            The node in question when retrieving the value of a node feature.
+        nodeFrom, nodeTo: tuple
+            Two node references, obtained by one of the actions `slot` or `node`.
+            The nodes in question when retrieving the value of an edge feature.
+
+        Returns
+        -------
+        string or integer
         """
 
         errors = self.errors
