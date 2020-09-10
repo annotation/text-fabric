@@ -134,7 +134,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L0-L1351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L0-L1382" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/walker.md
@@ -262,10 +262,13 @@ class CV(object):
             The node type that acts as the type of the slots in the data set.
 
         oText: dict
-            The configuration information to be stored in the `otext` feature:
+            The configuration information to be stored in the `otext` feature
+            (see `tf.core.text`):
 
             * section types
             * section features
+            * structure types
+            * structure features
             * text formats
 
         generic: dict
@@ -651,14 +654,23 @@ class CV(object):
 
         return (nType, seq)
 
-    def node(self, nType):
+    def node(self, nType, slots=None):
         &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
 
             n = cv.node(nodeType)
 
         You have to pass its *node type*, i.e. a string.
         Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
-        Non slot nodes will be automatically added to the set of embedders.
+
+        There are two modes for this function:
+
+        * Auto: (`slots=None`):
+          Non slot nodes will be automatically added to the set of embedders.
+        * Explicit: (`slots=iterable`):
+          The slots in iterable will be assigned to this node and nothing else.
+          The node will not be added to the set of embedders.
+          Put otherwise: the node will be terminated after construction.
+          However: you could resume it later to add other slots.
 
         Remember that you can add features to the node by later
 
@@ -670,6 +682,12 @@ class CV(object):
         ----------
         nType: string
             A node type, not the slot type
+        slots: iterable of int, optional `None`
+            The slots to assign to this node.
+            If left out, the node is left as an embedding node and
+            subsequent slots will be added to it automatically.
+            All slots in the iterable must have been generated before
+            by means of the `cv.slot()` action.
 
         Returns
         -------
@@ -697,7 +715,20 @@ class CV(object):
         node = (nType, seq)
 
         self._checkSecLevel(node, before=True)
-        curEmbedders.add(node)
+
+        if slots:
+            maxSlot = curSeq[slotType]
+
+            for s in slots:
+                if not 1 &lt;= s &lt;= maxSlot:
+                    errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+                else:
+                    oslots = self.oslots
+                    oslots[node].add(s)
+
+            self.stats[self.T] += 1
+        else:
+            curEmbedders.add(node)
 
         return node
 
@@ -1508,7 +1539,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L13-L1352" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L13-L1383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -1624,10 +1655,13 @@ class CV(object):
             The node type that acts as the type of the slots in the data set.
 
         oText: dict
-            The configuration information to be stored in the `otext` feature:
+            The configuration information to be stored in the `otext` feature
+            (see `tf.core.text`):
 
             * section types
             * section features
+            * structure types
+            * structure features
             * text formats
 
         generic: dict
@@ -2013,14 +2047,23 @@ class CV(object):
 
         return (nType, seq)
 
-    def node(self, nType):
+    def node(self, nType, slots=None):
         &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
 
             n = cv.node(nodeType)
 
         You have to pass its *node type*, i.e. a string.
         Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
-        Non slot nodes will be automatically added to the set of embedders.
+
+        There are two modes for this function:
+
+        * Auto: (`slots=None`):
+          Non slot nodes will be automatically added to the set of embedders.
+        * Explicit: (`slots=iterable`):
+          The slots in iterable will be assigned to this node and nothing else.
+          The node will not be added to the set of embedders.
+          Put otherwise: the node will be terminated after construction.
+          However: you could resume it later to add other slots.
 
         Remember that you can add features to the node by later
 
@@ -2032,6 +2075,12 @@ class CV(object):
         ----------
         nType: string
             A node type, not the slot type
+        slots: iterable of int, optional `None`
+            The slots to assign to this node.
+            If left out, the node is left as an embedding node and
+            subsequent slots will be added to it automatically.
+            All slots in the iterable must have been generated before
+            by means of the `cv.slot()` action.
 
         Returns
         -------
@@ -2059,7 +2108,20 @@ class CV(object):
         node = (nType, seq)
 
         self._checkSecLevel(node, before=True)
-        curEmbedders.add(node)
+
+        if slots:
+            maxSlot = curSeq[slotType]
+
+            for s in slots:
+                if not 1 &lt;= s &lt;= maxSlot:
+                    errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+                else:
+                    oslots = self.oslots
+                    oslots[node].add(s)
+
+            self.stats[self.T] += 1
+        else:
+            curEmbedders.add(node)
 
         return node
 
@@ -2906,7 +2968,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L803-L827" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L834-L858" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -2955,7 +3017,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L829-L843" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L860-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3006,7 +3068,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L653-L685" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L684-L716" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3069,7 +3131,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L623-L651" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L654-L682" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3131,7 +3193,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L845-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L876-L916" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3202,7 +3264,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L775-L801" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L806-L832" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3260,7 +3322,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L722-L773" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L753-L804" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3317,15 +3379,24 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 </details>
 </dd>
 <dt id="tf.convert.walker.CV.node"><code class="name flex">
-<span>def <span class="ident">node</span></span>(<span>self, nType)</span>
+<span>def <span class="ident">node</span></span>(<span>self, nType, slots=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Make a non-slot node and return the handle to it in <code>n</code>.</p>
 <pre><code>n = cv.node(nodeType)
 </code></pre>
 <p>You have to pass its <em>node type</em>, i.e. a string.
-Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.
-Non slot nodes will be automatically added to the set of embedders.</p>
+Think of <code>sentence</code>, <code>paragraph</code>, <code>phrase</code>, <code>word</code>, <code>sign</code>, whatever.</p>
+<p>There are two modes for this function:</p>
+<ul>
+<li>Auto: (<code>slots=None</code>):
+Non slot nodes will be automatically added to the set of embedders.</li>
+<li>Explicit: (<code>slots=iterable</code>):
+The slots in iterable will be assigned to this node and nothing else.
+The node will not be added to the set of embedders.
+Put otherwise: the node will be terminated after construction.
+However: you could resume it later to add other slots.</li>
+</ul>
 <p>Remember that you can add features to the node by later</p>
 <pre><code>cv.feature(n, key=value, ...)
 </code></pre>
@@ -3334,6 +3405,12 @@ Non slot nodes will be automatically added to the set of embedders.</p>
 <dl>
 <dt><strong><code>nType</code></strong> :&ensp;<code>string</code></dt>
 <dd>A node type, not the slot type</dd>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>int</code>, optional <code>None</code></dt>
+<dd>The slots to assign to this node.
+If left out, the node is left as an embedding node and
+subsequent slots will be added to it automatically.
+All slots in the iterable must have been generated before
+by means of the <code>cv.slot()</code> action.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -3346,16 +3423,25 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L516-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L519-L595" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def node(self, nType):
+<pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
 
         n = cv.node(nodeType)
 
     You have to pass its *node type*, i.e. a string.
     Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
-    Non slot nodes will be automatically added to the set of embedders.
+
+    There are two modes for this function:
+
+    * Auto: (`slots=None`):
+      Non slot nodes will be automatically added to the set of embedders.
+    * Explicit: (`slots=iterable`):
+      The slots in iterable will be assigned to this node and nothing else.
+      The node will not be added to the set of embedders.
+      Put otherwise: the node will be terminated after construction.
+      However: you could resume it later to add other slots.
 
     Remember that you can add features to the node by later
 
@@ -3367,6 +3453,12 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
     ----------
     nType: string
         A node type, not the slot type
+    slots: iterable of int, optional `None`
+        The slots to assign to this node.
+        If left out, the node is left as an embedding node and
+        subsequent slots will be added to it automatically.
+        All slots in the iterable must have been generated before
+        by means of the `cv.slot()` action.
 
     Returns
     -------
@@ -3394,7 +3486,20 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
     node = (nType, seq)
 
     self._checkSecLevel(node, before=True)
-    curEmbedders.add(node)
+
+    if slots:
+        maxSlot = curSeq[slotType]
+
+        for s in slots:
+            if not 1 &lt;= s &lt;= maxSlot:
+                errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+            else:
+                oslots = self.oslots
+                oslots[node].add(s)
+
+        self.stats[self.T] += 1
+    else:
+        curEmbedders.add(node)
 
     return node</code></pre>
 </details>
@@ -3430,7 +3535,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L687-L720" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L718-L751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -3492,7 +3597,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L589-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L620-L652" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -3556,7 +3661,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L468-L514" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L471-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -3632,7 +3737,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L440-L466" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L443-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -3685,7 +3790,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L566-L587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L597-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -3736,10 +3841,13 @@ In fact, the rules are exactly the same as for
 <dd>The node type that acts as the type of the slots in the data set.</dd>
 <dt><strong><code>oText</code></strong> :&ensp;<code>dict</code></dt>
 <dd>
-<p>The configuration information to be stored in the <code>otext</code> feature:</p>
+<p>The configuration information to be stored in the <code>otext</code> feature
+(see <code><a title="tf.core.text" href="../core/text.html">tf.core.text</a></code>):</p>
 <ul>
 <li>section types</li>
 <li>section features</li>
+<li>structure types</li>
+<li>structure features</li>
 <li>text formats</li>
 </ul>
 </dd>
@@ -3790,7 +3898,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efc307336f676d1d8a25504ccfcbfec80f751581/tf/convert/walker.py#L89-L240" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/convert/walker.py#L89-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -3830,10 +3938,13 @@ to TF.</p>
         The node type that acts as the type of the slots in the data set.
 
     oText: dict
-        The configuration information to be stored in the `otext` feature:
+        The configuration information to be stored in the `otext` feature
+        (see `tf.core.text`):
 
         * section types
         * section features
+        * structure types
+        * structure features
         * text formats
 
     generic: dict
