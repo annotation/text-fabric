@@ -124,10 +124,13 @@ class CV(object):
             The node type that acts as the type of the slots in the data set.
 
         oText: dict
-            The configuration information to be stored in the `otext` feature:
+            The configuration information to be stored in the `otext` feature
+            (see `tf.core.text`):
 
             * section types
             * section features
+            * structure types
+            * structure features
             * text formats
 
         generic: dict
@@ -513,14 +516,23 @@ class CV(object):
 
         return (nType, seq)
 
-    def node(self, nType):
+    def node(self, nType, slots=None):
         """Make a non-slot node and return the handle to it in `n`.
 
             n = cv.node(nodeType)
 
         You have to pass its *node type*, i.e. a string.
         Think of `sentence`, `paragraph`, `phrase`, `word`, `sign`, whatever.
-        Non slot nodes will be automatically added to the set of embedders.
+
+        There are two modes for this function:
+
+        * Auto: (`slots=None`):
+          Non slot nodes will be automatically added to the set of embedders.
+        * Explicit: (`slots=iterable`):
+          The slots in iterable will be assigned to this node and nothing else.
+          The node will not be added to the set of embedders.
+          Put otherwise: the node will be terminated after construction.
+          However: you could resume it later to add other slots.
 
         Remember that you can add features to the node by later
 
@@ -532,6 +544,12 @@ class CV(object):
         ----------
         nType: string
             A node type, not the slot type
+        slots: iterable of int, optional `None`
+            The slots to assign to this node.
+            If left out, the node is left as an embedding node and
+            subsequent slots will be added to it automatically.
+            All slots in the iterable must have been generated before
+            by means of the `cv.slot()` action.
 
         Returns
         -------
@@ -559,7 +577,20 @@ class CV(object):
         node = (nType, seq)
 
         self._checkSecLevel(node, before=True)
-        curEmbedders.add(node)
+
+        if slots:
+            maxSlot = curSeq[slotType]
+
+            for s in slots:
+                if not 1 <= s <= maxSlot:
+                    errors[f'slot out of range in `cv.node(({nType}, {seq}))`'].append(f"{s}")
+                else:
+                    oslots = self.oslots
+                    oslots[node].add(s)
+
+            self.stats[self.T] += 1
+        else:
+            curEmbedders.add(node)
 
         return node
 

@@ -48,10 +48,14 @@ text-fabric appName:hot
 
 #### 8.4.1
 
-2020-07-14
+2020-09-08
 
 Better error message if a standard module of a data set cannot be found.
 E.g. the parallels modules for the BHSA, DSS.
+
+Addition in `tf.convert.walker`, in the `cv.node()` function to add nodes:
+it accepts an additional optional parameter to link an explicit set of
+slots to a node.
 
 #### 8.4.0
 
