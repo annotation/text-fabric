@@ -53,6 +53,18 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="8">8</h2>
 <h3 id="84">8.4</h3>
+<h4 id="842">8.4.2</h4>
+<p>2020-09-20</p>
+<p>Minor fixes in the display:</p>
+<ul>
+<li><strong>The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.</strong>
+Fixed by using CSS mechanisms such as <code>display: inline-block</code> and <code>unicode-bidi: embed</code>.</li>
+<li><strong>Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible</strong>.
+Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
+zoom level, the dots become better visible.
+It seems that using the <code>rem</code> unit for specifying border-sizes contributes to this behaviour.
+So I specified all border widths in <code>px</code>, assuming 20px = 1rem.</li>
+</ul>
 <h4 id="841">8.4.1</h4>
 <p>2020-09-08</p>
 <p>Better error message if a standard module of a data set cannot be found.
@@ -295,7 +307,7 @@ Note that if you use Text-Fabric prior version 8, there will be no graceful fall
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f483c3ab13cd3ec58d8be789bbacdce8d19a2d3/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/about/releases.md
@@ -324,6 +336,7 @@ data-gaCategoryParameter="tf.about.releases">
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#8">8</a><ul>
 <li><a href="#84">8.4</a><ul>
+<li><a href="#842">8.4.2</a></li>
 <li><a href="#841">8.4.1</a></li>
 <li><a href="#840">8.4.0</a></li>
 </ul>

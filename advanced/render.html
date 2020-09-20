@@ -39,7 +39,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/advanced/render.py#L0-L492" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f483c3ab13cd3ec58d8be789bbacdce8d19a2d3/tf/advanced/render.py#L0-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/render.md
@@ -87,10 +87,11 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     ltr = settings.ltr
 
     elem = &#34;span&#34; if _inTuple else &#34;div&#34;
+    ubd = &#34; ubd&#34; if _inTuple else &#34;&#34;
     result = (
         f&#34;&#34;&#34;{passage}&lt;{elem} class=&#34;{ltr} children&#34;&gt;{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
         if isPretty
-        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
+        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}{ubd}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
     )
 
     if _browse or _asString:
@@ -551,7 +552,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fe473b40fb2529e23d2581f8a0b937c6360095e/tf/advanced/render.py#L10-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f483c3ab13cd3ec58d8be789bbacdce8d19a2d3/tf/advanced/render.py#L10-L56" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.
@@ -590,10 +591,11 @@ def _getFeatures(info, n, nType):
     ltr = settings.ltr
 
     elem = &#34;span&#34; if _inTuple else &#34;div&#34;
+    ubd = &#34; ubd&#34; if _inTuple else &#34;&#34;
     result = (
         f&#34;&#34;&#34;{passage}&lt;{elem} class=&#34;{ltr} children&#34;&gt;{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
         if isPretty
-        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
+        else f&#34;&#34;&#34;&lt;{elem} class=&#34;{ltr}{ubd}&#34;&gt;{passage}{rep}&lt;/{elem}&gt;&#34;&#34;&#34;
     )
 
     if _browse or _asString:
