@@ -44,10 +44,11 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     ltr = settings.ltr
 
     elem = "span" if _inTuple else "div"
+    ubd = " ubd" if _inTuple else ""
     result = (
         f"""{passage}<{elem} class="{ltr} children">{rep}</{elem}>"""
         if isPretty
-        else f"""<{elem} class="{ltr}">{passage}{rep}</{elem}>"""
+        else f"""<{elem} class="{ltr}{ubd}">{passage}{rep}</{elem}>"""
     )
 
     if _browse or _asString:

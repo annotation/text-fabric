@@ -1,7 +1,7 @@
 /* OVERALL */
 
 body {
-	padding: 2rem;
+	padding: 40px;
 }
 
 /* PAGE (NO COLUMNS) */
@@ -18,12 +18,12 @@ div.titleline,.authorline {
 div.titleline {
 	font-size: x-large;
 	font-weight: bold;
-	padding: 2rem;
+	padding: 40px;
 }
 div.authorline {
 	font-size: large;
 	font-style: italic;
-	padding: 1rem;
+	padding: 20px;
 }
 
 /* INPUT PADS */
@@ -31,21 +31,21 @@ div.authorline {
 pre.sections {
 	font-size: medium;
 	font-family: monospace;
-	width: calc(100% - 1rem);
-	margin: 0.3rem 0.3rem;
+	width: calc(100% - 20px);
+	margin: 6px 6px;
 	background-color: var(--sections-back);
 }
 pre.tuples {
 	font-size: medium;
 	font-family: monospace;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 	background-color: var(--tuples-back);
 }
 pre.query {
 	font-size: medium;
 	font-family: monospace;
-	width: calc(100% - 1rem);
-	margin: 0.3rem 0.3rem;
+	width: calc(100% - 20px);
+	margin: 6px 6px;
 	background-color: var(--query-back);
 }
 

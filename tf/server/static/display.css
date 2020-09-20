@@ -93,6 +93,12 @@ a:hover {
 .rtl {
     direction: rtl ! important;
 }
+.ubd {
+    unicode-bidi: embed;
+}
+.col {
+   display: inline-block;
+}
 .features {
     font-family: monospace;
     font-size: medium;
@@ -103,15 +109,15 @@ a:hover {
     justify-content: flex-start;
     align-items: flex-start;
     align-content: flex-start;
-    padding: 0.1rem;
-    margin: 0.1rem;
+    padding: 2px;
+    margin: 2px;
     direction: ltr;
     border: var(--meta-width) solid var(--meta-color);
     border-radius: var(--meta-width);
 }
 .features div,.features span {
     padding: 0;
-    margin: -0.1rem 0;
+    margin: -2px 0;
 }
 .features .f {
     font-family: sans-serif;
@@ -123,7 +129,7 @@ a:hover {
   color: #000000;
   background-color: #eeeeee;
   font-size: medium;
-  margin: 0.1rem 0rem;
+  margin: 2px 0px;
 }
 .features .xft .f {
   color: #000000;
@@ -196,8 +202,8 @@ a:hover {
     align-content: flex-start;
     flex-flow: column nowrap;
     background: #ffffff none repeat scroll 0 0;
-    padding:  0.5rem 0.1rem 0.1rem 0.1rem;
-    margin: 0.8rem 0.1rem 0.1rem 0.1rem;
+    padding:  10px 2px 2px 2px;
+    margin: 16px 2px 2px 2px;
     border-style: solid;
     font-size: small;
 }
@@ -260,30 +266,30 @@ span.plain {
     border-right-style: none
 }
 .plain.l {
-    padding-left: 0.2rem;
-    margin-left: 0.1rem;
+    padding-left: 4px;
+    margin-left: 2px;
     border-width: var(--border-width-plain);
 }
 .plain.r {
-    padding-right: 0.2rem;
-    margin-right: 0.1rem;
+    padding-right: 4px;
+    margin-right: 2px;
     border-width: var(--border-width-plain);
 }
 .lbl {
     font-family: monospace;
-    margin-top: -1.2rem;
-    margin-left: 1rem;
+    margin-top: -24px;
+    margin-left: 20px;
     background: #ffffff none repeat scroll 0 0;
-    padding: 0 0.3rem;
+    padding: 0 6px;
     border-style: solid;
     display: block;
     color: var(--label)
 }
 .lbl.trm {
     background-attachment: local;
-    margin-top: 0.1rem;
-    margin-left: 0.1rem;
-    padding: 0.1rem 0.1rem;
+    margin-top: 2px;
+    margin-left: 2px;
+    padding: 2px 2px;
     border-style: none;
 }
 .lbl.cnul {
@@ -311,9 +317,9 @@ span.plain {
 /* PROVENANCE */
 
 div.prov {
-	margin: 2rem;
-	padding: 1rem;
-	border: 0.1rem solid var(--fog-rim);
+	margin: 40px;
+	padding: 20px;
+	border: 2px solid var(--fog-rim);
 }
 div.pline {
 	display: flex;
@@ -352,18 +358,18 @@ div.pval {
   --text-color:         hsla( 60,  80%,  10%, 1.0  );
   --lex-color:          hsla(220,  90%,  60%, 1.0  );
   --meta-color:         hsla(  0,   0%,  90%, 0.7  );
-  --meta-width:         0.15rem;
+  --meta-width:         3px;
   --border-color-nul:   hsla(  0,   0%,  90%, 0.5  );
   --border-color0:      hsla(  0,   0%,  90%, 0.9  );
   --border-color1:      hsla(  0,   0%,  80%, 0.9  );
   --border-color2:      hsla(  0,   0%,  70%, 0.9  );
   --border-color3:      hsla(  0,   0%,  80%, 0.8  );
   --border-color4:      hsla(  0,   0%,  60%, 0.9  );
-  --border-width-nul:   0.1rem;
-  --border-width0:      0.1rem;
-  --border-width1:      0.15rem;
-  --border-width2:      0.2rem;
-  --border-width3:      0.3rem;
-  --border-width4:      0.25rem;
-  --border-width-plain: 0.1rem;
+  --border-width-nul:   2px;
+  --border-width0:      2px;
+  --border-width1:      3px;
+  --border-width2:      4px;
+  --border-width3:      6px;
+  --border-width4:      5px;
+  --border-width-plain: 2px;
 }

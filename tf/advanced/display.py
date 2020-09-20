@@ -482,7 +482,7 @@ def plainTuple(
             passageAtt = ""
 
         plainRep = "".join(
-            "<span>"
+            '<span class="col">'
             + mdEsc(
                 app.plain(
                     n,
@@ -497,11 +497,11 @@ def plainTuple(
         )
         html = (
             f'<details class="pretty dtrow {current}" seq="{seq}" {attOpen}>'
-            f"<summary>"
+            f'<summary>'
             f'<a href="#" class="pq fa fa-solar-panel fa-xs"'
             f' title="show in context" {passageAtt}></a>'
             f'<a href="#" class="sq" tup="{tupSeq}">{seq}</a>'
-            f" {passageRef} {plainRep}"
+            f' {passageRef} {plainRep}'
             f"</summary>"
             f'<div class="pretty">{prettyRep}</div>'
             f"</details>"

@@ -46,6 +46,20 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.2
+
+2020-09-20
+
+Minor fixes in the display:
+
+* **The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.**
+  Fixed by using CSS mechanisms such as `display: inline-block` and `unicode-bidi: embed`.
+* **Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible**.
+  Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
+  zoom level, the dots become better visible.
+  It seems that using the `rem` unit for specifying border-sizes contributes to this behaviour.
+  So I specified all border widths in `px`, assuming 20px = 1rem.
+
 #### 8.4.1
 
 2020-09-08

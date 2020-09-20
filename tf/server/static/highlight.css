@@ -4,7 +4,7 @@
 span.hl {
 	background-color: var(--hl-strong);
 	border-width: 0;
-	border-radius: 0.1rem;
+	border-radius: 2px;
 	border-style: solid;
 }
 div.contnr.hl,div.lbl.hl {
@@ -12,16 +12,16 @@ div.contnr.hl,div.lbl.hl {
 }
 div.contnr.hl {
   border-color: var(--hl-rim) ! important;
-	border-width: 0.2rem ! important;
+	border-width: 4px ! important;
 }
 
 span.hlbx {
 	border-color: var(--hl-rim);
-	border-width: 0.2rem ! important;
+	border-width: 4px ! important;
 	border-style: solid;
-	border-radius: 0.3rem;
-  padding: 0.2rem;
-  margin: 0.2rem;
+	border-radius: 6px;
+  padding: 4px;
+  margin: 4px;
 }
 
 span.plain {

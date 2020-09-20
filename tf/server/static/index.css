@@ -12,8 +12,8 @@ form {
 }
 
 img.icon {
-	height: 2rem;
-	width: 2rem;
+	height: 40px;
+	width: 40px;
 }
 
 div.page {
@@ -28,16 +28,16 @@ div.page {
 div.leftcol {
 	flex: 0 0 20rem;
 	border-right: 1pt solid var(--fog-rim);
-	padding-left: 0.2rem;
-	padding-right: 0.4rem;
+	padding-left: 4px;
+	padding-right: 8px;
 	height: 99vh;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
 div.midcol {
 	flex: 0 0 auto;
-	padding-left: 0.4rem;
-	padding-right: 0.4rem;
+	padding-left: 8px;
+	padding-right: 8px;
 	height: 99vh;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -49,8 +49,8 @@ div.rightcol {
 	justify-content: flex-start;
 	align-items: stretch;
 	border-left: 1pt solid var(--fog-rim);
-	padding-left: 0.4rem;
-	padding-right: 0.2rem;
+	padding-left: 8px;
+	padding-right: 4px;
 	height: 99vh;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -58,8 +58,8 @@ div.rightcol {
 div.rightcolx {
 	flex: 10 2 auto;
 	border-left: 1pt solid var(--fog-rim);
-	padding-left: 0.4rem;
-	padding-right: 0.2rem;
+	padding-left: 8px;
+	padding-right: 4px;
 	height: 99vh;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -81,9 +81,9 @@ div.rightcolx {
 	justify-content: flex-end;
 	height: 8rem;
 	width: 2rem;
-	border-bottom: 0.1rem solid var(--fog-rim);
-	border-left: 0.1rem solid var(--fog-rim);
-	border-right: 0.1rem solid var(--fog-rim);
+	border-bottom: 2px solid var(--fog-rim);
+	border-left: 2px solid var(--fog-rim);
+	border-right: 2px solid var(--fog-rim);
 }
 #sidebar > div > a {
 	flex: 0 0 auto;
@@ -93,7 +93,7 @@ div.rightcolx {
 	transform: rotate(270deg);
 	transform-origin: left top;
 	text-align: center;
-	margin-bottom: -2rem;
+	margin-bottom: -40px;
 }
 #sidebar > div > a:hover {
 	background-color: var(--gold-back);
@@ -102,7 +102,7 @@ div.rightcolx {
 	height: 2.2rem;
 	width: 2rem;
 	transform: none;
-	margin-bottom: 0rem;
+	margin-bottom: 0px;
 }
 #sidebar > div.active {
 	background-color: var(--gold-haze-back);
@@ -115,10 +115,10 @@ div.rightcolx {
 	height: 2.2rem;
 	width: 2rem;
 	background-color: var(--light-back);
-	border-bottom: 0.1rem solid var(--fog-rim);
+	border-bottom: 2px solid var(--fog-rim);
 	border-left: 0;
 	border-right: 0;
-	padding-bottom: 0.2rem;
+	padding-bottom: 4px;
 }
 #sidebarcont {
 	flex: 0 0 auto;
@@ -129,10 +129,10 @@ div.rightcolx {
 #sidebarcont > div {
 	display: none;
 	background-color: var(--light-back);
-	border: 0.1rem solid var(--fog-rim);
-	border-radius: 0.2rem;
-	padding: 0.5rem 0.3rem;
-	margin: 0.5rem 0.2rem;
+	border: 2px solid var(--fog-rim);
+	border-radius: 4px;
+	padding: 10px 6px;
+	margin: 10px 4px;
 	width: 20rem;
 }
 #sidebarcont > div.active {
@@ -145,7 +145,7 @@ div.rightcolx {
 	font-size: small;
 }
 p.ilab {
-	padding: 0.2rem 0rem 0.1rem 0.5rem;
+	padding: 4px 0px 2px 10px;
 	margin: 0;
 }
 
@@ -154,10 +154,10 @@ p.ilab {
 /* HELP */
 
 details.help {
-	border: 0.1rem solid var(--fog-rim);
-	border-radius: 0.2rem;
-	padding: 0.5rem 0.3rem;
-	margin: 0rem 0.2rem;
+	border: 2px solid var(--fog-rim);
+	border-radius: 4px;
+	padding: 10px 6px;
+	margin: 0px 4px;
 }
 details.help p {
 	font-size: small;
@@ -170,16 +170,16 @@ div.cline {
 	flex-flow: row nowrap;
 	justify-content: flex-start;
 	align-items: baseline;
-	margin-left: 1rem;
+	margin-left: 20px;
 	background-color: var(--haze-back);
 }
 span.cradio, input.cradio {
 	flex: 0 0 2rem;
-	margin-right: 0rem;
+	margin-right: 0px;
 }
 span.ctype {
 	flex: 0 0 4rem;
-	padding-right: 0.5rem;
+	padding-right: 10px;
 	font-size: x-small;
 	font-style: italic;
 }
@@ -192,12 +192,12 @@ div.tfline {
 	flex-flow: row nowrap;
 	justify-content: flex-start;
 	align-items: baseline;
-	margin-left: 1rem;
+	margin-left: 20px;
 	background-color: var(--haze-back);
 }
 span.tradio, input.tradio {
 	flex: 0 0 2rem;
-	margin-right: 0rem;
+	margin-right: 0px;
 }
 span.ttext {
 	flex: 0 1 auto;
@@ -215,9 +215,9 @@ span.ttext {
 textarea.sections {
 	font-size: large;
 	font-family: monospace;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 	height: 4rem;
-	margin: 0.3rem 0.3rem;
+	margin: 6px 6px;
 	background-color: var(--sections-back);
 }
 .tuples {
@@ -226,9 +226,9 @@ textarea.sections {
 textarea.tuples {
 	font-size: large;
 	font-family: monospace;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 	height: 5rem;
-	margin: 0.3rem 0.3rem;
+	margin: 6px 6px;
 	background-color: var(--tuples-back);
 }
 .query,p.setnames {
@@ -241,9 +241,9 @@ span.setnames {
 textarea.query {
 	font-size: large;
 	font-family: monospace;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 	height: 20rem;
-	margin: 0.3rem 0.3rem;
+	margin: 6px 6px;
 	background-color: var(--query-back);
 }
 
@@ -256,7 +256,7 @@ button, label.button {
 	color: var(--gray-fore);
 	background-color: var(--gray-back);
 	border: 0;
-	border-radius: 0.5rem;
+	border-radius: 10px;
 	padding: 0.3em;
 	cursor: pointer;
 }
@@ -269,9 +269,9 @@ input,textarea {
 	font-family: system-ui;
 	color: var(--paper-fore);
 	background-color: var(--paper-back);
-	border: 0.1rem inset var(--paper-back);
-	padding: 0.2rem;
-	margin: 0.2rem;
+	border: 2px inset var(--paper-back);
+	padding: 4px;
+	margin: 4px;
 }
 
 input.int {
@@ -282,15 +282,15 @@ input.int {
 input.name {
 	font-size: medium;
 	font-weight: bold;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 }
 
 textarea.description {
 	font-size: small;
 	font-family: system-ui;
-	width: calc(100% - 1rem);
+	width: calc(100% - 20px);
 	height: 20rem;
-	margin: 0.3rem 0.3rem;
+	margin: 6px 6px;
 	color: var(--paper-fore);
 }
 
@@ -330,11 +330,11 @@ div.passages {
 .total {
 	color: var(--blue-haze-fore);
 	background-color: var(--blue-haze-back);
-	border-radius: 0.4rem;
+	border-radius: 8px;
   border: 1pt solid var(--grey-rim);
 	line-height: 1.6em;
-	padding: 0.1rem 0.1rem;
-	margin: 0.4rem 0.2rem;
+	padding: 2px 2px;
+	margin: 8px 4px;
 }
 div.pline {
 	display: flex;
@@ -344,9 +344,9 @@ div.pline {
 	font-size: small;
 	color: var(--blue-haze-fore);
 	background-color: var(--blue-haze-back);
-	border-radius: 0.4rem;
-	border: 0.1rem solid var(--grey-rim);
-	padding: 0.2rem 0.2rem;
+	border-radius: 8px;
+	border: 2px solid var(--grey-rim);
+	padding: 4px 4px;
 	line-height: 1.5em;
 	text-decoration: none;
 }
@@ -362,9 +362,9 @@ div.sline {
 	font-size: small;
 	color: var(--blue-haze-fore);
 	background-color: var(--blue-haze-back);
-	border-radius: 0.2rem;
-	border: 0.1rem solid var(--grey-rim);
-	padding: 0.1rem 0.2rem;
+	border-radius: 4px;
+	border: 2px solid var(--grey-rim);
+	padding: 2px 4px;
 	line-height: 1.0em;
 	text-decoration: none;
 }
@@ -377,7 +377,7 @@ div.sline {
 	font-weight: normal;
 }
 .focus {
-	border: solid 0.3rem var(--gold-back);
+	border: solid 6px var(--gold-back);
 }
 
 /* RIGHT-COL: TABLES */
@@ -394,6 +394,6 @@ details.dtrow.focus {
 	background-color: var(--gold-back);
 }
 details.dtrow > summary > span {
-	padding: 0 0.5rem;
-	border-right: 0.2rem solid var(--fog-back);
+	padding: 0 10px;
+	border-right: 4px solid var(--fog-back);
 }

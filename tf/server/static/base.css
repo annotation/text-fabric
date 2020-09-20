@@ -40,10 +40,10 @@ div.hdlinks {
 div.hdlinks > a {
 	flex: 1 1 4rem;
 	background-color: var(--blue-haze-back);
-	border-radius: 0.4rem;
-	border: 0.1rem solid var(--grey-rim);
-	padding: 0.2rem 0.2rem;
-	margin: 0.2rem 0.2rem;
+	border-radius: 8px;
+	border: 2px solid var(--grey-rim);
+	padding: 4px 4px;
+	margin: 4px 4px;
 	text-align: center;
 	text-decoration: none;
 }
@@ -82,8 +82,8 @@ div.table {
 
 div.dtheadrow {
 	font-weight: bold;
-	margin-top: 0.5rem;
-	margin-bottom: 0.5rem;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 #sectionsTable div.dtheadrow {
 	background-color: var(--sections-back);
@@ -95,26 +95,26 @@ div.dtheadrow {
 	background-color: var(--query-back);
 }
 div.dtheadrow > span {
-	margin: 0.2rem;
-	padding: 0 0.5rem;
-	border-right: 0.2rem solid var(--light-rim);
+	margin: 4px;
+	padding: 0 10px;
+	border-right: 4px solid var(--light-rim);
 }
 details.dtrow {
-	border: 0.1rem solid var(--gray-rim);
+	border: 2px solid var(--gray-rim);
 }
 details.dtrow > summary {
 	background-color: var(--grey-back);
-	margin: 0.2rem 0;
-	padding: 0.2rem;
+	margin: 4px 0;
+	padding: 4px;
 }
 details.dtrow > summary > span {
-	padding: 0 0.5rem;
-	border-right: 0.2rem solid var(--gray-rim);
+	padding: 0 10px;
+	border-right: 4px solid var(--gray-rim);
 }
 
 div.pretty {
 	width: 100%;
-	margin: 0.2rem 0 0.5rem 0;
+	margin: 4px 0 10px 0;
 	background-color: var(--haze-back);
 }
 

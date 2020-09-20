@@ -306,7 +306,7 @@ def _plainTextSFinal(
   seq="{secStr}"
   {attOpen}
 >
-  <summary class="{tCls}">{app._sectionLink(sNode, text=secStr)} {textRep}</summary>
+  <summary class="{tCls} ubd">{app._sectionLink(sNode, text=secStr)} {textRep}</summary>
   <div class="pretty">{prettyRep}</div>
 </details>\
 """
