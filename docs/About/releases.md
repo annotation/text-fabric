@@ -46,6 +46,15 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.3
+
+2020-09-25
+
+Minor fix in the display:
+
+* **Left-to-right transcriptions in right-to-left corpora still had rtl tendencies**
+  Fixed by using the CSS mechanism `unicode-bidi: embed` more consistently.
+
 #### 8.4.2
 
 2020-09-20

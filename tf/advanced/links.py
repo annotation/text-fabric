@@ -151,8 +151,8 @@ def header(app):
   {tutLink}
 </div>\
 """,
-            f'<img class="hdlogo" src="/data/static/logo.png"/>',
-            f'<img class="hdlogo" src="/server/static/icon.png"/>',
+            '<img class="hdlogo" src="/data/static/logo.png"/>',
+            '<img class="hdlogo" src="/server/static/icon.png"/>',
         )
     else:
         tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
