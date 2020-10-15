@@ -310,9 +310,9 @@ class Text(object):
         if hdFromNd is None:
             info("No structural elements configured", tm=False)
             return
-        info(f"A heading is a tuple of pairs (node type, feature value)", tm=False)
+        info("A heading is a tuple of pairs (node type, feature value)", tm=False)
         info(
-            f"\tof node types and features that have been configured as structural elements",
+            "\tof node types and features that have been configured as structural elements",
             tm=False,
         )
         info(
@@ -320,7 +320,7 @@ class Text(object):
         )
         for (tp, ft) in headings:
             info(f"\tnode type {tp:<10} with heading feature {ft}", tm=False)
-        info(f"You can get them as a tuple with T.headings.", tm=False)
+        info("You can get them as a tuple with T.headings.", tm=False)
         info(
             f"""
 Structure API:
@@ -380,7 +380,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         hdTop = self.hdTop
 
         if hdTop is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
             return None
         if node is None:
             return tuple(self.structure(node=t) for t in self.top())
@@ -447,7 +447,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         hdTop = self.hdTop
 
         if hdTop is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
             return None
         return hdTop
 
@@ -480,7 +480,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         hdUp = self.hdUp
         if hdUp is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
             return None
         nType = fOtype(n)
         if nType not in self.structureTypeSet:
@@ -519,7 +519,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         error = TF.error
         hdDown = self.hdDown
         if hdDown is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
             return None
         nType = fOtype(n)
         if nType not in self.structureTypeSet:
@@ -562,7 +562,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         fOtype = F.otype.v
         hdFromNd = self.hdFromNd
         if hdFromNd is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
             return None
         nType = fOtype(n)
         if nType not in self.structureTypeSet:
@@ -600,7 +600,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         error = TF.error
         ndFromHd = self.ndFromHd
         if ndFromHd is None:
-            error(f"structure types are not configured", tm=False)
+            error("structure types are not configured", tm=False)
         n = ndFromHd.get(head, None)
         if n is None:
             error(f"no structure node with heading {head}", tm=False)
@@ -775,7 +775,7 @@ EXPLANATION: T.text() called with parameters:
                 expandRep2 = ""
             if downType == nType:
                 if explain:
-                    expandRep2 = f"(no expansion needed)"
+                    expandRep2 = "(no expansion needed)"
                 downType = None
 
             if explain:
@@ -809,7 +809,7 @@ EXPLANATION: T.text() called with parameters:
 
             if explain:
                 error(f"\t\tFORMATTING: {fmtRep}", tm=False)
-                error(f"\t\tMATERIAL:", tm=False)
+                error("\t\tMATERIAL:", tm=False)
             for n in xnodes:
                 rep = repf(n, **kwargs)
                 material.append(rep)

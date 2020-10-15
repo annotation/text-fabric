@@ -91,6 +91,7 @@ PROVENANCE_DEFAULTS = (
     ("webHint", None),
     ("webLang", None),
     ("webLexId", None),
+    ("webOffset", None),
     ("webUrl", None),
     ("webUrlLex", None),
     ("webLexId", None),

@@ -96,7 +96,11 @@ def linksApi(app, silent):
         if isCompatible and repo is not None
         else "no app configured"
     )
-    tfLink = outLink(f"Text-Fabric API {app.TF.version}", APIREF, "text-fabric-api",)
+    tfLink = outLink(
+        f"Text-Fabric API {app.TF.version}",
+        APIREF,
+        "text-fabric-api",
+    )
     tfsLink = (
         outLink(
             "Search Reference",
@@ -178,7 +182,7 @@ def webLink(
     !!! hint "Customizable"
         You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
-        `webBase`, `webLang`, `webUrl`, `webUrlLex`, and `webHint`.
+        `webBase`, `webLang`, `webOffset`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
@@ -213,6 +217,7 @@ def webLink(
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
+    webOffset = aContext.webOffset
     webUrl = aContext.webUrl
     webUrlLex = aContext.webUrlLex
     webLexId = aContext.webLexId
@@ -244,7 +249,18 @@ def webLink(
             href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                href = href.replace(f"<{i + 1}>", str(heading))
+                defaultOffset = 0 if type(heading) is int else ""
+                offset = (
+                    defaultOffset
+                    if webOffset is None
+                    else webOffset.get(i + 1, {}).get(
+                        headingTuple[i - 1], defaultOffset
+                    )
+                    if i > 0
+                    else defaultOffset
+                )
+                value = str(heading + offset)
+                href = href.replace(f"<{i + 1}>", value)
         else:
             href = None
 
@@ -263,7 +279,13 @@ def webLink(
         fullResult = text
     else:
         atts = dict(target="") if _noUrl else dict(title=webHint)
-        fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
+        fullResult = outLink(
+            text,
+            href,
+            clsName=clsName,
+            passage=passageText,
+            **atts,
+        )
     result = href if urlOnly else fullResult
     if _asString or urlOnly:
         return result
@@ -334,8 +356,7 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
 
 
 def _featuresPerModule(app):
-    """Generate a formatted list of loaded TF features, per module.
-    """
+    """Generate a formatted list of loaded TF features, per module."""
 
     isCompatible = app.isCompatible
     if isCompatible is not None and not isCompatible:

@@ -46,6 +46,17 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.4
+
+2020-10-15
+
+Enhancement in web links to nodes:
+there is a new setting `webOffset` in the configuration of a TF app that let you specify
+an offset between a logical page number and a physical page number.
+See the webOffset setting of `tf.advanced.settings`.
+It is needed by the new
+[missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml).
+
 #### 8.4.3
 
 2020-09-25

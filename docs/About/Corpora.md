@@ -37,6 +37,12 @@ A TF app can also download and update the corpus *data*.
     **[Transcriptions with morphology based on Martin Abegg's data files](https://github.com/ETCBC/dss/blob/master/docs/about.md)**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
+[missieven](https://github.com/annotation/app-missieven)
+:   *Dutch* 
+    General Missives, 1600 - 1800,
+    **[General Missives, Dutch East-Indian Company](https://github.com/Dans-labs/clariah-gm)**,
+    Jesse van der Does, Sophie Arnoult, Dirk Roorda
+
 [nena](https://github.com/annotation/app-nena)
 :   *Aramaic*
     North Eastern Neo-Aramaic Corpus, 2000,

@@ -435,6 +435,35 @@ Default:
 
 ---
 
+### `webOffset`
+
+If present, it is a dictionary that specifies offsets between page numbers as derived from section headings
+and page numbers as needed in the query string for te url of the online resource (see `webUrl`).
+
+Suppose we need to offset sections of level 2 depending on the section of level 1 they are in.
+For example, in the
+[missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml)
+we have section levels 1=volume, 2=page, 3=line.
+In each volume, the logical page 1 must be translated into a higher
+number, depending on the number of preface pages in that volume.
+
+The value of this parameter is a dict of dicts.
+
+The first level of keys specifies the section level of the sections that needs offsets.
+In our example case we specify offsets for pages (level 1), so the key is `2`.
+
+The second level of keys are the values of section headings of the containing sections, the volumes.
+In our example these are integers 1 - 13. 
+
+Finally, the value is the offset that will be applied for pages in that volume.
+Values are positive or negative integers or 0. 
+Missing values translate to 0 or the empty string.
+
+!!! note "integer or string"
+    Headings may be integers or strings.
+    If a heading is an integer, the offset will be added to it, if it is a string, the
+    offset will be concatenated to it.
+
 ### `webUrl`
 
 If present, `webLink(node)` will use this as a template to generate a url
