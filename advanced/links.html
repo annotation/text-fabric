@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L0-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L0-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -126,7 +126,11 @@ def linksApi(app, silent):
         if isCompatible and repo is not None
         else &#34;no app configured&#34;
     )
-    tfLink = outLink(f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;,)
+    tfLink = outLink(
+        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        APIREF,
+        &#34;text-fabric-api&#34;,
+    )
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
@@ -208,7 +212,7 @@ def webLink(
     !!! hint &#34;Customizable&#34;
         You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
-        `webBase`, `webLang`, `webUrl`, `webUrlLex`, and `webHint`.
+        `webBase`, `webLang`, `webOffset`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
@@ -243,6 +247,7 @@ def webLink(
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
+    webOffset = aContext.webOffset
     webUrl = aContext.webUrl
     webUrlLex = aContext.webUrlLex
     webLexId = aContext.webLexId
@@ -274,7 +279,18 @@ def webLink(
             href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
+                defaultOffset = 0 if type(heading) is int else &#34;&#34;
+                offset = (
+                    defaultOffset
+                    if webOffset is None
+                    else webOffset.get(i + 1, {}).get(
+                        headingTuple[i - 1], defaultOffset
+                    )
+                    if i &gt; 0
+                    else defaultOffset
+                )
+                value = str(heading + offset)
+                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, value)
         else:
             href = None
 
@@ -293,7 +309,13 @@ def webLink(
         fullResult = text
     else:
         atts = dict(target=&#34;&#34;) if _noUrl else dict(title=webHint)
-        fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
+        fullResult = outLink(
+            text,
+            href,
+            clsName=clsName,
+            passage=passageText,
+            **atts,
+        )
     result = href if urlOnly else fullResult
     if _asString or urlOnly:
         return result
@@ -364,8 +386,7 @@ def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_bla
 
 
 def _featuresPerModule(app):
-    &#34;&#34;&#34;Generate a formatted list of loaded TF features, per module.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Generate a formatted list of loaded TF features, per module.&#34;&#34;&#34;
 
     isCompatible = app.isCompatible
     if isCompatible is not None and not isCompatible:
@@ -568,7 +589,7 @@ and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L128-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L132-L168" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -629,7 +650,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L29-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L29-L129" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent):
     &#34;&#34;&#34;Produce the link API.
@@ -701,7 +722,11 @@ we force <code>silent=True</code>.</p></div>
         if isCompatible and repo is not None
         else &#34;no app configured&#34;
     )
-    tfLink = outLink(f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;,)
+    tfLink = outLink(
+        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        APIREF,
+        &#34;text-fabric-api&#34;,
+    )
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
@@ -754,7 +779,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L306-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L328-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -808,7 +833,7 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L484-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L505-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(org, repo, version, commit, release, local, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -871,7 +896,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L273-L303" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L295-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -919,7 +944,7 @@ the app's <code>config.yaml</code>.</p>
 <p class="admonition-title">Customizable</p>
 <p>You can customize the behaviour of <code><a title="tf.advanced.links.webLink" href="#tf.advanced.links.webLink">webLink()</a></code> to the needs of your corpus
 by providing appropriate values in its <code>config.yaml</code>, especially for
-<code>webBase</code>, <code>webLang</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
+<code>webBase</code>, <code>webLang</code>, <code>webOffset</code>, <code>webUrl</code>, <code>webUrlLex</code>, and <code>webHint</code>.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
@@ -949,7 +974,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4c21e08733cd382bcd606169d45b7952676f52b6/tf/advanced/links.py#L167-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47a9e4bcb9ab307d975d52d6e7955f26231f0605/tf/advanced/links.py#L171-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -965,7 +990,7 @@ other attributes.</dd>
     !!! hint &#34;Customizable&#34;
         You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
-        `webBase`, `webLang`, `webUrl`, `webUrlLex`, and `webHint`.
+        `webBase`, `webLang`, `webOffset`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
@@ -1000,6 +1025,7 @@ other attributes.</dd>
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
+    webOffset = aContext.webOffset
     webUrl = aContext.webUrl
     webUrlLex = aContext.webUrlLex
     webLexId = aContext.webLexId
@@ -1031,7 +1057,18 @@ other attributes.</dd>
             href = webUrl
             headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
             for (i, heading) in enumerate(headingTuple):
-                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, str(heading))
+                defaultOffset = 0 if type(heading) is int else &#34;&#34;
+                offset = (
+                    defaultOffset
+                    if webOffset is None
+                    else webOffset.get(i + 1, {}).get(
+                        headingTuple[i - 1], defaultOffset
+                    )
+                    if i &gt; 0
+                    else defaultOffset
+                )
+                value = str(heading + offset)
+                href = href.replace(f&#34;&lt;{i + 1}&gt;&#34;, value)
         else:
             href = None
 
@@ -1050,7 +1087,13 @@ other attributes.</dd>
         fullResult = text
     else:
         atts = dict(target=&#34;&#34;) if _noUrl else dict(title=webHint)
-        fullResult = outLink(text, href, clsName=clsName, passage=passageText, **atts,)
+        fullResult = outLink(
+            text,
+            href,
+            clsName=clsName,
+            passage=passageText,
+            **atts,
+        )
     result = href if urlOnly else fullResult
     if _asString or urlOnly:
         return result
