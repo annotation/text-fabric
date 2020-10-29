@@ -46,6 +46,12 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.5
+
+2020-10-29
+
+Small fix of a problem introduced by the previous enhancement.
+
 #### 8.4.4
 
 2020-10-15

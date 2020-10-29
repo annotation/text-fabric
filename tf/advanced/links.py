@@ -259,7 +259,7 @@ def webLink(
                     if i > 0
                     else defaultOffset
                 )
-                value = str(heading + offset)
+                value = "" if heading is None else str(heading + offset)
                 href = href.replace(f"<{i + 1}>", value)
         else:
             href = None
