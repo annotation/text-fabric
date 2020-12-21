@@ -71,6 +71,7 @@ pdocs : build docs
 sdocs : ship docs
 clean : clean local develop build
 l     : local develop build
+lp    : local production build
 i     : local non-develop build
 g     : push to github, code and docs
 v     : show current version
@@ -194,10 +195,11 @@ def makeDist(pypi=True):
     distFile = "{}-{}".format(PACKAGE, currentVersion)
     distFileCompressed = f"{distFile}.tar.gz"
     distPath = f"{DIST}/{distFileCompressed}"
+    distPath = f"{DIST}/*"
     print(distPath)
     rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
-    run(["python3", "setup.py", "sdist"])
+    run(["python3", "setup.py", "sdist", "bdist_wheel"])
     if pypi:
         run(["twine", "upload", "-u", "dirkroorda", distPath])
         run("./purge.sh", shell=True)

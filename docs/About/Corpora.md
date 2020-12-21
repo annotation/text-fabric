@@ -10,7 +10,19 @@ with them programmatically.
 
 A TF app can also download and update the corpus *data*.
 
-### Current TF apps
+All existing apps can be found in 
+[annotation](https://github.com/annotation) on GitHub.
+Each repo named `app-`*appName* hosts the app named *appName*.
+
+Corpora prefixed with a star do not have dedicated TF apps.
+
+
+`*` [Greek Literature](https://github.com/pthu/greek_literature)
+:   *Greek*
+    Greek Literature, -400 - 400,
+    [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
+    [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
+    The result of a massive conversion effort by Ernst Boogert.
 
 [athenaeus](https://github.com/annotation/app-athenaeus)
 :   *Greek*
@@ -90,17 +102,6 @@ A TF app can also download and update the corpus *data*.
     Uruk, 4000 - 3100 BC,
     **[Archaic tablets from Uruk](https://github.com/Nino-cunei/uruk/blob/master/docs/about.md)**,
     Cale Johnson, Dirk Roorda
-
-
-All these apps can be found in 
-[annotation](https://github.com/annotation) on GitHub.
-Each repo named `app-`*appName* hosts the app named *appName*.
-
-### Current TF corpora without an app
-
-[patristics](https://github.com/annotation/app-patristics)
-:   *Greek*
-    Works by Church Father, 200 - 600, **see [PThU](https://github.com/pthu/patristics)**, Ernst Boogert
 
 
 ### Intentions

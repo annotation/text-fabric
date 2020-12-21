@@ -1,3 +1,4 @@
+wheel
 rpyc
 flask
 psutil

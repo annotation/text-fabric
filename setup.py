@@ -14,6 +14,7 @@ setup(
         "tf.writing",
     ],
     install_requires=[
+        "wheel",
         "rpyc",
         "flask",
         "psutil",
