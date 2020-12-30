@@ -23,7 +23,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/advanced/app.py#L0-L495" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/app.py#L0-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -93,7 +93,7 @@ class App:
             [github.com/annotation](https://github.com/annotation).
 
             If there is a `/` in the *appName argument*,
-            it is interpreted as a location on your  system.
+            it is interpreted as a location on your system or on GitHub.
 
             If it points to a directory with a *config.yaml* in it,
             this config file will be read and interpreted as settings
@@ -453,10 +453,12 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
 
     &#34;&#34;&#34;
 
-    if not appName or &#34;/&#34; in appName:
+    (commit, release, local) = (None, None, None)
+    extraMod = None
+
+    if not appName or (&#34;/&#34; in appName and checkoutApp == &#34;&#34;):
         appPath = os.path.expanduser(appName) if appName else &#34;&#34;
         absPath = os.path.abspath(appPath)
-        (commit, release, local) = (None, None, None)
 
         if os.path.isdir(absPath):
             (appDir, appName) = os.path.split(absPath)
@@ -467,7 +469,13 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         else:
             console(f&#34;{absPath} is not an existing directory&#34;, error=True)
             appBase = False
+            appDir = None
         appPath = appDir
+    elif &#34;/&#34; in appName and checkoutApp != &#34;&#34;:
+        appBase = &#34;&#34;
+        appDir = &#34;&#34;
+        appPath = appDir
+        extraMod = f&#34;{appName}:{checkoutApp}&#34;
     else:
         (commit, release, local, appBase, appDir) = checkoutRepo(
             _browse=_browse,
@@ -482,11 +490,12 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         )
         appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
         appPath = f&#34;{appBaseRep}{appDir}&#34;
-    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
-    if not appBase and appBase != &#34;&#34;:
+
+    if appPath is None:
         return None
 
+    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
     isCompatible = cfg[&#34;isCompatible&#34;]
     if isCompatible is None:
         appClass = App
@@ -497,6 +506,11 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appPath = f&#34;{appBaseRep}{appDir}&#34;
 
         appClass = findAppClass(appName, appPath) or App
+    if extraMod:
+        if kwargs.get(&#34;mod&#34;, None):
+            kwargs[&#34;mod&#34;] = f&#34;{extraMod},{kwargs[&#39;mod&#39;]}&#34;
+        else:
+            kwargs[&#34;mod&#34;] = extraMod
     try:
         app = appClass(
             cfg,
@@ -564,7 +578,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/advanced/app.py#L398-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/app.py#L398-L510" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -597,10 +611,12 @@ class.</dd>
 
     &#34;&#34;&#34;
 
-    if not appName or &#34;/&#34; in appName:
+    (commit, release, local) = (None, None, None)
+    extraMod = None
+
+    if not appName or (&#34;/&#34; in appName and checkoutApp == &#34;&#34;):
         appPath = os.path.expanduser(appName) if appName else &#34;&#34;
         absPath = os.path.abspath(appPath)
-        (commit, release, local) = (None, None, None)
 
         if os.path.isdir(absPath):
             (appDir, appName) = os.path.split(absPath)
@@ -611,7 +627,13 @@ class.</dd>
         else:
             console(f&#34;{absPath} is not an existing directory&#34;, error=True)
             appBase = False
+            appDir = None
         appPath = appDir
+    elif &#34;/&#34; in appName and checkoutApp != &#34;&#34;:
+        appBase = &#34;&#34;
+        appDir = &#34;&#34;
+        appPath = appDir
+        extraMod = f&#34;{appName}:{checkoutApp}&#34;
     else:
         (commit, release, local, appBase, appDir) = checkoutRepo(
             _browse=_browse,
@@ -626,11 +648,12 @@ class.</dd>
         )
         appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
         appPath = f&#34;{appBaseRep}{appDir}&#34;
-    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
-    if not appBase and appBase != &#34;&#34;:
+
+    if appPath is None:
         return None
 
+    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg[&#34;provenanceSpec&#34;].get(&#34;version&#34;, None)
     isCompatible = cfg[&#34;isCompatible&#34;]
     if isCompatible is None:
         appClass = App
@@ -641,6 +664,11 @@ class.</dd>
         appPath = f&#34;{appBaseRep}{appDir}&#34;
 
         appClass = findAppClass(appName, appPath) or App
+    if extraMod:
+        if kwargs.get(&#34;mod&#34;, None):
+            kwargs[&#34;mod&#34;] = f&#34;{extraMod},{kwargs[&#39;mod&#39;]}&#34;
+        else:
+            kwargs[&#34;mod&#34;] = extraMod
     try:
         app = appClass(
             cfg,
@@ -687,8 +715,7 @@ can be as simple as the name of an existing TF-app.
 The app should exist as a repository <code>app-</code><em>appName</em> under
 <a href="https://github.com/annotation">github.com/annotation</a>.</p>
 <p>If there is a <code>/</code> in the <em>appName argument</em>,
-it is interpreted as a location on your
-system.</p>
+it is interpreted as a location on your system or on GitHub.</p>
 <p>If it points to a directory with a <em>config.yaml</em> in it,
 this config file will be read and interpreted as settings
 for the advanced API.
@@ -856,7 +883,7 @@ The list of those settings is spelled out in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/advanced/app.py#L38-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/app.py#L38-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -889,7 +916,7 @@ The list of those settings is spelled out in
             [github.com/annotation](https://github.com/annotation).
 
             If there is a `/` in the *appName argument*,
-            it is interpreted as a location on your  system.
+            it is interpreted as a location on your system or on GitHub.
 
             If it points to a directory with a *config.yaml* in it,
             this config file will be read and interpreted as settings
@@ -1237,7 +1264,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/advanced/app.py#L339-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/app.py#L339-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1272,7 +1299,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/advanced/app.py#L346-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/app.py#L346-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

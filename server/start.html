@@ -100,7 +100,7 @@ So we will look for the first available port after this.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L0-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L0-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/start.md
@@ -132,7 +132,7 @@ HELP = &#34;&#34;&#34;
 USAGE
 
 text-fabric --help
-text-fabric --version
+text-fabric -v
 text-fabric -k [app]
 text-fabric -p [app]
 
@@ -147,6 +147,7 @@ where all args are optional and args have one of these forms:
   --set=file
   --modules=modules-string
   --locations=locations-string
+  --version=version
 
 EFFECT
 
@@ -353,7 +354,7 @@ def main(cargs=sys.argv):
         console(HELP)
         return
     if len(cargs) &gt;= 2 and any(
-        arg in {&#34;--version&#34;, &#34;-version&#34;, &#34;-v&#34;} for arg in cargs[1:]
+        arg == &#34;-v&#34; for arg in cargs[1:]
     ):
         return
 
@@ -479,7 +480,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L239-L241" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L240-L242" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -494,7 +495,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L154-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L155-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -544,7 +545,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L194-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L195-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
@@ -566,7 +567,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L244-L356" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L245-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -576,7 +577,7 @@ if __name__ == &#34;__main__&#34;:
         console(HELP)
         return
     if len(cargs) &gt;= 2 and any(
-        arg in {&#34;--version&#34;, &#34;-version&#34;, &#34;-v&#34;} for arg in cargs[1:]
+        arg == &#34;-v&#34; for arg in cargs[1:]
     ):
         return
 
@@ -691,7 +692,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/start.py#L206-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/start.py#L207-L237" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;

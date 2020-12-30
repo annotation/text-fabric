@@ -76,7 +76,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/kernel.py#L0-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/kernel.py#L0-L567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/kernel.md
@@ -595,11 +595,13 @@ def main(cargs=sys.argv):
     locations = dataSource[&#34;locations&#34;]
     modules = dataSource[&#34;modules&#34;]
     setFile = dataSource[&#34;setFile&#34;]
+    version = dataSource[&#34;version&#34;]
 
     if checkout is None:
         checkout = &#34;&#34;
 
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}&#34;)
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;)
     app = findApp(
         appName,
         checkoutApp,
@@ -609,6 +611,7 @@ def main(cargs=sys.argv):
         locations=locations,
         modules=modules,
         setFile=setFile,
+        version=version,
     )
     if app is None:
         return
@@ -660,7 +663,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/kernel.py#L505-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/kernel.py#L505-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -675,11 +678,13 @@ if __name__ == &#34;__main__&#34;:
     locations = dataSource[&#34;locations&#34;]
     modules = dataSource[&#34;modules&#34;]
     setFile = dataSource[&#34;setFile&#34;]
+    version = dataSource[&#34;version&#34;]
 
     if checkout is None:
         checkout = &#34;&#34;
 
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}&#34;)
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;)
     app = findApp(
         appName,
         checkoutApp,
@@ -689,6 +694,7 @@ if __name__ == &#34;__main__&#34;:
         locations=locations,
         modules=modules,
         setFile=setFile,
+        version=version,
     )
     if app is None:
         return
@@ -714,7 +720,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/kernel.py#L486-L499" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/kernel.py#L486-L499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -740,7 +746,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/kernel.py#L28-L480" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/kernel.py#L28-L480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:

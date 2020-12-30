@@ -40,7 +40,7 @@ is available through the advanced API: <code>A</code>, see <code><a title="tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L0-L1045" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L0-L1059" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/main/fabric.md
@@ -96,7 +96,16 @@ PRECOMPUTE = (
     (False, &#34;__levDown__&#34;, levDown, (WARP[0], &#34;__levUp__&#34;, &#34;__rank__&#34;)),
     (False, &#34;__boundary__&#34;, boundary, WARP[0:2] + (&#34;__rank__&#34;,)),
     (True, &#34;__sections__&#34;, sections, WARP + (&#34;__levUp__&#34;, &#34;__levels__&#34;)),
-    (True, &#34;__structure__&#34;, structure, WARP + (&#34;__rank__&#34;, &#34;__levUp__&#34;,)),
+    (
+        True,
+        &#34;__structure__&#34;,
+        structure,
+        WARP
+        + (
+            &#34;__rank__&#34;,
+            &#34;__levUp__&#34;,
+        ),
+    ),
 )
 &#34;&#34;&#34;Precomputation steps.
 
@@ -245,7 +254,7 @@ Api reference : {APIREF}
             self.locations.append(expandDir(self, loc))
 
         self.locationRep = &#34;\n\t&#34;.join(
-            &#34;\n\t&#34;.join(f&#34;{l}/{f}&#34; for f in self.modules) for l in self.locations
+            &#34;\n\t&#34;.join(f&#34;{lc}/{f}&#34; for f in self.modules) for lc in self.locations
         )
         self.featuresRequested = []
         self.features = {}
@@ -470,7 +479,10 @@ Api reference : {APIREF}
             dest.add(fName)
         info(
             &#34;Feature overview: {} for nodes; {} for edges; {} configs; {} computed&#34;.format(
-                len(nodes), len(edges), len(configs), len(computeds),
+                len(nodes),
+                len(edges),
+                len(configs),
+                len(computeds),
             )
         )
         self.featureSets = dict(
@@ -710,7 +722,8 @@ Api reference : {APIREF}
                             otypeData.get(n, &#34;_UNKNOWN_&#34;), []
                         ).append(n)
                     for (nType, nodes) in sorted(
-                        unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
+                        unmappedByType.items(),
+                        key=lambda x: (-len(x[1]), x[0]),
                     ):
                         error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                     good = False
@@ -886,7 +899,8 @@ Api reference : {APIREF}
         self._getWriteLoc()
         info(
             &#34;{} features found and {} ignored&#34;.format(
-                len(tfFiles), sum(len(x) for x in self.featuresIgnored.values()),
+                len(tfFiles),
+                sum(len(x) for x in self.featuresIgnored.values()),
             ),
             tm=False,
         )
@@ -1197,7 +1211,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L86-L1046" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L95-L1060" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1317,7 +1331,7 @@ Api reference : {APIREF}
             self.locations.append(expandDir(self, loc))
 
         self.locationRep = &#34;\n\t&#34;.join(
-            &#34;\n\t&#34;.join(f&#34;{l}/{f}&#34; for f in self.modules) for l in self.locations
+            &#34;\n\t&#34;.join(f&#34;{lc}/{f}&#34; for f in self.modules) for lc in self.locations
         )
         self.featuresRequested = []
         self.features = {}
@@ -1542,7 +1556,10 @@ Api reference : {APIREF}
             dest.add(fName)
         info(
             &#34;Feature overview: {} for nodes; {} for edges; {} configs; {} computed&#34;.format(
-                len(nodes), len(edges), len(configs), len(computeds),
+                len(nodes),
+                len(edges),
+                len(configs),
+                len(computeds),
             )
         )
         self.featureSets = dict(
@@ -1782,7 +1799,8 @@ Api reference : {APIREF}
                             otypeData.get(n, &#34;_UNKNOWN_&#34;), []
                         ).append(n)
                     for (nType, nodes) in sorted(
-                        unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
+                        unmappedByType.items(),
+                        key=lambda x: (-len(x[1]), x[0]),
                     ):
                         error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                     good = False
@@ -1958,7 +1976,8 @@ Api reference : {APIREF}
         self._getWriteLoc()
         info(
             &#34;{} features found and {} ignored&#34;.format(
-                len(tfFiles), sum(len(x) for x in self.featuresIgnored.values()),
+                len(tfFiles),
+                sum(len(x) for x in self.featuresIgnored.values()),
             ),
             tm=False,
         )
@@ -2216,7 +2235,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="index.h
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L462-L485" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L474-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2281,7 +2300,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L370-L443" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L379-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2342,7 +2361,10 @@ There are other functions that give you the loaded features:
         dest.add(fName)
     info(
         &#34;Feature overview: {} for nodes; {} for edges; {} configs; {} computed&#34;.format(
-            len(nodes), len(edges), len(configs), len(computeds),
+            len(nodes),
+            len(edges),
+            len(configs),
+            len(computeds),
         )
     )
     self.featureSets = dict(
@@ -2385,7 +2407,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L716-L746" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L729-L759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2460,7 +2482,7 @@ the metadata of all features. Handy to add provenance data here:<pre><code>meta 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L748-L796" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L761-L809" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2548,7 +2570,7 @@ else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L232-L368" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L241-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2704,7 +2726,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L445-L460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L457-L472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2808,7 +2830,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/fabric.py#L487-L714" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/fabric.py#L499-L727" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -2992,7 +3014,8 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
                         otypeData.get(n, &#34;_UNKNOWN_&#34;), []
                     ).append(n)
                 for (nType, nodes) in sorted(
-                    unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
+                    unmappedByType.items(),
+                    key=lambda x: (-len(x[1]), x[0]),
                 ):
                     error(f&#34;--- unmapped {nType:&lt;10} : {makeExamples(nodes)}&#34;)
                 good = False

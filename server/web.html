@@ -105,7 +105,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/web.py#L0-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/web.py#L0-L142" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/server/web.md
@@ -160,15 +160,18 @@ def factory(web):
 
     @app.route(&#34;/server/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):
-        return send_file(f&#34;{MY_DIR}/static/{filepath}&#34;)
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
     def serveData(filepath):
-        return send_file(f&#34;{appPath}/static/{filepath}&#34;)
+        theFile = f&#34;{appPath}/static/{filepath}&#34;
+        return send_file(theFile) if appPath and os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
     def serveLocal(filepath):
-        return send_file(f&#34;{localDir}/{filepath}&#34;)
+        theFile = f&#34;{localDir}/{filepath}&#34;
+        return send_file(theFile) if os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
@@ -232,7 +235,11 @@ def main(cargs=sys.argv):
 
         webapp = factory(web)
         run_simple(
-            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=False,
+            use_debugger=False,
         )
     except OSError as e:
         console(str(e))
@@ -260,7 +267,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/web.py#L46-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/web.py#L46-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -270,15 +277,18 @@ if __name__ == &#34;__main__&#34;:
 
     @app.route(&#34;/server/static/&lt;path:filepath&gt;&#34;)
     def serveStatic(filepath):
-        return send_file(f&#34;{MY_DIR}/static/{filepath}&#34;)
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/data/static/&lt;path:filepath&gt;&#34;)
     def serveData(filepath):
-        return send_file(f&#34;{appPath}/static/{filepath}&#34;)
+        theFile = f&#34;{appPath}/static/{filepath}&#34;
+        return send_file(theFile) if appPath and os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/local/&lt;path:filepath&gt;&#34;)
     def serveLocal(filepath):
-        return send_file(f&#34;{localDir}/{filepath}&#34;)
+        theFile = f&#34;{localDir}/{filepath}&#34;
+        return send_file(theFile) if os.path.exists(theFile) else &#34;&#34;
 
     @app.route(&#34;/sections&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveSectionsBare():
@@ -336,7 +346,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/web.py#L112-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/web.py#L115-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argWeb(cargs)
@@ -352,7 +362,11 @@ if __name__ == &#34;__main__&#34;:
 
         webapp = factory(web)
         run_simple(
-            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=False,
+            use_debugger=False,
         )
     except OSError as e:
         console(str(e))
@@ -375,7 +389,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a2afb8c63041045a6f721c1ffb4efebf5beb761a/tf/server/web.py#L30-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/server/web.py#L30-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web(object):
     def __init__(self, portKernel):
