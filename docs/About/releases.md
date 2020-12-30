@@ -46,6 +46,16 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.6
+
+2020-12-30
+
+Small fixes in the functions that load a TF app: you could already
+directly load the data of an app-less corpus from disk, now you can do the
+same if such data resides on GitHub.
+
+Various other things had to be tweaked a little.
+
 #### 8.4.5
 
 2020-10-29

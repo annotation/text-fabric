@@ -51,15 +51,18 @@ def factory(web):
 
     @app.route("/server/static/<path:filepath>")
     def serveStatic(filepath):
-        return send_file(f"{MY_DIR}/static/{filepath}")
+        theFile = f"{MY_DIR}/static/{filepath}"
+        return send_file(theFile) if os.path.exists(theFile) else ""
 
     @app.route("/data/static/<path:filepath>")
     def serveData(filepath):
-        return send_file(f"{appPath}/static/{filepath}")
+        theFile = f"{appPath}/static/{filepath}"
+        return send_file(theFile) if appPath and os.path.exists(theFile) else ""
 
     @app.route("/local/<path:filepath>")
     def serveLocal(filepath):
-        return send_file(f"{localDir}/{filepath}")
+        theFile = f"{localDir}/{filepath}"
+        return send_file(theFile) if os.path.exists(theFile) else ""
 
     @app.route("/sections", methods=["GET", "POST"])
     def serveSectionsBare():
@@ -123,7 +126,11 @@ def main(cargs=sys.argv):
 
         webapp = factory(web)
         run_simple(
-            HOST, int(portWeb), webapp, use_reloader=False, use_debugger=False,
+            HOST,
+            int(portWeb),
+            webapp,
+            use_reloader=False,
+            use_debugger=False,
         )
     except OSError as e:
         console(str(e))

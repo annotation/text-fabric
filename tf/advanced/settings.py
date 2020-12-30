@@ -376,7 +376,7 @@ def setAppSpecs(app, cfg, reset=False):
     specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
-    if "apiVesrion" not in specs:
+    if "apiVersion" not in specs:
         specs["apiVersion"] = None
     checker = Check(app, False)
 

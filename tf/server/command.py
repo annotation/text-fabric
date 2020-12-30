@@ -64,6 +64,7 @@ def argApp(cargs):
     locations = argCollect('locations', cargs)
     modules = argCollect('modules', cargs)
     moduleRefs = argCollect('mod', cargs)
+    version = argCollect('version', cargs)
     setFile = argCollect('sets', cargs)
     return (appName, *_enSlug(
         dict(
@@ -74,6 +75,7 @@ def argApp(cargs):
             modules=modules,
             moduleRefs=moduleRefs,
             setFile=setFile,
+            version=version,
         )
     ))
 

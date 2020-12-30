@@ -52,7 +52,16 @@ PRECOMPUTE = (
     (False, "__levDown__", levDown, (WARP[0], "__levUp__", "__rank__")),
     (False, "__boundary__", boundary, WARP[0:2] + ("__rank__",)),
     (True, "__sections__", sections, WARP + ("__levUp__", "__levels__")),
-    (True, "__structure__", structure, WARP + ("__rank__", "__levUp__",)),
+    (
+        True,
+        "__structure__",
+        structure,
+        WARP
+        + (
+            "__rank__",
+            "__levUp__",
+        ),
+    ),
 )
 """Precomputation steps.
 
@@ -201,7 +210,7 @@ Api reference : {APIREF}
             self.locations.append(expandDir(self, loc))
 
         self.locationRep = "\n\t".join(
-            "\n\t".join(f"{l}/{f}" for f in self.modules) for l in self.locations
+            "\n\t".join(f"{lc}/{f}" for f in self.modules) for lc in self.locations
         )
         self.featuresRequested = []
         self.features = {}
@@ -426,7 +435,10 @@ Api reference : {APIREF}
             dest.add(fName)
         info(
             "Feature overview: {} for nodes; {} for edges; {} configs; {} computed".format(
-                len(nodes), len(edges), len(configs), len(computeds),
+                len(nodes),
+                len(edges),
+                len(configs),
+                len(computeds),
             )
         )
         self.featureSets = dict(
@@ -666,7 +678,8 @@ Api reference : {APIREF}
                             otypeData.get(n, "_UNKNOWN_"), []
                         ).append(n)
                     for (nType, nodes) in sorted(
-                        unmappedByType.items(), key=lambda x: (-len(x[1]), x[0]),
+                        unmappedByType.items(),
+                        key=lambda x: (-len(x[1]), x[0]),
                     ):
                         error(f"--- unmapped {nType:<10} : {makeExamples(nodes)}")
                     good = False
@@ -842,7 +855,8 @@ Api reference : {APIREF}
         self._getWriteLoc()
         info(
             "{} features found and {} ignored".format(
-                len(tfFiles), sum(len(x) for x in self.featuresIgnored.values()),
+                len(tfFiles),
+                sum(len(x) for x in self.featuresIgnored.values()),
             ),
             tm=False,
         )

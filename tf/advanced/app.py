@@ -66,7 +66,7 @@ class App:
             [github.com/annotation](https://github.com/annotation).
 
             If there is a `/` in the *appName argument*,
-            it is interpreted as a location on your  system.
+            it is interpreted as a location on your system or on GitHub.
 
             If it points to a directory with a *config.yaml* in it,
             this config file will be read and interpreted as settings
@@ -426,10 +426,12 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
 
     """
 
-    if not appName or "/" in appName:
+    (commit, release, local) = (None, None, None)
+    extraMod = None
+
+    if not appName or ("/" in appName and checkoutApp == ""):
         appPath = os.path.expanduser(appName) if appName else ""
         absPath = os.path.abspath(appPath)
-        (commit, release, local) = (None, None, None)
 
         if os.path.isdir(absPath):
             (appDir, appName) = os.path.split(absPath)
@@ -440,7 +442,13 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         else:
             console(f"{absPath} is not an existing directory", error=True)
             appBase = False
+            appDir = None
         appPath = appDir
+    elif "/" in appName and checkoutApp != "":
+        appBase = ""
+        appDir = ""
+        appPath = appDir
+        extraMod = f"{appName}:{checkoutApp}"
     else:
         (commit, release, local, appBase, appDir) = checkoutRepo(
             _browse=_browse,
@@ -455,11 +463,12 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         )
         appBaseRep = f"{appBase}/" if appBase else ""
         appPath = f"{appBaseRep}{appDir}"
-    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
-    version = cfg["provenanceSpec"].get("version", None)
-    if not appBase and appBase != "":
+
+    if appPath is None:
         return None
 
+    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    version = cfg["provenanceSpec"].get("version", None)
     isCompatible = cfg["isCompatible"]
     if isCompatible is None:
         appClass = App
@@ -470,6 +479,11 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appPath = f"{appBaseRep}{appDir}"
 
         appClass = findAppClass(appName, appPath) or App
+    if extraMod:
+        if kwargs.get("mod", None):
+            kwargs["mod"] = f"{extraMod},{kwargs['mod']}"
+        else:
+            kwargs["mod"] = extraMod
     try:
         app = appClass(
             cfg,

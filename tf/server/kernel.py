@@ -515,11 +515,13 @@ def main(cargs=sys.argv):
     locations = dataSource["locations"]
     modules = dataSource["modules"]
     setFile = dataSource["setFile"]
+    version = dataSource["version"]
 
     if checkout is None:
         checkout = ""
 
-    console(f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}")
+    versionRep = "" if version is None else f" version {version}"
+    console(f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}{versionRep}")
     app = findApp(
         appName,
         checkoutApp,
@@ -529,6 +531,7 @@ def main(cargs=sys.argv):
         locations=locations,
         modules=modules,
         setFile=setFile,
+        version=version,
     )
     if app is None:
         return

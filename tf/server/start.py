@@ -28,7 +28,7 @@ HELP = """
 USAGE
 
 text-fabric --help
-text-fabric --version
+text-fabric -v
 text-fabric -k [app]
 text-fabric -p [app]
 
@@ -43,6 +43,7 @@ where all args are optional and args have one of these forms:
   --set=file
   --modules=modules-string
   --locations=locations-string
+  --version=version
 
 EFFECT
 
@@ -249,7 +250,7 @@ def main(cargs=sys.argv):
         console(HELP)
         return
     if len(cargs) >= 2 and any(
-        arg in {"--version", "-version", "-v"} for arg in cargs[1:]
+        arg == "-v" for arg in cargs[1:]
     ):
         return
 
