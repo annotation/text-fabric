@@ -441,6 +441,93 @@ class Transcription(object):
 
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
+    arabic_trans = {
+        "\u0020": (" ", " ", " ", " "),    # SPACE
+        "\u060c": ("‚", ",", ",", ""),     # ARABIC COMMA
+        "\u061b": ("„", ";", ";", ""),     # ARABIC SEMICOLON
+        "\u061f": ("?", "?", "?", ""),     # ARABIC QUESTION MARK
+        "\u0621": ("'", "'", "ʾ", ""),     # ARABIC LETTER HAMZA
+        "\u0622": ("»", "", "", ""),  # ARABIC LETTER ALEF WITH MADDA ABOVE
+        "\u0623": (">", "", "", ""),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        "\u0624": ("&", "'", "ʾ", ""),    # ARABIC LETTER WAW WITH HAMZA ABOVE
+        "\u0625": ("<", "", "", ""),  # ARABIC LETTER ALEF WITH HAMZA BELOW
+        "\u0626": ("}", "'", "ʾ", ""),     # ARABIC LETTER YEH WITH HAMZA ABOVE
+        "\u0627": ("A", "_a", "ā", ""),    # ARABIC LETTER ALEF
+        "\u0628": ("b", "b", "b", ""),     # ARABIC LETTER BEH
+        "\u0629": ("p", "=t", "ŧ", ""),    # ARABIC LETTER TEH MARBUTA
+        "\u062a": ("t", "t", "t", ""),     # ARABIC LETTER TEH
+        "\u062b": ("v", "_t", "ṯ", ""),    # ARABIC LETTER THEH
+        "\u062c": ("j", "j", "ǧ", ""),     # ARABIC LETTER JEEM
+        "\u062d": ("H", "*h", "ḥ", ""),    # ARABIC LETTER HAH
+        "\u062e": ("x", "_h", "ḫ", ""),    # ARABIC LETTER KHAH
+        "\u062f": ("d", "d", "d", ""),     # ARABIC LETTER DAL
+        "\u0630": ("*", "_d", "ḏ", ""),    # ARABIC LETTER THAL
+        "\u0631": ("r", "r", "r", ""),     # ARABIC LETTER REH
+        "\u0632": ("z", "z", "z", ""),     # ARABIC LETTER ZAIN
+        "\u0633": ("s", "s", "s", ""),     # ARABIC LETTER SEEN
+        "\u0634": ("$", "^s", "š", ""),    # ARABIC LETTER SHEEN
+        "\u0635": ("S", "*s", "ṣ", ""),    # ARABIC LETTER SAD
+        "\u0636": ("D", "*d", "ḍ", ""),    # ARABIC LETTER DAD
+        "\u0637": ("T", "*t", "ṭ", ""),    # ARABIC LETTER TAH
+        "\u0638": ("Z", "*z", "ẓ", ""),    # ARABIC LETTER ZAH
+        "\u0639": ("E", "`", "ʿ", ""),     # ARABIC LETTER AIN
+        "\u063a": ("g", "*g", "ġ", ""),    # ARABIC LETTER GHAIN
+        "\u0640": ("_", "", "", ""),       # ARABIC TATWEEL
+        "\u0641": ("f", "f", "f", ""),     # ARABIC LETTER FEH
+        "\u0642": ("q", "*k", "ḳ", ""),    # ARABIC LETTER QAF
+        "\u0643": ("k", "k", "k", ""),     # ARABIC LETTER KAF
+        "\u0644": ("l", "l", "l", ""),     # ARABIC LETTER LAM
+        "\u0645": ("m", "m", "m", ""),     # ARABIC LETTER MEEM
+        "\u0646": ("n", "n", "n", ""),     # ARABIC LETTER NOON
+        "\u0647": ("h", "h", "h", ""),     # ARABIC LETTER HEH
+        "\u0648": ("w", "w", "w", ""),     # ARABIC LETTER WAW
+        "\u0649": ("Y", "/a", "á", ""),    # ARABIC LETTER ALEF MAKSURA
+        "\u064a": ("y", "y", "y", ""),     # ARABIC LETTER YEH
+        "\u064b": ("F", "a*n", "aⁿ", ""),  # ARABIC FATHATAN
+        "\u064c": ("N", "u*n", "uⁿ", ""),  # ARABIC DAMMATAN
+        "\u064d": ("K", "i*n", "iⁿ", ""),  # ARABIC KASRATAN
+        "\u064e": ("a", "a", "a", ""),     # ARABIC FATHA
+        "\u064f": ("u", "u", "u", ""),     # ARABIC DAMMA
+        "\u0650": ("i", "i", "i", ""),     # ARABIC KASRA
+        "\u0651": ("~", "", "", ""),  # ARABIC SHADDA
+        "\u0652": ("o", "", "", ""),  # ARABIC SUKUN
+        "\u0653": ("^", "", "", ""),  # ARABIC MADDAH ABOVE
+        "\u0654": ("#", "'", "ʾ", ""),     # ARABIC HAMZA ABOVE
+        "\u0655": ("=", "'", "ʾ", ""),     # ARABIC HAMZA BELOW
+        "\u0660": ("0", "0", "0", "0"),    # ARABIC INDIC DIGIT ZERO
+        "\u0661": ("1", "1", "1", "1"),    # ARABIC INDIC DIGIT ONE
+        "\u0662": ("2", "2", "2", "2"),    # ARABIC INDIC DIGIT TWO
+        "\u0663": ("3", "3", "3", "3"),    # ARABIC INDIC DIGIT THREE
+        "\u0664": ("4", "4", "4", "4"),    # ARABIC INDIC DIGIT FOUR
+        "\u0665": ("5", "5", "5", "5"),    # ARABIC INDIC DIGIT FIVE
+        "\u0666": ("6", "6", "6", "6"),    # ARABIC INDIC DIGIT SIX
+        "\u0667": ("7", "7", "7", "7"),    # ARABIC INDIC DIGIT SEVEN
+        "\u0668": ("8", "8", "8", "8"),    # ARABIC INDIC DIGIT EIGHT
+        "\u0669": ("9", "9", "9", "9"),    # ARABIC INDIC DIGIT NINE
+        "\u0670": ("`", "~a", "ã", ""),    # ARABIC LETTER SUPERSCRIPT ALEF
+        "\u0671": ("{", "", "", ""),  # ARABIC LETTER ALEF WASLA
+        "\u06af": ("G", "g", "g", ""),  # ARABIC LETTER GAF
+        "\u06cc": ("J", "#y", "Y", ""),  # ARABIC LETTER FARSI YEH
+        "\u06d6": ("SlY", "*sl/a", "ṣlá", ""),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+
+        "\u06da": ("M", "#j", "J", ""),  # ARABIC SMALL HIGH JEEM
+        "\u06dc": (":", "#s", "S", ""),  # ARABIC SMALL HIGH SEEN
+        "\u06df": ("@", "", "", ""),  # ARABIC SMALL HIGH ROUNDED ZERO
+        "\u06e0": ('"', "", "", ""),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        "\u06e2": ("[", "#m", "M", ""),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        "\u06e3": (";", "#s", "S", ""),  # ARABIC SMALL LOW SEEN
+        "\u06e5": (",", "#w", "W", ""),  # ARABIC SMALL WAW
+        "\u06e6": (".", "#y", "Y", ""),  # ARABIC SMALL YEH
+        "\u06e8": ("!", "#n", "N", ""),  # ARABIC SMALL HIGH NOON
+        "\u06ea": ("-", "", "", ""),  # ARABIC EMPTY CENTRE LOW STOP
+        "\u06eb": ("+", "", "", ""),  # ARABIC EMPTY CENTRE HIGH STOP
+        "\u06ec": ("%", "", "", ""),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        "\u06ed": ("]", "#m", "M", ""),  # ARABIC SMALL LOW MEEM
+    }
+    """
+    More Arabic transcriptions
+    """
+
     def __init__(self):
         self.hebrew_consonants = {
             Transcription.hebrew_mapping[x] for x in Transcription.hebrew_cons
@@ -470,6 +557,18 @@ class Transcription(object):
         self.syriac_punctuation_syc = tuple(
             Transcription.syriac_mapping[c] for c in self.syriac_punctuation_trans
         )
+
+        arabicMap = dict(qur={}, asc={}, lat={}, std={})
+        arabicMapI = dict(qur={}, asc={}, lat={}, std={})
+
+        for u in sorted(self.arabic_trans):
+            (qur, asc, lat, std) = self.arabic_trans[u]
+            for (k, v) in zip(arabicMap.keys(), self.arabic_trans[u]):
+                arabicMap[k].setdefault(v, u)
+                arabicMapI[k][u] = v
+
+        self.arabicMap = arabicMap
+        self.arabicMapI = arabicMapI
 
     def sycSplitPunc(self):
         pass

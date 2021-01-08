@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.7
+
+2021-01-05
+
+Renamed some CSS classes in the display style sheet of Text-Fabric.
+These names interfered with class names used in Jupyter Book.
+
 #### 8.4.6
 
 2020-12-30

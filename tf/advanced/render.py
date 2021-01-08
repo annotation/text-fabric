@@ -357,7 +357,7 @@ def _getPassage(isPretty, info, n):
     passage = webLink(n, _asString=True)
     wrap = "div" if isPretty else "span"
     sep = "" if isPretty else NB * 2
-    return f'<{wrap} class="section {ltr}">{passage}</{wrap}>{sep}'
+    return f'<{wrap} class="tfsechead {ltr}">{passage}</{wrap}>{sep}'
 
 
 def _getNodePart(isPretty, info, n, outer, switched):

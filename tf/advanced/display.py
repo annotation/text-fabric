@@ -455,7 +455,7 @@ def plainTuple(
             if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        passageRef = f'<span class="section ltr">{passageRef}</span>'
+        passageRef = f'<span class="tfsechead ltr">{passageRef}</span>'
     else:
         passageRef = ""
 

@@ -221,7 +221,7 @@ def getText(
     tplFilled = (
         (
             (
-                '<span class="section">'
+                '<span class="tfsechead">'
                 + (NB if passage else app.sectionStrFromNode(n))
                 + "</span>"
             )

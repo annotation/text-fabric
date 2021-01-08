@@ -144,11 +144,11 @@ a:hover {
   font-size: small;
   font-weight: normal;
 }
-.section {
+.tfsechead {
     font-family: sans-serif;
     font-size: small;
     font-weight: bold;
-    color: var(--section);
+    color: var(--tfsechead);
     unicode-bidi: embed;
     text-align: start;
 }
@@ -359,7 +359,7 @@ div.pval {
 :root {
 	--node:               hsla(120, 100%,  20%, 1.0  );
 	--label:              hsla(  0, 100%,  20%, 1.0  );
-	--section:            hsla(  0, 100%,  25%, 1.0  );
+	--tfsechead:          hsla(  0, 100%,  25%, 1.0  );
 	--structure:          hsla(120, 100%,  25%, 1.0  );
 	--features:           hsla(  0,   0%,  30%, 1.0  );
   --text-color:         hsla( 60,  80%,  10%, 1.0  );
