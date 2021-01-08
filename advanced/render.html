@@ -37,7 +37,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/render.py#L0-L493" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/25cebd7e1536a7d8550f4f0e9934eb329bc0cbf9/tf/advanced/render.py#L0-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/advanced/render.md
@@ -398,7 +398,7 @@ def _getPassage(isPretty, info, n):
     passage = webLink(n, _asString=True)
     wrap = &#34;div&#34; if isPretty else &#34;span&#34;
     sep = &#34;&#34; if isPretty else NB * 2
-    return f&#39;&lt;{wrap} class=&#34;section {ltr}&#34;&gt;{passage}&lt;/{wrap}&gt;{sep}&#39;
+    return f&#39;&lt;{wrap} class=&#34;tfsechead {ltr}&#34;&gt;{passage}&lt;/{wrap}&gt;{sep}&#39;
 
 
 def _getNodePart(isPretty, info, n, outer, switched):
@@ -550,7 +550,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d698d8a5dff3cf020c436c6009a324ce3abdc210/tf/advanced/render.py#L10-L56" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/25cebd7e1536a7d8550f4f0e9934eb329bc0cbf9/tf/advanced/render.py#L10-L56" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.
