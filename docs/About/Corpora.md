@@ -18,9 +18,9 @@ Each repo named `app-`*appName* hosts the app named *appName*.
 Corpora prefixed with a star do not have dedicated TF apps.
 
 
-`*` [Greek Literature](https://github.com/pthu/greek_literature)
+`*` [Greek Literature](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/GreekLiterature/start.ipynb)
 :   *Greek*
-    Greek Literature, -400 - 400,
+    [Greek Literature, -400 - +400](https://github.com/pthu/greek_literature),
     [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
     [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
     The result of a massive conversion effort by Ernst Boogert.
@@ -49,6 +49,13 @@ Corpora prefixed with a star do not have dedicated TF apps.
     Dead Sea Scrolls, 300 BC - 100 AD,
     **[Transcriptions with morphology based on Martin Abegg's data files](https://github.com/ETCBC/dss/blob/master/docs/about.md)**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
+
+`*` [fusus](https://nbviewer.jupyter.org/github/among/fusus/blob/master/source/useTf.ipynb)
+:   *Arabic*
+    Fusus Al Hikram,  1165- 2000,
+    **[editions of Ibn Arabi's Fusus plus commentaries in the centuries thereafter](https://github.com/among/fusus)**,
+    Cornelis van Lit, Dirk Roorda
+    *Work in progress*
 
 [missieven](https://github.com/annotation/app-missieven)
 :   *Dutch* 
