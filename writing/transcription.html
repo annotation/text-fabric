@@ -46,7 +46,7 @@ text material to transliterated representations and back.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L0-L921" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L0-L954" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/writing/transcription.md
@@ -469,6 +469,7 @@ class Transcription(object):
     }
     &#34;&#34;&#34;
     Maps an Arabic transliteration character to Unicode.
+    This is the mapping used in the Quran representation on tanzil.net.
 
     Example: beh
 
@@ -491,92 +492,124 @@ class Transcription(object):
 
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
-    arabic_trans = {
-        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),    # SPACE
-        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;&#34;),     # ARABIC COMMA
-        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;&#34;),     # ARABIC SEMICOLON
-        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;&#34;),     # ARABIC QUESTION MARK
-        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC LETTER HAMZA
-        &#34;\u0622&#34;: (&#34;»&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH MADDA ABOVE
-        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
-        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),    # ARABIC LETTER WAW WITH HAMZA ABOVE
-        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH HAMZA BELOW
-        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC LETTER YEH WITH HAMZA ABOVE
-        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;&#34;),    # ARABIC LETTER ALEF
-        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;&#34;),     # ARABIC LETTER BEH
-        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;&#34;),    # ARABIC LETTER TEH MARBUTA
-        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;&#34;),     # ARABIC LETTER TEH
-        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;&#34;),    # ARABIC LETTER THEH
-        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;&#34;),     # ARABIC LETTER JEEM
-        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;&#34;),    # ARABIC LETTER HAH
-        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;&#34;),    # ARABIC LETTER KHAH
-        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;&#34;),     # ARABIC LETTER DAL
-        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;&#34;),    # ARABIC LETTER THAL
-        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;&#34;),     # ARABIC LETTER REH
-        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;&#34;),     # ARABIC LETTER ZAIN
-        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;&#34;),     # ARABIC LETTER SEEN
-        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;&#34;),    # ARABIC LETTER SHEEN
-        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;&#34;),    # ARABIC LETTER SAD
-        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;&#34;),    # ARABIC LETTER DAD
-        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;&#34;),    # ARABIC LETTER TAH
-        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;&#34;),    # ARABIC LETTER ZAH
-        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;&#34;),     # ARABIC LETTER AIN
-        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;&#34;),    # ARABIC LETTER GHAIN
-        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),       # ARABIC TATWEEL
-        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;&#34;),     # ARABIC LETTER FEH
-        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;&#34;),    # ARABIC LETTER QAF
-        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;&#34;),     # ARABIC LETTER KAF
-        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;&#34;),     # ARABIC LETTER LAM
-        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;&#34;),     # ARABIC LETTER MEEM
-        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;&#34;),     # ARABIC LETTER NOON
-        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;&#34;),     # ARABIC LETTER HEH
-        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;&#34;),     # ARABIC LETTER WAW
-        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;&#34;),    # ARABIC LETTER ALEF MAKSURA
-        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;&#34;),     # ARABIC LETTER YEH
-        &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;&#34;),  # ARABIC FATHATAN
-        &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;&#34;),  # ARABIC DAMMATAN
-        &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;&#34;),  # ARABIC KASRATAN
-        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;&#34;),     # ARABIC FATHA
-        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;&#34;),     # ARABIC DAMMA
-        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;&#34;),     # ARABIC KASRA
-        &#34;\u0651&#34;: (&#34;~&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SHADDA
-        &#34;\u0652&#34;: (&#34;o&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SUKUN
-        &#34;\u0653&#34;: (&#34;^&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC MADDAH ABOVE
-        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC HAMZA ABOVE
-        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC HAMZA BELOW
-        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),    # ARABIC INDIC DIGIT ZERO
-        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),    # ARABIC INDIC DIGIT ONE
-        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),    # ARABIC INDIC DIGIT TWO
-        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),    # ARABIC INDIC DIGIT THREE
-        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),    # ARABIC INDIC DIGIT FOUR
-        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),    # ARABIC INDIC DIGIT FIVE
-        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),    # ARABIC INDIC DIGIT SIX
-        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),    # ARABIC INDIC DIGIT SEVEN
-        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),    # ARABIC INDIC DIGIT EIGHT
-        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),    # ARABIC INDIC DIGIT NINE
-        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),    # ARABIC LETTER SUPERSCRIPT ALEF
-        &#34;\u0671&#34;: (&#34;{&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WASLA
-        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;&#34;),  # ARABIC LETTER GAF
-        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;&#34;),  # ARABIC LETTER FARSI YEH
-        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
-
-        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;&#34;),  # ARABIC SMALL HIGH JEEM
-        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;&#34;),  # ARABIC SMALL HIGH SEEN
-        &#34;\u06df&#34;: (&#34;@&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SMALL HIGH ROUNDED ZERO
-        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
-        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;&#34;),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
-        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;&#34;),  # ARABIC SMALL LOW SEEN
-        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;&#34;),  # ARABIC SMALL WAW
-        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;&#34;),  # ARABIC SMALL YEH
-        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;&#34;),  # ARABIC SMALL HIGH NOON
-        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC EMPTY CENTRE LOW STOP
-        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC EMPTY CENTRE HIGH STOP
-        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
-        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;&#34;),  # ARABIC SMALL LOW MEEM
+    arabicTrans = {
+        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),      # SPACE
+        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),      # ARABIC COMMA
+        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),      # ARABIC SEMICOLON
+        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),      # ARABIC QUESTION MARK
+        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER HAMZA
+        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH MADDA ABOVE
+        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),      # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF
+        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),      # ARABIC LETTER BEH
+        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),     # ARABIC LETTER TEH MARBUTA
+        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),      # ARABIC LETTER TEH
+        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),    # ARABIC LETTER THEH
+        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),      # ARABIC LETTER JEEM
+        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),     # ARABIC LETTER HAH
+        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),    # ARABIC LETTER KHAH
+        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),      # ARABIC LETTER DAL
+        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),    # ARABIC LETTER THAL
+        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),      # ARABIC LETTER REH
+        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),      # ARABIC LETTER ZAIN
+        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),      # ARABIC LETTER SEEN
+        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),    # ARABIC LETTER SHEEN
+        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),     # ARABIC LETTER SAD
+        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),     # ARABIC LETTER DAD
+        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),     # ARABIC LETTER TAH
+        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),     # ARABIC LETTER ZAH
+        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),      # ARABIC LETTER AIN
+        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),    # ARABIC LETTER GHAIN
+        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),         # ARABIC TATWEEL
+        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),      # ARABIC LETTER FEH
+        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),     # ARABIC LETTER QAF
+        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),      # ARABIC LETTER KAF
+        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),      # ARABIC LETTER LAM
+        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),      # ARABIC LETTER MEEM
+        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),      # ARABIC LETTER NOON
+        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),      # ARABIC LETTER HEH
+        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),      # ARABIC LETTER WAW
+        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF MAKSURA
+        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),      # ARABIC LETTER YEH
+        &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;an&#34;),  # ARABIC FATHATAN
+        &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;un&#34;),  # ARABIC DAMMATAN
+        &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;in&#34;),  # ARABIC KASRATAN
+        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC FATHA
+        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),      # ARABIC DAMMA
+        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),      # ARABIC KASRA
+        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),     # ARABIC SHADDA
+        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC SUKUN
+        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC MADDAH ABOVE
+        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA ABOVE
+        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA BELOW
+        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC INDIC DIGIT ZERO
+        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),      # ARABIC INDIC DIGIT ONE
+        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),      # ARABIC INDIC DIGIT TWO
+        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),      # ARABIC INDIC DIGIT THREE
+        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),      # ARABIC INDIC DIGIT FOUR
+        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),      # ARABIC INDIC DIGIT FIVE
+        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),      # ARABIC INDIC DIGIT SIX
+        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),      # ARABIC INDIC DIGIT SEVEN
+        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),      # ARABIC INDIC DIGIT EIGHT
+        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),      # ARABIC INDIC DIGIT NINE
+        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),      # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC LETTER ALEF WASLA
+        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),      # ARABIC LETTER GAF
+        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),     # ARABIC LETTER FARSI YEH
+        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;ṣla&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),     # ARABIC SMALL HIGH JEEM
+        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),     # ARABIC SMALL HIGH SEEN
+        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH ROUNDED ZERO
+        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),     # ARABIC SMALL LOW SEEN
+        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),     # ARABIC SMALL WAW
+        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),     # ARABIC SMALL YEH
+        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),     # ARABIC SMALL HIGH NOON
+        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE LOW STOP
+        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
-    More Arabic transcriptions
+    More Arabic transcriptions:
+
+    * column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
+    * column 2/: `ascii` resp. `latin` plus diacritics also known as betacode.
+      We use a list compiled by
+      [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+    * column 4: `standard` (Library of Congress) (to-be filled).
+      We use the
+      [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+      We refrain of from applying rules that cannot be computed without
+      lexical/grammatical/dialectical knowledge of the arabic language.
     &#34;&#34;&#34;
+
+    arabicTransQuran = {}
+    arabicTransAscii = {}
+    arabicTransLatin = {}
+    arabicTransStandard = {}
+
+    for (ara, (qur, asc, lat, std)) in arabicTrans.items():
+        arabicTransQuran[ara] = qur
+        arabicTransAscii[ara] = asc
+        arabicTransLatin[ara] = lat
+        arabicTransStandard[ara] = std
+
+    def quranFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)
+
+    def asciiFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)
+
+    def latinFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)
+
+    def standardFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)
 
     def __init__(self):
         self.hebrew_consonants = {
@@ -611,9 +644,9 @@ class Transcription(object):
         arabicMap = dict(qur={}, asc={}, lat={}, std={})
         arabicMapI = dict(qur={}, asc={}, lat={}, std={})
 
-        for u in sorted(self.arabic_trans):
-            (qur, asc, lat, std) = self.arabic_trans[u]
-            for (k, v) in zip(arabicMap.keys(), self.arabic_trans[u]):
+        for u in sorted(Transcription.arabicTrans):
+            (qur, asc, lat, std) = Transcription.arabicTrans[u]
+            for (k, v) in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
                 arabicMap[k].setdefault(v, u)
                 arabicMapI[k][u] = v
 
@@ -1002,7 +1035,7 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L7-L922" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L7-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Transcription(object):
     &#34;&#34;&#34;Conversion between unicode and various transcriptions.
@@ -1419,6 +1452,7 @@ others are instance attributes.</p>
     }
     &#34;&#34;&#34;
     Maps an Arabic transliteration character to Unicode.
+    This is the mapping used in the Quran representation on tanzil.net.
 
     Example: beh
 
@@ -1441,92 +1475,124 @@ others are instance attributes.</p>
 
     arabic_mappingi = {v: k for (k, v) in arabic_mapping.items()}
 
-    arabic_trans = {
-        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),    # SPACE
-        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;&#34;),     # ARABIC COMMA
-        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;&#34;),     # ARABIC SEMICOLON
-        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;&#34;),     # ARABIC QUESTION MARK
-        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC LETTER HAMZA
-        &#34;\u0622&#34;: (&#34;»&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH MADDA ABOVE
-        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH HAMZA ABOVE
-        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),    # ARABIC LETTER WAW WITH HAMZA ABOVE
-        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WITH HAMZA BELOW
-        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC LETTER YEH WITH HAMZA ABOVE
-        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;&#34;),    # ARABIC LETTER ALEF
-        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;&#34;),     # ARABIC LETTER BEH
-        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;&#34;),    # ARABIC LETTER TEH MARBUTA
-        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;&#34;),     # ARABIC LETTER TEH
-        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;&#34;),    # ARABIC LETTER THEH
-        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;&#34;),     # ARABIC LETTER JEEM
-        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;&#34;),    # ARABIC LETTER HAH
-        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;&#34;),    # ARABIC LETTER KHAH
-        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;&#34;),     # ARABIC LETTER DAL
-        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;&#34;),    # ARABIC LETTER THAL
-        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;&#34;),     # ARABIC LETTER REH
-        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;&#34;),     # ARABIC LETTER ZAIN
-        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;&#34;),     # ARABIC LETTER SEEN
-        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;&#34;),    # ARABIC LETTER SHEEN
-        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;&#34;),    # ARABIC LETTER SAD
-        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;&#34;),    # ARABIC LETTER DAD
-        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;&#34;),    # ARABIC LETTER TAH
-        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;&#34;),    # ARABIC LETTER ZAH
-        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;&#34;),     # ARABIC LETTER AIN
-        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;&#34;),    # ARABIC LETTER GHAIN
-        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),       # ARABIC TATWEEL
-        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;&#34;),     # ARABIC LETTER FEH
-        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;&#34;),    # ARABIC LETTER QAF
-        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;&#34;),     # ARABIC LETTER KAF
-        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;&#34;),     # ARABIC LETTER LAM
-        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;&#34;),     # ARABIC LETTER MEEM
-        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;&#34;),     # ARABIC LETTER NOON
-        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;&#34;),     # ARABIC LETTER HEH
-        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;&#34;),     # ARABIC LETTER WAW
-        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;&#34;),    # ARABIC LETTER ALEF MAKSURA
-        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;&#34;),     # ARABIC LETTER YEH
-        &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;&#34;),  # ARABIC FATHATAN
-        &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;&#34;),  # ARABIC DAMMATAN
-        &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;&#34;),  # ARABIC KASRATAN
-        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;&#34;),     # ARABIC FATHA
-        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;&#34;),     # ARABIC DAMMA
-        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;&#34;),     # ARABIC KASRA
-        &#34;\u0651&#34;: (&#34;~&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SHADDA
-        &#34;\u0652&#34;: (&#34;o&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SUKUN
-        &#34;\u0653&#34;: (&#34;^&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC MADDAH ABOVE
-        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC HAMZA ABOVE
-        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#34;),     # ARABIC HAMZA BELOW
-        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),    # ARABIC INDIC DIGIT ZERO
-        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),    # ARABIC INDIC DIGIT ONE
-        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),    # ARABIC INDIC DIGIT TWO
-        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),    # ARABIC INDIC DIGIT THREE
-        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),    # ARABIC INDIC DIGIT FOUR
-        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),    # ARABIC INDIC DIGIT FIVE
-        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),    # ARABIC INDIC DIGIT SIX
-        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),    # ARABIC INDIC DIGIT SEVEN
-        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),    # ARABIC INDIC DIGIT EIGHT
-        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),    # ARABIC INDIC DIGIT NINE
-        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),    # ARABIC LETTER SUPERSCRIPT ALEF
-        &#34;\u0671&#34;: (&#34;{&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC LETTER ALEF WASLA
-        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;&#34;),  # ARABIC LETTER GAF
-        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;&#34;),  # ARABIC LETTER FARSI YEH
-        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
-
-        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;&#34;),  # ARABIC SMALL HIGH JEEM
-        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;&#34;),  # ARABIC SMALL HIGH SEEN
-        &#34;\u06df&#34;: (&#34;@&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SMALL HIGH ROUNDED ZERO
-        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
-        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;&#34;),  # ARABIC SMALL HIGH MEEM ISOLATED FORM
-        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;&#34;),  # ARABIC SMALL LOW SEEN
-        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;&#34;),  # ARABIC SMALL WAW
-        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;&#34;),  # ARABIC SMALL YEH
-        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;&#34;),  # ARABIC SMALL HIGH NOON
-        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC EMPTY CENTRE LOW STOP
-        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC EMPTY CENTRE HIGH STOP
-        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),  # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
-        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;&#34;),  # ARABIC SMALL LOW MEEM
+    arabicTrans = {
+        &#34;\u0020&#34;: (&#34; &#34;, &#34; &#34;, &#34; &#34;, &#34; &#34;),      # SPACE
+        &#34;\u060c&#34;: (&#34;‚&#34;, &#34;,&#34;, &#34;,&#34;, &#34;,&#34;),      # ARABIC COMMA
+        &#34;\u061b&#34;: (&#34;„&#34;, &#34;;&#34;, &#34;;&#34;, &#34;;&#34;),      # ARABIC SEMICOLON
+        &#34;\u061f&#34;: (&#34;?&#34;, &#34;?&#34;, &#34;?&#34;, &#34;?&#34;),      # ARABIC QUESTION MARK
+        &#34;\u0621&#34;: (&#34;&#39;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER HAMZA
+        &#34;\u0622&#34;: (&#34;»&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH MADDA ABOVE
+        &#34;\u0623&#34;: (&#34;&gt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA ABOVE
+        &#34;\u0624&#34;: (&#34;&amp;&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;&#39;&#34;),      # ARABIC LETTER WAW WITH HAMZA ABOVE
+        &#34;\u0625&#34;: (&#34;&lt;&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF WITH HAMZA BELOW
+        &#34;\u0626&#34;: (&#34;}&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;y&#34;),      # ARABIC LETTER YEH WITH HAMZA ABOVE
+        &#34;\u0627&#34;: (&#34;A&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF
+        &#34;\u0628&#34;: (&#34;b&#34;, &#34;b&#34;, &#34;b&#34;, &#34;b&#34;),      # ARABIC LETTER BEH
+        &#34;\u0629&#34;: (&#34;p&#34;, &#34;=t&#34;, &#34;ŧ&#34;, &#34;t&#34;),     # ARABIC LETTER TEH MARBUTA
+        &#34;\u062a&#34;: (&#34;t&#34;, &#34;t&#34;, &#34;t&#34;, &#34;t&#34;),      # ARABIC LETTER TEH
+        &#34;\u062b&#34;: (&#34;v&#34;, &#34;_t&#34;, &#34;ṯ&#34;, &#34;th&#34;),    # ARABIC LETTER THEH
+        &#34;\u062c&#34;: (&#34;j&#34;, &#34;j&#34;, &#34;ǧ&#34;, &#34;j&#34;),      # ARABIC LETTER JEEM
+        &#34;\u062d&#34;: (&#34;H&#34;, &#34;*h&#34;, &#34;ḥ&#34;, &#34;ḥ&#34;),     # ARABIC LETTER HAH
+        &#34;\u062e&#34;: (&#34;x&#34;, &#34;_h&#34;, &#34;ḫ&#34;, &#34;kh&#34;),    # ARABIC LETTER KHAH
+        &#34;\u062f&#34;: (&#34;d&#34;, &#34;d&#34;, &#34;d&#34;, &#34;d&#34;),      # ARABIC LETTER DAL
+        &#34;\u0630&#34;: (&#34;*&#34;, &#34;_d&#34;, &#34;ḏ&#34;, &#34;dh&#34;),    # ARABIC LETTER THAL
+        &#34;\u0631&#34;: (&#34;r&#34;, &#34;r&#34;, &#34;r&#34;, &#34;r&#34;),      # ARABIC LETTER REH
+        &#34;\u0632&#34;: (&#34;z&#34;, &#34;z&#34;, &#34;z&#34;, &#34;z&#34;),      # ARABIC LETTER ZAIN
+        &#34;\u0633&#34;: (&#34;s&#34;, &#34;s&#34;, &#34;s&#34;, &#34;s&#34;),      # ARABIC LETTER SEEN
+        &#34;\u0634&#34;: (&#34;$&#34;, &#34;^s&#34;, &#34;š&#34;, &#34;sh&#34;),    # ARABIC LETTER SHEEN
+        &#34;\u0635&#34;: (&#34;S&#34;, &#34;*s&#34;, &#34;ṣ&#34;, &#34;ṣ&#34;),     # ARABIC LETTER SAD
+        &#34;\u0636&#34;: (&#34;D&#34;, &#34;*d&#34;, &#34;ḍ&#34;, &#34;ḍ&#34;),     # ARABIC LETTER DAD
+        &#34;\u0637&#34;: (&#34;T&#34;, &#34;*t&#34;, &#34;ṭ&#34;, &#34;ṭ&#34;),     # ARABIC LETTER TAH
+        &#34;\u0638&#34;: (&#34;Z&#34;, &#34;*z&#34;, &#34;ẓ&#34;, &#34;ẓ&#34;),     # ARABIC LETTER ZAH
+        &#34;\u0639&#34;: (&#34;E&#34;, &#34;`&#34;, &#34;ʿ&#34;, &#34;`&#34;),      # ARABIC LETTER AIN
+        &#34;\u063a&#34;: (&#34;g&#34;, &#34;*g&#34;, &#34;ġ&#34;, &#34;gh&#34;),    # ARABIC LETTER GHAIN
+        &#34;\u0640&#34;: (&#34;_&#34;, &#34;&#34;, &#34;&#34;, &#34;&#34;),         # ARABIC TATWEEL
+        &#34;\u0641&#34;: (&#34;f&#34;, &#34;f&#34;, &#34;f&#34;, &#34;f&#34;),      # ARABIC LETTER FEH
+        &#34;\u0642&#34;: (&#34;q&#34;, &#34;*k&#34;, &#34;ḳ&#34;, &#34;q&#34;),     # ARABIC LETTER QAF
+        &#34;\u0643&#34;: (&#34;k&#34;, &#34;k&#34;, &#34;k&#34;, &#34;k&#34;),      # ARABIC LETTER KAF
+        &#34;\u0644&#34;: (&#34;l&#34;, &#34;l&#34;, &#34;l&#34;, &#34;l&#34;),      # ARABIC LETTER LAM
+        &#34;\u0645&#34;: (&#34;m&#34;, &#34;m&#34;, &#34;m&#34;, &#34;m&#34;),      # ARABIC LETTER MEEM
+        &#34;\u0646&#34;: (&#34;n&#34;, &#34;n&#34;, &#34;n&#34;, &#34;n&#34;),      # ARABIC LETTER NOON
+        &#34;\u0647&#34;: (&#34;h&#34;, &#34;h&#34;, &#34;h&#34;, &#34;h&#34;),      # ARABIC LETTER HEH
+        &#34;\u0648&#34;: (&#34;w&#34;, &#34;w&#34;, &#34;w&#34;, &#34;w&#34;),      # ARABIC LETTER WAW
+        &#34;\u0649&#34;: (&#34;Y&#34;, &#34;/a&#34;, &#34;á&#34;, &#34;ā&#34;),     # ARABIC LETTER ALEF MAKSURA
+        &#34;\u064a&#34;: (&#34;y&#34;, &#34;y&#34;, &#34;y&#34;, &#34;y&#34;),      # ARABIC LETTER YEH
+        &#34;\u064b&#34;: (&#34;F&#34;, &#34;a*n&#34;, &#34;aⁿ&#34;, &#34;an&#34;),  # ARABIC FATHATAN
+        &#34;\u064c&#34;: (&#34;N&#34;, &#34;u*n&#34;, &#34;uⁿ&#34;, &#34;un&#34;),  # ARABIC DAMMATAN
+        &#34;\u064d&#34;: (&#34;K&#34;, &#34;i*n&#34;, &#34;iⁿ&#34;, &#34;in&#34;),  # ARABIC KASRATAN
+        &#34;\u064e&#34;: (&#34;a&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC FATHA
+        &#34;\u064f&#34;: (&#34;u&#34;, &#34;u&#34;, &#34;u&#34;, &#34;u&#34;),      # ARABIC DAMMA
+        &#34;\u0650&#34;: (&#34;i&#34;, &#34;i&#34;, &#34;i&#34;, &#34;i&#34;),      # ARABIC KASRA
+        &#34;\u0651&#34;: (&#34;~&#34;, &#34;u&#34;, &#34;u&#34;, &#34;ūw&#34;),     # ARABIC SHADDA
+        &#34;\u0652&#34;: (&#34;o&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC SUKUN
+        &#34;\u0653&#34;: (&#34;^&#34;, &#34;_a&#34;, &#34;ā&#34;, &#34;ā&#34;),     # ARABIC MADDAH ABOVE
+        &#34;\u0654&#34;: (&#34;#&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA ABOVE
+        &#34;\u0655&#34;: (&#34;=&#34;, &#34;&#39;&#34;, &#34;ʾ&#34;, &#34;ā&#34;),      # ARABIC HAMZA BELOW
+        &#34;\u0660&#34;: (&#34;0&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC INDIC DIGIT ZERO
+        &#34;\u0661&#34;: (&#34;1&#34;, &#34;1&#34;, &#34;1&#34;, &#34;1&#34;),      # ARABIC INDIC DIGIT ONE
+        &#34;\u0662&#34;: (&#34;2&#34;, &#34;2&#34;, &#34;2&#34;, &#34;2&#34;),      # ARABIC INDIC DIGIT TWO
+        &#34;\u0663&#34;: (&#34;3&#34;, &#34;3&#34;, &#34;3&#34;, &#34;3&#34;),      # ARABIC INDIC DIGIT THREE
+        &#34;\u0664&#34;: (&#34;4&#34;, &#34;4&#34;, &#34;4&#34;, &#34;4&#34;),      # ARABIC INDIC DIGIT FOUR
+        &#34;\u0665&#34;: (&#34;5&#34;, &#34;5&#34;, &#34;5&#34;, &#34;5&#34;),      # ARABIC INDIC DIGIT FIVE
+        &#34;\u0666&#34;: (&#34;6&#34;, &#34;6&#34;, &#34;6&#34;, &#34;6&#34;),      # ARABIC INDIC DIGIT SIX
+        &#34;\u0667&#34;: (&#34;7&#34;, &#34;7&#34;, &#34;7&#34;, &#34;7&#34;),      # ARABIC INDIC DIGIT SEVEN
+        &#34;\u0668&#34;: (&#34;8&#34;, &#34;8&#34;, &#34;8&#34;, &#34;8&#34;),      # ARABIC INDIC DIGIT EIGHT
+        &#34;\u0669&#34;: (&#34;9&#34;, &#34;9&#34;, &#34;9&#34;, &#34;9&#34;),      # ARABIC INDIC DIGIT NINE
+        &#34;\u0670&#34;: (&#34;`&#34;, &#34;~a&#34;, &#34;ã&#34;, &#34;&#34;),      # ARABIC LETTER SUPERSCRIPT ALEF
+        &#34;\u0671&#34;: (&#34;{&#34;, &#34;a&#34;, &#34;a&#34;, &#34;a&#34;),      # ARABIC LETTER ALEF WASLA
+        &#34;\u06af&#34;: (&#34;G&#34;, &#34;g&#34;, &#34;g&#34;, &#34;g&#34;),      # ARABIC LETTER GAF
+        &#34;\u06cc&#34;: (&#34;J&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;y&#34;),     # ARABIC LETTER FARSI YEH
+        &#34;\u06d6&#34;: (&#34;SlY&#34;, &#34;*sl/a&#34;, &#34;ṣlá&#34;, &#34;ṣla&#34;),  # ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA
+        &#34;\u06da&#34;: (&#34;M&#34;, &#34;#j&#34;, &#34;J&#34;, &#34;j&#34;),     # ARABIC SMALL HIGH JEEM
+        &#34;\u06dc&#34;: (&#34;:&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;s&#34;),     # ARABIC SMALL HIGH SEEN
+        &#34;\u06df&#34;: (&#34;@&#34;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH ROUNDED ZERO
+        &#34;\u06e0&#34;: (&#39;&#34;&#39;, &#34;0&#34;, &#34;0&#34;, &#34;0&#34;),      # ARABIC SMALL HIGH UPRIGHT RECTANGULAR ZERO
+        &#34;\u06e2&#34;: (&#34;[&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL HIGH MEEM ISOLATED FORM
+        &#34;\u06e3&#34;: (&#34;;&#34;, &#34;#s&#34;, &#34;S&#34;, &#34;S&#34;),     # ARABIC SMALL LOW SEEN
+        &#34;\u06e5&#34;: (&#34;,&#34;, &#34;#w&#34;, &#34;W&#34;, &#34;W&#34;),     # ARABIC SMALL WAW
+        &#34;\u06e6&#34;: (&#34;.&#34;, &#34;#y&#34;, &#34;Y&#34;, &#34;Y&#34;),     # ARABIC SMALL YEH
+        &#34;\u06e8&#34;: (&#34;!&#34;, &#34;#n&#34;, &#34;N&#34;, &#34;N&#34;),     # ARABIC SMALL HIGH NOON
+        &#34;\u06ea&#34;: (&#34;-&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE LOW STOP
+        &#34;\u06eb&#34;: (&#34;+&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC EMPTY CENTRE HIGH STOP
+        &#34;\u06ec&#34;: (&#34;%&#34;, &#34;.&#34;, &#34;.&#34;, &#34;.&#34;),      # ARABIC ROUNDED HIGH STOP WITH FILLED CENTRE
+        &#34;\u06ed&#34;: (&#34;]&#34;, &#34;#m&#34;, &#34;M&#34;, &#34;M&#34;),     # ARABIC SMALL LOW MEEM
     }
     &#34;&#34;&#34;
-    More Arabic transcriptions
+    More Arabic transcriptions:
+
+    * column 1: `custom` [Quran-tanzil](http://tanzil.net/#1:1), slightly extended
+    * column 2/: `ascii` resp. `latin` plus diacritics also known as betacode.
+      We use a list compiled by
+      [Peter Verkinderen](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
+    * column 4: `standard` (Library of Congress) (to-be filled).
+      We use the
+      [arabic romanization list of 2012](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
+      We refrain of from applying rules that cannot be computed without
+      lexical/grammatical/dialectical knowledge of the arabic language.
     &#34;&#34;&#34;
+
+    arabicTransQuran = {}
+    arabicTransAscii = {}
+    arabicTransLatin = {}
+    arabicTransStandard = {}
+
+    for (ara, (qur, asc, lat, std)) in arabicTrans.items():
+        arabicTransQuran[ara] = qur
+        arabicTransAscii[ara] = asc
+        arabicTransLatin[ara] = lat
+        arabicTransStandard[ara] = std
+
+    def quranFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)
+
+    def asciiFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)
+
+    def latinFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)
+
+    def standardFromArabic(word):
+        return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)
 
     def __init__(self):
         self.hebrew_consonants = {
@@ -1561,9 +1627,9 @@ others are instance attributes.</p>
         arabicMap = dict(qur={}, asc={}, lat={}, std={})
         arabicMapI = dict(qur={}, asc={}, lat={}, std={})
 
-        for u in sorted(self.arabic_trans):
-            (qur, asc, lat, std) = self.arabic_trans[u]
-            for (k, v) in zip(arabicMap.keys(), self.arabic_trans[u]):
+        for u in sorted(Transcription.arabicTrans):
+            (qur, asc, lat, std) = Transcription.arabicTrans[u]
+            for (k, v) in zip(arabicMap.keys(), Transcription.arabicTrans[u]):
                 arabicMap[k].setdefault(v, u)
                 arabicMapI[k][u] = v
 
@@ -1923,9 +1989,45 @@ others are instance attributes.</p>
 </details>
 <h3>Class variables</h3>
 <dl>
+<dt id="tf.writing.transcription.Transcription.ara"><code class="name">var <span class="ident">ara</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabicTrans"><code class="name">var <span class="ident">arabicTrans</span></code></dt>
+<dd>
+<div class="desc"><p>More Arabic transcriptions:</p>
+<ul>
+<li>column 1: <code>custom</code> <a href="http://tanzil.net/#1:1">Quran-tanzil</a>, slightly extended</li>
+<li>column 2/: <code>ascii</code> resp. <code>latin</code> plus diacritics also known as betacode.
+We use a list compiled by
+<a href="https://pverkind.github.io/betacodeTranscriber/js/betacode.js">Peter Verkinderen</a></li>
+<li>column 4: <code>standard</code> (Library of Congress) (to-be filled).
+We use the
+<a href="https://www.loc.gov/catdir/cpso/romanization/arabic.pdf">arabic romanization list of 2012</a>
+We refrain of from applying rules that cannot be computed without
+lexical/grammatical/dialectical knowledge of the arabic language.</li>
+</ul></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabicTransAscii"><code class="name">var <span class="ident">arabicTransAscii</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabicTransLatin"><code class="name">var <span class="ident">arabicTransLatin</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabicTransQuran"><code class="name">var <span class="ident">arabicTransQuran</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.arabicTransStandard"><code class="name">var <span class="ident">arabicTransStandard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.writing.transcription.Transcription.arabic_mapping"><code class="name">var <span class="ident">arabic_mapping</span></code></dt>
 <dd>
-<div class="desc"><p>Maps an Arabic transliteration character to Unicode.</p>
+<div class="desc"><p>Maps an Arabic transliteration character to Unicode.
+This is the mapping used in the Quran representation on tanzil.net.</p>
 <p>Example: beh</p>
 <pre><code>Transcription.syriac_mapping['b']
 </code></pre>
@@ -1942,9 +2044,9 @@ others are instance attributes.</p>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="tf.writing.transcription.Transcription.arabic_trans"><code class="name">var <span class="ident">arabic_trans</span></code></dt>
+<dt id="tf.writing.transcription.Transcription.asc"><code class="name">var <span class="ident">asc</span></code></dt>
 <dd>
-<div class="desc"><p>More Arabic transcriptions</p></div>
+<div class="desc"></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.decomp"><code class="name">var <span class="ident">decomp</span></code></dt>
 <dd>
@@ -1963,11 +2065,19 @@ others are instance attributes.</p>
 <h2 id="output">Output</h2>
 <p>׃</p></div>
 </dd>
+<dt id="tf.writing.transcription.Transcription.lat"><code class="name">var <span class="ident">lat</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.writing.transcription.Transcription.noorigspace"><code class="name">var <span class="ident">noorigspace</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.ph_simple_pat"><code class="name">var <span class="ident">ph_simple_pat</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.qur"><code class="name">var <span class="ident">qur</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1988,6 +2098,10 @@ others are instance attributes.</p>
 <div class="desc"></div>
 </dd>
 <dt id="tf.writing.transcription.Transcription.shin_pat"><code class="name">var <span class="ident">shin_pat</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.writing.transcription.Transcription.std"><code class="name">var <span class="ident">std</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -2027,6 +2141,20 @@ others are instance attributes.</p>
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.writing.transcription.Transcription.asciiFromArabic"><code class="name flex">
+<span>def <span class="ident">asciiFromArabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L555-L556" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def asciiFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransAscii.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
 <dt id="tf.writing.transcription.Transcription.can_from_syriac"><code class="name flex">
 <span>def <span class="ident">can_from_syriac</span></span>(<span>self, word)</span>
 </code></dt>
@@ -2035,7 +2163,7 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L889-L890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L922-L923" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_from_syriac(self, word):
     return all(c in self.syriac_mappingi for c in word if c != &#34; &#34;)</code></pre>
@@ -2049,7 +2177,7 @@ others are instance attributes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L882-L887" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L915-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def can_to_syriac(self, word):
     return all(
@@ -2072,7 +2200,7 @@ produce the word in transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L908-L922" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L941-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_arabic(word):
     &#34;&#34;&#34;
@@ -2104,7 +2232,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L832-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L865-L881" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_hebrew(self, word):
     &#34;&#34;&#34;
@@ -2138,7 +2266,7 @@ produce the word in ETCBC transliteration.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L866-L880" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L899-L913" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def from_syriac(self, word):
     &#34;&#34;&#34;
@@ -2155,6 +2283,20 @@ produce the word in ETCBC transliteration.</p>
     &#34;&#34;&#34;
 
     return &#34;&#34;.join(self.syriac_mappingi.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.latinFromArabic"><code class="name flex">
+<span>def <span class="ident">latinFromArabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L558-L559" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def latinFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransLatin.get(x, x) for x in word)</code></pre>
 </details>
 </dd>
 <dt id="tf.writing.transcription.Transcription.ph_simplify"><code class="name flex">
@@ -2177,7 +2319,7 @@ character.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L808-L830" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L841-L863" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ph_simplify(pword):
     &#34;&#34;&#34;
@@ -2204,6 +2346,34 @@ character.</p></div>
     return Transcription.ph_simple_pat.sub(Transcription._ph_simple, pword)</code></pre>
 </details>
 </dd>
+<dt id="tf.writing.transcription.Transcription.quranFromArabic"><code class="name flex">
+<span>def <span class="ident">quranFromArabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L552-L553" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def quranFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransQuran.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
+<dt id="tf.writing.transcription.Transcription.standardFromArabic"><code class="name flex">
+<span>def <span class="ident">standardFromArabic</span></span>(<span>word)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L561-L562" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def standardFromArabic(word):
+    return &#34;&#34;.join(Transcription.arabicTransStandard.get(x, x) for x in word)</code></pre>
+</details>
+</dd>
 <dt id="tf.writing.transcription.Transcription.suffix_and_finales"><code class="name flex">
 <span>def <span class="ident">suffix_and_finales</span></span>(<span>word)</span>
 </code></dt>
@@ -2227,7 +2397,7 @@ Replace the last consonant of the word material by its final form, if applicable
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L586-L643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L619-L676" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suffix_and_finales(word):
     &#34;&#34;&#34;
@@ -2307,7 +2477,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L669-L688" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L702-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def suppress_space(word):
     &#34;&#34;&#34;
@@ -2339,7 +2509,7 @@ None
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L573-L574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L606-L607" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sycSplitPunc(self):
     pass</code></pre>
@@ -2358,7 +2528,7 @@ produce the word in Unicode Arabic.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L892-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L925-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_arabic(word):
     &#34;&#34;&#34;
@@ -2392,7 +2562,7 @@ Punctuation will also be stripped.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L706-L731" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L739-L764" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_c(word):
     &#34;&#34;&#34;
@@ -2435,7 +2605,7 @@ strip all the non-vowel pointing (i.e. the accents).</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L690-L704" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L723-L737" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_etcbc_v(word):
     &#34;&#34;&#34;
@@ -2469,7 +2639,7 @@ before accent pointing.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L733-L750" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L766-L783" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew(word):
     &#34;&#34;&#34;
@@ -2505,7 +2675,7 @@ produce the word in Unicode Hebrew, but without the pointing.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L770-L788" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L803-L821" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_c(word):
     &#34;&#34;&#34;
@@ -2541,7 +2711,7 @@ produce the word in Unicode Hebrew, but without the accents.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L752-L768" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L785-L801" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_v(word):
     &#34;&#34;&#34;
@@ -2577,7 +2747,7 @@ by the input word.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L790-L806" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L823-L839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_hebrew_x(word):
     &#34;&#34;&#34;
@@ -2611,7 +2781,7 @@ produce the word in Unicode Syriac.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/527483a74567e030a06bfb6fc9f8007b99f2c538/tf/writing/transcription.py#L850-L864" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9e6393b7eb4ace81d5e2c850607229e10ef70630/tf/writing/transcription.py#L883-L897" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def to_syriac(self, word):
     &#34;&#34;&#34;
@@ -2666,9 +2836,16 @@ produce the word in Unicode Syriac.</p>
 <li>
 <h4><code><a title="tf.writing.transcription.Transcription" href="#tf.writing.transcription.Transcription">Transcription</a></code></h4>
 <ul class="">
+<li><code><a title="tf.writing.transcription.Transcription.ara" href="#tf.writing.transcription.Transcription.ara">ara</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabicTrans" href="#tf.writing.transcription.Transcription.arabicTrans">arabicTrans</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabicTransAscii" href="#tf.writing.transcription.Transcription.arabicTransAscii">arabicTransAscii</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabicTransLatin" href="#tf.writing.transcription.Transcription.arabicTransLatin">arabicTransLatin</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabicTransQuran" href="#tf.writing.transcription.Transcription.arabicTransQuran">arabicTransQuran</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.arabicTransStandard" href="#tf.writing.transcription.Transcription.arabicTransStandard">arabicTransStandard</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.arabic_mapping" href="#tf.writing.transcription.Transcription.arabic_mapping">arabic_mapping</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.arabic_mappingi" href="#tf.writing.transcription.Transcription.arabic_mappingi">arabic_mappingi</a></code></li>
-<li><code><a title="tf.writing.transcription.Transcription.arabic_trans" href="#tf.writing.transcription.Transcription.arabic_trans">arabic_trans</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.asc" href="#tf.writing.transcription.Transcription.asc">asc</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.asciiFromArabic" href="#tf.writing.transcription.Transcription.asciiFromArabic">asciiFromArabic</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.can_from_syriac" href="#tf.writing.transcription.Transcription.can_from_syriac">can_from_syriac</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.can_to_syriac" href="#tf.writing.transcription.Transcription.can_to_syriac">can_to_syriac</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.decomp" href="#tf.writing.transcription.Transcription.decomp">decomp</a></code></li>
@@ -2677,14 +2854,20 @@ produce the word in Unicode Syriac.</p>
 <li><code><a title="tf.writing.transcription.Transcription.from_syriac" href="#tf.writing.transcription.Transcription.from_syriac">from_syriac</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.hebrew_cons" href="#tf.writing.transcription.Transcription.hebrew_cons">hebrew_cons</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.hebrew_mapping" href="#tf.writing.transcription.Transcription.hebrew_mapping">hebrew_mapping</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.lat" href="#tf.writing.transcription.Transcription.lat">lat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.latinFromArabic" href="#tf.writing.transcription.Transcription.latinFromArabic">latinFromArabic</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.noorigspace" href="#tf.writing.transcription.Transcription.noorigspace">noorigspace</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.ph_simple_pat" href="#tf.writing.transcription.Transcription.ph_simple_pat">ph_simple_pat</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.ph_simplify" href="#tf.writing.transcription.Transcription.ph_simplify">ph_simplify</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.qur" href="#tf.writing.transcription.Transcription.qur">qur</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.quranFromArabic" href="#tf.writing.transcription.Transcription.quranFromArabic">quranFromArabic</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.remove_accent_pat" href="#tf.writing.transcription.Transcription.remove_accent_pat">remove_accent_pat</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.remove_point_pat" href="#tf.writing.transcription.Transcription.remove_point_pat">remove_point_pat</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.remove_psn_pat" href="#tf.writing.transcription.Transcription.remove_psn_pat">remove_psn_pat</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.remove_psq_pat" href="#tf.writing.transcription.Transcription.remove_psq_pat">remove_psq_pat</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.shin_pat" href="#tf.writing.transcription.Transcription.shin_pat">shin_pat</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.standardFromArabic" href="#tf.writing.transcription.Transcription.standardFromArabic">standardFromArabic</a></code></li>
+<li><code><a title="tf.writing.transcription.Transcription.std" href="#tf.writing.transcription.Transcription.std">std</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.suffix_and_finales" href="#tf.writing.transcription.Transcription.suffix_and_finales">suffix_and_finales</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.suppress_space" href="#tf.writing.transcription.Transcription.suppress_space">suppress_space</a></code></li>
 <li><code><a title="tf.writing.transcription.Transcription.swap_accent_pat" href="#tf.writing.transcription.Transcription.swap_accent_pat">swap_accent_pat</a></code></li>
