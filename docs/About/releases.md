@@ -48,10 +48,13 @@ text-fabric appName:hot
 
 #### 8.4.7
 
-2021-01-05
+2021-01-20
 
 Renamed some CSS classes in the display style sheet of Text-Fabric.
 These names interfered with class names used in Jupyter Book.
+
+Added several transcriptions for Arabic characters.
+See `tf.writing.arabic`.
 
 #### 8.4.6
 
