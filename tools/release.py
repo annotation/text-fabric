@@ -18,8 +18,8 @@ def makeRelease(org, repo, tag, name, msg, silent=True):
         )
         if rate.limit < 100:
             console(
-                f"To increase the rate,"
-                f"see https://annotation.github.io/text-fabric/Api/Repo/"
+                "To increase the rate,"
+                "see https://annotation.github.io/text-fabric/Api/Repo/"
             )
 
     try:
@@ -29,12 +29,12 @@ def makeRelease(org, repo, tag, name, msg, silent=True):
             )
         repoOnline = ghConn.get_repo(f"{org}/{repo}")
         if not silent:
-            console(f"connected")
+            console("connected")
     except GithubException as why:
-        console(f"failed", error=True)
+        console("failed", error=True)
         console(f"GitHub says: {why}", error=True)
     except IOError:
-        console(f"no internet", error=True)
+        console("no internet", error=True)
 
     if not repoOnline:
         return 1
@@ -42,12 +42,12 @@ def makeRelease(org, repo, tag, name, msg, silent=True):
     try:
         repoOnline.create_git_release(tag, name, msg)
         result = 0
-    except GithubException as why:
-        console(f"failed", error=True)
-        console(f"GitHub says: {why}", error=True)
+    except GithubException:
+        console("failed", error=True)
+        console("GitHub says: {why}", error=True)
         result = 1
     except IOError:
-        console(f"no internet", error=True)
+        console("no internet", error=True)
         result = 1
     if result == 0:
         if not silent:

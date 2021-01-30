@@ -46,7 +46,7 @@ class EdgeFeature(object):
         If you need this repeatedly, or you need the whole dictionary,
         you can store the result as follows:
 
-           data = dict(E.fff.items())`
+           data = dict(E.fff.items())
 
         """
 

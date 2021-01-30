@@ -214,7 +214,8 @@ def combine(
 
     if not dirEmpty(targetLocation):
         error(
-            f"Output directory is not empty. Clean it or remove it or choose another location",
+            "Output directory is not empty."
+            " Clean it or remove it or choose another location",
             tm=False,
         )
         return False
@@ -348,7 +349,7 @@ def combine(
         commonTypes = set(slotTypes) & set(nodeTypesComp)
         if len(commonTypes):
             error(
-                f"Some node types are slots in one source and non slots in another",
+                "Some node types are slots in one source and non slots in another",
                 tm=False,
             )
             error(", ".sorted(commonTypes), tm=False)

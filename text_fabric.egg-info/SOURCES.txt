@@ -56,6 +56,7 @@ tf/advanced/zipdata.py
 tf/compose/__init__.py
 tf/compose/combine.py
 tf/compose/modify.py
+tf/compose/nodemaps.py
 tf/convert/__init__.py
 tf/convert/mql.py
 tf/convert/recorder.py

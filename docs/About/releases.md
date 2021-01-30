@@ -46,6 +46,20 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.8
+
+2021-01-30
+
+Added logic to map nodes between versions of TF datasets.
+This logic existed in a notebook that explores versions of the Hebrew Bible:
+[versionMappings](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
+Whereas the code to map slots between versions is highly dependent on the dataset in question,
+the code to extend a slot mapping to a node mapping is generic.
+That code is now in `tf.compose.nodemaps`.
+It is used in the 
+[missieven](https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb)
+corpus.
+
 #### 8.4.7
 
 2021-01-20

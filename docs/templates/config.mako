@@ -54,5 +54,5 @@
     # as nicely-formatted math formulas using MathJax.
     # Note: in Python docstrings, either all backslashes need to be escaped (\\)
     # or you need to use raw r-strings.
-    latex_math = False
+    latex_math = True
 %>

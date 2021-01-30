@@ -838,6 +838,13 @@ modify(source, target, ...)
 :   Modifies a TF datasets into one new TF dataset
 :   `tf.compose.modify`
 
+```
+Versions(api, va, vb, slotMap)
+```
+:   Extends a slot mapping between versions of a TF dataset
+    to a complete node mapping
+:   `tf.compose.nodemaps`
+
 ---
 
 # Data Interchange
