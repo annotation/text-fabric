@@ -78,14 +78,33 @@ type in the source version.
 We count the nodes that fall in each of the following cases.
 The list of cases is ordered by decreasing success of the mapping.
 
-label | description | explanation
---- | --- | ---
-`b` | **unique, perfect** | there is only one match for the mapping and it is a perfect one in terms of slots linked to it;
-`d` | **multiple, one perfect** | there are multiple matches, but at least one is perfect; this occurs typically if nodes of a type are linked to nested and overlapping sequences of slots, such as `subphrase`s;
-`c` | **unique, imperfect** | there is only one match, but it is not perfect; this indicates that some boundary reorganization has happened between the two versions, and that some slots of the source node have been cut off in the target node; yet the fact that the source node and the target node correspond is clear;
-`f` | **multiple, cleanly composed** | in this case the source node corresponds to a bunch of matches, that together cleanly cover the mapped slots of the source node; in other words: the original node has been split in several parts;
-`e` | **multiple, non-perfect** | all remaining cases where there are matches; these situations can be the result of more intrusive changes; if it turns out to be a small set they do require closer inspection;
-`a` | **not mapped** | these are nodes for which no match could be found.
+*   `b` **unique, perfect**:
+    there is only one match for the mapping and it is a perfect one
+    in terms of slots linked to it;
+*   `d`
+    **multiple, one perfect**:
+    there are multiple matches, but at least one is perfect;
+    this occurs typically if nodes of a type are linked to nested
+    and overlapping sequences of slots;
+*   `c`
+    **unique, imperfect**:
+    there is only one match, but it is not perfect;
+    this indicates that some boundary reorganization has happened between the two versions,
+    and that some slots of the source node have been cut off in the target node;
+    yet the fact that the source node and the target node correspond is clear;
+*   `f`
+    **multiple, cleanly composed**:
+    in this case the source node corresponds to a bunch of matches,
+    which together cleanly cover the mapped slots of the source node;
+    in other words: the original node has been split in several parts;
+*   `e`
+    **multiple, non-perfect**:
+    all remaining cases where there are matches;
+    these situations can be the result of more intrusive changes;
+    if it turns out to be a small set they do require closer inspection;
+*   `a`
+    **not mapped**:
+    these are nodes for which no match could be found.
 
 
 An involved example of creating node mappings between versions (not using this code) is
