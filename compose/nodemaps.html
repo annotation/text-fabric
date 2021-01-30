@@ -80,47 +80,35 @@ both in absolute numbers and in percentage of the total amount of nodes of that
 type in the source version.</p>
 <p>We count the nodes that fall in each of the following cases.
 The list of cases is ordered by decreasing success of the mapping.</p>
-<table>
-<thead>
-<tr>
-<th>label</th>
-<th>description</th>
-<th>explanation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>b</code></td>
-<td><strong>unique, perfect</strong></td>
-<td>there is only one match for the mapping and it is a perfect one in terms of slots linked to it;</td>
-</tr>
-<tr>
-<td><code>d</code></td>
-<td><strong>multiple, one perfect</strong></td>
-<td>there are multiple matches, but at least one is perfect; this occurs typically if nodes of a type are linked to nested and overlapping sequences of slots, such as <code>subphrase</code>s;</td>
-</tr>
-<tr>
-<td><code>c</code></td>
-<td><strong>unique, imperfect</strong></td>
-<td>there is only one match, but it is not perfect; this indicates that some boundary reorganization has happened between the two versions, and that some slots of the source node have been cut off in the target node; yet the fact that the source node and the target node correspond is clear;</td>
-</tr>
-<tr>
-<td><code>f</code></td>
-<td><strong>multiple, cleanly composed</strong></td>
-<td>in this case the source node corresponds to a bunch of matches, that together cleanly cover the mapped slots of the source node; in other words: the original node has been split in several parts;</td>
-</tr>
-<tr>
-<td><code>e</code></td>
-<td><strong>multiple, non-perfect</strong></td>
-<td>all remaining cases where there are matches; these situations can be the result of more intrusive changes; if it turns out to be a small set they do require closer inspection;</td>
-</tr>
-<tr>
-<td><code>a</code></td>
-<td><strong>not mapped</strong></td>
-<td>these are nodes for which no match could be found.</td>
-</tr>
-</tbody>
-</table>
+<ul>
+<li><code>b</code> <strong>unique, perfect</strong>:
+there is only one match for the mapping and it is a perfect one
+in terms of slots linked to it;</li>
+<li><code>d</code>
+<strong>multiple, one perfect</strong>:
+there are multiple matches, but at least one is perfect;
+this occurs typically if nodes of a type are linked to nested
+and overlapping sequences of slots;</li>
+<li><code>c</code>
+<strong>unique, imperfect</strong>:
+there is only one match, but it is not perfect;
+this indicates that some boundary reorganization has happened between the two versions,
+and that some slots of the source node have been cut off in the target node;
+yet the fact that the source node and the target node correspond is clear;</li>
+<li><code>f</code>
+<strong>multiple, cleanly composed</strong>:
+in this case the source node corresponds to a bunch of matches,
+which together cleanly cover the mapped slots of the source node;
+in other words: the original node has been split in several parts;</li>
+<li><code>e</code>
+<strong>multiple, non-perfect</strong>:
+all remaining cases where there are matches;
+these situations can be the result of more intrusive changes;
+if it turns out to be a small set they do require closer inspection;</li>
+<li><code>a</code>
+<strong>not mapped</strong>:
+these are nodes for which no match could be found.</li>
+</ul>
 <p>An involved example of creating node mappings between versions (not using this code) is
 <a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb">versionMappings.ipynb</a>.</p>
 <p>A simpler example, using this code is
@@ -134,7 +122,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L0-L458" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L0-L458" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/compose/nodemaps.md
@@ -612,7 +600,7 @@ class Versions:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L41-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L41-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def caption(level, heading, good=None, newLine=True, continuation=False):
     prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
@@ -704,7 +692,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L101-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L101-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, slotMap=None):
@@ -1076,7 +1064,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L233-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L233-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1143,7 +1131,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L259-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L259-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1223,7 +1211,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L324-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L324-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1247,7 +1235,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L151-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L151-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     va = self.va
@@ -1340,7 +1328,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L368-L379" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L368-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1375,7 +1363,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L381-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L381-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1466,7 +1454,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L337-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L337-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -1482,7 +1470,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L342-L366" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1201572ad3888c8a43619dadc4878fca32c1c310/tf/compose/nodemaps.py#L342-L366" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
