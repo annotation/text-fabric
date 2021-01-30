@@ -43,7 +43,7 @@ we can extend the slot mapping into a general node mapping.</p>
 use the already established <em>slot mapping</em> to map these to slots <span><span class="MathJax_Preview">t</span><script type="math/tex">t</script></span> in version <span><span class="MathJax_Preview">W</span><script type="math/tex">W</script></span>,
 and collect the nodes <span><span class="MathJax_Preview">m</span><script type="math/tex">m</script></span> in version <span><span class="MathJax_Preview">W</span><script type="math/tex">W</script></span> that are linked to those <span><span class="MathJax_Preview">t</span><script type="math/tex">t</script></span>.
 They are good candidates for the mapping.</p>
-<p><img alt="5" src="images/diffs.005.png"></p>
+<p><img alt="5" src="../images/diffs.005.png"></p>
 <h1 id="refinements">Refinements</h1>
 <p>When we try to match nodes across versions, based on slot containment, we also respect
 their <code>otype</code>s. So we will not try to match a <code>clause</code> to a <code>phrase</code>.
@@ -54,7 +54,7 @@ or collapsed.
 In general we find 0 or more candidates.
 Even if we find exactly one candidate, it does not have to be a perfect match.
 A typical situation is this:</p>
-<p><img alt="6" src="images/diffs.006.png"></p>
+<p><img alt="6" src="../images/diffs.006.png"></p>
 <p>We do not find a node <span><span class="MathJax_Preview">m\in W</span><script type="math/tex">m\in W</script></span> that occupies the mapped slots exactly.
 Instead, we find that the target area is split between two candidates who
 also reach outside the target area.</p>
@@ -134,7 +134,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L0-L458" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L0-L458" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/compose/nodemaps.md
@@ -612,7 +612,7 @@ class Versions:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L41-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L41-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def caption(level, heading, good=None, newLine=True, continuation=False):
     prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
@@ -704,7 +704,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L101-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L101-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, slotMap=None):
@@ -1076,7 +1076,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L233-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L233-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1143,7 +1143,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L259-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L259-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1223,7 +1223,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L324-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L324-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1247,7 +1247,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L151-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L151-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     va = self.va
@@ -1340,7 +1340,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L368-L379" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L368-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1375,7 +1375,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L381-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L381-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1466,7 +1466,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L337-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L337-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -1482,7 +1482,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/387719d359b81264239ad9f55afba5c31c53f1a6/tf/compose/nodemaps.py#L342-L366" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cf868b310300e7e1baf30923afdfdb58367c2a42/tf/compose/nodemaps.py#L342-L366" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
@@ -1518,7 +1518,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 </article>
 <nav id="sidebar">
 <p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png"></a></p>
-<p><a href="/text-fabric/index.html">tf home</a> - <a href="/text-fabric/cheatsheet.html">cheat sheet</a></p>
+<p><a href="/tf/index.html">tf home</a> - <a href="/tf/cheatsheet.html">cheat sheet</a></p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
