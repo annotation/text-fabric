@@ -27,7 +27,7 @@ use the already established *slot mapping* to map these to slots \(t\) in versio
 and collect the nodes \(m\) in version \(W\) that are linked to those \(t\).
 They are good candidates for the mapping.
 
-![5](images/diffs.005.png)
+![5](../images/diffs.005.png)
 
 # Refinements
 
@@ -42,7 +42,7 @@ In general we find 0 or more candidates.
 Even if we find exactly one candidate, it does not have to be a perfect match.
 A typical situation is this:
 
-![6](images/diffs.006.png)
+![6](../images/diffs.006.png)
 
 We do not find a node \(m\in W\) that occupies the mapped slots exactly.
 Instead, we find that the target area is split between two candidates who
