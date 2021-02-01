@@ -43,7 +43,7 @@ is available through the advanced API: <code>A</code>, see <code><a title="tf.ap
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L0-L1059" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L0-L1051" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/main/fabric.md
@@ -1078,21 +1078,13 @@ Api reference : {APIREF}
                         if fName in WARP:
                             continue
                         elif fObj.isEdge:
-                            if not hasattr(api.E, fName):
-                                setattr(
-                                    api.E,
-                                    fName,
-                                    EdgeFeature(
-                                        api, fObj.metaData, fObj.data, fObj.edgeValues
-                                    ),
-                                )
+                            apiFobj = EdgeFeature(
+                                api, fObj.metaData, fObj.data, fObj.edgeValues
+                            )
+                            setattr(api.E, fName, apiFobj)
                         else:
-                            if not hasattr(api.F, fName):
-                                setattr(
-                                    api.F,
-                                    fName,
-                                    NodeFeature(api, fObj.metaData, fObj.data),
-                                )
+                            apiFobj = NodeFeature(api, fObj.metaData, fObj.data)
+                            setattr(api.F, fName, apiFobj)
                     else:
                         if fName in WARP or fName in self.textFeatures:
                             continue
@@ -1214,7 +1206,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L95-L1060" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L95-L1052" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -2155,21 +2147,13 @@ Api reference : {APIREF}
                         if fName in WARP:
                             continue
                         elif fObj.isEdge:
-                            if not hasattr(api.E, fName):
-                                setattr(
-                                    api.E,
-                                    fName,
-                                    EdgeFeature(
-                                        api, fObj.metaData, fObj.data, fObj.edgeValues
-                                    ),
-                                )
+                            apiFobj = EdgeFeature(
+                                api, fObj.metaData, fObj.data, fObj.edgeValues
+                            )
+                            setattr(api.E, fName, apiFobj)
                         else:
-                            if not hasattr(api.F, fName):
-                                setattr(
-                                    api.F,
-                                    fName,
-                                    NodeFeature(api, fObj.metaData, fObj.data),
-                                )
+                            apiFobj = NodeFeature(api, fObj.metaData, fObj.data)
+                            setattr(api.F, fName, apiFobj)
                     else:
                         if fName in WARP or fName in self.textFeatures:
                             continue
@@ -2238,7 +2222,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="index.h
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L474-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L474-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2303,7 +2287,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L379-L455" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L379-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2410,7 +2394,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L729-L759" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L729-L759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2485,7 +2469,7 @@ the metadata of all features. Handy to add provenance data here:<pre><code>meta 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L761-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L761-L809" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2573,7 +2557,7 @@ else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L241-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L241-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2729,7 +2713,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L457-L472" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L457-L472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2833,7 +2817,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9b547789835660cf43bceb7ddcef57d53f3d4373/tf/fabric.py#L499-L727" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/fabric.py#L499-L727" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
