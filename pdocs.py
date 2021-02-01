@@ -1,6 +1,6 @@
 import sys
 import os
-from shutil import rmtree, copytree
+from shutil import rmtree, copytree, copyfile
 
 from subprocess import run, call, Popen, PIPE
 
@@ -200,11 +200,12 @@ def pdoc3(package):
         rmtree("site")
     console("Generate docs with pdoc3")
     run(f"{PDOC3STR} {package}", shell=True)
-    console("Move docs into place")
-    run(f"mv site/{package}/* site", shell=True)
-    rmtree(f"site/{package}")
-    console("Copy over the images")
-    copytree("docs/images", "site/images", dirs_exist_ok=True)
+    # console("Move docs into place")
+    # run(f"mv site/{package}/* site", shell=True)
+    # rmtree(f"site/{package}")
+    # console("Copy over the images")
+    copytree("docs/images", f"site/{package}/images", dirs_exist_ok=True)
+    copyfile("docs/index.html", "site/index.html")
 
 
 def shipDocs(org, repo, package):
