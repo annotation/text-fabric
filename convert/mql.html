@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L0-L734" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L0-L734" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/mql.md
@@ -878,7 +878,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L405-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L405-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34; Make proper unicode of a text that contains byte escape codes
@@ -896,7 +896,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L429-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L429-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1110,7 +1110,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L633-L735" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L633-L735" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1225,7 +1225,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L417-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L417-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     error = tmObj.error
@@ -1247,7 +1247,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L413-L414" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L413-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1267,7 +1267,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L28-L397" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L28-L397" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
@@ -1650,7 +1650,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/10095c83c27b90f6219bac41f02a59712c6bcacd/tf/convert/mql.py#L42-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/744f341033cab7202b274e80db12d56a65241c56/tf/convert/mql.py#L42-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     tmObj = self.tmObj
@@ -1735,7 +1735,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../doc-search.html#' + encodeURIComponent(query);
+const url = '../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
