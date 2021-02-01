@@ -124,7 +124,7 @@ PROTOCOL = "http://"
 HOST = "localhost"
 PORT_BASE = 10000
 
-URL_TFDOC = f"https://{ORG}.github.io/{REPO}"
+URL_TFDOC = f"https://{ORG}.github.io/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""
 
 DOI_DEFAULT = "no DOI"
@@ -133,10 +133,10 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.github.io/{REPO}/cheatsheet.html"
+APIREF = f"https://{ORG}.github.io/{REPO}/tf/cheatsheet.html"
 """Link to the Api docs of Text-Fabric."""
 
-SEARCHREF = f"https://{ORG}.github.io/{REPO}/about/searchusage.html"
+SEARCHREF = f"https://{ORG}.github.io/{REPO}/tf/about/searchusage.html"
 """Link to the Search docs of Text-Fabric."""
 
 APP_URL = f"{URL_GH}/{ORG}"

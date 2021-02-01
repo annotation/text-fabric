@@ -12,7 +12,7 @@
 ---
 
 All about Text-Fabric is in the
-[docs](https://annotation.github.io/text-fabric).
+[docs](https://annotation.github.io/text-fabric/tf).
 
 Want to contribute?
 Start with the [contribution notes](codestyle/contributing.md).
@@ -26,6 +26,6 @@ offers an easy and elegant way to do so.
 As an example, here I quote the 
 [*stitching* algorithm](https://archive.softwareheritage.org/swh:1:cnt:6169c074089ddc8a0e048cb67e1fec57857ef54d;lines=3224-3270/),
 by means of which Text-Fabric Search collects the solutions of a
-[search template](https://annotation.github.io/text-fabric/Use/Search/).
+[search template](https://annotation.github.io/text-fabric/tf/about/use.html).
 The quote refers directly to specific lines of code, deeply buried in
 a Python file within a particular version of Text-Fabric.**

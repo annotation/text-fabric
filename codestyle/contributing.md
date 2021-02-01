@@ -4,7 +4,7 @@
 
 Text-Fabric is a core engine with an app infrastructure.
 Here is a quick overview of the
-[main parts of the code](https://annotation.github.io/text-fabric/about/code.html).
+[main parts of the code](https://annotation.github.io/text-fabric/tf/about/code.html).
 
 ## Paradigm
 

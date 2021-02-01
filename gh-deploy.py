@@ -161,7 +161,7 @@ def gh_deploy():
         print("Failed to deploy to GitHub with error: \n%s", error)
         raise SystemExit(1)
     else:
-        url = "https://annotation.github.io/text-fabric/"
+        url = "https://annotation.github.io/text-fabric/tf"
         print("Your documentation should shortly be available at: " + url)
 
 

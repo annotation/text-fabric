@@ -19,7 +19,7 @@ def makeRelease(org, repo, tag, name, msg, silent=True):
         if rate.limit < 100:
             console(
                 "To increase the rate,"
-                "see https://annotation.github.io/text-fabric/Api/Repo/"
+                "see https://annotation.github.io/text-fabric/tf/advanced/repo.html"
             )
 
     try:

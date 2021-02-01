@@ -157,7 +157,7 @@ def _gh_deploy(org, repo):
         print("Failed to deploy to GitHub with error: \n%s", error)
         raise SystemExit(1)
     else:
-        url = f"https://{org}.github.io/{repo}/"
+        url = f"https://{org}.github.io/{repo}/tf"
         print("Your documentation should shortly be available at: " + url)
 
 

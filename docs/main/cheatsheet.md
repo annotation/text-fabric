@@ -594,7 +594,8 @@ T.down(node)
 
 ## `S.` Search (low level)
 
-[searchRough](https://annotation.github.io/text-fabric/about/searchusage.html#quantifiers)
+[searchRough](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchRough.ipynb)
+`tf.about.searchusage#quantifiers`
 
 ### Preparation
 

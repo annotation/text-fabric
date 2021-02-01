@@ -84,6 +84,6 @@ setup(
 Tools to read text corpora with (linguistic) annotations
 and process them efficiently.
 With a built in web-interface for querying a corpus.
-More info on https://annotation.github.io/text-fabric/
+More info on https://annotation.github.io/text-fabric/tf
 """,
 )
