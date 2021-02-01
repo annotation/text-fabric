@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.9
+
+2021-02-01
+
+Updated links to the documentation.
+The documentation has now a working search interface.
+
 #### 8.4.8
 
 2021-01-30
