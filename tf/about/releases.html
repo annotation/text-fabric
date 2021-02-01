@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>tf.about.releases API documentation</title>
+<meta name="description" content="Release notes …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.releases</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="release-notes">Release notes</h1>
+<div class="admonition hint">
+<p class="admonition-title">Consult the tutorials after changes</p>
+<p>When we change the API, we make sure that the tutorials show off
+all possibilities.</p>
+</div>
+<p>See the app-specific tutorials in
+<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master">annotation</a>.</p>
+<p>When TF apps have been updated, they will be autoloaded to the newest version
+provided you call the app as follows:</p>
+<p>(in a program)</p>
+<pre><code class="language-python">use('appName:latest', ... )
+</code></pre>
+<p>(on the command line)</p>
+<pre><code class="language-sh">text-fabric appName:latest
+</code></pre>
+<p>This will get you the newest stable version.
+To get the newest unstable version:</p>
+<p>(in a program)</p>
+<pre><code class="language-python">use('appName:hot', ...)
+</code></pre>
+<p>(on the command line)</p>
+<pre><code class="language-sh">text-fabric appName:hot
+</code></pre>
+<div class="admonition hint">
+<p class="admonition-title">What's going on</p>
+<p>See the <a href="https://github.com/annotation/text-fabric/issues">issue list on GitHub</a>.</p>
+</div>
+<hr>
+<h2 id="8">8</h2>
+<h3 id="84">8.4</h3>
+<h4 id="848">8.4.8</h4>
+<p>2021-01-30</p>
+<p>Added logic to map nodes between versions of TF datasets.
+This logic existed in a notebook that explores versions of the Hebrew Bible:
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb">versionMappings</a>.
+Whereas the code to map slots between versions is highly dependent on the dataset in question,
+the code to extend a slot mapping to a node mapping is generic.
+That code is now in <code><a title="tf.compose.nodemaps" href="../compose/nodemaps.html">tf.compose.nodemaps</a></code>.
+It is used in the
+<a href="https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb">missieven</a>
+corpus.</p>
+<h4 id="847">8.4.7</h4>
+<p>2021-01-20</p>
+<p>Renamed some CSS classes in the display style sheet of Text-Fabric.
+These names interfered with class names used in Jupyter Book.</p>
+<p>Added several transcriptions for Arabic characters.
+See <code><a title="tf.writing.arabic" href="../writing/arabic.html">tf.writing.arabic</a></code>.</p>
+<h4 id="846">8.4.6</h4>
+<p>2020-12-30</p>
+<p>Small fixes in the functions that load a TF app: you could already
+directly load the data of an app-less corpus from disk, now you can do the
+same if such data resides on GitHub.</p>
+<p>Various other things had to be tweaked a little.</p>
+<h4 id="845">8.4.5</h4>
+<p>2020-10-29</p>
+<p>Small fix of a problem introduced by the previous enhancement.</p>
+<h4 id="844">8.4.4</h4>
+<p>2020-10-15</p>
+<p>Enhancement in web links to nodes:
+there is a new setting <code>webOffset</code> in the configuration of a TF app that let you specify
+an offset between a logical page number and a physical page number.
+See the webOffset setting of <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>.
+It is needed by the new
+<a href="https://github.com/annotation/app-missieven/blob/master/code/config.yaml">missieven corpus</a>.</p>
+<h4 id="843">8.4.3</h4>
+<p>2020-09-25</p>
+<p>Minor fix in the display:</p>
+<ul>
+<li><strong>Left-to-right transcriptions in right-to-left corpora still had rtl tendencies</strong>
+Fixed by using the CSS mechanism <code>unicode-bidi: embed</code> more consistently.</li>
+</ul>
+<h4 id="842">8.4.2</h4>
+<p>2020-09-20</p>
+<p>Minor fixes in the display:</p>
+<ul>
+<li><strong>The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.</strong>
+Fixed by using CSS mechanisms such as <code>display: inline-block</code> and <code>unicode-bidi: embed</code>.</li>
+<li><strong>Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible</strong>.
+Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
+zoom level, the dots become better visible.
+It seems that using the <code>rem</code> unit for specifying border-sizes contributes to this behaviour.
+So I specified all border widths in <code>px</code>, assuming 20px = 1rem.</li>
+</ul>
+<h4 id="841">8.4.1</h4>
+<p>2020-09-08</p>
+<p>Better error message if a standard module of a data set cannot be found.
+E.g. the parallels modules for the BHSA, DSS.</p>
+<p>Addition in <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code>, in the <code>cv.node()</code> function to add nodes:
+it accepts an additional optional parameter to link an explicit set of
+slots to a node.</p>
+<h4 id="840">8.4.0</h4>
+<p>2020-07-09</p>
+<p>Added the <code><a title="tf.convert.tf.explode" href="../convert/tf.html#tf.convert.tf.explode">explode()</a></code> function, by which you can <em>explode</em> feature files
+into TF files without optimizations. </p>
+<h3 id="83">8.3</h3>
+<h4 id="835">8.3.5</h4>
+<p>2020-06-29</p>
+<p>Fixed an error when opening the Uruk corpus in the Text-Fabric browser.</p>
+<h4 id="834">8.3.4</h4>
+<p>2020-06-26</p>
+<p>Various small fixes:</p>
+<ul>
+<li>Fix in result display in TF browser: the members of a result
+form a row again instead of a column.</li>
+<li>Better error message in some cases in <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code>.</li>
+<li>Moved documentation of the walker functions into the docstrings of those functions.</li>
+</ul>
+<h4 id="833">8.3.3</h4>
+<p>Small fix by Cody Kingham: when calling <code>use(api=...)</code> with an TF api constructed
+before, the <code>TF</code> attribute of this api is not transported to the app object.</p>
+<p>2020-06-13</p>
+<h4 id="831-832">8.3.1, 8.3.2</h4>
+<p>2020-06-11</p>
+<p>Gentium Plus font installed.
+Greek Character table added.
+Small fixes, one blocking for the Text-Fabric browser.</p>
+<h4 id="830">8.3.0</h4>
+<p>2020-06-10</p>
+<h4 id="backward-incompatibility">Backward incompatibility</h4>
+<div class="admonition caution">
+<p class="admonition-title">corpus apps</p>
+<p>The API between TF and its apps has changed.
+If you upgrade TF to this version, you also have to upgrade the
+TF apps you work with.
+You can do that by adding the checkout specifier <code>latest</code> when
+you call the corpus, e.g. for the BHSA (one time is enough):</p>
+</div>
+<pre><code class="language-python">A = use(&quot;bhsa:latest&quot;, hoist=globals()&quot;)
+</code></pre>
+<p>Text-Fabric is now better in detecting if you load an incompatible app and will give
+you a useful hint.</p>
+<p>The post-incantation messages of TF are now better formatted and more modest.
+Most information is collapsed and expandible by a triangle.</p>
+<p>Under the hood improvement of the display algorithm.
+Both <code>plain</code> and <code>pretty</code> rely on the same <em>unravel</em> algorithm
+that turns a graph fragment into a tree for display.</p>
+<p>See <code><a title="tf.advanced.unravel" href="../advanced/unravel.html">tf.advanced.unravel</a></code>.</p>
+<p>The unravel function is also exposed as <code>A.unravel(node)</code>,
+see <code><a title="tf.advanced.unravel.unravel" href="../advanced/unravel.html#tf.advanced.unravel.unravel">unravel()</a></code>.</p>
+<p>Now you can define your own rendering function, taking the unraveled tree as input.</p>
+<h4 id="new-display-settings">New display settings</h4>
+<p>See <code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>.</p>
+<ul>
+<li><code>plainGaps</code>: normally, gaps are shown in plain displays.
+But the control is yours, with <code>plainGaps=False</code> gaps are suppressed.</li>
+<li>
+<p><code>hiddenTypes</code>: you can prevent node types from adding to the structure of the
+display, which might become very cluttered. E.g. the atom types of the
+BHSA, and also the subphrases and half verses.
+Before, it was a binary choice: the app determines which node types are hidden
+by default, and the user can switch them all on or all off.</p>
+<p>Now the app still determines the default, but the user can hide/unhide all
+combinations of node types.</p>
+</li>
+</ul>
+<h4 id="tf-browser">TF browser</h4>
+<p>Various fixes:</p>
+<ul>
+<li>Starting in v8, the ports through which the TF-browser communicates are no longer
+hardwired in the app config, but are determined at run time: the first
+available ports are choses.
+This had the negative consequence that different corpora could use the same port in turn,
+thereby wreaking havoc with the sessions for those corpora.
+Now the ports are determined as a function of the arguments to <code>text-fabric</code>.</li>
+<li>Text alignment and line wrapping has improved, especially in plain displays.</li>
+</ul>
+<h3 id="82">8.2</h3>
+<h4 id="822">8.2.2</h4>
+<p>2020-06-02</p>
+<p>When you load a corpus by means of <code>use</code>, you can now also override the config settings of the
+app on the fly. See <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code></p>
+<h4 id="821">8.2.1</h4>
+<p>2020-05-30</p>
+<p>Fixed two silly bugs, one of which a show stopper, preventing precomputation after
+download of data to complete.</p>
+<h4 id="820">8.2.0</h4>
+<p>2020-05-29</p>
+<p>Improved display algorithm: corpora need less configuration for TF
+to generate good displays.
+In particular, the atom types of the BHSA are now handled without
+tricky branches in the code.</p>
+<p>See <code><a title="tf.advanced.display" href="../advanced/display.html">tf.advanced.display</a></code>.</p>
+<p>Core API: a bit of streamlining:
+all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">new</p>
+<p>If you want to talk to yourself in markdown or HTML you can use
+<code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.</p>
+<p>See <code><a title="tf.advanced.helpers.dm" href="../advanced/helpers.html#tf.advanced.helpers.dm">dm()</a></code> and <code><a title="tf.advanced.helpers.dh" href="../advanced/helpers.html#tf.advanced.helpers.dh">dh()</a></code>.</p>
+</div>
+<h4 id="backward-incompatibility_1">Backward incompatibility</h4>
+<div class="admonition caution">
+<p class="admonition-title">corpus apps</p>
+<p>The API between TF and its apps has changed.
+If you upgrade TF to this version, you also have to upgrade the
+TF apps you work with.
+You can do that by adding the checkout specifier <code>latest</code> when
+you call the corpus, e.g. for the BHSA (one time is enough):</p>
+</div>
+<pre><code class="language-python">A = use(&quot;bhsa:latest&quot;, hoist=globals()&quot;)
+</code></pre>
+<div class="admonition caution">
+<p class="admonition-title">logging functions</p>
+<p>The methods <code>info</code> <code>error</code> <code>warning</code> are no longer hoisted to the
+global name space.</p>
+<p>Use <code>A.info</code> or <code>TF.info</code> for these methods.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">node functions</p>
+<p><code>N()</code> has become: <code>N.walk()</code></p>
+<p><code>sortNodes</code>, <code>sortKey</code>, <code>sortkeyTuple</code>, <code>sortkeyChunk</code>
+and <code>otypeRank</code> are no longer hoisted to the global name space.</p>
+<p>Use <code>N.sortNodes</code> etc. instead for all these methods.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">fix the compatibility relatively easily</p>
+<p>If you use the functions in question a lot in a program or notebook,
+define them right after the incantation as follows:</p>
+</div>
+<pre><code class="language-python">A = use('xxx', hoist=globals())
+
+info = A.info
+error = A.error
+silentOn = A.silentOn
+...
+sortNodes = N.sortNodes
+...
+</code></pre>
+<p>etc.</p>
+<h3 id="81">8.1</h3>
+<h4 id="812">8.1.2</h4>
+<p>2020-05-22</p>
+<p>Thoroughly reorganized docs.
+All available documentation has now moved into docstrings.
+The formatted docstrings form the online documentation as well.
+See <code><a title="tf" href="../index.html">tf</a></code>.</p>
+<h4 id="810-811">8.1.0, 8.1.1</h4>
+<p>2020-05-14</p>
+<ul>
+<li>New method in the
+<code>L</code>-API (<code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>): <code>L.i(node, otype=nodeTypes)</code>.
+It delivers the <em>intersectors</em> of a node, i.e. the nodes that share slots
+with the given <code>node</code>.</li>
+<li>Fixed a subtle bug in the <code>A.pretty()</code> which manifested itself in the Old Babylonian corpus.
+A line with clusters in it displayed the clusters twice if <code>baseTypes</code> has a non slot type.
+When doing a <code>plain</code> within a <code>pretty</code>,
+the displayer "forgot" the nodes encountered in <code>plain</code>, so they could not be skipped by the
+rest of <code>pretty</code>.</li>
+<li>More improvements in the display logic where things refuse to be hierarchical.</li>
+<li>To the display option <code>extraFeatures</code> you may also pass values like <code>type:feature</code>,
+see options (<code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>) under list of display parameters.</li>
+</ul>
+<h3 id="80">8.0</h3>
+<h4 id="803">8.0.3</h4>
+<p>2020-05-12</p>
+<ul>
+<li><code>A.header()</code> was used by the TF-browser to produce a colofon.
+Now it can be used in a Jupyter Notebook to produce the overview of features used,
+normally displayed after the incantantation.</li>
+<li>There is a new <code>A.showProvenance()</code> that can be used to show detailed provenance of
+the corpus data and all its modules. When you exported from the TF-browser, this data was
+included (and still is), but now you can invoke it from a program as well (typically in
+a Jupter notebook)</li>
+<li><strong>Provenance</strong> When exporting data from the TF-browser, a provenance sheet is generated
+with entries for the data modules. Now you can generate this sheet in a Jupyter notebook
+as well, by means of <code>A.showProvenance()</code>.</li>
+<li>Online data fetching/checking does not happen by default anymore if there is already
+local data. This reduces the number of GitHub API requests greatly, and users are less prone
+to hit the limit.</li>
+</ul>
+<h4 id="802">8.0.2</h4>
+<p>2020-05-11</p>
+<p>Small fix in <code>webLink()</code>.</p>
+<h4 id="801">8.0.1</h4>
+<p>2020-05-10</p>
+<p>Small fixes in order to accomodate NBviewer.</p>
+<p>There were two problems</p>
+<ul>
+<li>the online nbviewer clipped many boxes in the display
+(cause: name conflict between CSS class names in Text-Fabric and in NBviewer)</li>
+<li>the lineheight in the classic Jupyter notebook is fixed on a value that is too low,
+in Jupyter lab it is ok. Fix: we add CSS code that unsets the line height that
+the classic notebook sets.</li>
+</ul>
+<h4 id="800">8.0.0</h4>
+<p>2020-05-08</p>
+<p><strong>NB: This is a backwards incompatible change. Strongly recommended:</strong></p>
+<pre><code class="language-sh">pip3 install --upgrade text-fabric
+</code></pre>
+<p><strong>All known TF-apps (the ones in under the <code>annotation</code> org on GitHub) have been
+adapted to this change.</strong></p>
+<p><strong>Text-Fabric auto-downloads the newest version of an app by default.
+As a consequence, if you have not upgraded Text-Fabric, it will fail.</strong></p>
+<ul>
+<li>The functionality offered by TF-apps is now called the <em>Advanced API</em>, as opposed to the
+<em>core API</em>. Everything under <code>A</code> is the advanced API. The things under <code>F</code>, <code>E</code>, <code>L</code>, <code>T</code>,
+etc. are the core API.</li>
+<li><code>A</code> will work also for TF datasets without an app. The advanced API will compute
+reasonable defaults based on what it finds in the TF data. It is still possible to
+write full-fledged TF apps that extend the capabilities of the advanced API.</li>
+<li>Several special effects of individual TF apps are now supported by the advanced API.
+The most intricate it support for displaying discontinuous types piece by piece, as
+in the BHSA. The other one is support for graphics inclusion as in the Uruk corpus.</li>
+<li>Improvements in <code>plain()</code> and <code>pretty()</code>: they deliver better results and
+they make it easier for tf-app developers.<ul>
+<li>Pretty displays can be tamed by cutting of the unfolding of structure at some level
+and replacing it by plain displays (<code>baseTypes</code> display option).</li>
+<li>Highlights in plain display will be done, also for nodes deeply buried in the top node.
+This is determined by <code>baseTypes</code>: a node of type in <code>baseTypes</code> will get full
+highlighting, all other nodes will get highlighting by boxes around the material.</li>
+</ul>
+</li>
+<li>Core API improvement:
+The <code>Locality</code> (<code>L</code>) functions <code>d()</code>, <code>u()</code>, <code>l()</code>, <code>r()</code> take an optional
+parameter <code>otype</code> holding the node type of the related nodes that will be delivered.
+This can now also be an iterable of types (preferably a set of frozenset).</li>
+<li>Text-Fabric will detect when apps have a version mismatch with the general framework.
+If so, it will issue warnings and it will gracefully fall back to the core API.
+Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.</li>
+</ul>
+<h2 id="older-releases">Older releases</h2>
+<p>See <code><a title="tf.about.releasesold" href="releasesold.html">tf.about.releasesold</a></code></p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/a3bc4c720e465fade8b868a6e24e34396ff3f87d/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../../docs/about/releases.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#release-notes">Release notes</a><ul>
+<li><a href="#8">8</a><ul>
+<li><a href="#84">8.4</a><ul>
+<li><a href="#848">8.4.8</a></li>
+<li><a href="#847">8.4.7</a></li>
+<li><a href="#846">8.4.6</a></li>
+<li><a href="#845">8.4.5</a></li>
+<li><a href="#844">8.4.4</a></li>
+<li><a href="#843">8.4.3</a></li>
+<li><a href="#842">8.4.2</a></li>
+<li><a href="#841">8.4.1</a></li>
+<li><a href="#840">8.4.0</a></li>
+</ul>
+</li>
+<li><a href="#83">8.3</a><ul>
+<li><a href="#835">8.3.5</a></li>
+<li><a href="#834">8.3.4</a></li>
+<li><a href="#833">8.3.3</a></li>
+<li><a href="#831-832">8.3.1, 8.3.2</a></li>
+<li><a href="#830">8.3.0</a></li>
+<li><a href="#backward-incompatibility">Backward incompatibility</a></li>
+<li><a href="#new-display-settings">New display settings</a></li>
+<li><a href="#tf-browser">TF browser</a></li>
+</ul>
+</li>
+<li><a href="#82">8.2</a><ul>
+<li><a href="#822">8.2.2</a></li>
+<li><a href="#821">8.2.1</a></li>
+<li><a href="#820">8.2.0</a></li>
+<li><a href="#backward-incompatibility_1">Backward incompatibility</a></li>
+</ul>
+</li>
+<li><a href="#81">8.1</a><ul>
+<li><a href="#812">8.1.2</a></li>
+<li><a href="#810-811">8.1.0, 8.1.1</a></li>
+</ul>
+</li>
+<li><a href="#80">8.0</a><ul>
+<li><a href="#803">8.0.3</a></li>
+<li><a href="#802">8.0.2</a></li>
+<li><a href="#801">8.0.1</a></li>
+<li><a href="#800">8.0.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#older-releases">Older releases</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
