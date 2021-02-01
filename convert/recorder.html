@@ -43,7 +43,7 @@ character positions in the plain text</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L0-L86" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L0-L86" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../../docs/convert/recorder.md
@@ -151,7 +151,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L10-L87" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L10-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder(object):
     def __init__(self):
@@ -242,7 +242,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L22-L26" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L22-L26" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     if not string:
@@ -259,7 +259,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L19-L20" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L19-L20" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     self.context.discard(n)</code></pre>
@@ -273,7 +273,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L57-L87" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L57-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     nodesByPos = self.nodesByPos
@@ -316,7 +316,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L31-L32" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L31-L32" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def positions(self):
     return self.nodesByPos</code></pre>
@@ -330,7 +330,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L45-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L45-L55" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -353,7 +353,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L16-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L16-L17" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     self.context.add(n)</code></pre>
@@ -367,7 +367,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L28-L29" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L28-L29" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     return &#34;&#34;.join(self.material)</code></pre>
@@ -381,7 +381,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/916745547a850086a7d569a3b0c976b876f66a65/tf/convert/recorder.py#L34-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c4d0da15c6275758d9b19061232cbc68d3f81861/tf/convert/recorder.py#L34-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self, textPath, posPath=None):
     posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -401,10 +401,10 @@ class Recorder(object):
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="/text-fabric/images/tf-small.png" alt="annotation"></a></p>
 <p><a href="/tf/index.html">tf home</a> -
 <a href="/tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="/tf/images/GitHub_Logo.png" alt="GitHub"></a></p>
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="/text-fabric/images/GitHub_Logo.png" alt="GitHub"></a></p>
 </p>
 <div class="gcse-search" style="height: 70px"
 data-as_oq="inurl:github.com/annotation site:annotation.github.io"
@@ -490,7 +490,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://www.dans.knaw.nl"><img alt="DANS" src="/tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="/text-fabric/images/DANS-logo.png" width="200" alt="DANS"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
