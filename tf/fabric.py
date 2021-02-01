@@ -1031,21 +1031,13 @@ Api reference : {APIREF}
                         if fName in WARP:
                             continue
                         elif fObj.isEdge:
-                            if not hasattr(api.E, fName):
-                                setattr(
-                                    api.E,
-                                    fName,
-                                    EdgeFeature(
-                                        api, fObj.metaData, fObj.data, fObj.edgeValues
-                                    ),
-                                )
+                            apiFobj = EdgeFeature(
+                                api, fObj.metaData, fObj.data, fObj.edgeValues
+                            )
+                            setattr(api.E, fName, apiFobj)
                         else:
-                            if not hasattr(api.F, fName):
-                                setattr(
-                                    api.F,
-                                    fName,
-                                    NodeFeature(api, fObj.metaData, fObj.data),
-                                )
+                            apiFobj = NodeFeature(api, fObj.metaData, fObj.data)
+                            setattr(api.F, fName, apiFobj)
                     else:
                         if fName in WARP or fName in self.textFeatures:
                             continue

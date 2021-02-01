@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.10
+
+2021-02-01
+
+Bug fix: when loading an additional feature into an existing TF API,
+the feature did not get properly reloaded if it had already been loaded
+and the feature data had changed.
+
 #### 8.4.9
 
 2021-02-01
