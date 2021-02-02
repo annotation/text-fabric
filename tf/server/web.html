@@ -29,7 +29,8 @@
 in which you can enter a search template and view the results.</p>
 <p>This is realized by a web app based on
 <a href="http://flask.pocoo.org/docs/1.0/">Flask</a>.</p>
-<p>This web app connects to the <code><a title="tf.server.kernel" href="kernel.html">tf.server.kernel</a></code> and merges the retrieved data into a set of
+<p>This web app connects to the <code><a title="tf.server.kernel" href="kernel.html">tf.server.kernel</a></code> and merges the retrieved data
+into a set of
 <a href="https://github.com/annotation/text-fabric/tree/master/tf/server/views">templates</a>.</p>
 <h2 id="start-up">Start up</h2>
 <p>TF kernel, web server and browser page are started
@@ -84,8 +85,8 @@ of work done, with DOI links to the corpus and to Text-Fabric.</li>
 <ul>
 <li>the CSS loaded from the app dependent extraApi, used
 for pretty displays;</li>
-<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css">index.css</a>: the formatting of the
-<em>index</em> web page with which the user interacts;</li>
+<li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css">index.css</a>:
+the formatting of the <em>index</em> web page with which the user interacts;</li>
 <li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/views/export.css">export.css</a>
 the formatting of the export page;</li>
 <li><a href="https://github.com/annotation/text-fabric/blob/master/tf/server/views/base.css">base.css</a>
@@ -108,10 +109,86 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/web.py#L0-L142" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/web.py#L0-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/server/web.md
+# Web interface
+
+## About
+
+TF contains a web interface
+in which you can enter a search template and view the results.
+
+This is realized by a web app based on
+[Flask](http://flask.pocoo.org/docs/1.0/).
+
+This web app connects to the `tf.server.kernel` and merges the retrieved data
+into a set of
+[templates](https://github.com/annotation/text-fabric/tree/master/tf/server/views).
+
+## Start up
+
+TF kernel, web server and browser page are started
+up by means of a script called `text-fabric`, which will be installed in an executable
+directory by the `pip` installer.
+
+## Routes
+
+There are 4 kinds of routes in the web app:
+
+url pattern | effect
+--- | ---
+`/server/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/server/static)
+`/data/static/...` | serves a static file from the app specific static folder
+`/local/static/...` | serves a static file from a local directory specified by the app
+anything else | submits the form with user data and return the processed request
+
+## Templates
+
+There are two templates in
+[views](https://github.com/annotation/text-fabric/tree/master/tf/server/views)
+:
+
+* *index*: the normal template for returning responses
+  to user requests;
+* *export*: the template used for exporting results; it
+  has printer/PDF-friendly formatting: good page breaks.
+  Pretty displays always occur on a page by their own.
+  It has very few user interaction controls.
+  When saved as PDF from the browser, it is a neat record
+  of work done, with DOI links to the corpus and to Text-Fabric.
+
+## CSS
+
+We format the web pages with CSS, with extensive use of
+[flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox).
+
+There are several sources of CSS formatting:
+
+* the CSS loaded from the app dependent extraApi, used
+  for pretty displays;
+* [index.css](https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css):
+  the formatting of the *index* web page with which the user interacts;
+* [export.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/export.css)
+  the formatting of the export page;
+* [base.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/base.css)
+  shared formatting between the index and export pages.
+
+## Javascript
+
+We use a
+[modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/server/static/tf.js)
+on top of
+[JQuery](https://api.jquery.com).
+
+For collapsing and expanding elements we use the
+[details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+element. This is a convenient, Javascript-free way to manage
+collapsing. Unfortunately it is not supported by the Microsoft
+browsers, not even Edge.
+
+!!! caution &#34;On Windows?&#34;
+    Windows users should install Chrome of Firefox.
 &#34;&#34;&#34;
 
 import os
@@ -270,7 +347,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/web.py#L46-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/web.py#L122-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -342,14 +419,14 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.server.web.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/web.py#L115-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/web.py#L191-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argWeb(cargs)
@@ -392,7 +469,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/web.py#L30-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/web.py#L106-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web(object):
     def __init__(self, portKernel):

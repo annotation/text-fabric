@@ -42,10 +42,30 @@ modify(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/compose/modify.py#L0-L1082" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/compose/modify.py#L0-L1102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/compose/modify.md
+# Modify
+
+## Usage
+
+```python
+from tf.compose import modify
+modify(
+    location,
+    targetLocation,
+    mergeFeatures=None,
+    deleteFeatures=None,
+    addFeatures=None,
+    mergeTypes=None,
+    deleteTypes=None,
+    addTypes=None,
+    featureMeta=None,
+    silent=False,
+)
+```
+
+
 &#34;&#34;&#34;
 
 import collections
@@ -1420,7 +1440,7 @@ parameter will be merged into existing meta data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/compose/modify.py#L63-L1083" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/compose/modify.py#L83-L1103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def modify(
     location,

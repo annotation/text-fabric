@@ -27,9 +27,11 @@
 <p>Text-Fabric can be used as a service.
 The full API of Text-Fabric needs a lot of memory, which makes it unusably for
 rapid successions of loading and unloading, like when used in a web server context.</p>
-<p>However, you can start TF as a service process, after which many clients can connect to it,
+<p>However, you can start TF as a service process,
+after which many clients can connect to it,
 all looking at the same (read-only) data. We call this a <strong>TF kernel</strong>.</p>
-<p>The API that the TF kernel offers is limited, it is primarily template search that is offered.
+<p>The API that the TF kernel offers is limited,
+it is primarily template search that is offered.
 see <em>Kernel API</em> below.</p>
 <h2 id="start">Start</h2>
 <p>You can run the TF kernel as follows:</p>
@@ -79,10 +81,83 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/kernel.py#L0-L567" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L0-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/server/kernel.md
+# Text-Fabric kernel
+
+Text-Fabric can be used as a service.
+The full API of Text-Fabric needs a lot of memory, which makes it unusably for
+rapid successions of loading and unloading, like when used in a web server context.
+
+However, you can start TF as a service process,
+after which many clients can connect to it,
+all looking at the same (read-only) data. We call this a **TF kernel**.
+
+The API that the TF kernel offers is limited,
+it is primarily template search that is offered.
+see *Kernel API* below.
+
+## Start
+
+You can run the TF kernel as follows:
+
+```sh
+python3 -m tf.server.kernel ddd
+```
+
+where `ddd` points to a corpus, see `tf.app.use`.
+
+!!! example
+    See the
+    [start-up script](https://github.com/annotation/text-fabric/blob/master/tf/server/start.py)
+    of the text-fabric browser.
+
+## Connect
+
+The TF kernel can be connected by an other Python program as follows:
+
+```python
+from tf.server.kernel import makeTfConnection
+TF = makeTfConnection(host, port)
+api = TF.connect()
+```
+
+After this, `api` can be used to obtain information from the TF kernel.
+
+See the web server of the text-fabric browser, `tf.server.web`.
+
+## Kernel API
+
+The API of the TF kernel is created by the function `makeTfKernel`.
+
+It returns a class `TfKernel` with a number of exposed methods
+that can be called by other programs.
+
+For the machinery of interprocess communication we rely on the
+[rpyc](https://github.com/tomerfiliba/rpyc) module.
+See especially the docs on
+[services](https://rpyc.readthedocs.io/en/latest/docs/services.html#services).
+
+!!! explanation &#34;Shadow objects&#34;
+    The way rpyc works in the case of data transmission has a pitfall.
+    When a service returns a Python object to the client, it
+    does not return the object itself, but only a shadow object
+    so called *netref* objects. This strategy is called
+    [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
+    To the client the shadow object looks like the real thing,
+    but when the client needs to access members, they will be fetched
+    on the fly.
+
+    This is a performance problem when the service sends a big list or dict,
+    and the client iterates over all its items. Each item will be fetched in
+    a separate interprocess call, which causes an enormous overhead.
+
+    Boxing only happens for mutable objects. And here lies the work-around:
+
+    The service must send big chunks of data as immutable objects,
+    such as tuples. They are sent within a single interprocess call,
+    and fly swiftly through the connecting pipe.
 &#34;&#34;&#34;
 
 import sys
@@ -659,14 +734,14 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.kernel.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/kernel.py#L505-L549" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L578-L622" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -723,7 +798,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/kernel.py#L486-L499" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L559-L572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -749,7 +824,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/kernel.py#L28-L480" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L101-L553" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:

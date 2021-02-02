@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>tf.core.oslotsfeature API documentation</title>
-<meta name="description" content="Provides access to *oslots* feature data …" />
+<meta name="description" content="Access to *oslots* feature data …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,17 +23,21 @@
 <h1 class="title">Module <code>tf.core.oslotsfeature</code></h1>
 </header>
 <section id="section-intro">
-<p>Provides access to <em>oslots</em> feature data.</p>
+<h1 id="access-to-oslots-feature-data">Access to <em>oslots</em> feature data.</h1>
 <p>In general, features are stored as dictionaries, but this specific feature
 has an optimized representation. Since it is a large feature and present
 in any TF dataset, this pays off.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/oslotsfeature.py#L0-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/oslotsfeature.py#L0-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/core/oslotsfeature.md
+# Access to *oslots* feature data.
+
+In general, features are stored as dictionaries, but this specific feature
+has an optimized representation. Since it is a large feature and present
+in any TF dataset, this pays off.
 &#34;&#34;&#34;
 
 
@@ -111,7 +115,7 @@ class OslotsFeature(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/oslotsfeature.py#L6-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/oslotsfeature.py#L10-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OslotsFeature(object):
     def __init__(self, api, metaData, data):
@@ -187,7 +191,7 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/oslotsfeature.py#L20-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/oslotsfeature.py#L24-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;A generator that yields the non-slot nodes with their slots.
@@ -226,7 +230,7 @@ in the <code>.<a title="tf" href="../index.html">tf</a></code> feature file.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/oslotsfeature.py#L33-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/oslotsfeature.py#L37-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def s(self, n):
     &#34;&#34;&#34;Get the slots of a (non-slot) node.
@@ -316,7 +320,9 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#access-to-oslots-feature-data">Access to oslots feature data.</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

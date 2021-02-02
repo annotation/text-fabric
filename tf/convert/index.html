@@ -34,10 +34,21 @@ see <code><a title="tf.convert.tf.explode" href="tf.html#tf.convert.tf.explode">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/__init__.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/__init__.py#L0-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/convert/top.md
+# Various forms of data interchange
+
+Text-Fabric can interchange data with MQL, see `tf.convert.mql`.
+
+It has also support for converting streams of data to Text-Fabric format,
+see `tf.convert.walker`.
+
+And there is support for round trips of TF data to annotation tools and back,
+see `tf.convert.recorder`.
+
+You can *explode* plain TF files in big, non-optimized data files,
+see `tf.convert.tf.explode`.
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
@@ -54,7 +65,7 @@ see <code><a title="tf.convert.tf.explode" href="tf.html#tf.convert.tf.explode">
 </dd>
 <dt><code class="name"><a title="tf.convert.tf" href="tf.html">tf.convert.tf</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Raw, unoptimized data from TF files</p></div>
 </dd>
 <dt><code class="name"><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code></dt>
 <dd>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>tf.server.serve API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Dress TF nodes up for serving on the web …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,12 +23,30 @@
 <h1 class="title">Module <code>tf.server.serve</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="dress-tf-nodes-up-for-serving-on-the-web">Dress TF nodes up for serving on the web</h1>
+<p>When the TF kernel has retrieved data, it comes in the form of nodes.</p>
+<p>But the kernel is the one that is able to dress those nodes up with
+meaningful data.</p>
+<p>That dressing up is happening in this module, it has the higher level
+functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L0-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L0-L366" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import pickle
+<pre><code class="python">&#34;&#34;&#34;
+# Dress TF nodes up for serving on the web
+
+When the TF kernel has retrieved data, it comes in the form of nodes.
+
+But the kernel is the one that is able to dress those nodes up with
+meaningful data.
+
+That dressing up is happening in this module, it has the higher level
+functions for composing tables and passages.
+&#34;&#34;&#34;
+
+import pickle
 import markdown
 from flask import jsonify, redirect, render_template, make_response
 
@@ -400,7 +418,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L288-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L300-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
@@ -480,7 +498,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L227-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L239-L297" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     aContext = web.context
@@ -551,7 +569,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L168-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -620,7 +638,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L131-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -667,7 +685,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L58-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -750,7 +768,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/serve.py#L19-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi
@@ -850,7 +868,9 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#dress-tf-nodes-up-for-serving-on-the-web">Dress TF nodes up for serving on the web</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

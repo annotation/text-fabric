@@ -39,10 +39,24 @@ annotated by features.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/__init__.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/__init__.py#L0-L16" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/core/top.md
+# Core API of TF
+
+This API deals with the basic TF data model: a graph of nodes and edges,
+annotated by features.
+
+The core API consists of
+
+* `N`: see `nodes.Nodes` (walk through nodes)
+* `F`: see `nodefeature.NodeFeature` (retrieve feature values for nodes)
+* `E`: see `edgefeature.EdgeFeature` (retrieve feature values for edges)
+* `L`: see `locality.Locality` (move between levels)
+* `T`: see `text.Text` (get the text)
+* `S`: see `tf.search.search` (search by templates)
+
+plus some additional methods.
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
@@ -63,7 +77,7 @@ annotated by features.</p>
 </dd>
 <dt><code class="name"><a title="tf.core.edgefeature" href="edgefeature.html">tf.core.edgefeature</a></code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Mappings from edges to values …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.core.helpers" href="helpers.html">tf.core.helpers</a></code></dt>
 <dd>
@@ -83,15 +97,15 @@ annotated by features.</p>
 </dd>
 <dt><code class="name"><a title="tf.core.oslotsfeature" href="oslotsfeature.html">tf.core.oslotsfeature</a></code></dt>
 <dd>
-<div class="desc"><p>Provides access to <em>oslots</em> feature data …</p></div>
+<div class="desc"><p>Access to <em>oslots</em> feature data …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.core.otypefeature" href="otypefeature.html">tf.core.otypefeature</a></code></dt>
 <dd>
-<div class="desc"><p>Provides access to <em>otype</em> feature data …</p></div>
+<div class="desc"><p>Access to <em>otype</em> feature data …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></code></dt>
 <dd>
-<div class="desc"><p>Functions that precompute data …</p></div>
+<div class="desc"><p>Precompute data …</p></div>
 </dd>
 <dt><code class="name"><a title="tf.core.text" href="text.html">tf.core.text</a></code></dt>
 <dd>

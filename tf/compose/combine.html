@@ -49,10 +49,37 @@ combine(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/compose/combine.py#L0-L514" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/compose/combine.py#L0-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/compose/combine.md
+# Combine
+
+## Usage
+
+```python
+from tf.compose import combine
+combine(
+  (
+      location1,
+      location2,
+  ),
+  targetLocation,
+)
+```
+
+```
+combine(
+  (
+      (name1, location1),
+      (name2, location2),
+  ),
+  targetLocation,
+  componentType=None,
+  componentFeature=None,
+  featureMeta=None,
+  **otext,
+)
+```
 &#34;&#34;&#34;
 
 import os
@@ -733,7 +760,7 @@ that is already in one of the components.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/compose/combine.py#L34-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/compose/combine.py#L61-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def combine(
     locations,

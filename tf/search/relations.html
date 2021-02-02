@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>tf.search.relations API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Search by relational patterns between nodes" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,12 +23,17 @@
 <h1 class="title">Module <code>tf.search.relations</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="search-by-relational-patterns-between-nodes">Search by relational patterns between nodes</h1>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/search/relations.py#L0-L1689" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/search/relations.py#L0-L1693" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import collections
+<pre><code class="python">&#34;&#34;&#34;
+# Search by relational patterns between nodes
+&#34;&#34;&#34;
+
+import collections
 from array import array
 import types
 import re
@@ -1735,7 +1740,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/search/relations.py#L1574-L1638" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/search/relations.py#L1578-L1642" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_F_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1812,7 +1817,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/search/relations.py#L1531-L1571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/search/relations.py#L1535-L1575" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_K_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1865,7 +1870,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/search/relations.py#L1641-L1690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/search/relations.py#L1645-L1694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_V_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1927,7 +1932,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/search/relations.py#L50-L1528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/search/relations.py#L54-L1532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basicRelations(searchExe, api):
     C = api.C
@@ -3469,7 +3474,9 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#search-by-relational-patterns-between-nodes">Search by relational patterns between nodes</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

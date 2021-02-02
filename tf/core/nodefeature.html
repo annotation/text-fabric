@@ -23,7 +23,7 @@
 <h1 class="title">Module <code>tf.core.nodefeature</code></h1>
 </header>
 <section id="section-intro">
-<p>Mappings from nodes to values.</p>
+<h1 id="mappings-from-nodes-to-values">Mappings from nodes to values.</h1>
 <p>Every node feature is logically a mapping from nodes to values,
 string or integer.</p>
 <p>A feature object gives you methods that you can pass a node and that returns
@@ -36,10 +36,24 @@ dictionary: <code><a title="tf.core.nodefeature.NodeFeature.items" href="#tf.cor
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L0-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L0-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/core/nodefeature.md
+# Mappings from nodes to values.
+
+Every node feature is logically a mapping from nodes to values,
+string or integer.
+
+A feature object gives you methods that you can pass a node and that returns
+its value for that node.
+
+It is easiest to think of all node features as a dictionary keyed by nodes.
+
+However, some features have an optimized representation, and do not have
+a dictionary underneath.
+
+But you can still iterate over the data of a feature as if it were a
+dictionary: `tf.core.nodefeature.NodeFeature.items`
 &#34;&#34;&#34;
 
 
@@ -178,7 +192,7 @@ class NodeFeature(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L13-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L27-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NodeFeature(object):
     &#34;&#34;&#34;Provides access to (node) feature data.
@@ -320,7 +334,7 @@ highest frequencies first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L91-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L105-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def freqList(self, nodeTypes=None):
     &#34;&#34;&#34;Frequency list of the values of this feature.
@@ -367,7 +381,7 @@ you can store the result as follows:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L30-L44" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L44-L58" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
@@ -408,7 +422,7 @@ sorted in the canonical order.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L64-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L78-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def s(self, val):
     &#34;&#34;&#34;Query all nodes having a specified feature value.
@@ -456,7 +470,7 @@ sorted in the canonical order.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L46-L62" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L60-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def v(self, n):
     &#34;&#34;&#34;Get the value of a feature for a node.
@@ -487,7 +501,7 @@ sorted in the canonical order.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/nodefeature.py#L9-L10" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/nodefeature.py#L23-L24" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NodeFeatures(object):
     pass</code></pre>
@@ -550,7 +564,9 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#mappings-from-nodes-to-values">Mappings from nodes to values.</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>

@@ -103,10 +103,108 @@ So we will look for the first available port after this.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L0-L360" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L0-L458" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/server/start.md
+# Start kernel and webserver
+
+What the `text-fabric` script does is the same as:
+
+```sh
+python3 -m tf.server.start
+```
+
+During start up the following happens:
+
+Kill previous processes
+:   The system is searched for non-terminated incarnations of the processes
+    it wants to start up.
+    If they are encountered, they will be killed, so that they cannot prevent
+    a successful start up.
+
+Start TF kernel
+:   A `tf.server.kernel` is started.
+    This process loads the bulk of the TF data, so it can take a while.
+    When it has loaded the data, it sends out a message that loading is done,
+    which is picked up by the script.
+
+Start TF web server
+:   A short while after receiving the &#34;data loading done&#34; message,
+    the TF web server is started.
+
+    !!! hint &#34;Debug mode&#34;
+        If you have passed `-d` to the `text-fabric` script,
+        the **Flask** web server will be started in debug and reload mode.
+        That means that if you modify `web.py` or a module it imports,
+        the web server will reload itself automatically.
+        When you refresh the browser you see the changes.
+        If you have changed templates, the css, or the javascript,
+        you should do a &#34;refresh from origin&#34;.
+
+Load web page
+:   After a short while, the default web browser will be started
+    with a url and port at which the
+    web server will listen. You see your browser being started up
+    and the TF page being loaded.
+
+Wait
+:   The script now waits till the web server is finished.
+    You finish it by pressing Ctrl-C, and if you have used the `-d` flag,
+    you have to press it twice.
+
+Terminate the TF kernel&#34;
+:   At this point, the `text-fabric` script will terminate the TF kernel.
+
+Clean up
+:   Now all processes that have started up have been killed.
+
+    If something went wrong in this sequence, chances are that a process keeps running.
+    It will be terminated next time you call the `text-fabric`.
+
+!!! hint &#34;You can kill too&#34;
+    If you run
+
+```sh
+text-fabric -k
+```
+
+all tf-browser-related processes will be killed.
+
+```sh
+text-fabric -k ddd
+```
+
+will kill all such processes as far as they are for data source `ddd`.
+
+## Implementation notes
+
+Different corpora will use different ports for the kernel and webserver communication.
+
+The ports are computed from the arguments with which text-fabric is called.
+
+That is done by the [crc32](https://docs.python.org/3.7/library/zlib.html#zlib.crc32) function.
+There is no guarantee that collisions occur, and that the ports computed this way are free.
+So we will look for the first available port after this.
+
+On the whole, the following things are fairly well taken care of:
+
+*   Invocations of text-fabric with different arguments lead to different ports
+*   Repeated invocations of text-fabric with the same arguments lead to the same ports.
+
+In particular, the following invocations lead to different ports:
+
+```sh
+text-fabric banks
+```
+
+and
+
+```
+text-fabric banks:clone
+```
+
+and likewise for all other arguments.
+
 &#34;&#34;&#34;
 
 import sys
@@ -483,7 +581,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L240-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L338-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -498,7 +596,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L155-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L253-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -548,7 +646,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L195-L204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L293-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
@@ -563,14 +661,14 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.server.start.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L245-L357" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L343-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -695,7 +793,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/start.py#L207-L237" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/start.py#L305-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;

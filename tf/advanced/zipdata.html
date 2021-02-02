@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/advanced/zipdata.py#L0-L155" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/zipdata.py#L0-L155" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -36,8 +36,8 @@ from zipfile import ZipFile
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
 from ..core.helpers import console, splitModRef
 
-GH_BASE = os.path.expanduser(f&#34;~/github&#34;)
-DW_BASE = os.path.expanduser(f&#34;~/Downloads&#34;)
+GH_BASE = os.path.expanduser(&#34;~/github&#34;)
+DW_BASE = os.path.expanduser(&#34;~/Downloads&#34;)
 
 HELP = &#34;&#34;&#34;
 USAGE
@@ -93,7 +93,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             console(f&#34;Found {len(versionEntries)} versions&#34;)
         else:
             versionEntries.append((sourceDir, &#34;&#34;))
-            console(f&#34;Found unversioned features&#34;)
+            console(&#34;Found unversioned features&#34;)
         for (versionDir, version) in versionEntries:
             if version == TEMP_DIR:
                 continue
@@ -194,14 +194,14 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.zipdata.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Users/dirk/.pyenv/versions/3.9.0/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/advanced/zipdata.py#L133-L152" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/zipdata.py#L133-L152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) != 2 and any(
@@ -233,7 +233,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/advanced/zipdata.py#L43-L130" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/zipdata.py#L43-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
@@ -258,7 +258,7 @@ if __name__ == &#34;__main__&#34;:
             console(f&#34;Found {len(versionEntries)} versions&#34;)
         else:
             versionEntries.append((sourceDir, &#34;&#34;))
-            console(f&#34;Found unversioned features&#34;)
+            console(&#34;Found unversioned features&#34;)
         for (versionDir, version) in versionEntries:
             if version == TEMP_DIR:
                 continue

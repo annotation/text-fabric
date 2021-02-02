@@ -43,7 +43,7 @@ TF = Fabric(locations=OUT_DIR)
 cv = CV(TF)
 
 def director(cv):
-  # your code to unwrap your source data and trigger 
+  # your code to unwrap your source data and trigger
   # the generation of TF nodes, edges and features
 
 slotType = 'word'  # or whatever you choose
@@ -97,7 +97,7 @@ When you create a slot node</p>
 <p>then TF will link all current embedder nodes to the resulting slot.</p>
 <p>There are actions to add nodes to the set of embedder nodes,
 to remove them from it,
-and to add them again. </p>
+and to add them again.</p>
 <h2 id="dynamic-metadata">Dynamic Metadata</h2>
 <p>When the director runs, you have already specified all your feature
 metadata, including the value types.</p>
@@ -135,10 +135,143 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L0-L1382" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L0-L1515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/convert/walker.md
+# Walker
+
+You can convert a dataset to TF by writing a function that walks through it.
+
+That function must trigger a sequence of actions when reading the data.
+These actions drive Text-Fabric to build a valid Text-Fabric dataset.
+Many checks will be performed.
+
+!!! hint &#34;to and from MQL&#34;
+    If your source is MQL, you are even better off: Text-Fabric has a
+    module to import from MQL and to export to MQL.
+    See `tf.fabric.Fabric.importMQL` and `tf.fabric.Fabric.exportMQL`.
+
+## Set up
+
+Here is a schematic set up of such a conversion program.
+
+```python
+from tf.fabric import Fabric
+from tf.convert.walker import CV
+
+TF = Fabric(locations=OUT_DIR)
+cv = CV(TF)
+
+def director(cv):
+  # your code to unwrap your source data and trigger
+  # the generation of TF nodes, edges and features
+
+slotType = &#39;word&#39;  # or whatever you choose
+otext = {  # dictionary of config data for sections and text formats
+    ...
+}
+generic = {  # dictionary of metadata meant for all features
+    ...
+}
+intFeatures = {  # set of integer valued feature names
+    ...
+}
+featureMeta = {  # per feature dicts with metadata
+   ...
+}
+
+good = cv.walk(
+    director,
+    slotType,
+    otext=otext,
+    generic=generic,
+    intFeatures=intFeatures,
+    featureMeta=featureMeta,
+    warn=True,
+    force=False,
+    silent=False,
+)
+
+if good:
+  ... load the new TF data ...
+```
+
+See `tf.convert.walker.CV.walk`.
+
+## Walking
+
+When you walk through the input data source, you&#39;ll encounter things
+that have to become slots, non-slot nodes, edges and features in the new data set.
+
+You issue these things by means of an *action method* from `cv`, such as
+`cv.slot()` or `cv.node(nodeType)`.
+
+When your action creates slots or non slot nodes,
+Text-Fabric will return you a reference to that node,
+that you can use later for more actions related to that node.
+
+```python
+curPara = cv.node(&#39;para&#39;)
+```
+
+To add features to nodes, use a `cv.feature()` action.
+It will apply to a node passed as argument.
+
+To add features to edges, issue a `cv.edge()` action.
+It will require two node arguments: the *from* node and the *to* node.
+
+There is always a set of current *embedder nodes*.
+When you create a slot node
+
+```python
+curWord = cv.slot()
+```
+
+then TF will link all current embedder nodes to the resulting slot.
+
+There are actions to add nodes to the set of embedder nodes,
+to remove them from it,
+and to add them again.
+
+## Dynamic Metadata
+
+When the director runs, you have already specified all your feature
+metadata, including the value types.
+
+But if some of that information is dependent on what you encounter in the
+data, you can do two things:
+
+(A) Run a preliminary pass over the data and gather the required information,
+before running the director.
+
+(B) Update the metadata later on
+by issuing `cv.meta()` actions from within your director, see below.
+
+## Action methods
+
+The `cv` class contains methods that are responsible for particular *actions*
+that steer the graph building:
+
+*   `tf.convert.walker.CV.slot`
+*   `tf.convert.walker.CV.node`
+*   `tf.convert.walker.CV.terminate`
+*   `tf.convert.walker.CV.resume`
+*   `tf.convert.walker.CV.feature`
+*   `tf.convert.walker.CV.edge`
+*   `tf.convert.walker.CV.meta`
+*   `tf.convert.walker.CV.occurs`
+*   `tf.convert.walker.CV.linked`
+*   `tf.convert.walker.CV.active`
+*   `tf.convert.walker.CV.activeTypes`
+*   `tf.convert.walker.CV.get` and `cv.get(feature, nf, nt)`
+*   `tf.convert.walker.CV.stop`
+
+!!! hint &#34;Example&#34;
+    Follow the
+    [conversion tutorial](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb)
+
+    Or study a more involved example:
+    [Old Babylonian](https://github.com/Nino-cunei/oldbabylonian/blob/master/programs/tfFromATF.py)
 &#34;&#34;&#34;
 
 import collections
@@ -1540,7 +1673,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L13-L1383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L146-L1516" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -2969,7 +3102,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L834-L858" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L967-L991" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3018,7 +3151,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L860-L874" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L993-L1007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3069,7 +3202,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L684-L716" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L817-L849" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3132,7 +3265,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L654-L682" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L787-L815" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3194,7 +3327,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L876-L916" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L1009-L1049" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3265,7 +3398,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L806-L832" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L939-L965" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3323,7 +3456,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L753-L804" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L886-L937" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3424,7 +3557,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L519-L595" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L652-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -3536,7 +3669,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L718-L751" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L851-L884" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -3598,7 +3731,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L620-L652" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L753-L785" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -3662,7 +3795,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L471-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L604-L650" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -3738,7 +3871,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L443-L469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L576-L602" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -3791,7 +3924,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L597-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L730-L751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -3899,7 +4032,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/convert/walker.py#L89-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/convert/walker.py#L222-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,

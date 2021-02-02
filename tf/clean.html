@@ -35,10 +35,20 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/clean.py#L0-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/clean.py#L0-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../docs/main/clean.md
+# Clean
+
+From version 7.7.7 onwards, Text-Fabric uses a parameter `tf.parameters.PACK_VERSION`
+to mark the stored pre-computed data.
+Whenever there are incompatible changes in the packed data format, this
+version number will be increased and Text-Fabric will not attempt to load
+the older pre-computed data.
+
+The older data will not be removed, however.
+Use the function `clean` to get rid of pre-computed data
+that you no longer need.
 &#34;&#34;&#34;
 
 import sys
@@ -186,7 +196,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/clean.py#L34-L106" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/clean.py#L44-L116" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
@@ -271,7 +281,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/clean.py#L28-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/clean.py#L38-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
@@ -287,7 +297,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/clean.py#L22-L25" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/clean.py#L32-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;

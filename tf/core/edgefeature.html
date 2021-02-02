@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>tf.core.edgefeature API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Mappings from edges to values …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,17 +23,50 @@
 <h1 class="title">Module <code>tf.core.edgefeature</code></h1>
 </header>
 <section id="section-intro">
+<p>Mappings from edges to values.</p>
+<p>Every edge feature is logically a mapping from pairs of nodes to values,
+string or integer.</p>
+<p>A feature object gives you methods that you can pass a node and that returns
+its value for that node.</p>
+<p>It is easiest to think of all edge features as a dictionary keyed by nodes.
+The values are either sets or dictionaries.
+If the value is a set, then the elements are the second node in the pair
+and the value is <code>None</code>.
+If the value is a dictionary, then the keys are the second node in the pair,
+and the value is the value that the edge feature assigns to this pair.</p>
+<p>However, some features have an optimized representation, and do not have
+a dictionary underneath.</p>
+<p>But you can still iterate over the data of a feature as if it were a
+dictionary: <code><a title="tf.core.edgefeature.EdgeFeature.items" href="#tf.core.edgefeature.EdgeFeature.items">EdgeFeature.items()</a></code></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L0-L259" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L0-L277" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import collections
+<pre><code class="python">&#34;&#34;&#34;
+Mappings from edges to values.
 
-&#34;&#34;&#34;
-.. include:: ../../docs/core/edgefeature.md
+Every edge feature is logically a mapping from pairs of nodes to values,
+string or integer.
+
+A feature object gives you methods that you can pass a node and that returns
+its value for that node.
+
+It is easiest to think of all edge features as a dictionary keyed by nodes.
+The values are either sets or dictionaries.
+If the value is a set, then the elements are the second node in the pair
+and the value is `None`.
+If the value is a dictionary, then the keys are the second node in the pair,
+and the value is the value that the edge feature assigns to this pair.
+
+However, some features have an optimized representation, and do not have
+a dictionary underneath.
+
+But you can still iterate over the data of a feature as if it were a
+dictionary: `tf.core.edgefeature.EdgeFeature.items`
 &#34;&#34;&#34;
 
+import collections
 
 from .helpers import makeInverse, makeInverseVal
 
@@ -309,7 +342,7 @@ class EdgeFeature(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L15-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L33-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeature(object):
     &#34;&#34;&#34;Provides access to (edge) feature data.
@@ -633,7 +666,7 @@ E.b(m) = (n, 6)
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L121-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L139-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def b(self, n):
     &#34;&#34;&#34;Query *both* incoming edges to, and outgoing edges from a node.
@@ -744,7 +777,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L55-L85" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L73-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def f(self, n):
     &#34;&#34;&#34;Get outgoing edges *from* a node.
@@ -809,7 +842,7 @@ highest frequencies first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L201-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L219-L278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def freqList(self, nodeTypesFrom=None, nodeTypesTo=None):
     &#34;&#34;&#34;Frequency list of the values of this feature.
@@ -886,7 +919,7 @@ you can store the result as follows:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L40-L53" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L58-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def items(self):
     &#34;&#34;&#34;A generator that yields the items of the feature, seen as a mapping.
@@ -932,7 +965,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L87-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L105-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def t(self, n):
     &#34;&#34;&#34;Get incoming edges *to* a node.
@@ -979,7 +1012,7 @@ rather than <code>None</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/edgefeature.py#L11-L12" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/edgefeature.py#L29-L30" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class EdgeFeatures(object):
     pass</code></pre>

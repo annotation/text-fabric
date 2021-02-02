@@ -26,12 +26,16 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L0-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L0-L168" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 import pickle
 import socket
 import errno
+&#34;&#34;&#34;
+Command line argument processing
+&#34;&#34;&#34;
+
 from base64 import b64encode, b64decode
 from zlib import crc32
 
@@ -77,12 +81,16 @@ def getPort(portBase=PORT_BASE):
 
 def repSlug(slug):
     info = _deSlug(slug)
-    appName = info[&#39;appName&#39;]
-    checkoutApp = info[&#39;checkoutApp&#39;]
+    appName = info[&#34;appName&#34;]
+    checkoutApp = info[&#34;checkoutApp&#34;]
     if checkoutApp:
-        checkoutApp = f&#39;:{checkoutApp}&#39;
+        checkoutApp = f&#34;:{checkoutApp}&#34;
     rep = f&#34;{appName}{checkoutApp}&#34;
-    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;} and v is not None)
+    args = &#34; &#34;.join(
+        f&#34;--{k}={v}&#34;
+        for (k, v) in sorted(info.items())
+        if k not in {&#34;appName&#34;, &#34;checkoutApp&#34;} and v is not None
+    )
     if args:
         args = f&#34; {args}&#34;
     return f&#34;{rep}{args}&#34;
@@ -90,24 +98,27 @@ def repSlug(slug):
 
 def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
-    checkout = argCollect(&#39;checkout&#39;, cargs)
-    locations = argCollect(&#39;locations&#39;, cargs)
-    modules = argCollect(&#39;modules&#39;, cargs)
-    moduleRefs = argCollect(&#39;mod&#39;, cargs)
-    version = argCollect(&#39;version&#39;, cargs)
-    setFile = argCollect(&#39;sets&#39;, cargs)
-    return (appName, *_enSlug(
-        dict(
-            appName=appName,
-            checkoutApp=checkoutApp,
-            checkout=checkout,
-            locations=locations,
-            modules=modules,
-            moduleRefs=moduleRefs,
-            setFile=setFile,
-            version=version,
-        )
-    ))
+    checkout = argCollect(&#34;checkout&#34;, cargs)
+    locations = argCollect(&#34;locations&#34;, cargs)
+    modules = argCollect(&#34;modules&#34;, cargs)
+    moduleRefs = argCollect(&#34;mod&#34;, cargs)
+    version = argCollect(&#34;version&#34;, cargs)
+    setFile = argCollect(&#34;sets&#34;, cargs)
+    return (
+        appName,
+        *_enSlug(
+            dict(
+                appName=appName,
+                checkoutApp=checkoutApp,
+                checkout=checkout,
+                locations=locations,
+                modules=modules,
+                moduleRefs=moduleRefs,
+                setFile=setFile,
+                version=version,
+            )
+        ),
+    )
 
 
 def argKill(cargs):
@@ -203,28 +214,31 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L61-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L69-L91" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
-    checkout = argCollect(&#39;checkout&#39;, cargs)
-    locations = argCollect(&#39;locations&#39;, cargs)
-    modules = argCollect(&#39;modules&#39;, cargs)
-    moduleRefs = argCollect(&#39;mod&#39;, cargs)
-    version = argCollect(&#39;version&#39;, cargs)
-    setFile = argCollect(&#39;sets&#39;, cargs)
-    return (appName, *_enSlug(
-        dict(
-            appName=appName,
-            checkoutApp=checkoutApp,
-            checkout=checkout,
-            locations=locations,
-            modules=modules,
-            moduleRefs=moduleRefs,
-            setFile=setFile,
-            version=version,
-        )
-    ))</code></pre>
+    checkout = argCollect(&#34;checkout&#34;, cargs)
+    locations = argCollect(&#34;locations&#34;, cargs)
+    modules = argCollect(&#34;modules&#34;, cargs)
+    moduleRefs = argCollect(&#34;mod&#34;, cargs)
+    version = argCollect(&#34;version&#34;, cargs)
+    setFile = argCollect(&#34;sets&#34;, cargs)
+    return (
+        appName,
+        *_enSlug(
+            dict(
+                appName=appName,
+                checkoutApp=checkoutApp,
+                checkout=checkout,
+                locations=locations,
+                modules=modules,
+                moduleRefs=moduleRefs,
+                setFile=setFile,
+                version=version,
+            )
+        ),
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.server.command.argCollect"><code class="name flex">
@@ -235,7 +249,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L104-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L115-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argCollect(prefix, cargs):
     for arg in cargs[1:]:
@@ -252,7 +266,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L111-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L122-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argKernel(cargs):
     if len(cargs) != 3:
@@ -270,7 +284,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L83-L87" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L94-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argKill(cargs):
     for arg in cargs[1:]:
@@ -287,7 +301,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L97-L101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L108-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argNoweb(cargs):
     for arg in cargs[1:]:
@@ -304,7 +318,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L128-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L139-L156" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argParam(cargs):
     appName = None
@@ -334,7 +348,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L90-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L101-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argShow(cargs):
     for arg in cargs[1:]:
@@ -351,7 +365,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L119-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L130-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argWeb(cargs):
     if len(cargs) != 4:
@@ -370,7 +384,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L34-L45" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L38-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getPort(portBase=PORT_BASE):
     result = None
@@ -394,7 +408,7 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L16-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L20-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def portIsInUse(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -422,16 +436,20 @@ def _deSlug(slug):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/server/command.py#L48-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/command.py#L52-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def repSlug(slug):
     info = _deSlug(slug)
-    appName = info[&#39;appName&#39;]
-    checkoutApp = info[&#39;checkoutApp&#39;]
+    appName = info[&#34;appName&#34;]
+    checkoutApp = info[&#34;checkoutApp&#34;]
     if checkoutApp:
-        checkoutApp = f&#39;:{checkoutApp}&#39;
+        checkoutApp = f&#34;:{checkoutApp}&#34;
     rep = f&#34;{appName}{checkoutApp}&#34;
-    args = &#34; &#34;.join(f&#34;--{k}={v}&#34; for (k, v) in sorted(info.items()) if k not in {&#39;appName&#39;, &#39;checkoutApp&#39;} and v is not None)
+    args = &#34; &#34;.join(
+        f&#34;--{k}={v}&#34;
+        for (k, v) in sorted(info.items())
+        if k not in {&#34;appName&#34;, &#34;checkoutApp&#34;} and v is not None
+    )
     if args:
         args = f&#34; {args}&#34;
     return f&#34;{rep}{args}&#34;</code></pre>

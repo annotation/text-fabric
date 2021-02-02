@@ -23,7 +23,7 @@
 <h1 class="title">Module <code>tf.core.computed</code></h1>
 </header>
 <section id="section-intro">
-<p>Precomputed data components.</p>
+<h1 id="precomputed-data-components">Precomputed data components</h1>
 <p>In order to make the API work, Text-Fabric prepares some data and saves it in
 quick-load format. Most of this data are the features, but there is some extra
 data needed for the special functions of the <code><a title="tf.core.data.WARP" href="data.html#tf.core.data.WARP">WARP</a></code> features and the
@@ -47,10 +47,34 @@ versions of TF after 7.7.7.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/computed.py#L0-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/computed.py#L0-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../docs/core/computed.md
+# Precomputed data components
+
+In order to make the API work, Text-Fabric prepares some data and saves it in
+quick-load format. Most of this data are the features, but there is some extra
+data needed for the special functions of the `tf.core.data.WARP` features and the
+`tf.core.locality.Locality` API.
+
+Normally, you do not use this data, but since it is there, it might be valuable,
+so we have made it accessible in the `tf.core.computed.Computeds`-api.
+
+!!! explanation &#34;Pre-computed data storage&#34;
+    Pre-computed data is stored in cache directories in a directory `.tf`
+    inside the directory where the `otype` feature is encountered.
+
+    After precomputation the result is pickled and gzipped and written to a
+    `.tfx` file with the same name as the name of the feature.
+    This is done for nromal features and pre-computed features likewise.
+
+    After version 7.7.7 version the memory footprint of some precomputed features
+    has been reduced. Because the precomputed features on disk are exact replicas
+    of the precomputed features in RAM, older precomputed data does not work with
+    versions of TF after 7.7.7.
+
+    But from that version onwards, there is a parameter,
+    `tf.parameters.PACK_VERSION` to detect incompatibilities.
 &#34;&#34;&#34;
 
 
@@ -88,7 +112,7 @@ class Computed(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/computed.py#L10-L18" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/computed.py#L34-L42" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Computed(object):
     &#34;&#34;&#34;Provides access to precomputed data.
@@ -109,7 +133,7 @@ class Computed(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8c000e0941794b2d40b13d5c82981861812f4aa7/tf/core/computed.py#L6-L7" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/core/computed.py#L30-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Computeds(object):
     pass</code></pre>
@@ -172,7 +196,9 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul></ul>
+<ul>
+<li><a href="#precomputed-data-components">Precomputed data components</a></li>
+</ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
