@@ -1,4 +1,7 @@
-"""Fixed values for the whole program.
+"""
+# Parameters
+
+Fixed values for the whole program.
 """
 
 import sys

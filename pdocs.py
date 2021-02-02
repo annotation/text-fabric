@@ -9,7 +9,7 @@ import time
 import unicodedata
 
 
-SRC = "site"
+SITE = "site"
 REMOTE = "origin"
 BRANCH = "gh-pages"
 
@@ -123,18 +123,18 @@ def _ghp_import():
     if not _try_rebase(REMOTE, BRANCH):
         print("Failed to rebase %s branch.", BRANCH)
 
-    console("copy docs to the gh-pages branch")
+    console(f"copy docs to the {BRANCH} branch")
     cmd = ["git", "fast-import", "--date-format=raw", "--quiet"]
     kwargs = {"stdin": PIPE}
     if sys.version_info >= (3, 2, 0):
         kwargs["universal_newlines"] = False
     pipe = Popen(cmd, **kwargs)
     _start_commit(pipe, BRANCH, "docs update")
-    for path, _, fnames in os.walk(SRC):
+    for path, _, fnames in os.walk(SITE):
         for fn in fnames:
             fpath = os.path.join(path, fn)
             fpath = _normalize_path(fpath)
-            gpath = _gitpath(os.path.relpath(fpath, start=SRC))
+            gpath = _gitpath(os.path.relpath(fpath, start=SITE))
             _add_file(pipe, fpath, gpath)
     _add_nojekyll(pipe)
     _write(pipe, _enc("\n"))
@@ -142,7 +142,7 @@ def _ghp_import():
     if pipe.wait() != 0:
         sys.stdout.write(_enc("Failed to process commit.\n"))
 
-    console("push gh-pages branch to GitHub")
+    console(f"push {BRANCH} branch to GitHub")
     cmd = ["git", "push", REMOTE, BRANCH]
     proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
     (out, err) = proc.communicate()
@@ -169,16 +169,15 @@ PDOC3 = [
     "--force",
     "--html",
     "--output-dir",
-    "site",
+    SITE,
     "--template-dir",
-    "docs/templates",
+    "tf/docs/templates",
 ]
 PDOC3STR = " ".join(PDOC3)
 
 
 def pdoc3serve(package):
-    """Build the docs into site and serve them.
-    """
+    """Build the docs into site and serve them."""
 
     proc = Popen([*PDOC3, "--http", ":", package])
     time.sleep(1)
@@ -191,26 +190,26 @@ def pdoc3serve(package):
 
 
 def pdoc3(package):
-    """Build the docs into site.
-    """
+    """Build the docs into site."""
 
     console("Build docs")
-    if os.path.exists("site"):
-        console("Remove previous build (site)")
-        rmtree("site")
+    if os.path.exists(SITE):
+        console(f"Remove previous build ({SITE})")
+        rmtree(SITE)
     console("Generate docs with pdoc3")
     run(f"{PDOC3STR} {package}", shell=True)
     # console("Move docs into place")
-    # run(f"mv site/{package}/* site", shell=True)
-    # rmtree(f"site/{package}")
+    # run(f"mv {SITE}/{package}/* {SITE}", shell=True)
+    # rmtree(f"{SITE}/{package}")
     # console("Copy over the images")
-    copytree("docs/images", f"site/{package}/images", dirs_exist_ok=True)
-    copyfile("docs/index.html", "site/index.html")
+    copytree("tf/docs/images", f"{SITE}/{package}/images", dirs_exist_ok=True)
+
+    # a link from the old docs url to the new one
+    copyfile("tf/docs/index.html", f"{SITE}/index.html")
 
 
 def shipDocs(org, repo, package):
-    """Build the docs into site and ship them.
-    """
+    """Build the docs into site and ship them."""
 
     pdoc3(package)
     _gh_deploy(org, repo)

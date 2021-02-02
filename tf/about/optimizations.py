@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/optimizations.md
+.. include:: ../docs/about/optimizations.md
 """

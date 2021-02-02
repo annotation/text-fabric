@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/displaydesign.md
+.. include:: ../docs/about/displaydesign.md
 """

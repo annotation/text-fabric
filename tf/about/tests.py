@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/tests.md
+.. include:: ../docs/about/tests.md
 """

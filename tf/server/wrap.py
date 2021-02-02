@@ -1,3 +1,9 @@
+"""
+# Wrap material into HTML
+
+Lower level functions for wrapping TF data into actual HTML that can be served.
+"""
+
 import time
 import datetime
 

@@ -1,4 +1,5 @@
-"""Functions that precompute data.
+"""
+# Precompute data.
 
 For Text-Fabric to work efficiently, some  derived data needs to be precomputed.
 The precomputed data has a similar function as indexes in a database.

@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/background.md
+.. include:: ../docs/about/background.md
 """

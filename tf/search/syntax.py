@@ -1,3 +1,7 @@
+"""
+# Syntax of search templates
+"""
+
 import re
 
 # SYNTACTIC ANALYSIS OF SEARCH TEMPLATE ###
@@ -255,13 +259,13 @@ def _tokenize(searchExe):
                     )
                     good = False
                 if ET:
-                    searchExe.badSyntax.append((i, f"Quantifier: No preceding tokens"))
+                    searchExe.badSyntax.append((i, "Quantifier: No preceding tokens"))
                     good = False
                 if EA or EI:
                     searchExe.badSyntax.append(
                         (
                             i,
-                            f"Quantifier: Does not immediately follow an atom at the same level",
+                            "Quantifier: Does not immediately follow an atom at the same level",
                         )
                     )
                     good = False

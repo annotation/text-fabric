@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/fileformats.md
+.. include:: ../docs/about/fileformats.md
 """

@@ -6,8 +6,8 @@ from zipfile import ZipFile
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
 from ..core.helpers import console, splitModRef
 
-GH_BASE = os.path.expanduser(f"~/github")
-DW_BASE = os.path.expanduser(f"~/Downloads")
+GH_BASE = os.path.expanduser("~/github")
+DW_BASE = os.path.expanduser("~/Downloads")
 
 HELP = """
 USAGE
@@ -63,7 +63,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             console(f"Found {len(versionEntries)} versions")
         else:
             versionEntries.append((sourceDir, ""))
-            console(f"Found unversioned features")
+            console("Found unversioned features")
         for (versionDir, version) in versionEntries:
             if version == TEMP_DIR:
                 continue

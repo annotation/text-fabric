@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/writing/greek.md
+.. include:: ../docs/writing/greek.md
 """

@@ -26,7 +26,9 @@ setup(
     ],
     python_requires=">=3.6.3",
     include_package_data=True,
-    exclude_package_data={"": ["text_fabric.egg-info", "__pycache__", ".DS_Store"]},
+    exclude_package_data={
+        "": ["text_fabric.egg-info", "__pycache__", ".DS_Store", "docs"]
+    },
     zip_safe=False,
     entry_points={
         "console_scripts": [
@@ -34,7 +36,7 @@ setup(
             "text-fabric-zip = tf.advanced.zipdata:main",
         ]
     },
-    version='8.4.10',
+    version="8.4.10",
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="dirk.roorda@dans.knaw.nl",

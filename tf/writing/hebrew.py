@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/writing/hebrew.md
+.. include:: ../docs/writing/hebrew.md
 """

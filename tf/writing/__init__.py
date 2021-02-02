@@ -1,3 +1,5 @@
 """
-.. include:: ../../docs/writing/top.md
+# Writing systems support
+
+Transliteration tables for various writing systems.
 """

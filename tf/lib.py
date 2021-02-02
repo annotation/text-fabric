@@ -1,3 +1,9 @@
+"""
+# Uitility functions
+
+Read and write TF node sets from/to file.
+"""
+
 import os
 import pickle
 import gzip

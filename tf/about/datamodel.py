@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/datamodel.md
+.. include:: ../docs/about/datamodel.md
 """

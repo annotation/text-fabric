@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/searchdesign.md
+.. include:: ../docs/about/searchdesign.md
 """

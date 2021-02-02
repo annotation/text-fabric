@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/datasharing.md
+.. include:: ../docs/about/datasharing.md
 """

@@ -1,3 +1,7 @@
+"""
+# Search result finding
+"""
+
 import types
 from itertools import chain
 from inspect import signature

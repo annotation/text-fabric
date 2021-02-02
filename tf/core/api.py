@@ -1,5 +1,7 @@
 """
-.. include:: ../../docs/core/api.md
+# The core API of TF.
+
+It provides methods to navigate nodes and edges and lookup features.
 """
 
 from .helpers import flattenToSet, console

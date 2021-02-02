@@ -805,8 +805,6 @@ TF.clearCache()
 :   `tf.fabric.Fabric.clearCache`
 
 ```
-pyt
-hon
 from tf.clean import clean
 ```
 
@@ -818,11 +816,9 @@ clean()
 
 ---
 
-# Dataset Algebra
+# Dataset Operations
 
 ```
-pyt
-hon
 from tf.compose import combine, modify
 ```
 
@@ -852,8 +848,6 @@ Versions(api, va, vb, slotMap)
 ## Custom node sets for search
 
 ```
-pyt
-hon
 from tf.lib import readSets
 from tf.lib import writeSets
 ```
@@ -885,8 +879,6 @@ A.export(results, ...)
 ## BRAT
 
 ```
-pyt
-hon
 from convert.recorder import Recorder
 ```
 
@@ -917,8 +909,6 @@ TF.importMQL()
 ## Walker conversion
 
 ```
-pyt
-hon
 from tf.convert.walker import CV
 ```
 
@@ -933,8 +923,6 @@ cv = CV(TF)
 ## Exploding
 
 ```
-pyt
-hon
 from tf.convert.tf import explode
 ```
 
@@ -955,8 +943,6 @@ A.reuse()
 :   `tf.advanced.app.App.reuse`
 
 ```
-pyt
-hon
 from tf.advanced.find import loadModule
 ```
 

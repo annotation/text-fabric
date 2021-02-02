@@ -1,3 +1,9 @@
+"""
+# Send commands to a running kernel
+
+This may be used to monitor a kernel.
+"""
+
 import sys
 from ..core.helpers import console
 from ..server.kernel import makeTfConnection

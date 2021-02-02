@@ -1,3 +1,15 @@
+"""
+# Dress TF nodes up for serving on the web
+
+When the TF kernel has retrieved data, it comes in the form of nodes.
+
+But the kernel is the one that is able to dress those nodes up with
+meaningful data.
+
+That dressing up is happening in this module, it has the higher level
+functions for composing tables and passages.
+"""
+
 import pickle
 import markdown
 from flask import jsonify, redirect, render_template, make_response

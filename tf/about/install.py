@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/install.md
+.. include:: ../docs/about/install.md
 """

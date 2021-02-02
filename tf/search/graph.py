@@ -1,3 +1,7 @@
+"""
+# Graph oriented functions needed for search
+"""
+
 from itertools import chain
 
 # INSPECTING WITH THE SEARCH GRAPH ###

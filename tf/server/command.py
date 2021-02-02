@@ -2,6 +2,10 @@ import re
 import pickle
 import socket
 import errno
+"""
+Command line argument processing
+"""
+
 from base64 import b64encode, b64decode
 from zlib import crc32
 
@@ -47,12 +51,16 @@ def getPort(portBase=PORT_BASE):
 
 def repSlug(slug):
     info = _deSlug(slug)
-    appName = info['appName']
-    checkoutApp = info['checkoutApp']
+    appName = info["appName"]
+    checkoutApp = info["checkoutApp"]
     if checkoutApp:
-        checkoutApp = f':{checkoutApp}'
+        checkoutApp = f":{checkoutApp}"
     rep = f"{appName}{checkoutApp}"
-    args = " ".join(f"--{k}={v}" for (k, v) in sorted(info.items()) if k not in {'appName', 'checkoutApp'} and v is not None)
+    args = " ".join(
+        f"--{k}={v}"
+        for (k, v) in sorted(info.items())
+        if k not in {"appName", "checkoutApp"} and v is not None
+    )
     if args:
         args = f" {args}"
     return f"{rep}{args}"
@@ -60,24 +68,27 @@ def repSlug(slug):
 
 def argApp(cargs):
     (appName, checkoutApp) = argParam(cargs)
-    checkout = argCollect('checkout', cargs)
-    locations = argCollect('locations', cargs)
-    modules = argCollect('modules', cargs)
-    moduleRefs = argCollect('mod', cargs)
-    version = argCollect('version', cargs)
-    setFile = argCollect('sets', cargs)
-    return (appName, *_enSlug(
-        dict(
-            appName=appName,
-            checkoutApp=checkoutApp,
-            checkout=checkout,
-            locations=locations,
-            modules=modules,
-            moduleRefs=moduleRefs,
-            setFile=setFile,
-            version=version,
-        )
-    ))
+    checkout = argCollect("checkout", cargs)
+    locations = argCollect("locations", cargs)
+    modules = argCollect("modules", cargs)
+    moduleRefs = argCollect("mod", cargs)
+    version = argCollect("version", cargs)
+    setFile = argCollect("sets", cargs)
+    return (
+        appName,
+        *_enSlug(
+            dict(
+                appName=appName,
+                checkoutApp=checkoutApp,
+                checkout=checkout,
+                locations=locations,
+                modules=modules,
+                moduleRefs=moduleRefs,
+                setFile=setFile,
+                version=version,
+            )
+        ),
+    )
 
 
 def argKill(cargs):

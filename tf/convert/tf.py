@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/convert/tf.md
+# Raw, unoptimized data from TF files
 """
 
 import sys

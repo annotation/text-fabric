@@ -1,3 +1,7 @@
+"""
+# Search execution management
+"""
+
 from .relations import basicRelations
 from .syntax import syntax
 from .semantics import semantics

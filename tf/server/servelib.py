@@ -1,5 +1,14 @@
 """
-.. include:: ../../docs/server/servelib.md
+# Common Server Related Functions
+
+## About
+
+Here are functions that are being used by various parts of the
+TF browser infrastructure, such as
+
+* `tf.server.kernel`
+* `tf.server.web`
+* `tf.server.start`
 """
 
 import json
@@ -145,5 +154,5 @@ def zipData(csvs, resultsX, about, form):
                         ("\t".join("" if t is None else str(t) for t in tup) + "\n")
                         for tup in data
                     )
-                    zipFile.writestr(f"resultsx.tsv", contents.encode("utf_16_le"))
+                    zipFile.writestr("resultsx.tsv", contents.encode("utf_16_le"))
     return (f"{appName}-{jobName}.zip", zipBuffer.getvalue())

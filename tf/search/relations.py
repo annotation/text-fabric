@@ -1,3 +1,7 @@
+"""
+# Search by relational patterns between nodes
+"""
+
 import collections
 from array import array
 import types

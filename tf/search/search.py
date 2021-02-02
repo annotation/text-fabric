@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/search/search.md
+# Search (top-level)
 """
 
 from ..core.helpers import console, wrapMessages

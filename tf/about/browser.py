@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/browser.md
+.. include:: ../docs/about/browser.md
 """

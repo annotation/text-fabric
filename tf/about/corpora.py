@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/corpora.md
+.. include:: ../docs/about/corpora.md
 """

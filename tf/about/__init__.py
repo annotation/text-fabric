@@ -1,3 +1,5 @@
 """
-.. include:: ../../docs/about/top.md
+# Documents
+
+Higher level documentation.
 """

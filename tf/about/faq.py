@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/about/faq.md
+.. include:: ../docs/about/faq.md
 """

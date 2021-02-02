@@ -1,3 +1,7 @@
+"""
+# Semantics of search templates
+"""
+
 import types
 import re
 
@@ -88,7 +92,7 @@ def _grammar(searchExe):
                     good = False
                 if op is not None:
                     searchExe.badSemantics.append(
-                        (i, f"Lonely relation: not allowed at outermost level")
+                        (i, "Lonely relation: not allowed at outermost level")
                     )
                     good = False
                 if "name" in token:
@@ -126,7 +130,7 @@ def _grammar(searchExe):
                             edgeLine[len(qedges) - 1] = i
                     else:
                         searchExe.badSemantics.append(
-                            (i, f"Lonely relation: not allowed as first child")
+                            (i, "Lonely relation: not allowed as first child")
                         )
                         good = False
                 else:
@@ -363,7 +367,7 @@ def _validation(searchExe):
         match = fMatchRe.findall(op)
         if len(match):
             (fF, r, gF) = match[0]
-            opNameFG = f".f~r~g."
+            opNameFG = ".f~r~g."
             addRels.setdefault(opNameFG, set()).add(((f, fF), r, (t, gF)))
             for fName in (fF, gF):
                 fType = searchExe.api.TF.features[fName].dataType

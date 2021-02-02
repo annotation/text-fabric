@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/server/top.md
+# Local TF-data and web server
 """

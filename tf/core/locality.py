@@ -1,5 +1,5 @@
 """
-.. include:: ../../docs/core/locality.md
+# Local navigation between nodes.
 """
 
 

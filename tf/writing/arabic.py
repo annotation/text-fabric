@@ -1,3 +1,3 @@
 """
-.. include:: ../../docs/writing/arabic.md
+.. include:: ../docs/writing/arabic.md
 """

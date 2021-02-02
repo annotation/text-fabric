@@ -1,3 +1,2 @@
 recursive-include tf/server/templates *
 recursive-include tf/server/static *
-recursive-include tf/apps/* *
