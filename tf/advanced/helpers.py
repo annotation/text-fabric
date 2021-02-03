@@ -273,7 +273,72 @@ def getValue(app, n, nType, feat, suppress):
 # COMPOSE TABLES FOR CSV EXPORT
 
 
+def isUniform(app, tuples):
+    """Whether the members of tuples are uniform.
+
+    An iterable of tuples of nodes is uniform, if each
+    tuple has the same number of nodes,
+    and if the type of a node at position *i* in the tuple
+    is the same for all tuples.
+    """
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    uniform = True
+    fixedLength = None
+    fixedTypes = None
+
+    for tup in tuples:
+        thisLength = len(tup)
+        theseTypes = tuple(fOtype(n) for n in tup)
+
+        if fixedLength is None:
+            fixedLength = thisLength
+        if fixedTypes is None:
+            fixedTypes = theseTypes
+
+        if thisLength != fixedLength or theseTypes != fixedTypes:
+            uniform = False
+            break
+
+    return uniform
+
+
+def getRowsX(app, tuples, features, condenseType, fmt=None):
+    """Transform an iterable of nodes into a table with extra information.
+
+    If the tuples are uniform (`isUniform`), the formatting will
+    be richer then when the tuples are not uniform.
+    """
+
+    return (
+        getResultsX(app, tuples, features, condenseType, fmt=fmt)
+        if isUniform(app, tuples)
+        else getTuplesX(app, tuples, condenseType, fmt=fmt)
+    )
+
+
 def getResultsX(app, results, features, condenseType, fmt=None):
+    """Transform a uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    features: key value pairs
+        features per index position of the tuples.
+        It specifies for some positions `i` which features for the nodes at that
+        position should be looked up. For each `i` it should be an iterable
+        or comma-separated list of feature names.
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    """
+
     api = app.api
     F = api.F
     Fs = api.Fs
@@ -334,6 +399,64 @@ def getResultsX(app, results, features, condenseType, fmt=None):
                 text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
                 row.append(text)
             row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)
+
+
+def getTuplesX(app, results, condenseType, fmt=None):
+    """Transform a non-uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    """
+
+    api = app.api
+    F = api.F
+    T = api.T
+    N = api.N
+    fOtype = F.otype.v
+    otypeRank = N.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] <= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    rows = []
+
+    for (tm, tup) in enumerate(results):
+        tn = tm + 1
+        row = [tn]
+        for n in tup:
+            sparts = T.sectionFromNode(n)
+            nParts = len(sparts)
+            section = sparts + ((None,) * (sectionDepth - nParts))
+            row.extend(section)
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
         rows.append(tuple(row))
     return tuple(rows)
 
@@ -409,10 +532,7 @@ def showDict(title, data, *keys):
 
     openRep1 = "open" if len(keys) else ""
     openRep2 = "open" if len(keys) == 1 else ""
-    md = [
-        f"<details {openRep1}>"
-        f"<summary>{title}</summary>\n\n"
-    ]
+    md = [f"<details {openRep1}>" f"<summary>{title}</summary>\n\n"]
     for (i, (k, v)) in enumerate(sorted(data.items(), key=lambda y: str(y))):
         if len(keys) and k not in keys:
             continue

@@ -46,6 +46,23 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.11
+
+2021-02-03
+
+Enhancement: the TF-browser can now export the contents of the node pad, decorated
+with location information and text content. Previously, you only got a
+bare list of nodes in `nodes.tsv`. Now you also get a `nodesx.tsv`, 
+analogously to `resultsx.tsv`. See `tf.about.browser`.
+However, such a list of node tuples may not be as uniform as a list of query results.
+Non-uniform lists lead to a messy output table, but still usable.
+
+Thanks to Jorik Groen for asking for this.
+
+This also affects the `A.export()` function (`tf.advanced.display.export`),
+which was only able to export uniform lists.
+Now it can also export non-uniform lists.
+
 #### 8.4.10
 
 2021-02-01

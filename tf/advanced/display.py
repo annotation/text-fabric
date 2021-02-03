@@ -53,7 +53,7 @@ import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc
-from .helpers import getResultsX, tupleEnum, RESULT, dh, showDict
+from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .options import Options
@@ -229,6 +229,8 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+        The table maybe uniform or not uniform,
+        which matters to the output. See below.
     toDir: string, optional `None`
         The destination directory for the exported file.
         By default it is your Downloads folder.
@@ -270,6 +272,11 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     A file *toFile* in directory *toDir* with the following content:
 
     There will be a row for each tuple.
+
+    If the input tuples are *uniform*, i.e. each tuple has the
+    same number of nodes, and nodes in the same column have the same node types,
+    then the result table has the following layout:
+
     The columns are:
 
     * **R** the sequence number of the result tuple in the result list
@@ -286,6 +293,14 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     * **XFi** the value of extra feature **XF** for node **i**,
       where these features have been declared by a previous
       displaySetup(tupleFeatures=...)`
+
+    If the input tuples are not uniform, the layout is more primitive.
+    There will be no header column, because the number of columns may vary per row.
+    A row contains the successive information of all nodes in a tuple.
+    Depending of the type of each node you get a number of columns of section information.
+    Then follow two columns with the node and the node type.
+    Depending on the type of the node, there follows a column with the text of the node.
+    No additional features are produced.
 
     !!! caution "Encoding"
         The exported file is written in the `utf_16_le` encoding.
@@ -312,7 +327,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
             os.makedirs(toDir, exist_ok=True)
     toPath = f"{toDir}/{toFile}"
 
-    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
+    resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
     with open(toPath, "w", encoding="utf_16_le") as fh:
         fh.write(
@@ -542,11 +557,11 @@ def plainTuple(
         )
         html = (
             f'<details class="pretty dtrow {current}" seq="{seq}" {attOpen}>'
-            f'<summary>'
+            f"<summary>"
             f'<a href="#" class="pq fa fa-solar-panel fa-xs"'
             f' title="show in context" {passageAtt}></a>'
             f'<a href="#" class="sq" tup="{tupSeq}">{seq}</a>'
-            f' {passageRef} {plainRep}'
+            f" {passageRef} {plainRep}"
             f"</summary>"
             f'<div class="pretty">{prettyRep}</div>'
             f"</details>"
@@ -747,7 +762,9 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
-            t, highlights=highlights, **display.consume(options, "highlights"),
+            t,
+            highlights=highlights,
+            **display.consume(options, "highlights"),
         )
         if _browse:
             html.append(h)

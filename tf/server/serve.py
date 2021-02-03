@@ -248,7 +248,8 @@ def serveDownload(web):
     condenseType = form["condenseType"] or None
     textFormat = form["textFormat"] or None
     csvs = None
-    resultsX = None
+    tupleResultsX = None
+    queryResultsX = None
     messages = ""
     if task in wildQueries:
         messages = (
@@ -257,7 +258,7 @@ def serveDownload(web):
         )
     else:
         try:
-            (queryMessages, csvs, resultsX) = kernelApi.csvs(
+            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
                 task,
                 form["tuples"],
                 form["sections"],
@@ -283,9 +284,10 @@ def serveDownload(web):
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
     csvs = pickle.loads(csvs)
-    resultsX = pickle.loads(resultsX)
+    tupleResultsX = pickle.loads(tupleResultsX)
+    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(header, provenanceMd, form)
-    (fileName, zipBuffer) = zipData(csvs, resultsX, about, form)
+    (fileName, zipBuffer) = zipData(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
         "Expires": "0",

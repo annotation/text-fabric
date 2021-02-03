@@ -133,7 +133,7 @@ Job: {form['jobName']}
 """
 
 
-def zipData(csvs, resultsX, about, form):
+def zipData(csvs, tupleResultsX, queryResultsX, about, form):
     appName = form["appName"]
     jobName = form["jobName"]
 
@@ -148,11 +148,14 @@ def zipData(csvs, resultsX, about, form):
                     ("\t".join(str(t) for t in tup) + "\n") for tup in data
                 )
                 zipFile.writestr(f"{csv}.tsv", contents.encode("utf8"))
-            for (name, data) in (("resultsx", resultsX),):
+            for (name, data) in (
+                ("nodesx.tsv", tupleResultsX),
+                ("resultsx.tsv", queryResultsX),
+            ):
                 if data is not None:
                     contents = "\ufeff" + "".join(
                         ("\t".join("" if t is None else str(t) for t in tup) + "\n")
                         for tup in data
                     )
-                    zipFile.writestr("resultsx.tsv", contents.encode("utf_16_le"))
+                    zipFile.writestr(name, contents.encode("utf_16_le"))
     return (f"{appName}-{jobName}.zip", zipBuffer.getvalue())

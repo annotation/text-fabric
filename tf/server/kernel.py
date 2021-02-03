@@ -86,7 +86,7 @@ from ..core.helpers import console
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
-from ..advanced.helpers import getResultsX
+from ..advanced.helpers import getRowsX
 from ..advanced.tables import compose, composeP, composeT
 
 from .command import argKernel
@@ -151,8 +151,7 @@ def makeTfKernel(app, appName, port):
             return app.header()
 
         def exposed_provenance(self):
-            """Fetches provenance metadata to be shown on exported data pages.
-            """
+            """Fetches provenance metadata to be shown on exported data pages."""
 
             app = self.app
             aContext = app.context
@@ -178,15 +177,13 @@ def makeTfKernel(app, appName, port):
             )
 
         def exposed_css(self):
-            """Delivers the CSS code to be inserted on the browser page.
-            """
+            """Delivers the CSS code to be inserted on the browser page."""
 
             app = self.app
             return f'<style type="text/css">{app.loadCss()}</style>'
 
         def exposed_context(self):
-            """Fetches the TF app context settings for the corpus.
-            """
+            """Fetches the TF app context settings for the corpus."""
 
             app = self.app
 
@@ -328,7 +325,13 @@ def makeTfKernel(app, appName, port):
             return (results, messages)
 
         def exposed_table(
-            self, kind, task, features, opened=set(), getx=None, **options,
+            self,
+            kind,
+            task,
+            features,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             """Fetches material corresponding to a list of sections or tuples of nodes.
 
@@ -393,7 +396,13 @@ def makeTfKernel(app, appName, port):
             return (table, messages)
 
         def exposed_search(
-            self, query, batch, position=1, opened=set(), getx=None, **options,
+            self,
+            query,
+            batch,
+            position=1,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             """Executes a TF search template, retrieves formatted results.
 
@@ -539,8 +548,27 @@ def makeTfKernel(app, appName, port):
             )
             if condensed and condenseType:
                 csvs += ((f"resultsBy{condenseType}", queryResultsC),)
-            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
-            return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
+
+            tupleResultsX = getRowsX(
+                app,
+                tupleResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            queryResultsX = getRowsX(
+                app,
+                queryResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            return (
+                queryMessages,
+                pickle.dumps(csvs),
+                pickle.dumps(tupleResultsX),
+                pickle.dumps(queryResultsX),
+            )
 
     return TfKernel()
     return ThreadedServer(
@@ -594,7 +622,9 @@ def main(cargs=sys.argv):
         checkout = ""
 
     versionRep = "" if version is None else f" version {version}"
-    console(f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}{versionRep}")
+    console(
+        f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}{versionRep}"
+    )
     app = findApp(
         appName,
         checkoutApp,

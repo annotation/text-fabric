@@ -131,9 +131,14 @@ sections.tsv
 
 nodes.tsv
 :   contains the nodes you have selected as a list of tuples of nodes.
-    Now, if you want to share your results for checking and replication,
-    put all this in a research repository or in a GitHub repository,
-    which you can then archive to [ZENODO](https://zenodo.org) to obtain a DOI.
+
+nodesx.tsv
+:   contains the nodes you have selected as a list of tuples of nodes,
+    decorated with location information and text content.
+
+Now, if you want to share your results for checking and replication,
+put all this in a research repository or in a GitHub repository,
+which you can then archive to [ZENODO](https://zenodo.org) to obtain a DOI.
 
 ### Unicode in Excel CSVs
 
