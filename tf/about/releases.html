@@ -54,6 +54,18 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="8">8</h2>
 <h3 id="84">8.4</h3>
+<h4 id="8411">8.4.11</h4>
+<p>2021-02-03</p>
+<p>Enhancement: the TF-browser can now export the contents of the node pad, decorated
+with location information and text content. Previously, you only got a
+bare list of nodes in <code>nodes.tsv</code>. Now you also get a <code>nodesx.tsv</code>,
+analogously to <code>resultsx.tsv</code>. See <code><a title="tf.about.browser" href="browser.html">tf.about.browser</a></code>.
+However, such a list of node tuples may not be as uniform as a list of query results.
+Non-uniform lists lead to a messy output table, but still usable.</p>
+<p>Thanks to Jorik Groen for asking for this.</p>
+<p>This also affects the <code>A.export()</code> function (<code><a title="tf.advanced.display.export" href="../advanced/display.html#tf.advanced.display.export">export()</a></code>),
+which was only able to export uniform lists.
+Now it can also export non-uniform lists.</p>
 <h4 id="8410">8.4.10</h4>
 <p>2021-02-01</p>
 <p>Bug fix: when loading an additional feature into an existing TF API,
@@ -358,7 +370,7 @@ Note that if you use Text-Fabric prior version 8, there will be no graceful fall
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -432,6 +444,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#8">8</a><ul>
 <li><a href="#84">8.4</a><ul>
+<li><a href="#8411">8.4.11</a></li>
 <li><a href="#8410">8.4.10</a></li>
 <li><a href="#849">8.4.9</a></li>
 <li><a href="#848">8.4.8</a></li>

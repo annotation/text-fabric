@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L0-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L0-L826" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -121,7 +121,7 @@ import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc
-from .helpers import getResultsX, tupleEnum, RESULT, dh, showDict
+from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .options import Options
@@ -297,6 +297,8 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+        The table maybe uniform or not uniform,
+        which matters to the output. See below.
     toDir: string, optional `None`
         The destination directory for the exported file.
         By default it is your Downloads folder.
@@ -338,6 +340,11 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     A file *toFile* in directory *toDir* with the following content:
 
     There will be a row for each tuple.
+
+    If the input tuples are *uniform*, i.e. each tuple has the
+    same number of nodes, and nodes in the same column have the same node types,
+    then the result table has the following layout:
+
     The columns are:
 
     * **R** the sequence number of the result tuple in the result list
@@ -354,6 +361,14 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     * **XFi** the value of extra feature **XF** for node **i**,
       where these features have been declared by a previous
       displaySetup(tupleFeatures=...)`
+
+    If the input tuples are not uniform, the layout is more primitive.
+    There will be no header column, because the number of columns may vary per row.
+    A row contains the successive information of all nodes in a tuple.
+    Depending of the type of each node you get a number of columns of section information.
+    Then follow two columns with the node and the node type.
+    Depending on the type of the node, there follows a column with the text of the node.
+    No additional features are produced.
 
     !!! caution &#34;Encoding&#34;
         The exported file is written in the `utf_16_le` encoding.
@@ -380,7 +395,7 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
             os.makedirs(toDir, exist_ok=True)
     toPath = f&#34;{toDir}/{toFile}&#34;
 
-    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
+    resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
     with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
         fh.write(
@@ -610,11 +625,11 @@ def plainTuple(
         )
         html = (
             f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seq}&#34; {attOpen}&gt;&#39;
-            f&#39;&lt;summary&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
             f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
             f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
             f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
-            f&#39; {passageRef} {plainRep}&#39;
+            f&#34; {passageRef} {plainRep}&#34;
             f&#34;&lt;/summary&gt;&#34;
             f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
             f&#34;&lt;/details&gt;&#34;
@@ -815,7 +830,9 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
-            t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
+            t,
+            highlights=highlights,
+            **display.consume(options, &#34;highlights&#34;),
         )
         if _browse:
             html.append(h)
@@ -911,7 +928,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L67-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L67-L108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent):
     &#34;&#34;&#34;Produce the display API.
@@ -974,7 +991,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L169-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L169-L186" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1032,7 +1049,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L133-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L133-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1090,7 +1107,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L111-L130" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L111-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1130,7 +1147,9 @@ notebooks.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>tuples</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>integer</code></dt>
-<dd>The integers are the nodes, together they form a table.</dd>
+<dd>The integers are the nodes, together they form a table.
+The table maybe uniform or not uniform,
+which matters to the output. See below.</dd>
 <dt><strong><code>toDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>
 <p>The destination directory for the exported file.
@@ -1174,8 +1193,11 @@ has already been issued, so you can just say:</p>
 </dl>
 <h2 id="results">Results</h2>
 <p>A file <em>toFile</em> in directory <em>toDir</em> with the following content:</p>
-<p>There will be a row for each tuple.
-The columns are:</p>
+<p>There will be a row for each tuple.</p>
+<p>If the input tuples are <em>uniform</em>, i.e. each tuple has the
+same number of nodes, and nodes in the same column have the same node types,
+then the result table has the following layout:</p>
+<p>The columns are:</p>
 <ul>
 <li><strong>R</strong> the sequence number of the result tuple in the result list</li>
 <li><strong>S1 S2 S3</strong> the section as book, chapter, verse, in separate columns;
@@ -1192,6 +1214,13 @@ then this is the reference condenseType on which the decision is based.</li>
 where these features have been declared by a previous
 displaySetup(tupleFeatures=&hellip;)`</li>
 </ul>
+<p>If the input tuples are not uniform, the layout is more primitive.
+There will be no header column, because the number of columns may vary per row.
+A row contains the successive information of all nodes in a tuple.
+Depending of the type of each node you get a number of columns of section information.
+Then follow two columns with the node and the node type.
+Depending on the type of the node, there follows a column with the text of the node.
+No additional features are produced.</p>
 <div class="admonition caution">
 <p class="admonition-title">Encoding</p>
 <p>The exported file is written in the <code>utf_16_le</code> encoding.
@@ -1203,7 +1232,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L218-L324" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L218-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1219,6 +1248,8 @@ open it with <code>encoding=utf_16</code>.</p>
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+        The table maybe uniform or not uniform,
+        which matters to the output. See below.
     toDir: string, optional `None`
         The destination directory for the exported file.
         By default it is your Downloads folder.
@@ -1260,6 +1291,11 @@ open it with <code>encoding=utf_16</code>.</p>
     A file *toFile* in directory *toDir* with the following content:
 
     There will be a row for each tuple.
+
+    If the input tuples are *uniform*, i.e. each tuple has the
+    same number of nodes, and nodes in the same column have the same node types,
+    then the result table has the following layout:
+
     The columns are:
 
     * **R** the sequence number of the result tuple in the result list
@@ -1276,6 +1312,14 @@ open it with <code>encoding=utf_16</code>.</p>
     * **XFi** the value of extra feature **XF** for node **i**,
       where these features have been declared by a previous
       displaySetup(tupleFeatures=...)`
+
+    If the input tuples are not uniform, the layout is more primitive.
+    There will be no header column, because the number of columns may vary per row.
+    A row contains the successive information of all nodes in a tuple.
+    Depending of the type of each node you get a number of columns of section information.
+    Then follow two columns with the node and the node type.
+    Depending on the type of the node, there follows a column with the text of the node.
+    No additional features are produced.
 
     !!! caution &#34;Encoding&#34;
         The exported file is written in the `utf_16_le` encoding.
@@ -1302,7 +1346,7 @@ open it with <code>encoding=utf_16</code>.</p>
             os.makedirs(toDir, exist_ok=True)
     toPath = f&#34;{toDir}/{toFile}&#34;
 
-    resultsX = getResultsX(app, tuples, tupleFeatures, condenseType, fmt=fmt,)
+    resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
     with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
         fh.write(
@@ -1324,7 +1368,7 @@ else the CSS is returned.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L189-L215" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L189-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;The CSS is looked up and then loaded into a notebook if we are not
@@ -1387,7 +1431,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L592-L623" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L607-L638" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1471,7 +1515,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L421-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L436-L604" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1597,11 +1641,11 @@ Depending on <em>asString</em> above.</p></div>
         )
         html = (
             f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seq}&#34; {attOpen}&gt;&#39;
-            f&#39;&lt;summary&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
             f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
             f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
             f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
-            f&#39; {passageRef} {plainRep}&#39;
+            f&#34; {passageRef} {plainRep}&#34;
             f&#34;&lt;/summary&gt;&#34;
             f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
             f&#34;&lt;/details&gt;&#34;
@@ -1681,7 +1725,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L758-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L775-L807" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1746,7 +1790,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L687-L755" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L702-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -1811,7 +1855,9 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
-            t, highlights=highlights, **display.consume(options, &#34;highlights&#34;),
+            t,
+            highlights=highlights,
+            **display.consume(options, &#34;highlights&#34;),
         )
         if _browse:
             html.append(h)
@@ -1846,7 +1892,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L629-L684" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L644-L699" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -1935,7 +1981,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/display.py#L330-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/display.py#L345-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.

@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L0-L423" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L0-L543" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 
@@ -303,7 +303,72 @@ def getValue(app, n, nType, feat, suppress):
 # COMPOSE TABLES FOR CSV EXPORT
 
 
+def isUniform(app, tuples):
+    &#34;&#34;&#34;Whether the members of tuples are uniform.
+
+    An iterable of tuples of nodes is uniform, if each
+    tuple has the same number of nodes,
+    and if the type of a node at position *i* in the tuple
+    is the same for all tuples.
+    &#34;&#34;&#34;
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    uniform = True
+    fixedLength = None
+    fixedTypes = None
+
+    for tup in tuples:
+        thisLength = len(tup)
+        theseTypes = tuple(fOtype(n) for n in tup)
+
+        if fixedLength is None:
+            fixedLength = thisLength
+        if fixedTypes is None:
+            fixedTypes = theseTypes
+
+        if thisLength != fixedLength or theseTypes != fixedTypes:
+            uniform = False
+            break
+
+    return uniform
+
+
+def getRowsX(app, tuples, features, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform an iterable of nodes into a table with extra information.
+
+    If the tuples are uniform (`isUniform`), the formatting will
+    be richer then when the tuples are not uniform.
+    &#34;&#34;&#34;
+
+    return (
+        getResultsX(app, tuples, features, condenseType, fmt=fmt)
+        if isUniform(app, tuples)
+        else getTuplesX(app, tuples, condenseType, fmt=fmt)
+    )
+
+
 def getResultsX(app, results, features, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform a uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    features: key value pairs
+        features per index position of the tuples.
+        It specifies for some positions `i` which features for the nodes at that
+        position should be looked up. For each `i` it should be an iterable
+        or comma-separated list of feature names.
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    &#34;&#34;&#34;
+
     api = app.api
     F = api.F
     Fs = api.Fs
@@ -364,6 +429,64 @@ def getResultsX(app, results, features, condenseType, fmt=None):
                 text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
                 row.append(text)
             row.extend(Fs(feature).v(n) for feature in featureDict.get(j, emptyA))
+        rows.append(tuple(row))
+    return tuple(rows)
+
+
+def getTuplesX(app, results, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform a non-uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+    N = api.N
+    fOtype = F.otype.v
+    otypeRank = N.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    rows = []
+
+    for (tm, tup) in enumerate(results):
+        tn = tm + 1
+        row = [tn]
+        for n in tup:
+            sparts = T.sectionFromNode(n)
+            nParts = len(sparts)
+            section = sparts + ((None,) * (sectionDepth - nParts))
+            row.extend(section)
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
         rows.append(tuple(row))
     return tuple(rows)
 
@@ -439,10 +562,7 @@ def showDict(title, data, *keys):
 
     openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
     openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
-    md = [
-        f&#34;&lt;details {openRep1}&gt;&#34;
-        f&#34;&lt;summary&gt;{title}&lt;/summary&gt;\n\n&#34;
-    ]
+    md = [f&#34;&lt;details {openRep1}&gt;&#34; f&#34;&lt;summary&gt;{title}&lt;/summary&gt;\n\n&#34;]
     for (i, (k, v)) in enumerate(sorted(data.items(), key=lambda y: str(y))):
         if len(keys) and k not in keys:
             continue
@@ -479,7 +599,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L34-L48" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L34-L48" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dh(html):
     &#34;&#34;&#34;Display HTML in a Jupyter notebook.
@@ -516,7 +636,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L17-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L17-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dm(md):
     &#34;&#34;&#34;Display markdown in a Jupyter notebook.
@@ -543,7 +663,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L380-L390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L503-L513" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eData(x, level):
     if not x:
@@ -566,7 +686,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L366-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L489-L495" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eDict(x, level):
     indent = QUAD * level
@@ -585,7 +705,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L352-L353" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L475-L476" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eEmpty(x):
     return EM if type(x) is str else str(x)</code></pre>
@@ -599,7 +719,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L356-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L479-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eList(x, level):
     tpv = type(x)
@@ -619,7 +739,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L375-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L498-L500" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eRest(x, level):
     indent = QUAD * level
@@ -634,7 +754,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L341-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L464-L472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eScalar(x, level):
     if type(x) is str and &#34;\n&#34; in x:
@@ -655,7 +775,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L54-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L54-L65" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocalDir(cfg, local, version):
     provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
@@ -675,13 +795,48 @@ def showDict(title, data, *keys):
 <span>def <span class="ident">getResultsX</span></span>(<span>app, results, features, condenseType, fmt=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Transform a uniform iterable of nodes into a table with extra information.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
+<dd>A uniform <code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform()</a></code> sequence of tuples of nodes</dd>
+<dt><strong><code>features</code></strong> :&ensp;<code>key value pairs</code></dt>
+<dd>features per index position of the tuples.
+It specifies for some positions <code>i</code> which features for the nodes at that
+position should be looked up. For each <code>i</code> it should be an iterable
+or comma-separated list of feature names.</dd>
+<dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
+<dd>A node type. Types smaller or equal than this type will have their text
+displayed in the result.</dd>
+<dt><strong><code>fmt</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>A text format. If text has to be displayed, this format is used.
+If not passed, a default is used.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L276-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L322-L403" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform a uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    features: key value pairs
+        features per index position of the tuples.
+        It specifies for some positions `i` which features for the nodes at that
+        position should be looked up. For each `i` it should be an iterable
+        or comma-separated list of feature names.
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    &#34;&#34;&#34;
+
     api = app.api
     F = api.F
     Fs = api.Fs
@@ -746,6 +901,32 @@ def showDict(title, data, *keys):
     return tuple(rows)</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.helpers.getRowsX"><code class="name flex">
+<span>def <span class="ident">getRowsX</span></span>(<span>app, tuples, features, condenseType, fmt=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transform an iterable of nodes into a table with extra information.</p>
+<p>If the tuples are uniform (<code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform()</a></code>), the formatting will
+be richer then when the tuples are not uniform.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L308-L319" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getRowsX(app, tuples, features, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform an iterable of nodes into a table with extra information.
+
+    If the tuples are uniform (`isUniform`), the formatting will
+    be richer then when the tuples are not uniform.
+    &#34;&#34;&#34;
+
+    return (
+        getResultsX(app, tuples, features, condenseType, fmt=fmt)
+        if isUniform(app, tuples)
+        else getTuplesX(app, tuples, condenseType, fmt=fmt)
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.helpers.getText"><code class="name flex">
 <span>def <span class="ident">getText</span></span>(<span>app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None)</span>
 </code></dt>
@@ -754,7 +935,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L204-L253" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L204-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getText(
     app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None
@@ -808,6 +989,85 @@ def showDict(title, data, *keys):
     return tplFilled</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.helpers.getTuplesX"><code class="name flex">
+<span>def <span class="ident">getTuplesX</span></span>(<span>app, results, condenseType, fmt=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transform a non-uniform iterable of nodes into a table with extra information.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>results</code></strong> :&ensp;<code>iterable</code> of <code>tuple</code> of <code>int</code></dt>
+<dd>A uniform <code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform()</a></code> sequence of tuples of nodes</dd>
+<dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code></dt>
+<dd>A node type. Types smaller or equal than this type will have their text
+displayed in the result.</dd>
+<dt><strong><code>fmt</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>A text format. If text has to be displayed, this format is used.
+If not passed, a default is used.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L406-L461" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getTuplesX(app, results, condenseType, fmt=None):
+    &#34;&#34;&#34;Transform a non-uniform iterable of nodes into a table with extra information.
+
+    Parameters
+    ----------
+    results: iterable of tuple of int
+        A uniform `isUniform` sequence of tuples of nodes
+    condenseType: string
+        A node type. Types smaller or equal than this type will have their text
+        displayed in the result.
+    fmt: string, optional `None`
+        A text format. If text has to be displayed, this format is used.
+        If not passed, a default is used.
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+    N = api.N
+    fOtype = F.otype.v
+    otypeRank = N.otypeRank
+    sectionTypeSet = T.sectionTypeSet
+
+    aContext = app.context
+    noDescendTypes = aContext.noDescendTypes
+
+    sectionDepth = len(sectionTypeSet)
+    if len(results) == 0:
+        return ()
+
+    def withText(nodeType):
+        return (
+            condenseType is None
+            and nodeType not in sectionTypeSet
+            or otypeRank[nodeType] &lt;= otypeRank[condenseType]
+        )
+
+    noDescendTypes = noDescendTypes
+
+    rows = []
+
+    for (tm, tup) in enumerate(results):
+        tn = tm + 1
+        row = [tn]
+        for n in tup:
+            sparts = T.sectionFromNode(n)
+            nParts = len(sparts)
+            section = sparts + ((None,) * (sectionDepth - nParts))
+            row.extend(section)
+            nType = fOtype(n)
+            row.extend((n, nType))
+            if withText(nType):
+                text = T.text(n, fmt=fmt, descend=nType not in noDescendTypes)
+                row.append(text)
+        rows.append(tuple(row))
+    return tuple(rows)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.helpers.getValue"><code class="name flex">
 <span>def <span class="ident">getValue</span></span>(<span>app, n, nType, feat, suppress)</span>
 </code></dt>
@@ -816,7 +1076,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L256-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L256-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValue(app, n, nType, feat, suppress):
     F = app.api.F
@@ -843,7 +1103,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L68-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L68-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hasData(local, org, repo, version, relative):
     versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
@@ -868,10 +1128,56 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L200-L201" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L200-L201" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlSafe(text, isHtml):
     return text if isHtml else htmlEsc(text)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.helpers.isUniform"><code class="name flex">
+<span>def <span class="ident">isUniform</span></span>(<span>app, tuples)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Whether the members of tuples are uniform.</p>
+<p>An iterable of tuples of nodes is uniform, if each
+tuple has the same number of nodes,
+and if the type of a node at position <em>i</em> in the tuple
+is the same for all tuples.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L276-L305" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def isUniform(app, tuples):
+    &#34;&#34;&#34;Whether the members of tuples are uniform.
+
+    An iterable of tuples of nodes is uniform, if each
+    tuple has the same number of nodes,
+    and if the type of a node at position *i* in the tuple
+    is the same for all tuples.
+    &#34;&#34;&#34;
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    uniform = True
+    fixedLength = None
+    fixedTypes = None
+
+    for tup in tuples:
+        thisLength = len(tup)
+        theseTypes = tuple(fOtype(n) for n in tup)
+
+        if fixedLength is None:
+            fixedLength = thisLength
+        if fixedTypes is None:
+            fixedTypes = theseTypes
+
+        if thisLength != fixedLength or theseTypes != fixedTypes:
+            uniform = False
+            break
+
+    return uniform</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.parseFeatures"><code class="name flex">
@@ -882,7 +1188,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L113-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L113-L139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatures(features):
     if (
@@ -932,7 +1238,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L393-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L516-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDict(title, data, *keys):
     &#34;&#34;&#34;Shows selected keys of a dictionary in a pretty way.
@@ -953,10 +1259,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 
     openRep1 = &#34;open&#34; if len(keys) else &#34;&#34;
     openRep2 = &#34;open&#34; if len(keys) == 1 else &#34;&#34;
-    md = [
-        f&#34;&lt;details {openRep1}&gt;&#34;
-        f&#34;&lt;summary&gt;{title}&lt;/summary&gt;\n\n&#34;
-    ]
+    md = [f&#34;&lt;details {openRep1}&gt;&#34; f&#34;&lt;summary&gt;{title}&lt;/summary&gt;\n\n&#34;]
     for (i, (k, v)) in enumerate(sorted(data.items(), key=lambda y: str(y))):
         if len(keys) and k not in keys:
             continue
@@ -1008,7 +1311,7 @@ The display algorithm uses this to unravel nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L142-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L142-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transitiveClosure(relation, reflexiveExceptions):
     &#34;&#34;&#34;Produce the reflexive transitive closure of a relation.
@@ -1076,7 +1379,7 @@ The display algorithm uses this to unravel nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/advanced/helpers.py#L83-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/advanced/helpers.py#L83-L110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tupleEnum(tuples, start, end, limit, item):
     if start is None:
@@ -1187,10 +1490,13 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.helpers.eScalar" href="#tf.advanced.helpers.eScalar">eScalar</a></code></li>
 <li><code><a title="tf.advanced.helpers.getLocalDir" href="#tf.advanced.helpers.getLocalDir">getLocalDir</a></code></li>
 <li><code><a title="tf.advanced.helpers.getResultsX" href="#tf.advanced.helpers.getResultsX">getResultsX</a></code></li>
+<li><code><a title="tf.advanced.helpers.getRowsX" href="#tf.advanced.helpers.getRowsX">getRowsX</a></code></li>
 <li><code><a title="tf.advanced.helpers.getText" href="#tf.advanced.helpers.getText">getText</a></code></li>
+<li><code><a title="tf.advanced.helpers.getTuplesX" href="#tf.advanced.helpers.getTuplesX">getTuplesX</a></code></li>
 <li><code><a title="tf.advanced.helpers.getValue" href="#tf.advanced.helpers.getValue">getValue</a></code></li>
 <li><code><a title="tf.advanced.helpers.hasData" href="#tf.advanced.helpers.hasData">hasData</a></code></li>
 <li><code><a title="tf.advanced.helpers.htmlSafe" href="#tf.advanced.helpers.htmlSafe">htmlSafe</a></code></li>
+<li><code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform</a></code></li>
 <li><code><a title="tf.advanced.helpers.parseFeatures" href="#tf.advanced.helpers.parseFeatures">parseFeatures</a></code></li>
 <li><code><a title="tf.advanced.helpers.showDict" href="#tf.advanced.helpers.showDict">showDict</a></code></li>
 <li><code><a title="tf.advanced.helpers.transitiveClosure" href="#tf.advanced.helpers.transitiveClosure">transitiveClosure</a></code></li>

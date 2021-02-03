@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L0-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/kernel.py#L0-L670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -171,7 +171,7 @@ from ..core.helpers import console
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
-from ..advanced.helpers import getResultsX
+from ..advanced.helpers import getRowsX
 from ..advanced.tables import compose, composeP, composeT
 
 from .command import argKernel
@@ -236,8 +236,7 @@ def makeTfKernel(app, appName, port):
             return app.header()
 
         def exposed_provenance(self):
-            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.&#34;&#34;&#34;
 
             app = self.app
             aContext = app.context
@@ -263,15 +262,13 @@ def makeTfKernel(app, appName, port):
             )
 
         def exposed_css(self):
-            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.&#34;&#34;&#34;
 
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
         def exposed_context(self):
-            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;
 
             app = self.app
 
@@ -413,7 +410,13 @@ def makeTfKernel(app, appName, port):
             return (results, messages)
 
         def exposed_table(
-            self, kind, task, features, opened=set(), getx=None, **options,
+            self,
+            kind,
+            task,
+            features,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
 
@@ -478,7 +481,13 @@ def makeTfKernel(app, appName, port):
             return (table, messages)
 
         def exposed_search(
-            self, query, batch, position=1, opened=set(), getx=None, **options,
+            self,
+            query,
+            batch,
+            position=1,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
 
@@ -624,8 +633,27 @@ def makeTfKernel(app, appName, port):
             )
             if condensed and condenseType:
                 csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
-            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
-            return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
+
+            tupleResultsX = getRowsX(
+                app,
+                tupleResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            queryResultsX = getRowsX(
+                app,
+                queryResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            return (
+                queryMessages,
+                pickle.dumps(csvs),
+                pickle.dumps(tupleResultsX),
+                pickle.dumps(queryResultsX),
+            )
 
     return TfKernel()
     return ThreadedServer(
@@ -679,7 +707,9 @@ def main(cargs=sys.argv):
         checkout = &#34;&#34;
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;)
+    console(
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+    )
     app = findApp(
         appName,
         checkoutApp,
@@ -741,7 +771,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L578-L622" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/kernel.py#L606-L652" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -762,7 +792,9 @@ if __name__ == &#34;__main__&#34;:
         checkout = &#34;&#34;
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
-    console(f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;)
+    console(
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+    )
     app = findApp(
         appName,
         checkoutApp,
@@ -798,7 +830,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L559-L572" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/kernel.py#L587-L600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -824,7 +856,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/kernel.py#L101-L553" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/kernel.py#L101-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -879,8 +911,7 @@ if __name__ == &#34;__main__&#34;:
             return app.header()
 
         def exposed_provenance(self):
-            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.&#34;&#34;&#34;
 
             app = self.app
             aContext = app.context
@@ -906,15 +937,13 @@ if __name__ == &#34;__main__&#34;:
             )
 
         def exposed_css(self):
-            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.&#34;&#34;&#34;
 
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
 
         def exposed_context(self):
-            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.
-            &#34;&#34;&#34;
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;
 
             app = self.app
 
@@ -1056,7 +1085,13 @@ if __name__ == &#34;__main__&#34;:
             return (results, messages)
 
         def exposed_table(
-            self, kind, task, features, opened=set(), getx=None, **options,
+            self,
+            kind,
+            task,
+            features,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
 
@@ -1121,7 +1156,13 @@ if __name__ == &#34;__main__&#34;:
             return (table, messages)
 
         def exposed_search(
-            self, query, batch, position=1, opened=set(), getx=None, **options,
+            self,
+            query,
+            batch,
+            position=1,
+            opened=set(),
+            getx=None,
+            **options,
         ):
             &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
 
@@ -1267,8 +1308,27 @@ if __name__ == &#34;__main__&#34;:
             )
             if condensed and condenseType:
                 csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
-            resultsX = getResultsX(app, queryResults, features, condenseType, fmt=fmt,)
-            return (queryMessages, pickle.dumps(csvs), pickle.dumps(resultsX))
+
+            tupleResultsX = getRowsX(
+                app,
+                tupleResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            queryResultsX = getRowsX(
+                app,
+                queryResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            return (
+                queryMessages,
+                pickle.dumps(csvs),
+                pickle.dumps(tupleResultsX),
+                pickle.dumps(queryResultsX),
+            )
 
     return TfKernel()
     return ThreadedServer(

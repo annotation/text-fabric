@@ -129,11 +129,14 @@ Not only the results on the current page, but <em>all</em> results.</dd>
 <dt>sections.tsv</dt>
 <dd>contains the sections you have selected as a list of nodes.</dd>
 <dt>nodes.tsv</dt>
-<dd>contains the nodes you have selected as a list of tuples of nodes.
-Now, if you want to share your results for checking and replication,
-put all this in a research repository or in a GitHub repository,
-which you can then archive to <a href="https://zenodo.org">ZENODO</a> to obtain a DOI.</dd>
+<dd>contains the nodes you have selected as a list of tuples of nodes.</dd>
+<dt>nodesx.tsv</dt>
+<dd>contains the nodes you have selected as a list of tuples of nodes,
+decorated with location information and text content.</dd>
 </dl>
+<p>Now, if you want to share your results for checking and replication,
+put all this in a research repository or in a GitHub repository,
+which you can then archive to <a href="https://zenodo.org">ZENODO</a> to obtain a DOI.</p>
 <h3 id="unicode-in-excel-csvs">Unicode in Excel CSVs</h3>
 <p>The file <code>resultsx.tsv</code> is not in the usual <code>utf8</code> encoding,
 but in <code>utf_16</code> encoding.
@@ -182,7 +185,7 @@ That is unpleasant.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/about/browser.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/about/browser.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/browser.md

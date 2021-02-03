@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L0-L366" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L0-L368" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -284,7 +284,8 @@ def serveDownload(web):
     condenseType = form[&#34;condenseType&#34;] or None
     textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
-    resultsX = None
+    tupleResultsX = None
+    queryResultsX = None
     messages = &#34;&#34;
     if task in wildQueries:
         messages = (
@@ -293,7 +294,7 @@ def serveDownload(web):
         )
     else:
         try:
-            (queryMessages, csvs, resultsX) = kernelApi.csvs(
+            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
@@ -319,9 +320,10 @@ def serveDownload(web):
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
     csvs = pickle.loads(csvs)
-    resultsX = pickle.loads(resultsX)
+    tupleResultsX = pickle.loads(tupleResultsX)
+    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(header, provenanceMd, form)
-    (fileName, zipBuffer) = zipData(csvs, resultsX, about, form)
+    (fileName, zipBuffer) = zipData(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
         &#34;Expires&#34;: &#34;0&#34;,
@@ -418,7 +420,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L300-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L302-L369" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
@@ -498,7 +500,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L239-L297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L239-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     aContext = web.context
@@ -512,7 +514,8 @@ def serveAll(web, anything):
     condenseType = form[&#34;condenseType&#34;] or None
     textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
-    resultsX = None
+    tupleResultsX = None
+    queryResultsX = None
     messages = &#34;&#34;
     if task in wildQueries:
         messages = (
@@ -521,7 +524,7 @@ def serveAll(web, anything):
         )
     else:
         try:
-            (queryMessages, csvs, resultsX) = kernelApi.csvs(
+            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
@@ -547,9 +550,10 @@ def serveAll(web, anything):
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
     csvs = pickle.loads(csvs)
-    resultsX = pickle.loads(resultsX)
+    tupleResultsX = pickle.loads(tupleResultsX)
+    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(header, provenanceMd, form)
-    (fileName, zipBuffer) = zipData(csvs, resultsX, about, form)
+    (fileName, zipBuffer) = zipData(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
         &#34;Expires&#34;: &#34;0&#34;,
@@ -569,7 +573,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -638,7 +642,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -685,7 +689,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -768,7 +772,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4d33b7c07236e9c7fd927ab770db4fa363671b8b/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi
