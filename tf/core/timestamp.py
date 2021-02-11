@@ -66,8 +66,11 @@ class Timestamp(object):
         if _asString:
             return result
 
-    def info(self, msg, tm=True, nl=True, cache=0):
+    def info(self, msg, tm=True, nl=True, cache=0, force=False):
         """Sends an informational message to the standard output.
+
+        Info messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -79,16 +82,21 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution "Silence"
             Informational messages are not displayed in silent mode.
         """
 
-        if not self.silent:
+        if force or not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
-    def warning(self, msg, tm=True, nl=True, cache=0):
+    def warning(self, msg, tm=True, nl=True, cache=0, force=False):
         """Sends an warning message to the standard output.
+
+        Warning messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -100,12 +108,14 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution "Silence"
             Warning messages are not displayed if silent mode is `deep`.
         """
 
-        if self.silent != "deep":
+        if force or self.silent != "deep":
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):

@@ -60,7 +60,7 @@ class Recorder(object):
         with open(textPath, encoding="utf8") as fh:
             self.material = list(fh)
 
-        with open(posPath, "w", encoding="utf8") as fh:
+        with open(posPath, encoding="utf8") as fh:
             self.nodesByPos = [
                 {int(n) for n in line.rstrip("\n").split("\t")} for line in fh
             ]

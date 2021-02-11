@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.12
+
+2021-02-11
+
+Fix in `tf.convert.recorder.Recorder.read`:
+this method wrote to the positions file, rather than reading from it.
+Thanks to Sophie Arnoult for spotting it.
+
 #### 8.4.11
 
 2021-02-03

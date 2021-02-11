@@ -10,7 +10,7 @@ import errno
 import time
 import unicodedata
 
-from pdocs import console, pdoc3serve, pdoc3, shipDocs
+from tools.pdocs import console, pdoc3serve, pdoc3, shipDocs
 
 ORG = "annotation"
 REPO = "text-fabric"
