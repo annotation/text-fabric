@@ -37,7 +37,7 @@ character positions in the plain text</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L0-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L0-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -101,7 +101,7 @@ class Recorder(object):
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
             self.material = list(fh)
 
-        with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with open(posPath, encoding=&#34;utf8&#34;) as fh:
             self.nodesByPos = [
                 {int(n) for n in line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)} for line in fh
             ]
@@ -156,7 +156,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L21-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L21-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder(object):
     def __init__(self):
@@ -200,7 +200,7 @@ class Recorder(object):
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
             self.material = list(fh)
 
-        with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        with open(posPath, encoding=&#34;utf8&#34;) as fh:
             self.nodesByPos = [
                 {int(n) for n in line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)} for line in fh
             ]
@@ -247,7 +247,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L33-L37" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L33-L37" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     if not string:
@@ -264,7 +264,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L30-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L30-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     self.context.discard(n)</code></pre>
@@ -278,7 +278,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L68-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L68-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     nodesByPos = self.nodesByPos
@@ -321,7 +321,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L42-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L42-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def positions(self):
     return self.nodesByPos</code></pre>
@@ -335,7 +335,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L56-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L56-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -344,7 +344,7 @@ class Recorder(object):
     with open(textPath, encoding=&#34;utf8&#34;) as fh:
         self.material = list(fh)
 
-    with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+    with open(posPath, encoding=&#34;utf8&#34;) as fh:
         self.nodesByPos = [
             {int(n) for n in line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)} for line in fh
         ]</code></pre>
@@ -358,7 +358,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L27-L28" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L27-L28" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     self.context.add(n)</code></pre>
@@ -372,7 +372,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L39-L40" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L39-L40" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     return &#34;&#34;.join(self.material)</code></pre>
@@ -386,7 +386,7 @@ class Recorder(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/convert/recorder.py#L45-L54" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/convert/recorder.py#L45-L54" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self, textPath, posPath=None):
     posPath = posPath or f&#34;{textPath}.pos&#34;

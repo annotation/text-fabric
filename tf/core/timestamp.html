@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L0-L211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L0-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Timed messages
@@ -98,8 +98,11 @@ class Timestamp(object):
         if _asString:
             return result
 
-    def info(self, msg, tm=True, nl=True, cache=0):
+    def info(self, msg, tm=True, nl=True, cache=0, force=False):
         &#34;&#34;&#34;Sends an informational message to the standard output.
+
+        Info messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -111,16 +114,21 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
         &#34;&#34;&#34;
 
-        if not self.silent:
+        if force or not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
-    def warning(self, msg, tm=True, nl=True, cache=0):
+    def warning(self, msg, tm=True, nl=True, cache=0, force=False):
         &#34;&#34;&#34;Sends an warning message to the standard output.
+
+        Warning messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -132,12 +140,14 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
             Warning messages are not displayed if silent mode is `deep`.
         &#34;&#34;&#34;
 
-        if self.silent != &#34;deep&#34;:
+        if force or self.silent != &#34;deep&#34;:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
@@ -262,7 +272,7 @@ class Timestamp(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L13-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L13-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp(object):
     def __init__(self, level=None):
@@ -320,8 +330,11 @@ class Timestamp(object):
         if _asString:
             return result
 
-    def info(self, msg, tm=True, nl=True, cache=0):
+    def info(self, msg, tm=True, nl=True, cache=0, force=False):
         &#34;&#34;&#34;Sends an informational message to the standard output.
+
+        Info messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -333,16 +346,21 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
             Informational messages are not displayed in silent mode.
         &#34;&#34;&#34;
 
-        if not self.silent:
+        if force or not self.silent:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
-    def warning(self, msg, tm=True, nl=True, cache=0):
+    def warning(self, msg, tm=True, nl=True, cache=0, force=False):
         &#34;&#34;&#34;Sends an warning message to the standard output.
+
+        Warning messages may have been silenced, in that case
+        nothing happens.
 
         Parameters
         ----------
@@ -354,12 +372,14 @@ class Timestamp(object):
             Whether a newline should be appended to the message.
         cache: integer, optional `0`
             Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
             Warning messages are not displayed if silent mode is `deep`.
         &#34;&#34;&#34;
 
-        if self.silent != &#34;deep&#34;:
+        if force or self.silent != &#34;deep&#34;:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
@@ -475,7 +495,7 @@ class Timestamp(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L53-L67" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L53-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cache(self, _asString=False):
     if _asString:
@@ -520,7 +540,7 @@ silent mode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L111-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L121-L142" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an warning message to the standard error.
@@ -562,7 +582,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L134-L154" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L144-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
     &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
@@ -588,10 +608,12 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.info"><code class="name flex">
-<span>def <span class="ident">info</span></span>(<span>self, msg, tm=True, nl=True, cache=0)</span>
+<span>def <span class="ident">info</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sends an informational message to the standard output.</p>
+<p>Info messages may have been silenced, in that case
+nothing happens.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
@@ -602,6 +624,8 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <dd>Whether a newline should be appended to the message.</dd>
 <dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
 <dd>Whether the message should be cached.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, any silent condition is overriden.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Silence</p>
@@ -610,10 +634,13 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L69-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L69-L93" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0):
+<pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an informational message to the standard output.
+
+    Info messages may have been silenced, in that case
+    nothing happens.
 
     Parameters
     ----------
@@ -625,12 +652,14 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
         Whether a newline should be appended to the message.
     cache: integer, optional `0`
         Whether the message should be cached.
+    force: boolean, optional `False`
+        If True, any silent condition is overriden.
 
     !!! caution &#34;Silence&#34;
         Informational messages are not displayed in silent mode.
     &#34;&#34;&#34;
 
-    if not self.silent:
+    if force or not self.silent:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
 </dd>
@@ -649,7 +678,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L156-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L166-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isSilent(self):
     &#34;&#34;&#34;The current verbosity.
@@ -672,7 +701,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L24-L48" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L24-L48" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -709,7 +738,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L50-L51" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L50-L51" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self):
     self.log = []</code></pre>
@@ -731,7 +760,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L168-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L178-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
     &#34;&#34;&#34;Set the verbosity.
@@ -757,7 +786,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L194-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L204-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOff(self):
     &#34;&#34;&#34;Enable informational messages.
@@ -779,7 +808,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L183-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L193-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
     &#34;&#34;&#34;Suppress informational messages.
@@ -794,10 +823,12 @@ If <code>'deep'</code> also suppress warnings.</dd>
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.warning"><code class="name flex">
-<span>def <span class="ident">warning</span></span>(<span>self, msg, tm=True, nl=True, cache=0)</span>
+<span>def <span class="ident">warning</span></span>(<span>self, msg, tm=True, nl=True, cache=0, force=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sends an warning message to the standard output.</p>
+<p>Warning messages may have been silenced, in that case
+nothing happens.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>msg</code></strong> :&ensp;<code>string</code></dt>
@@ -808,6 +839,8 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <dd>Whether a newline should be appended to the message.</dd>
 <dt><strong><code>cache</code></strong> :&ensp;<code>integer</code>, optional <code>0</code></dt>
 <dd>Whether the message should be cached.</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, any silent condition is overriden.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Silence</p>
@@ -816,10 +849,13 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/108e7f9b48fb3d0dfd5607d96d3606e8e23adf05/tf/core/timestamp.py#L90-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/core/timestamp.py#L95-L119" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0):
+<pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an warning message to the standard output.
+
+    Warning messages may have been silenced, in that case
+    nothing happens.
 
     Parameters
     ----------
@@ -831,12 +867,14 @@ If <code>'deep'</code> also suppress warnings.</dd>
         Whether a newline should be appended to the message.
     cache: integer, optional `0`
         Whether the message should be cached.
+    force: boolean, optional `False`
+        If True, any silent condition is overriden.
 
     !!! caution &#34;Silence&#34;
         Warning messages are not displayed if silent mode is `deep`.
     &#34;&#34;&#34;
 
-    if self.silent != &#34;deep&#34;:
+    if force or self.silent != &#34;deep&#34;:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
 </dd>
