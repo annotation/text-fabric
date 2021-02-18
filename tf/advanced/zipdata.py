@@ -98,14 +98,15 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
             with ZipFile(f"{destDir}/{target}", "w", **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
                     zipFile.write(
-                        f"{sourceDir}{versionRep}/{featureFile}", arcname=featureFile,
+                        f"{sourceDir}{versionRep}/{featureFile}",
+                        arcname=featureFile,
                     )
     else:
 
         def collectFiles(base, path, results):
             thisPath = f"{base}/{path}" if path else base
             internalBase = f"{relative}/{path}" if path else relative
-            with os.scanDir(thisPath) as sd:
+            with os.scandir(thisPath) as sd:
                 for e in sd:
                     name = e.name
                     if name in EXCLUDE:
@@ -126,7 +127,8 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
                 zipFile.write(
-                    path, arcname=internalPath,
+                    path,
+                    arcname=internalPath,
                 )
 
 
@@ -146,8 +148,14 @@ def main(cargs=sys.argv):
 
     (org, repo, relative, checkout) = parts
 
-    tf = relative.endswith("tf") or "/tf/" in relative
-    sys.stdout.write(f"{tf}\n")
+    tf = (
+        relative == "tf"
+        or relative.endswith("tf")
+        or relative.startswith("tf/")
+        or "/tf/" in relative
+    )
+    tfMsg = "This is a TF dataset" if tf else "These are additional files"
+    sys.stdout.write(f"{tfMsg}\n")
 
     zipData(org, repo, relative=relative, tf=tf)
 
