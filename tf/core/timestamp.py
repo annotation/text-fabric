@@ -16,6 +16,7 @@ class Timestamp(object):
 
         self.oneLevelRep = "   |   "
         self.timestamp = {}
+        self.level = 0
         indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
@@ -150,13 +151,27 @@ class Timestamp(object):
         The reported time is with respect to a starting point, which can be reset.
         The starting points at different levels are independent of each other.
 
-        level: integer, optional `None`
+        level: integer|boolean, optional `None`
             The indentation level.
+            If an integer, it sets the indentation level.
+            If a boolean, it decreases or increases the indentation level,
+            but not below zero. `True` increases the indent with one level,
+            `False` decreases the indent.
         reset: boolean, optional `False`
             If `True`, the elapsed time to will be reset to 0 at the given level.
         """
 
-        self.level = 0 if level is None else level
+        self.level = (
+            0
+            if level is None
+            else level
+            if type(level) is int
+            else self.level + 1
+            if level
+            else self.level - 1
+        )
+        if self.level < 0:
+            self.level = 0
         self.levelRep = self.oneLevelRep * self.level
         if reset:
             self.timestamp[self.level] = time.time()
@@ -202,8 +217,7 @@ class Timestamp(object):
         self.silent = True if not deep else "deep"
 
     def silentOff(self):
-        """Enable informational messages.
-        """
+        """Enable informational messages."""
 
         self.silent = False
 

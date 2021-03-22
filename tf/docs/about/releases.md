@@ -46,6 +46,16 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.13
+
+2021-03-22
+
+A few minor improvements:
+
+* the `tf.convert.recorder` is improved. It can now save postion files per node type.
+* the `tf.core.timestamp.Timestamp.indent` method now accepts a boolean for its `level` parameter.
+  By this you can increase and decrease the current indentation level of messages.
+
 #### 8.4.12
 
 2021-02-11
