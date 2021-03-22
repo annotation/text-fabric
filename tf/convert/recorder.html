@@ -52,9 +52,19 @@ but not yet ended.</p>
 will add an entry to the position mapping: it maps the position of that character
 to the set of active nodes at that point.</p>
 <h2 id="usage">Usage</h2>
+<p>We suppose you have a corpus loaded, either by</p>
+<pre><code>from tf.app import use
+A = use(corpus)
+api = A.api
+</code></pre>
+<p>or by</p>
+<pre><code>from tf,fabric import Fabric
+TF = Fabric(locations, modules)
+api = TF.load(features)
+</code></pre>
 <pre><code>from tf.convert.recorder import Recorder
 
-rec = Recorder()
+rec = Recorder(api)
 
 rec.add(&quot;a&quot;)
 
@@ -75,23 +85,92 @@ rec.end(n2)
 rec.add(&quot;klmno&quot;)
 </code></pre>
 <p>This leads to the following mapping:</p>
-<p>position | text | active nodes
-&mdash; | &mdash;
-0 | <code>a</code> | <code>{}</code>
-1 | <code>b</code> | <code>{n1}</code>
-2 | <code>c</code> | <code>{n1}</code>
-3 | <code>d</code> | <code>{n1, n2}</code>
-4 | <code>e</code> | <code>{n1, n2}</code>
-5 | <code>f</code> | <code>{n1, n2}</code>
-6 | <code>g</code> | <code>{n2}</code>
-7 | <code>h</code> | <code>{n2}</code>
-8 | <code>i</code> | <code>{n2}</code>
-9 | <code>j</code> | <code>{n2}</code>
-10 | <code>k</code> | <code>{}</code>
-11 | <code>l</code> | <code>{}</code>
-12 | <code>m</code> | <code>{}</code>
-13 | <code>n</code> | <code>{}</code>
-14 | <code>o</code> | <code>{}</code></p>
+<table>
+<thead>
+<tr>
+<th>position</th>
+<th>text</th>
+<th>active nodes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>a</code></td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>b</code></td>
+<td><code>{n1}</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>c</code></td>
+<td><code>{n1}</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>d</code></td>
+<td><code>{n1, n2}</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>e</code></td>
+<td><code>{n1, n2}</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>f</code></td>
+<td><code>{n1, n2}</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>g</code></td>
+<td><code>{n2}</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>h</code></td>
+<td><code>{n2}</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>i</code></td>
+<td><code>{n2}</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>j</code></td>
+<td><code>{n2}</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>k</code></td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>l</code></td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>m</code></td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>n</code></td>
+<td><code>{}</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>o</code></td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
 <p>There are methods to obtain the accumulated text and the mapped positions from the
 recorder.</p>
 <p>You can write the information of a recorder to disk and read it back later.</p>
@@ -101,7 +180,7 @@ recorder.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L0-L297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L0-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -140,10 +219,26 @@ to the set of active nodes at that point.
 
 ## Usage
 
+We suppose you have a corpus loaded, either by
+
+```
+from tf.app import use
+A = use(corpus)
+api = A.api
+```
+
+or by
+
+```
+from tf,fabric import Fabric
+TF = Fabric(locations, modules)
+api = TF.load(features)
+```
+
 ```
 from tf.convert.recorder import Recorder
 
-rec = Recorder()
+rec = Recorder(api)
 
 rec.add(&#34;a&#34;)
 
@@ -167,7 +262,7 @@ rec.add(&#34;klmno&#34;)
 This leads to the following mapping:
 
 position | text | active nodes
---- | ---
+--- | --- | ---
 0 | `a` | `{}`
 1 | `b` | `{n1}`
 2 | `c` | `{n1}`
@@ -196,15 +291,26 @@ To see it in action, see this
 &#34;&#34;&#34;
 
 
+import os
 from itertools import chain
 
 ZWJ = &#34;\u200d&#34;  # zero width joiner
 
 
-class Recorder(object):
-    def __init__(self):
+class Recorder:
+    def __init__(self, api=None):
         &#34;&#34;&#34;Accumulator of generated text that remembers node positions.
+
+        Parameters
+        ----------
+        api: obj, optional `None`
+            The handle of the API of a loaded TF corpus.
+            This is needed for operations where the recorder needs
+            TF intelligence associated with the nodes, e.g. their types.
+            If you do not pass an api, such methods are unavailable later on.
         &#34;&#34;&#34;
+        self.api = api
+
         self.material = []
         &#34;&#34;&#34;Accumulated text.
 
@@ -265,7 +371,7 @@ class Recorder(object):
             If this parameter is absent, the zero-width joiner is used.
         &#34;&#34;&#34;
 
-        if not string:
+        if string is None:
             string = empty
         self.material.append(string)
         self.nodesByPos.extend([frozenset(self.context)] * len(string))
@@ -280,19 +386,89 @@ class Recorder(object):
         &#34;&#34;&#34;
         return &#34;&#34;.join(self.material)
 
-    def positions(self):
+    def positions(self, byType=False):
         &#34;&#34;&#34;Get the node positions.
+
+        Parameters
+        ----------
+        byType: boolean, optional `False`
+            If True, makes a separate node mapping per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
 
         Returns
         -------
-        list
-            Entry `i` in this list contains the frozen set of all
-            nodes that were active at character position `i` in the text.
-        &#34;&#34;&#34;
-        return self.nodesByPos
+        list|dict|None
+            If `byType`, the result is a dictionary, keyed by node type,
+            with values the mapping for nodes of that type.
+            Entry `i` in these list contains the frozen set of all
+            nodes of that type that were active at character position `i` in the text.
 
-    def write(self, textPath, posPath=None):
+            If not `byType` then a single mapping list is returned, where
+            entry `i` contains the frozen set of all
+            nodes, irrespective of their type
+            that were active at character position `i` in the text.
+        &#34;&#34;&#34;
+
+        if not byType:
+            return self.nodesByPos
+
+        api = self.api
+        if api is None:
+            print(
+                &#34;&#34;&#34;\
+Cannot determine node types without a TF api.
+You have to call Recorder(`api`) instead of Recorder()
+where `api` is the result of
+    tf.app.use(corpus)
+    or
+    tf.Fabric(locations, modules).load(features)
+&#34;&#34;&#34;
+            )
+            return None
+
+        F = api.F
+        Fotypev = F.otype.v
+        info = api.TF.info
+        indent = api.TF.indent
+
+        indent(level=True, reset=True)
+        info(&#34;gathering nodes ...&#34;)
+
+        allNodes = set(chain.from_iterable(self.nodesByPos))
+        allTypes = {Fotypev(n) for n in allNodes}
+        info(f&#34;found {len(allNodes)} nodes in {len(allTypes)} types&#34;)
+
+        nodesByPosByType = {nodeType: [] for nodeType in allTypes}
+
+        info(&#34;partitioning nodes over types ...&#34;)
+
+        for nodeSet in self.nodesByPos:
+            typed = {}
+            for node in nodeSet:
+                nodeType = Fotypev(node)
+                typed.setdefault(nodeType, set()).add(node)
+            for nodeType in allTypes:
+                thisSet = (
+                    frozenset(typed[nodeType]) if nodeType in typed else frozenset()
+                )
+                nodesByPosByType[nodeType].append(thisSet)
+
+        info(&#34;done&#34;)
+        indent(level=False)
+        return nodesByPosByType
+
+    def write(self, textPath, posPath=None, byType=False, optimize=True):
         &#34;&#34;&#34;Write the recorder information to disk.
+
+        The recorded text is written as a lain text file,
+        and the remembered node positions are written as a tsv file.
+
+        You can also let the node positions be written out by node type.
+        In that case you can also optimize the file size.
+
+        Optimization means that consecutive equal values are prepended
+        by the number of repetitions and a `*`.
 
         Parameters
         ----------
@@ -303,6 +479,14 @@ class Recorder(object):
             If absent, it equals `textPath` with `.pos` appended.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
+        byType: boolean, optional `False`
+            If True, writes separate node mappings per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
+            The file names are extended with the node type.
+            This extension occurs just before the last `.` of the inferred `posPath`.
+        optimize: boolean, optional `True`
+            Optimize file size. Only relevant if `byType` is True.
         &#34;&#34;&#34;
 
         posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -310,10 +494,61 @@ class Recorder(object):
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
 
-        with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(
-                &#34;\n&#34;.join(&#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos)
-            )
+        if not byType:
+            with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                fh.write(
+                    &#34;\n&#34;.join(
+                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+                    )
+                )
+            return
+
+        nodesByPosByType = self.positions(byType=True)
+        if nodesByPosByType is None:
+            print(&#34;No position files written&#34;)
+            return
+
+        (base, ext) = os.path.splitext(posPath)
+
+        # if we reach this, there is a TF api
+
+        api = self.api
+        info = api.TF.info
+        indent = api.TF.indent
+
+        indent(level=True, reset=True)
+
+        for (nodeType, nodesByPos) in nodesByPosByType.items():
+            fileName = f&#34;{base}-{nodeType}{ext}&#34;
+            info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
+            with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                if not optimize:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                        )
+                    )
+                else:
+                    repetition = 1
+                    previous = None
+
+                    for nodes in nodesByPos:
+                        if nodes == previous:
+                            repetition += 1
+                            continue
+                        else:
+                            if previous is not None:
+                                prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                                value = &#34;\t&#34;.join(str(i) for i in previous)
+                                fh.write(f&#34;{prefix}{value}\n&#34;)
+                            repetition = 1
+                            previous = nodes
+                    if previous is not None:
+                        prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                        value = &#34;\t&#34;.join(str(i) for i in previous)
+                        fh.write(f&#34;{prefix}{value}\n&#34;)
+
+        indent(level=False)
 
     def read(self, textPath, posPath=None):
         &#34;&#34;&#34;Read recorder information from disk.
@@ -414,18 +649,37 @@ class Recorder(object):
 <dl>
 <dt id="tf.convert.recorder.Recorder"><code class="flex name class">
 <span>class <span class="ident">Recorder</span></span>
+<span>(</span><span>api=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Accumulator of generated text that remembers node positions.</p></div>
+<div class="desc"><p>Accumulator of generated text that remembers node positions.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>api</code></strong> :&ensp;<code>obj</code>, optional <code>None</code></dt>
+<dd>The handle of the API of a loaded TF corpus.
+This is needed for operations where the recorder needs
+TF intelligence associated with the nodes, e.g. their types.
+If you do not pass an api, such methods are unavailable later on.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L99-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L116-L454" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class Recorder(object):
-    def __init__(self):
+<pre><code class="python">class Recorder:
+    def __init__(self, api=None):
         &#34;&#34;&#34;Accumulator of generated text that remembers node positions.
+
+        Parameters
+        ----------
+        api: obj, optional `None`
+            The handle of the API of a loaded TF corpus.
+            This is needed for operations where the recorder needs
+            TF intelligence associated with the nodes, e.g. their types.
+            If you do not pass an api, such methods are unavailable later on.
         &#34;&#34;&#34;
+        self.api = api
+
         self.material = []
         &#34;&#34;&#34;Accumulated text.
 
@@ -486,7 +740,7 @@ class Recorder(object):
             If this parameter is absent, the zero-width joiner is used.
         &#34;&#34;&#34;
 
-        if not string:
+        if string is None:
             string = empty
         self.material.append(string)
         self.nodesByPos.extend([frozenset(self.context)] * len(string))
@@ -501,19 +755,89 @@ class Recorder(object):
         &#34;&#34;&#34;
         return &#34;&#34;.join(self.material)
 
-    def positions(self):
+    def positions(self, byType=False):
         &#34;&#34;&#34;Get the node positions.
+
+        Parameters
+        ----------
+        byType: boolean, optional `False`
+            If True, makes a separate node mapping per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
 
         Returns
         -------
-        list
-            Entry `i` in this list contains the frozen set of all
-            nodes that were active at character position `i` in the text.
-        &#34;&#34;&#34;
-        return self.nodesByPos
+        list|dict|None
+            If `byType`, the result is a dictionary, keyed by node type,
+            with values the mapping for nodes of that type.
+            Entry `i` in these list contains the frozen set of all
+            nodes of that type that were active at character position `i` in the text.
 
-    def write(self, textPath, posPath=None):
+            If not `byType` then a single mapping list is returned, where
+            entry `i` contains the frozen set of all
+            nodes, irrespective of their type
+            that were active at character position `i` in the text.
+        &#34;&#34;&#34;
+
+        if not byType:
+            return self.nodesByPos
+
+        api = self.api
+        if api is None:
+            print(
+                &#34;&#34;&#34;\
+Cannot determine node types without a TF api.
+You have to call Recorder(`api`) instead of Recorder()
+where `api` is the result of
+    tf.app.use(corpus)
+    or
+    tf.Fabric(locations, modules).load(features)
+&#34;&#34;&#34;
+            )
+            return None
+
+        F = api.F
+        Fotypev = F.otype.v
+        info = api.TF.info
+        indent = api.TF.indent
+
+        indent(level=True, reset=True)
+        info(&#34;gathering nodes ...&#34;)
+
+        allNodes = set(chain.from_iterable(self.nodesByPos))
+        allTypes = {Fotypev(n) for n in allNodes}
+        info(f&#34;found {len(allNodes)} nodes in {len(allTypes)} types&#34;)
+
+        nodesByPosByType = {nodeType: [] for nodeType in allTypes}
+
+        info(&#34;partitioning nodes over types ...&#34;)
+
+        for nodeSet in self.nodesByPos:
+            typed = {}
+            for node in nodeSet:
+                nodeType = Fotypev(node)
+                typed.setdefault(nodeType, set()).add(node)
+            for nodeType in allTypes:
+                thisSet = (
+                    frozenset(typed[nodeType]) if nodeType in typed else frozenset()
+                )
+                nodesByPosByType[nodeType].append(thisSet)
+
+        info(&#34;done&#34;)
+        indent(level=False)
+        return nodesByPosByType
+
+    def write(self, textPath, posPath=None, byType=False, optimize=True):
         &#34;&#34;&#34;Write the recorder information to disk.
+
+        The recorded text is written as a lain text file,
+        and the remembered node positions are written as a tsv file.
+
+        You can also let the node positions be written out by node type.
+        In that case you can also optimize the file size.
+
+        Optimization means that consecutive equal values are prepended
+        by the number of repetitions and a `*`.
 
         Parameters
         ----------
@@ -524,6 +848,14 @@ class Recorder(object):
             If absent, it equals `textPath` with `.pos` appended.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
+        byType: boolean, optional `False`
+            If True, writes separate node mappings per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
+            The file names are extended with the node type.
+            This extension occurs just before the last `.` of the inferred `posPath`.
+        optimize: boolean, optional `True`
+            Optimize file size. Only relevant if `byType` is True.
         &#34;&#34;&#34;
 
         posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -531,10 +863,61 @@ class Recorder(object):
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
 
-        with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(
-                &#34;\n&#34;.join(&#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos)
-            )
+        if not byType:
+            with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                fh.write(
+                    &#34;\n&#34;.join(
+                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+                    )
+                )
+            return
+
+        nodesByPosByType = self.positions(byType=True)
+        if nodesByPosByType is None:
+            print(&#34;No position files written&#34;)
+            return
+
+        (base, ext) = os.path.splitext(posPath)
+
+        # if we reach this, there is a TF api
+
+        api = self.api
+        info = api.TF.info
+        indent = api.TF.indent
+
+        indent(level=True, reset=True)
+
+        for (nodeType, nodesByPos) in nodesByPosByType.items():
+            fileName = f&#34;{base}-{nodeType}{ext}&#34;
+            info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
+            with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                if not optimize:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                        )
+                    )
+                else:
+                    repetition = 1
+                    previous = None
+
+                    for nodes in nodesByPos:
+                        if nodes == previous:
+                            repetition += 1
+                            continue
+                        else:
+                            if previous is not None:
+                                prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                                value = &#34;\t&#34;.join(str(i) for i in previous)
+                                fh.write(f&#34;{prefix}{value}\n&#34;)
+                            repetition = 1
+                            previous = nodes
+                    if previous is not None:
+                        prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                        value = &#34;\t&#34;.join(str(i) for i in previous)
+                        fh.write(f&#34;{prefix}{value}\n&#34;)
+
+        indent(level=False)
 
     def read(self, textPath, posPath=None):
         &#34;&#34;&#34;Read recorder information from disk.
@@ -666,7 +1049,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L147-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L174-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     &#34;&#34;&#34;Add text to the accumulator.
@@ -684,7 +1067,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
         If this parameter is absent, the zero-width joiner is used.
     &#34;&#34;&#34;
 
-    if not string:
+    if string is None:
         string = empty
     self.material.append(string)
     self.nodesByPos.extend([frozenset(self.context)] * len(string))</code></pre>
@@ -704,7 +1087,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L135-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L162-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     &#34;&#34;&#34;End a node.
@@ -749,7 +1132,7 @@ be used as headers.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L238-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L394-L454" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     &#34;&#34;&#34;Read a tab-separated file of annotation data and convert it to features.
@@ -815,31 +1198,107 @@ be used as headers.</dd>
 </details>
 </dd>
 <dt id="tf.convert.recorder.Recorder.positions"><code class="name flex">
-<span>def <span class="ident">positions</span></span>(<span>self)</span>
+<span>def <span class="ident">positions</span></span>(<span>self, byType=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the node positions.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>byType</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, makes a separate node mapping per node type.
+For this it is needed that the Recorder has been
+passed a TF api when it was initialized.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>list</code></dt>
-<dd>Entry <code>i</code> in this list contains the frozen set of all
-nodes that were active at character position <code>i</code> in the text.</dd>
+<dt><code>list|dict|None</code></dt>
+<dd>
+<p>If <code>byType</code>, the result is a dictionary, keyed by node type,
+with values the mapping for nodes of that type.
+Entry <code>i</code> in these list contains the frozen set of all
+nodes of that type that were active at character position <code>i</code> in the text.</p>
+<p>If not <code>byType</code> then a single mapping list is returned, where
+entry <code>i</code> contains the frozen set of all
+nodes, irrespective of their type
+that were active at character position <code>i</code> in the text.</p>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L178-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L205-L275" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def positions(self):
-    &#34;&#34;&#34;Get the node positions.
+<pre><code class="python">    def positions(self, byType=False):
+        &#34;&#34;&#34;Get the node positions.
 
-    Returns
-    -------
-    list
-        Entry `i` in this list contains the frozen set of all
-        nodes that were active at character position `i` in the text.
-    &#34;&#34;&#34;
-    return self.nodesByPos</code></pre>
+        Parameters
+        ----------
+        byType: boolean, optional `False`
+            If True, makes a separate node mapping per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
+
+        Returns
+        -------
+        list|dict|None
+            If `byType`, the result is a dictionary, keyed by node type,
+            with values the mapping for nodes of that type.
+            Entry `i` in these list contains the frozen set of all
+            nodes of that type that were active at character position `i` in the text.
+
+            If not `byType` then a single mapping list is returned, where
+            entry `i` contains the frozen set of all
+            nodes, irrespective of their type
+            that were active at character position `i` in the text.
+        &#34;&#34;&#34;
+
+        if not byType:
+            return self.nodesByPos
+
+        api = self.api
+        if api is None:
+            print(
+                &#34;&#34;&#34;\
+Cannot determine node types without a TF api.
+You have to call Recorder(`api`) instead of Recorder()
+where `api` is the result of
+    tf.app.use(corpus)
+    or
+    tf.Fabric(locations, modules).load(features)
+&#34;&#34;&#34;
+            )
+            return None
+
+        F = api.F
+        Fotypev = F.otype.v
+        info = api.TF.info
+        indent = api.TF.indent
+
+        indent(level=True, reset=True)
+        info(&#34;gathering nodes ...&#34;)
+
+        allNodes = set(chain.from_iterable(self.nodesByPos))
+        allTypes = {Fotypev(n) for n in allNodes}
+        info(f&#34;found {len(allNodes)} nodes in {len(allTypes)} types&#34;)
+
+        nodesByPosByType = {nodeType: [] for nodeType in allTypes}
+
+        info(&#34;partitioning nodes over types ...&#34;)
+
+        for nodeSet in self.nodesByPos:
+            typed = {}
+            for node in nodeSet:
+                nodeType = Fotypev(node)
+                typed.setdefault(nodeType, set()).add(node)
+            for nodeType in allTypes:
+                thisSet = (
+                    frozenset(typed[nodeType]) if nodeType in typed else frozenset()
+                )
+                nodesByPosByType[nodeType].append(thisSet)
+
+        info(&#34;done&#34;)
+        indent(level=False)
+        return nodesByPosByType</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.recorder.Recorder.read"><code class="name flex">
@@ -860,7 +1319,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L213-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L369-L392" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     &#34;&#34;&#34;Read recorder information from disk.
@@ -902,7 +1361,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L123-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L150-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     &#34;&#34;&#34;Start a node.
@@ -930,7 +1389,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L168-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L195-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     &#34;&#34;&#34;Get the accumulated text.
@@ -944,10 +1403,16 @@ on each line a tab-separated list of active nodes.</dd>
 </details>
 </dd>
 <dt id="tf.convert.recorder.Recorder.write"><code class="name flex">
-<span>def <span class="ident">write</span></span>(<span>self, textPath, posPath=None)</span>
+<span>def <span class="ident">write</span></span>(<span>self, textPath, posPath=None, byType=False, optimize=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write the recorder information to disk.</p>
+<p>The recorded text is written as a lain text file,
+and the remembered node positions are written as a tsv file.</p>
+<p>You can also let the node positions be written out by node type.
+In that case you can also optimize the file size.</p>
+<p>Optimization means that consecutive equal values are prepended
+by the number of repetitions and a <code>*</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>textPath</code></strong> :&ensp;<code>string</code></dt>
@@ -957,14 +1422,31 @@ on each line a tab-separated list of active nodes.</dd>
 If absent, it equals <code>textPath</code> with <code>.pos</code> appended.
 The file format is: one line for each character position,
 on each line a tab-separated list of active nodes.</dd>
+<dt><strong><code>byType</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, writes separate node mappings per node type.
+For this it is needed that the Recorder has been
+passed a TF api when it was initialized.
+The file names are extended with the node type.
+This extension occurs just before the last <code>.</code> of the inferred <code>posPath</code>.</dd>
+<dt><strong><code>optimize</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Optimize file size. Only relevant if <code>byType</code> is True.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/convert/recorder.py#L189-L211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6b463ab4e685dd46218f7c58e425eca557063c4e/tf/convert/recorder.py#L277-L367" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def write(self, textPath, posPath=None):
+<pre><code class="python">def write(self, textPath, posPath=None, byType=False, optimize=True):
     &#34;&#34;&#34;Write the recorder information to disk.
+
+    The recorded text is written as a lain text file,
+    and the remembered node positions are written as a tsv file.
+
+    You can also let the node positions be written out by node type.
+    In that case you can also optimize the file size.
+
+    Optimization means that consecutive equal values are prepended
+    by the number of repetitions and a `*`.
 
     Parameters
     ----------
@@ -975,6 +1457,14 @@ on each line a tab-separated list of active nodes.</dd>
         If absent, it equals `textPath` with `.pos` appended.
         The file format is: one line for each character position,
         on each line a tab-separated list of active nodes.
+    byType: boolean, optional `False`
+        If True, writes separate node mappings per node type.
+        For this it is needed that the Recorder has been
+        passed a TF api when it was initialized.
+        The file names are extended with the node type.
+        This extension occurs just before the last `.` of the inferred `posPath`.
+    optimize: boolean, optional `True`
+        Optimize file size. Only relevant if `byType` is True.
     &#34;&#34;&#34;
 
     posPath = posPath or f&#34;{textPath}.pos&#34;
@@ -982,10 +1472,61 @@ on each line a tab-separated list of active nodes.</dd>
     with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
         fh.write(self.text())
 
-    with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-        fh.write(
-            &#34;\n&#34;.join(&#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos)
-        )</code></pre>
+    if not byType:
+        with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            fh.write(
+                &#34;\n&#34;.join(
+                    &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+                )
+            )
+        return
+
+    nodesByPosByType = self.positions(byType=True)
+    if nodesByPosByType is None:
+        print(&#34;No position files written&#34;)
+        return
+
+    (base, ext) = os.path.splitext(posPath)
+
+    # if we reach this, there is a TF api
+
+    api = self.api
+    info = api.TF.info
+    indent = api.TF.indent
+
+    indent(level=True, reset=True)
+
+    for (nodeType, nodesByPos) in nodesByPosByType.items():
+        fileName = f&#34;{base}-{nodeType}{ext}&#34;
+        info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
+        with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            if not optimize:
+                fh.write(
+                    &#34;\n&#34;.join(
+                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                    )
+                )
+            else:
+                repetition = 1
+                previous = None
+
+                for nodes in nodesByPos:
+                    if nodes == previous:
+                        repetition += 1
+                        continue
+                    else:
+                        if previous is not None:
+                            prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                            value = &#34;\t&#34;.join(str(i) for i in previous)
+                            fh.write(f&#34;{prefix}{value}\n&#34;)
+                        repetition = 1
+                        previous = nodes
+                if previous is not None:
+                    prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                    value = &#34;\t&#34;.join(str(i) for i in previous)
+                    fh.write(f&#34;{prefix}{value}\n&#34;)
+
+    indent(level=False)</code></pre>
 </details>
 </dd>
 </dl>
