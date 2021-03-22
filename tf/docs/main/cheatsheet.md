@@ -876,7 +876,7 @@ A.export(results, ...)
 
 ---
 
-## BRAT
+## Interchange with external annotation tools
 
 ```
 from convert.recorder import Recorder

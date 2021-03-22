@@ -874,16 +874,7 @@ Default:
 
 ## `writing`
 
-Code for triggering special fonts, e.g.
-
-iso | language
---- | ---
-`akk` | akkadian
-`hbo` | hebrew
-`syc` | syriac
-`ara` | arabic
-`grc` | greek
-`cld` | neo aramaic
+Code for triggering special fonts, see `tf.writing`.
 
 Default:
 :   string `''`
