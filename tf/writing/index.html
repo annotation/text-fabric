@@ -25,15 +25,77 @@
 <section id="section-intro">
 <h1 id="writing-systems-support">Writing systems support</h1>
 <p>Transliteration tables for various writing systems.</p>
+<p>One can pass a language code to Text-Fabric.</p>
+<p>When Text-Fabric displays text (e.g. in <code><a title="tf.advanced.display" href="../advanced/display.html">tf.advanced.display</a></code>)
+the language code may trigger the writing direction and the choice of font.</p>
+<p>Here are the ones that have an effect:</p>
+<table>
+<thead>
+<tr>
+<th>iso</th>
+<th>language</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>akk</code></td>
+<td>akkadian</td>
+</tr>
+<tr>
+<td><code>hbo</code></td>
+<td>hebrew</td>
+</tr>
+<tr>
+<td><code>syc</code></td>
+<td>syriac</td>
+</tr>
+<tr>
+<td><code>ara</code></td>
+<td>arabic</td>
+</tr>
+<tr>
+<td><code>grc</code></td>
+<td>greek</td>
+</tr>
+<tr>
+<td><code>cld</code></td>
+<td>neo aramaic</td>
+</tr>
+</tbody>
+</table>
+<dl>
+<dt>Default:</dt>
+<dd>string <code>''</code></dd>
+</dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/writing/__init__.py#L0-L4" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/writing/__init__.py#L0-L24" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Writing systems support
 
 Transliteration tables for various writing systems.
+
+One can pass a language code to Text-Fabric.
+
+When Text-Fabric displays text (e.g. in `tf.advanced.display`)
+the language code may trigger the writing direction and the choice of font.
+
+Here are the ones that have an effect:
+
+iso | language
+--- | ---
+`akk` | akkadian
+`hbo` | hebrew
+`syc` | syriac
+`ara` | arabic
+`grc` | greek
+`cld` | neo aramaic
+
+Default:
+:   string `&#39;&#39;`
+
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>

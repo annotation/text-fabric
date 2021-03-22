@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L0-L506" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L0-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search (top-level)
@@ -556,7 +556,7 @@ class Search(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34;
@@ -1095,7 +1095,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1161,6 +1161,7 @@ which yields the results one by one.</p>
 and delivered as a tuple.</p>
 </dd>
 </dl>
+<h2 id="notes">Notes</h2>
 <div class="admonition example">
 <p class="admonition-title">Iterating over the <code>fetch()</code> generator</p>
 <p>You typically fetch results by saying:</p>
@@ -1183,7 +1184,7 @@ returned as a tuple.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1264,6 +1265,7 @@ corpus has about it.</p>
 <dd>The result indicats where the tuple occurs in terms of sections,
 and what text is associated with the tuple.</dd>
 </dl>
+<h2 id="notes">Notes</h2>
 <div class="admonition example">
 <p class="admonition-title">Inspecting results</p>
 <p>This</p>
@@ -1285,7 +1287,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1369,7 +1371,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1423,6 +1425,7 @@ which yields the results one by one.</p>
 and delivered as a tuple.</p>
 </dd>
 </dl>
+<h2 id="notes">Notes</h2>
 <div class="admonition hint">
 <p class="admonition-title">More info on the search plan</p>
 <p>Searching is complex. The search template must be parsed, interpreted,
@@ -1431,7 +1434,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1528,7 +1531,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1605,7 +1608,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
@@ -1779,7 +1782,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/572f88f3e28c80c8419ee9f29784a926fe783e5c/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/53a0d89e12f61f63bc748980992189c1f847e1d3/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
