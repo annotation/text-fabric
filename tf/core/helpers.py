@@ -14,7 +14,7 @@ MSG64 = """Running on 64-bit Python"""
 
 HOME_DIR = os.path.expanduser("~").replace("\\", "/")
 
-SEP_RE = re.compile(r'[ ,]+')
+SEP_RE = re.compile(r"[ ,]+")
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
@@ -22,7 +22,7 @@ QUAD = "  "
 
 
 def unexpanduser(path):
-    return path.replace(HOME_DIR, '~')
+    return path.replace(HOME_DIR, "~")
 
 
 def dirEmpty(target):
@@ -248,6 +248,10 @@ def specFromRanges(ranges):  # ranges must be normalized
     )
 
 
+def specFromRangesLogical(ranges):  # ranges must be normalized
+    return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]
+
+
 def valueFromTf(tf):
     return "\\".join(
         x.replace("\\t", "\t").replace("\\n", "\n") for x in tf.split("\\\\")
@@ -403,8 +407,7 @@ def mergeDictOfSets(d1, d2):
 
 
 def mergeDict(source, overrides):
-    """Merge overrides into a source dictionary recursively.
-    """
+    """Merge overrides into a source dictionary recursively."""
 
     for (k, v) in overrides.items():
         if k in source and type(source[k]) is dict:
