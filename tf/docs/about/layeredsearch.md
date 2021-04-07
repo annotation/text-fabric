@@ -34,6 +34,8 @@ words after each other. You could then search for things like
 (verb noun noun)+
 ```
 
+We'll stick to NENA to provide us with examples of how to use layered search.
+
 ## Combined search
 
 In order to search, you specify search patterns for as many of
@@ -47,45 +49,57 @@ So, if you have specified
 
 level | layer | pattern
 --- | --- | ---
-**word** | *part-of-speech* | `verb noun`
+**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
 
-then the results are sequences of two words, of which the first is a verb and the
-second is a noun.
+you get all words with an `m`, `t`, and `l` in it, in that order.
+There are 1338 such words in 1238 sentences.
 
-If you have specified
+![results1](../images/ls/results1.png)
+
+By clicking on the checkbox next to the **full** layer,
+you will see the full-ascii transliteration of these results as well.
+
+![results2](../images/ls/results2.png)
+
+You can specify an additional search in the **full** layer, for example
+all words with a backquote \` in it. (A combining vowel diacritic).
+
+We then get the words that meet both criteria, still a good 492:
+
+![results3](../images/ls/results3.png)
 
 level | layer | pattern
 --- | --- | ---
-**word** | *part-of-speech* | `verb noun`
-**word** | *ascii* | `\b\w*G\w*\b\w*H\w*`
+**word** | **full** | \`
+**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
 
-the previous results are constrained by the fact that
-the candidate word pairs must be such that the first one contains the
-letter `G` and the second one the letter `H`.
-
-You can also constrain with other levels:
+You can also constrain with other levels.
+Suppose we want only occurrences of the previous results in texts
+written at the place *Dure*.
 
 level | layer | pattern
 --- | --- | ---
-**word** | *part-of-speech* | `verb noun`
-**word** | *ascii* | `\b\w*G\w*\b\w*H\w*`
-**book** | *title* | `Genesis`
+**text** | **place** | `Dure`
+**word** | **full** | \`
+**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
+
+![results4](../images/ls/results4.png)
 
 Now the additional constraint on the word pairs is that they occur
 in a book with title Genesis.
 
-You can go even further:
+You can go even further, we want them in the first 9 lines of the texts:
 
 level | layer | pattern
 --- | --- | ---
-**word** | *part-of-speech* | `verb noun`
-**word** | *ascii* | `\b\w*G\w*\b\w*H\w*`
-**sentence** | *number* | `\b[123]\b`
-**book** | *title* | `Genesis`
+**text** | **place** | `Dure`
+**line** | **number** | `Dure`
+**word** | **full** | \`
+**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
 
-Not only must the word pairs occur in Genesis, they also must occur in one
-of the first 3 sentences of a chapter, assuming that the sentences have been
-numbered by chapter.
+Still 20 results.
+
+![results5](../images/ls/results5.png)
 
 ## Additional controls
 
@@ -104,11 +118,15 @@ The descendants are all items at all levels that are contained in the `sentence`
 Note that all ancestor items are part of the search results.
 But not all descendant items are part of the search results.
 The ones that are results will be highlighted.
-The onse that are not will be displayed a bit dimmed, and they serve as
+The ones that are not will be displayed a bit dimmed, and they serve as
 context.
 
 By varying the container type, you can provide more or less context
 to your search results.
+
+We can select **word**, to get a much more compact overview:
+
+![results6](../images/ls/results6.png)
 
 **Show layers**: In the column `show` you see a number of checkboxes.
 Only the checked layers will show up in the search results.
@@ -116,42 +134,14 @@ Only the checked layers will show up in the search results.
 Note that you can switch on layers in which you did not search,
 and you can switch off layers in which you did search.
 
-For example, if you searched this
+For example, lets look at the **lite** and **manner** layers
+only (within the word layers):
 
-show | level | layer | pattern
---- | --- | --- | ---
-`[ ]` | **word** | *text* | ` `
-`[v]` | **word** | *consonant-vowel* | `CVCC`
-
-then your results will look like
-
-```
-CVCC ... CVCC ... CVCC
-```
-
-But if you selected the other level for show:
-
-show | level | layer | pattern
---- | --- | --- | ---
-`[v]` | **word** | *text* | ` `
-`[ ]` | **word** | *consonant-vowel* | `CVCC`
-
-your results will look like
-
-```
-hark ... word ... calm
-```
-
-and if you select both they will look like
-
-```
-CVCC ... CVCC ... CVCC
-hark ... word ... calm
-```
+![results7](../images/ls/results7.png)
 
 ### Execute
 
-When you click the big **Go** button,
+When you click the big **go search** button,
 the search is executed and results get displayed.
 
 Right below the button you'll see the number of items
@@ -161,39 +151,59 @@ found, specified per level.
 
 There might be (very) many results.
 Displaying them all might quickly overwhelm your browser.
-The interface only shows in the order of 40 results at a time.
+The interface only shows a screenful and then some,
+but you have various devices to move through them fluidly.
 
 By means of the slider you can wade through the results, and set the focus
-position, i.e. the position in the table around which you want to see those
-40 results.
+position, i.e. the position in the table around which you want to see
+some results.
 
-You can also type that position into a box, and you can shift it
-by a full or half-window forward or backward.
+The row that is in focus is clearly marked by a clear blue border,
+and the row that had focus just before has a dim blue border.
+
+You can also type that position into a box.
+And you can shift the focus by one or a half screen in both directions.
+Or go to the first or last result.
+
+There are keyboard short cuts for all of these controls (except the slider).
+If you hover over them, you see what the shortcut is.
+
+![results8](../images/ls/results8.png)
 
 ## Jobs
 
 Your search task is called a *job* and it has a name.
-You see it on the interface, and you can change it.
+You see it on the interface, and you can add new jobs,
+duplicate and rename existing ones, delete some, and switch
+between all jobs that your browser has remembered.
 
-Your browser will remember your jobs, but you can also save jobs to file
-on disk, from where you can archive them, or share them by any means you find
-convenient: mail, message, twitter , etc.
+![jobs](../images/ls/jobs.png)
+
+Your browser will indeed remember your jobs (not through cookies!
+but for your eyes only).
+
+But if you want to have other eyes look at your searches,
+you can also save jobs to file on disk, from where you can archive them,
+or share them by any means you find convenient: mail, message, twitter , etc.
 
 A job file is a small `.json` file that only contains the search patterns
 and display settings of the job.
 
-You can also export the results to Excel.
+You can also export the search results to Excel.
 When you do that, *all* results will get exported, not only the ones that show
 on the interface.
 
-The organization of the exported results is as follows: for each item
-that is in some level in some result, a row is made.
+![export](../images/ls/export.png)
 
-The first column is an identifier for that item: a number.
-The second column is the type of the level of that item: `text`, `word`, etc.
+The organization of the exported results is as follows:
+for each result item a row is made.
+
+The first column is an identifier for that item: a number, aka as *node*.
+The second column is the type of that item: `text`, `word`, etc.,
+aka as *node type*.
 
 And then follow columns for the individual layers, and the corresponding
-cells are filled with the values of the items in those layers, with
+cells are filled with the values of the nodes in those layers, with
 the parts that match the search between `«` and `»`.
 Only layers that have their `show` checkboxes marked will make it to
 the Excel file.
@@ -238,6 +248,24 @@ corpus, by means of a Jupyter Notebook
 
 We intend to make such interfaces for other Text-Fabric corpora, using more
 streamlined ways.
+
+# Credits
+
+The idea for this app came out of a discussion of
+[Cody Kingham](https://www.linkedin.com/in/cody-kingham-1135018a)
+and me about how we could
+make a simple but usable search interface for people that need to get hand on with
+the corpus in the first place.
+
+Given that we have the corpus data at our finger tips through Text-Fabric,
+but that TF-Query (`tf.about.searchusage`) is over the top, and requires installing Python
+and almost programming, the approach is to assemble data and power a simple Javascript
+program with it.
+
+This implementation of the idea was funded by
+[Prof. Geoffrey Kahn](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),
+and eventually written by
+[Dirk Roorda](https://pure.knaw.nl/portal/en/persons/dirk-roorda).
 
 
 
