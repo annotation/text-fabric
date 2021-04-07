@@ -38,7 +38,12 @@ but with a twist to make use of the annotations made to items in the corpus at v
 <p>Per level, there may be more than one way to represent the items.
 For example, for the word level, you may have representations in the original script in unicode,
 but also various transliterations in ascii.</p>
-<p>All these representations are <em>layers</em> that you can search.</p>
+<p>All these representations are <em>layers</em> that you can search.
+Here you can see how that looks like for the
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA corpus</a>
+which contains various text representations, among which several are dedicated to phonetic
+properties.</p>
+<p><img alt="layers" src="../images/ls/layers.png"></p>
 <p>Layers do not have to correspond with the text of the corpus.
 For example, you can make a layer where you put the part-of-speech of the
 words after each other. You could then search for things like</p>
@@ -309,7 +314,7 @@ streamlined ways.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ad10a96fd8aab912456b79a7f6caf70253d42000/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b6ec1f039a762c9c3158d007b42967c2ff0bc529/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/layeredsearch.md
