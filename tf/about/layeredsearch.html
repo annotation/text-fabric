@@ -49,6 +49,7 @@ For example, you can make a layer where you put the part-of-speech of the
 words after each other. You could then search for things like</p>
 <pre><code>(verb noun noun)+
 </code></pre>
+<p>We'll stick to NENA to provide us with examples of how to use layered search.</p>
 <h2 id="combined-search">Combined search</h2>
 <p>In order to search, you specify search patterns for as many of
 the available layers as you want.</p>
@@ -67,14 +68,21 @@ hold in all layers, filter through.</p>
 <tbody>
 <tr>
 <td><strong>word</strong></td>
-<td><em>part-of-speech</em></td>
-<td><code>verb noun</code></td>
+<td><strong>fuzzy</strong></td>
+<td><code>m[a-z]*t[a-z]*l</code></td>
 </tr>
 </tbody>
 </table>
-<p>then the results are sequences of two words, of which the first is a verb and the
-second is a noun.</p>
-<p>If you have specified</p>
+<p>you get all words with an <code>m</code>, <code>t</code>, and <code>l</code> in it, in that order.
+There are 1338 such words in 1238 sentences.</p>
+<p><img alt="results1" src="../images/ls/results1.png"></p>
+<p>By clicking on the checkbox next to the <strong>full</strong> layer,
+you will see the full-ascii transliteration of these results as well.</p>
+<p><img alt="results2" src="../images/ls/results2.png"></p>
+<p>You can specify an additional search in the <strong>full</strong> layer, for example
+all words with a backquote ` in it. (A combining vowel diacritic).</p>
+<p>We then get the words that meet both criteria, still a good 492:</p>
+<p><img alt="results3" src="../images/ls/results3.png"></p>
 <table>
 <thead>
 <tr>
@@ -86,20 +94,19 @@ second is a noun.</p>
 <tbody>
 <tr>
 <td><strong>word</strong></td>
-<td><em>part-of-speech</em></td>
-<td><code>verb noun</code></td>
+<td><strong>full</strong></td>
+<td>`</td>
 </tr>
 <tr>
 <td><strong>word</strong></td>
-<td><em>ascii</em></td>
-<td><code>\b\w*G\w*\b\w*H\w*</code></td>
+<td><strong>fuzzy</strong></td>
+<td><code>m[a-z]*t[a-z]*l</code></td>
 </tr>
 </tbody>
 </table>
-<p>the previous results are constrained by the fact that
-the candidate word pairs must be such that the first one contains the
-letter <code>G</code> and the second one the letter <code>H</code>.</p>
-<p>You can also constrain with other levels:</p>
+<p>You can also constrain with other levels.
+Suppose we want only occurrences of the previous results in texts
+written at the place <em>Dure</em>.</p>
 <table>
 <thead>
 <tr>
@@ -110,25 +117,26 @@ letter <code>G</code> and the second one the letter <code>H</code>.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>word</strong></td>
-<td><em>part-of-speech</em></td>
-<td><code>verb noun</code></td>
+<td><strong>text</strong></td>
+<td><strong>place</strong></td>
+<td><code>Dure</code></td>
 </tr>
 <tr>
 <td><strong>word</strong></td>
-<td><em>ascii</em></td>
-<td><code>\b\w*G\w*\b\w*H\w*</code></td>
+<td><strong>full</strong></td>
+<td>`</td>
 </tr>
 <tr>
-<td><strong>book</strong></td>
-<td><em>title</em></td>
-<td><code>Genesis</code></td>
+<td><strong>word</strong></td>
+<td><strong>fuzzy</strong></td>
+<td><code>m[a-z]*t[a-z]*l</code></td>
 </tr>
 </tbody>
 </table>
+<p><img alt="results4" src="../images/ls/results4.png"></p>
 <p>Now the additional constraint on the word pairs is that they occur
 in a book with title Genesis.</p>
-<p>You can go even further:</p>
+<p>You can go even further, we want them in the first 9 lines of the texts:</p>
 <table>
 <thead>
 <tr>
@@ -139,30 +147,29 @@ in a book with title Genesis.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>word</strong></td>
-<td><em>part-of-speech</em></td>
-<td><code>verb noun</code></td>
+<td><strong>text</strong></td>
+<td><strong>place</strong></td>
+<td><code>Dure</code></td>
+</tr>
+<tr>
+<td><strong>line</strong></td>
+<td><strong>number</strong></td>
+<td><code>Dure</code></td>
 </tr>
 <tr>
 <td><strong>word</strong></td>
-<td><em>ascii</em></td>
-<td><code>\b\w*G\w*\b\w*H\w*</code></td>
+<td><strong>full</strong></td>
+<td>`</td>
 </tr>
 <tr>
-<td><strong>sentence</strong></td>
-<td><em>number</em></td>
-<td><code>\b[123]\b</code></td>
-</tr>
-<tr>
-<td><strong>book</strong></td>
-<td><em>title</em></td>
-<td><code>Genesis</code></td>
+<td><strong>word</strong></td>
+<td><strong>fuzzy</strong></td>
+<td><code>m[a-z]*t[a-z]*l</code></td>
 </tr>
 </tbody>
 </table>
-<p>Not only must the word pairs occur in Genesis, they also must occur in one
-of the first 3 sentences of a chapter, assuming that the sentences have been
-numbered by chapter.</p>
+<p>Still 20 results.</p>
+<p><img alt="results5" src="../images/ls/results5.png"></p>
 <h2 id="additional-controls">Additional controls</h2>
 <p>The interface gives you additional ways to control how the results of your
 search are being displayed.</p>
@@ -177,105 +184,64 @@ The descendants are all items at all levels that are contained in the <code>sent
 <p>Note that all ancestor items are part of the search results.
 But not all descendant items are part of the search results.
 The ones that are results will be highlighted.
-The onse that are not will be displayed a bit dimmed, and they serve as
+The ones that are not will be displayed a bit dimmed, and they serve as
 context.</p>
 <p>By varying the container type, you can provide more or less context
 to your search results.</p>
+<p>We can select <strong>word</strong>, to get a much more compact overview:</p>
+<p><img alt="results6" src="../images/ls/results6.png"></p>
 <p><strong>Show layers</strong>: In the column <code>show</code> you see a number of checkboxes.
 Only the checked layers will show up in the search results.</p>
 <p>Note that you can switch on layers in which you did not search,
 and you can switch off layers in which you did search.</p>
-<p>For example, if you searched this</p>
-<table>
-<thead>
-<tr>
-<th>show</th>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>[ ]</code></td>
-<td><strong>word</strong></td>
-<td><em>text</em></td>
-<td><code> </code></td>
-</tr>
-<tr>
-<td><code>[v]</code></td>
-<td><strong>word</strong></td>
-<td><em>consonant-vowel</em></td>
-<td><code>CVCC</code></td>
-</tr>
-</tbody>
-</table>
-<p>then your results will look like</p>
-<pre><code>CVCC ... CVCC ... CVCC
-</code></pre>
-<p>But if you selected the other level for show:</p>
-<table>
-<thead>
-<tr>
-<th>show</th>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>[v]</code></td>
-<td><strong>word</strong></td>
-<td><em>text</em></td>
-<td><code> </code></td>
-</tr>
-<tr>
-<td><code>[ ]</code></td>
-<td><strong>word</strong></td>
-<td><em>consonant-vowel</em></td>
-<td><code>CVCC</code></td>
-</tr>
-</tbody>
-</table>
-<p>your results will look like</p>
-<pre><code>hark ... word ... calm
-</code></pre>
-<p>and if you select both they will look like</p>
-<pre><code>CVCC ... CVCC ... CVCC
-hark ... word ... calm
-</code></pre>
+<p>For example, lets look at the <strong>lite</strong> and <strong>manner</strong> layers
+only (within the word layers):</p>
+<p><img alt="results7" src="../images/ls/results7.png"></p>
 <h3 id="execute">Execute</h3>
-<p>When you click the big <strong>Go</strong> button,
+<p>When you click the big <strong>go search</strong> button,
 the search is executed and results get displayed.</p>
 <p>Right below the button you'll see the number of items
 found, specified per level.</p>
 <h3 id="results-table">Results table</h3>
 <p>There might be (very) many results.
 Displaying them all might quickly overwhelm your browser.
-The interface only shows in the order of 40 results at a time.</p>
+The interface only shows a screenful and then some,
+but you have various devices to move through them fluidly.</p>
 <p>By means of the slider you can wade through the results, and set the focus
-position, i.e. the position in the table around which you want to see those
-40 results.</p>
-<p>You can also type that position into a box, and you can shift it
-by a full or half-window forward or backward.</p>
+position, i.e. the position in the table around which you want to see
+some results.</p>
+<p>The row that is in focus is clearly marked by a clear blue border,
+and the row that had focus just before has a dim blue border.</p>
+<p>You can also type that position into a box.
+And you can shift the focus by one or a half screen in both directions.
+Or go to the first or last result.</p>
+<p>There are keyboard short cuts for all of these controls (except the slider).
+If you hover over them, you see what the shortcut is.</p>
+<p><img alt="results8" src="../images/ls/results8.png"></p>
 <h2 id="jobs">Jobs</h2>
 <p>Your search task is called a <em>job</em> and it has a name.
-You see it on the interface, and you can change it.</p>
-<p>Your browser will remember your jobs, but you can also save jobs to file
-on disk, from where you can archive them, or share them by any means you find
-convenient: mail, message, twitter , etc.</p>
+You see it on the interface, and you can add new jobs,
+duplicate and rename existing ones, delete some, and switch
+between all jobs that your browser has remembered.</p>
+<p><img alt="jobs" src="../images/ls/jobs.png"></p>
+<p>Your browser will indeed remember your jobs (not through cookies!
+but for your eyes only).</p>
+<p>But if you want to have other eyes look at your searches,
+you can also save jobs to file on disk, from where you can archive them,
+or share them by any means you find convenient: mail, message, twitter , etc.</p>
 <p>A job file is a small <code>.json</code> file that only contains the search patterns
 and display settings of the job.</p>
-<p>You can also export the results to Excel.
+<p>You can also export the search results to Excel.
 When you do that, <em>all</em> results will get exported, not only the ones that show
 on the interface.</p>
-<p>The organization of the exported results is as follows: for each item
-that is in some level in some result, a row is made.</p>
-<p>The first column is an identifier for that item: a number.
-The second column is the type of the level of that item: <code>text</code>, <code>word</code>, etc.</p>
+<p><img alt="export" src="../images/ls/export.png"></p>
+<p>The organization of the exported results is as follows:
+for each result item a row is made.</p>
+<p>The first column is an identifier for that item: a number, aka as <em>node</em>.
+The second column is the type of that item: <code>text</code>, <code>word</code>, etc.,
+aka as <em>node type</em>.</p>
 <p>And then follow columns for the individual layers, and the corresponding
-cells are filled with the values of the items in those layers, with
+cells are filled with the values of the nodes in those layers, with
 the parts that match the search between <code>«</code> and <code>»</code>.
 Only layers that have their <code>show</code> checkboxes marked will make it to
 the Excel file.</p>
@@ -311,10 +277,24 @@ corpus, by means of a Jupyter Notebook
 <a href="https://nbviewer.jupyter.org/github/CambridgeSemiticsLab/nena_tf/blob/master/nena2search/makedata.ipynb">makeCorpus</a>.</p>
 <p>We intend to make such interfaces for other Text-Fabric corpora, using more
 streamlined ways.</p>
+<h1 id="credits">Credits</h1>
+<p>The idea for this app came out of a discussion of
+<a href="https://www.linkedin.com/in/cody-kingham-1135018a">Cody Kingham</a>
+and me about how we could
+make a simple but usable search interface for people that need to get hand on with
+the corpus in the first place.</p>
+<p>Given that we have the corpus data at our finger tips through Text-Fabric,
+but that TF-Query (<code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>) is over the top, and requires installing Python
+and almost programming, the approach is to assemble data and power a simple Javascript
+program with it.</p>
+<p>This implementation of the idea was funded by
+<a href="https://www.ames.cam.ac.uk/people/professor-geoffrey-khan">Prof. Geoffrey Kahn</a>,
+and eventually written by
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b6ec1f039a762c9c3158d007b42967c2ff0bc529/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/2ea11bc9e99a62e8c134feec73b0e224ac4f4e06/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/layeredsearch.md
@@ -398,6 +378,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#the-app">The app</a></li>
 <li><a href="#making-this-app">Making this app</a></li>
+<li><a href="#credits">Credits</a></li>
 </ul>
 </div>
 <ul id="index">
