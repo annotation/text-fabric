@@ -19,6 +19,12 @@ For example, for the word level, you may have representations in the original sc
 but also various transliterations in ascii.
 
 All these representations are *layers* that you can search.
+Here you can see how that looks like for the
+[NENA corpus](https://github.com/CambridgeSemiticsLab/nena_tf)
+which contains various text representations, among which several are dedicated to phonetic
+properties.
+
+![layers](../images/ls/layers.png)
 
 Layers do not have to correspond with the text of the corpus.
 For example, you can make a layer where you put the part-of-speech of the
