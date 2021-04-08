@@ -85,15 +85,12 @@ level | layer | pattern
 
 ![results4](../images/ls/results4.png)
 
-Now the additional constraint on the word pairs is that they occur
-in a book with title Genesis.
-
 You can go even further, we want them in the first 9 lines of the texts:
 
 level | layer | pattern
 --- | --- | ---
 **text** | **place** | `Dure`
-**line** | **number** | `Dure`
+**line** | **number** | `\b[1-3]\b`
 **word** | **full** | \`
 **word** | **fuzzy** | `m[a-z]*t[a-z]*l`
 
