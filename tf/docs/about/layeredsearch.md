@@ -260,7 +260,7 @@ and almost programming, the approach is to assemble data and power a simple Java
 program with it.
 
 This implementation of the idea was funded by
-[Prof. Geoffrey Kahn](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),
+[Prof. Geoffrey Khan](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),
 and eventually written by
 [Dirk Roorda](https://pure.knaw.nl/portal/en/persons/dirk-roorda).
 
