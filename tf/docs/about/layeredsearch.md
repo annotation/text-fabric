@@ -85,7 +85,7 @@ level | layer | pattern
 
 ![results4](../images/ls/results4.png)
 
-You can go even further, we want them in the first 9 lines of the texts:
+You can go even further, we want them in the first 3 lines of the texts:
 
 level | layer | pattern
 --- | --- | ---
