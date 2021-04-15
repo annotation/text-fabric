@@ -49,7 +49,7 @@ For example, you can make a layer where you put the part-of-speech of the
 words after each other. You could then search for things like</p>
 <pre><code>(verb noun noun)+
 </code></pre>
-<p>We'll stick to NENA to provide us with examples of how to use layered search.</p>
+<p>We'll stick to NENA for examples of layered search.</p>
 <h2 id="combined-search">Combined search</h2>
 <p>In order to search, you specify search patterns for as many of
 the available layers as you want.</p>
@@ -78,6 +78,10 @@ There are 1338 such words in 1238 sentences.</p>
 <p><img alt="results1" src="../images/ls/results1.png"></p>
 <p>By clicking on the checkbox next to the <strong>full</strong> layer,
 you will see the full-ascii transliteration of these results as well.</p>
+<blockquote>
+<p>Click on "+ all layers" and "- active layers" to expand to all layers of a level
+and to collapse back to the active layers.</p>
+</blockquote>
 <p><img alt="results2" src="../images/ls/results2.png"></p>
 <p>You can specify an additional search in the <strong>full</strong> layer, for example
 all words with a backquote ` in it. (A combining vowel diacritic).</p>
@@ -171,35 +175,83 @@ written at the place <em>Dure</em>.</p>
 <h2 id="additional-controls">Additional controls</h2>
 <p>The interface gives you additional ways to control how the results of your
 search are being displayed.</p>
-<p><strong>Container type</strong>: In the column <code>by</code> you see radio buttons.
-Here you select the level that is used to chunk the search results in individual
-bits.
-Suppose you select <code>sentence</code> as your container type.
-Then all result items of type <code>sentence</code> are picked as the basis of a result.
-For each result, ancestors and descendants are added to the result.
-The ancestors are the items of higher levels that contain the <code>sentence</code> item.
-The descendants are all items at all levels that are contained in the <code>sentence</code> item.</p>
-<p>Note that all ancestor items are part of the search results.
-But not all descendant items are part of the search results.
-The ones that are results will be highlighted.
-The ones that are not will be displayed a bit dimmed, and they serve as
-context.</p>
-<p>By varying the container type, you can provide more or less context
+<p><strong>Row unit</strong>:
+In each level you see either the term <strong>row unit</strong> or <em>context</em> or <em>content</em>.</p>
+<p>The row unit is the level that corresponds to each individual result in the
+results table. Higher levels are <em>context</em> levels, lower levels are <em>content</em> levels.</p>
+<p>Each result mentions the corresponding results in the <em>context</em> levels.</p>
+<p>Each result contains all material in the <em>content</em> levels.</p>
+<p><em>Example:</em> if the <strong>row unit</strong> is <code>sentence</code>, then each result contains
+exactly one sentence.
+Together with that sentence, the <code>line</code> and <code>text</code> in which it occurs are mentioned.
+Inside the sentence, all of its <code>words</code> show up.
+Not all of them match, but the ones that do are highlighted.</p>
+<p>By varying the row unit, you can provide more or less context
 to your search results.</p>
 <p>We can select <strong>word</strong>, to get a much more compact overview:</p>
 <p><img alt="results6" src="../images/ls/results6.png"></p>
-<p><strong>Show layers</strong>: In the column <code>show</code> you see a number of checkboxes.
-Only the checked layers will show up in the search results.</p>
-<p>Note that you can switch on layers in which you did not search,
-and you can switch off layers in which you did search.</p>
+<p><strong>Flags</strong>
+The behaviour of your patterns can be changed by means of three flags, which are familiar
+citizens in the regular expression world:</p>
+<table>
+<thead>
+<tr>
+<th>flag</th>
+<th>mnemonic</th>
+<th>meaning</th>
+<th>default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i</td>
+<td>ignore</td>
+<td>ignore case</td>
+<td>on</td>
+</tr>
+<tr>
+<td>m</td>
+<td>multiline</td>
+<td><code>^ $</code> also match around embedded newlines in the string</td>
+<td>on</td>
+</tr>
+<tr>
+<td>s</td>
+<td>single string</td>
+<td><code>.</code> also matches the newline character</td>
+<td>off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Enable/disable patterns</strong>:
+In each layer you see a black or red button.
+Only the patterns in black layers are actually working, the red ones are skipped.
+It is as if you had not typed anything there.</p>
+<p>This way you can experiment with the cumulative effect of patterns in different layers,
+without the need to type them over and over again.</p>
+<p><strong>Show layers</strong>:
+In each layer you see a blue or grey button.
+Only the blue layers will show up in the search results.</p>
+<p>Note that you can show layers in which you did not search,
+and you can hide layers in which you did search.</p>
 <p>For example, lets look at the <strong>lite</strong> and <strong>manner</strong> layers
 only (within the word layers):</p>
 <p><img alt="results7" src="../images/ls/results7.png"></p>
+<p>Here we have also shown the layers <code>text-place</code> and <code>line-number</code>.</p>
+<p>Observe that we can also show the levels themselves.
+What you then get is the <code>node</code> layer.
+Nodes are internal numbers of objects.
+In Text-Fabric they are numbered from 1 for the first word or letter to a big number
+for the very last object.</p>
+<p>It might be more convenient to you to number the objects separately, starting at 1 in each level.</p>
+<p>There is an option by which you can choose what you like.</p>
 <h3 id="execute">Execute</h3>
-<p>When you click the big <strong>go search</strong> button,
-the search is executed and results get displayed.</p>
-<p>Right below the button you'll see the number of items
-found, specified per level.</p>
+<p>When you click the big button, the search is executed and results get displayed.</p>
+<p>Also, when you change your patterns, the search will be executed, to always reflect
+your input.</p>
+<p>But you can switch these auto-search off with an option, after which you have to
+manually press the button in order to see the results.</p>
+<p>Right below the button the number of items found appear, specified per level.</p>
 <h3 id="results-table">Results table</h3>
 <p>There might be (very) many results.
 Displaying them all might quickly overwhelm your browser.
@@ -213,55 +265,110 @@ and the row that had focus just before has a dim blue border.</p>
 <p>You can also type that position into a box.
 And you can shift the focus by one or a half screen in both directions.
 Or go to the first or last result.</p>
-<p>There are keyboard short cuts for all of these controls (except the slider).
+<p>There are keyboard shortcuts for all of these controls (except the slider).
 If you hover over them, you see what the shortcut is.</p>
+<p>All shortcuts need <code>Ctrl+Option</code></p>
+<table>
+<thead>
+<tr>
+<th>shortcut</th>
+<th>direction</th>
+<th>amount</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n</code></td>
+<td><strong>n</strong>ext</td>
+<td>one</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td><strong>p</strong>revious</td>
+<td>one</td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td><strong>b</strong>ack</td>
+<td>a batch (half a screenful)</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td><strong>f</strong>orward</td>
+<td>a batch (half a screen)</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td><strong>s</strong>tart</td>
+<td>all the way</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td><strong>e</strong>end</td>
+<td>all the way</td>
+</tr>
+</tbody>
+</table>
 <p><img alt="results8" src="../images/ls/results8.png"></p>
 <h2 id="jobs">Jobs</h2>
-<p>Your search task is called a <em>job</em> and it has a name.
+<p>Your search instructions together are called a <em>job</em> and it has a name.
 You see it on the interface, and you can add new jobs,
 duplicate and rename existing ones, delete some, and switch
 between all jobs that your browser has remembered.</p>
 <p><img alt="jobs" src="../images/ls/jobs.png"></p>
-<p>Your browser will indeed remember your jobs (not through cookies!
-but for your eyes only).</p>
-<p>But if you want to have other eyes look at your searches,
-you can also save jobs to file on disk, from where you can archive them,
-or share them by any means you find convenient: mail, message, twitter , etc.</p>
+<p>Indeed, your browser will remember your jobs (not through cookies! but for your eyes only).</p>
+<p>Sometimes you do want to have other eyes look at your searches.
+So you can share jobs by saving them first to a little file and then sharing that file
+by any means you find convenient: mail, message, twitter , etc.</p>
 <p>A job file is a small <code>.json</code> file that only contains the search patterns
 and display settings of the job.</p>
-<p>You can also export the search results to Excel.
+<h2 id="results-export">Results export</h2>
+<p>You can also export the search results to Excel (or rather, a tab-separated file, <code>.tsv</code>).
 When you do that, <em>all</em> results will get exported, not only the ones that show
 on the interface.</p>
 <p><img alt="export" src="../images/ls/export.png"></p>
 <p>The organization of the exported results is as follows:
 for each result item a row is made.</p>
-<p>The first column is an identifier for that item: a number, aka as <em>node</em>.
-The second column is the type of that item: <code>text</code>, <code>word</code>, etc.,
-aka as <em>node type</em>.</p>
+<p>The first column is an identifier for that item: a number.
+It is the sequence number of the item among the items in its level.
+Or, if you have the option active to show Text-Fabric node numbers instead, that is the number.</p>
+<p>In the first case, the header field will be <code>seqno</code>, in the second case <code>node</code>.</p>
+<p>The second column is the level of that item: <code>text</code>, <code>word</code>, etc.,</p>
 <p>And then follow columns for the individual layers, and the corresponding
 cells are filled with the values of the nodes in those layers, with
 the parts that match the search between <code>«</code> and <code>»</code>.
 Only layers that have their <code>show</code> checkboxes marked will make it to
 the Excel file.</p>
+<p>Some layers work with acronyms, instead of the real corpus values, e.g. <code>speaker</code> and <code>lang</code>.
+In the export you see these back with their expansion, like so <code>1 (=Dawið ʾAdam)</code>.</p>
+<p>By the way, you can see these expansions also on the interface, in the legend, and
+as a tool tip.</p>
+<p><img alt="results9" src="../images/ls/results9.png"></p>
 <h1 id="the-app">The app</h1>
-<p>We have implemented layered search as an offline Single Webpage Application.</p>
-<p>The app consists of:</p>
+<p>We have implemented layered search as an offline Single Page Application.</p>
+<p>The app consists of a single HTML file (<code>index.html</code>),
+a CSS file, PNG files (logos) and Javascript files.
+The corpus data is in a big Javascript file, the corpus configuration in a small one.
+The remaining Javascript files are the modules of the program.</p>
+<p>Modern browsers can take in modular Javascript, except when you have the HTML file
+locally on your computer and you open it with a double click.
+Your browser has then <code>file://</code> in its URL bar, and in that cases modular Javascript does
+not work.</p>
+<p>To overcome that, we have also bundled the program in a single file, and that is included by
+<code>local,html</code>.</p>
+<p>If you are in the app, you can download a zip file with <code>local.html</code> in it,
+so that you can have the full search experience completely off-line.</p>
+<p>Also when you have opened this page over the internet, your browser has downloaded the
+complete app, and all interaction between you and the search app happens at your browser,
+without further internet connection.</p>
+<p>As a consequence</p>
 <ul>
-<li>a HTML file (<code>index.html</code>)</li>
-<li>a CSS file (<code>layered.css</code>)</li>
-<li>a JS controlling program (<code>layered.js</code> with auxiliary <code>jquery.js</code>)</li>
-<li>a JS corpus data file (<code>corpus.js</code>) </li>
+<li>this app works without any kind of installation</li>
+<li>it does not collect data about you</li>
+<li>it does not use cookies.</li>
+<li>it works without internet connection</li>
 </ul>
-<p>If you have these files on your computer, you can just open <code>index.html</code> in your
-browser, and the interface is ready to use, and you do not need a server connection.</p>
-<p>If you have found <code>index.html</code> somewhere on the web, and the page is loaded,
-you can work with it offline. You can also save this webpage in your browser
-(take care to save it in full, as webarchive) and work with it later, without
-internet connection. You might have to put all four files together in one directory,
-depending on the way the browser has saved the webpage for you.</p>
-<p>As a consequence, the app works without any kind of installation.
-It also does not collect data about you, or sets cookies.
-When the browser remembers your previous jobs,
+<p>When the browser remembers your previous jobs,
 it does not use cookies for it but
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">localStorage</a>,
 which other sites cannot read.</p>
@@ -270,9 +377,9 @@ which other sites cannot read.</p>
 as a Text-Fabric dataset.</p>
 <p>The layered search functionality is not (yet) baked into Text-Fabric.
 We have created the first layered search interface for the
-<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA</a> (in the directory <em>nena2search</em>)
-corpus, by means of a Jupyter Notebook
-<a href="https://nbviewer.jupyter.org/github/CambridgeSemiticsLab/nena_tf/blob/master/nena2search/makedata.ipynb">makeCorpus</a>.</p>
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA</a>
+corpus, by means of a Python program
+<a href="https://github.com/annotation/app-nena/blob/master/mkdata.py">mkdata</a>.</p>
 <p>We intend to make such interfaces for other Text-Fabric corpora, using more
 streamlined ways.</p>
 <h1 id="credits">Credits</h1>
@@ -292,7 +399,7 @@ and eventually written by
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bbff0a1e7971be828c015d1a635a240a36d0447b/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/a8237c79d00165da0c72c993491685ecea37fa01/tf/about/layeredsearch.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/layeredsearch.md
@@ -372,6 +479,7 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><a href="#jobs">Jobs</a></li>
+<li><a href="#results-export">Results export</a></li>
 </ul>
 </li>
 <li><a href="#the-app">The app</a></li>
