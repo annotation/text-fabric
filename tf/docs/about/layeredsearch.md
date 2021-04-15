@@ -34,7 +34,7 @@ words after each other. You could then search for things like
 (verb noun noun)+
 ```
 
-We'll stick to NENA to provide us with examples of how to use layered search.
+We'll stick to NENA for examples of layered search.
 
 ## Combined search
 
@@ -58,6 +58,9 @@ There are 1338 such words in 1238 sentences.
 
 By clicking on the checkbox next to the **full** layer,
 you will see the full-ascii transliteration of these results as well.
+
+> Click on "+ all layers" and "- active layers" to expand to all layers of a level
+and to collapse back to the active layers.
 
 ![results2](../images/ls/results2.png)
 
@@ -103,46 +106,82 @@ Still 20 results.
 The interface gives you additional ways to control how the results of your
 search are being displayed.
 
-**Container type**: In the column `by` you see radio buttons.
-Here you select the level that is used to chunk the search results in individual
-bits.
-Suppose you select `sentence` as your container type. 
-Then all result items of type `sentence` are picked as the basis of a result.
-For each result, ancestors and descendants are added to the result.
-The ancestors are the items of higher levels that contain the `sentence` item.
-The descendants are all items at all levels that are contained in the `sentence` item.
+**Row unit**:
+In each level you see either the term **row unit** or *context* or *content*.
 
-Note that all ancestor items are part of the search results.
-But not all descendant items are part of the search results.
-The ones that are results will be highlighted.
-The ones that are not will be displayed a bit dimmed, and they serve as
-context.
+The row unit is the level that corresponds to each individual result in the
+results table. Higher levels are *context* levels, lower levels are *content* levels.
 
-By varying the container type, you can provide more or less context
+Each result mentions the corresponding results in the *context* levels.
+
+Each result contains all material in the *content* levels.
+
+*Example:* if the **row unit** is `sentence`, then each result contains
+exactly one sentence. 
+Together with that sentence, the `line` and `text` in which it occurs are mentioned.
+Inside the sentence, all of its `words` show up.
+Not all of them match, but the ones that do are highlighted.
+
+By varying the row unit, you can provide more or less context
 to your search results.
 
 We can select **word**, to get a much more compact overview:
 
 ![results6](../images/ls/results6.png)
 
-**Show layers**: In the column `show` you see a number of checkboxes.
-Only the checked layers will show up in the search results.
+**Flags**
+The behaviour of your patterns can be changed by means of three flags, which are familiar
+citizens in the regular expression world:
 
-Note that you can switch on layers in which you did not search,
-and you can switch off layers in which you did search.
+flag | mnemonic | meaning | default
+--- | --- | --- | ---
+i | ignore | ignore case | on
+m | multiline | `^ $` also match around embedded newlines in the string | on
+s | single string | `.` also matches the newline character | off
+
+**Enable/disable patterns**:
+In each layer you see a black or red button.
+Only the patterns in black layers are actually working, the red ones are skipped.
+It is as if you had not typed anything there.
+
+This way you can experiment with the cumulative effect of patterns in different layers,
+without the need to type them over and over again.
+
+**Show layers**:
+In each layer you see a blue or grey button.
+Only the blue layers will show up in the search results.
+
+Note that you can show layers in which you did not search,
+and you can hide layers in which you did search.
 
 For example, lets look at the **lite** and **manner** layers
 only (within the word layers):
 
 ![results7](../images/ls/results7.png)
 
+Here we have also shown the layers `text-place` and `line-number`.
+
+Observe that we can also show the levels themselves.
+What you then get is the `node` layer.
+Nodes are internal numbers of objects.
+In Text-Fabric they are numbered from 1 for the first word or letter to a big number
+for the very last object.
+
+It might be more convenient to you to number the objects separately, starting at 1 in each level.
+
+There is an option by which you can choose what you like.
+
 ### Execute
 
-When you click the big **go search** button,
-the search is executed and results get displayed.
+When you click the big button, the search is executed and results get displayed.
 
-Right below the button you'll see the number of items
-found, specified per level.
+Also, when you change your patterns, the search will be executed, to always reflect
+your input.
+
+But you can switch these auto-search off with an option, after which you have to
+manually press the button in order to see the results.
+
+Right below the button the number of items found appear, specified per level.
 
 ### Results table
 
@@ -162,31 +201,43 @@ You can also type that position into a box.
 And you can shift the focus by one or a half screen in both directions.
 Or go to the first or last result.
 
-There are keyboard short cuts for all of these controls (except the slider).
+There are keyboard shortcuts for all of these controls (except the slider).
 If you hover over them, you see what the shortcut is.
+
+All shortcuts need `Ctrl+Option`
+
+shortcut | direction | amount
+--- | --- | ---
+`n` | **n**ext | one
+`p` | **p**revious | one
+`b` | **b**ack | a batch (half a screenful)
+`f` | **f**orward | a batch (half a screen)
+`s` | **s**tart | all the way
+`e` | **e**end | all the way
 
 ![results8](../images/ls/results8.png)
 
 ## Jobs
 
-Your search task is called a *job* and it has a name.
+Your search instructions together are called a *job* and it has a name.
 You see it on the interface, and you can add new jobs,
 duplicate and rename existing ones, delete some, and switch
 between all jobs that your browser has remembered.
 
 ![jobs](../images/ls/jobs.png)
 
-Your browser will indeed remember your jobs (not through cookies!
-but for your eyes only).
+Indeed, your browser will remember your jobs (not through cookies! but for your eyes only).
 
-But if you want to have other eyes look at your searches,
-you can also save jobs to file on disk, from where you can archive them,
-or share them by any means you find convenient: mail, message, twitter , etc.
+Sometimes you do want to have other eyes look at your searches.
+So you can share jobs by saving them first to a little file and then sharing that file
+by any means you find convenient: mail, message, twitter , etc.
 
 A job file is a small `.json` file that only contains the search patterns
 and display settings of the job.
 
-You can also export the search results to Excel.
+## Results export
+
+You can also export the search results to Excel (or rather, a tab-separated file, `.tsv`).
 When you do that, *all* results will get exported, not only the ones that show
 on the interface.
 
@@ -195,9 +246,13 @@ on the interface.
 The organization of the exported results is as follows:
 for each result item a row is made.
 
-The first column is an identifier for that item: a number, aka as *node*.
-The second column is the type of that item: `text`, `word`, etc.,
-aka as *node type*.
+The first column is an identifier for that item: a number.
+It is the sequence number of the item among the items in its level.
+Or, if you have the option active to show Text-Fabric node numbers instead, that is the number.
+
+In the first case, the header field will be `seqno`, in the second case `node`.
+
+The second column is the level of that item: `text`, `word`, etc.,
 
 And then follow columns for the individual layers, and the corresponding
 cells are filled with the values of the nodes in those layers, with
@@ -205,28 +260,45 @@ the parts that match the search between `«` and `»`.
 Only layers that have their `show` checkboxes marked will make it to
 the Excel file.
 
+Some layers work with acronyms, instead of the real corpus values, e.g. `speaker` and `lang`.
+In the export you see these back with their expansion, like so `1 (=Dawið ʾAdam)`.
+
+By the way, you can see these expansions also on the interface, in the legend, and
+as a tool tip.
+
+![results9](../images/ls/results9.png)
+
 # The app
 
-We have implemented layered search as an offline Single Webpage Application.
+We have implemented layered search as an offline Single Page Application.
 
-The app consists of:
+The app consists of a single HTML file (`index.html`),
+a CSS file, PNG files (logos) and Javascript files.
+The corpus data is in a big Javascript file, the corpus configuration in a small one.
+The remaining Javascript files are the modules of the program.
 
-* a HTML file (`index.html`)
-* a CSS file (`layered.css`)
-* a JS controlling program (`layered.js` with auxiliary `jquery.js`)
-* a JS corpus data file (`corpus.js`) 
+Modern browsers can take in modular Javascript, except when you have the HTML file
+locally on your computer and you open it with a double click.
+Your browser has then `file://` in its URL bar, and in that cases modular Javascript does
+not work.
 
-If you have these files on your computer, you can just open `index.html` in your
-browser, and the interface is ready to use, and you do not need a server connection.
+To overcome that, we have also bundled the program in a single file, and that is included by
+`local,html`.
 
-If you have found `index.html` somewhere on the web, and the page is loaded,
-you can work with it offline. You can also save this webpage in your browser
-(take care to save it in full, as webarchive) and work with it later, without
-internet connection. You might have to put all four files together in one directory,
-depending on the way the browser has saved the webpage for you.
+If you are in the app, you can download a zip file with `local.html` in it,
+so that you can have the full search experience completely off-line.
 
-As a consequence, the app works without any kind of installation.
-It also does not collect data about you, or sets cookies.
+Also when you have opened this page over the internet, your browser has downloaded the
+complete app, and all interaction between you and the search app happens at your browser,
+without further internet connection.
+
+As a consequence
+
+* this app works without any kind of installation
+* it does not collect data about you
+* it does not use cookies.
+* it works without internet connection
+
 When the browser remembers your previous jobs,
 it does not use cookies for it but
 [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage),
@@ -239,9 +311,9 @@ as a Text-Fabric dataset.
 
 The layered search functionality is not (yet) baked into Text-Fabric.
 We have created the first layered search interface for the 
-[NENA](https://github.com/CambridgeSemiticsLab/nena_tf) (in the directory *nena2search*)
-corpus, by means of a Jupyter Notebook
-[makeCorpus](https://nbviewer.jupyter.org/github/CambridgeSemiticsLab/nena_tf/blob/master/nena2search/makedata.ipynb).
+[NENA](https://github.com/CambridgeSemiticsLab/nena_tf)
+corpus, by means of a Python program
+[mkdata](https://github.com/annotation/app-nena/blob/master/mkdata.py).
 
 We intend to make such interfaces for other Text-Fabric corpora, using more
 streamlined ways.
@@ -263,8 +335,3 @@ This implementation of the idea was funded by
 [Prof. Geoffrey Khan](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),
 and eventually written by
 [Dirk Roorda](https://pure.knaw.nl/portal/en/persons/dirk-roorda).
-
-
-
-
-

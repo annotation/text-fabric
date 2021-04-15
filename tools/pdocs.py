@@ -214,8 +214,9 @@ def pdoc3(pkg):
     copyfile(f"{pkg}/docs/index.html", f"{SITE}/index.html")
 
 
-def shipDocs(org, repo, pkg):
+def shipDocs(org, repo, pkg, pdoc=True):
     """Build the docs into site and ship them."""
 
-    pdoc3(pkg)
+    if pdoc:
+        pdoc3(pkg)
     _gh_deploy(org, repo, pkg)
