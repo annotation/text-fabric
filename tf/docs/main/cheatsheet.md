@@ -120,6 +120,12 @@ A.unravel(node, ...)
 :   convert a graph to a tree
 :   `tf.advanced.unravel.unravel`
 
+```
+A.getCss(
+```
+:   get the complete CSS stylesheet for this app
+:   `tf.advanced.display.getCss`
+
 ---
 
 ## Search (high level)

@@ -27,6 +27,7 @@ tf/about/displaydesign.py
 tf/about/faq.py
 tf/about/fileformats.py
 tf/about/install.py
+tf/about/layeredsearch.py
 tf/about/optimizations.py
 tf/about/releases.py
 tf/about/releasesold.py

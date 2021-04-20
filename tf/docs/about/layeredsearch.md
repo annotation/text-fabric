@@ -208,6 +208,7 @@ All shortcuts need `Ctrl+Option`
 
 shortcut | direction | amount
 --- | --- | ---
+`m` | NA | manual entry of the result number
 `n` | **n**ext | one
 `p` | **p**revious | one
 `b` | **b**ack | a batch (half a screenful)

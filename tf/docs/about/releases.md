@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 8.4
 
+#### 8.4.14
+
+2021-04-20
+
+A minor addition: you can now get the CSS of an app and re-use it in notebooks without
+loading the whole API.
+See `advanced.display.getCss`.
+
 #### 8.4.13
 
 2021-03-22

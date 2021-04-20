@@ -99,6 +99,7 @@ def displayApi(app, silent):
     app.pretty = types.MethodType(pretty, app)
     app.unravel = types.MethodType(unravel, app)
     app.loadCss = types.MethodType(loadCss, app)
+    app.getCss = types.MethodType(getCss, app)
     app.displayShow = types.MethodType(displayShow, app)
     app.displaySetup = types.MethodType(displaySetup, app)
     app.displayReset = types.MethodType(displayReset, app)
@@ -187,17 +188,51 @@ def displayReset(app, *options):
 
 
 def loadCss(app):
-    """The CSS is looked up and then loaded into a notebook if we are not
-    running in the TF browser,
-    else the CSS is returned.
+    """Load the CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
     """
 
     _browse = app._browse
     aContext = app.context
-    css = aContext.css
+    appCss = aContext.css
 
     if _browse:
-        return css
+        return appCss
+
+    css = getCss(app)
+    dh(css)
+
+
+def getCss(app):
+    """Export the CSS for this app.
+
+    We collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `<style>` element.
+    """
+
+    aContext = app.context
+    appCss = aContext.css
 
     cssPath = (
         f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
@@ -212,7 +247,7 @@ def loadCss(app):
         "tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n"
         "tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n"
     )
-    dh("<style>" + tableCss + genericCss + css + "</style>")
+    return f"<style>{tableCss}{genericCss}{appCss}</style>"
 
 
 def export(app, tuples, toDir=None, toFile="results.tsv", **options):
