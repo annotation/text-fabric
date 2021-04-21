@@ -198,7 +198,7 @@ def makeDist(pypi=True):
     run(["python3", "setup.py", "sdist", "bdist_wheel"])
     if pypi:
         run(["twine", "upload", "-u", "dirkroorda", distPath])
-        run("./purge.sh", shell=True)
+        # run("./purge.sh", shell=True)
 
 
 def commit(task, msg):
