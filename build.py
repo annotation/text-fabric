@@ -12,7 +12,7 @@ ORG = "annotation"
 REPO = "text-fabric"
 PKG = "tf"
 PACKAGE = "text-fabric"
-SCRIPT = "/Library/Frameworks/Python.framework/Versions/3.7/bin/{PACKAGE}"
+SCRIPT = "/Library/Frameworks/Python.framework/Versions/Current/bin/{PACKAGE}"
 
 DIST = "dist"
 

@@ -19,6 +19,7 @@ tf/about/__init__.py
 tf/about/apps.py
 tf/about/background.py
 tf/about/browser.py
+tf/about/clientmanual.py
 tf/about/code.py
 tf/about/corpora.py
 tf/about/datamodel.py
@@ -27,7 +28,6 @@ tf/about/displaydesign.py
 tf/about/faq.py
 tf/about/fileformats.py
 tf/about/install.py
-tf/about/layeredsearch.py
 tf/about/optimizations.py
 tf/about/releases.py
 tf/about/releasesold.py
@@ -54,6 +54,7 @@ tf/advanced/tables.py
 tf/advanced/text.py
 tf/advanced/unravel.py
 tf/advanced/zipdata.py
+tf/client/__init__.py
 tf/compose/__init__.py
 tf/compose/combine.py
 tf/compose/modify.py
@@ -153,5 +154,6 @@ tf/writing/__init__.py
 tf/writing/arabic.py
 tf/writing/greek.py
 tf/writing/hebrew.py
+tf/writing/neoaramaic.py
 tf/writing/syriac.py
 tf/writing/transcription.py

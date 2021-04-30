@@ -13,6 +13,7 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 * Install (`tf.about.install`)
 * FAQ (`tf.about.faq`)
 * Browser (`tf.about.browser`)
+* Search Client (`tf.about.clientmanual`)
 * Use (`tf.about.use`)
 * Search (`tf.about.searchusage`)
 * API (`tf.cheatsheet`)

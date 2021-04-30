@@ -11,6 +11,7 @@ setup(
         "tf.core",
         "tf.search",
         "tf.server",
+        "tf.client",
         "tf.writing",
     ],
     install_requires=[
@@ -34,6 +35,7 @@ setup(
         "console_scripts": [
             "text-fabric = tf.server.start:main",
             "text-fabric-zip = tf.advanced.zipdata:main",
+            "text-fabric-make = tf.client.make.build:main",
         ]
     },
     version='8.4.14',
