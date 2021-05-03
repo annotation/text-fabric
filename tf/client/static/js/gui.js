@@ -93,7 +93,11 @@ export class GuiProvider {
       }
       const bState = (useValue === null) ? "no" : value ? "on" : "off"
       const buttonHtml = `
-        <button type="button" name="${name}" class="setting ${bState}"></button>
+        <button
+          type="button" name="${name}"
+          class="setting"
+          title="${TIP[name]}"
+          ${bState}"></button>
       `
       if (name == "multihl") {
         const canRep = can ? "✅ in this browser" : "❌ in this browser"

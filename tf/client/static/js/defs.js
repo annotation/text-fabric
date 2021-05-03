@@ -69,7 +69,7 @@ OR
 use a single highlight color for the complete match
 N.B.: this might not be supported in your browser`,
   expand: "whether to show inactive layers",
-  focus: "make this the focus",
+  focus: "make this the focus level",
   exec: "whether this pattern is used in the search",
   visible: "whether this layer is visible in the results",
   visibletp: "whether node numbers are visible in the results",

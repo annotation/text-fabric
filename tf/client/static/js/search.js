@@ -859,8 +859,7 @@ export class SearchProvider {
       cols, layersPerType,
     } = this.getLayersPerType(exportsr)
 
-    const colsRep = cols.map(x => `${x}\t`)
-    const header = `${RESULTCOL}\t${colsRep.join("")}\n`
+    const header = `${RESULTCOL}\t${cols.join("\t")}\n`
 
     const genValueTsv = (nType, layer, node) => {
       /* generates the value for a layer of node, including the result highlighting

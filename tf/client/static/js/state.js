@@ -185,7 +185,7 @@ export class StateProvider {
         /* whether to keep results in single rows in tsv exports
          * even if there are multiple layers per level
          */
-        exportsr: true,
+        exportsr: false,
 
         /* whether to highlight groups with different colors
          * only if the browser supports it

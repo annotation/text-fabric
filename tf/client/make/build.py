@@ -1,3 +1,49 @@
+"""
+# Usage
+
+After installation, you have a new command `text-fabric-make`.
+You can use this on the command line to build new search interfaces for existing
+Text-Fabric apps.
+
+Such a search interface is a static html page, powered by a Javascript program,
+loaded with the corpus data into Javascript variables.
+
+You can build the interface and ship the html page to GitHub Pages,
+after which it is usable for everyone.
+
+## Prerequisites
+
+1.  A Text-Fabric dataset that is registered as a TF-App, e.g. `nena` in
+    [github.com/annotation/app-nena](https://github.com/annotation/app-nena).
+    This is the normative example for now.
+1.  Within that app's repo, a subdirectory
+    [layeredsearch](https://github.com/annotation/app-nena/tree/master/layeredsearch)
+    with definitions of search interfaces
+    (you can define multiple search interfaces for one dataset).
+    Within this directory:
+    1.  `config.yaml`: common metadata of all defined search interfaces
+    1.  for each search interface a folder
+        whose name is the name of the search interface, containing
+        1.  `config.yaml`: definition of this specific search interface
+        1.  `logo.png`: a logo
+        1.  `custom.css`: additional styling (may be empty)
+        1.  `mkdata.py`: a module containing a few functions that produce the
+            corpus configuration data and the corpus search data:
+            1.  `makeLegends(maker)`: produce abbreviation lists for some layers
+            2.  `record(maker)`: produce all the search data: full texts of layers and
+                mappings between nodes and positions in those texts
+
+            The `maker` argument is passed by the builder, and contains
+            the definition of the layers and the api of a loaded Text-Fabric dataset.
+
+## Commands
+
+See  also:
+
+*   `tf.client.make.help`
+*   `tf.about.clientmanual`
+"""
+
 import sys
 import os
 import re
@@ -258,7 +304,7 @@ class Make:
             writingUrl="https://«org».«ghPages»/text-fabric/tf/writing/«writing».html",
             urls=dict(
                 cheatsheet=(
-                    "cheatsheet",
+                    "regexp cheatsheet",
                     (
                         "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/"
                         "Regular_Expressions/Cheatsheet"
@@ -331,11 +377,6 @@ class Make:
                     "source code of the definition of this search interface",
                 ),
                 issue=(
-                    "Feature requests, bugs, feedback",
-                    "«issueUrl»",
-                    "report issues",
-                ),
-                issue2=(
                     "Report an issue",
                     "«issueUrl»",
                     "report issues",
