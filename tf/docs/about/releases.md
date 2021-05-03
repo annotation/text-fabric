@@ -44,6 +44,19 @@ text-fabric appName:hot
 
 ## 8
 
+### 8.5
+
+#### 8.5.0
+
+2021-05-03
+
+There is a new piece of functionality in Text-Fabric: making search interfaces for existing TF-apps.
+These are static HTML+CSS+Javascript pages, that provide *layered search*.
+Text-Fabric has a new command `text-fabric-make dataset interfacename` which generates such an app
+from a bit of configuration and code, which you have to provide in the `app-`*dataset* repo.
+
+See `tf.client`.
+
 ### 8.4
 
 #### 8.4.14

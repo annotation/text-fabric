@@ -859,8 +859,6 @@ export class SearchProvider {
       cols, layersPerType,
     } = this.getLayersPerType(exportsr)
 
-    this.tell(cols)
-
     const colsRep = cols.map(x => `${x}\t`)
     const header = `${RESULTCOL}\t${colsRep.join("")}\n`
 
@@ -946,37 +944,50 @@ export class SearchProvider {
        */
       const typeNodes = []
       for (const nType of upperTypes) {
-        typeNodes.push([false, (result[nType] ?? []).map(x => genNodeTsv(x))])
+        typeNodes.push((result[nType] ?? []).map(x => genNodeTsv(x)))
       }
       for (const nType of contentTypes) {
-        typeNodes.push([false, (result[nType] ?? []).map(x => genNodeTsv(x))])
+        typeNodes.push((result[nType] ?? []).map(x => genNodeTsv(x)))
       }
+
       const tsv = []
-      const maxLines = Math.max(
-        ...typeNodes.map(
-          x => Math.max(...x[1].map(y => y.length))
-        )
-      )
-      for (let i = 0; i < maxLines; i++) {
+
+      if (exportsr) {
         const line = [`${s + 1}`]
-        for (const [separate, chunks] of typeNodes) {
-          line.push("\t")
+        for (const chunks of typeNodes) {
+          const fields = []
           let first = true
-          let sep = ""
           for (const chunk of chunks) {
-            if (sep) {
-              line.push(sep)
-            }
-            line.push((i < chunk.length) ? chunk[i] : "")
-            if (first) {
-              first = false
-              if (separate) {
-                sep = "\t"
+            for (let i = 0; i < chunk.length; i++) {
+              if (first) {
+                fields[i] = ""
               }
+              const piece = chunk[i]
+              fields[i] += piece
+            }
+            first = false
+          }
+          line.push(fields.join("\t"))
+        }
+        tsv.push(`${line.join("\t")}\n`)
+      }
+      else {
+        const maxLayers = Math.max(
+          ...typeNodes.map(
+            x => Math.max(...x.map(y => y.length))
+          )
+        )
+
+        for (let i = 0; i < maxLayers; i++) {
+          const line = [`${s + 1}`]
+          for (const chunks of typeNodes) {
+            line.push("\t")
+            for (const chunk of chunks) {
+              line.push((i < chunk.length) ? chunk[i] : "")
             }
           }
+          tsv.push(`${line.join("")}\n`)
         }
-        tsv.push(`${line.join("")}\n`)
       }
       return tsv
     }
@@ -1004,6 +1015,9 @@ export class SearchProvider {
     const { Log, Disk, State } = this
 
     const { jobName } = State.gets()
+    const { focusType, settings: { exporthl, exportsr } } = State.getj()
+    const jobExtraSR = exportsr ? "-xc" : "-xr"
+    const jobExtraHL = exporthl ? "-hl" : ""
 
     const expr = $("#exportr")
     const runerror = $("#runerror")
@@ -1026,7 +1040,9 @@ export class SearchProvider {
     }
     if (errors.length == 0) {
       try {
-        Disk.download(text, jobName, "tsv", true)
+        Disk.download(
+          text, `${jobName}-${focusType}${jobExtraSR}${jobExtraHL}`, "tsv", true
+        )
       }
       catch (error) {
         errors.push({ where: "download", error })
