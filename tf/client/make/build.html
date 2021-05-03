@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L0-L957" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L0-L960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -253,7 +253,6 @@ class Make:
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings[&#34;lsVersion&#34;]
-        self.lsVersion = lsVersion
 
         c = dict(
             dataset=dataset,
@@ -513,9 +512,9 @@ class Make:
 
         clientConfig = dict(
             defs=dict(
+                lsVersion=C.lsVersion,
                 dataset=C.dataset,
                 client=C.client,
-                lsVersion=C.lsVersion,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -724,7 +723,7 @@ class Make:
         # copy over the static files
 
         C = self.C
-        lsVersion = self.lsVersion
+        lsVersion = C.lsVersion
 
         for (srcDir, dstDir) in (
             (C.pngInDir, C.pngOutDir),
@@ -948,23 +947,27 @@ class Make:
                     console(&#34;Http server has stopped&#34;)
 
     def incVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         parts = lsVersion.split(&#34;@&#34;, 1)
         v = int(parts[0].lstrip(&#34;v&#34;).lstrip(&#34;0&#34;), base=10)
         now = dt.utcnow().isoformat(timespec=&#34;seconds&#34;)
         self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;
+        C.lsVersion = self.lsVersion
 
     def showVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         versionFile = self.versionFile
         console(f&#34;{lsVersion} (according to {versionFile})&#34;)
 
     def adjustVersion(self):
+        C = self.C
         versionFile = self.versionFile
 
-        currentVersion = self.lsVersion
+        currentVersion = C.lsVersion
         self.incVersion()
-        newVersion = self.lsVersion
+        newVersion = C.lsVersion
 
         with open(versionFile, &#34;w&#34;) as fh:
             yaml.dump(dict(lsVersion=newVersion), fh)
@@ -1050,7 +1053,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L83-L95" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L83-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(data):
     sets = {}
@@ -1075,7 +1078,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L74-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L74-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args):
     sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
@@ -1090,7 +1093,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L79-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L79-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return None if legend is None else {v: k for (k, v) in legend.items()}</code></pre>
@@ -1104,7 +1107,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L951-L953" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L954-L956" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Mk = Make()
@@ -1124,7 +1127,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L98-L948" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L98-L951" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(self):
@@ -1207,7 +1210,6 @@ if __name__ == &#34;__main__&#34;:
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings[&#34;lsVersion&#34;]
-        self.lsVersion = lsVersion
 
         c = dict(
             dataset=dataset,
@@ -1467,9 +1469,9 @@ if __name__ == &#34;__main__&#34;:
 
         clientConfig = dict(
             defs=dict(
+                lsVersion=C.lsVersion,
                 dataset=C.dataset,
                 client=C.client,
-                lsVersion=C.lsVersion,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -1678,7 +1680,7 @@ if __name__ == &#34;__main__&#34;:
         # copy over the static files
 
         C = self.C
-        lsVersion = self.lsVersion
+        lsVersion = C.lsVersion
 
         for (srcDir, dstDir) in (
             (C.pngInDir, C.pngOutDir),
@@ -1902,23 +1904,27 @@ if __name__ == &#34;__main__&#34;:
                     console(&#34;Http server has stopped&#34;)
 
     def incVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         parts = lsVersion.split(&#34;@&#34;, 1)
         v = int(parts[0].lstrip(&#34;v&#34;).lstrip(&#34;0&#34;), base=10)
         now = dt.utcnow().isoformat(timespec=&#34;seconds&#34;)
         self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;
+        C.lsVersion = self.lsVersion
 
     def showVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         versionFile = self.versionFile
         console(f&#34;{lsVersion} (according to {versionFile})&#34;)
 
     def adjustVersion(self):
+        C = self.C
         versionFile = self.versionFile
 
-        currentVersion = self.lsVersion
+        currentVersion = C.lsVersion
         self.incVersion()
-        newVersion = self.lsVersion
+        newVersion = C.lsVersion
 
         with open(versionFile, &#34;w&#34;) as fh:
             yaml.dump(dict(lsVersion=newVersion), fh)
@@ -1988,7 +1994,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L931-L948" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L934-L951" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2018,14 +2024,15 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L885-L895" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L887-L898" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
+    C = self.C
     versionFile = self.versionFile
 
-    currentVersion = self.lsVersion
+    currentVersion = C.lsVersion
     self.incVersion()
-    newVersion = self.lsVersion
+    newVersion = C.lsVersion
 
     with open(versionFile, &#34;w&#34;) as fh:
         yaml.dump(dict(lsVersion=newVersion), fh)
@@ -2041,7 +2048,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L169-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L169-L417" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2053,7 +2060,6 @@ if __name__ == &#34;__main__&#34;:
     with open(versionFile) as fh:
         settings = yaml.load(fh, Loader=yaml.FullLoader)
         lsVersion = settings[&#34;lsVersion&#34;]
-    self.lsVersion = lsVersion
 
     c = dict(
         dataset=dataset,
@@ -2303,7 +2309,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L584-L599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L583-L598" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2331,7 +2337,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L601-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L600-L620" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -2364,7 +2370,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L903-L923" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L906-L926" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2397,14 +2403,16 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L873-L878" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L872-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
-    lsVersion = self.lsVersion
+    C = self.C
+    lsVersion = C.lsVersion
     parts = lsVersion.split(&#34;@&#34;, 1)
     v = int(parts[0].lstrip(&#34;v&#34;).lstrip(&#34;0&#34;), base=10)
     now = dt.utcnow().isoformat(timespec=&#34;seconds&#34;)
-    self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;</code></pre>
+    self.lsVersion = f&#34;v{v + 1:&gt;03}@{now}&#34;
+    C.lsVersion = self.lsVersion</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.loadTf"><code class="name flex">
@@ -2415,7 +2423,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L557-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L556-L561" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -2433,7 +2441,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L524-L555" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L523-L554" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(self):
     self.readArgs()
@@ -2489,7 +2497,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L623-L801" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L622-L800" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeClient(self):
         &#34;&#34;&#34;
@@ -2518,7 +2526,7 @@ and let a «client»-local.html include it</p>
         # copy over the static files
 
         C = self.C
-        lsVersion = self.lsVersion
+        lsVersion = C.lsVersion
 
         for (srcDir, dstDir) in (
             (C.pngInDir, C.pngOutDir),
@@ -2680,7 +2688,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L420-L522" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L419-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -2701,9 +2709,9 @@ and let a «client»-local.html include it</p>
 
     clientConfig = dict(
         defs=dict(
+            lsVersion=C.lsVersion,
             dataset=C.dataset,
             client=C.client,
-            lsVersion=C.lsVersion,
             org=C.org,
             repo=C.repo,
             urls=C.urls,
@@ -2795,7 +2803,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L564-L569" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L563-L568" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2813,7 +2821,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L571-L582" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L570-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2837,7 +2845,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L837-L840" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L836-L839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self):
     C = self.C
@@ -2853,7 +2861,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L105-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L105-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs(self):
     args = sys.argv[1:]
@@ -2928,7 +2936,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L897-L901" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L900-L904" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -2945,7 +2953,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L850-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L849-L870" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -2979,7 +2987,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L842-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L841-L847" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self):
     self.adjustVersion()
@@ -2998,7 +3006,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L925-L929" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L928-L932" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3015,10 +3023,11 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L880-L883" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L881-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
-    lsVersion = self.lsVersion
+    C = self.C
+    lsVersion = C.lsVersion
     versionFile = self.versionFile
     console(f&#34;{lsVersion} (according to {versionFile})&#34;)</code></pre>
 </details>
@@ -3031,7 +3040,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0d02de79776e3b8d355398622cb8a358f03098f2/tf/client/make/build.py#L803-L835" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L802-L834" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
