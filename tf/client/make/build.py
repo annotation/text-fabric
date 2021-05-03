@@ -176,7 +176,6 @@ class Make:
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings["lsVersion"]
-        self.lsVersion = lsVersion
 
         c = dict(
             dataset=dataset,
@@ -436,9 +435,9 @@ class Make:
 
         clientConfig = dict(
             defs=dict(
+                lsVersion=C.lsVersion,
                 dataset=C.dataset,
                 client=C.client,
-                lsVersion=C.lsVersion,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -647,7 +646,7 @@ class Make:
         # copy over the static files
 
         C = self.C
-        lsVersion = self.lsVersion
+        lsVersion = C.lsVersion
 
         for (srcDir, dstDir) in (
             (C.pngInDir, C.pngOutDir),
@@ -871,23 +870,27 @@ class Make:
                     console("Http server has stopped")
 
     def incVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         parts = lsVersion.split("@", 1)
         v = int(parts[0].lstrip("v").lstrip("0"), base=10)
         now = dt.utcnow().isoformat(timespec="seconds")
         self.lsVersion = f"v{v + 1:>03}@{now}"
+        C.lsVersion = self.lsVersion
 
     def showVersion(self):
-        lsVersion = self.lsVersion
+        C = self.C
+        lsVersion = C.lsVersion
         versionFile = self.versionFile
         console(f"{lsVersion} (according to {versionFile})")
 
     def adjustVersion(self):
+        C = self.C
         versionFile = self.versionFile
 
-        currentVersion = self.lsVersion
+        currentVersion = C.lsVersion
         self.incVersion()
-        newVersion = self.lsVersion
+        newVersion = C.lsVersion
 
         with open(versionFile, "w") as fh:
             yaml.dump(dict(lsVersion=newVersion), fh)
