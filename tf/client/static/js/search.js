@@ -821,7 +821,7 @@ export class SearchProvider {
     const html = genResultsHtml()
     const resultsbody = $("#resultsbody")
     resultsbody.html(html)
-    Gui.applyFocus()
+    Gui.applyPosition()
   }
 
   /* RESULTS EXPORT

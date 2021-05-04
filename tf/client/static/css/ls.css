@@ -207,14 +207,14 @@ button.medium, a.medium {
   background-color: var(--query-back);
 }
 /* entries in the query table for levels (node types) */
-.focus {
+button.focus {
   border-radius: 0.2rem;
   padding: 0.2rem;
   border-width: 0;
   color: var(--txtbtn-off-fore);
   background-color: var(--txtbtn-off-back);
 }
-.focus.on {
+button.focus.on {
   color: var(--txtbtn-on-fore);
   font-weight: bold;
   background-color: var(--txtbtn-on-back);
@@ -395,7 +395,7 @@ div.setting details {
 
 /* MID COLUMN */
 
-/* a vertical slider to set the focus position in the results table */
+/* a vertical slider to set the position in the results table */
 .swrapper {
   display: inline-block;
   width: 3rem;
@@ -412,7 +412,7 @@ div.setting details {
   transform: rotate(90deg);
 }
 
-/* control to set focus position manually */
+/* control to set the position manually */
 #setterw {
   margin-top: 1rem;
 }

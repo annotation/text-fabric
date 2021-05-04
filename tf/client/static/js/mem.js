@@ -29,7 +29,7 @@ export class MemProvider {
 
   init() {
     const { Config: { dataset, client } } = this
-    this.appPrefix = `ls/${dataset}/${client}/`
+    this.appPrefix = `tf.client/${dataset}/${client}/`
     this.keyLast = `${this.appPrefix}LastJob`
     this.keyPrefix = `${this.appPrefix}Keys/`
     this.keyLength = this.keyPrefix.length

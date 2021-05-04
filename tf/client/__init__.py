@@ -12,7 +12,10 @@ based on essentially two parameters:
 * a bunch of configuration details;
 * a piece of code that generates the search data.
 
-See also: `ls.about.clientmanual`
+See also:
+
+*   `tf.about.clientmanual`
+*   `tf.client.make.build`
 
 ## Author
 

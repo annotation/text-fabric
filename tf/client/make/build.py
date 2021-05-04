@@ -1,14 +1,14 @@
 """
 # Usage
 
-After installation, you have a new command `text-fabric-make`.
+After installing Text-Fabric, you have a new command `text-fabric-make`.
 You can use this on the command line to build new search interfaces for existing
 Text-Fabric apps.
 
-Such a search interface is a static html page, powered by a Javascript program,
-loaded with the corpus data into Javascript variables.
+Such a search interface is a static HTML page, powered by a Javascript program
+that reads the corpus data from Javascript variables.
 
-You can build the interface and ship the html page to GitHub Pages,
+You can build the interface and deploy the HTML page to GitHub Pages,
 after which it is usable for everyone.
 
 ## Prerequisites
@@ -27,8 +27,8 @@ after which it is usable for everyone.
         1.  `config.yaml`: definition of this specific search interface
         1.  `logo.png`: a logo
         1.  `custom.css`: additional styling (may be empty)
-        1.  `mkdata.py`: a module containing a few functions that produce the
-            corpus configuration data and the corpus search data:
+        1.  `mkdata.py`: a module containing a few functions that wrap the
+            corpus data into Javascript variables:
             1.  `makeLegends(maker)`: produce abbreviation lists for some layers
             2.  `record(maker)`: produce all the search data: full texts of layers and
                 mappings between nodes and positions in those texts
@@ -190,9 +190,9 @@ class Make:
             org="annotation",
             repo="app-«dataset»",
             rel="site",
-            generatorUrl=f"«ghUrl»/«org»/{T_F}/tree/master/tf/client",
-            sourceUrl="«ghUrl»/«org»/«repo»",
-            issueUrl="«sourceUrl»/issues",
+            generatorUrl=f"https://«org».«ghPages»/{T_F}/tf/client/make/build.html",
+            sourceUrl="«ghUrl»/«org»/«repo»/tree/master/layeredsearch",
+            issueUrl="«ghUrl»/«org»/«repo»/issues",
             tutUrl="«nbTutUrl»/«dataset»/start.ipynb",
             staticDir=STATIC_DIR,
             clientDir="«gh»/«org»/«repo»",
@@ -226,7 +226,8 @@ class Make:
             htmlLocalFile="«client»-local.html",
             htmlLocal="«siteDir»/«htmlLocalFile»",
             favicon="favicon.ico",
-            packageUrl="https://«org».«ghPages»/«repo»/«client».zip",
+            packageUrlOld="https://«org».«ghPages»/«repo»/«client».zip",
+            packageUrl="«client».zip",
         )
 
         fillRe = re.compile(r"«([a-zA-Z0-9_.]+)»")
@@ -284,7 +285,7 @@ class Make:
         clientMakeFile = c["clientMakeFile"]
 
         try:
-            moduleName = f"ls.{dataset}.{client}.{clientMake}"
+            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
             spec = util.spec_from_file_location(moduleName, clientMakeFile)
             code = util.module_from_spec(spec)
             sys.path.insert(0, clientMakeDir)
@@ -311,7 +312,7 @@ class Make:
                     "cheatsheet of regular expressions",
                 ),
                 license=(
-                    "license",
+                    "MIT",
                     "https://mit-license.org",
                     "website of MIT license",
                 ),
@@ -368,7 +369,7 @@ class Make:
                 generator=(
                     f"{T_F}/client",
                     "«generatorUrl»",
-                    "source code of the generator of this search interface",
+                    "the generator of this search interface",
                 ),
                 source=(
                     "«repo»",
@@ -781,9 +782,9 @@ class Make:
             htmlNormal = htmlNormal.replace("«dataset»", C.dataset)
             htmlNormal = htmlNormal.replace("«client»", C.client)
             htmlLocal = template.replace(
-                "«js»", f'''defer src="corpus/{C.client}/all.js«v»"'''
+                "«js»", f'''defer src="corpus/{C.client}-all.js"'''
             )
-            htmlLocal = htmlLocal.replace("«v»", f"?v={lsVersion}")
+            htmlLocal = htmlLocal.replace("«v»", "")
             htmlLocal = htmlLocal.replace("«dataset»", C.dataset)
             htmlLocal = htmlLocal.replace("«client»", C.client)
 

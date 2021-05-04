@@ -828,7 +828,7 @@ export class GuiProvider {
     }
   }
 
-  applyFocus() {
+  applyPosition() {
     /* adjust the interface to the current focus
      * Especially the result navigation controls and the slider
      */
@@ -895,7 +895,7 @@ export class GuiProvider {
 
     /* scrolls the interface to the result that is in focus
      */
-    const rTarget = $(`.focus`)
+    const rTarget = $(`#resultsbody>tr.focus`)
     if (rTarget != null && rTarget[0] != null) {
       rTarget[0].scrollIntoView({ block: "center", behavior: "smooth" })
     }
