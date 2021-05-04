@@ -24,12 +24,12 @@
 </header>
 <section id="section-intro">
 <h1 id="usage">Usage</h1>
-<p>After installation, you have a new command <code>text-fabric-make</code>.
+<p>After installing Text-Fabric, you have a new command <code>text-fabric-make</code>.
 You can use this on the command line to build new search interfaces for existing
 Text-Fabric apps.</p>
-<p>Such a search interface is a static html page, powered by a Javascript program,
-loaded with the corpus data into Javascript variables.</p>
-<p>You can build the interface and ship the html page to GitHub Pages,
+<p>Such a search interface is a static HTML page, powered by a Javascript program
+that reads the corpus data from Javascript variables.</p>
+<p>You can build the interface and deploy the HTML page to GitHub Pages,
 after which it is usable for everyone.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ol>
@@ -48,8 +48,8 @@ whose name is the name of the search interface, containing<ol>
 <li><code>logo.png</code>: a logo</li>
 <li><code>custom.css</code>: additional styling (may be empty)</li>
 <li>
-<p><code>mkdata.py</code>: a module containing a few functions that produce the
-corpus configuration data and the corpus search data:</p>
+<p><code>mkdata.py</code>: a module containing a few functions that wrap the
+corpus data into Javascript variables:</p>
 <ol>
 <li><code>makeLegends(maker)</code>: produce abbreviation lists for some layers</li>
 <li><code>record(maker)</code>: produce all the search data: full texts of layers and
@@ -73,19 +73,19 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L0-L960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L0-L961" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
 
-After installation, you have a new command `text-fabric-make`.
+After installing Text-Fabric, you have a new command `text-fabric-make`.
 You can use this on the command line to build new search interfaces for existing
 Text-Fabric apps.
 
-Such a search interface is a static html page, powered by a Javascript program,
-loaded with the corpus data into Javascript variables.
+Such a search interface is a static HTML page, powered by a Javascript program
+that reads the corpus data from Javascript variables.
 
-You can build the interface and ship the html page to GitHub Pages,
+You can build the interface and deploy the HTML page to GitHub Pages,
 after which it is usable for everyone.
 
 ## Prerequisites
@@ -104,8 +104,8 @@ after which it is usable for everyone.
         1.  `config.yaml`: definition of this specific search interface
         1.  `logo.png`: a logo
         1.  `custom.css`: additional styling (may be empty)
-        1.  `mkdata.py`: a module containing a few functions that produce the
-            corpus configuration data and the corpus search data:
+        1.  `mkdata.py`: a module containing a few functions that wrap the
+            corpus data into Javascript variables:
             1.  `makeLegends(maker)`: produce abbreviation lists for some layers
             2.  `record(maker)`: produce all the search data: full texts of layers and
                 mappings between nodes and positions in those texts
@@ -267,9 +267,9 @@ class Make:
             org=&#34;annotation&#34;,
             repo=&#34;app-«dataset»&#34;,
             rel=&#34;site&#34;,
-            generatorUrl=f&#34;«ghUrl»/«org»/{T_F}/tree/master/tf/client&#34;,
-            sourceUrl=&#34;«ghUrl»/«org»/«repo»&#34;,
-            issueUrl=&#34;«sourceUrl»/issues&#34;,
+            generatorUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/client/make/build.html&#34;,
+            sourceUrl=&#34;«ghUrl»/«org»/«repo»/tree/master/layeredsearch&#34;,
+            issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             clientDir=&#34;«gh»/«org»/«repo»&#34;,
@@ -303,7 +303,8 @@ class Make:
             htmlLocalFile=&#34;«client»-local.html&#34;,
             htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
-            packageUrl=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+            packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+            packageUrl=&#34;«client».zip&#34;,
         )
 
         fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -361,7 +362,7 @@ class Make:
         clientMakeFile = c[&#34;clientMakeFile&#34;]
 
         try:
-            moduleName = f&#34;ls.{dataset}.{client}.{clientMake}&#34;
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
             spec = util.spec_from_file_location(moduleName, clientMakeFile)
             code = util.module_from_spec(spec)
             sys.path.insert(0, clientMakeDir)
@@ -388,7 +389,7 @@ class Make:
                     &#34;cheatsheet of regular expressions&#34;,
                 ),
                 license=(
-                    &#34;license&#34;,
+                    &#34;MIT&#34;,
                     &#34;https://mit-license.org&#34;,
                     &#34;website of MIT license&#34;,
                 ),
@@ -445,7 +446,7 @@ class Make:
                 generator=(
                     f&#34;{T_F}/client&#34;,
                     &#34;«generatorUrl»&#34;,
-                    &#34;source code of the generator of this search interface&#34;,
+                    &#34;the generator of this search interface&#34;,
                 ),
                 source=(
                     &#34;«repo»&#34;,
@@ -858,9 +859,9 @@ class Make:
             htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
             htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}/all.js«v»&#34;&#39;&#39;&#39;
+                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
             )
-            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
+            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
             htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
 
@@ -1053,7 +1054,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L83-L95" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L83-L95" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(data):
     sets = {}
@@ -1078,7 +1079,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L74-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L74-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args):
     sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
@@ -1093,7 +1094,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L79-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L79-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return None if legend is None else {v: k for (k, v) in legend.items()}</code></pre>
@@ -1107,7 +1108,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L954-L956" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L955-L957" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Mk = Make()
@@ -1127,7 +1128,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L98-L951" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L98-L952" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(self):
@@ -1224,9 +1225,9 @@ if __name__ == &#34;__main__&#34;:
             org=&#34;annotation&#34;,
             repo=&#34;app-«dataset»&#34;,
             rel=&#34;site&#34;,
-            generatorUrl=f&#34;«ghUrl»/«org»/{T_F}/tree/master/tf/client&#34;,
-            sourceUrl=&#34;«ghUrl»/«org»/«repo»&#34;,
-            issueUrl=&#34;«sourceUrl»/issues&#34;,
+            generatorUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/client/make/build.html&#34;,
+            sourceUrl=&#34;«ghUrl»/«org»/«repo»/tree/master/layeredsearch&#34;,
+            issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             clientDir=&#34;«gh»/«org»/«repo»&#34;,
@@ -1260,7 +1261,8 @@ if __name__ == &#34;__main__&#34;:
             htmlLocalFile=&#34;«client»-local.html&#34;,
             htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
-            packageUrl=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+            packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+            packageUrl=&#34;«client».zip&#34;,
         )
 
         fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -1318,7 +1320,7 @@ if __name__ == &#34;__main__&#34;:
         clientMakeFile = c[&#34;clientMakeFile&#34;]
 
         try:
-            moduleName = f&#34;ls.{dataset}.{client}.{clientMake}&#34;
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
             spec = util.spec_from_file_location(moduleName, clientMakeFile)
             code = util.module_from_spec(spec)
             sys.path.insert(0, clientMakeDir)
@@ -1345,7 +1347,7 @@ if __name__ == &#34;__main__&#34;:
                     &#34;cheatsheet of regular expressions&#34;,
                 ),
                 license=(
-                    &#34;license&#34;,
+                    &#34;MIT&#34;,
                     &#34;https://mit-license.org&#34;,
                     &#34;website of MIT license&#34;,
                 ),
@@ -1402,7 +1404,7 @@ if __name__ == &#34;__main__&#34;:
                 generator=(
                     f&#34;{T_F}/client&#34;,
                     &#34;«generatorUrl»&#34;,
-                    &#34;source code of the generator of this search interface&#34;,
+                    &#34;the generator of this search interface&#34;,
                 ),
                 source=(
                     &#34;«repo»&#34;,
@@ -1815,9 +1817,9 @@ if __name__ == &#34;__main__&#34;:
             htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
             htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}/all.js«v»&#34;&#39;&#39;&#39;
+                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
             )
-            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
+            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
             htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
 
@@ -1994,7 +1996,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L934-L951" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L935-L952" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2024,7 +2026,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L887-L898" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L888-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2048,7 +2050,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L169-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L169-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2074,9 +2076,9 @@ if __name__ == &#34;__main__&#34;:
         org=&#34;annotation&#34;,
         repo=&#34;app-«dataset»&#34;,
         rel=&#34;site&#34;,
-        generatorUrl=f&#34;«ghUrl»/«org»/{T_F}/tree/master/tf/client&#34;,
-        sourceUrl=&#34;«ghUrl»/«org»/«repo»&#34;,
-        issueUrl=&#34;«sourceUrl»/issues&#34;,
+        generatorUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/client/make/build.html&#34;,
+        sourceUrl=&#34;«ghUrl»/«org»/«repo»/tree/master/layeredsearch&#34;,
+        issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
         tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
         staticDir=STATIC_DIR,
         clientDir=&#34;«gh»/«org»/«repo»&#34;,
@@ -2110,7 +2112,8 @@ if __name__ == &#34;__main__&#34;:
         htmlLocalFile=&#34;«client»-local.html&#34;,
         htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
         favicon=&#34;favicon.ico&#34;,
-        packageUrl=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+        packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
+        packageUrl=&#34;«client».zip&#34;,
     )
 
     fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -2168,7 +2171,7 @@ if __name__ == &#34;__main__&#34;:
     clientMakeFile = c[&#34;clientMakeFile&#34;]
 
     try:
-        moduleName = f&#34;ls.{dataset}.{client}.{clientMake}&#34;
+        moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
         spec = util.spec_from_file_location(moduleName, clientMakeFile)
         code = util.module_from_spec(spec)
         sys.path.insert(0, clientMakeDir)
@@ -2195,7 +2198,7 @@ if __name__ == &#34;__main__&#34;:
                 &#34;cheatsheet of regular expressions&#34;,
             ),
             license=(
-                &#34;license&#34;,
+                &#34;MIT&#34;,
                 &#34;https://mit-license.org&#34;,
                 &#34;website of MIT license&#34;,
             ),
@@ -2252,7 +2255,7 @@ if __name__ == &#34;__main__&#34;:
             generator=(
                 f&#34;{T_F}/client&#34;,
                 &#34;«generatorUrl»&#34;,
-                &#34;source code of the generator of this search interface&#34;,
+                &#34;the generator of this search interface&#34;,
             ),
             source=(
                 &#34;«repo»&#34;,
@@ -2309,7 +2312,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L583-L598" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L584-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2337,7 +2340,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L600-L620" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L601-L621" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -2370,7 +2373,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L906-L926" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L907-L927" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2403,7 +2406,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L872-L879" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L873-L880" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -2423,7 +2426,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L556-L561" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L557-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -2441,7 +2444,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L523-L554" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L524-L555" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(self):
     self.readArgs()
@@ -2497,7 +2500,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L622-L800" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L623-L801" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeClient(self):
         &#34;&#34;&#34;
@@ -2661,9 +2664,9 @@ and let a «client»-local.html include it</p>
             htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
             htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}/all.js«v»&#34;&#39;&#39;&#39;
+                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
             )
-            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
+            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
             htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
 
@@ -2688,7 +2691,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L419-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L420-L522" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -2803,7 +2806,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L563-L568" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L564-L569" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2821,7 +2824,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L570-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L571-L582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2845,7 +2848,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L836-L839" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L837-L840" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self):
     C = self.C
@@ -2861,7 +2864,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L105-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L105-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs(self):
     args = sys.argv[1:]
@@ -2936,7 +2939,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L900-L904" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L901-L905" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -2953,7 +2956,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L849-L870" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L850-L871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -2987,7 +2990,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L841-L847" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L842-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self):
     self.adjustVersion()
@@ -3006,7 +3009,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L928-L932" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L929-L933" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3023,7 +3026,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L881-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L882-L886" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3040,7 +3043,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/fff46c13a10eed971be059ef7d04e1821a5ded05/tf/client/make/build.py#L802-L834" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L803-L835" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
