@@ -1,5 +1,9 @@
 # Quick start
 
+This is the manual for the full interface.
+There is a separate manual for the simplified interface:
+`tf.about.manual`.
+
 
 ![interface](../images/ls/ls.001.png)
 

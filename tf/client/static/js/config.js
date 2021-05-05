@@ -15,12 +15,14 @@ export class ConfigProvider {
      */
 
     const {
+      mainConfig,
       defs: { lsVersion, org, repo, dataset, client, description, urls },
       levels,
       focusType, simpleBase,
       ntypes, ntypesinit, ntypessize,
       utypeOf, dtypeOf,
       layers, visible,
+      defaultSettings,
     } = configData
 
     /* the version stamp of this app
@@ -42,6 +44,14 @@ export class ConfigProvider {
     /* the client name of the app
      */
     this.client = client
+
+    /* main config settings of the app
+     */
+    this.mainConfig = mainConfig
+
+    /* default settings of the app
+     */
+    this.defaultSettings = defaultSettings
 
     /* the description of the configData
      */

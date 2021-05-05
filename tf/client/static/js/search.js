@@ -609,7 +609,7 @@ export class SearchProvider {
         const nIndex = ntypesI.get(nType)
         const typeRep = (nIndex < focusIndex)
           ? `${focusType}-content:${nType}`
-          : (nIndex === focusIndex)
+          : (nIndex === focusIndex && focusIndex > 0)
             ? `${nType}-content:`
             : nType
 
@@ -620,7 +620,10 @@ export class SearchProvider {
       }
     }
     else {
-      cols = contextTypes.concat(focusTypes).concat(`${focusType}-content`)
+      cols = contextTypes.concat(focusTypes)
+      if (focusIndex > 0) {
+        cols = cols.concat(`${focusType}-content`)
+      }
     }
 
     const layersContent = []
@@ -673,7 +676,7 @@ export class SearchProvider {
     const {
       upperTypes, contentTypes,
       cols, layersPerType, layersContent,
-    } = this.getLayersPerType()
+    } = this.getLayersPerType(false)
 
     const colsRep = cols.map(x => `<th>${x}</th>`)
     const header = `<tr><th>${RESULTCOL}</th>${colsRep.join("")}</tr>`

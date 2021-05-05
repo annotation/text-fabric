@@ -1,95 +1,99 @@
 import {
-  DEBUG, FLAGSDEFAULT, DEFAULTJOB, MAXINPUT,
-  OBJECT, NUMBER, STRING, BOOL,
+  DEBUG,
+  FLAGSDEFAULT,
+  DEFAULTJOB,
+  MAXINPUT,
+  OBJECT,
+  NUMBER,
+  STRING,
+  BOOL,
 } from "./defs.js"
-
 
 const isObject = value =>
   value != null && typeof value === OBJECT && !Array.isArray(value)
 
-
 export class StateProvider {
-/* THE STATE
- *
- * The state contains changeable information needed to present the
- * interface.
- * It contains two kinds of information:
- *   - computed search results
- *   - user interaction state (button clicks, field entries)
- *
- * For a description of the state members, see the class definition below.
- *
- * MUTABLE STATE
- *
- * Contrary React-Redux practice, our state is mutable.
- * We do not work with cycles that re-render the display after state changes,
- * so we do not need to detect state changes efficiently.
- * Instead, at each state change, we also update the interface.
- *
- * STATE PROVIDER OBJECT
- *
- * The state logic is encapsulated in a class which is instantiated
- * with one object, whose data represents the state of the app.
- *
- * INITIAL STATE
- *
- * The jobState part of the data is fixed in shape.
- * The State Provider furnish a jobState that has all members and sub members present,
- * filled with default values, none of which are undefined
- * (null is allowed for leaf members)
- *
- * The jobState can be initialized from external, incoming data,
- * use the startj method for that.
- *
- * SAFE MERGE
- *
- * The jobState may come from untrusted sources, such as an imported file
- * of localStorage. Such a jobState may not conform to the shape of the jobState
- * as prescribed here.
- * So the Provider performs a safe merge of the new jobState into a
- * fresh initial jobState.
- * A safe merge copies leaf members of the incoming state into corresponding places
- * in the initial state, provided the path in the incoming state exists in the initial
- * state, and the type of the value in the incoming state is the same as that of
- * the corresponding value in the initial state,
- * and the incoming value is not undefined.
- * If the type of the value is string, the value should be less than MAXINPUT.
- *
- * If any of these conditions are not met, the update of that value is skipped.
- * An error message will be written to the console .
- *
- * GETTING the state
- *
- * Always by the gets() or getj() methods
- *
- * gets is for top level state slices except jobState
- * sets gets the jobState slice as a deep copy (so you cannot modify the jobState)
- *
- * const { query: { [nType]: { [layer]: pattern } } } = State.getj()
- *
- * N.B. We do not have to take care to use default values ( = {} ) for intermediate
- * subobjects, because the members of the jobState are guaranteed to exist.
- *
- * SETTING the state
- *
- * Always by the sets() or setj() methods
- *
- * We get the members of state object back (except jobState).
- * This enables patterns where we set a state member
- * and then use that value in a local variable:
- *
- * const { tpResults } = State.sets({ tpResults: {} })
- *
- * Note that setj() does not return data!
- *
- * When setting the jobState with setj(),
- * we apply the same checks as when we start a job from external data.
- *
- * INVARIANT:
- *
- * The jobState always has the full prescribed shape, with all members present at any
- * level, and with no undefined leaf values
- */
+  /* THE STATE
+   *
+   * The state contains changeable information needed to present the
+   * interface.
+   * It contains two kinds of information:
+   *   - computed search results
+   *   - user interaction state (button clicks, field entries)
+   *
+   * For a description of the state members, see the class definition below.
+   *
+   * MUTABLE STATE
+   *
+   * Contrary React-Redux practice, our state is mutable.
+   * We do not work with cycles that re-render the display after state changes,
+   * so we do not need to detect state changes efficiently.
+   * Instead, at each state change, we also update the interface.
+   *
+   * STATE PROVIDER OBJECT
+   *
+   * The state logic is encapsulated in a class which is instantiated
+   * with one object, whose data represents the state of the app.
+   *
+   * INITIAL STATE
+   *
+   * The jobState part of the data is fixed in shape.
+   * The State Provider furnish a jobState that has all members and sub members present,
+   * filled with default values, none of which are undefined
+   * (null is allowed for leaf members)
+   *
+   * The jobState can be initialized from external, incoming data,
+   * use the startj method for that.
+   *
+   * SAFE MERGE
+   *
+   * The jobState may come from untrusted sources, such as an imported file
+   * of localStorage. Such a jobState may not conform to the shape of the jobState
+   * as prescribed here.
+   * So the Provider performs a safe merge of the new jobState into a
+   * fresh initial jobState.
+   * A safe merge copies leaf members of the incoming state into corresponding places
+   * in the initial state, provided the path in the incoming state exists in the initial
+   * state, and the type of the value in the incoming state is the same as that of
+   * the corresponding value in the initial state,
+   * and the incoming value is not undefined.
+   * If the type of the value is string, the value should be less than MAXINPUT.
+   *
+   * If any of these conditions are not met, the update of that value is skipped.
+   * An error message will be written to the console .
+   *
+   * GETTING the state
+   *
+   * Always by the gets() or getj() methods
+   *
+   * gets is for top level state slices except jobState
+   * sets gets the jobState slice as a deep copy (so you cannot modify the jobState)
+   *
+   * const { query: { [nType]: { [layer]: pattern } } } = State.getj()
+   *
+   * N.B. We do not have to take care to use default values ( = {} ) for intermediate
+   * subobjects, because the members of the jobState are guaranteed to exist.
+   *
+   * SETTING the state
+   *
+   * Always by the sets() or setj() methods
+   *
+   * We get the members of state object back (except jobState).
+   * This enables patterns where we set a state member
+   * and then use that value in a local variable:
+   *
+   * const { tpResults } = State.sets({ tpResults: {} })
+   *
+   * Note that setj() does not return data!
+   *
+   * When setting the jobState with setj(),
+   * we apply the same checks as when we start a job from external data.
+   *
+   * INVARIANT:
+   *
+   * The jobState always has the full prescribed shape, with all members present at any
+   * level, and with no undefined leaf values
+   */
 
   /* private members
    */
@@ -106,7 +110,6 @@ export class StateProvider {
     /* Make the contents for an initial, valid state, with defaults filled in
      * It can be called when certain elements of the state change.
      */
-
 
     this.data = {
       /* for each node type: { nodes, matches }
@@ -158,43 +161,63 @@ export class StateProvider {
      * This is the first step in guaranteeing that the jobState has a fixed shape.
      */
     const {
-      Config: { ntypes, focusType, layers, visible },
-      Features: { features: { indices: { can } } },
+      Config: {
+        defaultSettings: {
+          autoexec,
+          nodeseq,
+          exporthl,
+          exportsr,
+          multihl,
+          simple,
+        } = {},
+        ntypes,
+        focusType,
+        layers,
+        visible,
+      },
+      Features: {
+        features: {
+          indices: { can },
+        },
+      },
     } = this
 
     /* First set a dumb, superficial value
      */
     const jobState = {
-      /* options that affect general aspects of searching
+      /* options that affect general aspects of the interface and its operations
        */
       settings: {
+        /* whether to offer a simplified interface
+         */
+        simple,
 
         /* whether to run search immediately after change or after button press
          */
-        autoexec: true,
+        autoexec,
 
         /* whether displayed node numbers start at 1 per node type
          * or are exactly the TF node numbers
          */
-        nodeseq: true,
+        nodeseq,
 
         /* whether to mark matches in tsv exports
          */
-        exporthl: true,
+        exporthl,
 
         /* whether to keep results in single rows in tsv exports
          * even if there are multiple layers per level
          */
-        exportsr: false,
+        exportsr,
 
         /* whether to highlight groups with different colors
          * only if the browser supports it
          */
-        multihl: can ? true : null,
+        multihl: can ? multihl : null,
       },
 
-/* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
- */
+      /* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+       */
       /* { pattern, flags, exec } per node type and then per layer
        * - pattern: a regex (regular expression): defines the search
        * - flags: (i m s)
@@ -273,14 +296,17 @@ export class StateProvider {
      */
     const {
       data,
-      Features: { features: { indices: { can } } },
+      Features: {
+        features: {
+          indices: { can },
+        },
+      },
     } = this
 
     const { settings = {}, settings: { multihl } = {} } = incoming
     if (multihl === null && can) {
       settings.multihl = true
-    }
-    else if (multihl !== null && !can) {
+    } else if (multihl !== null && !can) {
       settings.multihl = null
     }
 
@@ -302,7 +328,9 @@ export class StateProvider {
      * But he can change the contents of the members that hold an object as value.
      * This is intentional.
      */
-    const { data: { jobState, ...rest } } = this
+    const {
+      data: { jobState, ...rest },
+    } = this
     return rest
   }
 
@@ -310,7 +338,9 @@ export class StateProvider {
     /* GET JOB NAME
      * convenience function
      */
-    const { data: { jobName } } = this
+    const {
+      data: { jobName },
+    } = this
     return jobName
   }
 
@@ -367,7 +397,9 @@ export class StateProvider {
      * returns the jobState
      * The caller should not modify the jobState, so we return a deep copy of it
      */
-    const { data: { jobState } } = this
+    const {
+      data: { jobState },
+    } = this
     return JSON.parse(JSON.stringify(jobState))
   }
 
@@ -377,7 +409,10 @@ export class StateProvider {
      * Performs a safe update of the jobState by incoming data
      * The jobState is committed to Mem
      */
-    const { Mem, data: { jobName, jobState } } = this
+    const {
+      Mem,
+      data: { jobName, jobState },
+    } = this
     this.merge(jobState, incoming, [])
     Mem.setkl(jobName, jobState)
   }
@@ -443,9 +478,7 @@ export class StateProvider {
         continue
       }
       if (!isObject(inVal)) {
-        Log.error(
-          `${pRep}unknown type ${inTp} for ${inKey}=${inVal} instead of object`
-        )
+        Log.error(`${pRep}unknown type ${inTp} for ${inKey}=${inVal} instead of object`)
         continue
       }
       if (isObject(origVal)) {
@@ -458,4 +491,3 @@ export class StateProvider {
     }
   }
 }
-

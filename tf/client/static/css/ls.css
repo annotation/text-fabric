@@ -390,7 +390,7 @@ div.setting details {
 #appversion {
   font-family: monospace;
   font-size: medium;
-  color: var(--black);
+  color: var(--grey);
 }
 
 /* MID COLUMN */
@@ -593,6 +593,7 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
 :root {
   --white:            hsla(  0,   0%, 100%, 1    );
   --black:            hsla(  0,   0%,   0%, 1    );
+  --grey:             hsla(  0,   0%,  40%, 1    );
   --initializing:     hsla( 50, 100%,  50%, 1    );
   --dirty-border:     hsla( 50, 100%,  50%, 1    );
   --executing:        hsla( 20, 100%,  50%, 1    );

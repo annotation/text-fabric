@@ -13,6 +13,7 @@ export const DEFAULTJOB = "search"
 export const RESULTCOL = "nr"
 
 export const BUTTON = {
+  simple: { on: "🔎", off: "🛠" },
   nodeseq: { on: "nodes start at 1", off: "nodes as in text-fabric" },
   autoexec: { on: "auto search", off: "use button to search" },
   exporthl: {
@@ -49,6 +50,9 @@ export const SEARCH = {
 }
 
 export const TIP = {
+  simple: `🛠 expert interface
+OR
+🔎 minimalistic interface`,
   nodeseq: `node numbers start at 1 for each node types
 OR
 node numbers are exactly as in Text Fabric`,

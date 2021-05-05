@@ -1,17 +1,24 @@
 /*eslint-env jquery*/
 
 import {
-  SEARCH, TIP, MAXINPUT, DEFAULTJOB, QUWINDOW, FLAGSDEFAULT, BUTTON, FOCUSTEXT,
+  SEARCH,
+  TIP,
+  MAXINPUT,
+  DEFAULTJOB,
+  QUWINDOW,
+  FLAGSDEFAULT,
+  BUTTON,
+  FOCUSTEXT,
   BOOL,
 } from "./defs.js"
 
 export class GuiProvider {
-/* INITIALIZE DYNAMIC PARTS OF THE INTERFACE
- *
- * Almost everything on the interface is depending on the data
- * that is encountered in Config
- * Here we generate HTML and place it in the DOM
- */
+  /* INITIALIZE DYNAMIC PARTS OF THE INTERFACE
+   *
+   * Almost everything on the interface is depending on the data
+   * that is encountered in Config
+   * Here we generate HTML and place it in the DOM
+   */
 
   deps({ Log, Features, State, Job, Config, Search }) {
     this.Features = Features
@@ -24,8 +31,7 @@ export class GuiProvider {
 
   init() {
     this.build()
-    this.activateJobs()
-    this.activateSearch()
+    this.activate()
   }
 
   /* BUILDING the HTML
@@ -36,15 +42,33 @@ export class GuiProvider {
      */
     const {
       Config: {
+        mainConfig: {
+          description: { simple: simpleDesc, full: fullDesc } = {},
+          jobs: { simple: simpleJobs, full: fullJobs } = {},
+          provenance: { simple: simpleProv, full: fullProv } = {},
+        } = {},
         ntypesR,
         lsVersion,
         description,
         urls,
-        layers, levels,
+        layers,
+        levels,
       },
+      State,
     } = this
-    $("#description").html(description)
-    $("#appversion").html(lsVersion.replace(/@/, " @ "))
+    const {
+      settings: { simple },
+    } = State.getj()
+
+    $("#titleplace").html(simple ? simpleDesc : fullDesc)
+    if (!simple) {
+      $("#description").html(description)
+    }
+    $("#provenance").html(simple ? simpleProv : fullProv)
+    $("#appversion").html(
+      simple ? lsVersion.replace(/^.*?@\s*/, "") : lsVersion.replace(/@/, " @ ")
+    )
+    $("#jobsplace").html(simple ? simpleJobs : fullJobs)
 
     $("go").html(SEARCH.dirty)
 
@@ -57,13 +81,13 @@ export class GuiProvider {
 
     for (const nType of ntypesR) {
       const tpInfo = layers[nType] || {}
-      const description = levels[nType] || {}
-      html.push(this.genTypeWidgets(nType, description, tpInfo))
+      const tpDesc = levels[nType] || {}
+      html.push(this.genTypeWidgets(nType, tpDesc, tpInfo))
     }
     querybody.html(html.join(""))
 
     this.placeStatTotals()
-    this.placeSettings()
+    this.buildSettings()
 
     for (const [kind, [linkText, linkHref, linkTitle]] of Object.entries(urls)) {
       const elem = $(`#${kind}link`)
@@ -74,16 +98,41 @@ export class GuiProvider {
         elem.html(linkText)
       }
     }
-
   }
 
-  placeSettings() {
-    const { State, Features: { features: { indices: { can, support } } } } = this
-    const { settings } = State.getj()
+  buildSettings() {
+    const {
+      State,
+      Features: {
+        features: {
+          indices: { can, support },
+        },
+      },
+    } = this
+    const {
+      settings,
+      settings: { simple },
+    } = State.getj()
+
+    $("#ifsetting").html(`
+      <div id="settings">
+        <button
+          type="button" name="simple"
+          class="setting on"
+          title="${TIP.simple}"
+        ></button>
+      </div>
+    `)
+    if (simple) {
+      $("#settingsplace").html("")
+      return
+    }
 
     const html = []
-
     for (const [name, value] of Object.entries(settings)) {
+      if (name == "simple") {
+        continue
+      }
       let useValue = value
       if (name == "multihl") {
         if (value == null && can) {
@@ -91,35 +140,39 @@ export class GuiProvider {
           State.setj({ settings: { [name]: useValue } })
         }
       }
-      const bState = (useValue === null) ? "no" : value ? "on" : "off"
+      const bState = useValue === null ? "no" : value ? "on" : "off"
       const buttonHtml = `
-        <button
-          type="button" name="${name}"
-          class="setting"
-          title="${TIP[name]}"
-          ${bState}"></button>
-      `
+      <button
+        type="button" name="${name}"
+        class="setting ${bState}"
+        title="${TIP[name]}"
+      ></button>
+    `
       if (name == "multihl") {
         const canRep = can ? "✅ in this browser" : "❌ in this browser"
-        html.push(
-          `<div class="setting">
-            ${buttonHtml}
-            <details><summary>${canRep}</summary><p>${support}</p></details>
-          </details>
-          `)
-      }
-      else {
+        html.push(`
+        <div class="setting">
+          ${buttonHtml}
+          <details><summary>${canRep}</summary><p>${support}</p></details>
+        </details>
+        `)
+      } else {
         html.push(`<p>${buttonHtml}</p>`)
       }
     }
-    const settingsplace = $("#settings")
-    settingsplace.html(html.join(""))
+    $("#settingsplace").html(`
+      <details><summary class="setting">options</summary>
+        <div id="settings">${html.join("")}</div>
+      </details>
+    `)
   }
 
   placeStatTotals() {
     /* stats
      */
-    const { Config: { ntypesR, ntypessize } } = this
+    const {
+      Config: { ntypesR, ntypessize },
+    } = this
 
     const html = []
 
@@ -140,43 +193,60 @@ export class GuiProvider {
   placeStatResults(stats) {
     /* draw statistics found by weed() on the interface
      */
-    const { Config: { ntypes } } = this
+    const {
+      Config: { ntypes },
+    } = this
 
     for (const nType of ntypes) {
       const dest = $(`.statresult[ntype="${nType}"]`)
       const stat = stats[nType]
-      const useStat = (stat == null) ? " " : stat
+      const useStat = stat == null ? " " : stat
       dest.html(`${useStat}`)
     }
   }
 
-  genTypeWidgets(nType, description, tpInfo) {
+  genTypeWidgets(nType, tpDesc, tpInfo) {
     /* Generate html for the search controls for a node type
      */
-    const nTypeRep = description
-      ? `<details>
+    const { State } = this
+    const {
+      settings: { simple },
+    } = State.getj()
+
+    const nTypeRep =
+      !simple && tpDesc
+        ? `<details>
            <summary class="lv">${nType}</summary>
-           <div>${description}</div>
+           <div>${tpDesc}</div>
           </details>`
-      : `<span class="lv">${nType}</span>`
+        : `<span class="lv">${nType}</span>`
 
     const html = []
+    const expandButton = simple
+      ? ""
+      : `<button type="button" name="expand" class="expand"
+          ntype="${nType}"
+          title="${TIP.expand}"
+         ></button>`
+
+    const execButton = simple ? "" : "<td></td>"
+    const visibleButton = simple
+      ? ""
+      : `<td><button type="button" name="visible" class="visible"
+          ntype="${nType}" layer="_"
+          title="${TIP.visibletp}"
+         ></button></td>`
+
     html.push(`
   <tr class="qtype" ntype="${nType}">
     <td class="lvcell">${nTypeRep}</td>
-    <td><button type="button" name="expand" class="expand"
-      ntype="${nType}"
-      title="${TIP.expand}"
-    ></button></td>
+    <td>${expandButton}</td>
     <td><button type="button" name="ctype" class="focus"
       ntype="${nType}"
       title="${TIP.focus}"
-    >result</button></td>
-    <td></td>
-    <td><button type="button" name="visible" class="visible"
-      ntype="${nType}" layer="_"
-      title="${TIP.visibletp}"
     ></button></td>
+    ${execButton}
+    ${visibleButton}
   </tr>
   `)
 
@@ -189,48 +259,68 @@ export class GuiProvider {
   genWidget(nType, layer, lrInfo) {
     /* Generate html for the search controls for a single layer
      */
-   return (
-    `
+    const { State } = this
+    const {
+      settings: { simple },
+    } = State.getj()
+
+    const slash = simple ? "" : "/"
+    const flagsButton = simple
+      ? ""
+      : `<button type="button" name="i" class="flags"
+          ntype="${nType}" layer="${layer}"
+          title="${TIP.flagi}"
+        >i</button><button type="button" name="m" class="flags"
+          ntype="${nType}" layer="${layer}"
+          title="${TIP.flagm}"
+        >m</button><button type="button" name="s" class="flags"
+          ntype="${nType}" layer="${layer}"
+          title="${TIP.flags}"
+        >s</button>`
+
+    const execButton = simple
+      ? ""
+      : `<td><button type="button" name="exec" class="exec"
+          ntype="${nType}" layer="${layer}"
+          title="${TIP.exec}"
+        ></button></td>`
+
+    const visibleButton = simple
+      ? ""
+      : `<td><button type="button" name="visible" class="visible"
+          ntype="${nType}" layer="${layer}"
+          title="${TIP.visible}"
+        ></button></td>`
+
+    return `
   <tr class="ltype" ntype="${nType}" layer="${layer}">
     <td>${this.genLegend(nType, layer, lrInfo)}</td>
     <td>
-      /<input type="text" kind="pattern" class="pattern"
+      ${slash}<input type="text" kind="pattern" class="pattern"
         ntype="${nType}" layer="${layer}"
         maxlength="${MAXINPUT}"
         value=""
       ><span kind="error" class="error"
         ntype="${nType}" layer="${layer}"
-      ></span>/</td>
-    <td><button type="button" name="i" class="flags"
-        ntype="${nType}" layer="${layer}"
-        title="${TIP.flagi}"
-      >i</button><button type="button" name="m" class="flags"
-        ntype="${nType}" layer="${layer}"
-        title="${TIP.flagm}"
-      >m</button><button type="button" name="s" class="flags"
-        ntype="${nType}" layer="${layer}"
-        title="${TIP.flags}"
-      >s</button>
-    </td>
-    <td><button type="button" name="exec" class="exec"
-      ntype="${nType}" layer="${layer}"
-      title="${TIP.exec}"
-    ></button></td>
-    <td><button type="button" name="visible" class="visible"
-      ntype="${nType}" layer="${layer}"
-      title="${TIP.visible}"
-    ></button></td>
+      ></span>${slash}</td>
+    <td>${flagsButton}</td>
+    ${execButton}
+    ${visibleButton}
   </tr>
-  `)
+  `
   }
 
   genLegend(nType, layer, lrInfo) {
     /* Generate html for the description / legend of a single layer
      */
+    const { State } = this
+    const {
+      settings: { simple },
+    } = State.getj()
     const { valueMap, description } = lrInfo
     const html = []
 
-    if (valueMap || description) {
+    if (!simple && (valueMap || description)) {
       html.push(`
   <details>
     <summary class="lyr">${layer}</summary>
@@ -244,8 +334,7 @@ export class GuiProvider {
   <div class="legend">
     <b><code>${acro}</code></b> =
     <i><code>${full}</code></i>
-  </div>`
-          )
+  </div>`)
         }
       }
       html.push(`
@@ -259,7 +348,6 @@ export class GuiProvider {
     return html.join("")
   }
 
-
   /* MAKE THE INTERFACE ACTIVE
    *
    * Add actions to the controls of the search interface,
@@ -268,6 +356,11 @@ export class GuiProvider {
 
   /* ADDING ACTIONS TO THE DOM
    */
+
+  activate() {
+    this.activateJobs()
+    this.activateSearch()
+  }
 
   activateJobs() {
     /* make all job controls active
@@ -385,25 +478,8 @@ export class GuiProvider {
     return cancelled ? null : newName
   }
 
-  activateSearch() {
-    /* make the search button active
-     */
+  activateSettings() {
     const { State, Search } = this
-
-    const go = $(`#go`)
-
-    const handleQuery = e => {
-      e.preventDefault()
-      go.off("click")
-      Search.runQuery({ allSteps: true })
-      State.setj({ dirty: false })
-      this.clearBrowserState()
-      go.click(handleQuery)
-    }
-
-    go.off("click").click(handleQuery)
-    /* handle changes in the expansion of layers
-     */
 
     const settingctls = $("#settings button")
     settingctls.off("click").click(e => {
@@ -424,6 +500,29 @@ export class GuiProvider {
       }
       this.clearBrowserState()
     })
+  }
+
+  activateSearch() {
+    /* make the search button active
+     */
+    const { State, Search } = this
+
+    const go = $(`#go`)
+
+    const handleQuery = e => {
+      e.preventDefault()
+      go.off("click")
+      Search.runQuery({ allSteps: true })
+      State.setj({ dirty: false })
+      this.clearBrowserState()
+      go.click(handleQuery)
+    }
+
+    go.off("click").click(handleQuery)
+    /* handle changes in the expansion of layers
+     */
+
+    this.activateSettings()
 
     const expands = $(`button[name="expand"]`)
     expands.off("click").click(e => {
@@ -462,11 +561,15 @@ export class GuiProvider {
       const elem = $(e.target)
       const nType = elem.attr("ntype")
       const layer = elem.attr("layer")
-      const { target: { value: pattern } } = e
+      const {
+        target: { value: pattern },
+      } = e
       this.makeDirty(elem)
       State.setj({ query: { [nType]: { [layer]: { pattern } } } })
 
-      const { settings: { autoexec } } = State.getj()
+      const {
+        settings: { autoexec },
+      } = State.getj()
       if (autoexec) {
         Search.runQuery({ allSteps: true })
       }
@@ -488,7 +591,9 @@ export class GuiProvider {
       this.makeDirty(elem)
       State.setj({ query: { [nType]: { [layer]: { flags: { [name]: !isOn } } } } })
 
-      const { settings: { autoexec } } = State.getj()
+      const {
+        settings: { autoexec },
+      } = State.getj()
       if (autoexec) {
         Search.runQuery({ allSteps: true })
       }
@@ -509,7 +614,9 @@ export class GuiProvider {
         this.makeDirty(elem)
         State.setj({ query: { [nType]: { [layer]: { exec: !isOn } } } })
 
-        const { settings: { autoexec } } = State.getj()
+        const {
+          settings: { autoexec },
+        } = State.getj()
         if (autoexec) {
           Search.runQuery({ allSteps: true })
         }
@@ -527,9 +634,7 @@ export class GuiProvider {
       const layer = elem.attr("layer")
       const isOn = elem.hasClass("on")
       State.setj({ visibleLayers: { [nType]: { [layer]: !isOn } } })
-      this.setButton(
-        "visible", `[ntype="${nType}"][layer="${layer}"]`, !isOn, true,
-      )
+      this.setButton("visible", `[ntype="${nType}"][layer="${layer}"]`, !isOn, true)
       Search.runQuery({ display: [] })
       this.clearBrowserState()
     })
@@ -584,14 +689,16 @@ export class GuiProvider {
     slider.off("change").change(() => {
       const { focusPos } = State.getj()
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(slider.val() - 1),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(slider.val() - 1),
       })
       Search.runQuery({ display: [] })
     })
     setter.off("change").change(() => {
       const { focusPos } = State.getj()
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(setter.val() - 1),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(setter.val() - 1),
       })
       Search.runQuery({ display: [] })
     })
@@ -601,7 +708,8 @@ export class GuiProvider {
         return
       }
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(focusPos - 1),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(focusPos - 1),
       })
       Search.runQuery({ display: [] })
     })
@@ -611,7 +719,8 @@ export class GuiProvider {
         return
       }
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(focusPos - QUWINDOW),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(focusPos - QUWINDOW),
       })
       Search.runQuery({ display: [] })
     })
@@ -629,7 +738,8 @@ export class GuiProvider {
         return
       }
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(focusPos + 1),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(focusPos + 1),
       })
       Search.runQuery({ display: [] })
     })
@@ -639,7 +749,8 @@ export class GuiProvider {
         return
       }
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(focusPos + QUWINDOW),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(focusPos + QUWINDOW),
       })
       Search.runQuery({ display: [] })
     })
@@ -649,7 +760,8 @@ export class GuiProvider {
         return
       }
       State.setj({
-        prevFocusPos: focusPos, focusPos: this.checkFocus(-1),
+        prevFocusPos: focusPos,
+        focusPos: this.checkFocus(-1),
       })
       Search.runQuery({ display: [] })
     })
@@ -687,7 +799,9 @@ export class GuiProvider {
       this.setButton("visible", `[ntype="${nType}"][layer="_"]`, visibleNodes, true)
 
       for (const layer of Object.keys(tpInfo)) {
-        const { [layer]: { pattern, flags } } = tpQuery
+        const {
+          [layer]: { pattern, flags },
+        } = tpQuery
         const box = $(`[kind="pattern"][ntype="${nType}"][layer="${layer}"]`)
         box.val(pattern)
 
@@ -699,9 +813,7 @@ export class GuiProvider {
         this.applyExec(nType, layer)
 
         const { [layer]: visible } = tpVisible
-        this.setButton(
-          "visible", `[ntype="${nType}"][layer="${layer}"]`, visible, true,
-        )
+        this.setButton("visible", `[ntype="${nType}"][layer="${layer}"]`, visible, true)
       }
     }
     this.applyContainer(focusType)
@@ -709,7 +821,13 @@ export class GuiProvider {
   applyExec(nType, layer) {
     const { State } = this
 
-    const { query: { [nType]: { [layer]: { pattern, exec } } } } = State.getj()
+    const {
+      query: {
+        [nType]: {
+          [layer]: { pattern, exec },
+        },
+      },
+    } = State.getj()
     const useExec = pattern.length == 0 ? null : exec
     this.setButton("exec", `[ntype="${nType}"][layer="${layer}"]`, useExec, true)
   }
@@ -741,15 +859,24 @@ export class GuiProvider {
 
     const { settings } = State.getj()
 
-    const tasks = (name == null) ? Object.entries(settings) : [[name, settings[name]]]
+    const allTasks = Object.entries(settings)
+    const tasks = name == null ? allTasks : [[name, settings[name]]]
 
-    for (const [name, setting] of tasks) {
-      this.setButton(name, "", setting, true)
+    if (name == "simple") {
+      this.init()
+      this.apply(false)
+    } else {
+      for (const [aname, setting] of tasks) {
+        this.setButton(aname, "", setting, true)
+      }
     }
   }
 
   applyLayers(nType) {
-    const { Config: { layers: { [nType]: tpLayers = {} } = {} }, State } = this
+    const {
+      Config: { layers: { [nType]: tpLayers = {} } = {} },
+      State,
+    } = this
     const {
       expandTypes: { [nType]: expand },
       visibleLayers: { [nType]: tpVisible },
@@ -757,13 +884,15 @@ export class GuiProvider {
     } = State.getj()
 
     const totalLayers = Object.keys(tpLayers).length
-    const useExpand = (totalLayers == 0) ? null : expand
+    const useExpand = totalLayers == 0 ? null : expand
 
     let totalActive = 0
 
     for (const layer of Object.keys(tpLayers)) {
       const row = $(`.ltype[ntype="${nType}"][layer="${layer}"]`)
-      const { [layer]: { pattern } } = tpQuery
+      const {
+        [layer]: { pattern },
+      } = tpQuery
       const { [layer]: visible } = tpVisible
       const isActive = visible || pattern.length > 0
 
@@ -772,12 +901,13 @@ export class GuiProvider {
       }
       if (expand || isActive) {
         row.show()
-      }
-      else {
+      } else {
         row.hide()
       }
     }
-    const { expand: { no, on, off } } = BUTTON
+    const {
+      expand: { no, on, off },
+    } = BUTTON
     const expandText = {
       no,
       on: `${on}(${totalActive})`,
@@ -790,14 +920,14 @@ export class GuiProvider {
     /* update the tags on the buttons for the focusType selection
      * Only one of them can be on, they are function-wise radio buttons
      */
-    const { Config: { ntypes, ntypesI } } = this
+    const {
+      Config: { ntypes, ntypesI },
+    } = this
 
     const focusIndex = ntypesI.get(focusType)
     for (const nType of ntypes) {
       const nTypeIndex = ntypesI.get(nType)
-      const k = (focusIndex == nTypeIndex)
-        ? "r" : (focusIndex < nTypeIndex)
-        ? "a" : "d"
+      const k = focusIndex == nTypeIndex ? "r" : focusIndex < nTypeIndex ? "a" : "d"
       const elem = $(`button[name="ctype"][ntype="${nType}"]`)
       elem.html(FOCUSTEXT[k])
     }
@@ -825,6 +955,9 @@ export class GuiProvider {
 
     if (run) {
       Search.runQuery({ allSteps: true })
+    }
+    else {
+      this.applyPosition()
     }
   }
 
@@ -920,20 +1053,18 @@ export class GuiProvider {
     if (onoff == null) {
       elem.removeClass("on")
       elem.addClass("no")
-    }
-    else {
+    } else {
       if (onoff) {
         elem.addClass("on")
         elem.removeClass("no")
-      }
-      else {
+      } else {
         elem.removeClass("on")
         elem.removeClass("no")
       }
     }
     if (changeTag) {
-      const texts = (typeof changeTag == BOOL) ? BUTTON[name] : changeTag
-      elem.html(texts[(onoff == null) ? "no" : onoff ? "on" : "off"])
+      const texts = typeof changeTag == BOOL ? BUTTON[name] : changeTag
+      elem.html(texts[onoff == null ? "no" : onoff ? "on" : "off"])
     }
   }
 
@@ -975,4 +1106,3 @@ export class GuiProvider {
     }
   }
 }
-

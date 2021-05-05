@@ -63,11 +63,12 @@ from tf.fabric import Fabric
 from tf.core.helpers import specFromRanges, rangesFromSet
 
 from .gh import deploy
-from.help import HELP
+from .help import HELP
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED, compresslevel=6)
 T_F = "text-fabric"
 LS = "layeredsearch"
+CONFIG_FILE = f"{os.path.dirname(os.path.abspath(__file__))}/config.yaml"
 STATIC_DIR = f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/static"
 
 
@@ -113,22 +114,32 @@ class Make:
         self.dataset = dataset
         args = args[1:]
 
-        if not len(args) or args[0] in {"-h", "--help", "help"}:
+        if not len(args):
             console(HELP)
-            console("Missing client")
+            console("Missing client/command")
             quit()
 
-        client = args[0]
+        if args[0] in {"-h", "--help", "help"}:
+            console(HELP)
+            quit()
+
+        if args[0] == "serve":
+            client = None
+            command = args[0]
+            args = args[1:]
+        else:
+            client = args[0]
+            args = args[1:]
+
+            if not len(args) or args[0] in {"-h", "--help", "help"}:
+                console(HELP)
+                if not len(args):
+                    console("No command given")
+                quit()
+
+            command = args[0]
+
         self.client = client
-        args = args[1:]
-
-        if not len(args) or args[0] in {"-h", "--help", "help"}:
-            console(HELP)
-            if not len(args):
-                console("No command given")
-            quit()
-
-        command = args[0]
         self.command = command
         self.page = None
         self.message = None
@@ -153,7 +164,7 @@ class Make:
 
         if command in {"serve"}:
             if len(args) < 2:
-                self.page = client
+                self.page = "index"
             else:
                 self.page = args[1]
                 self.remaining = args[2:]
@@ -177,16 +188,21 @@ class Make:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings["lsVersion"]
 
+        with open(CONFIG_FILE) as fh:
+            mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
+
         c = dict(
             dataset=dataset,
             client=client,
             lsVersion=lsVersion,
+            mainConfig=mainConfig,
             gh=os.path.expanduser("~/github"),
             ghUrl="https://github.com",
             nbUrl="https://nbviewer.jupyter.org/github",
             ghPages="github.io",
             nbTutUrl="«nbUrl»/annotation/tutorials/tree/master",
             lsDocUrl=f"https://«org».«ghPages»/{T_F}/tf/about/clientmanual.html",
+            lsDocSimpleUrl=f"https://«org».«ghPages»/{T_F}/tf/about/manual.html",
             org="annotation",
             repo="app-«dataset»",
             rel="site",
@@ -198,7 +214,7 @@ class Make:
             clientDir="«gh»/«org»/«repo»",
             configDir=f"«clientDir»/{LS}",
             lsConfig="«configDir»/config.yaml",
-            clientConfig="«configDir»/«client»/config.yaml",
+            clientConfigFile="«configDir»/«client»/config.yaml",
             clientMake="mkdata",
             clientMakeDir="«configDir»/«client»",
             clientMakeFile="«clientMakeDir»/«clientMake».py",
@@ -269,151 +285,159 @@ class Make:
                 c[k] = v
                 fillin(c, k, v)
 
-        clientConfig = c["clientConfig"]
-        if not os.path.exists(clientConfig):
-            console(f"No config.yaml found for {dataset}:{client}: {clientConfig}")
-            quit()
+        if client is not None:
+            clientConfigFile = c["clientConfigFile"]
+            if not os.path.exists(clientConfigFile):
+                console(
+                    f"No config.yaml found for {dataset}:{client}: {clientConfigFile}"
+                )
+                quit()
 
-        with open(clientConfig) as fh:
-            settings = yaml.load(fh, Loader=yaml.FullLoader)
-            for (k, v) in settings.items():
+            with open(clientConfigFile) as fh:
+                settings = yaml.load(fh, Loader=yaml.FullLoader)
+                for (k, v) in settings.items():
+                    c[k] = v
+                    fillin(c, k, v)
+
+            clientMake = c["clientMake"]
+            clientMakeDir = c["clientMakeDir"]
+            clientMakeFile = c["clientMakeFile"]
+
+            try:
+                moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
+                spec = util.spec_from_file_location(moduleName, clientMakeFile)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, clientMakeDir)
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                self.makeLegends = types.MethodType(code.makeLegends, self)
+                self.record = types.MethodType(code.record, self)
+
+            except Exception as e:
+                console(f"Cannot make data for {dataset}:{client}: {str(e)}")
+                quit()
+
+            d = dict(
+                dataLocation="«gh»/«data.org»/«data.repo»/«data.rel»",
+                dataUrl="«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»",
+                writingUrl="https://«org».«ghPages»/text-fabric/tf/writing/«writing».html",
+                urls=dict(
+                    cheatsheet=(
+                        "regexp cheatsheet",
+                        (
+                            "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/"
+                            "Regular_Expressions/Cheatsheet"
+                        ),
+                        "cheatsheet of regular expressions",
+                    ),
+                    license=(
+                        "MIT",
+                        "https://mit-license.org",
+                        "website of MIT license",
+                    ),
+                    maker=(
+                        None,
+                        "https://dans.knaw.nl/en/front-page?set_language=en",
+                        "Website of DANS = Data Archiving and Networked Services",
+                    ),
+                    corpus=(
+                        None,
+                        "«corpus.url»",
+                        "«corpus.tip»",
+                    ),
+                    corpus2=(
+                        "«corpus.text»",
+                        "«corpus.url»",
+                        "«corpus.tip»",
+                    ),
+                    author=(
+                        "Dirk Roorda",
+                        "https://pure.knaw.nl/portal/en/persons/dirk-roorda",
+                        "profile of the author",
+                    ),
+                    author1=(
+                        "«author1.text»",
+                        "«author1.url»",
+                        "«author1.tip»",
+                    ),
+                    author2=(
+                        "«author2.text»",
+                        "«author2.url»",
+                        "«author2.tip»",
+                    ),
+                    tf=(
+                        None,
+                        "https://«org».«ghPages»/text-fabric/tf/",
+                        "Text-Fabric documentation website",
+                    ),
+                    lsdoc=(
+                        "user manual (full)",
+                        "«lsDocUrl»",
+                        "user manual for the full search interface",
+                    ),
+                    lsdocsimple=(
+                        "user manual (simple)",
+                        "«lsDocSimpleUrl»",
+                        "user manual for the simplified search interface",
+                    ),
+                    datadoc=(
+                        "data (feature) documentation",
+                        "«data.docUrl»",
+                        "explanation of the features in the dataset",
+                    ),
+                    data=(
+                        "based on text-fabric data version «data.version»",
+                        "«dataUrl»",
+                        "online repository of the underlying text-fabric data",
+                    ),
+                    generator=(
+                        f"{T_F}/client",
+                        "«generatorUrl»",
+                        "the generator of this search interface",
+                    ),
+                    source=(
+                        "«repo»",
+                        "«sourceUrl»",
+                        "source code of the definition of this search interface",
+                    ),
+                    issue=(
+                        "Report an issue",
+                        "«issueUrl»",
+                        "report issues",
+                    ),
+                    package=(
+                        "download",
+                        "«packageUrl»",
+                        "zip file for offline use",
+                    ),
+                    writing=(
+                        "«writing»",
+                        "«writingUrl»",
+                        "characters and transliteration for «writing»",
+                    ),
+                    related=(
+                        "text-fabric «dataset»",
+                        "«tutUrl»",
+                        "using Text-Fabric on the same corpus",
+                    ),
+                ),
+            )
+
+            for (k, v) in d.items():
                 c[k] = v
                 fillin(c, k, v)
 
-        clientMake = c["clientMake"]
-        clientMakeDir = c["clientMakeDir"]
-        clientMakeFile = c["clientMakeFile"]
-
-        try:
-            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f"Cannot make data for {dataset}:{client}: {str(e)}")
-            quit()
-
-        d = dict(
-            dataLocation="«gh»/«data.org»/«data.repo»/«data.rel»",
-            dataUrl="«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»",
-            writingUrl="https://«org».«ghPages»/text-fabric/tf/writing/«writing».html",
-            urls=dict(
-                cheatsheet=(
-                    "regexp cheatsheet",
-                    (
-                        "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/"
-                        "Regular_Expressions/Cheatsheet"
+            setattr(
+                C,
+                "debugConfig",
+                dict(
+                    setup=dict(
+                        file=f"{c['jsOutDir']}/{c['jsDefs']}",
+                        re=re.compile(r"""export const DEBUG = ([a-z]+)"""),
+                        mask="export const DEBUG = {}",
                     ),
-                    "cheatsheet of regular expressions",
                 ),
-                license=(
-                    "MIT",
-                    "https://mit-license.org",
-                    "website of MIT license",
-                ),
-                maker=(
-                    None,
-                    "https://dans.knaw.nl/en/front-page?set_language=en",
-                    "Website of DANS = Data Archiving and Networked Services",
-                ),
-                corpus=(
-                    None,
-                    "«corpus.url»",
-                    "«corpus.tip»",
-                ),
-                corpus2=(
-                    "«corpus.text»",
-                    "«corpus.url»",
-                    "«corpus.tip»",
-                ),
-                author=(
-                    "Dirk Roorda",
-                    "https://pure.knaw.nl/portal/en/persons/dirk-roorda",
-                    "profile of the author",
-                ),
-                author1=(
-                    "«author1.text»",
-                    "«author1.url»",
-                    "«author1.tip»",
-                ),
-                author2=(
-                    "«author2.text»",
-                    "«author2.url»",
-                    "«author2.tip»",
-                ),
-                tf=(
-                    None,
-                    "https://«org».«ghPages»/text-fabric/tf/",
-                    "Text-Fabric documentation website",
-                ),
-                lsdoc=(
-                    "user manual",
-                    "«lsDocUrl»",
-                    "user manual for this search interface",
-                ),
-                datadoc=(
-                    "data (feature) documentation",
-                    "«data.docUrl»",
-                    "explanation of the features in the dataset",
-                ),
-                data=(
-                    "based on text-fabric data version «data.version»",
-                    "«dataUrl»",
-                    "online repository of the underlying text-fabric data",
-                ),
-                generator=(
-                    f"{T_F}/client",
-                    "«generatorUrl»",
-                    "the generator of this search interface",
-                ),
-                source=(
-                    "«repo»",
-                    "«sourceUrl»",
-                    "source code of the definition of this search interface",
-                ),
-                issue=(
-                    "Report an issue",
-                    "«issueUrl»",
-                    "report issues",
-                ),
-                package=(
-                    "download",
-                    "«packageUrl»",
-                    "zip file for offline use",
-                ),
-                writing=(
-                    "«writing»",
-                    "«writingUrl»",
-                    "characters and transliteration for «writing»",
-                ),
-                related=(
-                    "text-fabric «dataset»",
-                    "«tutUrl»",
-                    "using Text-Fabric on the same corpus",
-                ),
-            ),
-        )
-
-        for (k, v) in d.items():
-            c[k] = v
-            fillin(c, k, v)
-
-        setattr(
-            C,
-            "debugConfig",
-            dict(
-                setup=dict(
-                    file=f"{c['jsOutDir']}/{c['jsDefs']}",
-                    re=re.compile(r"""export const DEBUG = ([a-z]+)"""),
-                    mask="export const DEBUG = {}",
-                ),
-            ),
-        )
+            )
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -435,6 +459,7 @@ class Make:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
                 dataset=C.dataset,
@@ -446,6 +471,7 @@ class Make:
             ),
             ntypes=typeSeq,
             typesLower=typesLower,
+            defaultSettings=C.defaultSettings,
         )
 
         # check visible- and focus- attributes
@@ -472,9 +498,7 @@ class Make:
         else:
             focusType = theFocuses[0]
             if len(theFocuses) > 1:
-                console(
-                    "Multiple node types declared as result focus:\n"
-                )
+                console("Multiple node types declared as result focus:\n")
                 console("\t" + (", ".join(theFocuses)) + "\n")
             else:
                 console("Node type declared as result focus:\n")
@@ -746,7 +770,9 @@ class Make:
                     thisConfig = f"{C.configDir}/{thisClient}/config.yaml"
                     if os.path.exists(thisConfig):
                         with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
+                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
+                                "short", ""
+                            )
                     else:
                         desc = ""
                     clients[thisClient] = desc

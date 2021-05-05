@@ -1,5 +1,6 @@
 HELP = """
-text-fabric-make dataset client command [parameters]
+text-fabric-make {dataset} serve {page}
+text-fabric-make {dataset} {client} {command} [parameters]
 
 dataset: a Text-Fabric dataset such as "nena", "bhsa"
 client: the name of a layered-search client as defined in the config.yaml
@@ -11,7 +12,7 @@ command:
 --help
 help  : print help and exit
 
-serve [page] : serve search page locally, default «client».html
+serve [page] : serve search page locally, default index.html
 v            : show current version of search-client code
 i            : increase version
 config       : build corpus config file
