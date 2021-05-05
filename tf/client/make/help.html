@@ -26,10 +26,11 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/help.py#L0-L23" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/help.py#L0-L24" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">HELP = &#34;&#34;&#34;
-text-fabric-make dataset client command [parameters]
+text-fabric-make {dataset} serve {page}
+text-fabric-make {dataset} {client} {command} [parameters]
 
 dataset: a Text-Fabric dataset such as &#34;nena&#34;, &#34;bhsa&#34;
 client: the name of a layered-search client as defined in the config.yaml
@@ -41,7 +42,7 @@ command:
 --help
 help  : print help and exit
 
-serve [page] : serve search page locally, default «client».html
+serve [page] : serve search page locally, default index.html
 v            : show current version of search-client code
 i            : increase version
 config       : build corpus config file

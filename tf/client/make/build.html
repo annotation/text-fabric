@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L0-L961" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L0-L987" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -140,11 +140,12 @@ from tf.fabric import Fabric
 from tf.core.helpers import specFromRanges, rangesFromSet
 
 from .gh import deploy
-from.help import HELP
+from .help import HELP
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED, compresslevel=6)
 T_F = &#34;text-fabric&#34;
 LS = &#34;layeredsearch&#34;
+CONFIG_FILE = f&#34;{os.path.dirname(os.path.abspath(__file__))}/config.yaml&#34;
 STATIC_DIR = f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/static&#34;
 
 
@@ -190,22 +191,32 @@ class Make:
         self.dataset = dataset
         args = args[1:]
 
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        if not len(args):
             console(HELP)
-            console(&#34;Missing client&#34;)
+            console(&#34;Missing client/command&#34;)
             quit()
 
-        client = args[0]
+        if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+            console(HELP)
+            quit()
+
+        if args[0] == &#34;serve&#34;:
+            client = None
+            command = args[0]
+            args = args[1:]
+        else:
+            client = args[0]
+            args = args[1:]
+
+            if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+                console(HELP)
+                if not len(args):
+                    console(&#34;No command given&#34;)
+                quit()
+
+            command = args[0]
+
         self.client = client
-        args = args[1:]
-
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            if not len(args):
-                console(&#34;No command given&#34;)
-            quit()
-
-        command = args[0]
         self.command = command
         self.page = None
         self.message = None
@@ -230,7 +241,7 @@ class Make:
 
         if command in {&#34;serve&#34;}:
             if len(args) &lt; 2:
-                self.page = client
+                self.page = &#34;index&#34;
             else:
                 self.page = args[1]
                 self.remaining = args[2:]
@@ -254,16 +265,21 @@ class Make:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings[&#34;lsVersion&#34;]
 
+        with open(CONFIG_FILE) as fh:
+            mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
+
         c = dict(
             dataset=dataset,
             client=client,
             lsVersion=lsVersion,
+            mainConfig=mainConfig,
             gh=os.path.expanduser(&#34;~/github&#34;),
             ghUrl=&#34;https://github.com&#34;,
             nbUrl=&#34;https://nbviewer.jupyter.org/github&#34;,
             ghPages=&#34;github.io&#34;,
             nbTutUrl=&#34;«nbUrl»/annotation/tutorials/tree/master&#34;,
             lsDocUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/clientmanual.html&#34;,
+            lsDocSimpleUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/manual.html&#34;,
             org=&#34;annotation&#34;,
             repo=&#34;app-«dataset»&#34;,
             rel=&#34;site&#34;,
@@ -275,7 +291,7 @@ class Make:
             clientDir=&#34;«gh»/«org»/«repo»&#34;,
             configDir=f&#34;«clientDir»/{LS}&#34;,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
-            clientConfig=&#34;«configDir»/«client»/config.yaml&#34;,
+            clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
             clientMakeDir=&#34;«configDir»/«client»&#34;,
             clientMakeFile=&#34;«clientMakeDir»/«clientMake».py&#34;,
@@ -346,151 +362,159 @@ class Make:
                 c[k] = v
                 fillin(c, k, v)
 
-        clientConfig = c[&#34;clientConfig&#34;]
-        if not os.path.exists(clientConfig):
-            console(f&#34;No config.yaml found for {dataset}:{client}: {clientConfig}&#34;)
-            quit()
+        if client is not None:
+            clientConfigFile = c[&#34;clientConfigFile&#34;]
+            if not os.path.exists(clientConfigFile):
+                console(
+                    f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
+                )
+                quit()
 
-        with open(clientConfig) as fh:
-            settings = yaml.load(fh, Loader=yaml.FullLoader)
-            for (k, v) in settings.items():
+            with open(clientConfigFile) as fh:
+                settings = yaml.load(fh, Loader=yaml.FullLoader)
+                for (k, v) in settings.items():
+                    c[k] = v
+                    fillin(c, k, v)
+
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+            try:
+                moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+                spec = util.spec_from_file_location(moduleName, clientMakeFile)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, clientMakeDir)
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                self.makeLegends = types.MethodType(code.makeLegends, self)
+                self.record = types.MethodType(code.record, self)
+
+            except Exception as e:
+                console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+                quit()
+
+            d = dict(
+                dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
+                dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
+                writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
+                urls=dict(
+                    cheatsheet=(
+                        &#34;regexp cheatsheet&#34;,
+                        (
+                            &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
+                            &#34;Regular_Expressions/Cheatsheet&#34;
+                        ),
+                        &#34;cheatsheet of regular expressions&#34;,
+                    ),
+                    license=(
+                        &#34;MIT&#34;,
+                        &#34;https://mit-license.org&#34;,
+                        &#34;website of MIT license&#34;,
+                    ),
+                    maker=(
+                        None,
+                        &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
+                        &#34;Website of DANS = Data Archiving and Networked Services&#34;,
+                    ),
+                    corpus=(
+                        None,
+                        &#34;«corpus.url»&#34;,
+                        &#34;«corpus.tip»&#34;,
+                    ),
+                    corpus2=(
+                        &#34;«corpus.text»&#34;,
+                        &#34;«corpus.url»&#34;,
+                        &#34;«corpus.tip»&#34;,
+                    ),
+                    author=(
+                        &#34;Dirk Roorda&#34;,
+                        &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
+                        &#34;profile of the author&#34;,
+                    ),
+                    author1=(
+                        &#34;«author1.text»&#34;,
+                        &#34;«author1.url»&#34;,
+                        &#34;«author1.tip»&#34;,
+                    ),
+                    author2=(
+                        &#34;«author2.text»&#34;,
+                        &#34;«author2.url»&#34;,
+                        &#34;«author2.tip»&#34;,
+                    ),
+                    tf=(
+                        None,
+                        &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
+                        &#34;Text-Fabric documentation website&#34;,
+                    ),
+                    lsdoc=(
+                        &#34;user manual (full)&#34;,
+                        &#34;«lsDocUrl»&#34;,
+                        &#34;user manual for the full search interface&#34;,
+                    ),
+                    lsdocsimple=(
+                        &#34;user manual (simple)&#34;,
+                        &#34;«lsDocSimpleUrl»&#34;,
+                        &#34;user manual for the simplified search interface&#34;,
+                    ),
+                    datadoc=(
+                        &#34;data (feature) documentation&#34;,
+                        &#34;«data.docUrl»&#34;,
+                        &#34;explanation of the features in the dataset&#34;,
+                    ),
+                    data=(
+                        &#34;based on text-fabric data version «data.version»&#34;,
+                        &#34;«dataUrl»&#34;,
+                        &#34;online repository of the underlying text-fabric data&#34;,
+                    ),
+                    generator=(
+                        f&#34;{T_F}/client&#34;,
+                        &#34;«generatorUrl»&#34;,
+                        &#34;the generator of this search interface&#34;,
+                    ),
+                    source=(
+                        &#34;«repo»&#34;,
+                        &#34;«sourceUrl»&#34;,
+                        &#34;source code of the definition of this search interface&#34;,
+                    ),
+                    issue=(
+                        &#34;Report an issue&#34;,
+                        &#34;«issueUrl»&#34;,
+                        &#34;report issues&#34;,
+                    ),
+                    package=(
+                        &#34;download&#34;,
+                        &#34;«packageUrl»&#34;,
+                        &#34;zip file for offline use&#34;,
+                    ),
+                    writing=(
+                        &#34;«writing»&#34;,
+                        &#34;«writingUrl»&#34;,
+                        &#34;characters and transliteration for «writing»&#34;,
+                    ),
+                    related=(
+                        &#34;text-fabric «dataset»&#34;,
+                        &#34;«tutUrl»&#34;,
+                        &#34;using Text-Fabric on the same corpus&#34;,
+                    ),
+                ),
+            )
+
+            for (k, v) in d.items():
                 c[k] = v
                 fillin(c, k, v)
 
-        clientMake = c[&#34;clientMake&#34;]
-        clientMakeDir = c[&#34;clientMakeDir&#34;]
-        clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-            quit()
-
-        d = dict(
-            dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
-            dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
-            writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
-            urls=dict(
-                cheatsheet=(
-                    &#34;regexp cheatsheet&#34;,
-                    (
-                        &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
-                        &#34;Regular_Expressions/Cheatsheet&#34;
+            setattr(
+                C,
+                &#34;debugConfig&#34;,
+                dict(
+                    setup=dict(
+                        file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
+                        re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
+                        mask=&#34;export const DEBUG = {}&#34;,
                     ),
-                    &#34;cheatsheet of regular expressions&#34;,
                 ),
-                license=(
-                    &#34;MIT&#34;,
-                    &#34;https://mit-license.org&#34;,
-                    &#34;website of MIT license&#34;,
-                ),
-                maker=(
-                    None,
-                    &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
-                    &#34;Website of DANS = Data Archiving and Networked Services&#34;,
-                ),
-                corpus=(
-                    None,
-                    &#34;«corpus.url»&#34;,
-                    &#34;«corpus.tip»&#34;,
-                ),
-                corpus2=(
-                    &#34;«corpus.text»&#34;,
-                    &#34;«corpus.url»&#34;,
-                    &#34;«corpus.tip»&#34;,
-                ),
-                author=(
-                    &#34;Dirk Roorda&#34;,
-                    &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
-                    &#34;profile of the author&#34;,
-                ),
-                author1=(
-                    &#34;«author1.text»&#34;,
-                    &#34;«author1.url»&#34;,
-                    &#34;«author1.tip»&#34;,
-                ),
-                author2=(
-                    &#34;«author2.text»&#34;,
-                    &#34;«author2.url»&#34;,
-                    &#34;«author2.tip»&#34;,
-                ),
-                tf=(
-                    None,
-                    &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
-                    &#34;Text-Fabric documentation website&#34;,
-                ),
-                lsdoc=(
-                    &#34;user manual&#34;,
-                    &#34;«lsDocUrl»&#34;,
-                    &#34;user manual for this search interface&#34;,
-                ),
-                datadoc=(
-                    &#34;data (feature) documentation&#34;,
-                    &#34;«data.docUrl»&#34;,
-                    &#34;explanation of the features in the dataset&#34;,
-                ),
-                data=(
-                    &#34;based on text-fabric data version «data.version»&#34;,
-                    &#34;«dataUrl»&#34;,
-                    &#34;online repository of the underlying text-fabric data&#34;,
-                ),
-                generator=(
-                    f&#34;{T_F}/client&#34;,
-                    &#34;«generatorUrl»&#34;,
-                    &#34;the generator of this search interface&#34;,
-                ),
-                source=(
-                    &#34;«repo»&#34;,
-                    &#34;«sourceUrl»&#34;,
-                    &#34;source code of the definition of this search interface&#34;,
-                ),
-                issue=(
-                    &#34;Report an issue&#34;,
-                    &#34;«issueUrl»&#34;,
-                    &#34;report issues&#34;,
-                ),
-                package=(
-                    &#34;download&#34;,
-                    &#34;«packageUrl»&#34;,
-                    &#34;zip file for offline use&#34;,
-                ),
-                writing=(
-                    &#34;«writing»&#34;,
-                    &#34;«writingUrl»&#34;,
-                    &#34;characters and transliteration for «writing»&#34;,
-                ),
-                related=(
-                    &#34;text-fabric «dataset»&#34;,
-                    &#34;«tutUrl»&#34;,
-                    &#34;using Text-Fabric on the same corpus&#34;,
-                ),
-            ),
-        )
-
-        for (k, v) in d.items():
-            c[k] = v
-            fillin(c, k, v)
-
-        setattr(
-            C,
-            &#34;debugConfig&#34;,
-            dict(
-                setup=dict(
-                    file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
-                    re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
-                    mask=&#34;export const DEBUG = {}&#34;,
-                ),
-            ),
-        )
+            )
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -512,6 +536,7 @@ class Make:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
                 dataset=C.dataset,
@@ -523,6 +548,7 @@ class Make:
             ),
             ntypes=typeSeq,
             typesLower=typesLower,
+            defaultSettings=C.defaultSettings,
         )
 
         # check visible- and focus- attributes
@@ -549,9 +575,7 @@ class Make:
         else:
             focusType = theFocuses[0]
             if len(theFocuses) &gt; 1:
-                console(
-                    &#34;Multiple node types declared as result focus:\n&#34;
-                )
+                console(&#34;Multiple node types declared as result focus:\n&#34;)
                 console(&#34;\t&#34; + (&#34;, &#34;.join(theFocuses)) + &#34;\n&#34;)
             else:
                 console(&#34;Node type declared as result focus:\n&#34;)
@@ -823,7 +847,9 @@ class Make:
                     thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
                     if os.path.exists(thisConfig):
                         with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
+                                &#34;short&#34;, &#34;&#34;
+                            )
                     else:
                         desc = &#34;&#34;
                     clients[thisClient] = desc
@@ -1054,7 +1080,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L83-L95" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L84-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(data):
     sets = {}
@@ -1079,7 +1105,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L74-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L75-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args):
     sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
@@ -1094,7 +1120,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L79-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L80-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return None if legend is None else {v: k for (k, v) in legend.items()}</code></pre>
@@ -1108,7 +1134,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L955-L957" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L981-L983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Mk = Make()
@@ -1128,7 +1154,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L98-L952" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L99-L978" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(self):
@@ -1148,22 +1174,32 @@ if __name__ == &#34;__main__&#34;:
         self.dataset = dataset
         args = args[1:]
 
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        if not len(args):
             console(HELP)
-            console(&#34;Missing client&#34;)
+            console(&#34;Missing client/command&#34;)
             quit()
 
-        client = args[0]
+        if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+            console(HELP)
+            quit()
+
+        if args[0] == &#34;serve&#34;:
+            client = None
+            command = args[0]
+            args = args[1:]
+        else:
+            client = args[0]
+            args = args[1:]
+
+            if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+                console(HELP)
+                if not len(args):
+                    console(&#34;No command given&#34;)
+                quit()
+
+            command = args[0]
+
         self.client = client
-        args = args[1:]
-
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            if not len(args):
-                console(&#34;No command given&#34;)
-            quit()
-
-        command = args[0]
         self.command = command
         self.page = None
         self.message = None
@@ -1188,7 +1224,7 @@ if __name__ == &#34;__main__&#34;:
 
         if command in {&#34;serve&#34;}:
             if len(args) &lt; 2:
-                self.page = client
+                self.page = &#34;index&#34;
             else:
                 self.page = args[1]
                 self.remaining = args[2:]
@@ -1212,16 +1248,21 @@ if __name__ == &#34;__main__&#34;:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings[&#34;lsVersion&#34;]
 
+        with open(CONFIG_FILE) as fh:
+            mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
+
         c = dict(
             dataset=dataset,
             client=client,
             lsVersion=lsVersion,
+            mainConfig=mainConfig,
             gh=os.path.expanduser(&#34;~/github&#34;),
             ghUrl=&#34;https://github.com&#34;,
             nbUrl=&#34;https://nbviewer.jupyter.org/github&#34;,
             ghPages=&#34;github.io&#34;,
             nbTutUrl=&#34;«nbUrl»/annotation/tutorials/tree/master&#34;,
             lsDocUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/clientmanual.html&#34;,
+            lsDocSimpleUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/manual.html&#34;,
             org=&#34;annotation&#34;,
             repo=&#34;app-«dataset»&#34;,
             rel=&#34;site&#34;,
@@ -1233,7 +1274,7 @@ if __name__ == &#34;__main__&#34;:
             clientDir=&#34;«gh»/«org»/«repo»&#34;,
             configDir=f&#34;«clientDir»/{LS}&#34;,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
-            clientConfig=&#34;«configDir»/«client»/config.yaml&#34;,
+            clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
             clientMakeDir=&#34;«configDir»/«client»&#34;,
             clientMakeFile=&#34;«clientMakeDir»/«clientMake».py&#34;,
@@ -1304,151 +1345,159 @@ if __name__ == &#34;__main__&#34;:
                 c[k] = v
                 fillin(c, k, v)
 
-        clientConfig = c[&#34;clientConfig&#34;]
-        if not os.path.exists(clientConfig):
-            console(f&#34;No config.yaml found for {dataset}:{client}: {clientConfig}&#34;)
-            quit()
+        if client is not None:
+            clientConfigFile = c[&#34;clientConfigFile&#34;]
+            if not os.path.exists(clientConfigFile):
+                console(
+                    f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
+                )
+                quit()
 
-        with open(clientConfig) as fh:
-            settings = yaml.load(fh, Loader=yaml.FullLoader)
-            for (k, v) in settings.items():
+            with open(clientConfigFile) as fh:
+                settings = yaml.load(fh, Loader=yaml.FullLoader)
+                for (k, v) in settings.items():
+                    c[k] = v
+                    fillin(c, k, v)
+
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+            try:
+                moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+                spec = util.spec_from_file_location(moduleName, clientMakeFile)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, clientMakeDir)
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                self.makeLegends = types.MethodType(code.makeLegends, self)
+                self.record = types.MethodType(code.record, self)
+
+            except Exception as e:
+                console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+                quit()
+
+            d = dict(
+                dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
+                dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
+                writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
+                urls=dict(
+                    cheatsheet=(
+                        &#34;regexp cheatsheet&#34;,
+                        (
+                            &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
+                            &#34;Regular_Expressions/Cheatsheet&#34;
+                        ),
+                        &#34;cheatsheet of regular expressions&#34;,
+                    ),
+                    license=(
+                        &#34;MIT&#34;,
+                        &#34;https://mit-license.org&#34;,
+                        &#34;website of MIT license&#34;,
+                    ),
+                    maker=(
+                        None,
+                        &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
+                        &#34;Website of DANS = Data Archiving and Networked Services&#34;,
+                    ),
+                    corpus=(
+                        None,
+                        &#34;«corpus.url»&#34;,
+                        &#34;«corpus.tip»&#34;,
+                    ),
+                    corpus2=(
+                        &#34;«corpus.text»&#34;,
+                        &#34;«corpus.url»&#34;,
+                        &#34;«corpus.tip»&#34;,
+                    ),
+                    author=(
+                        &#34;Dirk Roorda&#34;,
+                        &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
+                        &#34;profile of the author&#34;,
+                    ),
+                    author1=(
+                        &#34;«author1.text»&#34;,
+                        &#34;«author1.url»&#34;,
+                        &#34;«author1.tip»&#34;,
+                    ),
+                    author2=(
+                        &#34;«author2.text»&#34;,
+                        &#34;«author2.url»&#34;,
+                        &#34;«author2.tip»&#34;,
+                    ),
+                    tf=(
+                        None,
+                        &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
+                        &#34;Text-Fabric documentation website&#34;,
+                    ),
+                    lsdoc=(
+                        &#34;user manual (full)&#34;,
+                        &#34;«lsDocUrl»&#34;,
+                        &#34;user manual for the full search interface&#34;,
+                    ),
+                    lsdocsimple=(
+                        &#34;user manual (simple)&#34;,
+                        &#34;«lsDocSimpleUrl»&#34;,
+                        &#34;user manual for the simplified search interface&#34;,
+                    ),
+                    datadoc=(
+                        &#34;data (feature) documentation&#34;,
+                        &#34;«data.docUrl»&#34;,
+                        &#34;explanation of the features in the dataset&#34;,
+                    ),
+                    data=(
+                        &#34;based on text-fabric data version «data.version»&#34;,
+                        &#34;«dataUrl»&#34;,
+                        &#34;online repository of the underlying text-fabric data&#34;,
+                    ),
+                    generator=(
+                        f&#34;{T_F}/client&#34;,
+                        &#34;«generatorUrl»&#34;,
+                        &#34;the generator of this search interface&#34;,
+                    ),
+                    source=(
+                        &#34;«repo»&#34;,
+                        &#34;«sourceUrl»&#34;,
+                        &#34;source code of the definition of this search interface&#34;,
+                    ),
+                    issue=(
+                        &#34;Report an issue&#34;,
+                        &#34;«issueUrl»&#34;,
+                        &#34;report issues&#34;,
+                    ),
+                    package=(
+                        &#34;download&#34;,
+                        &#34;«packageUrl»&#34;,
+                        &#34;zip file for offline use&#34;,
+                    ),
+                    writing=(
+                        &#34;«writing»&#34;,
+                        &#34;«writingUrl»&#34;,
+                        &#34;characters and transliteration for «writing»&#34;,
+                    ),
+                    related=(
+                        &#34;text-fabric «dataset»&#34;,
+                        &#34;«tutUrl»&#34;,
+                        &#34;using Text-Fabric on the same corpus&#34;,
+                    ),
+                ),
+            )
+
+            for (k, v) in d.items():
                 c[k] = v
                 fillin(c, k, v)
 
-        clientMake = c[&#34;clientMake&#34;]
-        clientMakeDir = c[&#34;clientMakeDir&#34;]
-        clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-            quit()
-
-        d = dict(
-            dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
-            dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
-            writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
-            urls=dict(
-                cheatsheet=(
-                    &#34;regexp cheatsheet&#34;,
-                    (
-                        &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
-                        &#34;Regular_Expressions/Cheatsheet&#34;
+            setattr(
+                C,
+                &#34;debugConfig&#34;,
+                dict(
+                    setup=dict(
+                        file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
+                        re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
+                        mask=&#34;export const DEBUG = {}&#34;,
                     ),
-                    &#34;cheatsheet of regular expressions&#34;,
                 ),
-                license=(
-                    &#34;MIT&#34;,
-                    &#34;https://mit-license.org&#34;,
-                    &#34;website of MIT license&#34;,
-                ),
-                maker=(
-                    None,
-                    &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
-                    &#34;Website of DANS = Data Archiving and Networked Services&#34;,
-                ),
-                corpus=(
-                    None,
-                    &#34;«corpus.url»&#34;,
-                    &#34;«corpus.tip»&#34;,
-                ),
-                corpus2=(
-                    &#34;«corpus.text»&#34;,
-                    &#34;«corpus.url»&#34;,
-                    &#34;«corpus.tip»&#34;,
-                ),
-                author=(
-                    &#34;Dirk Roorda&#34;,
-                    &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
-                    &#34;profile of the author&#34;,
-                ),
-                author1=(
-                    &#34;«author1.text»&#34;,
-                    &#34;«author1.url»&#34;,
-                    &#34;«author1.tip»&#34;,
-                ),
-                author2=(
-                    &#34;«author2.text»&#34;,
-                    &#34;«author2.url»&#34;,
-                    &#34;«author2.tip»&#34;,
-                ),
-                tf=(
-                    None,
-                    &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
-                    &#34;Text-Fabric documentation website&#34;,
-                ),
-                lsdoc=(
-                    &#34;user manual&#34;,
-                    &#34;«lsDocUrl»&#34;,
-                    &#34;user manual for this search interface&#34;,
-                ),
-                datadoc=(
-                    &#34;data (feature) documentation&#34;,
-                    &#34;«data.docUrl»&#34;,
-                    &#34;explanation of the features in the dataset&#34;,
-                ),
-                data=(
-                    &#34;based on text-fabric data version «data.version»&#34;,
-                    &#34;«dataUrl»&#34;,
-                    &#34;online repository of the underlying text-fabric data&#34;,
-                ),
-                generator=(
-                    f&#34;{T_F}/client&#34;,
-                    &#34;«generatorUrl»&#34;,
-                    &#34;the generator of this search interface&#34;,
-                ),
-                source=(
-                    &#34;«repo»&#34;,
-                    &#34;«sourceUrl»&#34;,
-                    &#34;source code of the definition of this search interface&#34;,
-                ),
-                issue=(
-                    &#34;Report an issue&#34;,
-                    &#34;«issueUrl»&#34;,
-                    &#34;report issues&#34;,
-                ),
-                package=(
-                    &#34;download&#34;,
-                    &#34;«packageUrl»&#34;,
-                    &#34;zip file for offline use&#34;,
-                ),
-                writing=(
-                    &#34;«writing»&#34;,
-                    &#34;«writingUrl»&#34;,
-                    &#34;characters and transliteration for «writing»&#34;,
-                ),
-                related=(
-                    &#34;text-fabric «dataset»&#34;,
-                    &#34;«tutUrl»&#34;,
-                    &#34;using Text-Fabric on the same corpus&#34;,
-                ),
-            ),
-        )
-
-        for (k, v) in d.items():
-            c[k] = v
-            fillin(c, k, v)
-
-        setattr(
-            C,
-            &#34;debugConfig&#34;,
-            dict(
-                setup=dict(
-                    file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
-                    re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
-                    mask=&#34;export const DEBUG = {}&#34;,
-                ),
-            ),
-        )
+            )
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -1470,6 +1519,7 @@ if __name__ == &#34;__main__&#34;:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
                 dataset=C.dataset,
@@ -1481,6 +1531,7 @@ if __name__ == &#34;__main__&#34;:
             ),
             ntypes=typeSeq,
             typesLower=typesLower,
+            defaultSettings=C.defaultSettings,
         )
 
         # check visible- and focus- attributes
@@ -1507,9 +1558,7 @@ if __name__ == &#34;__main__&#34;:
         else:
             focusType = theFocuses[0]
             if len(theFocuses) &gt; 1:
-                console(
-                    &#34;Multiple node types declared as result focus:\n&#34;
-                )
+                console(&#34;Multiple node types declared as result focus:\n&#34;)
                 console(&#34;\t&#34; + (&#34;, &#34;.join(theFocuses)) + &#34;\n&#34;)
             else:
                 console(&#34;Node type declared as result focus:\n&#34;)
@@ -1781,7 +1830,9 @@ if __name__ == &#34;__main__&#34;:
                     thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
                     if os.path.exists(thisConfig):
                         with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
+                                &#34;short&#34;, &#34;&#34;
+                            )
                     else:
                         desc = &#34;&#34;
                     clients[thisClient] = desc
@@ -1996,7 +2047,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L935-L952" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L961-L978" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2026,7 +2077,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L888-L899" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L914-L925" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2050,7 +2101,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L169-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L180-L442" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2063,16 +2114,21 @@ if __name__ == &#34;__main__&#34;:
         settings = yaml.load(fh, Loader=yaml.FullLoader)
         lsVersion = settings[&#34;lsVersion&#34;]
 
+    with open(CONFIG_FILE) as fh:
+        mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
+
     c = dict(
         dataset=dataset,
         client=client,
         lsVersion=lsVersion,
+        mainConfig=mainConfig,
         gh=os.path.expanduser(&#34;~/github&#34;),
         ghUrl=&#34;https://github.com&#34;,
         nbUrl=&#34;https://nbviewer.jupyter.org/github&#34;,
         ghPages=&#34;github.io&#34;,
         nbTutUrl=&#34;«nbUrl»/annotation/tutorials/tree/master&#34;,
         lsDocUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/clientmanual.html&#34;,
+        lsDocSimpleUrl=f&#34;https://«org».«ghPages»/{T_F}/tf/about/manual.html&#34;,
         org=&#34;annotation&#34;,
         repo=&#34;app-«dataset»&#34;,
         rel=&#34;site&#34;,
@@ -2084,7 +2140,7 @@ if __name__ == &#34;__main__&#34;:
         clientDir=&#34;«gh»/«org»/«repo»&#34;,
         configDir=f&#34;«clientDir»/{LS}&#34;,
         lsConfig=&#34;«configDir»/config.yaml&#34;,
-        clientConfig=&#34;«configDir»/«client»/config.yaml&#34;,
+        clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
         clientMake=&#34;mkdata&#34;,
         clientMakeDir=&#34;«configDir»/«client»&#34;,
         clientMakeFile=&#34;«clientMakeDir»/«clientMake».py&#34;,
@@ -2155,151 +2211,159 @@ if __name__ == &#34;__main__&#34;:
             c[k] = v
             fillin(c, k, v)
 
-    clientConfig = c[&#34;clientConfig&#34;]
-    if not os.path.exists(clientConfig):
-        console(f&#34;No config.yaml found for {dataset}:{client}: {clientConfig}&#34;)
-        quit()
+    if client is not None:
+        clientConfigFile = c[&#34;clientConfigFile&#34;]
+        if not os.path.exists(clientConfigFile):
+            console(
+                f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
+            )
+            quit()
 
-    with open(clientConfig) as fh:
-        settings = yaml.load(fh, Loader=yaml.FullLoader)
-        for (k, v) in settings.items():
+        with open(clientConfigFile) as fh:
+            settings = yaml.load(fh, Loader=yaml.FullLoader)
+            for (k, v) in settings.items():
+                c[k] = v
+                fillin(c, k, v)
+
+        clientMake = c[&#34;clientMake&#34;]
+        clientMakeDir = c[&#34;clientMakeDir&#34;]
+        clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+        try:
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+            quit()
+
+        d = dict(
+            dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
+            dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
+            writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
+            urls=dict(
+                cheatsheet=(
+                    &#34;regexp cheatsheet&#34;,
+                    (
+                        &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
+                        &#34;Regular_Expressions/Cheatsheet&#34;
+                    ),
+                    &#34;cheatsheet of regular expressions&#34;,
+                ),
+                license=(
+                    &#34;MIT&#34;,
+                    &#34;https://mit-license.org&#34;,
+                    &#34;website of MIT license&#34;,
+                ),
+                maker=(
+                    None,
+                    &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
+                    &#34;Website of DANS = Data Archiving and Networked Services&#34;,
+                ),
+                corpus=(
+                    None,
+                    &#34;«corpus.url»&#34;,
+                    &#34;«corpus.tip»&#34;,
+                ),
+                corpus2=(
+                    &#34;«corpus.text»&#34;,
+                    &#34;«corpus.url»&#34;,
+                    &#34;«corpus.tip»&#34;,
+                ),
+                author=(
+                    &#34;Dirk Roorda&#34;,
+                    &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
+                    &#34;profile of the author&#34;,
+                ),
+                author1=(
+                    &#34;«author1.text»&#34;,
+                    &#34;«author1.url»&#34;,
+                    &#34;«author1.tip»&#34;,
+                ),
+                author2=(
+                    &#34;«author2.text»&#34;,
+                    &#34;«author2.url»&#34;,
+                    &#34;«author2.tip»&#34;,
+                ),
+                tf=(
+                    None,
+                    &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
+                    &#34;Text-Fabric documentation website&#34;,
+                ),
+                lsdoc=(
+                    &#34;user manual (full)&#34;,
+                    &#34;«lsDocUrl»&#34;,
+                    &#34;user manual for the full search interface&#34;,
+                ),
+                lsdocsimple=(
+                    &#34;user manual (simple)&#34;,
+                    &#34;«lsDocSimpleUrl»&#34;,
+                    &#34;user manual for the simplified search interface&#34;,
+                ),
+                datadoc=(
+                    &#34;data (feature) documentation&#34;,
+                    &#34;«data.docUrl»&#34;,
+                    &#34;explanation of the features in the dataset&#34;,
+                ),
+                data=(
+                    &#34;based on text-fabric data version «data.version»&#34;,
+                    &#34;«dataUrl»&#34;,
+                    &#34;online repository of the underlying text-fabric data&#34;,
+                ),
+                generator=(
+                    f&#34;{T_F}/client&#34;,
+                    &#34;«generatorUrl»&#34;,
+                    &#34;the generator of this search interface&#34;,
+                ),
+                source=(
+                    &#34;«repo»&#34;,
+                    &#34;«sourceUrl»&#34;,
+                    &#34;source code of the definition of this search interface&#34;,
+                ),
+                issue=(
+                    &#34;Report an issue&#34;,
+                    &#34;«issueUrl»&#34;,
+                    &#34;report issues&#34;,
+                ),
+                package=(
+                    &#34;download&#34;,
+                    &#34;«packageUrl»&#34;,
+                    &#34;zip file for offline use&#34;,
+                ),
+                writing=(
+                    &#34;«writing»&#34;,
+                    &#34;«writingUrl»&#34;,
+                    &#34;characters and transliteration for «writing»&#34;,
+                ),
+                related=(
+                    &#34;text-fabric «dataset»&#34;,
+                    &#34;«tutUrl»&#34;,
+                    &#34;using Text-Fabric on the same corpus&#34;,
+                ),
+            ),
+        )
+
+        for (k, v) in d.items():
             c[k] = v
             fillin(c, k, v)
 
-    clientMake = c[&#34;clientMake&#34;]
-    clientMakeDir = c[&#34;clientMakeDir&#34;]
-    clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-    try:
-        moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-        spec = util.spec_from_file_location(moduleName, clientMakeFile)
-        code = util.module_from_spec(spec)
-        sys.path.insert(0, clientMakeDir)
-        spec.loader.exec_module(code)
-        sys.path.pop(0)
-        self.makeLegends = types.MethodType(code.makeLegends, self)
-        self.record = types.MethodType(code.record, self)
-
-    except Exception as e:
-        console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-        quit()
-
-    d = dict(
-        dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
-        dataUrl=&#34;«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»&#34;,
-        writingUrl=&#34;https://«org».«ghPages»/text-fabric/tf/writing/«writing».html&#34;,
-        urls=dict(
-            cheatsheet=(
-                &#34;regexp cheatsheet&#34;,
-                (
-                    &#34;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/&#34;
-                    &#34;Regular_Expressions/Cheatsheet&#34;
+        setattr(
+            C,
+            &#34;debugConfig&#34;,
+            dict(
+                setup=dict(
+                    file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
+                    re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
+                    mask=&#34;export const DEBUG = {}&#34;,
                 ),
-                &#34;cheatsheet of regular expressions&#34;,
             ),
-            license=(
-                &#34;MIT&#34;,
-                &#34;https://mit-license.org&#34;,
-                &#34;website of MIT license&#34;,
-            ),
-            maker=(
-                None,
-                &#34;https://dans.knaw.nl/en/front-page?set_language=en&#34;,
-                &#34;Website of DANS = Data Archiving and Networked Services&#34;,
-            ),
-            corpus=(
-                None,
-                &#34;«corpus.url»&#34;,
-                &#34;«corpus.tip»&#34;,
-            ),
-            corpus2=(
-                &#34;«corpus.text»&#34;,
-                &#34;«corpus.url»&#34;,
-                &#34;«corpus.tip»&#34;,
-            ),
-            author=(
-                &#34;Dirk Roorda&#34;,
-                &#34;https://pure.knaw.nl/portal/en/persons/dirk-roorda&#34;,
-                &#34;profile of the author&#34;,
-            ),
-            author1=(
-                &#34;«author1.text»&#34;,
-                &#34;«author1.url»&#34;,
-                &#34;«author1.tip»&#34;,
-            ),
-            author2=(
-                &#34;«author2.text»&#34;,
-                &#34;«author2.url»&#34;,
-                &#34;«author2.tip»&#34;,
-            ),
-            tf=(
-                None,
-                &#34;https://«org».«ghPages»/text-fabric/tf/&#34;,
-                &#34;Text-Fabric documentation website&#34;,
-            ),
-            lsdoc=(
-                &#34;user manual&#34;,
-                &#34;«lsDocUrl»&#34;,
-                &#34;user manual for this search interface&#34;,
-            ),
-            datadoc=(
-                &#34;data (feature) documentation&#34;,
-                &#34;«data.docUrl»&#34;,
-                &#34;explanation of the features in the dataset&#34;,
-            ),
-            data=(
-                &#34;based on text-fabric data version «data.version»&#34;,
-                &#34;«dataUrl»&#34;,
-                &#34;online repository of the underlying text-fabric data&#34;,
-            ),
-            generator=(
-                f&#34;{T_F}/client&#34;,
-                &#34;«generatorUrl»&#34;,
-                &#34;the generator of this search interface&#34;,
-            ),
-            source=(
-                &#34;«repo»&#34;,
-                &#34;«sourceUrl»&#34;,
-                &#34;source code of the definition of this search interface&#34;,
-            ),
-            issue=(
-                &#34;Report an issue&#34;,
-                &#34;«issueUrl»&#34;,
-                &#34;report issues&#34;,
-            ),
-            package=(
-                &#34;download&#34;,
-                &#34;«packageUrl»&#34;,
-                &#34;zip file for offline use&#34;,
-            ),
-            writing=(
-                &#34;«writing»&#34;,
-                &#34;«writingUrl»&#34;,
-                &#34;characters and transliteration for «writing»&#34;,
-            ),
-            related=(
-                &#34;text-fabric «dataset»&#34;,
-                &#34;«tutUrl»&#34;,
-                &#34;using Text-Fabric on the same corpus&#34;,
-            ),
-        ),
-    )
-
-    for (k, v) in d.items():
-        c[k] = v
-        fillin(c, k, v)
-
-    setattr(
-        C,
-        &#34;debugConfig&#34;,
-        dict(
-            setup=dict(
-                file=f&#34;{c[&#39;jsOutDir&#39;]}/{c[&#39;jsDefs&#39;]}&#34;,
-                re=re.compile(r&#34;&#34;&#34;export const DEBUG = ([a-z]+)&#34;&#34;&#34;),
-                mask=&#34;export const DEBUG = {}&#34;,
-            ),
-        ),
-    )
+        )
     for (k, v) in c.items():
         setattr(C, k, v)</code></pre>
 </details>
@@ -2312,7 +2376,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L584-L599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L608-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2340,7 +2404,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L601-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L625-L645" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -2373,7 +2437,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L907-L927" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L933-L953" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2406,7 +2470,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L873-L880" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L899-L906" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -2426,7 +2490,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L557-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L581-L586" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -2444,7 +2508,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L524-L555" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L548-L579" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(self):
     self.readArgs()
@@ -2500,7 +2564,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L623-L801" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L647-L827" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeClient(self):
         &#34;&#34;&#34;
@@ -2628,7 +2692,9 @@ and let a «client»-local.html include it</p>
                     thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
                     if os.path.exists(thisConfig):
                         with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
+                                &#34;short&#34;, &#34;&#34;
+                            )
                     else:
                         desc = &#34;&#34;
                     clients[thisClient] = desc
@@ -2691,7 +2757,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L420-L522" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L444-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -2711,6 +2777,7 @@ and let a «client»-local.html include it</p>
     # and the code that generates the data for the client
 
     clientConfig = dict(
+        mainConfig=C.mainConfig,
         defs=dict(
             lsVersion=C.lsVersion,
             dataset=C.dataset,
@@ -2722,6 +2789,7 @@ and let a «client»-local.html include it</p>
         ),
         ntypes=typeSeq,
         typesLower=typesLower,
+        defaultSettings=C.defaultSettings,
     )
 
     # check visible- and focus- attributes
@@ -2748,9 +2816,7 @@ and let a «client»-local.html include it</p>
     else:
         focusType = theFocuses[0]
         if len(theFocuses) &gt; 1:
-            console(
-                &#34;Multiple node types declared as result focus:\n&#34;
-            )
+            console(&#34;Multiple node types declared as result focus:\n&#34;)
             console(&#34;\t&#34; + (&#34;, &#34;.join(theFocuses)) + &#34;\n&#34;)
         else:
             console(&#34;Node type declared as result focus:\n&#34;)
@@ -2806,7 +2872,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L564-L569" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L588-L593" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2824,7 +2890,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L571-L582" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L595-L606" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;api&#34;, None):
@@ -2848,7 +2914,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L837-L840" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L863-L866" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self):
     C = self.C
@@ -2864,7 +2930,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L105-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L106-L178" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs(self):
     args = sys.argv[1:]
@@ -2877,22 +2943,32 @@ and let a «client»-local.html include it</p>
     self.dataset = dataset
     args = args[1:]
 
-    if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+    if not len(args):
         console(HELP)
-        console(&#34;Missing client&#34;)
+        console(&#34;Missing client/command&#34;)
         quit()
 
-    client = args[0]
+    if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        console(HELP)
+        quit()
+
+    if args[0] == &#34;serve&#34;:
+        client = None
+        command = args[0]
+        args = args[1:]
+    else:
+        client = args[0]
+        args = args[1:]
+
+        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+            console(HELP)
+            if not len(args):
+                console(&#34;No command given&#34;)
+            quit()
+
+        command = args[0]
+
     self.client = client
-    args = args[1:]
-
-    if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-        console(HELP)
-        if not len(args):
-            console(&#34;No command given&#34;)
-        quit()
-
-    command = args[0]
     self.command = command
     self.page = None
     self.message = None
@@ -2917,7 +2993,7 @@ and let a «client»-local.html include it</p>
 
     if command in {&#34;serve&#34;}:
         if len(args) &lt; 2:
-            self.page = client
+            self.page = &#34;index&#34;
         else:
             self.page = args[1]
             self.remaining = args[2:]
@@ -2939,7 +3015,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L901-L905" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L927-L931" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -2956,7 +3032,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L850-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L876-L897" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -2990,7 +3066,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L842-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L868-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self):
     self.adjustVersion()
@@ -3009,7 +3085,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L929-L933" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L955-L959" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3026,7 +3102,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L882-L886" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L908-L912" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3043,7 +3119,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/71cd67fcd2dd4e6758a8ca1f751ce8df9d6b7cac/tf/client/make/build.py#L803-L835" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/client/make/build.py#L829-L861" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
