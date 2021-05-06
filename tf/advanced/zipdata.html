@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/advanced/zipdata.py#L0-L163" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/advanced/zipdata.py#L0-L163" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -163,7 +163,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
 
 def main(cargs=sys.argv):
-    if len(cargs) != 2 and any(
+    if len(cargs) &lt; 2 or any(
         arg in {&#34;--help&#34;, &#34;-help&#34;, &#34;-h&#34;, &#34;?&#34;, &#34;-?&#34;} for arg in cargs
     ):
         console(HELP)
@@ -209,10 +209,10 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/advanced/zipdata.py#L135-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/advanced/zipdata.py#L135-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
-    if len(cargs) != 2 and any(
+    if len(cargs) &lt; 2 or any(
         arg in {&#34;--help&#34;, &#34;-help&#34;, &#34;-h&#34;, &#34;?&#34;, &#34;-?&#34;} for arg in cargs
     ):
         console(HELP)
@@ -247,7 +247,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50c1984274500d61cf231bd7ee516437cccafc4f/tf/advanced/zipdata.py#L43-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/advanced/zipdata.py#L43-L132" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
