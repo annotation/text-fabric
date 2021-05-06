@@ -133,7 +133,7 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
 
 
 def main(cargs=sys.argv):
-    if len(cargs) != 2 and any(
+    if len(cargs) < 2 or any(
         arg in {"--help", "-help", "-h", "?", "-?"} for arg in cargs
     ):
         console(HELP)

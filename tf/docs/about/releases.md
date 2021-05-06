@@ -46,6 +46,12 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.2
+
+2021-05-06
+
+Updates in the layered search app and its distribution.
+
 #### 8.5.1
 
 2021-05-04
