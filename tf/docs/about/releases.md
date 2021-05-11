@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.3
+
+2021-05-11
+
+Updates in the layered search app and its distribution.
+The Recorder API has some additions `tf.convert.recorder`
+
 #### 8.5.2
 
 2021-05-06

@@ -193,15 +193,12 @@ button.medium, a.medium {
 
 /* expand buttons in the query table for levels (node types) */
 .expand {
+  font-family: monospace;
   border-radius: 0.2rem;
   padding: 0.2rem;
   border-width: 0;
-  color: var(--txtbtn-off-fore);
-  background-color: var(--txtbtn-off-back);
-}
-.expand.on {
-  color: var(--txtbtn-off-fore);
-  background-color: var(--txtbtn-off-back);
+  color: var(--expand-fore);
+  background-color: var(--expand-back);
 }
 .expand.no {
   background-color: var(--query-back);
@@ -230,11 +227,26 @@ button.focus.on {
   font-weight: bold;
 }
 /* the name of a layer */
-.lyr {
+.lyr, button.lyr {
   background-color: var(--layer-back);
   border-radius: 0.1rem;
-  padding: 0.2rem 0rem;
-  margin: 0.2rem 0rem;
+  padding: 0.2rem 0.1rem;
+  margin: 0.2rem 0.1rem;
+}
+button.lyr {
+  border: 0.1rem solid var(--black);
+}
+/* the xray of a layer */
+tr.xray {
+  display: none;
+}
+input.xray {
+  width: 100%;
+}
+pre.xray {
+  font-family: monospace;
+  font-size: medium;
+  white-space: pre-wrap;
 }
 /* the entry of a regex (search pattern) */
 .pattern {
@@ -376,6 +388,26 @@ div.setting details {
   margin-top: 0;
 }
 
+/* keyboard */
+
+td.kchar {
+  font-family: monospace;
+  font-size: large;
+  padding: 0.5rem;
+}
+a.kchar {
+  color: var(--cntinp-fore);
+  background-color: var(--cntinp-back);
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  text-decoration: none;
+}
+.kexplain {
+  font-family: sans-serif;
+  font-size: small;
+}
+/* provenance */
+
 #provenance {
   margin-top: 4rem;
   padding: 1rem 3rem;
@@ -456,6 +488,11 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
 }
 
 /* RIGHT COLUMN */
+
+a.corpus {
+  text-decoration: none;
+  color: var(--corpus-link-fore);
+}
 
 #resultsbody,#resultshead {
   background-color: var(--white);
@@ -614,6 +651,8 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
 	--txtbtn-on-back:   hsla(  0,   0%,  99%, 1    );
 	--txtbtn-off-fore:  hsla(  0,   0%,  50%, 1    );
 	--txtbtn-off-back:  hsla(  0,   0%,  98%, 1    );
+	--expand-fore:      hsla(  0,   0%, 100%, 1    );
+	--expand-back:      hsla(  0,   0%,  20%, 1    );
 	--query-back:       hsla(  0,   0%,  90%, 1    );
 	--query-border:     hsla(  0,   0%,  90%, 1    );
 	--level-back:       hsla(  0,   0%,  90%, 1    );
@@ -634,6 +673,7 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
   --node-fore:        hsla(240,  70%,  20%, 1    ); 
   --node-back:        hsla(240,  50%,  95%, 1    ); 
 	--provenance-fore:  hsla(  0,   0%,  50%, 1    );
+  --corpus-link-fore: hsla(240, 100%,  60%, 1    ); 
 
   --hl-back:          hsla( 60, 100%,  60%, 1    ); 
 

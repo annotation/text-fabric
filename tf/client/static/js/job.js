@@ -39,9 +39,10 @@ export class JobProvider {
     State.startj(jobName, jobContent)
   }
 
-  later() {
+  async later() {
     const { Gui } = this
     Gui.apply(true)
+    Gui.activateLayers()
   }
 
   /* job actions as defined by controls on the interface

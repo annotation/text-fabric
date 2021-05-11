@@ -10,6 +10,7 @@ import {
   BUTTON,
   FOCUSTEXT,
   BOOL,
+  htmlEsc,
 } from "./defs.js"
 
 export class GuiProvider {
@@ -20,11 +21,12 @@ export class GuiProvider {
    * Here we generate HTML and place it in the DOM
    */
 
-  deps({ Log, Features, State, Job, Config, Search }) {
+  deps({ Log, Features, State, Job, Config, Corpus, Search }) {
     this.Features = Features
     this.State = State
     this.Job = Job
     this.Config = Config
+    this.Corpus = Corpus
     this.Search = Search
     this.tell = Log.tell
   }
@@ -88,6 +90,7 @@ export class GuiProvider {
 
     this.placeStatTotals()
     this.buildSettings()
+    this.buildKeyboard()
 
     for (const [kind, [linkText, linkHref, linkTitle]] of Object.entries(urls)) {
       const elem = $(`#${kind}link`)
@@ -97,6 +100,37 @@ export class GuiProvider {
       if (linkText != null) {
         elem.html(linkText)
       }
+    }
+  }
+
+  buildKeyboard() {
+    const {
+      Config: { keyboard },
+      State,
+    } = this
+    const {
+      settings: { simple },
+    } = State.getj()
+    if (!simple && keyboard) {
+      const place = $("#keyboardplace")
+      const html = []
+      html.push(`<details><summary
+        class="setting">Special characters</summary><table><tbody>`)
+      for (const [k, explain] of Object.entries(keyboard)) {
+        const kEsc = htmlEsc(k)
+        const kCode = k.charCodeAt(0)
+        html.push(`
+        <tr>
+          <td class="kchar"><a
+            class="kchar" kcode="${kCode}" href="#"
+            title="copy this character to the clipboard"
+            >${kEsc}</a></td>
+          <td class="kexplain">${htmlEsc(explain)}</td>
+        </tr>
+        `)
+      }
+      html.push(`</tbody></table></details>`)
+      place.html(html.join(""))
     }
   }
 
@@ -213,13 +247,7 @@ export class GuiProvider {
       settings: { simple },
     } = State.getj()
 
-    const nTypeRep =
-      !simple && tpDesc
-        ? `<details>
-           <summary class="lv">${nType}</summary>
-           <div>${tpDesc}</div>
-          </details>`
-        : `<span class="lv">${nType}</span>`
+    const nTypeRep = `<span class="lv" title="${tpDesc}">${nType}</span>`
 
     const html = []
     const expandButton = simple
@@ -239,8 +267,7 @@ export class GuiProvider {
 
     html.push(`
   <tr class="qtype" ntype="${nType}">
-    <td class="lvcell">${nTypeRep}</td>
-    <td>${expandButton}</td>
+    <td colspan="2" class="lvcell">${expandButton} ${nTypeRep}</td>
     <td><button type="button" name="ctype" class="focus"
       ntype="${nType}"
       title="${TIP.focus}"
@@ -292,6 +319,14 @@ export class GuiProvider {
           title="${TIP.visible}"
         ></button></td>`
 
+    const xray = `
+      <tr ntype="${nType}" layer="${layer}" class="xray"><td colspan="5">
+      <div><input type="range" class="xray" ntype="${nType}" layer="${layer}"
+      min="1" max="1" step="1"></div>
+      <pre ntype="${nType}" layer="${layer}" class="xray"></pre>
+      </td></tr>
+    `
+
     return `
   <tr class="ltype" ntype="${nType}" layer="${layer}">
     <td>${this.genLegend(nType, layer, lrInfo)}</td>
@@ -307,6 +342,7 @@ export class GuiProvider {
     ${execButton}
     ${visibleButton}
   </tr>
+  ${xray}
   `
   }
 
@@ -320,30 +356,36 @@ export class GuiProvider {
     const { valueMap, description } = lrInfo
     const html = []
 
-    if (!simple && (valueMap || description)) {
-      html.push(`
-  <details>
-    <summary class="lyr">${layer}</summary>
-  `)
-      if (description) {
-        html.push(`<div>${description}</div>`)
-      }
+    const header = `<button type="button" ntype="${nType}" layer="${layer}"
+        class="lyr" title="${description}"
+      >${layer}</button>`
+
+    if (!simple) {
       if (valueMap) {
-        for (const [acro, full] of Object.entries(valueMap)) {
-          html.push(`
-  <div class="legend">
-    <b><code>${acro}</code></b> =
-    <i><code>${full}</code></i>
-  </div>`)
+        html.push(`
+    <details>
+      <summary>${header}</summary>
+    `)
+        if (valueMap) {
+          const valueItems = Array.isArray(valueMap)
+            ? valueMap
+            : Object.entries(valueMap)
+          for (const [acro, full] of valueItems) {
+            html.push(`
+    <div class="legend">
+      <b><code>${acro}</code></b> =
+      <i><code>${full}</code></i>
+    </div>`)
+          }
         }
+        html.push(`
+    </details>
+      `)
+      } else {
+        html.push(header)
       }
-      html.push(`
-  </details>
-  `)
     } else {
-      html.push(`
-  <span class="lyr">${layer}</span>
-  `)
+      html.push(header)
     }
     return html.join("")
   }
@@ -478,6 +520,17 @@ export class GuiProvider {
     return cancelled ? null : newName
   }
 
+  activateKeyboard() {
+    const copyctls = $("a[kcode]")
+    copyctls.off("click").click(e => {
+      e.preventDefault()
+      const elem = $(e.target)
+      const kCode = elem.attr("kcode")
+      console.log(`k=${String.fromCharCode(kCode)}`)
+      navigator.clipboard.writeText(String.fromCharCode(kCode))
+    })
+  }
+
   activateSettings() {
     const { State, Search } = this
 
@@ -519,9 +572,11 @@ export class GuiProvider {
     }
 
     go.off("click").click(handleQuery)
+
     /* handle changes in the expansion of layers
      */
 
+    this.activateKeyboard()
     this.activateSettings()
 
     const expands = $(`button[name="expand"]`)
@@ -537,6 +592,7 @@ export class GuiProvider {
       }
       this.clearBrowserState()
     })
+
     /* handle changes in the focus type
      */
     const focuses = $(`button[name="ctype"]`)
@@ -578,6 +634,7 @@ export class GuiProvider {
     })
     const errors = $(`[kind="error"]`)
     errors.hide()
+
     /* handle changes in the regexp flags
      */
     const flags = $(`button.flags`)
@@ -600,6 +657,7 @@ export class GuiProvider {
       this.setButton(name, `[ntype="${nType}"][layer="${layer}"]`, !isOn)
       this.clearBrowserState()
     })
+
     /* handles changes in the "exec" controls
      */
     const execs = $(`button.exec`)
@@ -624,6 +682,7 @@ export class GuiProvider {
       }
       this.clearBrowserState()
     })
+
     /* handles changes in the "visible" controls
      */
     const visibles = $(`button.visible`)
@@ -767,6 +826,83 @@ export class GuiProvider {
     })
   }
 
+  activateLayers() {
+    /* do the xray of layers
+     */
+
+    const minChunkSize = 10000
+    const maxSteps = 1000
+
+    const getStepSize = size => {
+      if (size <= minChunkSize) {
+        return 0
+      }
+      if (size <= minChunkSize * maxSteps) {
+        return minChunkSize
+      }
+      return Math.round(1 + size / maxSteps)
+    }
+
+    const getMaterial = (text, start, stepSize) => {
+      const chunkSize = stepSize == 0 ? text.length : stepSize
+      return htmlEsc(text.slice(start - 1, start + chunkSize - 1))
+    }
+
+    const {
+      Corpus: { texts },
+    } = this
+
+    const sliders = $("input.xray")
+    for (const slider of sliders.get()) {
+      const elem = $(slider)
+      const nType = elem.attr("ntype")
+      const layer = elem.attr("layer")
+      const {
+        [nType]: { [layer]: text },
+      } = texts
+      const content = $(`pre.xray[ntype="${nType}"][layer="${layer}"]`)
+      const stepSize = getStepSize(text.length)
+
+      if (stepSize == 0) {
+        elem.hide()
+      } else {
+        elem.show()
+        elem.attr("max", text.length)
+        elem.attr("step", stepSize)
+        elem.val(1)
+        elem.off("change").change(() => {
+          const xpos = elem.val()
+          const material = getMaterial(text, xpos, stepSize)
+          content.html(material)
+        })
+      }
+    }
+
+    const controls = $("button.lyr")
+    controls.off("click").click(e => {
+      e.preventDefault()
+      const elem = $(e.target)
+      const nType = elem.attr("ntype")
+      const layer = elem.attr("layer")
+      const row = $(`tr.xray[ntype="${nType}"][layer="${layer}"]`)
+      const slider = $(`input.xray[ntype="${nType}"][layer="${layer}"]`)
+      const content = $(`pre.xray[ntype="${nType}"][layer="${layer}"]`)
+      const isHidden = row.is(":hidden")
+      if (isHidden) {
+        row.show()
+        const {
+          [nType]: { [layer]: text },
+        } = texts
+        const xpos = slider.val()
+        const stepSize = getStepSize(text.length)
+        const material = getMaterial(text, xpos, stepSize)
+        content.html(material)
+      } else {
+        row.hide()
+      }
+    })
+  }
+
   /* APPLYING STATE CHANGES to the DOM
    */
 
@@ -864,6 +1000,7 @@ export class GuiProvider {
 
     if (name == "simple") {
       this.init()
+      this.activateLayers()
       this.apply(false)
     } else {
       for (const [aname, setting] of tasks) {
@@ -886,8 +1023,6 @@ export class GuiProvider {
     const totalLayers = Object.keys(tpLayers).length
     const useExpand = totalLayers == 0 ? null : expand
 
-    let totalActive = 0
-
     for (const layer of Object.keys(tpLayers)) {
       const row = $(`.ltype[ntype="${nType}"][layer="${layer}"]`)
       const {
@@ -896,9 +1031,6 @@ export class GuiProvider {
       const { [layer]: visible } = tpVisible
       const isActive = visible || pattern.length > 0
 
-      if (isActive) {
-        totalActive += 1
-      }
       if (expand || isActive) {
         row.show()
       } else {
@@ -910,8 +1042,8 @@ export class GuiProvider {
     } = BUTTON
     const expandText = {
       no,
-      on: `${on}(${totalActive})`,
-      off: `${off}(${totalLayers})`,
+      on: `${on}`,
+      off: `${off}`,
     }
     this.setButton("expand", `[ntype="${nType}"]`, useExpand, expandText)
   }
@@ -955,8 +1087,7 @@ export class GuiProvider {
 
     if (run) {
       Search.runQuery({ allSteps: true })
-    }
-    else {
+    } else {
       this.applyPosition()
     }
   }

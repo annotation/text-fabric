@@ -23,6 +23,8 @@ export class ConfigProvider {
       utypeOf, dtypeOf,
       layers, visible,
       defaultSettings,
+      defaultFlags,
+      keyboard,
     } = configData
 
     /* the version stamp of this app
@@ -52,6 +54,14 @@ export class ConfigProvider {
     /* default settings of the app
      */
     this.defaultSettings = defaultSettings
+
+    /* default flags of the query patterns
+     */
+    this.defaultFlags = defaultFlags
+
+    /* keyboard symbols
+    */
+    this.keyboard = keyboard
 
     /* the description of the configData
      */

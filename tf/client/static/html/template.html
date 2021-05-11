@@ -8,16 +8,18 @@
     <link rel="stylesheet" href="css/ls.css«v»"></script>
     <link rel="stylesheet" href="css/«client».css«v»"></script>
     <script defer src="jslib/jquery.js«v»"></script>
-    <script defer src="corpus/«client»-configdata.js«v»"></script>
+    <script defer src="corpus/config.js«v»"></script>
     <script «js»></script>
-    <script defer src="corpus/«client»-corpusdata.js«v»"></script>
+    <script defer src="corpus/init.js«v»"></script>
+    <script defer src="corpus/links.js«v»"></script>
+    <script defer src="corpus/up.js«v»"></script>
+    «corpus»
 	</head>
 	<body>
     <div class="page">
       <div class="leftcol">
         <div class="progress" id="progress">
-          Javascript has not yet kicked in.<br>
-          Loading corpus ...<br>
+          Loading corpus «dataset» for «client» search interface ...<br>
         </div>
         <a
            id="corpuslink" href="#"
@@ -63,7 +65,10 @@
                 </tbody>
               </table>
             </div>
-            <div id="settingsplace"></div>
+            <div>
+              <div id="settingsplace"></div>
+              <div id="keyboardplace"></div>
+            </div>
             <div id="ifsetting"></div>
           </div>
         </div>

@@ -89,7 +89,7 @@
 
 /* --- CORPUS DATA ----------------------------------------------
  *
- * The fixed data is in the global vars corpusData and configData.
+ * The fixed data is in the global vars corpusxxx and configData.
  *
  * Both kinds of data will be wrapped into Provider objects: Config and Corpus
  * after which the global vars should not be accessed, not even for reading.
@@ -143,7 +143,7 @@ class AppProvider {
  * layered.js
  *  - the app itself (this very script that you are reading now)
  * corpusdata.js
- *  - texts and mappings from textual positions to nodes
+ *  - texts and mappings from nodes to textual positions
  *  - a big file, multi-megabyte
  *
  * When the document is ready, and the app has been loaded, the app will execute
@@ -225,7 +225,7 @@ class AppProvider {
     const { providers, order: { later } } = this
 
     for (const name of later) {
-      providers[name].later()
+      await providers[name].later()
     }
   }
 }

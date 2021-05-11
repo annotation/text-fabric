@@ -59,7 +59,8 @@ from time import sleep
 from zipfile import ZIP_DEFLATED, ZipFile
 from importlib import util
 
-from tf.fabric import Fabric
+# from tf.fabric import Fabric
+from tf.app import use
 from tf.core.helpers import specFromRanges, rangesFromSet
 
 from .gh import deploy
@@ -72,110 +73,151 @@ CONFIG_FILE = f"{os.path.dirname(os.path.abspath(__file__))}/config.yaml"
 STATIC_DIR = f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/static"
 
 
-def console(*args):
-    sys.stderr.write(" ".join(args) + "\n")
-    sys.stderr.flush()
+def console(*args, error=False):
+    device = sys.stderr if error else sys.stdout
+    device.write(" ".join(args) + "\n")
+    device.flush()
 
 
 def invertMap(legend):
-    return None if legend is None else {v: k for (k, v) in legend.items()}
+    return (
+        None
+        if legend is None
+        else {v: k for (k, v) in legend.items()}
+        if type(legend) is dict
+        else legend
+    )
 
 
-def compress(data):
-    sets = {}
+def readArgs():
+    class A:
+        pass
 
-    compressed = []
+    A.dataset = None
+    A.client = None
+    A.command = None
+    A.page = None
+    A.debugState = None
 
-    for n in sorted(data):
-        sets.setdefault(data[n], []).append(n)
+    args = sys.argv[1:]
 
-    for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
-        nSpec = list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
-        compressed.append(f"{nSpec}\t{value}")
+    if not len(args) or args[0] in {"-h", "--help", "help"}:
+        console(HELP)
+        console("Missing dataset and client")
+        return None
 
-    return compressed
+    dataset = args[0]
+    A.dataset = dataset
+    args = args[1:]
+
+    if not len(args):
+        console(HELP)
+        console("Missing client/command")
+        return None
+
+    if args[0] in {"-h", "--help", "help"}:
+        console(HELP)
+        return None
+
+    if args[0] == "serve":
+        client = None
+        command = args[0]
+        args = args[1:]
+    elif args[0] == "ship":
+        client = None
+        command = args[0]
+        args = args[1:]
+    else:
+        client = args[0]
+        args = args[1:]
+
+        if not len(args) or args[0] in {"-h", "--help", "help"}:
+            console(HELP)
+            if not len(args):
+                console("No command given")
+            return None
+
+        command = args[0]
+
+    A.client = client
+    A.command = command
+    A.page = None
+    A.debugState = None
+
+    if command not in {
+        "serve",
+        "v",
+        "i",
+        "config",
+        "corpus",
+        "client",
+        "clientdebug",
+        "debug",
+        "publish",
+        "ship",
+    }:
+        console(HELP)
+        console(f"Wrong arguments: «{' '.join(args)}»")
+        return None
+
+    if command in {"serve"}:
+        if len(args) < 2:
+            A.page = "index"
+        else:
+            A.page = args[1]
+
+    elif command in {"debug"}:
+        if len(args) < 2 or args[1] not in {"on", "off"}:
+            console("say on or off")
+            return None
+
+        A.debugState = args[1]
+    return A
 
 
 class Make:
-    def __init__(self):
+    def __init__(self, dataset, client, page=None, debugState=None):
         class C:
             pass
 
         self.C = C
-
-    def readArgs(self):
-        args = sys.argv[1:]
-        if not len(args) or args[0] in {"-h", "--help", "help"}:
-            console(HELP)
-            console("Missing dataset and client")
-            quit()
-
-        dataset = args[0]
         self.dataset = dataset
-        args = args[1:]
-
-        if not len(args):
-            console(HELP)
-            console("Missing client/command")
-            quit()
-
-        if args[0] in {"-h", "--help", "help"}:
-            console(HELP)
-            quit()
-
-        if args[0] == "serve":
-            client = None
-            command = args[0]
-            args = args[1:]
-        else:
-            client = args[0]
-            args = args[1:]
-
-            if not len(args) or args[0] in {"-h", "--help", "help"}:
-                console(HELP)
-                if not len(args):
-                    console("No command given")
-                quit()
-
-            command = args[0]
-
         self.client = client
-        self.command = command
-        self.page = None
-        self.message = None
-        self.debugState = None
-        self.remaining = []
+        self.page = page
+        self.debugState = debugState
+        self.good = True
 
-        if command not in {
-            "serve",
-            "v",
-            "i",
-            "config",
-            "corpus",
-            "client",
-            "clientdebug",
-            "debug",
-            "publish",
-            "ship",
-        }:
-            console(HELP)
-            console(f"Wrong arguments: «{' '.join(args)}»")
-            quit()
+        if dataset:
+            if not self.config():
+                self.good = False
 
-        if command in {"serve"}:
-            if len(args) < 2:
-                self.page = "index"
-            else:
-                self.page = args[1]
-                self.remaining = args[2:]
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
 
-        elif command in {"debug"}:
-            if len(args) < 2 or args[1] not in {"on", "off"}:
-                console("say on or off")
-                quit()
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c["clientMake"]
+            clientMakeDir = c["clientMakeDir"]
+            clientMakeFile = c["clientMakeFile"]
 
-            self.debugState = args[1]
-            self.remaining = args[2:]
+        try:
+            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f"Cannot make data for {dataset}:{client}: {str(e)}")
+            return None
 
     def config(self):
         C = self.C
@@ -211,8 +253,8 @@ class Make:
             issueUrl="«ghUrl»/«org»/«repo»/issues",
             tutUrl="«nbTutUrl»/«dataset»/start.ipynb",
             staticDir=STATIC_DIR,
-            clientDir="«gh»/«org»/«repo»",
-            configDir=f"«clientDir»/{LS}",
+            appDir="«gh»/«org»/«repo»",
+            configDir=f"«appDir»/{LS}",
             lsConfig="«configDir»/config.yaml",
             clientConfigFile="«configDir»/«client»/config.yaml",
             clientMake="mkdata",
@@ -227,20 +269,23 @@ class Make:
             jslibInDir="«staticDir»/jslib",
             template="«htmlInDir»/template.html",
             index="«htmlInDir»/index.html",
-            siteDir="«clientDir»/«rel»",
-            pngOutDir="«siteDir»/png",
-            cssOutDir="«siteDir»/css",
+            siteDir="«appDir»/«rel»",
+            appClientDir="«siteDir»/«client»",
+            pngOutDir="«appClientDir»/png",
+            cssOutDir="«appClientDir»/css",
             htmlOutDir="«siteDir»",
-            jsOutDir="«siteDir»/js",
-            jslibOutDir="«siteDir»/jslib",
-            jsCorpusDir="«siteDir»/corpus",
+            jsOutDir="«appClientDir»/js",
+            jslibOutDir="«appClientDir»/jslib",
+            jsCorpusDir="«appClientDir»/corpus",
+            jsInit="«jsCorpusDir»/init.js",
             jsApp="app.js",
             jsDefs="defs.js",
-            jsDest="«jsCorpusDir»/«client»-all.js",
+            jsAll="all.js",
+            jsAllPath="«appClientDir»/«jsAll»",
             htmlIndex="«siteDir»/index.html",
-            htmlClient="«siteDir»/«client».html",
-            htmlLocalFile="«client»-local.html",
-            htmlLocal="«siteDir»/«htmlLocalFile»",
+            htmlClient="«appClientDir»/index.html",
+            htmlLocalFile="index-local.html",
+            htmlLocal="«appClientDir»/«htmlLocalFile»",
             favicon="favicon.ico",
             packageUrlOld="https://«org».«ghPages»/«repo»/«client».zip",
             packageUrl="«client».zip",
@@ -277,7 +322,7 @@ class Make:
         lsConfig = c["lsConfig"]
         if not os.path.exists(lsConfig):
             console(f"No config.yaml found for {dataset}: {lsConfig}")
-            quit()
+            return None
 
         with open(lsConfig) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -291,7 +336,7 @@ class Make:
                 console(
                     f"No config.yaml found for {dataset}:{client}: {clientConfigFile}"
                 )
-                quit()
+                return None
 
             with open(clientConfigFile) as fh:
                 settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -299,23 +344,7 @@ class Make:
                     c[k] = v
                     fillin(c, k, v)
 
-            clientMake = c["clientMake"]
-            clientMakeDir = c["clientMakeDir"]
-            clientMakeFile = c["clientMakeFile"]
-
-            try:
-                moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
-                spec = util.spec_from_file_location(moduleName, clientMakeFile)
-                code = util.module_from_spec(spec)
-                sys.path.insert(0, clientMakeDir)
-                spec.loader.exec_module(code)
-                sys.path.pop(0)
-                self.makeLegends = types.MethodType(code.makeLegends, self)
-                self.record = types.MethodType(code.record, self)
-
-            except Exception as e:
-                console(f"Cannot make data for {dataset}:{client}: {str(e)}")
-                quit()
+            self.importMake(c=c)
 
             d = dict(
                 dataLocation="«gh»/«data.org»/«data.repo»/«data.rel»",
@@ -441,10 +470,13 @@ class Make:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        return True
+
     def makeClientSettings(self):
         C = self.C
         layerSettings = C.layerSettings
-        api = self.api
+        A = self.A
+        api = A.api
         Cp = api.C
 
         self.makeLegends()
@@ -472,6 +504,8 @@ class Make:
             ntypes=typeSeq,
             typesLower=typesLower,
             defaultSettings=C.defaultSettings,
+            defaultFlags=C.defaultFlags,
+            keyboard=getattr(C, "keyboard", None),
         )
 
         # check visible- and focus- attributes
@@ -487,7 +521,7 @@ class Make:
                 if layerInfo.get("visible", False):
                     theVisibles.append((nType, name))
                 theMap = layerInfo.get("legend", None)
-                if theMap is not None:
+                if theMap is not None and type(theMap) is dict:
                     default = layerInfo.get("default", None)
                     if default is not None:
                         theMap[""] = default
@@ -545,16 +579,7 @@ class Make:
         )
         self.clientConfig = clientConfig
 
-    def main(self):
-        self.readArgs()
-
-        command = self.command
-
-        if not command:
-            quit()
-
-        self.config()
-
+    def doCommand(self, command):
         if command == "serve":
             self.serve()
         elif command == "v":
@@ -570,8 +595,8 @@ class Make:
         elif command == "client":
             self.makeClient()
         elif command == "clientdebug":
-            self.makeClient()
             self.debugState = "on"
+            self.makeClient()
             self.adjustDebug()
         elif command == "publish":
             self.publish()
@@ -580,128 +605,136 @@ class Make:
 
     def loadTf(self):
         C = self.C
-        TF = Fabric(locations=C.dataLocation, modules=[C.data["version"]])
-        allFeatures = TF.explore(silent=True, show=True)
-        loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-        self.api = TF.load(loadableFeatures, silent=True)
+        dataset = C.dataset
+        version = C.data["version"]
+        A = use(f"{dataset}:clone", checkout="clone", version=version)
+        # TF = Fabric(locations=C.dataLocation, modules=[C.data["version"]])
+        # allFeatures = TF.explore(silent=True, show=True)
+        # loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
+        # self.api = TF.load(loadableFeatures, silent=True)
+        self.A = A
 
     def makeConfig(self):
-        if not getattr(self, "api", None):
+        if not getattr(self, "A", None):
             self.loadTf()
         if not getattr(self, "clientConfig", None):
             self.makeClientSettings()
         self.dumpConfig()
 
+    def makeLinks(self):
+        A = self.A
+        api = A.api
+        T = api.T
+        F = api.F
+
+        sTypes = T.sectionTypes
+        A.info(f"links for types {', '.join(sTypes)}")
+        links = {
+            sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
+            for sType in sTypes
+        }
+        for (sType, sLinks) in links.items():
+            A.info(f"{sType:<20}: {len(sLinks):>6} links", tm=False)
+        A.info("done")
+        self.links = links
+
     def makeCorpus(self):
-        if not getattr(self, "api", None):
+        if not getattr(self, "A", None):
             self.loadTf()
         if not getattr(self, "clientConfig", None):
             self.makeClientSettings()
-        TF = self.api.TF
+        A = self.A
 
-        TF.info("Recording ...")
+        A.info("Make links ...")
+        self.makeLinks()
+
+        A.info("Recording ...")
         self.record()
 
-        TF.info("Dumping ...")
+        A.info("Dumping ...")
         self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
         clientConfig = self.clientConfig
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameConfig = f"{destData}/{C.client}-configdata.js"
+        fileNameConfig = f"{destData}/config.js"
 
         with open(fileNameConfig, "w") as fh:
             fh.write("const configData = ")
             json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
-        TF.info(f"Config written to file {fileNameConfig}")
+        A.info(f"Config written to file {fileNameConfig}")
+
+    def compress(self, data):
+        sets = {}
+
+        compressed = []
+
+        for n in sorted(data):
+            sets.setdefault(data[n], []).append(n)
+
+        for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
+            nSpec = (
+                list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
+            )
+            compressed.append(f"{nSpec}\t{value}")
+
+        return compressed
 
     def dumpCorpus(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
 
         data = self.data
-        data["up"] = compress(data["up"])
+        data["links"] = self.links
 
-        TF.indent(reset=True)
-        TF.info("Dumping data to a single compact json file")
+        A.indent(reset=True)
+        A.info("Dumping data to compact json files")
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameData = f"{destData}/{C.client}-corpusdata.js"
+        def writeDataFile(name, address, data, asString=False):
+            path = f"{destData}/{name.lower()}.js"
+            heading = f"corpusData[{address}] = "
+            with open(path, "w") as fh:
+                fh.write(heading)
+                if asString:
+                    fh.write("`")
+                    fh.write(data)
+                    fh.write("`")
+                else:
+                    json.dump(
+                        data, fh, ensure_ascii=False, indent=None, separators=(",", ":")
+                    )
+                A.info(f"Data {name} stored in {path}")
 
-        with open(fileNameData, "w") as fh:
-            fh.write("const corpusData = ")
-            json.dump(data, fh, ensure_ascii=False, indent=None, separators=(",", ":"))
-        TF.info(f"Data written to file {fileNameData}")
+        init = ["var corpusData = {}\n"]
 
-    def makeClient(self):
-        """
-        We create a client app in the target directory.
+        for (partName, partData) in data.items():
+            if partName in {"texts", "positions"}:
+                init.append(f'corpusData["{partName}"] = {{}}\n')
+                for (nType, tpData) in partData.items():
+                    init.append(f'corpusData["{partName}"]["{nType}"] = {{}}\n')
+                    for (layer, lrData) in tpData.items():
+                        writeDataFile(
+                            f"{partName}-{nType}-{layer}",
+                            f'"{partName}"]["{nType}"]["{layer}"',
+                            lrData,
+                        )
+            else:
+                writeDataFile(partName, f'"{partName}"', partData)
+        with open(C.jsInit, "w") as fh:
+            fh.write("".join(init))
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
-
-        Module loading does not work when you open the HTML file locally
-        (i.e. when the HTML is not served by a server).
-
-        N.B. There is a difference between a local web server serving at `localhost`
-        and opening the file directly into your browser by double clicking on it.
-
-        In the first case, you see in your un the URL bar of your browser
-        something that starts with
-        `http://` or `https://`, in the second case you see `file://` instead.
-
-        Modular Javascript does not work with `file://` origins.
-
-        For that case, we bundle the modules into one,
-        and let a «client»-local.html include it
-
-        We also zip the client into {C.client}.zip so that users can download it easily
-        """
-
-        # copy over the static files
-
+    def makeCombined(self):
         C = self.C
-        lsVersion = C.lsVersion
-
-        for (srcDir, dstDir) in (
-            (C.pngInDir, C.pngOutDir),
-            (C.cssInDir, C.cssOutDir),
-            (C.jsInDir, C.jsOutDir),
-            (C.jslibInDir, C.jslibOutDir),
-            (C.htmlInDir, C.htmlOutDir),
-        ):
-            if not os.path.exists(dstDir):
-                os.makedirs(dstDir, exist_ok=True)
-
-            with os.scandir(srcDir) as it:
-                for entry in it:
-                    name = entry.name
-                    if not entry.is_file() or name.startswith("."):
-                        continue
-                    srcFile = f"{srcDir}/{name}"
-                    if srcFile != C.template:
-                        copy(srcFile, f"{dstDir}/{name}")
-        copy(f"{C.staticDir}/{C.favicon}", f"{C.siteDir}/{C.favicon}")
-
-        # move the custom files in place
-
-        for (srcFile, dstFile) in (
-            (C.clientCss, f"{C.cssOutDir}/{C.client}.css"),
-            (C.clientLogo, f"{C.pngOutDir}/{C.client}.png"),
-        ):
-            copy(srcFile, dstFile)
-
-        # create combined javascript file
 
         commentRe = re.compile(r"""[ \t]*/\*.*?\*/[ \t]*""", re.S)
         importRe = re.compile(r'''import\s+\{.*?\}\s+from\s+"[^"]*\.js"''', re.S)
@@ -753,29 +786,26 @@ class Make:
             + "\n\n"
             + content[C.jsApp]
         )
-        with open(C.jsDest, "w") as fh:
+        with open(C.jsAllPath, "w") as fh:
             fh.write(combined)
-        console(f"Combined js file written to {C.jsDest}")
+        console(f"Combined js file written to {C.jsAllPath}")
 
-        # fill in the html templates
+    def makeHtml(self):
+        C = self.C
+        lsVersion = C.lsVersion
 
         # index of all clients
 
         clients = {}
 
-        with os.scandir(C.configDir) as it:
-            for entry in it:
-                if entry.is_dir():
-                    thisClient = entry.name
-                    thisConfig = f"{C.configDir}/{thisClient}/config.yaml"
-                    if os.path.exists(thisConfig):
-                        with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
-                                "short", ""
-                            )
-                    else:
-                        desc = ""
-                    clients[thisClient] = desc
+        for thisClient in self.getAllClients():
+            thisConfig = f"{C.configDir}/{thisClient}/config.yaml"
+            if os.path.exists(thisConfig):
+                with open(thisConfig) as fh:
+                    desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
+            else:
+                desc = ""
+            clients[thisClient] = desc
 
         with open(C.index) as fh:
             template = fh.read()
@@ -786,7 +816,7 @@ class Make:
             for (thisClient, desc) in clients.items():
                 html.append(
                     f"""
-<dt><a href="{thisClient}.html">{thisClient}</a></dt>
+<dt><a href="{thisClient}/index.html">{thisClient}</a></dt>
 <dd>{desc}</dd>
 """
                 )
@@ -799,17 +829,27 @@ class Make:
 
         # client and client-local
 
+        with os.scandir(C.jsCorpusDir) as it:
+            scripts = []
+            for entry in it:
+                file = entry.name
+                if not file.endswith(".js"):
+                    continue
+                if file.startswith("texts-") or file.startswith("positions"):
+                    scripts.append(f'<script defer src="corpus/{file}«v»"></script>')
+            corpusScripts = "\n".join(scripts)
+
         with open(C.template) as fh:
             template = fh.read()
             htmlNormal = template.replace(
                 "«js»", '''type="module" src="js/app.js«v»"'''
             )
+            htmlNormal = htmlNormal.replace("«corpus»", corpusScripts)
             htmlNormal = htmlNormal.replace("«v»", f"?v={lsVersion}")
             htmlNormal = htmlNormal.replace("«dataset»", C.dataset)
             htmlNormal = htmlNormal.replace("«client»", C.client)
-            htmlLocal = template.replace(
-                "«js»", f'''defer src="corpus/{C.client}-all.js"'''
-            )
+            htmlLocal = template.replace("«js»", f'''defer src="{C.jsAll}"''')
+            htmlLocal = htmlLocal.replace("«corpus»", corpusScripts)
             htmlLocal = htmlLocal.replace("«v»", "")
             htmlLocal = htmlLocal.replace("«dataset»", C.dataset)
             htmlLocal = htmlLocal.replace("«client»", C.client)
@@ -822,9 +862,77 @@ class Make:
             fh.write(htmlLocal)
         console(f"html file (for use with file://) written to {C.htmlLocal}")
 
-        # zip the standalone client
+    def makeClient(self):
+        """
+        We create a client app in the target directory.
 
-        self.zipApp()
+        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+
+        Module loading does not work when you open the HTML file locally
+        (i.e. when the HTML is not served by a server).
+
+        N.B. There is a difference between a local web server serving at `localhost`
+        and opening the file directly into your browser by double clicking on it.
+
+        In the first case, you see in your un the URL bar of your browser
+        something that starts with
+        `http://` or `https://`, in the second case you see `file://` instead.
+
+        Modular Javascript does not work with `file://` origins.
+
+        For that case, we bundle the modules into one,
+        and let a «client»-local.html include it
+
+        We also zip the client into {C.client}.zip so that users can download it easily
+
+        However, if the debugState is on, we skip all steps that are unneccesary
+        to see the updated client working.
+        """
+
+        # copy over the static files
+
+        C = self.C
+        debug = self.debugState == "on"
+
+        for (srcDir, dstDir) in (
+            (C.pngInDir, C.pngOutDir),
+            (C.cssInDir, C.cssOutDir),
+            (C.jsInDir, C.jsOutDir),
+            (C.jslibInDir, C.jslibOutDir),
+            (C.htmlInDir, C.htmlOutDir),
+        ):
+            if not os.path.exists(dstDir):
+                os.makedirs(dstDir, exist_ok=True)
+
+            with os.scandir(srcDir) as it:
+                for entry in it:
+                    name = entry.name
+                    if not entry.is_file() or name.startswith("."):
+                        continue
+                    srcFile = f"{srcDir}/{name}"
+                    if srcFile != C.template:
+                        copy(srcFile, f"{dstDir}/{name}")
+        copy(f"{C.staticDir}/{C.favicon}", f"{C.siteDir}/{C.favicon}")
+
+        # move the custom files in place
+
+        for (srcFile, dstFile) in (
+            (C.clientCss, f"{C.cssOutDir}/{C.client}.css"),
+            (C.clientLogo, f"{C.pngOutDir}/{C.client}.png"),
+        ):
+            copy(srcFile, dstFile)
+
+        console("Copied static files")
+
+        # create combined javascript file
+
+        if not debug:
+            self.makeCombined()
+
+        self.makeHtml()
+
+        if not debug:
+            self.zipApp()
 
     def zipApp(self):
         C = self.C
@@ -838,40 +946,50 @@ class Make:
         """.strip().split()
         )
         items.add(C.htmlLocalFile)
+        items.add(C.jsAll)
 
         zipped = f"{C.siteDir}/{C.client}.zip"
 
         with ZipFile(zipped, "w", **ZIP_OPTIONS) as zipFile:
-            with os.scandir(C.siteDir) as it:
+            with os.scandir(C.appClientDir) as it:
                 for entry in it:
                     file = entry.name
                     if file not in items:
                         continue
                     if entry.is_file():
-                        zipFile.write(f"{C.siteDir}/{file}", arcname=file)
+                        zipFile.write(f"{C.appClientDir}/{file}", arcname=file)
                         console(f"adding {file}")
                     else:
-                        with os.scandir(f"{C.siteDir}/{file}") as sit:
+                        with os.scandir(f"{C.appClientDir}/{file}") as sit:
                             for sentry in sit:
                                 sfile = sentry.name
                                 if sentry.is_file and not sfile.startswith("."):
                                     sfile = f"{file}/{sfile}"
-                                    zipFile.write(f"{C.siteDir}/{sfile}", arcname=sfile)
+                                    zipFile.write(
+                                        f"{C.appClientDir}/{sfile}", arcname=sfile
+                                    )
                                     console(f"adding {sfile}")
         console(f"Packaged client into {zipped}")
 
     def publish(self):
         C = self.C
-        os.chdir(C.clientDir)
+        appDir = C.appDir
+        siteDir = C.siteDir
+        dataset = self.dataset
+        client = self.client
+        clients = self.getAllClients() if client is None else [client]
+        console(f"Publishing {dataset}:{','.join(clients)} from {siteDir} ...")
+        os.chdir(appDir)
         deploy(C.org, C.repo)
 
-    def ship(self):
+    def ship(self, publish=True):
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
         self.makeCorpus()
         self.makeClient()
-        self.publish()
+        if publish:
+            self.publish()
 
     def serve(self):
         C = self.C
@@ -949,11 +1067,14 @@ class Make:
             debugs[cfile] = debug
 
         if not good:
-            quit()
+            return False
         return debugs
 
     def showDebug(self):
         debugInfo = self.getDebugs()
+        if debugInfo is None:
+            return False
+        return True
 
         for (source, debug) in debugInfo.items():
             console(f"{debug} (according to {source})")
@@ -962,7 +1083,8 @@ class Make:
         C = self.C
         debugState = self.debugState
 
-        self.showDebug()
+        if not self.showDebug():
+            return
 
         newValue = "true" if debugState == "on" else "false"
 
@@ -975,12 +1097,53 @@ class Make:
                 fh.write(text)
 
         console(f"Debug set to {newValue}")
-        self.showDebug()
+        if not self.showDebug():
+            return
+
+    def getAllClients(self):
+        C = self.C
+        configDir = C.configDir
+
+        clients = []
+
+        with os.scandir(configDir) as it:
+            for entry in it:
+                client = entry.name
+                if not entry.is_dir() or client.startswith("."):
+                    continue
+                clients.append(client)
+        return clients
 
 
 def main():
-    Mk = Make()
-    return Mk.main()
+    A = readArgs()
+    if A is None:
+        return 0
+
+    dataset = A.dataset
+    client = A.client
+    command = A.command
+    page = A.page
+    debugState = A.debugState
+
+    if not dataset:
+        return
+
+    if not client:
+        if command not in {"serve", "ship"}:
+            return
+
+    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+
+    if command == "ship" and client is None:
+        clients = Mk.getAllClients()
+        for client in clients:
+            ThisMk = Make(dataset, client)
+            ThisMk.ship(publish=False)
+        Mk.publish()
+        return
+
+    return Mk.doCommand(command)
 
 
 if __name__ == "__main__":

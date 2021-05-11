@@ -32,9 +32,9 @@ export const BUTTON = {
   exec: { no: " ", on: "⚫️", off: "🔴" },
   visible: { on: "🔵", off: "⚪️" },
   expand: {
-    on: "- active layers",
-    off: "+ all layers",
-    no: "no layers",
+    on: "-",
+    off: "+",
+    no: "",
   },
 }
 
@@ -86,5 +86,7 @@ OFF: excluding newlines"`,
   flagi: `ignore
 ON: case-insensitive
 OFF: case-sensitive"`,
+  corpus: `to the online presence of this node`,
 }
 
+export const htmlEsc = text => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;")

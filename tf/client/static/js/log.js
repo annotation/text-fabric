@@ -11,32 +11,35 @@ export class LogProvider {
     this.tell = Log.tell
   }
 
-  init() {
+  async init() {
     /* warn the developer that DEBU is still true
      */
     this.tell("!!! IS ON !!!")
 
     this.place = $("#progress")
-    this.clearProgress()
-    this.placeProgress("Javascript has kicked in.")
+    await this.placeProgress("Javascript has kicked in.")
   }
   async later() {
-    this.placeProgress("Done ...")
+    await this.placeProgress("Done ...")
     await new Promise(r => setTimeout(r, 1000))
-    this.clearProgress()
+    await this.clearProgress()
   }
 
-  clearProgress() {
+  async clearProgress() {
     /* Clear progress messages in specified location
      * See placeProgress
      */
+    console.warn("CLEAR")
     this.place.html("")
+    await new Promise(r => setTimeout(r, 50))
   }
-  placeProgress(msg) {
+  async placeProgress(msg) {
     /* Draw a progress message on the interface
      * The message is drawn in element box
      */
+    console.warn(msg)
     this.place.append(`${msg}<br>`)
+    await new Promise(r => setTimeout(r, 50))
   }
 
   progress(msg) {

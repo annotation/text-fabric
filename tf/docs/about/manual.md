@@ -11,34 +11,39 @@
     But they can be way more sophisticated than that.
     See **Search patterns** below for a crash course.
 
-<mark>2. focus</mark>
+<mark>2. show text of a layer</mark>
+:   You can click on the name of each layer to show and hide the
+    full text of that layer.
+    So that you know the material in which you are searching.
+
+<mark>3. focus</mark>
 :   The level in the corpus that corresponds with a single row in the results table.
     For example, if you put focus on `sentence`, the results will be organized by sentence.
 
     !!! hint "More or less context"
         By changing focus, you will see more or less context around the results.
 
-<mark>3. execute</mark>
+<mark>4. execute</mark>
 :   Whenever you change a pattern, the search results will be updated.
     But you can also press this button to run the search again.
 
-<mark>4. stats</mark>
+<mark>5. stats</mark>
 :   How many results there are at each level, compared to the total size of the corpus.
 
-<mark>5. export</mark>
+<mark>6. export</mark>
 :   Export the search results as a tab-separated file (`.tsv`).
     This file can be opened in Excel.
     All  results are exported, not only the ones that show on the current page.
     The level of detail depends on the currently selected **focus** level.
 
-<mark>6. options</mark>
+<mark>7. options</mark>
 :   Switch between the simple interface and the full interface.
     There is a separate manual for the full interface: `tf.about.clientmanual`.
 
-<mark>7. help</mark>
+<mark>8. help</mark>
 :   Help and info.
 
-<mark>8. navigate</mark>
+<mark>9. navigate</mark>
 :   Walk through the results in various ways:
 
     *   manual entry of the position number,
@@ -47,14 +52,14 @@
 
     If you do this often: there are handy **keyboard shortcuts**. See below.
 
-<mark>9. position</mark>
+<mark>10. position</mark>
 :   The current position in the results table is marked.
 
-<mark>10. previous position</mark>
+<mark>11. previous position</mark>
 :   The previous position in the results table is also marked,
     in a slightly less conspicuous way.
 
-<mark>11. highlighting</mark>
+<mark>12. highlighting</mark>
 :   The portions in the layer that match the corresponding pattern are highlighted.
 
     !!! caution
@@ -64,6 +69,13 @@
         There is an option to retain highlight information in exports.
         For that you have to use the full interface.
     
+<mark>13. links to online</mark>
+:   The top level layers are linked to an online
+    representation of the corpus.
+    For example, for NENA it is the GitHub repository where the source
+    texts are stored.
+    For the BHSA it is [SHEBANQ](https://shebanq.ancient-data.org).
+
 ## Search patterns
 
 Here is a crash course in increasingly complex search patterns.
@@ -73,7 +85,9 @@ Simple words
 :   `mute` is a pattern that matches all occurrences of the string `mute`.
     Case is not important, and it does not have to be a whole word.
 
-    <mark>if the case of letters is important, use the full interface.</mark>
+    hint !!! "Case sensitive search"
+        If the case of letters is important, use the full interface,
+        where you can switch it on and off.
 
 Word boundaries
 :   We can reckon with word boundaries:

@@ -1,5 +1,7 @@
 HELP = """
 text-fabric-make {dataset} serve {page}
+text-fabric-make {dataset} ship
+text-fabric-make {dataset} {client} ship
 text-fabric-make {dataset} {client} {command} [parameters]
 
 dataset: a Text-Fabric dataset such as "nena", "bhsa"
@@ -22,4 +24,6 @@ clientdebug  : same as taks client but put it in debug mode
 debug on|off : set debug flag of the client on or off
 publish      : publish the layered search client on the Github Pages of app-«dataset»
 ship         : performs all build steps: i, config, corpus, client, debug off, publish
+               if {client} is given, ships this client,
+               otherwise ships all clients for the dataset
 """

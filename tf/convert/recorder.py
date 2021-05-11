@@ -110,6 +110,8 @@ To see it in action, see this
 import os
 from itertools import chain
 
+from tf.core.helpers import specFromRangesLogical, specFromRanges, rangesFromSet
+
 ZWJ = "\u200d"  # zero width joiner
 
 
@@ -202,8 +204,8 @@ class Recorder:
         """
         return "".join(self.material)
 
-    def positions(self, byType=False):
-        """Get the node positions.
+    def positions(self, byType=False, simple=False):
+        """Get the node positions as mapping from character positions.
 
         Parameters
         ----------
@@ -211,22 +213,31 @@ class Recorder:
             If True, makes a separate node mapping per node type.
             For this it is needed that the Recorder has been
             passed a TF api when it was initialized.
+        simple: boolean, optional `False`
+            In some cases it is known on beforehand that at each textual position
+            there is at most 1 node.
+            Then it is more economical to fill the list with single nodes
+            rather than with sets of nodes.
+            If this parameter is True, we pick the first node from the set.
 
         Returns
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping for nodes of that type.
-            Entry `i` in these list contains the frozen set of all
-            nodes of that type that were active at character position `i` in the text.
+            with values the mapping of textual positions to nodes of that type.
+            This mapping takes the shape of a list where entry `i`
+            contains the frozen set of all nodes of that type
+            that were active at character position `i` in the text.
 
-            If not `byType` then a single mapping list is returned, where
-            entry `i` contains the frozen set of all
+            If not `byType` then a single mapping is returned (as list),
+            where entry `i` contains the frozen set of all
             nodes, irrespective of their type
             that were active at character position `i` in the text.
         """
 
         if not byType:
+            if simple:
+                return tuple(list(x)[0] if x else None for x in self.nodesByPos)
             return self.nodesByPos
 
         api = self.api
@@ -268,11 +279,84 @@ where `api` is the result of
                 thisSet = (
                     frozenset(typed[nodeType]) if nodeType in typed else frozenset()
                 )
-                nodesByPosByType[nodeType].append(thisSet)
+                value = (list(thisSet)[0] if thisSet else None) if simple else thisSet
+                nodesByPosByType[nodeType].append(value)
 
         info("done")
         indent(level=False)
         return nodesByPosByType
+
+    def iPositions(self, byType=False, logical=True, asEntries=False):
+        """Get the node positions as mapping from nodes.
+
+        Parameters
+        ----------
+        byType: boolean, optional `False`
+            If True, makes a separate node mapping per node type.
+            For this it is needed that the Recorder has been
+            passed a TF api when it was initialized.
+        logical: boolean, optional `True`
+            If True, specs are represented as tuples of ranges
+            and a range is represented as a tuples of a begin and end point,
+            or as a tuple of a single point.
+            Points are integers.
+            If False, ranges are represented by strings: , separated ranges,
+            a ranges is b-e or p.
+        asEntries: boolean, optional `False`
+            If True, do not return the dict, but rather its entries.
+
+        Returns
+        -------
+        list|dict|None
+            If `byType`, the result is a dictionary, keyed by node type,
+            with values the mapping for nodes of that type.
+            Entry `n` in this mapping contains the intervals of all
+            character positions in the text where node `n` is active.
+
+            If not `byType` then a single mapping is returned.
+        """
+
+        method = specFromRangesLogical if logical else specFromRanges
+        posByNode = {}
+        for (i, nodeSet) in enumerate(self.nodesByPos):
+            for node in nodeSet:
+                posByNode.setdefault(node, set()).add(i)
+        for (n, nodeSet) in posByNode.items():
+            posByNode[n] = method(rangesFromSet(nodeSet))
+
+        if asEntries:
+            posByNode = tuple(posByNode.items())
+        if not byType:
+            return posByNode
+
+        api = self.api
+        if api is None:
+            print(
+                """\
+Cannot determine node types without a TF api.
+You have to call Recorder(`api`) instead of Recorder()
+where `api` is the result of
+    tf.app.use(corpus)
+    or
+    tf.Fabric(locations, modules).load(features)
+"""
+            )
+            return None
+
+        F = api.F
+        Fotypev = F.otype.v
+
+        posByNodeType = {}
+        if asEntries:
+            for (n, spec) in posByNode:
+                nType = Fotypev(n)
+                posByNodeType.setdefault(nType, []).append(n, spec)
+        else:
+            for (n, spec) in posByNode.items():
+                nType = Fotypev(n)
+                posByNodeType.setdefault(nType, {})[n] = spec
+
+        return posByNodeType
 
     def write(self, textPath, posPath=None, byType=False, optimize=True):
         """Write the recorder information to disk.

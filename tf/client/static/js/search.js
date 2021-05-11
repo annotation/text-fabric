@@ -1,24 +1,32 @@
 /*eslint-env jquery*/
 
-import { SEARCH, MAXINPUT, NUMBER, QUWINDOW, RESULTCOL } from "./defs.js"
+import {
+  SEARCH,
+  MAXINPUT,
+  NUMBER,
+  QUWINDOW,
+  RESULTCOL,
+  TIP,
+  htmlEsc,
+} from "./defs.js"
 
 export class SearchProvider {
-/* SEARCH EXECUTION
- *
- * The implementation of layered search:
- *
- * 1. gather:
- *    - match the regular expressions against the texts of the layers
- *    - for each node type, take the intersection of the resulting
- *      nodesets in the layers
- * 2. weed (the heart of the layered search algorithm):
- *    - intersect across node types (using projection to upward and downward levels)
- * 3. compose:
- *    - organize the result nodes around the nodes in a focus type
- * 4. display:
- *    - draw the table of results on the interface by screenfuls
- *    - make navigation controls for moving the focus through the table
- */
+  /* SEARCH EXECUTION
+   *
+   * The implementation of layered search:
+   *
+   * 1. gather:
+   *    - match the regular expressions against the texts of the layers
+   *    - for each node type, take the intersection of the resulting
+   *      nodesets in the layers
+   * 2. weed (the heart of the layered search algorithm):
+   *    - intersect across node types (using projection to upward and downward levels)
+   * 3. compose:
+   *    - organize the result nodes around the nodes in a focus type
+   * 4. display:
+   *    - draw the table of results on the interface by screenfuls
+   *    - make navigation controls for moving the focus through the table
+   */
 
   constructor() {
     this.getAcro = /[^0-9]/g
@@ -93,8 +101,7 @@ export class SearchProvider {
     if (allSteps || gather) {
       try {
         this.gather()
-      }
-      catch (error) {
+      } catch (error) {
         errors.push({ where: "gather", error })
         Log.error(error)
       }
@@ -105,8 +112,7 @@ export class SearchProvider {
         try {
           const stats = this.weed()
           Gui.placeStatResults(stats)
-        }
-        catch (error) {
+        } catch (error) {
           errors.push({ where: "weed", error })
           Log.error(error)
         }
@@ -116,8 +122,7 @@ export class SearchProvider {
       if (allSteps || composeArg !== undefined) {
         try {
           this.composeResults(allSteps ? false : composeArg)
-        }
-        catch (error) {
+        } catch (error) {
           errors.push({ where: "compose", error })
           Log.error(error)
         }
@@ -127,8 +132,7 @@ export class SearchProvider {
       if (allSteps || display) {
         try {
           this.displayResults()
-        }
-        catch (error) {
+        } catch (error) {
           errors.push({ where: "display", error })
           Log.error(error)
         }
@@ -139,13 +143,12 @@ export class SearchProvider {
       Log.placeError(
         runerror,
         errors.map(({ where, error }) => `${where}: ${error}`).join("<br>"),
-        go,
+        go
       )
-    }
-    else {
+    } else {
       Log.clearError(runerror, go)
     }
-    go.html(SEARCH[(errors.length == 0) ? "done" : "failed"])
+    go.html(SEARCH[errors.length == 0 ? "done" : "failed"])
     expr.addClass("active")
     output.removeClass("waiting")
     go.removeClass("waiting")
@@ -157,10 +160,19 @@ export class SearchProvider {
     /* perform regular expression search for a single layer
      * return character positions and nodes that hold those positions
      */
-    const { Corpus: { texts: { [nType]: { [layer]: text } }, positions } } = this
+    const {
+      Corpus: {
+        texts: {
+          [nType]: { [layer]: text },
+        },
+        positions,
+      },
+    } = this
     const { pos: posKey } = lrInfo
-    const { [nType]: { [posKey]: pos } } = positions
-    const posFromNode = new Map()
+    const {
+      [nType]: { [posKey]: pos },
+    } = positions
+    const matches = new Map()
     const nodeSet = new Set()
     if (multiHl) {
       let result
@@ -172,17 +184,16 @@ export class SearchProvider {
           for (let h = b; h < e; h++) {
             const node = pos[h]
             if (node != null) {
-              if (!posFromNode.has(node)) {
-                posFromNode.set(node, new Map())
+              if (!matches.has(node)) {
+                matches.set(node, new Map())
               }
-              posFromNode.get(node).set(h, g)
+              matches.get(node).set(h, g)
               nodeSet.add(node)
             }
           }
         }
       }
-    }
-    else {
+    } else {
       const results = text.matchAll(regex)
       for (const result of results) {
         const hit = result[0]
@@ -191,16 +202,16 @@ export class SearchProvider {
         for (let i = start; i < end; i++) {
           const node = pos[i]
           if (node != null) {
-            if (!posFromNode.has(node)) {
-              posFromNode.set(node, new Map())
+            if (!matches.has(node)) {
+              matches.set(node, new Map())
             }
-            posFromNode.get(node).set(i, 0)
+            matches.get(node).set(i, 0)
             nodeSet.add(node)
           }
         }
       }
     }
-    return { posFromNode, nodeSet }
+    return { matches, nodeSet }
   }
 
   gather() {
@@ -211,12 +222,19 @@ export class SearchProvider {
      */
     const {
       Log,
-      Features: { features: { indices: { can } } },
+      Features: {
+        features: {
+          indices: { can },
+        },
+      },
       Config: { ntypesR, layers },
       State,
     } = this
 
-    const { query, settings: { multihl } } = State.getj()
+    const {
+      query,
+      settings: { multihl },
+    } = State.getj()
 
     State.sets({ resultsComposed: [], resultTypeMap: new Map() })
     const { tpResults } = State.sets({ tpResults: {} })
@@ -231,7 +249,9 @@ export class SearchProvider {
         const box = $(`[kind="pattern"][ntype="${nType}"][layer="${layer}"]`)
         const ebox = $(`[kind="error"][ntype="${nType}"][layer="${layer}"]`)
         Log.clearError(ebox, box)
-        const { [layer]: { pattern, flags, exec } } = tpQuery
+        const {
+          [layer]: { pattern, flags, exec },
+        } = tpQuery
         if (!exec || pattern.length == 0) {
           continue
         }
@@ -239,13 +259,15 @@ export class SearchProvider {
           Log.placeError(
             ebox,
             `pattern must be less than ${MAXINPUT} characters long`,
-            box,
+            box
           )
           continue
         }
         const mhl = can && multihl
         const flagString = Object.entries(flags)
-          .filter(x => x[1]).map(x => x[0]).join("")
+          .filter(x => x[1])
+          .map(x => x[0])
+          .join("")
         let regex
         try {
           const dFlag = mhl ? "d" : ""
@@ -254,8 +276,8 @@ export class SearchProvider {
           Log.placeError(ebox, `"${pattern}": ${error}`, box)
           continue
         }
-        const { posFromNode, nodeSet } = this.doSearch(nType, layer, lrInfo, regex, mhl)
-        matchesByLayer[layer] = posFromNode
+        const { matches, nodeSet } = this.doSearch(nType, layer, lrInfo, regex, mhl)
+        matchesByLayer[layer] = matches
         if (intersection == null) {
           intersection = nodeSet
         } else {
@@ -279,7 +301,11 @@ export class SearchProvider {
      *   that maps 1-1 to the nodeset of any other type modulo projection.
      *  returns statistics: how many nodes there are for each type.
      */
-    const { Config: { ntypes }, Corpus: { up, down }, State } = this
+    const {
+      Config: { ntypes },
+      Corpus: { up, down },
+      State,
+    } = this
     const { tpResults } = State.gets()
     const stats = {}
 
@@ -290,7 +316,9 @@ export class SearchProvider {
 
     for (let i = 0; i < ntypes.length; i++) {
       const nType = ntypes[i]
-      const { [nType]: { nodes } } = tpResults
+      const {
+        [nType]: { nodes },
+      } = tpResults
 
       if (nodes != null) {
         if (lo == null) {
@@ -331,7 +359,10 @@ export class SearchProvider {
     for (let i = hi; i > lo; i--) {
       const upType = ntypes[i]
       const dnType = ntypes[i - 1]
-      const { [upType]: { nodes: upNodes }, [dnType]: resultsDn = {} } = tpResults
+      const {
+        [upType]: { nodes: upNodes },
+        [dnType]: resultsDn = {},
+      } = tpResults
       let { nodes: dnNodes } = resultsDn
       const dnFree = dnNodes == null
 
@@ -364,7 +395,10 @@ export class SearchProvider {
     for (let i = lo; i < ntypes.length - 1; i++) {
       const dnType = ntypes[i]
       const upType = ntypes[i + 1]
-      const { [upType]: resultsUp = {}, [dnType]: { nodes: dnNodes } } = tpResults
+      const {
+        [upType]: resultsUp = {},
+        [dnType]: { nodes: dnNodes },
+      } = tpResults
 
       const upNodes = new Set()
       for (const dn of dnNodes) {
@@ -380,7 +414,10 @@ export class SearchProvider {
     for (let i = lo; i > 0; i--) {
       const upType = ntypes[i]
       const dnType = ntypes[i - 1]
-      const { [upType]: { nodes: upNodes }, [dnType]: resultsDn = {} } = tpResults
+      const {
+        [upType]: { nodes: upNodes },
+        [dnType]: resultsDn = {},
+      } = tpResults
       const dnNodes = new Set()
       for (const un of upNodes) {
         if (down.has(un)) {
@@ -422,7 +459,11 @@ export class SearchProvider {
      * focus position in the old focus type
      * We adjust the interface to the new focus pos (slider and number controls)
      */
-    const { Config: { ntypesI, utypeOf }, Corpus: { up }, State } = this
+    const {
+      Config: { ntypesI, utypeOf },
+      Corpus: { up },
+      State,
+    } = this
     const { tpResults, resultsComposed: oldResultsComposed } = State.gets()
 
     if (tpResults == null) {
@@ -444,13 +485,13 @@ export class SearchProvider {
     const oldRelative = oldFocusPos / oldNResultsP
     const oldPrevRelative = oldPrevFocusPos / oldNResultsP
 
-    const {
-      resultsComposed, resultTypeMap,
-    } = State.sets({ resultsComposed: [], resultTypeMap: new Map() })
+    const { resultsComposed, resultTypeMap } = State.sets({
+      resultsComposed: [],
+      resultTypeMap: new Map(),
+    })
 
     if (focusNodes) {
       for (const cn of focusNodes) {
-
         /* collect the upnodes
          */
         resultTypeMap.set(cn, focusType)
@@ -474,7 +515,7 @@ export class SearchProvider {
          */
         const descendants = this.getDescendants(cn, ntypesI.get(focusType))
         for (const desc of descendants) {
-          const d = (typeof desc === NUMBER) ? desc : desc[0]
+          const d = typeof desc === NUMBER ? desc : desc[0]
           const dType = resultTypeMap.get(d)
           if (levels[dType] === undefined) {
             levels[dType] = []
@@ -516,7 +557,11 @@ export class SearchProvider {
       return []
     }
 
-    const { Config: { dtypeOf, ntypes }, Corpus: { down }, State } = this
+    const {
+      Config: { dtypeOf, ntypes },
+      Corpus: { down },
+      State,
+    } = this
     const { resultTypeMap } = State.gets()
 
     const uType = ntypes[uTypeIndex]
@@ -538,7 +583,7 @@ export class SearchProvider {
     return dest
   }
 
-  getHlText(iPositions, matches, text, valueMap, tip) {
+  getHlText(textRange, matches, text, valueMap, tip) {
     /* get highlighted text for a node
      * The results of matching a pattern against a text are highlighted within that text
      * returns a sequence of spans, where a span is an array of postions plus a boolean
@@ -548,14 +593,15 @@ export class SearchProvider {
     const { getAcro } = this
 
     const hasMap = valueMap != null
+    const doMap = hasMap && !Array.isArray(valueMap)
 
     const spans = []
     let str = ""
     let curHl = -2
 
-    for (const i of iPositions) {
+    for (const i of textRange ?? []) {
       const ch = text[i]
-      if (hasMap) {
+      if (doMap) {
         str += ch
       }
       const hl = matches.get(i) ?? -1
@@ -573,13 +619,20 @@ export class SearchProvider {
      * or the empty string
      */
 
-    const tipStr = (hasMap && tip) ? valueMap[str.replaceAll(getAcro, "")] : null
+    const tipStr = doMap && tip ? valueMap[str.replaceAll(getAcro, "")] : null
     return { spans, tipStr }
   }
 
   getLayersPerType(colPerLayer) {
-    const { Config: { ntypesR, ntypesI, layers }, State } = this
-    const { focusType, visibleLayers, settings: { nodeseq } } = State.getj()
+    const {
+      Config: { ntypesR, ntypesI, layers },
+      State,
+    } = this
+    const {
+      focusType,
+      visibleLayers,
+      settings: { nodeseq },
+    } = State.getj()
     const focusIndex = ntypesI.get(focusType)
 
     const layersPerType = new Map()
@@ -588,7 +641,8 @@ export class SearchProvider {
       const { [nType]: definedLayers = {} } = layers
       const { [nType]: tpVisible = {} } = visibleLayers
       const nodeLayer = ["_"]
-      const tpLayers = nodeLayer.concat(Object.keys(definedLayers))
+      const tpLayers = nodeLayer
+        .concat(Object.keys(definedLayers))
         .filter(x => tpVisible[x])
 
       layersPerType.set(nType, tpLayers)
@@ -600,26 +654,24 @@ export class SearchProvider {
     const focusTypes = visibleTypes.filter(x => ntypesI.get(x) == focusIndex)
     const contentTypes = ntypesR.filter(x => ntypesI.get(x) < focusIndex)
     const upperTypes = contextTypes.concat(focusTypes)
-    //const firstContentTypes = (contentTypes.length == 0) ? [] : [contentTypes[0]]
-    //const cols = contextTypes.concat(focusTypes).concat(firstContentTypes)
     let cols
     if (colPerLayer) {
       cols = []
       for (const nType of visibleTypes) {
         const nIndex = ntypesI.get(nType)
-        const typeRep = (nIndex < focusIndex)
-          ? `${focusType}-content:${nType}`
-          : (nIndex === focusIndex && focusIndex > 0)
+        const typeRep =
+          nIndex < focusIndex
+            ? `${focusType}-content:${nType}`
+            : nIndex === focusIndex && focusIndex > 0
             ? `${nType}-content:`
             : nType
 
         for (const layer of layersPerType.get(nType)) {
-          const layerRep = (layer === "_") ? (nodeseq ? "seqno" : "node") : layer
+          const layerRep = layer === "_" ? (nodeseq ? "seqno" : "node") : layer
           cols.push(`${typeRep}:${layerRep}`)
         }
       }
-    }
-    else {
+    } else {
       cols = contextTypes.concat(focusTypes)
       if (focusIndex > 0) {
         cols = cols.concat(`${focusType}-content`)
@@ -656,15 +708,23 @@ export class SearchProvider {
      *     where the descendants that have results are highlighted.
      */
     const {
-      Features: { features: { indices: { can } } },
+      Features: {
+        features: {
+          indices: { can },
+        },
+      },
       Config: { simpleBase, layers, ntypesI, ntypesinit },
-      Corpus: { texts, iPositions },
+      Corpus: { links, texts, iPositions },
       State,
       Gui,
     } = this
 
     const { resultTypeMap, tpResults, resultsComposed } = State.gets()
-    const { settings: { nodeseq, multihl }, focusPos, prevFocusPos } = State.getj()
+    const {
+      settings: { nodeseq, multihl },
+      focusPos,
+      prevFocusPos,
+    } = State.getj()
 
     if (tpResults == null) {
       State.sets({ resultsComposed: null })
@@ -674,8 +734,11 @@ export class SearchProvider {
     const mhl = can && multihl
 
     const {
-      upperTypes, contentTypes,
-      cols, layersPerType, layersContent,
+      upperTypes,
+      contentTypes,
+      cols,
+      layersPerType,
+      layersContent,
     } = this.getLayersPerType(false)
 
     const colsRep = cols.map(x => `<th>${x}</th>`)
@@ -683,26 +746,44 @@ export class SearchProvider {
     const resultshead = $("#resultshead")
     resultshead.html(header)
 
-    const genValueHtml = (nType, layer, node) => {
+    const genValueHtml = (nType, layer, node, linkUrl) => {
       /* generates the html for a layer of node, including the result highlighting
        */
+
       if (layer == "_") {
         const num = nodeseq ? node - ntypesinit[nType] + 1 : node
-        return `<span class="n">${num}</span>`
+        return linkUrl
+          ? `<a class="n corpus"
+              href="${linkUrl}"
+              title="${TIP.corpus}"
+             >${num}</a>`
+          : `<span class="n">${num}</span>`
       }
-      const { [nType]: { [layer]: { pos: posKey, valueMap, tip } } } = layers
-      const { [nType]: { [layer]: text } } = texts
-      const { [nType]: { [posKey]: iPos } } = iPositions
-      const nodeIPositions = iPos.get(node)
+      const {
+        [nType]: {
+          [layer]: { pos: posKey, valueMap, tip },
+        },
+      } = layers
+      const {
+        [nType]: { [layer]: text },
+      } = texts
+      const {
+        [nType]: { [posKey]: iPos },
+      } = iPositions
+      const textRange = iPos.get(node)
       const { [nType]: { matches: { [layer]: matches } = {} } = {} } = tpResults
       const nodeMatches =
         matches == null || !matches.has(node) ? new Map() : matches.get(node)
 
       const { spans, tipStr } = this.getHlText(
-        nodeIPositions, nodeMatches, text, valueMap, tip,
+        textRange,
+        nodeMatches,
+        text,
+        valueMap,
+        tip
       )
       const hasTip = tipStr != null
-      const tipRep = (hasTip) ? ` title="${tipStr}"` : ""
+      const tipRep = hasTip ? ` title="${tipStr}"` : ""
 
       const html = []
       const multiple = spans.length > 1 || hasTip
@@ -710,15 +791,21 @@ export class SearchProvider {
         html.push(`<span${tipRep}>`)
       }
       for (const [hl, val] of spans) {
-        const theHl = (hl == 0 && !mhl) ? "hl" : `hl${hl}`
-        const hlRep = (hl >= 0) ? ` class="${theHl}"` : ""
-        const hlTitle = (hl >= 0) ? ` title="group ${hl}"` : ""
-        html.push(`<span${hlRep}${hlTitle}>${val}</span>`)
+        const theHl = hl == 0 && !mhl ? "hl" : `hl${hl}`
+        const hlRep = hl >= 0 ? ` class="${theHl}"` : ""
+        const hlTitle = hl >= 0 ? ` title="group ${hl}"` : ""
+        html.push(`<span${hlRep}${hlTitle}>${htmlEsc(val)}</span>`)
       }
       if (multiple) {
         html.push(`</span>`)
       }
-      return html.join("")
+      const bare = html.join("")
+      return linkUrl
+        ? `<a class="corpus"
+            href="${linkUrl}"
+            title="${TIP.corpus}"
+           >${bare}</a>`
+        : bare
     }
 
     const genNodeHtml = node => {
@@ -727,6 +814,7 @@ export class SearchProvider {
       const [n, children] = typeof node === NUMBER ? [node, []] : node
       const nType = resultTypeMap.get(n)
       const { [nType]: { nodes } = {} } = tpResults
+      const { [nType]: { [n]: linkUrl } = {} } = links
       const tpLayers = layersPerType.get(nType)
       const nLayers = tpLayers.length
       const hasLayers = nLayers > 0
@@ -748,8 +836,11 @@ export class SearchProvider {
 
       if (hasLayers) {
         html.push(`<span class="${hdRep}${lrRep}">`)
+        let first = true
         for (const layer of tpLayers) {
-          html.push(`${genValueHtml(nType, layer, n)}`)
+          const link = first ? linkUrl : null
+          html.push(`${genValueHtml(nType, layer, n, link)}`)
+          first = false
         }
         html.push(`</span>`)
       }
@@ -787,11 +878,7 @@ export class SearchProvider {
         }
       }
       const typeRep = typeNodes.join("\n")
-      const focusCls = isFocus
-        ? ` class="focus"`
-        : isPrevFocus
-        ? ` class="pfocus"`
-        : ""
+      const focusCls = isFocus ? ` class="focus"` : isPrevFocus ? ` class="pfocus"` : ""
 
       return `
   <tr${focusCls}>
@@ -810,10 +897,7 @@ export class SearchProvider {
       }
 
       const startPos = Math.max((focusPos || 0) - 2 * QUWINDOW, 0)
-      const endPos = Math.min(
-        startPos + 4 * QUWINDOW + 1,
-        resultsComposed.length - 1
-      )
+      const endPos = Math.min(startPos + 4 * QUWINDOW + 1, resultsComposed.length - 1)
       const html = []
       for (let i = startPos; i <= endPos; i++) {
         html.push(genResultHtml(i, resultsComposed[i]))
@@ -840,7 +924,7 @@ export class SearchProvider {
 
   tabular() {
     /* tsv export, closely analogous to how the results are displayed on screen
-    */
+     */
 
     const {
       Config: { layers, ntypesinit },
@@ -850,17 +934,18 @@ export class SearchProvider {
     } = this
 
     const { resultTypeMap, tpResults, resultsComposed } = State.gets()
-    const { settings: { nodeseq, exporthl, exportsr } } = State.getj()
+    const {
+      settings: { nodeseq, exporthl, exportsr },
+    } = State.getj()
 
     if (tpResults == null) {
       State.sets({ resultsComposed: null })
       return
     }
 
-    const {
-      upperTypes, contentTypes,
-      cols, layersPerType,
-    } = this.getLayersPerType(exportsr)
+    const { upperTypes, contentTypes, cols, layersPerType } = this.getLayersPerType(
+      exportsr
+    )
 
     const header = `${RESULTCOL}\t${cols.join("\t")}\n`
 
@@ -871,27 +956,38 @@ export class SearchProvider {
       if (layer == "_") {
         return `${nodeseq ? node - ntypesinit[nType] + 1 : node} `
       }
-      const { [nType]: { [layer]: { pos: posKey, valueMap, tip } } } = layers
-      const { [nType]: { [layer]: text } } = texts
-      const { [nType]: { [posKey]: iPos } } = iPositions
-      const nodeIPositions = iPos.get(node)
+      const {
+        [nType]: {
+          [layer]: { pos: posKey, valueMap, tip },
+        },
+      } = layers
+      const {
+        [nType]: { [layer]: text },
+      } = texts
+      const {
+        [nType]: { [posKey]: iPos },
+      } = iPositions
+      const textRange = iPos.get(node)
       const { [nType]: { matches: { [layer]: matches } = {} } = {} } = tpResults
       const nodeMatches =
         matches == null || !matches.has(node) ? new Map() : matches.get(node)
 
       const { spans, tipStr } = this.getHlText(
-        nodeIPositions, nodeMatches, text, valueMap, tip,
+        textRange,
+        nodeMatches,
+        text,
+        valueMap,
+        tip
       )
-      const tipRep = (tipStr == null) ? "" : `(=${tipStr})`
+      const tipRep = tipStr == null ? "" : `(=${tipStr})`
 
       let piece = ""
 
       for (const [hl, val] of spans) {
         if (exporthl && hl >= 0) {
-          const hlRep = (hl == 0) ? "" : `${hl}=`
+          const hlRep = hl == 0 ? "" : `${hl}=`
           piece += `«${hlRep}${val}»`
-        }
-        else {
+        } else {
           piece += val
         }
         piece += tipRep
@@ -908,15 +1004,14 @@ export class SearchProvider {
       const tpLayers = layersPerType.get(nType)
 
       const newStack = [
-        ...stack ?? [],
+        ...(stack ?? []),
         ...tpLayers.map(lr => genValueTsv(nType, lr, n)),
       ]
 
       let tsv
       if (children.length == 0) {
         tsv = newStack
-      }
-      else {
+      } else {
         const tsvs = []
         let first = true
 
@@ -936,7 +1031,7 @@ export class SearchProvider {
       const maxLen = Math.max(...tsvs.map(x => x.length))
       const stack = []
       for (let i = 0; i < maxLen; i++) {
-        stack[i] = tsvs.map(x => (i < x.length) ? x[i] : "").join("")
+        stack[i] = tsvs.map(x => (i < x.length ? x[i] : "")).join("")
       }
       return stack
     }
@@ -972,12 +1067,9 @@ export class SearchProvider {
           line.push(fields.join("\t"))
         }
         tsv.push(`${line.join("\t")}\n`)
-      }
-      else {
+      } else {
         const maxLayers = Math.max(
-          ...typeNodes.map(
-            x => Math.max(...x.map(y => y.length))
-          )
+          ...typeNodes.map(x => Math.max(...x.map(y => y.length)))
         )
 
         for (let i = 0; i < maxLayers; i++) {
@@ -985,7 +1077,7 @@ export class SearchProvider {
           for (const chunks of typeNodes) {
             line.push("\t")
             for (const chunk of chunks) {
-              line.push((i < chunk.length) ? chunk[i] : "")
+              line.push(i < chunk.length ? chunk[i] : "")
             }
           }
           tsv.push(`${line.join("")}\n`)
@@ -1017,7 +1109,10 @@ export class SearchProvider {
     const { Log, Disk, State } = this
 
     const { jobName } = State.gets()
-    const { focusType, settings: { exporthl, exportsr } } = State.getj()
+    const {
+      focusType,
+      settings: { exporthl, exportsr },
+    } = State.getj()
     const jobExtraSR = exportsr ? "-xc" : "-xr"
     const jobExtraHL = exporthl ? "-hl" : ""
 
@@ -1035,18 +1130,19 @@ export class SearchProvider {
 
     try {
       text = this.tabular()
-    }
-    catch (error) {
+    } catch (error) {
       errors.push({ where: "tabular", error })
       Log.error(error)
     }
     if (errors.length == 0) {
       try {
         Disk.download(
-          text, `${jobName}-${focusType}${jobExtraSR}${jobExtraHL}`, "tsv", true
+          text,
+          `${jobName}-${focusType}${jobExtraSR}${jobExtraHL}`,
+          "tsv",
+          true
         )
-      }
-      catch (error) {
+      } catch (error) {
         errors.push({ where: "download", error })
         Log.error(error)
       }
@@ -1056,10 +1152,9 @@ export class SearchProvider {
       Log.placeError(
         runerror,
         errors.map(({ where, error }) => `${where}: ${error}`).join("<br>"),
-        expr,
+        expr
       )
-    }
-    else {
+    } else {
       Log.clearError(runerror, expr)
     }
     expr.addClass("active")

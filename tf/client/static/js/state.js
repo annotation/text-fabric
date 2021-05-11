@@ -170,6 +170,7 @@ export class StateProvider {
           multihl,
           simple,
         } = {},
+        defaultFlags = FLAGSDEFAULT,
         ntypes,
         focusType,
         layers,
@@ -281,7 +282,7 @@ export class StateProvider {
 
         query[nType][layer] = {
           pattern: DEBUG ? pattern : "",
-          flags: { ...FLAGSDEFAULT },
+          flags: { ...defaultFlags },
           exec: true,
         }
         visibleLayers[nType][layer] = lrVisible

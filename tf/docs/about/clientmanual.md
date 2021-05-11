@@ -4,7 +4,6 @@ This is the manual for the full interface.
 There is a separate manual for the simplified interface:
 `tf.about.manual`.
 
-
 ![interface](../images/ls/ls.001.png)
 
 <mark>1. about</mark>
@@ -31,6 +30,19 @@ There is a separate manual for the simplified interface:
         [background on regexes](https://en.wikipedia.org/wiki/Regular_expression)
         and
         [cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet).
+
+<mark>3a. legend</mark>
+:   Some layers have a triangle in front of their names.
+    These are layers that consists of a limited amount of keywords.
+    If they are acronymns, you can see their legend here.
+    Otherwise, you see a frequency list of there values here.
+
+    ![values](../images/ls/ls.008.png)
+
+<mark>3b. text of a layer</mark>
+:   You can click on the name of each layer to show and hide the
+    full text of that layer.
+    So that you know the material in which you are searching.
 
 <mark>4. flags</mark>
 :   When searching with regexes, you can alter their interpretation by setting some *flags*:
@@ -72,6 +84,19 @@ There is a separate manual for the simplified interface:
 <mark>10. options</mark>
 :   Modify the behaviour of search/export.
     See **Options** below.
+
+    !!! hint "Special characters"
+        If your corpus has special characters, and you want to type them into
+        the patterns, you can copy them from the **Special characters button**.
+
+        Just click on the character you need, and it is copied on the clipboard,
+        so that you can paste it anywhere you like (even in other applications).
+
+        ![chars](../images/ls/ls.007.png)
+
+    !!! hint "Simplified interface"
+        Here is the button to switch back and forth between the simplified and the 
+        full interface.
 
 <mark>11. export</mark>
 :   Export the search results as a tab-separated file (`.tsv`).
@@ -134,6 +159,13 @@ There is a separate manual for the simplified interface:
         but you can switch this off by means of an option.
         See **Options** below.
     
+<mark>18. links to online</mark>
+:   The top level layers are linked to an online
+    representation of the corpus.
+    For example, for NENA it is the GitHub repository where the source
+    texts are stored.
+    For the BHSA it is [SHEBANQ](https://shebanq.ancient-data.org).
+
 ## Export
 
 You can export the search results to Excel (or rather, a tab-separated file, `.tsv`).
