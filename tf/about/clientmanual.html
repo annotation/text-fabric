@@ -57,6 +57,18 @@ and
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet">cheatsheet</a>.</p>
 </div>
 </dd>
+<dt><mark>3a. legend</mark></dt>
+<dd>
+<p>Some layers have a triangle in front of their names.
+These are layers that consists of a limited amount of keywords.
+If they are acronymns, you can see their legend here.
+Otherwise, you see a frequency list of there values here.</p>
+<p><img alt="values" src="../images/ls/ls.008.png"></p>
+</dd>
+<dt><mark>3b. text of a layer</mark></dt>
+<dd>You can click on the name of each layer to show and hide the
+full text of that layer.
+So that you know the material in which you are searching.</dd>
 <dt><mark>4. flags</mark></dt>
 <dd>
 <p>When searching with regexes, you can alter their interpretation by setting some <em>flags</em>:</p>
@@ -101,8 +113,23 @@ whenever you have changed something in the search criteria.</p>
 <dd>Statistics of the current search results,
 compared to the statistics of the whole corpus.</dd>
 <dt><mark>10. options</mark></dt>
-<dd>Modify the behaviour of search/export.
-See <strong>Options</strong> below.</dd>
+<dd>
+<p>Modify the behaviour of search/export.
+See <strong>Options</strong> below.</p>
+<div class="admonition hint">
+<p class="admonition-title">Special characters</p>
+<p>If your corpus has special characters, and you want to type them into
+the patterns, you can copy them from the <strong>Special characters button</strong>.</p>
+<p>Just click on the character you need, and it is copied on the clipboard,
+so that you can paste it anywhere you like (even in other applications).</p>
+<p><img alt="chars" src="../images/ls/ls.007.png"></p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Simplified interface</p>
+<p>Here is the button to switch back and forth between the simplified and the
+full interface.</p>
+</div>
+</dd>
 <dt><mark>11. export</mark></dt>
 <dd>
 <p>Export the search results as a tab-separated file (<code>.tsv</code>).
@@ -243,6 +270,12 @@ but you can switch this off by means of an option.
 See <strong>Options</strong> below.</p>
 </div>
 </dd>
+<dt><mark>18. links to online</mark></dt>
+<dd>The top level layers are linked to an online
+representation of the corpus.
+For example, for NENA it is the GitHub repository where the source
+texts are stored.
+For the BHSA it is <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</dd>
 </dl>
 <h2 id="export">Export</h2>
 <p>You can export the search results to Excel (or rather, a tab-separated file, <code>.tsv</code>).
@@ -589,7 +622,7 @@ and eventually written by
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/about/clientmanual.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/about/clientmanual.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/clientmanual.md

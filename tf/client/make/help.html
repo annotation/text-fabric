@@ -26,10 +26,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/help.py#L0-L24" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/help.py#L0-L28" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">HELP = &#34;&#34;&#34;
 text-fabric-make {dataset} serve {page}
+text-fabric-make {dataset} ship
+text-fabric-make {dataset} {client} ship
 text-fabric-make {dataset} {client} {command} [parameters]
 
 dataset: a Text-Fabric dataset such as &#34;nena&#34;, &#34;bhsa&#34;
@@ -52,6 +54,8 @@ clientdebug  : same as taks client but put it in debug mode
 debug on|off : set debug flag of the client on or off
 publish      : publish the layered search client on the Github Pages of app-«dataset»
 ship         : performs all build steps: i, config, corpus, client, debug off, publish
+               if {client} is given, ships this client,
+               otherwise ships all clients for the dataset
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>

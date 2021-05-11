@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L0-L986" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L0-L1149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -136,7 +136,8 @@ from time import sleep
 from zipfile import ZIP_DEFLATED, ZipFile
 from importlib import util
 
-from tf.fabric import Fabric
+# from tf.fabric import Fabric
+from tf.app import use
 from tf.core.helpers import specFromRanges, rangesFromSet
 
 from .gh import deploy
@@ -149,110 +150,151 @@ CONFIG_FILE = f&#34;{os.path.dirname(os.path.abspath(__file__))}/config.yaml&#34
 STATIC_DIR = f&#34;{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/static&#34;
 
 
-def console(*args):
-    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
-    sys.stderr.flush()
+def console(*args, error=False):
+    device = sys.stderr if error else sys.stdout
+    device.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    device.flush()
 
 
 def invertMap(legend):
-    return None if legend is None else {v: k for (k, v) in legend.items()}
+    return (
+        None
+        if legend is None
+        else {v: k for (k, v) in legend.items()}
+        if type(legend) is dict
+        else legend
+    )
 
 
-def compress(data):
-    sets = {}
+def readArgs():
+    class A:
+        pass
 
-    compressed = []
+    A.dataset = None
+    A.client = None
+    A.command = None
+    A.page = None
+    A.debugState = None
 
-    for n in sorted(data):
-        sets.setdefault(data[n], []).append(n)
+    args = sys.argv[1:]
 
-    for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
-        nSpec = list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
-        compressed.append(f&#34;{nSpec}\t{value}&#34;)
+    if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        console(HELP)
+        console(&#34;Missing dataset and client&#34;)
+        return None
 
-    return compressed
+    dataset = args[0]
+    A.dataset = dataset
+    args = args[1:]
+
+    if not len(args):
+        console(HELP)
+        console(&#34;Missing client/command&#34;)
+        return None
+
+    if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        console(HELP)
+        return None
+
+    if args[0] == &#34;serve&#34;:
+        client = None
+        command = args[0]
+        args = args[1:]
+    elif args[0] == &#34;ship&#34;:
+        client = None
+        command = args[0]
+        args = args[1:]
+    else:
+        client = args[0]
+        args = args[1:]
+
+        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+            console(HELP)
+            if not len(args):
+                console(&#34;No command given&#34;)
+            return None
+
+        command = args[0]
+
+    A.client = client
+    A.command = command
+    A.page = None
+    A.debugState = None
+
+    if command not in {
+        &#34;serve&#34;,
+        &#34;v&#34;,
+        &#34;i&#34;,
+        &#34;config&#34;,
+        &#34;corpus&#34;,
+        &#34;client&#34;,
+        &#34;clientdebug&#34;,
+        &#34;debug&#34;,
+        &#34;publish&#34;,
+        &#34;ship&#34;,
+    }:
+        console(HELP)
+        console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
+        return None
+
+    if command in {&#34;serve&#34;}:
+        if len(args) &lt; 2:
+            A.page = &#34;index&#34;
+        else:
+            A.page = args[1]
+
+    elif command in {&#34;debug&#34;}:
+        if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
+            console(&#34;say on or off&#34;)
+            return None
+
+        A.debugState = args[1]
+    return A
 
 
 class Make:
-    def __init__(self):
+    def __init__(self, dataset, client, page=None, debugState=None):
         class C:
             pass
 
         self.C = C
-
-    def readArgs(self):
-        args = sys.argv[1:]
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            console(&#34;Missing dataset and client&#34;)
-            quit()
-
-        dataset = args[0]
         self.dataset = dataset
-        args = args[1:]
-
-        if not len(args):
-            console(HELP)
-            console(&#34;Missing client/command&#34;)
-            quit()
-
-        if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            quit()
-
-        if args[0] == &#34;serve&#34;:
-            client = None
-            command = args[0]
-            args = args[1:]
-        else:
-            client = args[0]
-            args = args[1:]
-
-            if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-                console(HELP)
-                if not len(args):
-                    console(&#34;No command given&#34;)
-                quit()
-
-            command = args[0]
-
         self.client = client
-        self.command = command
-        self.page = None
-        self.message = None
-        self.debugState = None
-        self.remaining = []
+        self.page = page
+        self.debugState = debugState
+        self.good = True
 
-        if command not in {
-            &#34;serve&#34;,
-            &#34;v&#34;,
-            &#34;i&#34;,
-            &#34;config&#34;,
-            &#34;corpus&#34;,
-            &#34;client&#34;,
-            &#34;clientdebug&#34;,
-            &#34;debug&#34;,
-            &#34;publish&#34;,
-            &#34;ship&#34;,
-        }:
-            console(HELP)
-            console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
-            quit()
+        if dataset:
+            if not self.config():
+                self.good = False
 
-        if command in {&#34;serve&#34;}:
-            if len(args) &lt; 2:
-                self.page = &#34;index&#34;
-            else:
-                self.page = args[1]
-                self.remaining = args[2:]
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
 
-        elif command in {&#34;debug&#34;}:
-            if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
-                console(&#34;say on or off&#34;)
-                quit()
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
 
-            self.debugState = args[1]
-            self.remaining = args[2:]
+        try:
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+            return None
 
     def config(self):
         C = self.C
@@ -288,8 +330,8 @@ class Make:
             issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
-            clientDir=&#34;«gh»/«org»/«repo»&#34;,
-            configDir=f&#34;«clientDir»/{LS}&#34;,
+            appDir=&#34;«gh»/«org»/«repo»&#34;,
+            configDir=f&#34;«appDir»/{LS}&#34;,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
             clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
@@ -304,20 +346,23 @@ class Make:
             jslibInDir=&#34;«staticDir»/jslib&#34;,
             template=&#34;«htmlInDir»/template.html&#34;,
             index=&#34;«htmlInDir»/index.html&#34;,
-            siteDir=&#34;«clientDir»/«rel»&#34;,
-            pngOutDir=&#34;«siteDir»/png&#34;,
-            cssOutDir=&#34;«siteDir»/css&#34;,
+            siteDir=&#34;«appDir»/«rel»&#34;,
+            appClientDir=&#34;«siteDir»/«client»&#34;,
+            pngOutDir=&#34;«appClientDir»/png&#34;,
+            cssOutDir=&#34;«appClientDir»/css&#34;,
             htmlOutDir=&#34;«siteDir»&#34;,
-            jsOutDir=&#34;«siteDir»/js&#34;,
-            jslibOutDir=&#34;«siteDir»/jslib&#34;,
-            jsCorpusDir=&#34;«siteDir»/corpus&#34;,
+            jsOutDir=&#34;«appClientDir»/js&#34;,
+            jslibOutDir=&#34;«appClientDir»/jslib&#34;,
+            jsCorpusDir=&#34;«appClientDir»/corpus&#34;,
+            jsInit=&#34;«jsCorpusDir»/init.js&#34;,
             jsApp=&#34;app.js&#34;,
             jsDefs=&#34;defs.js&#34;,
-            jsDest=&#34;«jsCorpusDir»/«client»-all.js&#34;,
+            jsAll=&#34;all.js&#34;,
+            jsAllPath=&#34;«appClientDir»/«jsAll»&#34;,
             htmlIndex=&#34;«siteDir»/index.html&#34;,
-            htmlClient=&#34;«siteDir»/«client».html&#34;,
-            htmlLocalFile=&#34;«client»-local.html&#34;,
-            htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
+            htmlClient=&#34;«appClientDir»/index.html&#34;,
+            htmlLocalFile=&#34;index-local.html&#34;,
+            htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
             packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
             packageUrl=&#34;«client».zip&#34;,
@@ -354,7 +399,7 @@ class Make:
         lsConfig = c[&#34;lsConfig&#34;]
         if not os.path.exists(lsConfig):
             console(f&#34;No config.yaml found for {dataset}: {lsConfig}&#34;)
-            quit()
+            return None
 
         with open(lsConfig) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -368,7 +413,7 @@ class Make:
                 console(
                     f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
                 )
-                quit()
+                return None
 
             with open(clientConfigFile) as fh:
                 settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -376,23 +421,7 @@ class Make:
                     c[k] = v
                     fillin(c, k, v)
 
-            clientMake = c[&#34;clientMake&#34;]
-            clientMakeDir = c[&#34;clientMakeDir&#34;]
-            clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-            try:
-                moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-                spec = util.spec_from_file_location(moduleName, clientMakeFile)
-                code = util.module_from_spec(spec)
-                sys.path.insert(0, clientMakeDir)
-                spec.loader.exec_module(code)
-                sys.path.pop(0)
-                self.makeLegends = types.MethodType(code.makeLegends, self)
-                self.record = types.MethodType(code.record, self)
-
-            except Exception as e:
-                console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-                quit()
+            self.importMake(c=c)
 
             d = dict(
                 dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
@@ -518,10 +547,13 @@ class Make:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        return True
+
     def makeClientSettings(self):
         C = self.C
         layerSettings = C.layerSettings
-        api = self.api
+        A = self.A
+        api = A.api
         Cp = api.C
 
         self.makeLegends()
@@ -549,6 +581,8 @@ class Make:
             ntypes=typeSeq,
             typesLower=typesLower,
             defaultSettings=C.defaultSettings,
+            defaultFlags=C.defaultFlags,
+            keyboard=getattr(C, &#34;keyboard&#34;, None),
         )
 
         # check visible- and focus- attributes
@@ -564,7 +598,7 @@ class Make:
                 if layerInfo.get(&#34;visible&#34;, False):
                     theVisibles.append((nType, name))
                 theMap = layerInfo.get(&#34;legend&#34;, None)
-                if theMap is not None:
+                if theMap is not None and type(theMap) is dict:
                     default = layerInfo.get(&#34;default&#34;, None)
                     if default is not None:
                         theMap[&#34;&#34;] = default
@@ -622,16 +656,7 @@ class Make:
         )
         self.clientConfig = clientConfig
 
-    def main(self):
-        self.readArgs()
-
-        command = self.command
-
-        if not command:
-            quit()
-
-        self.config()
-
+    def doCommand(self, command):
         if command == &#34;serve&#34;:
             self.serve()
         elif command == &#34;v&#34;:
@@ -647,8 +672,8 @@ class Make:
         elif command == &#34;client&#34;:
             self.makeClient()
         elif command == &#34;clientdebug&#34;:
-            self.makeClient()
             self.debugState = &#34;on&#34;
+            self.makeClient()
             self.adjustDebug()
         elif command == &#34;publish&#34;:
             self.publish()
@@ -657,128 +682,136 @@ class Make:
 
     def loadTf(self):
         C = self.C
-        TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-        allFeatures = TF.explore(silent=True, show=True)
-        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        self.api = TF.load(loadableFeatures, silent=True)
+        dataset = C.dataset
+        version = C.data[&#34;version&#34;]
+        A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
+        # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
+        # allFeatures = TF.explore(silent=True, show=True)
+        # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        # self.api = TF.load(loadableFeatures, silent=True)
+        self.A = A
 
     def makeConfig(self):
-        if not getattr(self, &#34;api&#34;, None):
+        if not getattr(self, &#34;A&#34;, None):
             self.loadTf()
         if not getattr(self, &#34;clientConfig&#34;, None):
             self.makeClientSettings()
         self.dumpConfig()
 
+    def makeLinks(self):
+        A = self.A
+        api = A.api
+        T = api.T
+        F = api.F
+
+        sTypes = T.sectionTypes
+        A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
+        links = {
+            sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
+            for sType in sTypes
+        }
+        for (sType, sLinks) in links.items():
+            A.info(f&#34;{sType:&lt;20}: {len(sLinks):&gt;6} links&#34;, tm=False)
+        A.info(&#34;done&#34;)
+        self.links = links
+
     def makeCorpus(self):
-        if not getattr(self, &#34;api&#34;, None):
+        if not getattr(self, &#34;A&#34;, None):
             self.loadTf()
         if not getattr(self, &#34;clientConfig&#34;, None):
             self.makeClientSettings()
-        TF = self.api.TF
+        A = self.A
 
-        TF.info(&#34;Recording ...&#34;)
+        A.info(&#34;Make links ...&#34;)
+        self.makeLinks()
+
+        A.info(&#34;Recording ...&#34;)
         self.record()
 
-        TF.info(&#34;Dumping ...&#34;)
+        A.info(&#34;Dumping ...&#34;)
         self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
         clientConfig = self.clientConfig
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameConfig = f&#34;{destData}/{C.client}-configdata.js&#34;
+        fileNameConfig = f&#34;{destData}/config.js&#34;
 
         with open(fileNameConfig, &#34;w&#34;) as fh:
             fh.write(&#34;const configData = &#34;)
             json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
-        TF.info(f&#34;Config written to file {fileNameConfig}&#34;)
+        A.info(f&#34;Config written to file {fileNameConfig}&#34;)
+
+    def compress(self, data):
+        sets = {}
+
+        compressed = []
+
+        for n in sorted(data):
+            sets.setdefault(data[n], []).append(n)
+
+        for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
+            nSpec = (
+                list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
+            )
+            compressed.append(f&#34;{nSpec}\t{value}&#34;)
+
+        return compressed
 
     def dumpCorpus(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
 
         data = self.data
-        data[&#34;up&#34;] = compress(data[&#34;up&#34;])
+        data[&#34;links&#34;] = self.links
 
-        TF.indent(reset=True)
-        TF.info(&#34;Dumping data to a single compact json file&#34;)
+        A.indent(reset=True)
+        A.info(&#34;Dumping data to compact json files&#34;)
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameData = f&#34;{destData}/{C.client}-corpusdata.js&#34;
+        def writeDataFile(name, address, data, asString=False):
+            path = f&#34;{destData}/{name.lower()}.js&#34;
+            heading = f&#34;corpusData[{address}] = &#34;
+            with open(path, &#34;w&#34;) as fh:
+                fh.write(heading)
+                if asString:
+                    fh.write(&#34;`&#34;)
+                    fh.write(data)
+                    fh.write(&#34;`&#34;)
+                else:
+                    json.dump(
+                        data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                    )
+                A.info(f&#34;Data {name} stored in {path}&#34;)
 
-        with open(fileNameData, &#34;w&#34;) as fh:
-            fh.write(&#34;const corpusData = &#34;)
-            json.dump(data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;))
-        TF.info(f&#34;Data written to file {fileNameData}&#34;)
+        init = [&#34;var corpusData = {}\n&#34;]
 
-    def makeClient(self):
-        &#34;&#34;&#34;
-        We create a client app in the target directory.
+        for (partName, partData) in data.items():
+            if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+                init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
+                for (nType, tpData) in partData.items():
+                    init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
+                    for (layer, lrData) in tpData.items():
+                        writeDataFile(
+                            f&#34;{partName}-{nType}-{layer}&#34;,
+                            f&#39;&#34;{partName}&#34;][&#34;{nType}&#34;][&#34;{layer}&#34;&#39;,
+                            lrData,
+                        )
+            else:
+                writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
+        with open(C.jsInit, &#34;w&#34;) as fh:
+            fh.write(&#34;&#34;.join(init))
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
-
-        Module loading does not work when you open the HTML file locally
-        (i.e. when the HTML is not served by a server).
-
-        N.B. There is a difference between a local web server serving at `localhost`
-        and opening the file directly into your browser by double clicking on it.
-
-        In the first case, you see in your un the URL bar of your browser
-        something that starts with
-        `http://` or `https://`, in the second case you see `file://` instead.
-
-        Modular Javascript does not work with `file://` origins.
-
-        For that case, we bundle the modules into one,
-        and let a «client»-local.html include it
-
-        We also zip the client into {C.client}.zip so that users can download it easily
-        &#34;&#34;&#34;
-
-        # copy over the static files
-
+    def makeCombined(self):
         C = self.C
-        lsVersion = C.lsVersion
-
-        for (srcDir, dstDir) in (
-            (C.pngInDir, C.pngOutDir),
-            (C.cssInDir, C.cssOutDir),
-            (C.jsInDir, C.jsOutDir),
-            (C.jslibInDir, C.jslibOutDir),
-            (C.htmlInDir, C.htmlOutDir),
-        ):
-            if not os.path.exists(dstDir):
-                os.makedirs(dstDir, exist_ok=True)
-
-            with os.scandir(srcDir) as it:
-                for entry in it:
-                    name = entry.name
-                    if not entry.is_file() or name.startswith(&#34;.&#34;):
-                        continue
-                    srcFile = f&#34;{srcDir}/{name}&#34;
-                    if srcFile != C.template:
-                        copy(srcFile, f&#34;{dstDir}/{name}&#34;)
-        copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
-
-        # move the custom files in place
-
-        for (srcFile, dstFile) in (
-            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
-            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
-        ):
-            copy(srcFile, dstFile)
-
-        # create combined javascript file
 
         commentRe = re.compile(r&#34;&#34;&#34;[ \t]*/\*.*?\*/[ \t]*&#34;&#34;&#34;, re.S)
         importRe = re.compile(r&#39;&#39;&#39;import\s+\{.*?\}\s+from\s+&#34;[^&#34;]*\.js&#34;&#39;&#39;&#39;, re.S)
@@ -830,29 +863,26 @@ class Make:
             + &#34;\n\n&#34;
             + content[C.jsApp]
         )
-        with open(C.jsDest, &#34;w&#34;) as fh:
+        with open(C.jsAllPath, &#34;w&#34;) as fh:
             fh.write(combined)
-        console(f&#34;Combined js file written to {C.jsDest}&#34;)
+        console(f&#34;Combined js file written to {C.jsAllPath}&#34;)
 
-        # fill in the html templates
+    def makeHtml(self):
+        C = self.C
+        lsVersion = C.lsVersion
 
         # index of all clients
 
         clients = {}
 
-        with os.scandir(C.configDir) as it:
-            for entry in it:
-                if entry.is_dir():
-                    thisClient = entry.name
-                    thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
-                    if os.path.exists(thisConfig):
-                        with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
-                                &#34;short&#34;, &#34;&#34;
-                            )
-                    else:
-                        desc = &#34;&#34;
-                    clients[thisClient] = desc
+        for thisClient in self.getAllClients():
+            thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
+            if os.path.exists(thisConfig):
+                with open(thisConfig) as fh:
+                    desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+            else:
+                desc = &#34;&#34;
+            clients[thisClient] = desc
 
         with open(C.index) as fh:
             template = fh.read()
@@ -863,7 +893,7 @@ class Make:
             for (thisClient, desc) in clients.items():
                 html.append(
                     f&#34;&#34;&#34;
-&lt;dt&gt;&lt;a href=&#34;{thisClient}.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;a href=&#34;{thisClient}/index.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
 &lt;dd&gt;{desc}&lt;/dd&gt;
 &#34;&#34;&#34;
                 )
@@ -876,17 +906,27 @@ class Make:
 
         # client and client-local
 
+        with os.scandir(C.jsCorpusDir) as it:
+            scripts = []
+            for entry in it:
+                file = entry.name
+                if not file.endswith(&#34;.js&#34;):
+                    continue
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                    scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
+            corpusScripts = &#34;\n&#34;.join(scripts)
+
         with open(C.template) as fh:
             template = fh.read()
             htmlNormal = template.replace(
                 &#34;«js»&#34;, &#39;&#39;&#39;type=&#34;module&#34; src=&#34;js/app.js«v»&#34;&#39;&#39;&#39;
             )
+            htmlNormal = htmlNormal.replace(&#34;«corpus»&#34;, corpusScripts)
             htmlNormal = htmlNormal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
             htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
-            htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
-            )
+            htmlLocal = template.replace(&#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;{C.jsAll}&#34;&#39;&#39;&#39;)
+            htmlLocal = htmlLocal.replace(&#34;«corpus»&#34;, corpusScripts)
             htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
             htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
@@ -899,9 +939,77 @@ class Make:
             fh.write(htmlLocal)
         console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)
 
-        # zip the standalone client
+    def makeClient(self):
+        &#34;&#34;&#34;
+        We create a client app in the target directory.
 
-        self.zipApp()
+        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+
+        Module loading does not work when you open the HTML file locally
+        (i.e. when the HTML is not served by a server).
+
+        N.B. There is a difference between a local web server serving at `localhost`
+        and opening the file directly into your browser by double clicking on it.
+
+        In the first case, you see in your un the URL bar of your browser
+        something that starts with
+        `http://` or `https://`, in the second case you see `file://` instead.
+
+        Modular Javascript does not work with `file://` origins.
+
+        For that case, we bundle the modules into one,
+        and let a «client»-local.html include it
+
+        We also zip the client into {C.client}.zip so that users can download it easily
+
+        However, if the debugState is on, we skip all steps that are unneccesary
+        to see the updated client working.
+        &#34;&#34;&#34;
+
+        # copy over the static files
+
+        C = self.C
+        debug = self.debugState == &#34;on&#34;
+
+        for (srcDir, dstDir) in (
+            (C.pngInDir, C.pngOutDir),
+            (C.cssInDir, C.cssOutDir),
+            (C.jsInDir, C.jsOutDir),
+            (C.jslibInDir, C.jslibOutDir),
+            (C.htmlInDir, C.htmlOutDir),
+        ):
+            if not os.path.exists(dstDir):
+                os.makedirs(dstDir, exist_ok=True)
+
+            with os.scandir(srcDir) as it:
+                for entry in it:
+                    name = entry.name
+                    if not entry.is_file() or name.startswith(&#34;.&#34;):
+                        continue
+                    srcFile = f&#34;{srcDir}/{name}&#34;
+                    if srcFile != C.template:
+                        copy(srcFile, f&#34;{dstDir}/{name}&#34;)
+        copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
+
+        # move the custom files in place
+
+        for (srcFile, dstFile) in (
+            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
+            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
+        ):
+            copy(srcFile, dstFile)
+
+        console(&#34;Copied static files&#34;)
+
+        # create combined javascript file
+
+        if not debug:
+            self.makeCombined()
+
+        self.makeHtml()
+
+        if not debug:
+            self.zipApp()
 
     def zipApp(self):
         C = self.C
@@ -915,40 +1023,50 @@ class Make:
         &#34;&#34;&#34;.strip().split()
         )
         items.add(C.htmlLocalFile)
+        items.add(C.jsAll)
 
         zipped = f&#34;{C.siteDir}/{C.client}.zip&#34;
 
         with ZipFile(zipped, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-            with os.scandir(C.siteDir) as it:
+            with os.scandir(C.appClientDir) as it:
                 for entry in it:
                     file = entry.name
                     if file not in items:
                         continue
                     if entry.is_file():
-                        zipFile.write(f&#34;{C.siteDir}/{file}&#34;, arcname=file)
+                        zipFile.write(f&#34;{C.appClientDir}/{file}&#34;, arcname=file)
                         console(f&#34;adding {file}&#34;)
                     else:
-                        with os.scandir(f&#34;{C.siteDir}/{file}&#34;) as sit:
+                        with os.scandir(f&#34;{C.appClientDir}/{file}&#34;) as sit:
                             for sentry in sit:
                                 sfile = sentry.name
                                 if sentry.is_file and not sfile.startswith(&#34;.&#34;):
                                     sfile = f&#34;{file}/{sfile}&#34;
-                                    zipFile.write(f&#34;{C.siteDir}/{sfile}&#34;, arcname=sfile)
+                                    zipFile.write(
+                                        f&#34;{C.appClientDir}/{sfile}&#34;, arcname=sfile
+                                    )
                                     console(f&#34;adding {sfile}&#34;)
         console(f&#34;Packaged client into {zipped}&#34;)
 
     def publish(self):
         C = self.C
-        os.chdir(C.clientDir)
+        appDir = C.appDir
+        siteDir = C.siteDir
+        dataset = self.dataset
+        client = self.client
+        clients = self.getAllClients() if client is None else [client]
+        console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
+        os.chdir(appDir)
         deploy(C.org, C.repo)
 
-    def ship(self):
+    def ship(self, publish=True):
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
         self.makeCorpus()
         self.makeClient()
-        self.publish()
+        if publish:
+            self.publish()
 
     def serve(self):
         C = self.C
@@ -1026,11 +1144,14 @@ class Make:
             debugs[cfile] = debug
 
         if not good:
-            quit()
+            return False
         return debugs
 
     def showDebug(self):
         debugInfo = self.getDebugs()
+        if debugInfo is None:
+            return False
+        return True
 
         for (source, debug) in debugInfo.items():
             console(f&#34;{debug} (according to {source})&#34;)
@@ -1039,7 +1160,8 @@ class Make:
         C = self.C
         debugState = self.debugState
 
-        self.showDebug()
+        if not self.showDebug():
+            return
 
         newValue = &#34;true&#34; if debugState == &#34;on&#34; else &#34;false&#34;
 
@@ -1052,12 +1174,53 @@ class Make:
                 fh.write(text)
 
         console(f&#34;Debug set to {newValue}&#34;)
-        self.showDebug()
+        if not self.showDebug():
+            return
+
+    def getAllClients(self):
+        C = self.C
+        configDir = C.configDir
+
+        clients = []
+
+        with os.scandir(configDir) as it:
+            for entry in it:
+                client = entry.name
+                if not entry.is_dir() or client.startswith(&#34;.&#34;):
+                    continue
+                clients.append(client)
+        return clients
 
 
 def main():
-    Mk = Make()
-    return Mk.main()
+    A = readArgs()
+    if A is None:
+        return 0
+
+    dataset = A.dataset
+    client = A.client
+    command = A.command
+    page = A.page
+    debugState = A.debugState
+
+    if not dataset:
+        return
+
+    if not client:
+        if command not in {&#34;serve&#34;, &#34;ship&#34;}:
+            return
+
+    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+
+    if command == &#34;ship&#34; and client is None:
+        clients = Mk.getAllClients()
+        for client in clients:
+            ThisMk = Make(dataset, client)
+            ThisMk.ship(publish=False)
+        Mk.publish()
+        return
+
+    return Mk.doCommand(command)
 
 
 if __name__ == &#34;__main__&#34;:
@@ -1071,44 +1234,20 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.client.make.build.compress"><code class="name flex">
-<span>def <span class="ident">compress</span></span>(<span>data)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L84-L96" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def compress(data):
-    sets = {}
-
-    compressed = []
-
-    for n in sorted(data):
-        sets.setdefault(data[n], []).append(n)
-
-    for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
-        nSpec = list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
-        compressed.append(f&#34;{nSpec}\t{value}&#34;)
-
-    return compressed</code></pre>
-</details>
-</dd>
 <dt id="tf.client.make.build.console"><code class="name flex">
-<span>def <span class="ident">console</span></span>(<span>*args)</span>
+<span>def <span class="ident">console</span></span>(<span>*args, error=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L75-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def console(*args):
-    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
-    sys.stderr.flush()</code></pre>
+<pre><code class="python">def console(*args, error=False):
+    device = sys.stderr if error else sys.stdout
+    device.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    device.flush()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.invertMap"><code class="name flex">
@@ -1119,10 +1258,16 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L80-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
-    return None if legend is None else {v: k for (k, v) in legend.items()}</code></pre>
+    return (
+        None
+        if legend is None
+        else {v: k for (k, v) in legend.items()}
+        if type(legend) is dict
+        else legend
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.main"><code class="name flex">
@@ -1133,11 +1278,133 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L981-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1118-L1146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
-    Mk = Make()
-    return Mk.main()</code></pre>
+    A = readArgs()
+    if A is None:
+        return 0
+
+    dataset = A.dataset
+    client = A.client
+    command = A.command
+    page = A.page
+    debugState = A.debugState
+
+    if not dataset:
+        return
+
+    if not client:
+        if command not in {&#34;serve&#34;, &#34;ship&#34;}:
+            return
+
+    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+
+    if command == &#34;ship&#34; and client is None:
+        clients = Mk.getAllClients()
+        for client in clients:
+            ThisMk = Make(dataset, client)
+            ThisMk.ship(publish=False)
+        Mk.publish()
+        return
+
+    return Mk.doCommand(command)</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.readArgs"><code class="name flex">
+<span>def <span class="ident">readArgs</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readArgs():
+    class A:
+        pass
+
+    A.dataset = None
+    A.client = None
+    A.command = None
+    A.page = None
+    A.debugState = None
+
+    args = sys.argv[1:]
+
+    if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        console(HELP)
+        console(&#34;Missing dataset and client&#34;)
+        return None
+
+    dataset = args[0]
+    A.dataset = dataset
+    args = args[1:]
+
+    if not len(args):
+        console(HELP)
+        console(&#34;Missing client/command&#34;)
+        return None
+
+    if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+        console(HELP)
+        return None
+
+    if args[0] == &#34;serve&#34;:
+        client = None
+        command = args[0]
+        args = args[1:]
+    elif args[0] == &#34;ship&#34;:
+        client = None
+        command = args[0]
+        args = args[1:]
+    else:
+        client = args[0]
+        args = args[1:]
+
+        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
+            console(HELP)
+            if not len(args):
+                console(&#34;No command given&#34;)
+            return None
+
+        command = args[0]
+
+    A.client = client
+    A.command = command
+    A.page = None
+    A.debugState = None
+
+    if command not in {
+        &#34;serve&#34;,
+        &#34;v&#34;,
+        &#34;i&#34;,
+        &#34;config&#34;,
+        &#34;corpus&#34;,
+        &#34;client&#34;,
+        &#34;clientdebug&#34;,
+        &#34;debug&#34;,
+        &#34;publish&#34;,
+        &#34;ship&#34;,
+    }:
+        console(HELP)
+        console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
+        return None
+
+    if command in {&#34;serve&#34;}:
+        if len(args) &lt; 2:
+            A.page = &#34;index&#34;
+        else:
+            A.page = args[1]
+
+    elif command in {&#34;debug&#34;}:
+        if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
+            console(&#34;say on or off&#34;)
+            return None
+
+        A.debugState = args[1]
+    return A</code></pre>
 </details>
 </dd>
 </dl>
@@ -1147,94 +1414,58 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.client.make.build.Make"><code class="flex name class">
 <span>class <span class="ident">Make</span></span>
+<span>(</span><span>dataset, client, page=None, debugState=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L99-L978" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L178-L1115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
-    def __init__(self):
+    def __init__(self, dataset, client, page=None, debugState=None):
         class C:
             pass
 
         self.C = C
-
-    def readArgs(self):
-        args = sys.argv[1:]
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            console(&#34;Missing dataset and client&#34;)
-            quit()
-
-        dataset = args[0]
         self.dataset = dataset
-        args = args[1:]
-
-        if not len(args):
-            console(HELP)
-            console(&#34;Missing client/command&#34;)
-            quit()
-
-        if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            quit()
-
-        if args[0] == &#34;serve&#34;:
-            client = None
-            command = args[0]
-            args = args[1:]
-        else:
-            client = args[0]
-            args = args[1:]
-
-            if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-                console(HELP)
-                if not len(args):
-                    console(&#34;No command given&#34;)
-                quit()
-
-            command = args[0]
-
         self.client = client
-        self.command = command
-        self.page = None
-        self.message = None
-        self.debugState = None
-        self.remaining = []
+        self.page = page
+        self.debugState = debugState
+        self.good = True
 
-        if command not in {
-            &#34;serve&#34;,
-            &#34;v&#34;,
-            &#34;i&#34;,
-            &#34;config&#34;,
-            &#34;corpus&#34;,
-            &#34;client&#34;,
-            &#34;clientdebug&#34;,
-            &#34;debug&#34;,
-            &#34;publish&#34;,
-            &#34;ship&#34;,
-        }:
-            console(HELP)
-            console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
-            quit()
+        if dataset:
+            if not self.config():
+                self.good = False
 
-        if command in {&#34;serve&#34;}:
-            if len(args) &lt; 2:
-                self.page = &#34;index&#34;
-            else:
-                self.page = args[1]
-                self.remaining = args[2:]
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
 
-        elif command in {&#34;debug&#34;}:
-            if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
-                console(&#34;say on or off&#34;)
-                quit()
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
 
-            self.debugState = args[1]
-            self.remaining = args[2:]
+        try:
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+            return None
 
     def config(self):
         C = self.C
@@ -1270,8 +1501,8 @@ if __name__ == &#34;__main__&#34;:
             issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
-            clientDir=&#34;«gh»/«org»/«repo»&#34;,
-            configDir=f&#34;«clientDir»/{LS}&#34;,
+            appDir=&#34;«gh»/«org»/«repo»&#34;,
+            configDir=f&#34;«appDir»/{LS}&#34;,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
             clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
@@ -1286,20 +1517,23 @@ if __name__ == &#34;__main__&#34;:
             jslibInDir=&#34;«staticDir»/jslib&#34;,
             template=&#34;«htmlInDir»/template.html&#34;,
             index=&#34;«htmlInDir»/index.html&#34;,
-            siteDir=&#34;«clientDir»/«rel»&#34;,
-            pngOutDir=&#34;«siteDir»/png&#34;,
-            cssOutDir=&#34;«siteDir»/css&#34;,
+            siteDir=&#34;«appDir»/«rel»&#34;,
+            appClientDir=&#34;«siteDir»/«client»&#34;,
+            pngOutDir=&#34;«appClientDir»/png&#34;,
+            cssOutDir=&#34;«appClientDir»/css&#34;,
             htmlOutDir=&#34;«siteDir»&#34;,
-            jsOutDir=&#34;«siteDir»/js&#34;,
-            jslibOutDir=&#34;«siteDir»/jslib&#34;,
-            jsCorpusDir=&#34;«siteDir»/corpus&#34;,
+            jsOutDir=&#34;«appClientDir»/js&#34;,
+            jslibOutDir=&#34;«appClientDir»/jslib&#34;,
+            jsCorpusDir=&#34;«appClientDir»/corpus&#34;,
+            jsInit=&#34;«jsCorpusDir»/init.js&#34;,
             jsApp=&#34;app.js&#34;,
             jsDefs=&#34;defs.js&#34;,
-            jsDest=&#34;«jsCorpusDir»/«client»-all.js&#34;,
+            jsAll=&#34;all.js&#34;,
+            jsAllPath=&#34;«appClientDir»/«jsAll»&#34;,
             htmlIndex=&#34;«siteDir»/index.html&#34;,
-            htmlClient=&#34;«siteDir»/«client».html&#34;,
-            htmlLocalFile=&#34;«client»-local.html&#34;,
-            htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
+            htmlClient=&#34;«appClientDir»/index.html&#34;,
+            htmlLocalFile=&#34;index-local.html&#34;,
+            htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
             packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
             packageUrl=&#34;«client».zip&#34;,
@@ -1336,7 +1570,7 @@ if __name__ == &#34;__main__&#34;:
         lsConfig = c[&#34;lsConfig&#34;]
         if not os.path.exists(lsConfig):
             console(f&#34;No config.yaml found for {dataset}: {lsConfig}&#34;)
-            quit()
+            return None
 
         with open(lsConfig) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -1350,7 +1584,7 @@ if __name__ == &#34;__main__&#34;:
                 console(
                     f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
                 )
-                quit()
+                return None
 
             with open(clientConfigFile) as fh:
                 settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -1358,23 +1592,7 @@ if __name__ == &#34;__main__&#34;:
                     c[k] = v
                     fillin(c, k, v)
 
-            clientMake = c[&#34;clientMake&#34;]
-            clientMakeDir = c[&#34;clientMakeDir&#34;]
-            clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-            try:
-                moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-                spec = util.spec_from_file_location(moduleName, clientMakeFile)
-                code = util.module_from_spec(spec)
-                sys.path.insert(0, clientMakeDir)
-                spec.loader.exec_module(code)
-                sys.path.pop(0)
-                self.makeLegends = types.MethodType(code.makeLegends, self)
-                self.record = types.MethodType(code.record, self)
-
-            except Exception as e:
-                console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-                quit()
+            self.importMake(c=c)
 
             d = dict(
                 dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
@@ -1500,10 +1718,13 @@ if __name__ == &#34;__main__&#34;:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        return True
+
     def makeClientSettings(self):
         C = self.C
         layerSettings = C.layerSettings
-        api = self.api
+        A = self.A
+        api = A.api
         Cp = api.C
 
         self.makeLegends()
@@ -1531,6 +1752,8 @@ if __name__ == &#34;__main__&#34;:
             ntypes=typeSeq,
             typesLower=typesLower,
             defaultSettings=C.defaultSettings,
+            defaultFlags=C.defaultFlags,
+            keyboard=getattr(C, &#34;keyboard&#34;, None),
         )
 
         # check visible- and focus- attributes
@@ -1546,7 +1769,7 @@ if __name__ == &#34;__main__&#34;:
                 if layerInfo.get(&#34;visible&#34;, False):
                     theVisibles.append((nType, name))
                 theMap = layerInfo.get(&#34;legend&#34;, None)
-                if theMap is not None:
+                if theMap is not None and type(theMap) is dict:
                     default = layerInfo.get(&#34;default&#34;, None)
                     if default is not None:
                         theMap[&#34;&#34;] = default
@@ -1604,16 +1827,7 @@ if __name__ == &#34;__main__&#34;:
         )
         self.clientConfig = clientConfig
 
-    def main(self):
-        self.readArgs()
-
-        command = self.command
-
-        if not command:
-            quit()
-
-        self.config()
-
+    def doCommand(self, command):
         if command == &#34;serve&#34;:
             self.serve()
         elif command == &#34;v&#34;:
@@ -1629,8 +1843,8 @@ if __name__ == &#34;__main__&#34;:
         elif command == &#34;client&#34;:
             self.makeClient()
         elif command == &#34;clientdebug&#34;:
-            self.makeClient()
             self.debugState = &#34;on&#34;
+            self.makeClient()
             self.adjustDebug()
         elif command == &#34;publish&#34;:
             self.publish()
@@ -1639,128 +1853,136 @@ if __name__ == &#34;__main__&#34;:
 
     def loadTf(self):
         C = self.C
-        TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-        allFeatures = TF.explore(silent=True, show=True)
-        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        self.api = TF.load(loadableFeatures, silent=True)
+        dataset = C.dataset
+        version = C.data[&#34;version&#34;]
+        A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
+        # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
+        # allFeatures = TF.explore(silent=True, show=True)
+        # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        # self.api = TF.load(loadableFeatures, silent=True)
+        self.A = A
 
     def makeConfig(self):
-        if not getattr(self, &#34;api&#34;, None):
+        if not getattr(self, &#34;A&#34;, None):
             self.loadTf()
         if not getattr(self, &#34;clientConfig&#34;, None):
             self.makeClientSettings()
         self.dumpConfig()
 
+    def makeLinks(self):
+        A = self.A
+        api = A.api
+        T = api.T
+        F = api.F
+
+        sTypes = T.sectionTypes
+        A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
+        links = {
+            sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
+            for sType in sTypes
+        }
+        for (sType, sLinks) in links.items():
+            A.info(f&#34;{sType:&lt;20}: {len(sLinks):&gt;6} links&#34;, tm=False)
+        A.info(&#34;done&#34;)
+        self.links = links
+
     def makeCorpus(self):
-        if not getattr(self, &#34;api&#34;, None):
+        if not getattr(self, &#34;A&#34;, None):
             self.loadTf()
         if not getattr(self, &#34;clientConfig&#34;, None):
             self.makeClientSettings()
-        TF = self.api.TF
+        A = self.A
 
-        TF.info(&#34;Recording ...&#34;)
+        A.info(&#34;Make links ...&#34;)
+        self.makeLinks()
+
+        A.info(&#34;Recording ...&#34;)
         self.record()
 
-        TF.info(&#34;Dumping ...&#34;)
+        A.info(&#34;Dumping ...&#34;)
         self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
         clientConfig = self.clientConfig
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameConfig = f&#34;{destData}/{C.client}-configdata.js&#34;
+        fileNameConfig = f&#34;{destData}/config.js&#34;
 
         with open(fileNameConfig, &#34;w&#34;) as fh:
             fh.write(&#34;const configData = &#34;)
             json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
-        TF.info(f&#34;Config written to file {fileNameConfig}&#34;)
+        A.info(f&#34;Config written to file {fileNameConfig}&#34;)
+
+    def compress(self, data):
+        sets = {}
+
+        compressed = []
+
+        for n in sorted(data):
+            sets.setdefault(data[n], []).append(n)
+
+        for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
+            nSpec = (
+                list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
+            )
+            compressed.append(f&#34;{nSpec}\t{value}&#34;)
+
+        return compressed
 
     def dumpCorpus(self):
         C = self.C
-        api = self.api
-        TF = api.TF
+        A = self.A
 
         data = self.data
-        data[&#34;up&#34;] = compress(data[&#34;up&#34;])
+        data[&#34;links&#34;] = self.links
 
-        TF.indent(reset=True)
-        TF.info(&#34;Dumping data to a single compact json file&#34;)
+        A.indent(reset=True)
+        A.info(&#34;Dumping data to compact json files&#34;)
 
         destData = C.jsCorpusDir
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        fileNameData = f&#34;{destData}/{C.client}-corpusdata.js&#34;
+        def writeDataFile(name, address, data, asString=False):
+            path = f&#34;{destData}/{name.lower()}.js&#34;
+            heading = f&#34;corpusData[{address}] = &#34;
+            with open(path, &#34;w&#34;) as fh:
+                fh.write(heading)
+                if asString:
+                    fh.write(&#34;`&#34;)
+                    fh.write(data)
+                    fh.write(&#34;`&#34;)
+                else:
+                    json.dump(
+                        data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                    )
+                A.info(f&#34;Data {name} stored in {path}&#34;)
 
-        with open(fileNameData, &#34;w&#34;) as fh:
-            fh.write(&#34;const corpusData = &#34;)
-            json.dump(data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;))
-        TF.info(f&#34;Data written to file {fileNameData}&#34;)
+        init = [&#34;var corpusData = {}\n&#34;]
 
-    def makeClient(self):
-        &#34;&#34;&#34;
-        We create a client app in the target directory.
+        for (partName, partData) in data.items():
+            if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+                init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
+                for (nType, tpData) in partData.items():
+                    init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
+                    for (layer, lrData) in tpData.items():
+                        writeDataFile(
+                            f&#34;{partName}-{nType}-{layer}&#34;,
+                            f&#39;&#34;{partName}&#34;][&#34;{nType}&#34;][&#34;{layer}&#34;&#39;,
+                            lrData,
+                        )
+            else:
+                writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
+        with open(C.jsInit, &#34;w&#34;) as fh:
+            fh.write(&#34;&#34;.join(init))
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
-
-        Module loading does not work when you open the HTML file locally
-        (i.e. when the HTML is not served by a server).
-
-        N.B. There is a difference between a local web server serving at `localhost`
-        and opening the file directly into your browser by double clicking on it.
-
-        In the first case, you see in your un the URL bar of your browser
-        something that starts with
-        `http://` or `https://`, in the second case you see `file://` instead.
-
-        Modular Javascript does not work with `file://` origins.
-
-        For that case, we bundle the modules into one,
-        and let a «client»-local.html include it
-
-        We also zip the client into {C.client}.zip so that users can download it easily
-        &#34;&#34;&#34;
-
-        # copy over the static files
-
+    def makeCombined(self):
         C = self.C
-        lsVersion = C.lsVersion
-
-        for (srcDir, dstDir) in (
-            (C.pngInDir, C.pngOutDir),
-            (C.cssInDir, C.cssOutDir),
-            (C.jsInDir, C.jsOutDir),
-            (C.jslibInDir, C.jslibOutDir),
-            (C.htmlInDir, C.htmlOutDir),
-        ):
-            if not os.path.exists(dstDir):
-                os.makedirs(dstDir, exist_ok=True)
-
-            with os.scandir(srcDir) as it:
-                for entry in it:
-                    name = entry.name
-                    if not entry.is_file() or name.startswith(&#34;.&#34;):
-                        continue
-                    srcFile = f&#34;{srcDir}/{name}&#34;
-                    if srcFile != C.template:
-                        copy(srcFile, f&#34;{dstDir}/{name}&#34;)
-        copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
-
-        # move the custom files in place
-
-        for (srcFile, dstFile) in (
-            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
-            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
-        ):
-            copy(srcFile, dstFile)
-
-        # create combined javascript file
 
         commentRe = re.compile(r&#34;&#34;&#34;[ \t]*/\*.*?\*/[ \t]*&#34;&#34;&#34;, re.S)
         importRe = re.compile(r&#39;&#39;&#39;import\s+\{.*?\}\s+from\s+&#34;[^&#34;]*\.js&#34;&#39;&#39;&#39;, re.S)
@@ -1812,29 +2034,26 @@ if __name__ == &#34;__main__&#34;:
             + &#34;\n\n&#34;
             + content[C.jsApp]
         )
-        with open(C.jsDest, &#34;w&#34;) as fh:
+        with open(C.jsAllPath, &#34;w&#34;) as fh:
             fh.write(combined)
-        console(f&#34;Combined js file written to {C.jsDest}&#34;)
+        console(f&#34;Combined js file written to {C.jsAllPath}&#34;)
 
-        # fill in the html templates
+    def makeHtml(self):
+        C = self.C
+        lsVersion = C.lsVersion
 
         # index of all clients
 
         clients = {}
 
-        with os.scandir(C.configDir) as it:
-            for entry in it:
-                if entry.is_dir():
-                    thisClient = entry.name
-                    thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
-                    if os.path.exists(thisConfig):
-                        with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
-                                &#34;short&#34;, &#34;&#34;
-                            )
-                    else:
-                        desc = &#34;&#34;
-                    clients[thisClient] = desc
+        for thisClient in self.getAllClients():
+            thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
+            if os.path.exists(thisConfig):
+                with open(thisConfig) as fh:
+                    desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+            else:
+                desc = &#34;&#34;
+            clients[thisClient] = desc
 
         with open(C.index) as fh:
             template = fh.read()
@@ -1845,7 +2064,7 @@ if __name__ == &#34;__main__&#34;:
             for (thisClient, desc) in clients.items():
                 html.append(
                     f&#34;&#34;&#34;
-&lt;dt&gt;&lt;a href=&#34;{thisClient}.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
+&lt;dt&gt;&lt;a href=&#34;{thisClient}/index.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
 &lt;dd&gt;{desc}&lt;/dd&gt;
 &#34;&#34;&#34;
                 )
@@ -1858,17 +2077,27 @@ if __name__ == &#34;__main__&#34;:
 
         # client and client-local
 
+        with os.scandir(C.jsCorpusDir) as it:
+            scripts = []
+            for entry in it:
+                file = entry.name
+                if not file.endswith(&#34;.js&#34;):
+                    continue
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                    scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
+            corpusScripts = &#34;\n&#34;.join(scripts)
+
         with open(C.template) as fh:
             template = fh.read()
             htmlNormal = template.replace(
                 &#34;«js»&#34;, &#39;&#39;&#39;type=&#34;module&#34; src=&#34;js/app.js«v»&#34;&#39;&#39;&#39;
             )
+            htmlNormal = htmlNormal.replace(&#34;«corpus»&#34;, corpusScripts)
             htmlNormal = htmlNormal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
             htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
-            htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
-            )
+            htmlLocal = template.replace(&#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;{C.jsAll}&#34;&#39;&#39;&#39;)
+            htmlLocal = htmlLocal.replace(&#34;«corpus»&#34;, corpusScripts)
             htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
             htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
             htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
@@ -1881,9 +2110,77 @@ if __name__ == &#34;__main__&#34;:
             fh.write(htmlLocal)
         console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)
 
-        # zip the standalone client
+    def makeClient(self):
+        &#34;&#34;&#34;
+        We create a client app in the target directory.
 
-        self.zipApp()
+        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+
+        Module loading does not work when you open the HTML file locally
+        (i.e. when the HTML is not served by a server).
+
+        N.B. There is a difference between a local web server serving at `localhost`
+        and opening the file directly into your browser by double clicking on it.
+
+        In the first case, you see in your un the URL bar of your browser
+        something that starts with
+        `http://` or `https://`, in the second case you see `file://` instead.
+
+        Modular Javascript does not work with `file://` origins.
+
+        For that case, we bundle the modules into one,
+        and let a «client»-local.html include it
+
+        We also zip the client into {C.client}.zip so that users can download it easily
+
+        However, if the debugState is on, we skip all steps that are unneccesary
+        to see the updated client working.
+        &#34;&#34;&#34;
+
+        # copy over the static files
+
+        C = self.C
+        debug = self.debugState == &#34;on&#34;
+
+        for (srcDir, dstDir) in (
+            (C.pngInDir, C.pngOutDir),
+            (C.cssInDir, C.cssOutDir),
+            (C.jsInDir, C.jsOutDir),
+            (C.jslibInDir, C.jslibOutDir),
+            (C.htmlInDir, C.htmlOutDir),
+        ):
+            if not os.path.exists(dstDir):
+                os.makedirs(dstDir, exist_ok=True)
+
+            with os.scandir(srcDir) as it:
+                for entry in it:
+                    name = entry.name
+                    if not entry.is_file() or name.startswith(&#34;.&#34;):
+                        continue
+                    srcFile = f&#34;{srcDir}/{name}&#34;
+                    if srcFile != C.template:
+                        copy(srcFile, f&#34;{dstDir}/{name}&#34;)
+        copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
+
+        # move the custom files in place
+
+        for (srcFile, dstFile) in (
+            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
+            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
+        ):
+            copy(srcFile, dstFile)
+
+        console(&#34;Copied static files&#34;)
+
+        # create combined javascript file
+
+        if not debug:
+            self.makeCombined()
+
+        self.makeHtml()
+
+        if not debug:
+            self.zipApp()
 
     def zipApp(self):
         C = self.C
@@ -1897,40 +2194,50 @@ if __name__ == &#34;__main__&#34;:
         &#34;&#34;&#34;.strip().split()
         )
         items.add(C.htmlLocalFile)
+        items.add(C.jsAll)
 
         zipped = f&#34;{C.siteDir}/{C.client}.zip&#34;
 
         with ZipFile(zipped, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-            with os.scandir(C.siteDir) as it:
+            with os.scandir(C.appClientDir) as it:
                 for entry in it:
                     file = entry.name
                     if file not in items:
                         continue
                     if entry.is_file():
-                        zipFile.write(f&#34;{C.siteDir}/{file}&#34;, arcname=file)
+                        zipFile.write(f&#34;{C.appClientDir}/{file}&#34;, arcname=file)
                         console(f&#34;adding {file}&#34;)
                     else:
-                        with os.scandir(f&#34;{C.siteDir}/{file}&#34;) as sit:
+                        with os.scandir(f&#34;{C.appClientDir}/{file}&#34;) as sit:
                             for sentry in sit:
                                 sfile = sentry.name
                                 if sentry.is_file and not sfile.startswith(&#34;.&#34;):
                                     sfile = f&#34;{file}/{sfile}&#34;
-                                    zipFile.write(f&#34;{C.siteDir}/{sfile}&#34;, arcname=sfile)
+                                    zipFile.write(
+                                        f&#34;{C.appClientDir}/{sfile}&#34;, arcname=sfile
+                                    )
                                     console(f&#34;adding {sfile}&#34;)
         console(f&#34;Packaged client into {zipped}&#34;)
 
     def publish(self):
         C = self.C
-        os.chdir(C.clientDir)
+        appDir = C.appDir
+        siteDir = C.siteDir
+        dataset = self.dataset
+        client = self.client
+        clients = self.getAllClients() if client is None else [client]
+        console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
+        os.chdir(appDir)
         deploy(C.org, C.repo)
 
-    def ship(self):
+    def ship(self, publish=True):
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
         self.makeCorpus()
         self.makeClient()
-        self.publish()
+        if publish:
+            self.publish()
 
     def serve(self):
         C = self.C
@@ -2008,11 +2315,14 @@ if __name__ == &#34;__main__&#34;:
             debugs[cfile] = debug
 
         if not good:
-            quit()
+            return False
         return debugs
 
     def showDebug(self):
         debugInfo = self.getDebugs()
+        if debugInfo is None:
+            return False
+        return True
 
         for (source, debug) in debugInfo.items():
             console(f&#34;{debug} (according to {source})&#34;)
@@ -2021,7 +2331,8 @@ if __name__ == &#34;__main__&#34;:
         C = self.C
         debugState = self.debugState
 
-        self.showDebug()
+        if not self.showDebug():
+            return
 
         newValue = &#34;true&#34; if debugState == &#34;on&#34; else &#34;false&#34;
 
@@ -2034,7 +2345,22 @@ if __name__ == &#34;__main__&#34;:
                 fh.write(text)
 
         console(f&#34;Debug set to {newValue}&#34;)
-        self.showDebug()</code></pre>
+        if not self.showDebug():
+            return
+
+    def getAllClients(self):
+        C = self.C
+        configDir = C.configDir
+
+        clients = []
+
+        with os.scandir(configDir) as it:
+            for entry in it:
+                client = entry.name
+                if not entry.is_dir() or client.startswith(&#34;.&#34;):
+                    continue
+                clients.append(client)
+        return clients</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -2046,13 +2372,14 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L961-L978" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1082-L1101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
     debugState = self.debugState
 
-    self.showDebug()
+    if not self.showDebug():
+        return
 
     newValue = &#34;true&#34; if debugState == &#34;on&#34; else &#34;false&#34;
 
@@ -2065,7 +2392,8 @@ if __name__ == &#34;__main__&#34;:
             fh.write(text)
 
     console(f&#34;Debug set to {newValue}&#34;)
-    self.showDebug()</code></pre>
+    if not self.showDebug():
+        return</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.adjustVersion"><code class="name flex">
@@ -2076,7 +2404,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L914-L925" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1032-L1043" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2092,6 +2420,33 @@ if __name__ == &#34;__main__&#34;:
     console(f&#34;Version went from `{currentVersion}` to `{newVersion}`&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.client.make.build.Make.compress"><code class="name flex">
+<span>def <span class="ident">compress</span></span>(<span>self, data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L673-L687" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def compress(self, data):
+    sets = {}
+
+    compressed = []
+
+    for n in sorted(data):
+        sets.setdefault(data[n], []).append(n)
+
+    for (value, nset) in sorted(sets.items(), key=lambda x: (x[1][0], x[1][-1])):
+        nSpec = (
+            list(nset)[0] if len(nset) == 1 else specFromRanges(rangesFromSet(nset))
+        )
+        compressed.append(f&#34;{nSpec}\t{value}&#34;)
+
+    return compressed</code></pre>
+</details>
+</dd>
 <dt id="tf.client.make.build.Make.config"><code class="name flex">
 <span>def <span class="ident">config</span></span>(<span>self)</span>
 </code></dt>
@@ -2100,7 +2455,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L180-L442" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L222-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2136,8 +2491,8 @@ if __name__ == &#34;__main__&#34;:
         issueUrl=&#34;«ghUrl»/«org»/«repo»/issues&#34;,
         tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
         staticDir=STATIC_DIR,
-        clientDir=&#34;«gh»/«org»/«repo»&#34;,
-        configDir=f&#34;«clientDir»/{LS}&#34;,
+        appDir=&#34;«gh»/«org»/«repo»&#34;,
+        configDir=f&#34;«appDir»/{LS}&#34;,
         lsConfig=&#34;«configDir»/config.yaml&#34;,
         clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
         clientMake=&#34;mkdata&#34;,
@@ -2152,20 +2507,23 @@ if __name__ == &#34;__main__&#34;:
         jslibInDir=&#34;«staticDir»/jslib&#34;,
         template=&#34;«htmlInDir»/template.html&#34;,
         index=&#34;«htmlInDir»/index.html&#34;,
-        siteDir=&#34;«clientDir»/«rel»&#34;,
-        pngOutDir=&#34;«siteDir»/png&#34;,
-        cssOutDir=&#34;«siteDir»/css&#34;,
+        siteDir=&#34;«appDir»/«rel»&#34;,
+        appClientDir=&#34;«siteDir»/«client»&#34;,
+        pngOutDir=&#34;«appClientDir»/png&#34;,
+        cssOutDir=&#34;«appClientDir»/css&#34;,
         htmlOutDir=&#34;«siteDir»&#34;,
-        jsOutDir=&#34;«siteDir»/js&#34;,
-        jslibOutDir=&#34;«siteDir»/jslib&#34;,
-        jsCorpusDir=&#34;«siteDir»/corpus&#34;,
+        jsOutDir=&#34;«appClientDir»/js&#34;,
+        jslibOutDir=&#34;«appClientDir»/jslib&#34;,
+        jsCorpusDir=&#34;«appClientDir»/corpus&#34;,
+        jsInit=&#34;«jsCorpusDir»/init.js&#34;,
         jsApp=&#34;app.js&#34;,
         jsDefs=&#34;defs.js&#34;,
-        jsDest=&#34;«jsCorpusDir»/«client»-all.js&#34;,
+        jsAll=&#34;all.js&#34;,
+        jsAllPath=&#34;«appClientDir»/«jsAll»&#34;,
         htmlIndex=&#34;«siteDir»/index.html&#34;,
-        htmlClient=&#34;«siteDir»/«client».html&#34;,
-        htmlLocalFile=&#34;«client»-local.html&#34;,
-        htmlLocal=&#34;«siteDir»/«htmlLocalFile»&#34;,
+        htmlClient=&#34;«appClientDir»/index.html&#34;,
+        htmlLocalFile=&#34;index-local.html&#34;,
+        htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
         favicon=&#34;favicon.ico&#34;,
         packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
         packageUrl=&#34;«client».zip&#34;,
@@ -2202,7 +2560,7 @@ if __name__ == &#34;__main__&#34;:
     lsConfig = c[&#34;lsConfig&#34;]
     if not os.path.exists(lsConfig):
         console(f&#34;No config.yaml found for {dataset}: {lsConfig}&#34;)
-        quit()
+        return None
 
     with open(lsConfig) as fh:
         settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -2216,7 +2574,7 @@ if __name__ == &#34;__main__&#34;:
             console(
                 f&#34;No config.yaml found for {dataset}:{client}: {clientConfigFile}&#34;
             )
-            quit()
+            return None
 
         with open(clientConfigFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -2224,23 +2582,7 @@ if __name__ == &#34;__main__&#34;:
                 c[k] = v
                 fillin(c, k, v)
 
-        clientMake = c[&#34;clientMake&#34;]
-        clientMakeDir = c[&#34;clientMakeDir&#34;]
-        clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-            quit()
+        self.importMake(c=c)
 
         d = dict(
             dataLocation=&#34;«gh»/«data.org»/«data.repo»/«data.rel»&#34;,
@@ -2364,7 +2706,44 @@ if __name__ == &#34;__main__&#34;:
             ),
         )
     for (k, v) in c.items():
-        setattr(C, k, v)</code></pre>
+        setattr(C, k, v)
+
+    return True</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.doCommand"><code class="name flex">
+<span>def <span class="ident">doCommand</span></span>(<span>self, command)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L582-L604" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def doCommand(self, command):
+    if command == &#34;serve&#34;:
+        self.serve()
+    elif command == &#34;v&#34;:
+        self.showVersion()
+    elif command == &#34;i&#34;:
+        self.adjustVersion()
+    elif command == &#34;debug&#34;:
+        self.adjustDebug()
+    elif command == &#34;config&#34;:
+        self.makeConfig()
+    elif command == &#34;corpus&#34;:
+        self.makeCorpus()
+    elif command == &#34;client&#34;:
+        self.makeClient()
+    elif command == &#34;clientdebug&#34;:
+        self.debugState = &#34;on&#34;
+        self.makeClient()
+        self.adjustDebug()
+    elif command == &#34;publish&#34;:
+        self.publish()
+    elif command == &#34;ship&#34;:
+        self.ship()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.dumpConfig"><code class="name flex">
@@ -2375,24 +2754,23 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L608-L623" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L657-L671" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
-    api = self.api
-    TF = api.TF
+    A = self.A
     clientConfig = self.clientConfig
 
     destData = C.jsCorpusDir
     if not os.path.exists(destData):
         os.makedirs(destData, exist_ok=True)
 
-    fileNameConfig = f&#34;{destData}/{C.client}-configdata.js&#34;
+    fileNameConfig = f&#34;{destData}/config.js&#34;
 
     with open(fileNameConfig, &#34;w&#34;) as fh:
         fh.write(&#34;const configData = &#34;)
         json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
-    TF.info(f&#34;Config written to file {fileNameConfig}&#34;)</code></pre>
+    A.info(f&#34;Config written to file {fileNameConfig}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.dumpCorpus"><code class="name flex">
@@ -2403,29 +2781,79 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L625-L645" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L689-L734" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
-    api = self.api
-    TF = api.TF
+    A = self.A
 
     data = self.data
-    data[&#34;up&#34;] = compress(data[&#34;up&#34;])
+    data[&#34;links&#34;] = self.links
 
-    TF.indent(reset=True)
-    TF.info(&#34;Dumping data to a single compact json file&#34;)
+    A.indent(reset=True)
+    A.info(&#34;Dumping data to compact json files&#34;)
 
     destData = C.jsCorpusDir
     if not os.path.exists(destData):
         os.makedirs(destData, exist_ok=True)
 
-    fileNameData = f&#34;{destData}/{C.client}-corpusdata.js&#34;
+    def writeDataFile(name, address, data, asString=False):
+        path = f&#34;{destData}/{name.lower()}.js&#34;
+        heading = f&#34;corpusData[{address}] = &#34;
+        with open(path, &#34;w&#34;) as fh:
+            fh.write(heading)
+            if asString:
+                fh.write(&#34;`&#34;)
+                fh.write(data)
+                fh.write(&#34;`&#34;)
+            else:
+                json.dump(
+                    data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                )
+            A.info(f&#34;Data {name} stored in {path}&#34;)
 
-    with open(fileNameData, &#34;w&#34;) as fh:
-        fh.write(&#34;const corpusData = &#34;)
-        json.dump(data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;))
-    TF.info(f&#34;Data written to file {fileNameData}&#34;)</code></pre>
+    init = [&#34;var corpusData = {}\n&#34;]
+
+    for (partName, partData) in data.items():
+        if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+            init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
+            for (nType, tpData) in partData.items():
+                init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
+                for (layer, lrData) in tpData.items():
+                    writeDataFile(
+                        f&#34;{partName}-{nType}-{layer}&#34;,
+                        f&#39;&#34;{partName}&#34;][&#34;{nType}&#34;][&#34;{layer}&#34;&#39;,
+                        lrData,
+                    )
+        else:
+            writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
+    with open(C.jsInit, &#34;w&#34;) as fh:
+        fh.write(&#34;&#34;.join(init))</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.getAllClients"><code class="name flex">
+<span>def <span class="ident">getAllClients</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1103-L1115" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getAllClients(self):
+    C = self.C
+    configDir = C.configDir
+
+    clients = []
+
+    with os.scandir(configDir) as it:
+        for entry in it:
+            client = entry.name
+            if not entry.is_dir() or client.startswith(&#34;.&#34;):
+                continue
+            clients.append(client)
+    return clients</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.getDebugs"><code class="name flex">
@@ -2436,7 +2864,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L933-L953" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1051-L1071" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2457,8 +2885,47 @@ if __name__ == &#34;__main__&#34;:
         debugs[cfile] = debug
 
     if not good:
-        quit()
+        return False
     return debugs</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.importMake"><code class="name flex">
+<span>def <span class="ident">importMake</span></span>(<span>self, c=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def importMake(self, c=None):
+    client = self.client
+    dataset = self.dataset
+
+    if c is None:
+        C = self.C
+        clientMake = C.clientMake
+        clientMakeDir = C.clientMakeDir
+        clientMakeFile = C.clientMakeFile
+    else:
+        clientMake = c[&#34;clientMake&#34;]
+        clientMakeDir = c[&#34;clientMakeDir&#34;]
+        clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+    try:
+        moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+        spec = util.spec_from_file_location(moduleName, clientMakeFile)
+        code = util.module_from_spec(spec)
+        sys.path.insert(0, clientMakeDir)
+        spec.loader.exec_module(code)
+        sys.path.pop(0)
+        self.makeLegends = types.MethodType(code.makeLegends, self)
+        self.record = types.MethodType(code.record, self)
+
+    except Exception as e:
+        console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+        return None</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.incVersion"><code class="name flex">
@@ -2469,7 +2936,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L899-L906" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1017-L1024" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -2489,58 +2956,18 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L581-L586" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L606-L615" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
-    TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-    allFeatures = TF.explore(silent=True, show=True)
-    loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-    self.api = TF.load(loadableFeatures, silent=True)</code></pre>
-</details>
-</dd>
-<dt id="tf.client.make.build.Make.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L548-L579" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def main(self):
-    self.readArgs()
-
-    command = self.command
-
-    if not command:
-        quit()
-
-    self.config()
-
-    if command == &#34;serve&#34;:
-        self.serve()
-    elif command == &#34;v&#34;:
-        self.showVersion()
-    elif command == &#34;i&#34;:
-        self.adjustVersion()
-    elif command == &#34;debug&#34;:
-        self.adjustDebug()
-    elif command == &#34;config&#34;:
-        self.makeConfig()
-    elif command == &#34;corpus&#34;:
-        self.makeCorpus()
-    elif command == &#34;client&#34;:
-        self.makeClient()
-    elif command == &#34;clientdebug&#34;:
-        self.makeClient()
-        self.debugState = &#34;on&#34;
-        self.adjustDebug()
-    elif command == &#34;publish&#34;:
-        self.publish()
-    elif command == &#34;ship&#34;:
-        self.ship()</code></pre>
+    dataset = C.dataset
+    version = C.data[&#34;version&#34;]
+    A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
+    # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
+    # allFeatures = TF.explore(silent=True, show=True)
+    # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+    # self.api = TF.load(loadableFeatures, silent=True)
+    self.A = A</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.makeClient"><code class="name flex">
@@ -2559,192 +2986,84 @@ something that starts with
 <p>Modular Javascript does not work with <code>file://</code> origins.</p>
 <p>For that case, we bundle the modules into one,
 and let a «client»-local.html include it</p>
-<p>We also zip the client into {C.client}.zip so that users can download it easily</p></div>
+<p>We also zip the client into {C.client}.zip so that users can download it easily</p>
+<p>However, if the debugState is on, we skip all steps that are unneccesary
+to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L647-L827" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L865-L935" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">    def makeClient(self):
-        &#34;&#34;&#34;
-        We create a client app in the target directory.
+<pre><code class="python">def makeClient(self):
+    &#34;&#34;&#34;
+    We create a client app in the target directory.
 
-        The client consists of HTML/CSS/PNG files plus a modular Javascript program.
+    The client consists of HTML/CSS/PNG files plus a modular Javascript program.
 
-        Module loading does not work when you open the HTML file locally
-        (i.e. when the HTML is not served by a server).
+    Module loading does not work when you open the HTML file locally
+    (i.e. when the HTML is not served by a server).
 
-        N.B. There is a difference between a local web server serving at `localhost`
-        and opening the file directly into your browser by double clicking on it.
+    N.B. There is a difference between a local web server serving at `localhost`
+    and opening the file directly into your browser by double clicking on it.
 
-        In the first case, you see in your un the URL bar of your browser
-        something that starts with
-        `http://` or `https://`, in the second case you see `file://` instead.
+    In the first case, you see in your un the URL bar of your browser
+    something that starts with
+    `http://` or `https://`, in the second case you see `file://` instead.
 
-        Modular Javascript does not work with `file://` origins.
+    Modular Javascript does not work with `file://` origins.
 
-        For that case, we bundle the modules into one,
-        and let a «client»-local.html include it
+    For that case, we bundle the modules into one,
+    and let a «client»-local.html include it
 
-        We also zip the client into {C.client}.zip so that users can download it easily
-        &#34;&#34;&#34;
+    We also zip the client into {C.client}.zip so that users can download it easily
 
-        # copy over the static files
+    However, if the debugState is on, we skip all steps that are unneccesary
+    to see the updated client working.
+    &#34;&#34;&#34;
 
-        C = self.C
-        lsVersion = C.lsVersion
+    # copy over the static files
 
-        for (srcDir, dstDir) in (
-            (C.pngInDir, C.pngOutDir),
-            (C.cssInDir, C.cssOutDir),
-            (C.jsInDir, C.jsOutDir),
-            (C.jslibInDir, C.jslibOutDir),
-            (C.htmlInDir, C.htmlOutDir),
-        ):
-            if not os.path.exists(dstDir):
-                os.makedirs(dstDir, exist_ok=True)
+    C = self.C
+    debug = self.debugState == &#34;on&#34;
 
-            with os.scandir(srcDir) as it:
-                for entry in it:
-                    name = entry.name
-                    if not entry.is_file() or name.startswith(&#34;.&#34;):
-                        continue
-                    srcFile = f&#34;{srcDir}/{name}&#34;
-                    if srcFile != C.template:
-                        copy(srcFile, f&#34;{dstDir}/{name}&#34;)
-        copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
+    for (srcDir, dstDir) in (
+        (C.pngInDir, C.pngOutDir),
+        (C.cssInDir, C.cssOutDir),
+        (C.jsInDir, C.jsOutDir),
+        (C.jslibInDir, C.jslibOutDir),
+        (C.htmlInDir, C.htmlOutDir),
+    ):
+        if not os.path.exists(dstDir):
+            os.makedirs(dstDir, exist_ok=True)
 
-        # move the custom files in place
-
-        for (srcFile, dstFile) in (
-            (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
-            (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
-        ):
-            copy(srcFile, dstFile)
-
-        # create combined javascript file
-
-        commentRe = re.compile(r&#34;&#34;&#34;[ \t]*/\*.*?\*/[ \t]*&#34;&#34;&#34;, re.S)
-        importRe = re.compile(r&#39;&#39;&#39;import\s+\{.*?\}\s+from\s+&#34;[^&#34;]*\.js&#34;&#39;&#39;&#39;, re.S)
-        exportRe = re.compile(r&#34;&#34;&#34;^export[ ]+&#34;&#34;&#34;, re.M)
-        whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
-        nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
-
-        def getModule(module):
-            with open(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
-                text = fh.read()
-            text = importRe.sub(&#34;&#34;, text)
-            text = exportRe.sub(&#34;&#34;, text)
-            text = commentRe.sub(&#34;&#34;, text)
-            text = whiteRe.sub(&#34;&#34;, text)
-            text = nlRe.sub(&#34;\n&#34;, text)
-            return text
-
-        modules = []
-
-        with os.scandir(C.jsOutDir) as it:
+        with os.scandir(srcDir) as it:
             for entry in it:
                 name = entry.name
-                if (
-                    not entry.is_file()
-                    or name.startswith(&#34;.&#34;)
-                    or not name.endswith(&#34;.js&#34;)
-                ):
+                if not entry.is_file() or name.startswith(&#34;.&#34;):
                     continue
-                modules.append(entry.name)
-        console(&#34;, &#34;.join(module[0:-3] for module in modules))
+                srcFile = f&#34;{srcDir}/{name}&#34;
+                if srcFile != C.template:
+                    copy(srcFile, f&#34;{dstDir}/{name}&#34;)
+    copy(f&#34;{C.staticDir}/{C.favicon}&#34;, f&#34;{C.siteDir}/{C.favicon}&#34;)
 
-        content = {module: getModule(module) for module in modules}
+    # move the custom files in place
 
-        header = &#34;&#34;&#34;\
-/*eslint-env jquery*/
-/* global configData */
-/* global corpusData */
+    for (srcFile, dstFile) in (
+        (C.clientCss, f&#34;{C.cssOutDir}/{C.client}.css&#34;),
+        (C.clientLogo, f&#34;{C.pngOutDir}/{C.client}.png&#34;),
+    ):
+        copy(srcFile, dstFile)
 
-    &#34;&#34;&#34;
-        combined = (
-            header
-            + content[C.jsDefs]
-            + &#34;\n\n&#34;
-            + &#34;\n\n&#34;.join(
-                text
-                for (name, text) in content.items()
-                if name not in {C.jsDefs, C.jsApp}
-            )
-            + &#34;\n\n&#34;
-            + content[C.jsApp]
-        )
-        with open(C.jsDest, &#34;w&#34;) as fh:
-            fh.write(combined)
-        console(f&#34;Combined js file written to {C.jsDest}&#34;)
+    console(&#34;Copied static files&#34;)
 
-        # fill in the html templates
+    # create combined javascript file
 
-        # index of all clients
+    if not debug:
+        self.makeCombined()
 
-        clients = {}
+    self.makeHtml()
 
-        with os.scandir(C.configDir) as it:
-            for entry in it:
-                if entry.is_dir():
-                    thisClient = entry.name
-                    thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
-                    if os.path.exists(thisConfig):
-                        with open(thisConfig) as fh:
-                            desc = yaml.load(fh, Loader=yaml.FullLoader).get(
-                                &#34;short&#34;, &#34;&#34;
-                            )
-                    else:
-                        desc = &#34;&#34;
-                    clients[thisClient] = desc
-
-        with open(C.index) as fh:
-            template = fh.read()
-            htmlIndex = template.replace(&#34;«dataset»&#34;, C.dataset)
-            htmlIndex = htmlIndex.replace(&#34;«client»&#34;, C.client)
-
-            html = []
-            for (thisClient, desc) in clients.items():
-                html.append(
-                    f&#34;&#34;&#34;
-&lt;dt&gt;&lt;a href=&#34;{thisClient}.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
-&lt;dd&gt;{desc}&lt;/dd&gt;
-&#34;&#34;&#34;
-                )
-
-            htmlIndex = htmlIndex.replace(&#34;«clients»&#34;, &#34;&#34;.join(html))
-
-        with open(C.htmlIndex, &#34;w&#34;) as fh:
-            fh.write(htmlIndex)
-        console(f&#34;html file written to {C.htmlIndex}&#34;)
-
-        # client and client-local
-
-        with open(C.template) as fh:
-            template = fh.read()
-            htmlNormal = template.replace(
-                &#34;«js»&#34;, &#39;&#39;&#39;type=&#34;module&#34; src=&#34;js/app.js«v»&#34;&#39;&#39;&#39;
-            )
-            htmlNormal = htmlNormal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
-            htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
-            htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
-            htmlLocal = template.replace(
-                &#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;corpus/{C.client}-all.js&#34;&#39;&#39;&#39;
-            )
-            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
-            htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
-            htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
-
-        with open(C.htmlClient, &#34;w&#34;) as fh:
-            fh.write(htmlNormal)
-        console(f&#34;html file written to {C.htmlClient}&#34;)
-
-        with open(C.htmlLocal, &#34;w&#34;) as fh:
-            fh.write(htmlLocal)
-        console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)
-
-        # zip the standalone client
-
+    if not debug:
         self.zipApp()</code></pre>
 </details>
 </dd>
@@ -2756,12 +3075,13 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L444-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L475-L580" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
     layerSettings = C.layerSettings
-    api = self.api
+    A = self.A
+    api = A.api
     Cp = api.C
 
     self.makeLegends()
@@ -2789,6 +3109,8 @@ and let a «client»-local.html include it</p>
         ntypes=typeSeq,
         typesLower=typesLower,
         defaultSettings=C.defaultSettings,
+        defaultFlags=C.defaultFlags,
+        keyboard=getattr(C, &#34;keyboard&#34;, None),
     )
 
     # check visible- and focus- attributes
@@ -2804,7 +3126,7 @@ and let a «client»-local.html include it</p>
             if layerInfo.get(&#34;visible&#34;, False):
                 theVisibles.append((nType, name))
             theMap = layerInfo.get(&#34;legend&#34;, None)
-            if theMap is not None:
+            if theMap is not None and type(theMap) is dict:
                 default = layerInfo.get(&#34;default&#34;, None)
                 if default is not None:
                     theMap[&#34;&#34;] = default
@@ -2863,6 +3185,74 @@ and let a «client»-local.html include it</p>
     self.clientConfig = clientConfig</code></pre>
 </details>
 </dd>
+<dt id="tf.client.make.build.Make.makeCombined"><code class="name flex">
+<span>def <span class="ident">makeCombined</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L736-L791" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">    def makeCombined(self):
+        C = self.C
+
+        commentRe = re.compile(r&#34;&#34;&#34;[ \t]*/\*.*?\*/[ \t]*&#34;&#34;&#34;, re.S)
+        importRe = re.compile(r&#39;&#39;&#39;import\s+\{.*?\}\s+from\s+&#34;[^&#34;]*\.js&#34;&#39;&#39;&#39;, re.S)
+        exportRe = re.compile(r&#34;&#34;&#34;^export[ ]+&#34;&#34;&#34;, re.M)
+        whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
+        nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
+
+        def getModule(module):
+            with open(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
+                text = fh.read()
+            text = importRe.sub(&#34;&#34;, text)
+            text = exportRe.sub(&#34;&#34;, text)
+            text = commentRe.sub(&#34;&#34;, text)
+            text = whiteRe.sub(&#34;&#34;, text)
+            text = nlRe.sub(&#34;\n&#34;, text)
+            return text
+
+        modules = []
+
+        with os.scandir(C.jsOutDir) as it:
+            for entry in it:
+                name = entry.name
+                if (
+                    not entry.is_file()
+                    or name.startswith(&#34;.&#34;)
+                    or not name.endswith(&#34;.js&#34;)
+                ):
+                    continue
+                modules.append(entry.name)
+        console(&#34;, &#34;.join(module[0:-3] for module in modules))
+
+        content = {module: getModule(module) for module in modules}
+
+        header = &#34;&#34;&#34;\
+/*eslint-env jquery*/
+/* global configData */
+/* global corpusData */
+
+    &#34;&#34;&#34;
+        combined = (
+            header
+            + content[C.jsDefs]
+            + &#34;\n\n&#34;
+            + &#34;\n\n&#34;.join(
+                text
+                for (name, text) in content.items()
+                if name not in {C.jsDefs, C.jsApp}
+            )
+            + &#34;\n\n&#34;
+            + content[C.jsApp]
+        )
+        with open(C.jsAllPath, &#34;w&#34;) as fh:
+            fh.write(combined)
+        console(f&#34;Combined js file written to {C.jsAllPath}&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.client.make.build.Make.makeConfig"><code class="name flex">
 <span>def <span class="ident">makeConfig</span></span>(<span>self)</span>
 </code></dt>
@@ -2871,10 +3261,10 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L588-L593" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L617-L622" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
-    if not getattr(self, &#34;api&#34;, None):
+    if not getattr(self, &#34;A&#34;, None):
         self.loadTf()
     if not getattr(self, &#34;clientConfig&#34;, None):
         self.makeClientSettings()
@@ -2889,20 +3279,134 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L595-L606" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L641-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
-    if not getattr(self, &#34;api&#34;, None):
+    if not getattr(self, &#34;A&#34;, None):
         self.loadTf()
     if not getattr(self, &#34;clientConfig&#34;, None):
         self.makeClientSettings()
-    TF = self.api.TF
+    A = self.A
 
-    TF.info(&#34;Recording ...&#34;)
+    A.info(&#34;Make links ...&#34;)
+    self.makeLinks()
+
+    A.info(&#34;Recording ...&#34;)
     self.record()
 
-    TF.info(&#34;Dumping ...&#34;)
+    A.info(&#34;Dumping ...&#34;)
     self.dumpCorpus()</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.makeHtml"><code class="name flex">
+<span>def <span class="ident">makeHtml</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L793-L863" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">    def makeHtml(self):
+        C = self.C
+        lsVersion = C.lsVersion
+
+        # index of all clients
+
+        clients = {}
+
+        for thisClient in self.getAllClients():
+            thisConfig = f&#34;{C.configDir}/{thisClient}/config.yaml&#34;
+            if os.path.exists(thisConfig):
+                with open(thisConfig) as fh:
+                    desc = yaml.load(fh, Loader=yaml.FullLoader).get(&#34;short&#34;, &#34;&#34;)
+            else:
+                desc = &#34;&#34;
+            clients[thisClient] = desc
+
+        with open(C.index) as fh:
+            template = fh.read()
+            htmlIndex = template.replace(&#34;«dataset»&#34;, C.dataset)
+            htmlIndex = htmlIndex.replace(&#34;«client»&#34;, C.client)
+
+            html = []
+            for (thisClient, desc) in clients.items():
+                html.append(
+                    f&#34;&#34;&#34;
+&lt;dt&gt;&lt;a href=&#34;{thisClient}/index.html&#34;&gt;{thisClient}&lt;/a&gt;&lt;/dt&gt;
+&lt;dd&gt;{desc}&lt;/dd&gt;
+&#34;&#34;&#34;
+                )
+
+            htmlIndex = htmlIndex.replace(&#34;«clients»&#34;, &#34;&#34;.join(html))
+
+        with open(C.htmlIndex, &#34;w&#34;) as fh:
+            fh.write(htmlIndex)
+        console(f&#34;html file written to {C.htmlIndex}&#34;)
+
+        # client and client-local
+
+        with os.scandir(C.jsCorpusDir) as it:
+            scripts = []
+            for entry in it:
+                file = entry.name
+                if not file.endswith(&#34;.js&#34;):
+                    continue
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                    scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
+            corpusScripts = &#34;\n&#34;.join(scripts)
+
+        with open(C.template) as fh:
+            template = fh.read()
+            htmlNormal = template.replace(
+                &#34;«js»&#34;, &#39;&#39;&#39;type=&#34;module&#34; src=&#34;js/app.js«v»&#34;&#39;&#39;&#39;
+            )
+            htmlNormal = htmlNormal.replace(&#34;«corpus»&#34;, corpusScripts)
+            htmlNormal = htmlNormal.replace(&#34;«v»&#34;, f&#34;?v={lsVersion}&#34;)
+            htmlNormal = htmlNormal.replace(&#34;«dataset»&#34;, C.dataset)
+            htmlNormal = htmlNormal.replace(&#34;«client»&#34;, C.client)
+            htmlLocal = template.replace(&#34;«js»&#34;, f&#39;&#39;&#39;defer src=&#34;{C.jsAll}&#34;&#39;&#39;&#39;)
+            htmlLocal = htmlLocal.replace(&#34;«corpus»&#34;, corpusScripts)
+            htmlLocal = htmlLocal.replace(&#34;«v»&#34;, &#34;&#34;)
+            htmlLocal = htmlLocal.replace(&#34;«dataset»&#34;, C.dataset)
+            htmlLocal = htmlLocal.replace(&#34;«client»&#34;, C.client)
+
+        with open(C.htmlClient, &#34;w&#34;) as fh:
+            fh.write(htmlNormal)
+        console(f&#34;html file written to {C.htmlClient}&#34;)
+
+        with open(C.htmlLocal, &#34;w&#34;) as fh:
+            fh.write(htmlLocal)
+        console(f&#34;html file (for use with file://) written to {C.htmlLocal}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.makeLinks"><code class="name flex">
+<span>def <span class="ident">makeLinks</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L624-L639" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeLinks(self):
+    A = self.A
+    api = A.api
+    T = api.T
+    F = api.F
+
+    sTypes = T.sectionTypes
+    A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
+    links = {
+        sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
+        for sType in sTypes
+    }
+    for (sType, sLinks) in links.items():
+        A.info(f&#34;{sType:&lt;20}: {len(sLinks):&gt;6} links&#34;, tm=False)
+    A.info(&#34;done&#34;)
+    self.links = links</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.publish"><code class="name flex">
@@ -2913,97 +3417,18 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L863-L866" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L974-L983" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self):
     C = self.C
-    os.chdir(C.clientDir)
+    appDir = C.appDir
+    siteDir = C.siteDir
+    dataset = self.dataset
+    client = self.client
+    clients = self.getAllClients() if client is None else [client]
+    console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
+    os.chdir(appDir)
     deploy(C.org, C.repo)</code></pre>
-</details>
-</dd>
-<dt id="tf.client.make.build.Make.readArgs"><code class="name flex">
-<span>def <span class="ident">readArgs</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L106-L178" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def readArgs(self):
-    args = sys.argv[1:]
-    if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-        console(HELP)
-        console(&#34;Missing dataset and client&#34;)
-        quit()
-
-    dataset = args[0]
-    self.dataset = dataset
-    args = args[1:]
-
-    if not len(args):
-        console(HELP)
-        console(&#34;Missing client/command&#34;)
-        quit()
-
-    if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-        console(HELP)
-        quit()
-
-    if args[0] == &#34;serve&#34;:
-        client = None
-        command = args[0]
-        args = args[1:]
-    else:
-        client = args[0]
-        args = args[1:]
-
-        if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
-            console(HELP)
-            if not len(args):
-                console(&#34;No command given&#34;)
-            quit()
-
-        command = args[0]
-
-    self.client = client
-    self.command = command
-    self.page = None
-    self.message = None
-    self.debugState = None
-    self.remaining = []
-
-    if command not in {
-        &#34;serve&#34;,
-        &#34;v&#34;,
-        &#34;i&#34;,
-        &#34;config&#34;,
-        &#34;corpus&#34;,
-        &#34;client&#34;,
-        &#34;clientdebug&#34;,
-        &#34;debug&#34;,
-        &#34;publish&#34;,
-        &#34;ship&#34;,
-    }:
-        console(HELP)
-        console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
-        quit()
-
-    if command in {&#34;serve&#34;}:
-        if len(args) &lt; 2:
-            self.page = &#34;index&#34;
-        else:
-            self.page = args[1]
-            self.remaining = args[2:]
-
-    elif command in {&#34;debug&#34;}:
-        if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
-            console(&#34;say on or off&#34;)
-            quit()
-
-        self.debugState = args[1]
-        self.remaining = args[2:]</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.replaceDebug"><code class="name flex">
@@ -3014,7 +3439,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L927-L931" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1045-L1049" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -3031,7 +3456,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L876-L897" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L994-L1015" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -3058,22 +3483,23 @@ and let a «client»-local.html include it</p>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.ship"><code class="name flex">
-<span>def <span class="ident">ship</span></span>(<span>self)</span>
+<span>def <span class="ident">ship</span></span>(<span>self, publish=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L868-L874" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L985-L992" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def ship(self):
+<pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
     self.adjustDebug()
     self.makeConfig()
     self.makeCorpus()
     self.makeClient()
-    self.publish()</code></pre>
+    if publish:
+        self.publish()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.showDebug"><code class="name flex">
@@ -3084,10 +3510,13 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L955-L959" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1073-L1080" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
+    if debugInfo is None:
+        return False
+    return True
 
     for (source, debug) in debugInfo.items():
         console(f&#34;{debug} (according to {source})&#34;)</code></pre>
@@ -3101,7 +3530,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L908-L912" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1026-L1030" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3118,7 +3547,7 @@ and let a «client»-local.html include it</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/client/make/build.py#L829-L861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L937-L972" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
@@ -3132,25 +3561,28 @@ and let a «client»-local.html include it</p>
     &#34;&#34;&#34;.strip().split()
     )
     items.add(C.htmlLocalFile)
+    items.add(C.jsAll)
 
     zipped = f&#34;{C.siteDir}/{C.client}.zip&#34;
 
     with ZipFile(zipped, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
-        with os.scandir(C.siteDir) as it:
+        with os.scandir(C.appClientDir) as it:
             for entry in it:
                 file = entry.name
                 if file not in items:
                     continue
                 if entry.is_file():
-                    zipFile.write(f&#34;{C.siteDir}/{file}&#34;, arcname=file)
+                    zipFile.write(f&#34;{C.appClientDir}/{file}&#34;, arcname=file)
                     console(f&#34;adding {file}&#34;)
                 else:
-                    with os.scandir(f&#34;{C.siteDir}/{file}&#34;) as sit:
+                    with os.scandir(f&#34;{C.appClientDir}/{file}&#34;) as sit:
                         for sentry in sit:
                             sfile = sentry.name
                             if sentry.is_file and not sfile.startswith(&#34;.&#34;):
                                 sfile = f&#34;{file}/{sfile}&#34;
-                                zipFile.write(f&#34;{C.siteDir}/{sfile}&#34;, arcname=sfile)
+                                zipFile.write(
+                                    f&#34;{C.appClientDir}/{sfile}&#34;, arcname=sfile
+                                )
                                 console(f&#34;adding {sfile}&#34;)
     console(f&#34;Packaged client into {zipped}&#34;)</code></pre>
 </details>
@@ -3230,10 +3662,10 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.client.make.build.compress" href="#tf.client.make.build.compress">compress</a></code></li>
 <li><code><a title="tf.client.make.build.console" href="#tf.client.make.build.console">console</a></code></li>
 <li><code><a title="tf.client.make.build.invertMap" href="#tf.client.make.build.invertMap">invertMap</a></code></li>
 <li><code><a title="tf.client.make.build.main" href="#tf.client.make.build.main">main</a></code></li>
+<li><code><a title="tf.client.make.build.readArgs" href="#tf.client.make.build.readArgs">readArgs</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -3243,19 +3675,24 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.client.make.build.Make.adjustDebug" href="#tf.client.make.build.Make.adjustDebug">adjustDebug</a></code></li>
 <li><code><a title="tf.client.make.build.Make.adjustVersion" href="#tf.client.make.build.Make.adjustVersion">adjustVersion</a></code></li>
+<li><code><a title="tf.client.make.build.Make.compress" href="#tf.client.make.build.Make.compress">compress</a></code></li>
 <li><code><a title="tf.client.make.build.Make.config" href="#tf.client.make.build.Make.config">config</a></code></li>
+<li><code><a title="tf.client.make.build.Make.doCommand" href="#tf.client.make.build.Make.doCommand">doCommand</a></code></li>
 <li><code><a title="tf.client.make.build.Make.dumpConfig" href="#tf.client.make.build.Make.dumpConfig">dumpConfig</a></code></li>
 <li><code><a title="tf.client.make.build.Make.dumpCorpus" href="#tf.client.make.build.Make.dumpCorpus">dumpCorpus</a></code></li>
+<li><code><a title="tf.client.make.build.Make.getAllClients" href="#tf.client.make.build.Make.getAllClients">getAllClients</a></code></li>
 <li><code><a title="tf.client.make.build.Make.getDebugs" href="#tf.client.make.build.Make.getDebugs">getDebugs</a></code></li>
+<li><code><a title="tf.client.make.build.Make.importMake" href="#tf.client.make.build.Make.importMake">importMake</a></code></li>
 <li><code><a title="tf.client.make.build.Make.incVersion" href="#tf.client.make.build.Make.incVersion">incVersion</a></code></li>
 <li><code><a title="tf.client.make.build.Make.loadTf" href="#tf.client.make.build.Make.loadTf">loadTf</a></code></li>
-<li><code><a title="tf.client.make.build.Make.main" href="#tf.client.make.build.Make.main">main</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeClient" href="#tf.client.make.build.Make.makeClient">makeClient</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeClientSettings" href="#tf.client.make.build.Make.makeClientSettings">makeClientSettings</a></code></li>
+<li><code><a title="tf.client.make.build.Make.makeCombined" href="#tf.client.make.build.Make.makeCombined">makeCombined</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeConfig" href="#tf.client.make.build.Make.makeConfig">makeConfig</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeCorpus" href="#tf.client.make.build.Make.makeCorpus">makeCorpus</a></code></li>
+<li><code><a title="tf.client.make.build.Make.makeHtml" href="#tf.client.make.build.Make.makeHtml">makeHtml</a></code></li>
+<li><code><a title="tf.client.make.build.Make.makeLinks" href="#tf.client.make.build.Make.makeLinks">makeLinks</a></code></li>
 <li><code><a title="tf.client.make.build.Make.publish" href="#tf.client.make.build.Make.publish">publish</a></code></li>
-<li><code><a title="tf.client.make.build.Make.readArgs" href="#tf.client.make.build.Make.readArgs">readArgs</a></code></li>
 <li><code><a title="tf.client.make.build.Make.replaceDebug" href="#tf.client.make.build.Make.replaceDebug">replaceDebug</a></code></li>
 <li><code><a title="tf.client.make.build.Make.serve" href="#tf.client.make.build.Make.serve">serve</a></code></li>
 <li><code><a title="tf.client.make.build.Make.ship" href="#tf.client.make.build.Make.ship">ship</a></code></li>

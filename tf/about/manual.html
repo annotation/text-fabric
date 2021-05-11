@@ -37,7 +37,11 @@ All results will be listed in the table on the right.</p>
 But they can be way more sophisticated than that.
 See <strong>Search patterns</strong> below for a crash course.</p>
 </dd>
-<dt><mark>2. focus</mark></dt>
+<dt><mark>2. show text of a layer</mark></dt>
+<dd>You can click on the name of each layer to show and hide the
+full text of that layer.
+So that you know the material in which you are searching.</dd>
+<dt><mark>3. focus</mark></dt>
 <dd>
 <p>The level in the corpus that corresponds with a single row in the results table.
 For example, if you put focus on <code>sentence</code>, the results will be organized by sentence.</p>
@@ -46,23 +50,23 @@ For example, if you put focus on <code>sentence</code>, the results will be orga
 <p>By changing focus, you will see more or less context around the results.</p>
 </div>
 </dd>
-<dt><mark>3. execute</mark></dt>
+<dt><mark>4. execute</mark></dt>
 <dd>Whenever you change a pattern, the search results will be updated.
 But you can also press this button to run the search again.</dd>
-<dt><mark>4. stats</mark></dt>
+<dt><mark>5. stats</mark></dt>
 <dd>How many results there are at each level, compared to the total size of the corpus.</dd>
-<dt><mark>5. export</mark></dt>
+<dt><mark>6. export</mark></dt>
 <dd>Export the search results as a tab-separated file (<code>.tsv</code>).
 This file can be opened in Excel.
 All
 results are exported, not only the ones that show on the current page.
 The level of detail depends on the currently selected <strong>focus</strong> level.</dd>
-<dt><mark>6. options</mark></dt>
+<dt><mark>7. options</mark></dt>
 <dd>Switch between the simple interface and the full interface.
 There is a separate manual for the full interface: <code><a title="tf.about.clientmanual" href="clientmanual.html">tf.about.clientmanual</a></code>.</dd>
-<dt><mark>7. help</mark></dt>
+<dt><mark>8. help</mark></dt>
 <dd>Help and info.</dd>
-<dt><mark>8. navigate</mark></dt>
+<dt><mark>9. navigate</mark></dt>
 <dd>
 <p>Walk through the results in various ways:</p>
 <ul>
@@ -72,12 +76,12 @@ There is a separate manual for the full interface: <code><a title="tf.about.clie
 </ul>
 <p>If you do this often: there are handy <strong>keyboard shortcuts</strong>. See below.</p>
 </dd>
-<dt><mark>9. position</mark></dt>
+<dt><mark>10. position</mark></dt>
 <dd>The current position in the results table is marked.</dd>
-<dt><mark>10. previous position</mark></dt>
+<dt><mark>11. previous position</mark></dt>
 <dd>The previous position in the results table is also marked,
 in a slightly less conspicuous way.</dd>
-<dt><mark>11. highlighting</mark></dt>
+<dt><mark>12. highlighting</mark></dt>
 <dd>
 <p>The portions in the layer that match the corresponding pattern are highlighted.</p>
 <div class="admonition caution">
@@ -90,6 +94,12 @@ in a slightly less conspicuous way.</dd>
 For that you have to use the full interface.</p>
 </div>
 </dd>
+<dt><mark>13. links to online</mark></dt>
+<dd>The top level layers are linked to an online
+representation of the corpus.
+For example, for NENA it is the GitHub repository where the source
+texts are stored.
+For the BHSA it is <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</dd>
 </dl>
 <h2 id="search-patterns">Search patterns</h2>
 <p>Here is a crash course in increasingly complex search patterns.
@@ -99,7 +109,9 @@ We only give examples and a bit of explanation.</p>
 <dd>
 <p><code>mute</code> is a pattern that matches all occurrences of the string <code>mute</code>.
 Case is not important, and it does not have to be a whole word.</p>
-<p><mark>if the case of letters is important, use the full interface.</mark></p>
+<p>hint !!! "Case sensitive search"
+If the case of letters is important, use the full interface,
+where you can switch it on and off.</p>
 </dd>
 <dt>Word boundaries</dt>
 <dd>
@@ -345,7 +357,7 @@ to perform the following actions:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1a2873ab39f5528db174edc9cbf818b6e74db582/tf/about/manual.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/about/manual.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/manual.md
