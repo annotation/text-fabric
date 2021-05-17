@@ -48,7 +48,9 @@ and representing the objects of that level by some of their <em>features</em>
 (such as title, number, transcription).
 Each layer can be searched by means of a search pattern.
 Such patterns are technically <em>regular expressions</em>;
-from now on we use the term <strong>regex</strong>, plural <strong>regexes</strong>.</p>
+from now on we use the term <strong>regex</strong>, plural <strong>regexes</strong>.
+To see what it means to search in several layers and levels at the same time: see
+section <strong>Meaning</strong> below.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Read
@@ -277,6 +279,80 @@ For example, for NENA it is the GitHub repository where the source
 texts are stored.
 For the BHSA it is <a href="https://shebanq.ancient-data.org">SHEBANQ</a>.</dd>
 </dl>
+<h2 id="meaning">Meaning</h2>
+<h3 id="levels">Levels</h3>
+<p>Your corpus is divided into levels, e.g. text/line/sentence/word/.</p>
+<p>At each level there are objects in the corpus and they can be represented in certain ways:</p>
+<ul>
+<li>text are represented by their titles;</li>
+<li>lines are represented by their numbers;</li>
+<li>words are represented by the strings of which they are composed.</li>
+</ul>
+<h3 id="layers">Layers</h3>
+<p>Per level, there may be more than one way to represent the objects.
+For example, at the word level, you may have representations in the original script in unicode,
+but also various transliterations in ascii.</p>
+<p>All these representations are <em>layers</em> that you can search.
+For example, the
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA corpus</a>
+contains various text representations,
+among which several are dedicated to phonetic properties.</p>
+<p><img alt="layers" src="../images/ls/ls.003.png"></p>
+<p>Layers do not have to correspond with the text of the corpus.
+They can be based of arbitrary annotations that exist in the corpus.</p>
+<h3 id="combined-search">Combined search</h3>
+<p>In order to search, you specify search patterns for as many of
+the available layers as you want.</p>
+<p>When the search is performed, all these layers will produce results,
+and the results in one layer will be "intersected" with the results in all other layers.</p>
+<p>It might seem as if we are comparing apples and oranges, but our corpus has the structure
+to enable exactly this kind of operation.
+At each level we have a set of textual objects, called <em>nodes</em>, and for each node
+we know exactly which textual positions they are linked to.</p>
+<p>When we compare the search results of two layers in one level, we know the
+textual position of each result in each layer. Hence we also know the nodes
+in those results.
+We take all nodes that are involved in the results of one layer as a set.
+We do the same for the other layer.
+Then we take the intersection of those sets.
+The resulting set is the nodeset defined by the combined results in the two layers.
+When we display them, we show the results in both layers, by showing the material
+of the result nodes according to the layer and we highlight the portions that match
+the regular expression in that layer.</p>
+<p>See the top half in the next figure.</p>
+<p><img alt="layers" src="../images/ls/ls.009.png"></p>
+<p>The bottom half of the figure above shows what we do if we have to compare the
+results of layers in different levels. In that case, those layers have different
+kinds of result nodes, and we cannot take the intersection directly.</p>
+<p>However, we can <em>project</em> the nodes of one level to those of another level
+by using the notion of embedding.</p>
+<p>We project a node <em>upward</em> by mapping it to the node that embeds it.</p>
+<p>We project a node <em>downward</em> by mapping it to all nodes that are embedded in it.</p>
+<p>By projecting the result nodes of one level to another level,
+we end up with two nodesets at the same level that we can intersect.</p>
+<div class="admonition caution">
+<p class="admonition-title">Beware of complicated criteria</p>
+<p>Before you devise sophisticated criteria, note that this search engine
+is not very refined in taking intersections.
+It takes the intersections of the joint results of the matches in the layers.
+It will not take the intersections of the individual matches.
+See the next figure for the difference.</p>
+<p><img alt="layers" src="../images/ls/ls.010.png"></p>
+<p>If you look for <code>/aa.*aa/</code> in the bottom layer, and then want to restrict the results
+by specifying that each result occurs within a <code>/PQ/</code> match of the top layer,
+you will be disappointed.</p>
+<p>That will only work if we had implemented a <em>strict</em> semantics: the individual
+matches in the different layers should match exactly (after projection).</p>
+<p>Instead, in our loose semantics, matches in one layer are not discarded,
+but intersected with matches in an order layer.</p>
+<p>In fact, there is a whole spectrum of strictness, where it depends on the
+intention of the search which degree of strictness is desirable.</p>
+<p>For now, that is becoming way to complex, both to be usable and to be implementable.
+That is why we have opted for the lax interpretation.</p>
+<p>The bottomline is: use the search tool to grab the things that are potentially of interest.
+If you need to pinpoint further, export the results to Excel and use other tools/methods
+to achieve that.</p>
+</div>
 <h2 id="export">Export</h2>
 <p>You can export the search results to Excel (or rather, a tab-separated file, <code>.tsv</code>).
 When you do that, <em>all</em> results will get exported, not only the ones that show
@@ -421,144 +497,6 @@ programming languages and in all powerful text-editors.</p>
 because it is very likely that you encounter them again.</p>
 <p>For more background,
 read <a href="https://en.wikipedia.org/wiki/Regular_expression">wikipedia</a>.</p>
-<h2 id="corpus-in-layers">Corpus in layers</h2>
-<p>Your corpus is divided into levels, e.g. book/chapter/verse/sentence/word/line/letter.</p>
-<p>At each level there are objects in the corpus and they can be represented in certain ways:</p>
-<ul>
-<li>books are represented by book titles;</li>
-<li>chapters and verses are represented by their numbers;</li>
-<li>words and letters are represented by the strings of which they are composed.</li>
-</ul>
-<p>Per level, there may be more than one way to represent the objects.
-For example, at the word level, you may have representations in the original script in unicode,
-but also various transliterations in ascii.</p>
-<p>All these representations are <em>layers</em> that you can search.
-For example, the
-<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA corpus</a>
-contains various text representations,
-among which several are dedicated to phonetic properties.</p>
-<p><img alt="layers" src="../images/ls/ls.003.png"></p>
-<p>Layers do not have to correspond with the text of the corpus.
-They can be based of arbitrary annotations that exist in the corpus.
-For example, you can make a layer where you put the part-of-speech of the
-words after each other. You could then search for things like</p>
-<pre><code>(verb noun noun)+
-</code></pre>
-<p>We'll stick to NENA for examples of layered search.</p>
-<h2 id="combined-search">Combined search</h2>
-<p>In order to search, you specify search patterns for as many of
-the available layers as you want.</p>
-<p>When the search is performed, all these layers will produce results,
-and the results per layer will be compared, and only results that
-hold in all layers, are retained, partial results are discarded.</p>
-<p>So, if you have specified </p>
-<table>
-<thead>
-<tr>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>fuzzy</strong></td>
-<td><code>m[a-z]*t[a-z]*l</code></td>
-</tr>
-</tbody>
-</table>
-<p>you get all words with an <code>m</code>, <code>t</code>, and <code>l</code> in it, in that order.
-There are 1338 such words in 1238 sentences.</p>
-<p>By showing the <strong>full</strong> layer,
-you will see the full-ascii transliteration of these results as well.</p>
-<p>You can specify an additional search in the <strong>full</strong> layer, for example
-all words with a backquote ` in it. (A combining vowel diacritic).</p>
-<table>
-<thead>
-<tr>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>full</strong></td>
-<td>`</td>
-</tr>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>fuzzy</strong></td>
-<td><code>m[a-z]*t[a-z]*l</code></td>
-</tr>
-</tbody>
-</table>
-<p>We then get the words that meet both criteria, still a good 492.</p>
-<p>You can also constrain with other levels.
-Suppose we want only occurrences of the previous results in texts
-written at the place <em>Dure</em>.</p>
-<table>
-<thead>
-<tr>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>text</strong></td>
-<td><strong>place</strong></td>
-<td><code>Dure</code></td>
-</tr>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>full</strong></td>
-<td>`</td>
-</tr>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>fuzzy</strong></td>
-<td><code>m[a-z]*t[a-z]*l</code></td>
-</tr>
-</tbody>
-</table>
-<p>You can go even further:
-we want the results to be in the first 3 lines of the texts:</p>
-<table>
-<thead>
-<tr>
-<th>level</th>
-<th>layer</th>
-<th>pattern</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>text</strong></td>
-<td><strong>place</strong></td>
-<td><code>Dure</code></td>
-</tr>
-<tr>
-<td><strong>line</strong></td>
-<td><strong>number</strong></td>
-<td><code>\b[1-3]\b</code></td>
-</tr>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>full</strong></td>
-<td>`</td>
-</tr>
-<tr>
-<td><strong>word</strong></td>
-<td><strong>fuzzy</strong></td>
-<td><code>m[a-z]*t[a-z]*l</code></td>
-</tr>
-</tbody>
-</table>
-<p>We are left with 20 results.</p>
 <h1 id="the-search-interface-as-app">The search interface as app</h1>
 <p>We have implemented layered search as an offline Single Page Application.</p>
 <p>The app consists of a single HTML file (<em>app</em><code>.html</code>),
@@ -622,7 +560,7 @@ and eventually written by
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/about/clientmanual.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/about/clientmanual.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/clientmanual.md
@@ -694,15 +632,17 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#quick-start">Quick start</a><ul>
+<li><a href="#meaning">Meaning</a><ul>
+<li><a href="#levels">Levels</a></li>
+<li><a href="#layers">Layers</a></li>
+<li><a href="#combined-search">Combined search</a></li>
+</ul>
+</li>
 <li><a href="#export">Export</a></li>
 <li><a href="#options">Options</a></li>
 </ul>
 </li>
-<li><a href="#background-information">Background information</a><ul>
-<li><a href="#corpus-in-layers">Corpus in layers</a></li>
-<li><a href="#combined-search">Combined search</a></li>
-</ul>
-</li>
+<li><a href="#background-information">Background information</a></li>
 <li><a href="#the-search-interface-as-app">The search interface as app</a></li>
 <li><a href="#making-this-app">Making this app</a></li>
 <li><a href="#credits">Credits</a></li>

@@ -36,6 +36,7 @@ All results will be listed in the table on the right.</p>
 <p>A pattern can be as simple as a word, and then it will find all occurrences of that word.
 But they can be way more sophisticated than that.
 See <strong>Search patterns</strong> below for a crash course.</p>
+<p>See <strong>Meaning</strong> below for what the meaning is of multiple patterns working together.</p>
 </dd>
 <dt><mark>2. show text of a layer</mark></dt>
 <dd>You can click on the name of each layer to show and hide the
@@ -255,6 +256,32 @@ The full story is here:</p>
 </ul>
 </dd>
 </dl>
+<h2 id="meaning">Meaning</h2>
+<h3 id="levels">Levels</h3>
+<p>Your corpus is divided into levels, e.g. text/line/sentence/word/.</p>
+<p>At each level there are objects in the corpus and they can be represented in certain ways:</p>
+<ul>
+<li>text are represented by their titles;</li>
+<li>lines are represented by their numbers;</li>
+<li>words are represented by the strings of which they are composed.</li>
+</ul>
+<h3 id="combined-search">Combined search</h3>
+<p>In order to search, you specify search patterns for as many of
+the available layers as you want.</p>
+<p>When the search is performed, all these layers will produce results,
+and the results in one layer will be "intersected" with the results in all other layers.</p>
+<div class="admonition caution">
+<p class="admonition-title">Beware of complicated criteria</p>
+<p>Before you devise sophisticated criteria, note that this search engine
+is not very refined in taking intersections.
+It takes the intersections of the joint results of the matches in the layers.
+It will not take the intersections of the individual matches.</p>
+<p>The bottomline is: use the search tool to grab the things that are potentially of interest.
+If you need to pinpoint further, export the results to Excel and use other tools/methods
+to achieve that.</p>
+<p>If you need more information in this, consult the
+manual for the full interface: <code><a title="tf.about.clientmanual" href="clientmanual.html">tf.about.clientmanual</a></code>.</p>
+</div>
 <h2 id="export">Export</h2>
 <p>You can export the search results to Excel (or rather, a tab-separated file, <code>.tsv</code>).
 When you do that, <em>all</em> results will get exported, not only the ones that show
@@ -357,7 +384,7 @@ to perform the following actions:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/about/manual.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/about/manual.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/manual.md
@@ -430,6 +457,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#search-manual">Search manual</a><ul>
 <li><a href="#search-patterns">Search patterns</a></li>
+<li><a href="#meaning">Meaning</a><ul>
+<li><a href="#levels">Levels</a></li>
+<li><a href="#combined-search">Combined search</a></li>
+</ul>
+</li>
 <li><a href="#export">Export</a></li>
 <li><a href="#keyboard-shortcuts">Keyboard shortcuts</a></li>
 </ul>

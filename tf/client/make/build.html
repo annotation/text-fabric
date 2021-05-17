@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L0-L1149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L0-L1153" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -627,27 +627,35 @@ class Make:
         layers = {}
         levels = {}
 
-        for (nType, typeInfo) in layerSettings.items():
-            levels[nType] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
+        ntypesinitTF = {level[0]: level[2] for level in Cp.levels.data}
+        ntypessizeTF = {level[0]: level[3] - level[2] + 1 for level in Cp.levels.data}
+        ntypesinit = {}
+        ntypessize = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            nType = typeInfo.get(&#34;nType&#34;, level)
+            levels[level] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
             ti = typeInfo.get(&#34;layers&#34;, None)
             if ti is None:
                 continue
 
-            visible[nType] = {name: ti[name].get(&#34;visible&#34;, False) for name in ti}
-            layers[nType] = {
-                name: dict(
-                    valueMap=invertMap(ti[name].get(&#34;legend&#34;, None)),
-                    tip=ti[name].get(&#34;tip&#34;, False),
-                    pos=ti[name][&#34;pos&#34;] or name,
-                    pattern=ti[name].get(&#34;example&#34;, &#34;&#34;),
-                    description=ti[name].get(&#34;description&#34;, &#34;&#34;),
+            visible[level] = {layer: ti[layer].get(&#34;visible&#34;, False) for layer in ti}
+            layers[level] = {
+                layer: dict(
+                    valueMap=invertMap(ti[layer].get(&#34;legend&#34;, None)),
+                    tip=ti[layer].get(&#34;tip&#34;, False),
+                    pos=ti[layer][&#34;pos&#34;] or layer,
+                    pattern=ti[layer].get(&#34;example&#34;, &#34;&#34;),
+                    description=ti[layer].get(&#34;description&#34;, &#34;&#34;),
                 )
-                for name in ti
+                for layer in ti
             }
+            ntypesinit[level] = ntypesinitTF[nType]
+            ntypessize[level] = ntypessizeTF[nType]
 
         clientConfig |= dict(
-            ntypesinit={level[0]: level[2] for level in Cp.levels.data},
-            ntypessize={level[0]: level[3] - level[2] + 1 for level in Cp.levels.data},
+            ntypesinit=ntypesinit,
+            ntypessize=ntypessize,
             dtypeOf={typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])},
             utypeOf={tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])},
             visible=visible,
@@ -685,10 +693,6 @@ class Make:
         dataset = C.dataset
         version = C.data[&#34;version&#34;]
         A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
-        # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-        # allFeatures = TF.explore(silent=True, show=True)
-        # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        # self.api = TF.load(loadableFeatures, silent=True)
         self.A = A
 
     def makeConfig(self):
@@ -1242,7 +1246,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1258,7 +1262,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1278,7 +1282,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1118-L1146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1122-L1150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = readArgs()
@@ -1319,7 +1323,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs():
     class A:
@@ -1421,7 +1425,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L178-L1115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L178-L1119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(self, dataset, client, page=None, debugState=None):
@@ -1798,27 +1802,35 @@ if __name__ == &#34;__main__&#34;:
         layers = {}
         levels = {}
 
-        for (nType, typeInfo) in layerSettings.items():
-            levels[nType] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
+        ntypesinitTF = {level[0]: level[2] for level in Cp.levels.data}
+        ntypessizeTF = {level[0]: level[3] - level[2] + 1 for level in Cp.levels.data}
+        ntypesinit = {}
+        ntypessize = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            nType = typeInfo.get(&#34;nType&#34;, level)
+            levels[level] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
             ti = typeInfo.get(&#34;layers&#34;, None)
             if ti is None:
                 continue
 
-            visible[nType] = {name: ti[name].get(&#34;visible&#34;, False) for name in ti}
-            layers[nType] = {
-                name: dict(
-                    valueMap=invertMap(ti[name].get(&#34;legend&#34;, None)),
-                    tip=ti[name].get(&#34;tip&#34;, False),
-                    pos=ti[name][&#34;pos&#34;] or name,
-                    pattern=ti[name].get(&#34;example&#34;, &#34;&#34;),
-                    description=ti[name].get(&#34;description&#34;, &#34;&#34;),
+            visible[level] = {layer: ti[layer].get(&#34;visible&#34;, False) for layer in ti}
+            layers[level] = {
+                layer: dict(
+                    valueMap=invertMap(ti[layer].get(&#34;legend&#34;, None)),
+                    tip=ti[layer].get(&#34;tip&#34;, False),
+                    pos=ti[layer][&#34;pos&#34;] or layer,
+                    pattern=ti[layer].get(&#34;example&#34;, &#34;&#34;),
+                    description=ti[layer].get(&#34;description&#34;, &#34;&#34;),
                 )
-                for name in ti
+                for layer in ti
             }
+            ntypesinit[level] = ntypesinitTF[nType]
+            ntypessize[level] = ntypessizeTF[nType]
 
         clientConfig |= dict(
-            ntypesinit={level[0]: level[2] for level in Cp.levels.data},
-            ntypessize={level[0]: level[3] - level[2] + 1 for level in Cp.levels.data},
+            ntypesinit=ntypesinit,
+            ntypessize=ntypessize,
             dtypeOf={typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])},
             utypeOf={tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])},
             visible=visible,
@@ -1856,10 +1868,6 @@ if __name__ == &#34;__main__&#34;:
         dataset = C.dataset
         version = C.data[&#34;version&#34;]
         A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
-        # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-        # allFeatures = TF.explore(silent=True, show=True)
-        # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        # self.api = TF.load(loadableFeatures, silent=True)
         self.A = A
 
     def makeConfig(self):
@@ -2372,7 +2380,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1082-L1101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1086-L1105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2404,7 +2412,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1032-L1043" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1036-L1047" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2428,7 +2436,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L673-L687" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L677-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2455,7 +2463,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L222-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L222-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2719,7 +2727,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L582-L604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L590-L612" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -2754,7 +2762,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L657-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L661-L675" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2781,7 +2789,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L689-L734" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L693-L738" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -2839,7 +2847,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1103-L1115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1107-L1119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -2864,7 +2872,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1051-L1071" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1055-L1075" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2897,7 +2905,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -2936,7 +2944,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1017-L1024" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1021-L1028" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -2956,17 +2964,13 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L606-L615" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L614-L619" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
     dataset = C.dataset
     version = C.data[&#34;version&#34;]
     A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
-    # TF = Fabric(locations=C.dataLocation, modules=[C.data[&#34;version&#34;]])
-    # allFeatures = TF.explore(silent=True, show=True)
-    # loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-    # self.api = TF.load(loadableFeatures, silent=True)
     self.A = A</code></pre>
 </details>
 </dd>
@@ -2992,7 +2996,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L865-L935" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L869-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3075,7 +3079,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L475-L580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L475-L588" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3155,27 +3159,35 @@ to see the updated client working.</p></div>
     layers = {}
     levels = {}
 
-    for (nType, typeInfo) in layerSettings.items():
-        levels[nType] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
+    ntypesinitTF = {level[0]: level[2] for level in Cp.levels.data}
+    ntypessizeTF = {level[0]: level[3] - level[2] + 1 for level in Cp.levels.data}
+    ntypesinit = {}
+    ntypessize = {}
+
+    for (level, typeInfo) in layerSettings.items():
+        nType = typeInfo.get(&#34;nType&#34;, level)
+        levels[level] = typeInfo.get(&#34;description&#34;, &#34;&#34;)
         ti = typeInfo.get(&#34;layers&#34;, None)
         if ti is None:
             continue
 
-        visible[nType] = {name: ti[name].get(&#34;visible&#34;, False) for name in ti}
-        layers[nType] = {
-            name: dict(
-                valueMap=invertMap(ti[name].get(&#34;legend&#34;, None)),
-                tip=ti[name].get(&#34;tip&#34;, False),
-                pos=ti[name][&#34;pos&#34;] or name,
-                pattern=ti[name].get(&#34;example&#34;, &#34;&#34;),
-                description=ti[name].get(&#34;description&#34;, &#34;&#34;),
+        visible[level] = {layer: ti[layer].get(&#34;visible&#34;, False) for layer in ti}
+        layers[level] = {
+            layer: dict(
+                valueMap=invertMap(ti[layer].get(&#34;legend&#34;, None)),
+                tip=ti[layer].get(&#34;tip&#34;, False),
+                pos=ti[layer][&#34;pos&#34;] or layer,
+                pattern=ti[layer].get(&#34;example&#34;, &#34;&#34;),
+                description=ti[layer].get(&#34;description&#34;, &#34;&#34;),
             )
-            for name in ti
+            for layer in ti
         }
+        ntypesinit[level] = ntypesinitTF[nType]
+        ntypessize[level] = ntypessizeTF[nType]
 
     clientConfig |= dict(
-        ntypesinit={level[0]: level[2] for level in Cp.levels.data},
-        ntypessize={level[0]: level[3] - level[2] + 1 for level in Cp.levels.data},
+        ntypesinit=ntypesinit,
+        ntypessize=ntypessize,
         dtypeOf={typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])},
         utypeOf={tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])},
         visible=visible,
@@ -3193,7 +3205,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L736-L791" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L740-L795" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeCombined(self):
         C = self.C
@@ -3261,7 +3273,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L617-L622" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L621-L626" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3279,7 +3291,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L641-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L645-L659" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3306,7 +3318,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L793-L863" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L797-L867" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeHtml(self):
         C = self.C
@@ -3389,7 +3401,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L624-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L628-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     A = self.A
@@ -3417,7 +3429,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L974-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L978-L987" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self):
     C = self.C
@@ -3439,7 +3451,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1045-L1049" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1049-L1053" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -3456,7 +3468,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L994-L1015" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L998-L1019" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -3490,7 +3502,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L985-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L989-L996" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
@@ -3510,7 +3522,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1073-L1080" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1077-L1084" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3530,7 +3542,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L1026-L1030" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1030-L1034" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3547,7 +3559,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/89d464db0cba5af3af0d6d2a9f4f2aeade685da9/tf/client/make/build.py#L937-L972" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L941-L976" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
