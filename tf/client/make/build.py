@@ -550,27 +550,35 @@ class Make:
         layers = {}
         levels = {}
 
-        for (nType, typeInfo) in layerSettings.items():
-            levels[nType] = typeInfo.get("description", "")
+        ntypesinitTF = {level[0]: level[2] for level in Cp.levels.data}
+        ntypessizeTF = {level[0]: level[3] - level[2] + 1 for level in Cp.levels.data}
+        ntypesinit = {}
+        ntypessize = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            nType = typeInfo.get("nType", level)
+            levels[level] = typeInfo.get("description", "")
             ti = typeInfo.get("layers", None)
             if ti is None:
                 continue
 
-            visible[nType] = {name: ti[name].get("visible", False) for name in ti}
-            layers[nType] = {
-                name: dict(
-                    valueMap=invertMap(ti[name].get("legend", None)),
-                    tip=ti[name].get("tip", False),
-                    pos=ti[name]["pos"] or name,
-                    pattern=ti[name].get("example", ""),
-                    description=ti[name].get("description", ""),
+            visible[level] = {layer: ti[layer].get("visible", False) for layer in ti}
+            layers[level] = {
+                layer: dict(
+                    valueMap=invertMap(ti[layer].get("legend", None)),
+                    tip=ti[layer].get("tip", False),
+                    pos=ti[layer]["pos"] or layer,
+                    pattern=ti[layer].get("example", ""),
+                    description=ti[layer].get("description", ""),
                 )
-                for name in ti
+                for layer in ti
             }
+            ntypesinit[level] = ntypesinitTF[nType]
+            ntypessize[level] = ntypessizeTF[nType]
 
         clientConfig |= dict(
-            ntypesinit={level[0]: level[2] for level in Cp.levels.data},
-            ntypessize={level[0]: level[3] - level[2] + 1 for level in Cp.levels.data},
+            ntypesinit=ntypesinit,
+            ntypessize=ntypessize,
             dtypeOf={typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])},
             utypeOf={tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])},
             visible=visible,
@@ -608,10 +616,6 @@ class Make:
         dataset = C.dataset
         version = C.data["version"]
         A = use(f"{dataset}:clone", checkout="clone", version=version)
-        # TF = Fabric(locations=C.dataLocation, modules=[C.data["version"]])
-        # allFeatures = TF.explore(silent=True, show=True)
-        # loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-        # self.api = TF.load(loadableFeatures, silent=True)
         self.A = A
 
     def makeConfig(self):

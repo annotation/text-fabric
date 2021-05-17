@@ -24,6 +24,8 @@ There is a separate manual for the simplified interface:
     Each layer can be searched by means of a search pattern.
     Such patterns are technically *regular expressions*; 
     from now on we use the term **regex**, plural **regexes**.
+    To see what it means to search in several layers and levels at the same time: see 
+    section **Meaning** below.
 
     !!! hint
         Read
@@ -165,6 +167,106 @@ There is a separate manual for the simplified interface:
     For example, for NENA it is the GitHub repository where the source
     texts are stored.
     For the BHSA it is [SHEBANQ](https://shebanq.ancient-data.org).
+
+## Meaning
+
+### Levels
+
+Your corpus is divided into levels, e.g. text/line/sentence/word/.
+
+At each level there are objects in the corpus and they can be represented in certain ways:
+
+* text are represented by their titles;
+* lines are represented by their numbers;
+* words are represented by the strings of which they are composed.
+
+### Layers
+
+Per level, there may be more than one way to represent the objects.
+For example, at the word level, you may have representations in the original script in unicode,
+but also various transliterations in ascii.
+
+All these representations are *layers* that you can search.
+For example, the
+[NENA corpus](https://github.com/CambridgeSemiticsLab/nena_tf)
+contains various text representations,
+among which several are dedicated to phonetic properties.
+
+![layers](../images/ls/ls.003.png)
+
+Layers do not have to correspond with the text of the corpus.
+They can be based of arbitrary annotations that exist in the corpus.
+
+### Combined search
+
+In order to search, you specify search patterns for as many of
+the available layers as you want.
+
+When the search is performed, all these layers will produce results,
+and the results in one layer will be "intersected" with the results in all other layers.
+
+It might seem as if we are comparing apples and oranges, but our corpus has the structure
+to enable exactly this kind of operation.
+At each level we have a set of textual objects, called *nodes*, and for each node
+we know exactly which textual positions they are linked to.
+
+When we compare the search results of two layers in one level, we know the
+textual position of each result in each layer. Hence we also know the nodes
+in those results.
+We take all nodes that are involved in the results of one layer as a set.
+We do the same for the other layer.
+Then we take the intersection of those sets.
+The resulting set is the nodeset defined by the combined results in the two layers.
+When we display them, we show the results in both layers, by showing the material
+of the result nodes according to the layer and we highlight the portions that match
+the regular expression in that layer.
+
+See the top half in the next figure.
+
+![layers](../images/ls/ls.009.png)
+
+The bottom half of the figure above shows what we do if we have to compare the
+results of layers in different levels. In that case, those layers have different
+kinds of result nodes, and we cannot take the intersection directly.
+
+However, we can *project* the nodes of one level to those of another level
+by using the notion of embedding.
+
+We project a node *upward* by mapping it to the node that embeds it.
+
+We project a node *downward* by mapping it to all nodes that are embedded in it.
+
+By projecting the result nodes of one level to another level,
+we end up with two nodesets at the same level that we can intersect.
+
+!!! caution "Beware of complicated criteria"
+    Before you devise sophisticated criteria, note that this search engine
+    is not very refined in taking intersections.
+    It takes the intersections of the joint results of the matches in the layers.
+    It will not take the intersections of the individual matches.
+    See the next figure for the difference.
+
+    ![layers](../images/ls/ls.010.png)
+
+    If you look for `/aa.*aa/` in the bottom layer, and then want to restrict the results
+    by specifying that each result occurs within a `/PQ/` match of the top layer,
+    you will be disappointed.
+
+    That will only work if we had implemented a *strict* semantics: the individual
+    matches in the different layers should match exactly (after projection).
+
+    Instead, in our loose semantics, matches in one layer are not discarded,
+    but intersected with matches in an order layer.
+
+    In fact, there is a whole spectrum of strictness, where it depends on the
+    intention of the search which degree of strictness is desirable.
+
+    For now, that is becoming way to complex, both to be usable and to be implementable.
+    That is why we have opted for the lax interpretation.
+
+    The bottomline is: use the search tool to grab the things that are potentially of interest.
+    If you need to pinpoint further, export the results to Excel and use other tools/methods
+    to achieve that.
 
 ## Export
 
@@ -325,92 +427,6 @@ because it is very likely that you encounter them again.
 
 For more background,
 read [wikipedia](https://en.wikipedia.org/wiki/Regular_expression).
-
-## Corpus in layers
-
-Your corpus is divided into levels, e.g. book/chapter/verse/sentence/word/line/letter.
-
-At each level there are objects in the corpus and they can be represented in certain ways:
-
-* books are represented by book titles;
-* chapters and verses are represented by their numbers;
-* words and letters are represented by the strings of which they are composed.
-
-Per level, there may be more than one way to represent the objects.
-For example, at the word level, you may have representations in the original script in unicode,
-but also various transliterations in ascii.
-
-All these representations are *layers* that you can search.
-For example, the
-[NENA corpus](https://github.com/CambridgeSemiticsLab/nena_tf)
-contains various text representations,
-among which several are dedicated to phonetic properties.
-
-![layers](../images/ls/ls.003.png)
-
-Layers do not have to correspond with the text of the corpus.
-They can be based of arbitrary annotations that exist in the corpus.
-For example, you can make a layer where you put the part-of-speech of the
-words after each other. You could then search for things like
-
-```
-(verb noun noun)+
-```
-
-We'll stick to NENA for examples of layered search.
-
-## Combined search
-
-In order to search, you specify search patterns for as many of
-the available layers as you want.
-
-When the search is performed, all these layers will produce results,
-and the results per layer will be compared, and only results that
-hold in all layers, are retained, partial results are discarded.
-
-So, if you have specified 
-
-level | layer | pattern
---- | --- | ---
-**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
-
-you get all words with an `m`, `t`, and `l` in it, in that order.
-There are 1338 such words in 1238 sentences.
-
-By showing the **full** layer,
-you will see the full-ascii transliteration of these results as well.
-
-You can specify an additional search in the **full** layer, for example
-all words with a backquote \` in it. (A combining vowel diacritic).
-
-level | layer | pattern
---- | --- | ---
-**word** | **full** | \`
-**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
-
-We then get the words that meet both criteria, still a good 492.
-
-You can also constrain with other levels.
-Suppose we want only occurrences of the previous results in texts
-written at the place *Dure*.
-
-level | layer | pattern
---- | --- | ---
-**text** | **place** | `Dure`
-**word** | **full** | \`
-**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
-
-You can go even further:
-we want the results to be in the first 3 lines of the texts:
-
-level | layer | pattern
---- | --- | ---
-**text** | **place** | `Dure`
-**line** | **number** | `\b[1-3]\b`
-**word** | **full** | \`
-**word** | **fuzzy** | `m[a-z]*t[a-z]*l`
-
-We are left with 20 results.
 
 # The search interface as app
 

@@ -390,6 +390,10 @@ div.setting details {
 
 /* keyboard */
 
+#keyboardplace {
+  max-height: 20rem;
+  overflow: scroll;
+}
 td.kchar {
   font-family: monospace;
   font-size: large;

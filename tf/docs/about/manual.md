@@ -11,6 +11,8 @@
     But they can be way more sophisticated than that.
     See **Search patterns** below for a crash course.
 
+    See **Meaning** below for what the meaning is of multiple patterns working together.
+
 <mark>2. show text of a layer</mark>
 :   You can click on the name of each layer to show and hide the
     full text of that layer.
@@ -226,6 +228,39 @@ Ultimate power
 
     *   [cheatsheet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Cheatsheet)
     *   [regex](https://en.wikipedia.org/wiki/Regular_expression)
+
+## Meaning
+
+### Levels
+
+Your corpus is divided into levels, e.g. text/line/sentence/word/.
+
+At each level there are objects in the corpus and they can be represented in certain ways:
+
+* text are represented by their titles;
+* lines are represented by their numbers;
+* words are represented by the strings of which they are composed.
+
+### Combined search
+
+In order to search, you specify search patterns for as many of
+the available layers as you want.
+
+When the search is performed, all these layers will produce results,
+and the results in one layer will be "intersected" with the results in all other layers.
+
+!!! caution "Beware of complicated criteria"
+    Before you devise sophisticated criteria, note that this search engine
+    is not very refined in taking intersections.
+    It takes the intersections of the joint results of the matches in the layers.
+    It will not take the intersections of the individual matches.
+
+    The bottomline is: use the search tool to grab the things that are potentially of interest.
+    If you need to pinpoint further, export the results to Excel and use other tools/methods
+    to achieve that.
+
+    If you need more information in this, consult the 
+    manual for the full interface: `tf.about.clientmanual`.
 
 ## Export
 
