@@ -54,6 +54,16 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="8">8</h2>
 <h3 id="85">8.5</h3>
+<h4 id="854">8.5.4</h4>
+<p>2021-05-20</p>
+<ul>
+<li>Updates in the <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code>: a new method to export positions using
+much less data, provided certain assumptions hold.</li>
+<li>Updates in the <code><a title="tf.client" href="../client/index.html">tf.client</a></code>: a more memory-friendly way to store
+the corpus data, especially the positions data.
+The method can be switched on and off, depending whether the corpus
+satisfies the preliminaries for this space optimization.</li>
+</ul>
 <h4 id="853">8.5.3</h4>
 <p>2021-05-11</p>
 <p>Updates in the layered search app and its distribution.
@@ -406,7 +416,7 @@ Note that if you use Text-Fabric prior version 8, there will be no graceful fall
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -480,6 +490,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#8">8</a><ul>
 <li><a href="#85">8.5</a><ul>
+<li><a href="#854">8.5.4</a></li>
 <li><a href="#853">8.5.3</a></li>
 <li><a href="#852">8.5.2</a></li>
 <li><a href="#851">8.5.1</a></li>

@@ -180,7 +180,7 @@ recorder.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L0-L537" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L0-L670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -542,6 +542,139 @@ where `api` is the result of
 
         return posByNodeType
 
+    def rPositions(self, acceptMaterialOutsideNodes=False):
+        &#34;&#34;&#34;Get the first textual position for each node
+
+        The position information is a big amount of data, in the general case.
+        Under certain assumptions we can economize on this data usage.
+
+        Strong assumptions:
+
+        1.  every textual position is covered by exactly one node**
+        2.  the nodes are consecutive:
+            every next node is equal to the previous node plus 1
+        3.  the positions of the nodes are monotonous in the nodes, i.e.
+            if node n &lt; m, then the position of n is before the position of m.
+
+        Imagine the text partitioned in consecutive non-overlapping chunks, where
+        each node corresponds to exactly one chunk, and the order of the nodes
+        is the same as the order of the corresponding chunks.
+
+        Parameters
+        ----------
+        acceptMaterialOutsideNodes: boolean, optional `False`
+            If this is True, we accept that the text contains extra material that is not
+            covered by any node.
+            So condition 1 above is relaxed in that we accept no nodes for a textual
+            position.
+
+            Applications that make use of the positions must realize that in this case
+            the material associated with a node also includes the subsequent material
+            outside any node.
+
+        Returns
+        -------
+        list | str
+            The result is a list `posList`.
+            Suppose we map nodes n, n+1, ..., n+m.
+            Suppose node n starts at position t0, n+1 at position t1,
+            n+m at position tm.
+            Suppose te is the position just after the whole text.
+
+            Then we deliver as a result:
+
+            ```
+            n - 1
+            t0
+            t1
+            ...
+            tm
+            te
+            ```
+
+            So the first element of the list is used to specify the offset to be
+            applied for all subsequent nodes.
+            The `te` value is added as a sentinel, to facilitate the determination
+            of the last position of each node.
+
+            Users of `posList` can find the start and end positions of node m
+            as follows
+
+            ```
+            start = posList[m - posList[0]]
+            end   = posList[m - posList[0] + 1] - 1
+            ```
+
+            We return not only the posList if the assumptions hold.
+            If not, we return a string with diagnostic information.
+        &#34;&#34;&#34;
+
+        good = True
+        multipleNodes = 0
+        multipleFirst = 0
+        noNodes = 0
+        noFirst = 0
+        nonConsecutive = 0
+        nonConsecutiveFirst = 0
+
+        posByNode = {}
+        for (i, nodeSet) in enumerate(self.nodesByPos):
+            if (not acceptMaterialOutsideNodes and len(nodeSet) == 0) or len(
+                nodeSet
+            ) &gt; 1:
+                good = False
+                if len(nodeSet) == 0:
+                    if noNodes == 0:
+                        noFirst = i
+                    noNodes += 1
+                else:
+                    if multipleNodes == 0:
+                        multipleFirst = i
+                    multipleNodes += 1
+                continue
+            for node in nodeSet:
+                if node in posByNode:
+                    continue
+                posByNode[node] = i
+
+        lastI = i
+
+        if not good:
+            msg = &#34;&#34;
+            if noNodes:
+                msg += (
+                    f&#34;{noNodes} positions without node, &#34;
+                    f&#34;of which the first one is {noFirst}\n&#34;
+                )
+            if multipleNodes:
+                msg += (
+                    f&#34;{multipleNodes} positions with multiple nodes, &#34;
+                    f&#34;of which the first one is {multipleFirst}\n&#34;
+                )
+            return msg
+
+        sortedPosByNode = sorted(posByNode.items())
+        offset = sortedPosByNode[0][0] - 1
+        posList = [offset]
+        prevNode = offset
+        for (node, i) in sortedPosByNode:
+            if prevNode + 1 != node:
+                good = False
+                if nonConsecutive == 0:
+                    nonConsecutiveFirst = f&#34;{prevNode} =&gt; {node}&#34;
+                nonConsecutive += 1
+            else:
+                posList.append(i)
+            prevNode = node
+        posList.append(lastI)
+
+        if not good:
+            return (
+                f&#34;{nonConsecutive} nonConsecutive nodes, &#34;
+                f&#34;of which the first one is {nonConsecutiveFirst}&#34;
+            )
+        return posList
+
     def write(self, textPath, posPath=None, byType=False, optimize=True):
         &#34;&#34;&#34;Write the recorder information to disk.
 
@@ -748,7 +881,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L118-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L118-L671" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder:
     def __init__(self, api=None):
@@ -993,6 +1126,139 @@ where `api` is the result of
 
         return posByNodeType
 
+    def rPositions(self, acceptMaterialOutsideNodes=False):
+        &#34;&#34;&#34;Get the first textual position for each node
+
+        The position information is a big amount of data, in the general case.
+        Under certain assumptions we can economize on this data usage.
+
+        Strong assumptions:
+
+        1.  every textual position is covered by exactly one node**
+        2.  the nodes are consecutive:
+            every next node is equal to the previous node plus 1
+        3.  the positions of the nodes are monotonous in the nodes, i.e.
+            if node n &lt; m, then the position of n is before the position of m.
+
+        Imagine the text partitioned in consecutive non-overlapping chunks, where
+        each node corresponds to exactly one chunk, and the order of the nodes
+        is the same as the order of the corresponding chunks.
+
+        Parameters
+        ----------
+        acceptMaterialOutsideNodes: boolean, optional `False`
+            If this is True, we accept that the text contains extra material that is not
+            covered by any node.
+            So condition 1 above is relaxed in that we accept no nodes for a textual
+            position.
+
+            Applications that make use of the positions must realize that in this case
+            the material associated with a node also includes the subsequent material
+            outside any node.
+
+        Returns
+        -------
+        list | str
+            The result is a list `posList`.
+            Suppose we map nodes n, n+1, ..., n+m.
+            Suppose node n starts at position t0, n+1 at position t1,
+            n+m at position tm.
+            Suppose te is the position just after the whole text.
+
+            Then we deliver as a result:
+
+            ```
+            n - 1
+            t0
+            t1
+            ...
+            tm
+            te
+            ```
+
+            So the first element of the list is used to specify the offset to be
+            applied for all subsequent nodes.
+            The `te` value is added as a sentinel, to facilitate the determination
+            of the last position of each node.
+
+            Users of `posList` can find the start and end positions of node m
+            as follows
+
+            ```
+            start = posList[m - posList[0]]
+            end   = posList[m - posList[0] + 1] - 1
+            ```
+
+            We return not only the posList if the assumptions hold.
+            If not, we return a string with diagnostic information.
+        &#34;&#34;&#34;
+
+        good = True
+        multipleNodes = 0
+        multipleFirst = 0
+        noNodes = 0
+        noFirst = 0
+        nonConsecutive = 0
+        nonConsecutiveFirst = 0
+
+        posByNode = {}
+        for (i, nodeSet) in enumerate(self.nodesByPos):
+            if (not acceptMaterialOutsideNodes and len(nodeSet) == 0) or len(
+                nodeSet
+            ) &gt; 1:
+                good = False
+                if len(nodeSet) == 0:
+                    if noNodes == 0:
+                        noFirst = i
+                    noNodes += 1
+                else:
+                    if multipleNodes == 0:
+                        multipleFirst = i
+                    multipleNodes += 1
+                continue
+            for node in nodeSet:
+                if node in posByNode:
+                    continue
+                posByNode[node] = i
+
+        lastI = i
+
+        if not good:
+            msg = &#34;&#34;
+            if noNodes:
+                msg += (
+                    f&#34;{noNodes} positions without node, &#34;
+                    f&#34;of which the first one is {noFirst}\n&#34;
+                )
+            if multipleNodes:
+                msg += (
+                    f&#34;{multipleNodes} positions with multiple nodes, &#34;
+                    f&#34;of which the first one is {multipleFirst}\n&#34;
+                )
+            return msg
+
+        sortedPosByNode = sorted(posByNode.items())
+        offset = sortedPosByNode[0][0] - 1
+        posList = [offset]
+        prevNode = offset
+        for (node, i) in sortedPosByNode:
+            if prevNode + 1 != node:
+                good = False
+                if nonConsecutive == 0:
+                    nonConsecutiveFirst = f&#34;{prevNode} =&gt; {node}&#34;
+                nonConsecutive += 1
+            else:
+                posList.append(i)
+            prevNode = node
+        posList.append(lastI)
+
+        if not good:
+            return (
+                f&#34;{nonConsecutive} nonConsecutive nodes, &#34;
+                f&#34;of which the first one is {nonConsecutiveFirst}&#34;
+            )
+        return posList
+
     def write(self, textPath, posPath=None, byType=False, optimize=True):
         &#34;&#34;&#34;Write the recorder information to disk.
 
@@ -1215,7 +1481,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L176-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L176-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     &#34;&#34;&#34;Add text to the accumulator.
@@ -1253,7 +1519,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L164-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L164-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     &#34;&#34;&#34;End a node.
@@ -1303,7 +1569,7 @@ character positions in the text where node <code>n</code> is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L289-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L289-L359" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def iPositions(self, byType=False, logical=True, asEntries=False):
         &#34;&#34;&#34;Get the node positions as mapping from nodes.
@@ -1408,7 +1674,7 @@ be used as headers.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L478-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L611-L671" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     &#34;&#34;&#34;Read a tab-separated file of annotation data and convert it to features.
@@ -1509,7 +1775,7 @@ that were active at character position <code>i</code> in the text.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L207-L287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L207-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def positions(self, byType=False, simple=False):
         &#34;&#34;&#34;Get the node positions as mapping from character positions.
@@ -1594,6 +1860,205 @@ where `api` is the result of
         return nodesByPosByType</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.recorder.Recorder.rPositions"><code class="name flex">
+<span>def <span class="ident">rPositions</span></span>(<span>self, acceptMaterialOutsideNodes=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the first textual position for each node</p>
+<p>The position information is a big amount of data, in the general case.
+Under certain assumptions we can economize on this data usage.</p>
+<p>Strong assumptions:</p>
+<ol>
+<li>every textual position is covered by exactly one node**</li>
+<li>the nodes are consecutive:
+every next node is equal to the previous node plus 1</li>
+<li>the positions of the nodes are monotonous in the nodes, i.e.
+if node n &lt; m, then the position of n is before the position of m.</li>
+</ol>
+<p>Imagine the text partitioned in consecutive non-overlapping chunks, where
+each node corresponds to exactly one chunk, and the order of the nodes
+is the same as the order of the corresponding chunks.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>acceptMaterialOutsideNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>If this is True, we accept that the text contains extra material that is not
+covered by any node.
+So condition 1 above is relaxed in that we accept no nodes for a textual
+position.</p>
+<p>Applications that make use of the positions must realize that in this case
+the material associated with a node also includes the subsequent material
+outside any node.</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list | str</code></dt>
+<dd>
+<p>The result is a list <code>posList</code>.
+Suppose we map nodes n, n+1, &hellip;, n+m.
+Suppose node n starts at position t0, n+1 at position t1,
+n+m at position tm.
+Suppose te is the position just after the whole text.</p>
+<p>Then we deliver as a result:</p>
+<p><code>n - 1
+t0
+t1
+...
+tm
+te</code></p>
+<p>So the first element of the list is used to specify the offset to be
+applied for all subsequent nodes.
+The <code>te</code> value is added as a sentinel, to facilitate the determination
+of the last position of each node.</p>
+<p>Users of <code>posList</code> can find the start and end positions of node m
+as follows</p>
+<p><code>start = posList[m - posList[0]]
+end
+= posList[m - posList[0] + 1] - 1</code></p>
+<p>We return not only the posList if the assumptions hold.
+If not, we return a string with diagnostic information.</p>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L361-L492" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def rPositions(self, acceptMaterialOutsideNodes=False):
+    &#34;&#34;&#34;Get the first textual position for each node
+
+    The position information is a big amount of data, in the general case.
+    Under certain assumptions we can economize on this data usage.
+
+    Strong assumptions:
+
+    1.  every textual position is covered by exactly one node**
+    2.  the nodes are consecutive:
+        every next node is equal to the previous node plus 1
+    3.  the positions of the nodes are monotonous in the nodes, i.e.
+        if node n &lt; m, then the position of n is before the position of m.
+
+    Imagine the text partitioned in consecutive non-overlapping chunks, where
+    each node corresponds to exactly one chunk, and the order of the nodes
+    is the same as the order of the corresponding chunks.
+
+    Parameters
+    ----------
+    acceptMaterialOutsideNodes: boolean, optional `False`
+        If this is True, we accept that the text contains extra material that is not
+        covered by any node.
+        So condition 1 above is relaxed in that we accept no nodes for a textual
+        position.
+
+        Applications that make use of the positions must realize that in this case
+        the material associated with a node also includes the subsequent material
+        outside any node.
+
+    Returns
+    -------
+    list | str
+        The result is a list `posList`.
+        Suppose we map nodes n, n+1, ..., n+m.
+        Suppose node n starts at position t0, n+1 at position t1,
+        n+m at position tm.
+        Suppose te is the position just after the whole text.
+
+        Then we deliver as a result:
+
+        ```
+        n - 1
+        t0
+        t1
+        ...
+        tm
+        te
+        ```
+
+        So the first element of the list is used to specify the offset to be
+        applied for all subsequent nodes.
+        The `te` value is added as a sentinel, to facilitate the determination
+        of the last position of each node.
+
+        Users of `posList` can find the start and end positions of node m
+        as follows
+
+        ```
+        start = posList[m - posList[0]]
+        end   = posList[m - posList[0] + 1] - 1
+        ```
+
+        We return not only the posList if the assumptions hold.
+        If not, we return a string with diagnostic information.
+    &#34;&#34;&#34;
+
+    good = True
+    multipleNodes = 0
+    multipleFirst = 0
+    noNodes = 0
+    noFirst = 0
+    nonConsecutive = 0
+    nonConsecutiveFirst = 0
+
+    posByNode = {}
+    for (i, nodeSet) in enumerate(self.nodesByPos):
+        if (not acceptMaterialOutsideNodes and len(nodeSet) == 0) or len(
+            nodeSet
+        ) &gt; 1:
+            good = False
+            if len(nodeSet) == 0:
+                if noNodes == 0:
+                    noFirst = i
+                noNodes += 1
+            else:
+                if multipleNodes == 0:
+                    multipleFirst = i
+                multipleNodes += 1
+            continue
+        for node in nodeSet:
+            if node in posByNode:
+                continue
+            posByNode[node] = i
+
+    lastI = i
+
+    if not good:
+        msg = &#34;&#34;
+        if noNodes:
+            msg += (
+                f&#34;{noNodes} positions without node, &#34;
+                f&#34;of which the first one is {noFirst}\n&#34;
+            )
+        if multipleNodes:
+            msg += (
+                f&#34;{multipleNodes} positions with multiple nodes, &#34;
+                f&#34;of which the first one is {multipleFirst}\n&#34;
+            )
+        return msg
+
+    sortedPosByNode = sorted(posByNode.items())
+    offset = sortedPosByNode[0][0] - 1
+    posList = [offset]
+    prevNode = offset
+    for (node, i) in sortedPosByNode:
+        if prevNode + 1 != node:
+            good = False
+            if nonConsecutive == 0:
+                nonConsecutiveFirst = f&#34;{prevNode} =&gt; {node}&#34;
+            nonConsecutive += 1
+        else:
+            posList.append(i)
+        prevNode = node
+    posList.append(lastI)
+
+    if not good:
+        return (
+            f&#34;{nonConsecutive} nonConsecutive nodes, &#34;
+            f&#34;of which the first one is {nonConsecutiveFirst}&#34;
+        )
+    return posList</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.recorder.Recorder.read"><code class="name flex">
 <span>def <span class="ident">read</span></span>(<span>self, textPath, posPath=None)</span>
 </code></dt>
@@ -1612,7 +2077,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L453-L476" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L586-L609" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     &#34;&#34;&#34;Read recorder information from disk.
@@ -1654,7 +2119,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L152-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L152-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     &#34;&#34;&#34;Start a node.
@@ -1682,7 +2147,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L197-L205" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L197-L205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     &#34;&#34;&#34;Get the accumulated text.
@@ -1727,7 +2192,7 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/convert/recorder.py#L361-L451" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/convert/recorder.py#L494-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self, textPath, posPath=None, byType=False, optimize=True):
     &#34;&#34;&#34;Write the recorder information to disk.
@@ -1908,6 +2373,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.recorder.Recorder.material" href="#tf.convert.recorder.Recorder.material">material</a></code></li>
 <li><code><a title="tf.convert.recorder.Recorder.nodesByPos" href="#tf.convert.recorder.Recorder.nodesByPos">nodesByPos</a></code></li>
 <li><code><a title="tf.convert.recorder.Recorder.positions" href="#tf.convert.recorder.Recorder.positions">positions</a></code></li>
+<li><code><a title="tf.convert.recorder.Recorder.rPositions" href="#tf.convert.recorder.Recorder.rPositions">rPositions</a></code></li>
 <li><code><a title="tf.convert.recorder.Recorder.read" href="#tf.convert.recorder.Recorder.read">read</a></code></li>
 <li><code><a title="tf.convert.recorder.Recorder.start" href="#tf.convert.recorder.Recorder.start">start</a></code></li>
 <li><code><a title="tf.convert.recorder.Recorder.text" href="#tf.convert.recorder.Recorder.text">text</a></code></li>

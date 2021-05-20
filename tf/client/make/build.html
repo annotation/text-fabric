@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L0-L1153" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L0-L1219" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -547,6 +547,14 @@ class Make:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        for (setting, default) in (
+            (&#34;linkLevelMin&#34;, 1),
+            (&#34;linkLevelMax&#34;, 3),
+            (&#34;memSavingMethod&#34;, 0),
+        ):
+            if getattr(C, setting, None) is None:
+                setattr(C, setting, default)
+
         return True
 
     def makeClientSettings(self):
@@ -568,6 +576,7 @@ class Make:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            memSavingMethod=C.memSavingMethod,
             mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
@@ -703,12 +712,15 @@ class Make:
         self.dumpConfig()
 
     def makeLinks(self):
+        C = self.C
         A = self.A
         api = A.api
         T = api.T
         F = api.F
 
-        sTypes = T.sectionTypes
+        linkLevelMin = C.linkLevelMin
+        linkLevelMax = C.linkLevelMax
+        sTypes = T.sectionTypes[linkLevelMin - 1 : linkLevelMax]
         A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
         links = {
             sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
@@ -733,7 +745,7 @@ class Make:
         self.record()
 
         A.info(&#34;Dumping ...&#34;)
-        self.dumpCorpus()
+        return self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
@@ -770,8 +782,55 @@ class Make:
     def dumpCorpus(self):
         C = self.C
         A = self.A
+        layerSettings = C.layerSettings
+        memSavingMethod = C.memSavingMethod
 
-        data = self.data
+        up = self.up
+        recorders = self.recorders
+        accumulators = self.accumulators
+
+        texts = {}
+        posinfo = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            ti = typeInfo.get(&#34;layers&#34;, None)
+            if ti is None:
+                continue
+
+            texts[level] = {layer: None for layer in ti}
+            posinfo[level] = {layer: None for layer in ti if ti[layer][&#34;pos&#34;] is None}
+
+        A.info(&#34;wrap recorders for delivery&#34;)
+        good = True
+
+        for (level, typeInfo) in recorders.items():
+            A.info(f&#34;\t{level}&#34;)
+            for (layer, x) in typeInfo.items():
+                A.info(f&#34;\t\t{layer}&#34;)
+                texts[level][layer] = x.text()
+                if memSavingMethod == 0:
+                    posinfo[level][layer] = x.positions(simple=True)
+                elif memSavingMethod == 1:
+                    posResult = x.rPositions(acceptMaterialOutsideNodes=True)
+                    if type(posResult) is str:
+                        A.error(&#34;Memory optimization cannot be applied to this layer&#34;)
+                        A.error(&#34;because of violation of the assumptions:&#34;)
+                        A.error(posResult)
+                        good = False
+                    posinfo[level][layer] = posResult
+
+        A.info(&#34;wrap accumulators for delivery&#34;)
+        for (level, typeInfo) in accumulators.items():
+            A.info(f&#34;\t{level}&#34;)
+            for (layer, x) in typeInfo.items():
+                A.info(f&#34;\t\t{layer}&#34;)
+                texts[level][layer] = &#34;&#34;.join(x)
+
+        data = dict(
+            texts=texts,
+            posinfo=posinfo,
+            up=self.compress(up),
+        )
         data[&#34;links&#34;] = self.links
 
         A.indent(reset=True)
@@ -781,25 +840,29 @@ class Make:
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        def writeDataFile(name, address, data, asString=False):
+        def writeDataFile(name, address, thisData, asString=False):
             path = f&#34;{destData}/{name.lower()}.js&#34;
             heading = f&#34;corpusData[{address}] = &#34;
             with open(path, &#34;w&#34;) as fh:
                 fh.write(heading)
                 if asString:
                     fh.write(&#34;`&#34;)
-                    fh.write(data)
+                    fh.write(thisData)
                     fh.write(&#34;`&#34;)
                 else:
                     json.dump(
-                        data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                        thisData,
+                        fh,
+                        ensure_ascii=False,
+                        indent=None,
+                        separators=(&#34;,&#34;, &#34;:&#34;),
                     )
                 A.info(f&#34;Data {name} stored in {path}&#34;)
 
         init = [&#34;var corpusData = {}\n&#34;]
 
         for (partName, partData) in data.items():
-            if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+            if partName in {&#34;texts&#34;, &#34;posinfo&#34;}:
                 init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
                 for (nType, tpData) in partData.items():
                     init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
@@ -813,6 +876,8 @@ class Make:
                 writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
         with open(C.jsInit, &#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(init))
+
+        return good
 
     def makeCombined(self):
         C = self.C
@@ -916,7 +981,7 @@ class Make:
                 file = entry.name
                 if not file.endswith(&#34;.js&#34;):
                     continue
-                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;posinfo-&#34;):
                     scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
             corpusScripts = &#34;\n&#34;.join(scripts)
 
@@ -1052,13 +1117,13 @@ class Make:
                                     console(f&#34;adding {sfile}&#34;)
         console(f&#34;Packaged client into {zipped}&#34;)
 
-    def publish(self):
+    def publish(self, allClients=True):
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
         dataset = self.dataset
         client = self.client
-        clients = self.getAllClients() if client is None else [client]
+        clients = self.getAllClients() if allClients or client is None else [client]
         console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
         os.chdir(appDir)
         deploy(C.org, C.repo)
@@ -1067,10 +1132,11 @@ class Make:
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
-        self.makeCorpus()
-        self.makeClient()
-        if publish:
-            self.publish()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            if publish:
+                self.publish()
 
     def serve(self):
         C = self.C
@@ -1246,7 +1312,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1262,7 +1328,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1282,7 +1348,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1122-L1150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1188-L1216" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = readArgs()
@@ -1323,7 +1389,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs():
     class A:
@@ -1425,7 +1491,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L178-L1119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L178-L1185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(self, dataset, client, page=None, debugState=None):
@@ -1722,6 +1788,14 @@ if __name__ == &#34;__main__&#34;:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        for (setting, default) in (
+            (&#34;linkLevelMin&#34;, 1),
+            (&#34;linkLevelMax&#34;, 3),
+            (&#34;memSavingMethod&#34;, 0),
+        ):
+            if getattr(C, setting, None) is None:
+                setattr(C, setting, default)
+
         return True
 
     def makeClientSettings(self):
@@ -1743,6 +1817,7 @@ if __name__ == &#34;__main__&#34;:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            memSavingMethod=C.memSavingMethod,
             mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
@@ -1878,12 +1953,15 @@ if __name__ == &#34;__main__&#34;:
         self.dumpConfig()
 
     def makeLinks(self):
+        C = self.C
         A = self.A
         api = A.api
         T = api.T
         F = api.F
 
-        sTypes = T.sectionTypes
+        linkLevelMin = C.linkLevelMin
+        linkLevelMax = C.linkLevelMax
+        sTypes = T.sectionTypes[linkLevelMin - 1 : linkLevelMax]
         A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
         links = {
             sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
@@ -1908,7 +1986,7 @@ if __name__ == &#34;__main__&#34;:
         self.record()
 
         A.info(&#34;Dumping ...&#34;)
-        self.dumpCorpus()
+        return self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
@@ -1945,8 +2023,55 @@ if __name__ == &#34;__main__&#34;:
     def dumpCorpus(self):
         C = self.C
         A = self.A
+        layerSettings = C.layerSettings
+        memSavingMethod = C.memSavingMethod
 
-        data = self.data
+        up = self.up
+        recorders = self.recorders
+        accumulators = self.accumulators
+
+        texts = {}
+        posinfo = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            ti = typeInfo.get(&#34;layers&#34;, None)
+            if ti is None:
+                continue
+
+            texts[level] = {layer: None for layer in ti}
+            posinfo[level] = {layer: None for layer in ti if ti[layer][&#34;pos&#34;] is None}
+
+        A.info(&#34;wrap recorders for delivery&#34;)
+        good = True
+
+        for (level, typeInfo) in recorders.items():
+            A.info(f&#34;\t{level}&#34;)
+            for (layer, x) in typeInfo.items():
+                A.info(f&#34;\t\t{layer}&#34;)
+                texts[level][layer] = x.text()
+                if memSavingMethod == 0:
+                    posinfo[level][layer] = x.positions(simple=True)
+                elif memSavingMethod == 1:
+                    posResult = x.rPositions(acceptMaterialOutsideNodes=True)
+                    if type(posResult) is str:
+                        A.error(&#34;Memory optimization cannot be applied to this layer&#34;)
+                        A.error(&#34;because of violation of the assumptions:&#34;)
+                        A.error(posResult)
+                        good = False
+                    posinfo[level][layer] = posResult
+
+        A.info(&#34;wrap accumulators for delivery&#34;)
+        for (level, typeInfo) in accumulators.items():
+            A.info(f&#34;\t{level}&#34;)
+            for (layer, x) in typeInfo.items():
+                A.info(f&#34;\t\t{layer}&#34;)
+                texts[level][layer] = &#34;&#34;.join(x)
+
+        data = dict(
+            texts=texts,
+            posinfo=posinfo,
+            up=self.compress(up),
+        )
         data[&#34;links&#34;] = self.links
 
         A.indent(reset=True)
@@ -1956,25 +2081,29 @@ if __name__ == &#34;__main__&#34;:
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        def writeDataFile(name, address, data, asString=False):
+        def writeDataFile(name, address, thisData, asString=False):
             path = f&#34;{destData}/{name.lower()}.js&#34;
             heading = f&#34;corpusData[{address}] = &#34;
             with open(path, &#34;w&#34;) as fh:
                 fh.write(heading)
                 if asString:
                     fh.write(&#34;`&#34;)
-                    fh.write(data)
+                    fh.write(thisData)
                     fh.write(&#34;`&#34;)
                 else:
                     json.dump(
-                        data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                        thisData,
+                        fh,
+                        ensure_ascii=False,
+                        indent=None,
+                        separators=(&#34;,&#34;, &#34;:&#34;),
                     )
                 A.info(f&#34;Data {name} stored in {path}&#34;)
 
         init = [&#34;var corpusData = {}\n&#34;]
 
         for (partName, partData) in data.items():
-            if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+            if partName in {&#34;texts&#34;, &#34;posinfo&#34;}:
                 init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
                 for (nType, tpData) in partData.items():
                     init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
@@ -1988,6 +2117,8 @@ if __name__ == &#34;__main__&#34;:
                 writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
         with open(C.jsInit, &#34;w&#34;) as fh:
             fh.write(&#34;&#34;.join(init))
+
+        return good
 
     def makeCombined(self):
         C = self.C
@@ -2091,7 +2222,7 @@ if __name__ == &#34;__main__&#34;:
                 file = entry.name
                 if not file.endswith(&#34;.js&#34;):
                     continue
-                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;posinfo-&#34;):
                     scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
             corpusScripts = &#34;\n&#34;.join(scripts)
 
@@ -2227,13 +2358,13 @@ if __name__ == &#34;__main__&#34;:
                                     console(f&#34;adding {sfile}&#34;)
         console(f&#34;Packaged client into {zipped}&#34;)
 
-    def publish(self):
+    def publish(self, allClients=True):
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
         dataset = self.dataset
         client = self.client
-        clients = self.getAllClients() if client is None else [client]
+        clients = self.getAllClients() if allClients or client is None else [client]
         console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
         os.chdir(appDir)
         deploy(C.org, C.repo)
@@ -2242,10 +2373,11 @@ if __name__ == &#34;__main__&#34;:
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
-        self.makeCorpus()
-        self.makeClient()
-        if publish:
-            self.publish()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            if publish:
+                self.publish()
 
     def serve(self):
         C = self.C
@@ -2380,7 +2512,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1086-L1105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1152-L1171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2412,7 +2544,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1036-L1047" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1102-L1113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2436,7 +2568,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L677-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L689-L703" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2463,7 +2595,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L222-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L222-L481" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -2716,6 +2848,14 @@ if __name__ == &#34;__main__&#34;:
     for (k, v) in c.items():
         setattr(C, k, v)
 
+    for (setting, default) in (
+        (&#34;linkLevelMin&#34;, 1),
+        (&#34;linkLevelMax&#34;, 3),
+        (&#34;memSavingMethod&#34;, 0),
+    ):
+        if getattr(C, setting, None) is None:
+            setattr(C, setting, default)
+
     return True</code></pre>
 </details>
 </dd>
@@ -2727,7 +2867,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L590-L612" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L599-L621" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -2762,7 +2902,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L661-L675" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L673-L687" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2789,13 +2929,60 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L693-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L705-L803" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
     A = self.A
+    layerSettings = C.layerSettings
+    memSavingMethod = C.memSavingMethod
 
-    data = self.data
+    up = self.up
+    recorders = self.recorders
+    accumulators = self.accumulators
+
+    texts = {}
+    posinfo = {}
+
+    for (level, typeInfo) in layerSettings.items():
+        ti = typeInfo.get(&#34;layers&#34;, None)
+        if ti is None:
+            continue
+
+        texts[level] = {layer: None for layer in ti}
+        posinfo[level] = {layer: None for layer in ti if ti[layer][&#34;pos&#34;] is None}
+
+    A.info(&#34;wrap recorders for delivery&#34;)
+    good = True
+
+    for (level, typeInfo) in recorders.items():
+        A.info(f&#34;\t{level}&#34;)
+        for (layer, x) in typeInfo.items():
+            A.info(f&#34;\t\t{layer}&#34;)
+            texts[level][layer] = x.text()
+            if memSavingMethod == 0:
+                posinfo[level][layer] = x.positions(simple=True)
+            elif memSavingMethod == 1:
+                posResult = x.rPositions(acceptMaterialOutsideNodes=True)
+                if type(posResult) is str:
+                    A.error(&#34;Memory optimization cannot be applied to this layer&#34;)
+                    A.error(&#34;because of violation of the assumptions:&#34;)
+                    A.error(posResult)
+                    good = False
+                posinfo[level][layer] = posResult
+
+    A.info(&#34;wrap accumulators for delivery&#34;)
+    for (level, typeInfo) in accumulators.items():
+        A.info(f&#34;\t{level}&#34;)
+        for (layer, x) in typeInfo.items():
+            A.info(f&#34;\t\t{layer}&#34;)
+            texts[level][layer] = &#34;&#34;.join(x)
+
+    data = dict(
+        texts=texts,
+        posinfo=posinfo,
+        up=self.compress(up),
+    )
     data[&#34;links&#34;] = self.links
 
     A.indent(reset=True)
@@ -2805,25 +2992,29 @@ if __name__ == &#34;__main__&#34;:
     if not os.path.exists(destData):
         os.makedirs(destData, exist_ok=True)
 
-    def writeDataFile(name, address, data, asString=False):
+    def writeDataFile(name, address, thisData, asString=False):
         path = f&#34;{destData}/{name.lower()}.js&#34;
         heading = f&#34;corpusData[{address}] = &#34;
         with open(path, &#34;w&#34;) as fh:
             fh.write(heading)
             if asString:
                 fh.write(&#34;`&#34;)
-                fh.write(data)
+                fh.write(thisData)
                 fh.write(&#34;`&#34;)
             else:
                 json.dump(
-                    data, fh, ensure_ascii=False, indent=None, separators=(&#34;,&#34;, &#34;:&#34;)
+                    thisData,
+                    fh,
+                    ensure_ascii=False,
+                    indent=None,
+                    separators=(&#34;,&#34;, &#34;:&#34;),
                 )
             A.info(f&#34;Data {name} stored in {path}&#34;)
 
     init = [&#34;var corpusData = {}\n&#34;]
 
     for (partName, partData) in data.items():
-        if partName in {&#34;texts&#34;, &#34;positions&#34;}:
+        if partName in {&#34;texts&#34;, &#34;posinfo&#34;}:
             init.append(f&#39;corpusData[&#34;{partName}&#34;] = {{}}\n&#39;)
             for (nType, tpData) in partData.items():
                 init.append(f&#39;corpusData[&#34;{partName}&#34;][&#34;{nType}&#34;] = {{}}\n&#39;)
@@ -2836,7 +3027,9 @@ if __name__ == &#34;__main__&#34;:
         else:
             writeDataFile(partName, f&#39;&#34;{partName}&#34;&#39;, partData)
     with open(C.jsInit, &#34;w&#34;) as fh:
-        fh.write(&#34;&#34;.join(init))</code></pre>
+        fh.write(&#34;&#34;.join(init))
+
+    return good</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.getAllClients"><code class="name flex">
@@ -2847,7 +3040,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1107-L1119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1173-L1185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -2872,7 +3065,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1055-L1075" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1121-L1141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -2905,7 +3098,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -2944,7 +3137,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1021-L1028" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1087-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -2964,7 +3157,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L614-L619" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L623-L628" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -2996,7 +3189,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L869-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L934-L1004" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3079,7 +3272,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L475-L588" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L483-L597" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3100,6 +3293,7 @@ to see the updated client working.</p></div>
     # and the code that generates the data for the client
 
     clientConfig = dict(
+        memSavingMethod=C.memSavingMethod,
         mainConfig=C.mainConfig,
         defs=dict(
             lsVersion=C.lsVersion,
@@ -3205,7 +3399,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L740-L795" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L805-L860" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeCombined(self):
         C = self.C
@@ -3273,7 +3467,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L621-L626" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L630-L635" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3291,7 +3485,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L645-L659" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L657-L671" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3307,7 +3501,7 @@ to see the updated client working.</p></div>
     self.record()
 
     A.info(&#34;Dumping ...&#34;)
-    self.dumpCorpus()</code></pre>
+    return self.dumpCorpus()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.makeHtml"><code class="name flex">
@@ -3318,7 +3512,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L797-L867" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L862-L932" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeHtml(self):
         C = self.C
@@ -3365,7 +3559,7 @@ to see the updated client working.</p></div>
                 file = entry.name
                 if not file.endswith(&#34;.js&#34;):
                     continue
-                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;positions&#34;):
+                if file.startswith(&#34;texts-&#34;) or file.startswith(&#34;posinfo-&#34;):
                     scripts.append(f&#39;&lt;script defer src=&#34;corpus/{file}«v»&#34;&gt;&lt;/script&gt;&#39;)
             corpusScripts = &#34;\n&#34;.join(scripts)
 
@@ -3401,15 +3595,18 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L628-L643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L637-L655" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
+    C = self.C
     A = self.A
     api = A.api
     T = api.T
     F = api.F
 
-    sTypes = T.sectionTypes
+    linkLevelMin = C.linkLevelMin
+    linkLevelMax = C.linkLevelMax
+    sTypes = T.sectionTypes[linkLevelMin - 1 : linkLevelMax]
     A.info(f&#34;links for types {&#39;, &#39;.join(sTypes)}&#34;)
     links = {
         sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
@@ -3422,22 +3619,22 @@ to see the updated client working.</p></div>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.publish"><code class="name flex">
-<span>def <span class="ident">publish</span></span>(<span>self)</span>
+<span>def <span class="ident">publish</span></span>(<span>self, allClients=True)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L978-L987" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1043-L1052" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def publish(self):
+<pre><code class="python">def publish(self, allClients=True):
     C = self.C
     appDir = C.appDir
     siteDir = C.siteDir
     dataset = self.dataset
     client = self.client
-    clients = self.getAllClients() if client is None else [client]
+    clients = self.getAllClients() if allClients or client is None else [client]
     console(f&#34;Publishing {dataset}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;)
     os.chdir(appDir)
     deploy(C.org, C.repo)</code></pre>
@@ -3451,7 +3648,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1049-L1053" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1115-L1119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -3468,7 +3665,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L998-L1019" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1064-L1085" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -3502,16 +3699,17 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L989-L996" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1054-L1062" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
     self.adjustDebug()
     self.makeConfig()
-    self.makeCorpus()
-    self.makeClient()
-    if publish:
-        self.publish()</code></pre>
+    good = self.makeCorpus()
+    if good:
+        self.makeClient()
+        if publish:
+            self.publish()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.showDebug"><code class="name flex">
@@ -3522,7 +3720,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1077-L1084" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1143-L1150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3542,7 +3740,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L1030-L1034" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1096-L1100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3559,7 +3757,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/86016a08e660776a59cbc9071bda07019539f7a1/tf/client/make/build.py#L941-L976" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1006-L1041" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
