@@ -2,6 +2,21 @@
 
 import { SEARCH, MAXINPUT, NUMBER, QUWINDOW, RESULTCOL, TIP, htmlEsc } from "./defs.js"
 
+
+const getTextRange = (memSavingMethod, iPos, node) => {
+  if (memSavingMethod == 1) {
+    const offset = iPos[0]
+    const start = iPos[node - offset]
+    const end = iPos[node - offset + 1] - 1
+    const textRange = new Array(end - start + 1)
+    for (let i = start; i <= end; i++) {
+      textRange[i - start] = i
+    }
+    return textRange
+  }
+  return iPos.get(node)
+}
+
 export class SearchProvider {
   /* SEARCH EXECUTION
    *
@@ -705,7 +720,7 @@ export class SearchProvider {
           indices: { can },
         },
       },
-      Config: { simpleBase, layers, ntypesI, ntypesinit },
+      Config: { memSavingMethod, simpleBase, layers, ntypesI, ntypesinit },
       Corpus: { links, texts, iPositions },
       State,
       Gui,
@@ -762,7 +777,8 @@ export class SearchProvider {
       const {
         [nType]: { [posKey]: iPos },
       } = iPositions
-      const textRange = iPos.get(node)
+
+      const textRange = getTextRange(memSavingMethod, iPos, node)
       const { [nType]: { matches: { [layer]: matches } = {} } = {} } = tpResults
       const nodeMatches =
         matches == null || !matches.has(node) ? new Map() : matches.get(node)
@@ -919,7 +935,7 @@ export class SearchProvider {
      */
 
     const {
-      Config: { layers, ntypesinit },
+      Config: { memSavingMethod, layers, ntypesinit },
       Corpus: { texts, iPositions },
       State,
       tabNl,
@@ -959,7 +975,8 @@ export class SearchProvider {
       const {
         [nType]: { [posKey]: iPos },
       } = iPositions
-      const textRange = iPos.get(node)
+
+      const textRange = getTextRange(memSavingMethod, iPos, node)
       const { [nType]: { matches: { [layer]: matches } = {} } = {} } = tpResults
       const nodeMatches =
         matches == null || !matches.has(node) ? new Map() : matches.get(node)

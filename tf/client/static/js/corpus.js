@@ -6,7 +6,8 @@ export class CorpusProvider {
    * Readonly data: texts, iPositions, the parent relation "up".
    */
 
-  deps({ Log }) {
+  deps({ Log, Config }) {
+    this.Config = Config
     this.Log = Log
     this.tell = Log.tell
   }
@@ -15,19 +16,24 @@ export class CorpusProvider {
     /* try to encapsulate all access to the data inside this class
      */
 
+    const { links, texts, posinfo } = corpusData
+
     /* links from section nodes to the inline corpus
      */
-    this.links = corpusData.links
+    this.links = links
 
     /* full text for a layer; per type and then per layer
      */
-    this.texts = corpusData.texts
+    this.texts = texts
 
-    /* mapping of textual positions to nodes per layer
-     * It is in fact a list.
-     * Unmapped textual positions have value null
+    /* mapping of textual positions to nodes per layer or the inverse
+     *
+     * It depends on the memSavingMethod:
+     *
+     * if it is 0, we get positions (mapping of textual positions to nodes)
+     * if it is 1, we get iPositions (mapping of nodes to textual positions)
      */
-    this.positions = corpusData.positions
+    this.posinfo = posinfo
 
     await this.warmUpData()
 
@@ -101,33 +107,75 @@ export class CorpusProvider {
      * (we do not support overlapping nodes of the same type)
      */
 
-    const { Log, positions } = this
+    const {
+      Log,
+      Config: { memSavingMethod },
+      posinfo,
+    } = this
 
-    const iPositions = {}
+    if (memSavingMethod == 0) {
+      this.positions = posinfo
+      const iPositions = {}
 
-    for (const [nType, tpInfo] of Object.entries(positions)) {
-      for (const [layer, pos] of Object.entries(tpInfo)) {
-        await Log.placeProgress(`mapping ${nType}-${layer}`)
-        const iPos = new Map()
+      for (const [nType, tpInfo] of Object.entries(posinfo)) {
+        for (const [layer, pos] of Object.entries(tpInfo)) {
+          await Log.placeProgress(`mapping ${nType}-${layer}`)
 
-        for (let i = 0; i < pos.length; i++) {
-          const node = pos[i]
-          if (node == null) {
-            continue
+          const iPos = new Map()
+
+          for (let i = 0; i < pos.length; i++) {
+            const node = pos[i]
+            if (node == null) {
+              continue
+            }
+            if (!iPos.has(node)) {
+              iPos.set(node, [])
+            }
+            iPos.get(node).push(i)
           }
-          if (!iPos.has(node)) {
-            iPos.set(node, [])
-          }
-          iPos.get(node).push(i)
-        }
 
-        if (iPositions[nType] == null) {
-          iPositions[nType] = {}
+          if (iPositions[nType] == null) {
+            iPositions[nType] = {}
+          }
+          iPositions[nType][layer] = iPos
         }
-        iPositions[nType][layer] = iPos
       }
-    }
 
-    this.iPositions = iPositions
+      this.iPositions = iPositions
+    }
+    else if (memSavingMethod == 1) {
+      this.iPositions = posinfo
+      const positions = {}
+
+      for (const [nType, tpInfo] of Object.entries(posinfo)) {
+        for (const [layer, iPos] of Object.entries(tpInfo)) {
+          await Log.placeProgress(`mapping ${nType}-${layer}`)
+
+          const afterLastPos = iPos[iPos.length - 1]
+          /* this is 1 more than the last textual position.
+           * Hence it is the length of the text of the layer
+           */
+          const offset = iPos[0]
+          /* this is one less than the first node whose position
+           * is recorded in in iPos
+           */
+          const buffer = new ArrayBuffer(32 * afterLastPos)
+          const pos = new Uint32Array(buffer)
+          for (let i = 1; i < iPos.length - 1; i++) {
+            const node = offset + i
+            const start = iPos[i]
+            const end = iPos[i + 1]
+            for (let t = start; t < end; t++) {
+              pos[t] = node
+            }
+          }
+          if (positions[nType] == null) {
+            positions[nType] = {}
+          }
+          positions[nType][layer] = pos
+        }
+      }
+      this.positions = positions
+    }
   }
 }

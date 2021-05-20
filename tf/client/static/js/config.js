@@ -25,11 +25,16 @@ export class ConfigProvider {
       defaultSettings,
       defaultFlags,
       keyboard,
+      memSavingMethod,
     } = configData
 
     /* the version stamp of this app
      */
     this.lsVersion = lsVersion
+
+    /* how big data is handled in memory
+     */
+    this.memSavingMethod = memSavingMethod
 
     /* the Github organization of the app
      */

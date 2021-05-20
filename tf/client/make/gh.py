@@ -15,8 +15,8 @@ SITE = "site"
 
 
 def console(*args):
-    sys.stderr.write(" ".join(args) + "\n")
-    sys.stderr.flush()
+    sys.stdout.write(" ".join(args) + "\n")
+    sys.stdout.flush()
 
 
 def _enc(text):

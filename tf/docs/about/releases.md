@@ -46,6 +46,17 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.4
+
+2021-05-20
+
+*   Updates in the `tf.convert.recorder`: a new method to export positions using
+    much less data, provided certain assumptions hold.
+*   Updates in the `tf.client`: a more memory-friendly way to store
+    the corpus data, especially the positions data.
+    The method can be switched on and off, depending whether the corpus
+    satisfies the preliminaries for this space optimization.
+
 #### 8.5.3
 
 2021-05-11

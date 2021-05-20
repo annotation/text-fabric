@@ -358,6 +358,139 @@ where `api` is the result of
 
         return posByNodeType
 
+    def rPositions(self, acceptMaterialOutsideNodes=False):
+        """Get the first textual position for each node
+
+        The position information is a big amount of data, in the general case.
+        Under certain assumptions we can economize on this data usage.
+
+        Strong assumptions:
+
+        1.  every textual position is covered by exactly one node**
+        2.  the nodes are consecutive:
+            every next node is equal to the previous node plus 1
+        3.  the positions of the nodes are monotonous in the nodes, i.e.
+            if node n < m, then the position of n is before the position of m.
+
+        Imagine the text partitioned in consecutive non-overlapping chunks, where
+        each node corresponds to exactly one chunk, and the order of the nodes
+        is the same as the order of the corresponding chunks.
+
+        Parameters
+        ----------
+        acceptMaterialOutsideNodes: boolean, optional `False`
+            If this is True, we accept that the text contains extra material that is not
+            covered by any node.
+            So condition 1 above is relaxed in that we accept no nodes for a textual
+            position.
+
+            Applications that make use of the positions must realize that in this case
+            the material associated with a node also includes the subsequent material
+            outside any node.
+
+        Returns
+        -------
+        list | str
+            The result is a list `posList`.
+            Suppose we map nodes n, n+1, ..., n+m.
+            Suppose node n starts at position t0, n+1 at position t1,
+            n+m at position tm.
+            Suppose te is the position just after the whole text.
+
+            Then we deliver as a result:
+
+            ```
+            n - 1
+            t0
+            t1
+            ...
+            tm
+            te
+            ```
+
+            So the first element of the list is used to specify the offset to be
+            applied for all subsequent nodes.
+            The `te` value is added as a sentinel, to facilitate the determination
+            of the last position of each node.
+
+            Users of `posList` can find the start and end positions of node m
+            as follows
+
+            ```
+            start = posList[m - posList[0]]
+            end   = posList[m - posList[0] + 1] - 1
+            ```
+
+            We return not only the posList if the assumptions hold.
+            If not, we return a string with diagnostic information.
+        """
+
+        good = True
+        multipleNodes = 0
+        multipleFirst = 0
+        noNodes = 0
+        noFirst = 0
+        nonConsecutive = 0
+        nonConsecutiveFirst = 0
+
+        posByNode = {}
+        for (i, nodeSet) in enumerate(self.nodesByPos):
+            if (not acceptMaterialOutsideNodes and len(nodeSet) == 0) or len(
+                nodeSet
+            ) > 1:
+                good = False
+                if len(nodeSet) == 0:
+                    if noNodes == 0:
+                        noFirst = i
+                    noNodes += 1
+                else:
+                    if multipleNodes == 0:
+                        multipleFirst = i
+                    multipleNodes += 1
+                continue
+            for node in nodeSet:
+                if node in posByNode:
+                    continue
+                posByNode[node] = i
+
+        lastI = i
+
+        if not good:
+            msg = ""
+            if noNodes:
+                msg += (
+                    f"{noNodes} positions without node, "
+                    f"of which the first one is {noFirst}\n"
+                )
+            if multipleNodes:
+                msg += (
+                    f"{multipleNodes} positions with multiple nodes, "
+                    f"of which the first one is {multipleFirst}\n"
+                )
+            return msg
+
+        sortedPosByNode = sorted(posByNode.items())
+        offset = sortedPosByNode[0][0] - 1
+        posList = [offset]
+        prevNode = offset
+        for (node, i) in sortedPosByNode:
+            if prevNode + 1 != node:
+                good = False
+                if nonConsecutive == 0:
+                    nonConsecutiveFirst = f"{prevNode} => {node}"
+                nonConsecutive += 1
+            else:
+                posList.append(i)
+            prevNode = node
+        posList.append(lastI)
+
+        if not good:
+            return (
+                f"{nonConsecutive} nonConsecutive nodes, "
+                f"of which the first one is {nonConsecutiveFirst}"
+            )
+        return posList
+
     def write(self, textPath, posPath=None, byType=False, optimize=True):
         """Write the recorder information to disk.
 

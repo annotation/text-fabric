@@ -470,6 +470,14 @@ class Make:
         for (k, v) in c.items():
             setattr(C, k, v)
 
+        for (setting, default) in (
+            ("linkLevelMin", 1),
+            ("linkLevelMax", 3),
+            ("memSavingMethod", 0),
+        ):
+            if getattr(C, setting, None) is None:
+                setattr(C, setting, default)
+
         return True
 
     def makeClientSettings(self):
@@ -491,6 +499,7 @@ class Make:
         # and the code that generates the data for the client
 
         clientConfig = dict(
+            memSavingMethod=C.memSavingMethod,
             mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
@@ -626,12 +635,15 @@ class Make:
         self.dumpConfig()
 
     def makeLinks(self):
+        C = self.C
         A = self.A
         api = A.api
         T = api.T
         F = api.F
 
-        sTypes = T.sectionTypes
+        linkLevelMin = C.linkLevelMin
+        linkLevelMax = C.linkLevelMax
+        sTypes = T.sectionTypes[linkLevelMin - 1 : linkLevelMax]
         A.info(f"links for types {', '.join(sTypes)}")
         links = {
             sType: {n: A.webLink(n, urlOnly=True) for n in F.otype.s(sType)}
@@ -656,7 +668,7 @@ class Make:
         self.record()
 
         A.info("Dumping ...")
-        self.dumpCorpus()
+        return self.dumpCorpus()
 
     def dumpConfig(self):
         C = self.C
@@ -693,8 +705,55 @@ class Make:
     def dumpCorpus(self):
         C = self.C
         A = self.A
+        layerSettings = C.layerSettings
+        memSavingMethod = C.memSavingMethod
 
-        data = self.data
+        up = self.up
+        recorders = self.recorders
+        accumulators = self.accumulators
+
+        texts = {}
+        posinfo = {}
+
+        for (level, typeInfo) in layerSettings.items():
+            ti = typeInfo.get("layers", None)
+            if ti is None:
+                continue
+
+            texts[level] = {layer: None for layer in ti}
+            posinfo[level] = {layer: None for layer in ti if ti[layer]["pos"] is None}
+
+        A.info("wrap recorders for delivery")
+        good = True
+
+        for (level, typeInfo) in recorders.items():
+            A.info(f"\t{level}")
+            for (layer, x) in typeInfo.items():
+                A.info(f"\t\t{layer}")
+                texts[level][layer] = x.text()
+                if memSavingMethod == 0:
+                    posinfo[level][layer] = x.positions(simple=True)
+                elif memSavingMethod == 1:
+                    posResult = x.rPositions(acceptMaterialOutsideNodes=True)
+                    if type(posResult) is str:
+                        A.error("Memory optimization cannot be applied to this layer")
+                        A.error("because of violation of the assumptions:")
+                        A.error(posResult)
+                        good = False
+                    posinfo[level][layer] = posResult
+
+        A.info("wrap accumulators for delivery")
+        for (level, typeInfo) in accumulators.items():
+            A.info(f"\t{level}")
+            for (layer, x) in typeInfo.items():
+                A.info(f"\t\t{layer}")
+                texts[level][layer] = "".join(x)
+
+        data = dict(
+            texts=texts,
+            posinfo=posinfo,
+            up=self.compress(up),
+        )
         data["links"] = self.links
 
         A.indent(reset=True)
@@ -704,25 +763,29 @@ class Make:
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
-        def writeDataFile(name, address, data, asString=False):
+        def writeDataFile(name, address, thisData, asString=False):
             path = f"{destData}/{name.lower()}.js"
             heading = f"corpusData[{address}] = "
             with open(path, "w") as fh:
                 fh.write(heading)
                 if asString:
                     fh.write("`")
-                    fh.write(data)
+                    fh.write(thisData)
                     fh.write("`")
                 else:
                     json.dump(
-                        data, fh, ensure_ascii=False, indent=None, separators=(",", ":")
+                        thisData,
+                        fh,
+                        ensure_ascii=False,
+                        indent=None,
+                        separators=(",", ":"),
                     )
                 A.info(f"Data {name} stored in {path}")
 
         init = ["var corpusData = {}\n"]
 
         for (partName, partData) in data.items():
-            if partName in {"texts", "positions"}:
+            if partName in {"texts", "posinfo"}:
                 init.append(f'corpusData["{partName}"] = {{}}\n')
                 for (nType, tpData) in partData.items():
                     init.append(f'corpusData["{partName}"]["{nType}"] = {{}}\n')
@@ -736,6 +799,8 @@ class Make:
                 writeDataFile(partName, f'"{partName}"', partData)
         with open(C.jsInit, "w") as fh:
             fh.write("".join(init))
+
+        return good
 
     def makeCombined(self):
         C = self.C
@@ -839,7 +904,7 @@ class Make:
                 file = entry.name
                 if not file.endswith(".js"):
                     continue
-                if file.startswith("texts-") or file.startswith("positions"):
+                if file.startswith("texts-") or file.startswith("posinfo-"):
                     scripts.append(f'<script defer src="corpus/{file}«v»"></script>')
             corpusScripts = "\n".join(scripts)
 
@@ -975,13 +1040,13 @@ class Make:
                                     console(f"adding {sfile}")
         console(f"Packaged client into {zipped}")
 
-    def publish(self):
+    def publish(self, allClients=True):
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
         dataset = self.dataset
         client = self.client
-        clients = self.getAllClients() if client is None else [client]
+        clients = self.getAllClients() if allClients or client is None else [client]
         console(f"Publishing {dataset}:{','.join(clients)} from {siteDir} ...")
         os.chdir(appDir)
         deploy(C.org, C.repo)
@@ -990,10 +1055,11 @@ class Make:
         self.adjustVersion()
         self.adjustDebug()
         self.makeConfig()
-        self.makeCorpus()
-        self.makeClient()
-        if publish:
-            self.publish()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            if publish:
+                self.publish()
 
     def serve(self):
         C = self.C
