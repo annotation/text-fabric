@@ -96,14 +96,12 @@ def readArgs():
     A.dataset = None
     A.client = None
     A.command = None
-    A.page = None
-    A.debugState = None
 
     args = sys.argv[1:]
 
     if not len(args) or args[0] in {"-h", "--help", "help"}:
         console(HELP)
-        console("Missing dataset and client")
+        console("Missing dataset")
         return None
 
     dataset = args[0]
@@ -112,18 +110,14 @@ def readArgs():
 
     if not len(args):
         console(HELP)
-        console("Missing client/command")
+        console("Missing client or command")
         return None
 
     if args[0] in {"-h", "--help", "help"}:
         console(HELP)
         return None
 
-    if args[0] == "serve":
-        client = None
-        command = args[0]
-        args = args[1:]
-    elif args[0] == "ship":
+    if args[0] in {"serve", "ship", "make"}:
         client = None
         command = args[0]
         args = args[1:]
@@ -138,10 +132,12 @@ def readArgs():
             return None
 
         command = args[0]
+        args = args[1:]
 
     A.client = client
     A.command = command
-    A.page = None
+    A.folder = None
+    A.configFolder = None
     A.debugState = None
 
     if command not in {
@@ -155,35 +151,48 @@ def readArgs():
         "debug",
         "publish",
         "ship",
+        "make",
     }:
         console(HELP)
         console(f"Wrong arguments: «{' '.join(args)}»")
         return None
 
-    if command in {"serve"}:
-        if len(args) < 2:
-            A.page = "index"
+    if command == "serve":
+        if len(args) < 1:
+            A.folder = None
         else:
-            A.page = args[1]
+            A.folder = args[0]
 
-    elif command in {"debug"}:
-        if len(args) < 2 or args[1] not in {"on", "off"}:
+    elif command == "make":
+        if len(args) < 1:
+            console(HELP)
+            console("Missing output folder argument")
+            return None
+        else:
+            A.folder = args[1] if len(args) > 1 else args[0]
+            A.configFolder = args[0] if len(args) > 1 else None
+
+    elif command == "debug":
+        if len(args) < 1 or args[0] not in {"on", "off"}:
             console("say on or off")
             return None
 
-        A.debugState = args[1]
+        A.debugState = args[0]
     return A
 
 
 class Make:
-    def __init__(self, dataset, client, page=None, debugState=None):
+    def __init__(
+        self, dataset, client, folder=None, configFolder=None, debugState=None
+    ):
         class C:
             pass
 
         self.C = C
         self.dataset = dataset
         self.client = client
-        self.page = page
+        self.folder = folder
+        self.configFolder = configFolder
         self.debugState = debugState
         self.good = True
 
@@ -191,38 +200,38 @@ class Make:
             if not self.config():
                 self.good = False
 
-    def importMake(self, c=None):
-        client = self.client
-        dataset = self.dataset
-
-        if c is None:
-            C = self.C
-            clientMake = C.clientMake
-            clientMakeDir = C.clientMakeDir
-            clientMakeFile = C.clientMakeFile
-        else:
-            clientMake = c["clientMake"]
-            clientMakeDir = c["clientMakeDir"]
-            clientMakeFile = c["clientMakeFile"]
-
-        try:
-            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f"Cannot make data for {dataset}:{client}: {str(e)}")
-            return None
+    def doCommand(self, command):
+        if command == "serve":
+            self.serve()
+        elif command == "v":
+            self.showVersion()
+        elif command == "i":
+            self.adjustVersion()
+        elif command == "debug":
+            self.adjustDebug()
+        elif command == "config":
+            self.makeConfig()
+        elif command == "corpus":
+            self.makeCorpus()
+        elif command == "client":
+            self.makeClient()
+        elif command == "clientdebug":
+            self.debugState = "on"
+            self.makeClient()
+            self.adjustDebug()
+        elif command == "publish":
+            self.publish()
+        elif command == "ship":
+            self.ship()
+        elif command == "make":
+            self.make()
 
     def config(self):
         C = self.C
         dataset = self.dataset
         client = self.client
+        folder = self.folder
+        configFolder = self.configFolder
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
@@ -254,7 +263,7 @@ class Make:
             tutUrl="«nbTutUrl»/«dataset»/start.ipynb",
             staticDir=STATIC_DIR,
             appDir="«gh»/«org»/«repo»",
-            configDir=f"«appDir»/{LS}",
+            configDir=f"«appDir»/{LS}" if configFolder is None else configFolder,
             lsConfig="«configDir»/config.yaml",
             clientConfigFile="«configDir»/«client»/config.yaml",
             clientMake="mkdata",
@@ -269,7 +278,7 @@ class Make:
             jslibInDir="«staticDir»/jslib",
             template="«htmlInDir»/template.html",
             index="«htmlInDir»/index.html",
-            siteDir="«appDir»/«rel»",
+            siteDir="«appDir»/«rel»" if folder is None else folder,
             appClientDir="«siteDir»/«client»",
             pngOutDir="«appClientDir»/png",
             cssOutDir="«appClientDir»/css",
@@ -287,8 +296,7 @@ class Make:
             htmlLocalFile="index-local.html",
             htmlLocal="«appClientDir»/«htmlLocalFile»",
             favicon="favicon.ico",
-            packageUrlOld="https://«org».«ghPages»/«repo»/«client».zip",
-            packageUrl="«client».zip",
+            packageUrl="../«client».zip",
         )
 
         fillRe = re.compile(r"«([a-zA-Z0-9_.]+)»")
@@ -467,6 +475,7 @@ class Make:
                     ),
                 ),
             )
+
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -479,6 +488,34 @@ class Make:
                 setattr(C, setting, default)
 
         return True
+
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
+
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c["clientMake"]
+            clientMakeDir = c["clientMakeDir"]
+            clientMakeFile = c["clientMakeFile"]
+
+        try:
+            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f"Cannot make data for {dataset}:{client}: {str(e)}")
+            return None
 
     def makeClientSettings(self):
         C = self.C
@@ -595,30 +632,6 @@ class Make:
             layers=layers,
         )
         self.clientConfig = clientConfig
-
-    def doCommand(self, command):
-        if command == "serve":
-            self.serve()
-        elif command == "v":
-            self.showVersion()
-        elif command == "i":
-            self.adjustVersion()
-        elif command == "debug":
-            self.adjustDebug()
-        elif command == "config":
-            self.makeConfig()
-        elif command == "corpus":
-            self.makeCorpus()
-        elif command == "client":
-            self.makeClient()
-        elif command == "clientdebug":
-            self.debugState = "on"
-            self.makeClient()
-            self.adjustDebug()
-        elif command == "publish":
-            self.publish()
-        elif command == "ship":
-            self.ship()
 
     def loadTf(self):
         C = self.C
@@ -1053,24 +1066,31 @@ class Make:
 
     def ship(self, publish=True):
         self.adjustVersion()
-        self.adjustDebug()
         self.makeConfig()
         good = self.makeCorpus()
         if good:
             self.makeClient()
+            self.adjustDebug()
             if publish:
                 self.publish()
 
+    def make(self):
+        self.makeConfig()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            self.adjustDebug()
+
     def serve(self):
         C = self.C
-        page = self.page
         os.chdir(C.siteDir)
 
+        console(f"HTTP serving files in {C.siteDir}")
         server = Popen(
             ["python3", "-m", "http.server"], stdout=PIPE, bufsize=1, encoding="utf-8"
         )
         sleep(1)
-        webbrowser.open(f"http://localhost:8000/{page}.html", new=2, autoraise=True)
+        webbrowser.open("http://localhost:8000/index.html", new=2, autoraise=True)
         stopped = server.poll()
         if not stopped:
             try:
@@ -1193,24 +1213,41 @@ def main():
     dataset = A.dataset
     client = A.client
     command = A.command
-    page = A.page
+    folder = A.folder
+    configFolder = A.configFolder
     debugState = A.debugState
 
     if not dataset:
         return
 
     if not client:
-        if command not in {"serve", "ship"}:
+        if command not in {"serve", "ship", "make"}:
             return
 
-    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+    Mk = Make(
+        A.dataset,
+        A.client,
+        folder=folder,
+        configFolder=configFolder,
+        debugState=debugState,
+    )
 
-    if command == "ship" and client is None:
+    if command in {"ship", "make"} and client is None:
         clients = Mk.getAllClients()
         for client in clients:
-            ThisMk = Make(dataset, client)
-            ThisMk.ship(publish=False)
-        Mk.publish()
+            ThisMk = Make(
+                dataset,
+                client,
+                folder=folder,
+                configFolder=configFolder,
+                debugState=debugState,
+            )
+            if command == "ship":
+                ThisMk.ship(publish=False)
+            else:
+                ThisMk.make()
+        if command == "ship":
+            Mk.publish()
         return
 
     return Mk.doCommand(command)

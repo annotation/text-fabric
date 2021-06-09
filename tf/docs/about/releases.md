@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.5
+
+*   Updates in the `tf.client`: more ways of building the layeredsearch client.
+    Driven by the NENA pipeline.
+
+2021-05-20
+
 #### 8.5.4
 
 2021-05-20
