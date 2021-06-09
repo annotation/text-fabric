@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L0-L1219" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L0-L1256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -173,14 +173,12 @@ def readArgs():
     A.dataset = None
     A.client = None
     A.command = None
-    A.page = None
-    A.debugState = None
 
     args = sys.argv[1:]
 
     if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
         console(HELP)
-        console(&#34;Missing dataset and client&#34;)
+        console(&#34;Missing dataset&#34;)
         return None
 
     dataset = args[0]
@@ -189,18 +187,14 @@ def readArgs():
 
     if not len(args):
         console(HELP)
-        console(&#34;Missing client/command&#34;)
+        console(&#34;Missing client or command&#34;)
         return None
 
     if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
         console(HELP)
         return None
 
-    if args[0] == &#34;serve&#34;:
-        client = None
-        command = args[0]
-        args = args[1:]
-    elif args[0] == &#34;ship&#34;:
+    if args[0] in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
         client = None
         command = args[0]
         args = args[1:]
@@ -215,10 +209,12 @@ def readArgs():
             return None
 
         command = args[0]
+        args = args[1:]
 
     A.client = client
     A.command = command
-    A.page = None
+    A.folder = None
+    A.configFolder = None
     A.debugState = None
 
     if command not in {
@@ -232,35 +228,48 @@ def readArgs():
         &#34;debug&#34;,
         &#34;publish&#34;,
         &#34;ship&#34;,
+        &#34;make&#34;,
     }:
         console(HELP)
         console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
         return None
 
-    if command in {&#34;serve&#34;}:
-        if len(args) &lt; 2:
-            A.page = &#34;index&#34;
+    if command == &#34;serve&#34;:
+        if len(args) &lt; 1:
+            A.folder = None
         else:
-            A.page = args[1]
+            A.folder = args[0]
 
-    elif command in {&#34;debug&#34;}:
-        if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
+    elif command == &#34;make&#34;:
+        if len(args) &lt; 1:
+            console(HELP)
+            console(&#34;Missing output folder argument&#34;)
+            return None
+        else:
+            A.folder = args[1] if len(args) &gt; 1 else args[0]
+            A.configFolder = args[0] if len(args) &gt; 1 else None
+
+    elif command == &#34;debug&#34;:
+        if len(args) &lt; 1 or args[0] not in {&#34;on&#34;, &#34;off&#34;}:
             console(&#34;say on or off&#34;)
             return None
 
-        A.debugState = args[1]
+        A.debugState = args[0]
     return A
 
 
 class Make:
-    def __init__(self, dataset, client, page=None, debugState=None):
+    def __init__(
+        self, dataset, client, folder=None, configFolder=None, debugState=None
+    ):
         class C:
             pass
 
         self.C = C
         self.dataset = dataset
         self.client = client
-        self.page = page
+        self.folder = folder
+        self.configFolder = configFolder
         self.debugState = debugState
         self.good = True
 
@@ -268,38 +277,38 @@ class Make:
             if not self.config():
                 self.good = False
 
-    def importMake(self, c=None):
-        client = self.client
-        dataset = self.dataset
-
-        if c is None:
-            C = self.C
-            clientMake = C.clientMake
-            clientMakeDir = C.clientMakeDir
-            clientMakeFile = C.clientMakeFile
-        else:
-            clientMake = c[&#34;clientMake&#34;]
-            clientMakeDir = c[&#34;clientMakeDir&#34;]
-            clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-            return None
+    def doCommand(self, command):
+        if command == &#34;serve&#34;:
+            self.serve()
+        elif command == &#34;v&#34;:
+            self.showVersion()
+        elif command == &#34;i&#34;:
+            self.adjustVersion()
+        elif command == &#34;debug&#34;:
+            self.adjustDebug()
+        elif command == &#34;config&#34;:
+            self.makeConfig()
+        elif command == &#34;corpus&#34;:
+            self.makeCorpus()
+        elif command == &#34;client&#34;:
+            self.makeClient()
+        elif command == &#34;clientdebug&#34;:
+            self.debugState = &#34;on&#34;
+            self.makeClient()
+            self.adjustDebug()
+        elif command == &#34;publish&#34;:
+            self.publish()
+        elif command == &#34;ship&#34;:
+            self.ship()
+        elif command == &#34;make&#34;:
+            self.make()
 
     def config(self):
         C = self.C
         dataset = self.dataset
         client = self.client
+        folder = self.folder
+        configFolder = self.configFolder
         versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
         self.versionFile = versionFile
 
@@ -331,7 +340,7 @@ class Make:
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             appDir=&#34;«gh»/«org»/«repo»&#34;,
-            configDir=f&#34;«appDir»/{LS}&#34;,
+            configDir=f&#34;«appDir»/{LS}&#34; if configFolder is None else configFolder,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
             clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
@@ -346,7 +355,7 @@ class Make:
             jslibInDir=&#34;«staticDir»/jslib&#34;,
             template=&#34;«htmlInDir»/template.html&#34;,
             index=&#34;«htmlInDir»/index.html&#34;,
-            siteDir=&#34;«appDir»/«rel»&#34;,
+            siteDir=&#34;«appDir»/«rel»&#34; if folder is None else folder,
             appClientDir=&#34;«siteDir»/«client»&#34;,
             pngOutDir=&#34;«appClientDir»/png&#34;,
             cssOutDir=&#34;«appClientDir»/css&#34;,
@@ -364,8 +373,7 @@ class Make:
             htmlLocalFile=&#34;index-local.html&#34;,
             htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
-            packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
-            packageUrl=&#34;«client».zip&#34;,
+            packageUrl=&#34;../«client».zip&#34;,
         )
 
         fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -544,6 +552,7 @@ class Make:
                     ),
                 ),
             )
+
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -556,6 +565,34 @@ class Make:
                 setattr(C, setting, default)
 
         return True
+
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
+
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+        try:
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+            return None
 
     def makeClientSettings(self):
         C = self.C
@@ -672,30 +709,6 @@ class Make:
             layers=layers,
         )
         self.clientConfig = clientConfig
-
-    def doCommand(self, command):
-        if command == &#34;serve&#34;:
-            self.serve()
-        elif command == &#34;v&#34;:
-            self.showVersion()
-        elif command == &#34;i&#34;:
-            self.adjustVersion()
-        elif command == &#34;debug&#34;:
-            self.adjustDebug()
-        elif command == &#34;config&#34;:
-            self.makeConfig()
-        elif command == &#34;corpus&#34;:
-            self.makeCorpus()
-        elif command == &#34;client&#34;:
-            self.makeClient()
-        elif command == &#34;clientdebug&#34;:
-            self.debugState = &#34;on&#34;
-            self.makeClient()
-            self.adjustDebug()
-        elif command == &#34;publish&#34;:
-            self.publish()
-        elif command == &#34;ship&#34;:
-            self.ship()
 
     def loadTf(self):
         C = self.C
@@ -1130,24 +1143,31 @@ class Make:
 
     def ship(self, publish=True):
         self.adjustVersion()
-        self.adjustDebug()
         self.makeConfig()
         good = self.makeCorpus()
         if good:
             self.makeClient()
+            self.adjustDebug()
             if publish:
                 self.publish()
 
+    def make(self):
+        self.makeConfig()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            self.adjustDebug()
+
     def serve(self):
         C = self.C
-        page = self.page
         os.chdir(C.siteDir)
 
+        console(f&#34;HTTP serving files in {C.siteDir}&#34;)
         server = Popen(
             [&#34;python3&#34;, &#34;-m&#34;, &#34;http.server&#34;], stdout=PIPE, bufsize=1, encoding=&#34;utf-8&#34;
         )
         sleep(1)
-        webbrowser.open(f&#34;http://localhost:8000/{page}.html&#34;, new=2, autoraise=True)
+        webbrowser.open(&#34;http://localhost:8000/index.html&#34;, new=2, autoraise=True)
         stopped = server.poll()
         if not stopped:
             try:
@@ -1270,24 +1290,41 @@ def main():
     dataset = A.dataset
     client = A.client
     command = A.command
-    page = A.page
+    folder = A.folder
+    configFolder = A.configFolder
     debugState = A.debugState
 
     if not dataset:
         return
 
     if not client:
-        if command not in {&#34;serve&#34;, &#34;ship&#34;}:
+        if command not in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
             return
 
-    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+    Mk = Make(
+        A.dataset,
+        A.client,
+        folder=folder,
+        configFolder=configFolder,
+        debugState=debugState,
+    )
 
-    if command == &#34;ship&#34; and client is None:
+    if command in {&#34;ship&#34;, &#34;make&#34;} and client is None:
         clients = Mk.getAllClients()
         for client in clients:
-            ThisMk = Make(dataset, client)
-            ThisMk.ship(publish=False)
-        Mk.publish()
+            ThisMk = Make(
+                dataset,
+                client,
+                folder=folder,
+                configFolder=configFolder,
+                debugState=debugState,
+            )
+            if command == &#34;ship&#34;:
+                ThisMk.ship(publish=False)
+            else:
+                ThisMk.make()
+        if command == &#34;ship&#34;:
+            Mk.publish()
         return
 
     return Mk.doCommand(command)
@@ -1312,7 +1349,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L76-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1328,7 +1365,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L82-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1348,7 +1385,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1188-L1216" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1208-L1253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = readArgs()
@@ -1358,24 +1395,41 @@ if __name__ == &#34;__main__&#34;:
     dataset = A.dataset
     client = A.client
     command = A.command
-    page = A.page
+    folder = A.folder
+    configFolder = A.configFolder
     debugState = A.debugState
 
     if not dataset:
         return
 
     if not client:
-        if command not in {&#34;serve&#34;, &#34;ship&#34;}:
+        if command not in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
             return
 
-    Mk = Make(A.dataset, A.client, page=page, debugState=debugState)
+    Mk = Make(
+        A.dataset,
+        A.client,
+        folder=folder,
+        configFolder=configFolder,
+        debugState=debugState,
+    )
 
-    if command == &#34;ship&#34; and client is None:
+    if command in {&#34;ship&#34;, &#34;make&#34;} and client is None:
         clients = Mk.getAllClients()
         for client in clients:
-            ThisMk = Make(dataset, client)
-            ThisMk.ship(publish=False)
-        Mk.publish()
+            ThisMk = Make(
+                dataset,
+                client,
+                folder=folder,
+                configFolder=configFolder,
+                debugState=debugState,
+            )
+            if command == &#34;ship&#34;:
+                ThisMk.ship(publish=False)
+            else:
+                ThisMk.make()
+        if command == &#34;ship&#34;:
+            Mk.publish()
         return
 
     return Mk.doCommand(command)</code></pre>
@@ -1389,7 +1443,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L92-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L92-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs():
     class A:
@@ -1398,14 +1452,12 @@ if __name__ == &#34;__main__&#34;:
     A.dataset = None
     A.client = None
     A.command = None
-    A.page = None
-    A.debugState = None
 
     args = sys.argv[1:]
 
     if not len(args) or args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
         console(HELP)
-        console(&#34;Missing dataset and client&#34;)
+        console(&#34;Missing dataset&#34;)
         return None
 
     dataset = args[0]
@@ -1414,18 +1466,14 @@ if __name__ == &#34;__main__&#34;:
 
     if not len(args):
         console(HELP)
-        console(&#34;Missing client/command&#34;)
+        console(&#34;Missing client or command&#34;)
         return None
 
     if args[0] in {&#34;-h&#34;, &#34;--help&#34;, &#34;help&#34;}:
         console(HELP)
         return None
 
-    if args[0] == &#34;serve&#34;:
-        client = None
-        command = args[0]
-        args = args[1:]
-    elif args[0] == &#34;ship&#34;:
+    if args[0] in {&#34;serve&#34;, &#34;ship&#34;, &#34;make&#34;}:
         client = None
         command = args[0]
         args = args[1:]
@@ -1440,10 +1488,12 @@ if __name__ == &#34;__main__&#34;:
             return None
 
         command = args[0]
+        args = args[1:]
 
     A.client = client
     A.command = command
-    A.page = None
+    A.folder = None
+    A.configFolder = None
     A.debugState = None
 
     if command not in {
@@ -1457,23 +1507,33 @@ if __name__ == &#34;__main__&#34;:
         &#34;debug&#34;,
         &#34;publish&#34;,
         &#34;ship&#34;,
+        &#34;make&#34;,
     }:
         console(HELP)
         console(f&#34;Wrong arguments: «{&#39; &#39;.join(args)}»&#34;)
         return None
 
-    if command in {&#34;serve&#34;}:
-        if len(args) &lt; 2:
-            A.page = &#34;index&#34;
+    if command == &#34;serve&#34;:
+        if len(args) &lt; 1:
+            A.folder = None
         else:
-            A.page = args[1]
+            A.folder = args[0]
 
-    elif command in {&#34;debug&#34;}:
-        if len(args) &lt; 2 or args[1] not in {&#34;on&#34;, &#34;off&#34;}:
+    elif command == &#34;make&#34;:
+        if len(args) &lt; 1:
+            console(HELP)
+            console(&#34;Missing output folder argument&#34;)
+            return None
+        else:
+            A.folder = args[1] if len(args) &gt; 1 else args[0]
+            A.configFolder = args[0] if len(args) &gt; 1 else None
+
+    elif command == &#34;debug&#34;:
+        if len(args) &lt; 1 or args[0] not in {&#34;on&#34;, &#34;off&#34;}:
             console(&#34;say on or off&#34;)
             return None
 
-        A.debugState = args[1]
+        A.debugState = args[0]
     return A</code></pre>
 </details>
 </dd>
@@ -1484,24 +1544,27 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.client.make.build.Make"><code class="flex name class">
 <span>class <span class="ident">Make</span></span>
-<span>(</span><span>dataset, client, page=None, debugState=None)</span>
+<span>(</span><span>dataset, client, folder=None, configFolder=None, debugState=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L178-L1185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L184-L1205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
-    def __init__(self, dataset, client, page=None, debugState=None):
+    def __init__(
+        self, dataset, client, folder=None, configFolder=None, debugState=None
+    ):
         class C:
             pass
 
         self.C = C
         self.dataset = dataset
         self.client = client
-        self.page = page
+        self.folder = folder
+        self.configFolder = configFolder
         self.debugState = debugState
         self.good = True
 
@@ -1509,38 +1572,38 @@ if __name__ == &#34;__main__&#34;:
             if not self.config():
                 self.good = False
 
-    def importMake(self, c=None):
-        client = self.client
-        dataset = self.dataset
-
-        if c is None:
-            C = self.C
-            clientMake = C.clientMake
-            clientMakeDir = C.clientMakeDir
-            clientMakeFile = C.clientMakeFile
-        else:
-            clientMake = c[&#34;clientMake&#34;]
-            clientMakeDir = c[&#34;clientMakeDir&#34;]
-            clientMakeFile = c[&#34;clientMakeFile&#34;]
-
-        try:
-            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
-            spec = util.spec_from_file_location(moduleName, clientMakeFile)
-            code = util.module_from_spec(spec)
-            sys.path.insert(0, clientMakeDir)
-            spec.loader.exec_module(code)
-            sys.path.pop(0)
-            self.makeLegends = types.MethodType(code.makeLegends, self)
-            self.record = types.MethodType(code.record, self)
-
-        except Exception as e:
-            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
-            return None
+    def doCommand(self, command):
+        if command == &#34;serve&#34;:
+            self.serve()
+        elif command == &#34;v&#34;:
+            self.showVersion()
+        elif command == &#34;i&#34;:
+            self.adjustVersion()
+        elif command == &#34;debug&#34;:
+            self.adjustDebug()
+        elif command == &#34;config&#34;:
+            self.makeConfig()
+        elif command == &#34;corpus&#34;:
+            self.makeCorpus()
+        elif command == &#34;client&#34;:
+            self.makeClient()
+        elif command == &#34;clientdebug&#34;:
+            self.debugState = &#34;on&#34;
+            self.makeClient()
+            self.adjustDebug()
+        elif command == &#34;publish&#34;:
+            self.publish()
+        elif command == &#34;ship&#34;:
+            self.ship()
+        elif command == &#34;make&#34;:
+            self.make()
 
     def config(self):
         C = self.C
         dataset = self.dataset
         client = self.client
+        folder = self.folder
+        configFolder = self.configFolder
         versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
         self.versionFile = versionFile
 
@@ -1572,7 +1635,7 @@ if __name__ == &#34;__main__&#34;:
             tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             appDir=&#34;«gh»/«org»/«repo»&#34;,
-            configDir=f&#34;«appDir»/{LS}&#34;,
+            configDir=f&#34;«appDir»/{LS}&#34; if configFolder is None else configFolder,
             lsConfig=&#34;«configDir»/config.yaml&#34;,
             clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
             clientMake=&#34;mkdata&#34;,
@@ -1587,7 +1650,7 @@ if __name__ == &#34;__main__&#34;:
             jslibInDir=&#34;«staticDir»/jslib&#34;,
             template=&#34;«htmlInDir»/template.html&#34;,
             index=&#34;«htmlInDir»/index.html&#34;,
-            siteDir=&#34;«appDir»/«rel»&#34;,
+            siteDir=&#34;«appDir»/«rel»&#34; if folder is None else folder,
             appClientDir=&#34;«siteDir»/«client»&#34;,
             pngOutDir=&#34;«appClientDir»/png&#34;,
             cssOutDir=&#34;«appClientDir»/css&#34;,
@@ -1605,8 +1668,7 @@ if __name__ == &#34;__main__&#34;:
             htmlLocalFile=&#34;index-local.html&#34;,
             htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
             favicon=&#34;favicon.ico&#34;,
-            packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
-            packageUrl=&#34;«client».zip&#34;,
+            packageUrl=&#34;../«client».zip&#34;,
         )
 
         fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -1785,6 +1847,7 @@ if __name__ == &#34;__main__&#34;:
                     ),
                 ),
             )
+
         for (k, v) in c.items():
             setattr(C, k, v)
 
@@ -1797,6 +1860,34 @@ if __name__ == &#34;__main__&#34;:
                 setattr(C, setting, default)
 
         return True
+
+    def importMake(self, c=None):
+        client = self.client
+        dataset = self.dataset
+
+        if c is None:
+            C = self.C
+            clientMake = C.clientMake
+            clientMakeDir = C.clientMakeDir
+            clientMakeFile = C.clientMakeFile
+        else:
+            clientMake = c[&#34;clientMake&#34;]
+            clientMakeDir = c[&#34;clientMakeDir&#34;]
+            clientMakeFile = c[&#34;clientMakeFile&#34;]
+
+        try:
+            moduleName = f&#34;tf.client.ls.{dataset}.{client}.{clientMake}&#34;
+            spec = util.spec_from_file_location(moduleName, clientMakeFile)
+            code = util.module_from_spec(spec)
+            sys.path.insert(0, clientMakeDir)
+            spec.loader.exec_module(code)
+            sys.path.pop(0)
+            self.makeLegends = types.MethodType(code.makeLegends, self)
+            self.record = types.MethodType(code.record, self)
+
+        except Exception as e:
+            console(f&#34;Cannot make data for {dataset}:{client}: {str(e)}&#34;)
+            return None
 
     def makeClientSettings(self):
         C = self.C
@@ -1913,30 +2004,6 @@ if __name__ == &#34;__main__&#34;:
             layers=layers,
         )
         self.clientConfig = clientConfig
-
-    def doCommand(self, command):
-        if command == &#34;serve&#34;:
-            self.serve()
-        elif command == &#34;v&#34;:
-            self.showVersion()
-        elif command == &#34;i&#34;:
-            self.adjustVersion()
-        elif command == &#34;debug&#34;:
-            self.adjustDebug()
-        elif command == &#34;config&#34;:
-            self.makeConfig()
-        elif command == &#34;corpus&#34;:
-            self.makeCorpus()
-        elif command == &#34;client&#34;:
-            self.makeClient()
-        elif command == &#34;clientdebug&#34;:
-            self.debugState = &#34;on&#34;
-            self.makeClient()
-            self.adjustDebug()
-        elif command == &#34;publish&#34;:
-            self.publish()
-        elif command == &#34;ship&#34;:
-            self.ship()
 
     def loadTf(self):
         C = self.C
@@ -2371,24 +2438,31 @@ if __name__ == &#34;__main__&#34;:
 
     def ship(self, publish=True):
         self.adjustVersion()
-        self.adjustDebug()
         self.makeConfig()
         good = self.makeCorpus()
         if good:
             self.makeClient()
+            self.adjustDebug()
             if publish:
                 self.publish()
 
+    def make(self):
+        self.makeConfig()
+        good = self.makeCorpus()
+        if good:
+            self.makeClient()
+            self.adjustDebug()
+
     def serve(self):
         C = self.C
-        page = self.page
         os.chdir(C.siteDir)
 
+        console(f&#34;HTTP serving files in {C.siteDir}&#34;)
         server = Popen(
             [&#34;python3&#34;, &#34;-m&#34;, &#34;http.server&#34;], stdout=PIPE, bufsize=1, encoding=&#34;utf-8&#34;
         )
         sleep(1)
-        webbrowser.open(f&#34;http://localhost:8000/{page}.html&#34;, new=2, autoraise=True)
+        webbrowser.open(&#34;http://localhost:8000/index.html&#34;, new=2, autoraise=True)
         stopped = server.poll()
         if not stopped:
             try:
@@ -2512,7 +2586,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1152-L1171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1172-L1191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2544,7 +2618,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1102-L1113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1122-L1133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2568,7 +2642,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L689-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L702-L716" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2595,12 +2669,14 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L222-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L229-L490" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
     dataset = self.dataset
     client = self.client
+    folder = self.folder
+    configFolder = self.configFolder
     versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
     self.versionFile = versionFile
 
@@ -2632,7 +2708,7 @@ if __name__ == &#34;__main__&#34;:
         tutUrl=&#34;«nbTutUrl»/«dataset»/start.ipynb&#34;,
         staticDir=STATIC_DIR,
         appDir=&#34;«gh»/«org»/«repo»&#34;,
-        configDir=f&#34;«appDir»/{LS}&#34;,
+        configDir=f&#34;«appDir»/{LS}&#34; if configFolder is None else configFolder,
         lsConfig=&#34;«configDir»/config.yaml&#34;,
         clientConfigFile=&#34;«configDir»/«client»/config.yaml&#34;,
         clientMake=&#34;mkdata&#34;,
@@ -2647,7 +2723,7 @@ if __name__ == &#34;__main__&#34;:
         jslibInDir=&#34;«staticDir»/jslib&#34;,
         template=&#34;«htmlInDir»/template.html&#34;,
         index=&#34;«htmlInDir»/index.html&#34;,
-        siteDir=&#34;«appDir»/«rel»&#34;,
+        siteDir=&#34;«appDir»/«rel»&#34; if folder is None else folder,
         appClientDir=&#34;«siteDir»/«client»&#34;,
         pngOutDir=&#34;«appClientDir»/png&#34;,
         cssOutDir=&#34;«appClientDir»/css&#34;,
@@ -2665,8 +2741,7 @@ if __name__ == &#34;__main__&#34;:
         htmlLocalFile=&#34;index-local.html&#34;,
         htmlLocal=&#34;«appClientDir»/«htmlLocalFile»&#34;,
         favicon=&#34;favicon.ico&#34;,
-        packageUrlOld=&#34;https://«org».«ghPages»/«repo»/«client».zip&#34;,
-        packageUrl=&#34;«client».zip&#34;,
+        packageUrl=&#34;../«client».zip&#34;,
     )
 
     fillRe = re.compile(r&#34;«([a-zA-Z0-9_.]+)»&#34;)
@@ -2845,6 +2920,7 @@ if __name__ == &#34;__main__&#34;:
                 ),
             ),
         )
+
     for (k, v) in c.items():
         setattr(C, k, v)
 
@@ -2867,7 +2943,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L599-L621" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L203-L227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -2891,7 +2967,9 @@ if __name__ == &#34;__main__&#34;:
     elif command == &#34;publish&#34;:
         self.publish()
     elif command == &#34;ship&#34;:
-        self.ship()</code></pre>
+        self.ship()
+    elif command == &#34;make&#34;:
+        self.make()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.dumpConfig"><code class="name flex">
@@ -2902,7 +2980,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L673-L687" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L686-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -2929,7 +3007,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L705-L803" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L718-L816" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -3040,7 +3118,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1173-L1185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1193-L1205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -3065,7 +3143,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1121-L1141" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1141-L1161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -3098,7 +3176,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L194-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L492-L518" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -3137,7 +3215,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1087-L1094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1107-L1114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -3157,7 +3235,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L623-L628" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L636-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -3165,6 +3243,24 @@ if __name__ == &#34;__main__&#34;:
     version = C.data[&#34;version&#34;]
     A = use(f&#34;{dataset}:clone&#34;, checkout=&#34;clone&#34;, version=version)
     self.A = A</code></pre>
+</details>
+</dd>
+<dt id="tf.client.make.build.Make.make"><code class="name flex">
+<span>def <span class="ident">make</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1077-L1082" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def make(self):
+    self.makeConfig()
+    good = self.makeCorpus()
+    if good:
+        self.makeClient()
+        self.adjustDebug()</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.makeClient"><code class="name flex">
@@ -3189,7 +3285,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L934-L1004" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L947-L1017" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3272,7 +3368,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L483-L597" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L520-L634" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3399,7 +3495,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L805-L860" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L818-L873" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeCombined(self):
         C = self.C
@@ -3467,7 +3563,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L630-L635" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L643-L648" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3485,7 +3581,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L657-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L670-L684" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3512,7 +3608,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L862-L932" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L875-L945" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeHtml(self):
         C = self.C
@@ -3595,7 +3691,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L637-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L650-L668" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     C = self.C
@@ -3626,7 +3722,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1043-L1052" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1056-L1065" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self, allClients=True):
     C = self.C
@@ -3648,7 +3744,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1115-L1119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1135-L1139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -3665,18 +3761,18 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1064-L1085" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1084-L1105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
-    page = self.page
     os.chdir(C.siteDir)
 
+    console(f&#34;HTTP serving files in {C.siteDir}&#34;)
     server = Popen(
         [&#34;python3&#34;, &#34;-m&#34;, &#34;http.server&#34;], stdout=PIPE, bufsize=1, encoding=&#34;utf-8&#34;
     )
     sleep(1)
-    webbrowser.open(f&#34;http://localhost:8000/{page}.html&#34;, new=2, autoraise=True)
+    webbrowser.open(&#34;http://localhost:8000/index.html&#34;, new=2, autoraise=True)
     stopped = server.poll()
     if not stopped:
         try:
@@ -3699,15 +3795,15 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1054-L1062" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1067-L1075" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
-    self.adjustDebug()
     self.makeConfig()
     good = self.makeCorpus()
     if good:
         self.makeClient()
+        self.adjustDebug()
         if publish:
             self.publish()</code></pre>
 </details>
@@ -3720,7 +3816,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1143-L1150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1163-L1170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3740,7 +3836,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1096-L1100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1116-L1120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3757,7 +3853,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b8ed6dded9d7f63f445d5edacd8090c808c321ac/tf/client/make/build.py#L1006-L1041" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/client/make/build.py#L1019-L1054" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C
@@ -3895,6 +3991,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.client.make.build.Make.importMake" href="#tf.client.make.build.Make.importMake">importMake</a></code></li>
 <li><code><a title="tf.client.make.build.Make.incVersion" href="#tf.client.make.build.Make.incVersion">incVersion</a></code></li>
 <li><code><a title="tf.client.make.build.Make.loadTf" href="#tf.client.make.build.Make.loadTf">loadTf</a></code></li>
+<li><code><a title="tf.client.make.build.Make.make" href="#tf.client.make.build.Make.make">make</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeClient" href="#tf.client.make.build.Make.makeClient">makeClient</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeClientSettings" href="#tf.client.make.build.Make.makeClientSettings">makeClientSettings</a></code></li>
 <li><code><a title="tf.client.make.build.Make.makeCombined" href="#tf.client.make.build.Make.makeCombined">makeCombined</a></code></li>
