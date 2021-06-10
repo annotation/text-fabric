@@ -377,9 +377,272 @@ from ..parameters import (
     EXPRESS_BASE,
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
+    DOWNLOADS,
 )
 from ..core.helpers import console, htmlEsc
 from .helpers import dh
+from .zipdata import zipData
+
+
+class Repo:
+    def __init__(
+        self,
+        org,
+        repo,
+        folder,
+        version,
+        increase,
+        source=GH_BASE,
+        dest=DOWNLOADS,
+    ):
+        self.org = org
+        self.repo = repo
+        self.folder = folder
+        self.version = version
+        self.increase = increase
+        self.source = os.path.expanduser(source)
+        self.dest = os.path.expanduser(dest)
+
+        self.repoOnline = None
+        self.ghConn = None
+
+    def newRelease(self):
+        if not self.makeZip():
+            return False
+
+        self.connect()
+        if not self.ghConn:
+            return False
+
+        if not self.fetchInfo():
+            return False
+
+        if not self.bumpRelease():
+            return False
+
+        if not self.makeRelease():
+            return False
+
+        if not self.uploadZip():
+            return False
+
+        return True
+
+    def makeZip(self):
+        source = self.source
+        dest = self.dest
+        org = self.org
+        repo = self.repo
+        folder = self.folder
+        version = self.version
+
+        dataIn = f"{source}/{org}/{repo}/{folder}/{version}"
+
+        if not os.path.exists(dataIn):
+            console(f"No data found in {dataIn}", error=True)
+            return False
+
+        zipData(org, repo, version=version, relative=folder, source=source, dest=dest)
+        return True
+
+    def connect(self):
+        warning = self.warning
+
+        if not self.ghConn:
+            ghPerson = os.environ.get("GHPERS", None)
+            if ghPerson:
+                self.ghConn = Github(ghPerson)
+            else:
+                ghClient = os.environ.get("GHCLIENT", None)
+                ghSecret = os.environ.get("GHSECRET", None)
+                if ghClient and ghSecret:
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+                else:
+                    self.ghConn = Github()
+        try:
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
+                f"rate limit is {rate.limit} requests per hour,"
+                f" with {rate.remaining} left for this hour"
+            )
+            if rate.limit < 100:
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html/")
+
+            self.log(
+                f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
+                newline=False,
+            )
+            self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
+            self.log("connected")
+        except GithubException as why:
+            warning("failed")
+            warning(f"GitHub says: {why}")
+        except IOError:
+            warning("no internet")
+
+    def fetchInfo(self):
+        g = self.repoOnline
+        if not g:
+            return False
+        self.commitOn = None
+        self.releaseOn = None
+        self.releaseCommitOn = None
+        result = self.getRelease()
+        if result:
+            self.releaseOn = result
+        result = self.getCommit()
+        if result:
+            self.commitOn = result
+        return True
+
+    def bumpRelease(self):
+        increase = self.increase
+
+        latestR = self.releaseOn
+        if latestR:
+            console(f"Latest release = {latestR}")
+        else:
+            latestR = "v0.0.0"
+            console("No releases yet")
+
+        # bump the release version
+
+        v = ""
+        if latestR.startswith("v"):
+            v = "v"
+            r = latestR.removeprefix("v")
+        parts = [int(p) for p in r.split(".")]
+        nParts = len(parts)
+        if nParts < increase:
+            for i in range(nParts, increase):
+                parts.append(0)
+        parts[increase - 1] += 1
+        parts[increase:] = []
+        newTag = f"{v}{'.'.join(str(p) for p in parts)}"
+        console(f"New release = {newTag}")
+        self.newTag = newTag
+        return True
+
+    def makeRelease(self):
+        commit = self.commitOn
+        newTag = self.newTag
+
+        g = self.repoOnline
+        if not g:
+            return False
+
+        tag_message = "data update"
+        release_name = "data update"
+        release_message = "data update"
+
+        try:
+            newReleaseObj = g.create_git_tag_and_release(
+                newTag,
+                tag_message,
+                release_name,
+                release_message,
+                commit,
+                "commit",
+            )
+        except Exception as e:
+            self.error("\tcannot create release", newline=True)
+            console(str(e), error=True)
+            return False
+
+        self.newReleaseObj = newReleaseObj
+        return True
+
+    def uploadZip(self):
+        newTag = self.newTag
+        newReleaseObj = self.newReleaseObj
+        dest = self.dest
+        org = self.org
+        repo = self.repo
+        folder = self.folder
+        version = self.version
+        dataFile = f"{folder}-{version}.zip"
+        dataDir = f"{dest}/{org}-release/{repo}"
+        dataPath = f"{dataDir}/{dataFile}"
+
+        if not os.path.exists(dataPath):
+            console(f"No release data found: {dataPath}", error=True)
+            return False
+
+        try:
+            newReleaseObj.upload_asset(dataPath, label='', content_type="application/zip", name=dataFile)
+            console(f"{dataFile} attached to release {newTag}")
+        except Exception as e:
+            self.error("\tcannot attach zipfile to release", newline=True)
+            console(str(e), error=True)
+            return False
+
+        return True
+
+    def getRelease(self):
+        r = self.getReleaseObj()
+        if not r:
+            return None
+        return r.tag_name
+
+    def getReleaseObj(self):
+        g = self.repoOnline
+        if not g:
+            return None
+
+        r = None
+
+        try:
+            r = g.get_latest_release()
+        except UnknownObjectException:
+            self.error("\tno releases", newline=True)
+        except Exception:
+            self.error("\tcannot find releases", newline=True)
+        return r
+
+    def getCommit(self):
+        c = self.getCommitObj()
+        if not c:
+            return None
+        return c.sha
+
+    def getCommitObj(self):
+        error = self.error
+
+        g = self.repoOnline
+        if not g:
+            return None
+
+        c = None
+
+        try:
+            cs = g.get_commits()
+            if cs.totalCount:
+                c = cs[0]
+            else:
+                error("\tno commits")
+        except Exception:
+            error("\tcannot find commits")
+        return c
+
+    def log(self, msg, newline=True):
+        console(msg, newline=newline)
+
+    def warning(self, msg, newline=True):
+        console(msg, newline=newline)
+
+    def error(self, msg, newline=True):
+        console(msg, error=True, newline=newline)
+
+
+def releaseData(org, repo, folder, version, increase, source=GH_BASE, dest=DOWNLOADS):
+    """
+    increase:
+    1 = bump major version;
+    2 = bump intermediate version;
+    3 = bump minor version
+    """
+    R = Repo(org, repo, folder, version, increase, source=source, dest=dest)
+    return R.newRelease()
 
 
 class Checkout(object):
@@ -635,9 +898,7 @@ class Checkout(object):
                             warning(f"The offline {label} may not be the latest")
                             self.localBase = self.baseLocal
                         else:
-                            error(
-                                f"The requested {label} is not available offline"
-                            )
+                            error(f"The requested {label} is not available offline")
                     else:
                         warning(f"The requested {label} is not available offline")
                         error("No online connection")
@@ -677,7 +938,7 @@ class Checkout(object):
             labelEsc = htmlEsc(label)
             stateEsc = htmlEsc(state)
             offEsc = htmlEsc(offString)
-            locEsc = htmlEsc(f'{self.localBase}/{self.localDir}{self.versionRep}')
+            locEsc = htmlEsc(f"{self.localBase}/{self.localDir}{self.versionRep}")
             if _browse:
                 self.log(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
@@ -983,10 +1244,7 @@ class Checkout(object):
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                warning(
-                    f"To increase the rate,"
-                    f"see {URL_TFDOC}/advanced/repo.html/"
-                )
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html/")
 
             self.log(
                 f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",

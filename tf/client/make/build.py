@@ -90,12 +90,12 @@ def invertMap(legend):
 
 
 def readArgs():
-    class A:
+    class Args:
         pass
 
-    A.dataset = None
-    A.client = None
-    A.command = None
+    Args.dataset = None
+    Args.client = None
+    Args.command = None
 
     args = sys.argv[1:]
 
@@ -105,7 +105,7 @@ def readArgs():
         return None
 
     dataset = args[0]
-    A.dataset = dataset
+    Args.dataset = dataset
     args = args[1:]
 
     if not len(args):
@@ -134,11 +134,11 @@ def readArgs():
         command = args[0]
         args = args[1:]
 
-    A.client = client
-    A.command = command
-    A.folder = None
-    A.configFolder = None
-    A.debugState = None
+    Args.client = client
+    Args.command = command
+    Args.folder = None
+    Args.configFolder = None
+    Args.debugState = None
 
     if command not in {
         "serve",
@@ -159,9 +159,9 @@ def readArgs():
 
     if command == "serve":
         if len(args) < 1:
-            A.folder = None
+            Args.folder = None
         else:
-            A.folder = args[0]
+            Args.folder = args[0]
 
     elif command == "make":
         if len(args) < 1:
@@ -169,22 +169,25 @@ def readArgs():
             console("Missing output folder argument")
             return None
         else:
-            A.folder = args[1] if len(args) > 1 else args[0]
-            A.configFolder = args[0] if len(args) > 1 else None
+            Args.folder = args[1] if len(args) > 1 else args[0]
+            Args.configFolder = args[0] if len(args) > 1 else None
 
     elif command == "debug":
         if len(args) < 1 or args[0] not in {"on", "off"}:
             console("say on or off")
             return None
 
-        A.debugState = args[0]
-    return A
+        Args.debugState = args[0]
+    return Args
 
 
 class Make:
     def __init__(
-        self, dataset, client, folder=None, configFolder=None, debugState=None
+        self, dataset, client, A=None, folder=None, configFolder=None, debugState=None
     ):
+        if A is not None:
+            self.A = A
+
         class C:
             pass
 
@@ -1205,17 +1208,40 @@ class Make:
         return clients
 
 
+def makeSearchClients(dataset, folder, configFolder):
+    DEBUG_STATE = "off"
+
+    Mk = Make(
+        dataset, None, folder=folder, configFolder=configFolder, debugState=DEBUG_STATE
+    )
+    clients = Mk.getAllClients()
+
+    A = None
+    for client in clients:
+        print(f"\n\no-o-o-o-o-o-o {client} o-o-o-o-o-o-o-o\n\n")
+        ThisMk = Make(
+            dataset,
+            client,
+            A=A,
+            folder=folder,
+            configFolder=configFolder,
+            debugState=DEBUG_STATE,
+        )
+        ThisMk.make()
+        A = ThisMk.A
+
+
 def main():
-    A = readArgs()
-    if A is None:
+    Args = readArgs()
+    if Args is None:
         return 0
 
-    dataset = A.dataset
-    client = A.client
-    command = A.command
-    folder = A.folder
-    configFolder = A.configFolder
-    debugState = A.debugState
+    dataset = Args.dataset
+    client = Args.client
+    command = Args.command
+    folder = Args.folder
+    configFolder = Args.configFolder
+    debugState = Args.debugState
 
     if not dataset:
         return
@@ -1225,8 +1251,8 @@ def main():
             return
 
     Mk = Make(
-        A.dataset,
-        A.client,
+        Args.dataset,
+        Args.client,
         folder=folder,
         configFolder=configFolder,
         debugState=debugState,

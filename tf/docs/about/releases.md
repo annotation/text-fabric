@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.6
+
+*   Updates in `tf.advanced.repo`: a function `releaseData` that releases
+    a version of TF data of a corpus to GitHub.
+    The release number gets bumped, the data is zipped and attached to the release.
+    This helps to write pipeline scripts that transfer corpus updates to the TF
+    eco-system.
+
 #### 8.5.5
 
 *   Updates in the `tf.client`: more ways of building the layeredsearch client.

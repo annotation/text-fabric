@@ -3,11 +3,11 @@ import sys
 from shutil import rmtree
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
 from ..core.helpers import console, splitModRef
 
-GH_BASE = os.path.expanduser("~/github")
-DW_BASE = os.path.expanduser("~/Downloads")
+GH = os.path.expanduser(GH_BASE)
+DW = os.path.expanduser(DOWNLOADS)
 
 HELP = """
 USAGE
@@ -40,10 +40,12 @@ and the are named {relative}-{version}.zip
 EXCLUDE = {".DS_Store"}
 
 
-def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
+def zipData(
+    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+):
     console(f"Create release data for {org}/{repo}/{relative}")
-    sourceBase = f"{GH_BASE}/{org}"
-    destBase = f"{DW_BASE}/{org}-release"
+    sourceBase = f"{source}/{org}"
+    destBase = f"{dest}/{org}-release"
     sourceDir = f"{sourceBase}/{repo}/{relative}"
     destDir = f"{destBase}/{repo}"
     dataFiles = {}
@@ -64,12 +66,14 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
         else:
             versionEntries.append((sourceDir, ""))
             console("Found unversioned features")
-        for (versionDir, version) in versionEntries:
-            if version == TEMP_DIR:
+        for (versionDir, ver) in versionEntries:
+            if ver == TEMP_DIR:
                 continue
-            versionRep = f"/{version}" if version else ""
-            versionRep2 = f"{version}/" if version else ""
-            versionRep3 = f"-{version}" if version else ""
+            if version is not None and version != ver:
+                continue
+            versionRep = f"/{ver}" if ver else ""
+            versionRep2 = f"{ver}/" if ver else ""
+            versionRep3 = f"-{ver}" if ver else ""
             tfDir = f"{versionDir}{versionRep}"
             with os.scandir(tfDir) as sd:
                 for e in sd:
@@ -84,16 +88,16 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                             error=True,
                         )
                         continue
-                    dataFiles.setdefault(version, set()).add(featureFile)
+                    dataFiles.setdefault(ver, set()).add(featureFile)
 
         console(f"zip files end up in {destDir}")
-        for (version, features) in sorted(dataFiles.items()):
+        for (ver, features) in sorted(dataFiles.items()):
             item = f"{org}/{repo}"
-            versionRep = f"/{version}" if version else ""
-            versionRep3 = f"-{version}" if version else ""
+            versionRep = f"/{ver}" if ver else ""
+            versionRep3 = f"-{ver}" if ver else ""
             target = f"{relativeDest}{versionRep3}.zip"
             console(
-                f"zipping {item:<25} {version:>4} with {len(features):>3} features ==> {target}"
+                f"zipping {item:<25} {ver:>4} with {len(features):>3} features ==> {target}"
             )
             with ZipFile(f"{destDir}/{target}", "w", **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
@@ -102,7 +106,6 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                         arcname=featureFile,
                     )
     else:
-
         def collectFiles(base, path, results):
             thisPath = f"{base}/{path}" if path else base
             internalBase = f"{relative}/{path}" if path else relative
@@ -119,10 +122,12 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                         collectFiles(base, f"{path}/{name}", results)
 
         results = []
+        versionRep = f"/{version}" if version else ""
+        sourceDir = f"{sourceDir}{versionRep}"
         collectFiles(sourceDir, "", results)
         if not relativeDest:
             relativeDest = "-"
-        console(f"zipping {org}/{repo}/{relative} with {len(results)} files")
+        console(f"zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files")
         console(f"zip file is {destDir}/{relativeDest}.zip")
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
