@@ -26,18 +26,18 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/advanced/zipdata.py#L0-L163" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c5f8afb38648a07ff37a50f52db89d7c7f3d965/tf/advanced/zipdata.py#L0-L168" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
 from shutil import rmtree
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
 from ..core.helpers import console, splitModRef
 
-GH_BASE = os.path.expanduser(&#34;~/github&#34;)
-DW_BASE = os.path.expanduser(&#34;~/Downloads&#34;)
+GH = os.path.expanduser(GH_BASE)
+DW = os.path.expanduser(DOWNLOADS)
 
 HELP = &#34;&#34;&#34;
 USAGE
@@ -70,10 +70,12 @@ and the are named {relative}-{version}.zip
 EXCLUDE = {&#34;.DS_Store&#34;}
 
 
-def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
+def zipData(
+    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+):
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
-    sourceBase = f&#34;{GH_BASE}/{org}&#34;
-    destBase = f&#34;{DW_BASE}/{org}-release&#34;
+    sourceBase = f&#34;{source}/{org}&#34;
+    destBase = f&#34;{dest}/{org}-release&#34;
     sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}
@@ -94,12 +96,14 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
         else:
             versionEntries.append((sourceDir, &#34;&#34;))
             console(&#34;Found unversioned features&#34;)
-        for (versionDir, version) in versionEntries:
-            if version == TEMP_DIR:
+        for (versionDir, ver) in versionEntries:
+            if ver == TEMP_DIR:
                 continue
-            versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
-            versionRep2 = f&#34;{version}/&#34; if version else &#34;&#34;
-            versionRep3 = f&#34;-{version}&#34; if version else &#34;&#34;
+            if version is not None and version != ver:
+                continue
+            versionRep = f&#34;/{ver}&#34; if ver else &#34;&#34;
+            versionRep2 = f&#34;{ver}/&#34; if ver else &#34;&#34;
+            versionRep3 = f&#34;-{ver}&#34; if ver else &#34;&#34;
             tfDir = f&#34;{versionDir}{versionRep}&#34;
             with os.scandir(tfDir) as sd:
                 for e in sd:
@@ -114,16 +118,16 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                             error=True,
                         )
                         continue
-                    dataFiles.setdefault(version, set()).add(featureFile)
+                    dataFiles.setdefault(ver, set()).add(featureFile)
 
         console(f&#34;zip files end up in {destDir}&#34;)
-        for (version, features) in sorted(dataFiles.items()):
+        for (ver, features) in sorted(dataFiles.items()):
             item = f&#34;{org}/{repo}&#34;
-            versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
-            versionRep3 = f&#34;-{version}&#34; if version else &#34;&#34;
+            versionRep = f&#34;/{ver}&#34; if ver else &#34;&#34;
+            versionRep3 = f&#34;-{ver}&#34; if ver else &#34;&#34;
             target = f&#34;{relativeDest}{versionRep3}.zip&#34;
             console(
-                f&#34;zipping {item:&lt;25} {version:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
+                f&#34;zipping {item:&lt;25} {ver:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
             )
             with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
@@ -132,7 +136,6 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                         arcname=featureFile,
                     )
     else:
-
         def collectFiles(base, path, results):
             thisPath = f&#34;{base}/{path}&#34; if path else base
             internalBase = f&#34;{relative}/{path}&#34; if path else relative
@@ -149,10 +152,12 @@ def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
                         collectFiles(base, f&#34;{path}/{name}&#34;, results)
 
         results = []
+        versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
+        sourceDir = f&#34;{sourceDir}{versionRep}&#34;
         collectFiles(sourceDir, &#34;&#34;, results)
         if not relativeDest:
             relativeDest = &#34;-&#34;
-        console(f&#34;zipping {org}/{repo}/{relative} with {len(results)} files&#34;)
+        console(f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;)
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
@@ -209,7 +214,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/advanced/zipdata.py#L135-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c5f8afb38648a07ff37a50f52db89d7c7f3d965/tf/advanced/zipdata.py#L140-L165" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -240,19 +245,21 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.advanced.zipdata.zipData"><code class="name flex">
-<span>def <span class="ident">zipData</span></span>(<span>org, repo, relative='tf', tf=True, keep=False)</span>
+<span>def <span class="ident">zipData</span></span>(<span>org, repo, relative='tf', version=None, tf=True, keep=False, source='/Users/dirk/github', dest='/Users/dirk/Downloads')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5bdfed691d0809ef41d410d7e425dc7d3d159024/tf/advanced/zipdata.py#L43-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c5f8afb38648a07ff37a50f52db89d7c7f3d965/tf/advanced/zipdata.py#L43-L137" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def zipData(org, repo, relative=RELATIVE, tf=True, keep=False):
+<pre><code class="python">def zipData(
+    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+):
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
-    sourceBase = f&#34;{GH_BASE}/{org}&#34;
-    destBase = f&#34;{DW_BASE}/{org}-release&#34;
+    sourceBase = f&#34;{source}/{org}&#34;
+    destBase = f&#34;{dest}/{org}-release&#34;
     sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}
@@ -273,12 +280,14 @@ if __name__ == &#34;__main__&#34;:
         else:
             versionEntries.append((sourceDir, &#34;&#34;))
             console(&#34;Found unversioned features&#34;)
-        for (versionDir, version) in versionEntries:
-            if version == TEMP_DIR:
+        for (versionDir, ver) in versionEntries:
+            if ver == TEMP_DIR:
                 continue
-            versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
-            versionRep2 = f&#34;{version}/&#34; if version else &#34;&#34;
-            versionRep3 = f&#34;-{version}&#34; if version else &#34;&#34;
+            if version is not None and version != ver:
+                continue
+            versionRep = f&#34;/{ver}&#34; if ver else &#34;&#34;
+            versionRep2 = f&#34;{ver}/&#34; if ver else &#34;&#34;
+            versionRep3 = f&#34;-{ver}&#34; if ver else &#34;&#34;
             tfDir = f&#34;{versionDir}{versionRep}&#34;
             with os.scandir(tfDir) as sd:
                 for e in sd:
@@ -293,16 +302,16 @@ if __name__ == &#34;__main__&#34;:
                             error=True,
                         )
                         continue
-                    dataFiles.setdefault(version, set()).add(featureFile)
+                    dataFiles.setdefault(ver, set()).add(featureFile)
 
         console(f&#34;zip files end up in {destDir}&#34;)
-        for (version, features) in sorted(dataFiles.items()):
+        for (ver, features) in sorted(dataFiles.items()):
             item = f&#34;{org}/{repo}&#34;
-            versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
-            versionRep3 = f&#34;-{version}&#34; if version else &#34;&#34;
+            versionRep = f&#34;/{ver}&#34; if ver else &#34;&#34;
+            versionRep3 = f&#34;-{ver}&#34; if ver else &#34;&#34;
             target = f&#34;{relativeDest}{versionRep3}.zip&#34;
             console(
-                f&#34;zipping {item:&lt;25} {version:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
+                f&#34;zipping {item:&lt;25} {ver:&gt;4} with {len(features):&gt;3} features ==&gt; {target}&#34;
             )
             with ZipFile(f&#34;{destDir}/{target}&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
                 for featureFile in sorted(features):
@@ -311,7 +320,6 @@ if __name__ == &#34;__main__&#34;:
                         arcname=featureFile,
                     )
     else:
-
         def collectFiles(base, path, results):
             thisPath = f&#34;{base}/{path}&#34; if path else base
             internalBase = f&#34;{relative}/{path}&#34; if path else relative
@@ -328,10 +336,12 @@ if __name__ == &#34;__main__&#34;:
                         collectFiles(base, f&#34;{path}/{name}&#34;, results)
 
         results = []
+        versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
+        sourceDir = f&#34;{sourceDir}{versionRep}&#34;
         collectFiles(sourceDir, &#34;&#34;, results)
         if not relativeDest:
             relativeDest = &#34;-&#34;
-        console(f&#34;zipping {org}/{repo}/{relative} with {len(results)} files&#34;)
+        console(f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;)
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
