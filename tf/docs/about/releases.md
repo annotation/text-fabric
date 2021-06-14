@@ -48,6 +48,14 @@ text-fabric appName:hot
 
 #### 8.5.6
 
+2021-06-14
+
+Small fix in the distribution of tf.client.make
+
+#### 8.5.6
+
+2021-06-09
+
 *   Updates in `tf.advanced.repo`: a function `releaseData` that releases
     a version of TF data of a corpus to GitHub.
     The release number gets bumped, the data is zipped and attached to the release.
@@ -56,10 +64,11 @@ text-fabric appName:hot
 
 #### 8.5.5
 
+2021-06-08
+
+
 *   Updates in the `tf.client`: more ways of building the layeredsearch client.
     Driven by the NENA pipeline.
-
-2021-05-20
 
 #### 8.5.4
 

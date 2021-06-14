@@ -57,6 +57,10 @@ tf/advanced/text.py
 tf/advanced/unravel.py
 tf/advanced/zipdata.py
 tf/client/__init__.py
+tf/client/make/__init__.py
+tf/client/make/build.py
+tf/client/make/gh.py
+tf/client/make/help.py
 tf/client/static/.DS_Store
 tf/client/static/favicon.ico
 tf/client/static/version.yaml
