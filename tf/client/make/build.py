@@ -138,7 +138,7 @@ def readArgs():
     Args.client = client
     Args.command = command
     Args.folder = None
-    Args.configFolder = None
+    Args.appFolder = None
     Args.debugState = None
 
     if command not in {
@@ -171,7 +171,7 @@ def readArgs():
             return None
         else:
             Args.folder = args[1] if len(args) > 1 else args[0]
-            Args.configFolder = args[0] if len(args) > 1 else None
+            Args.appFolder = args[0] if len(args) > 1 else None
 
     elif command == "debug":
         if len(args) < 1 or args[0] not in {"on", "off"}:
@@ -184,7 +184,7 @@ def readArgs():
 
 class Make:
     def __init__(
-        self, dataset, client, A=None, folder=None, configFolder=None, debugState=None
+        self, dataset, client, A=None, folder=None, appFolder=None, debugState=None
     ):
         if A is not None:
             self.A = A
@@ -196,7 +196,7 @@ class Make:
         self.dataset = dataset
         self.client = client
         self.folder = folder
-        self.configFolder = configFolder
+        self.appFolder = appFolder
         self.debugState = debugState
         self.good = True
 
@@ -235,7 +235,7 @@ class Make:
         dataset = self.dataset
         client = self.client
         folder = self.folder
-        configFolder = self.configFolder
+        appFolder = self.appFolder
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
@@ -267,7 +267,7 @@ class Make:
             tutUrl="«nbTutUrl»/«dataset»/start.ipynb",
             staticDir=STATIC_DIR,
             appDir="«gh»/«org»/«repo»",
-            configDir=f"«appDir»/{LS}" if configFolder is None else configFolder,
+            configDir=f"«appDir»/{LS}" if appFolder is None else f"{appFolder}/{LS}",
             lsConfig="«configDir»/config.yaml",
             clientConfigFile="«configDir»/«client»/config.yaml",
             clientMake="mkdata",
@@ -1221,11 +1221,11 @@ class Make:
         return clients
 
 
-def makeSearchClients(dataset, folder, configFolder, dataDir=None):
+def makeSearchClients(dataset, folder, appFolder, dataDir=None):
     DEBUG_STATE = "off"
 
     Mk = Make(
-        dataset, None, folder=folder, configFolder=configFolder, debugState=DEBUG_STATE
+        dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE
     )
     clients = Mk.getAllClients()
     version = Mk.C.data["version"]
@@ -1233,7 +1233,7 @@ def makeSearchClients(dataset, folder, configFolder, dataDir=None):
     def getDataFromDir():
         TF = Fabric(locations=dataDir, modules=[version])
         api = TF.loadAll()
-        A = use(f"{dataset}:clone", api=api)
+        A = use(appFolder, api=api)
         return A
 
     A = None if dataDir is None else getDataFromDir()
@@ -1244,7 +1244,7 @@ def makeSearchClients(dataset, folder, configFolder, dataDir=None):
             client,
             A=A,
             folder=folder,
-            configFolder=configFolder,
+            appFolder=appFolder,
             debugState=DEBUG_STATE,
         )
         ThisMk.make()
@@ -1260,7 +1260,7 @@ def main():
     client = Args.client
     command = Args.command
     folder = Args.folder
-    configFolder = Args.configFolder
+    appFolder = Args.appFolder
     debugState = Args.debugState
 
     if not dataset:
@@ -1274,7 +1274,7 @@ def main():
         Args.dataset,
         Args.client,
         folder=folder,
-        configFolder=configFolder,
+        appFolder=appFolder,
         debugState=debugState,
     )
 
@@ -1285,7 +1285,7 @@ def main():
                 dataset,
                 client,
                 folder=folder,
-                configFolder=configFolder,
+                appFolder=appFolder,
                 debugState=debugState,
             )
             if command == "ship":
