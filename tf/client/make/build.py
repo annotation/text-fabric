@@ -61,6 +61,7 @@ from importlib import util
 
 # from tf.fabric import Fabric
 from tf.app import use
+from tf.fabric import Fabric
 from tf.core.helpers import specFromRanges, rangesFromSet
 
 from .gh import deploy
@@ -1220,15 +1221,22 @@ class Make:
         return clients
 
 
-def makeSearchClients(dataset, folder, configFolder):
+def makeSearchClients(dataset, folder, configFolder, dataDir=None):
     DEBUG_STATE = "off"
 
     Mk = Make(
         dataset, None, folder=folder, configFolder=configFolder, debugState=DEBUG_STATE
     )
     clients = Mk.getAllClients()
+    version = Mk.C.data["version"]
 
-    A = None
+    def getDataFromDir():
+        TF = Fabric(locations=dataDir, modules=[version])
+        api = TF.loadAll()
+        A = use(f"{dataset}:clone", api=api)
+        return A
+
+    A = None if dataDir is None else getDataFromDir()
     for client in clients:
         print(f"\n\no-o-o-o-o-o-o {client} o-o-o-o-o-o-o-o\n\n")
         ThisMk = Make(
