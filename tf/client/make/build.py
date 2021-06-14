@@ -625,6 +625,7 @@ class Make:
             ntypesinit[level] = ntypesinitTF[nType]
             ntypessize[level] = ntypessizeTF[nType]
 
+        """
         clientConfig |= dict(
             ntypesinit=ntypesinit,
             ntypessize=ntypessize,
@@ -634,6 +635,17 @@ class Make:
             levels=levels,
             layers=layers,
         )
+        """
+        for (k, v) in (
+            ("ntypesinit", ntypesinit),
+            ("ntypessize", ntypessize),
+            ("dtypeOf", {typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])}),
+            ("utypeOf", {tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])}),
+            ("visible", visible),
+            ("levels", levels),
+            ("layers", layers),
+        ):
+            clientConfig[k] = v
         self.clientConfig = clientConfig
 
     def loadTf(self):

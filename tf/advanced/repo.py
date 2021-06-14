@@ -510,7 +510,7 @@ class Repo:
         v = ""
         if latestR.startswith("v"):
             v = "v"
-            r = latestR.removeprefix("v")
+            r = latestR[1:] if latestR.startswith("v") else latestR
         parts = [int(p) for p in r.split(".")]
         nParts = len(parts)
         if nParts < increase:
