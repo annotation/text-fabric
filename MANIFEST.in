@@ -1,3 +1,4 @@
 recursive-include tf/client/static *
+include tf/client/make/config.yaml
 recursive-include tf/server/templates *
 recursive-include tf/server/static *

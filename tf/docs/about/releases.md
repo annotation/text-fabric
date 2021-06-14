@@ -46,11 +46,11 @@ text-fabric appName:hot
 
 ### 8.5
 
-#### 8.5.6
+#### 8.5.7,8
 
 2021-06-14
 
-Small fix in the distribution of tf.client.make
+Small fixes in the distribution of tf.client.make
 
 #### 8.5.6
 
