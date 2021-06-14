@@ -1228,10 +1228,10 @@ def makeSearchClients(dataset, folder, appFolder, dataDir=None):
         dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE
     )
     clients = Mk.getAllClients()
-    version = Mk.C.data["version"]
+    # version = Mk.C.data["version"]
 
     def getDataFromDir():
-        TF = Fabric(locations=dataDir, modules=[version])
+        TF = Fabric(locations=dataDir, modules=[""])
         api = TF.loadAll()
         A = use(appFolder, api=api)
         return A
