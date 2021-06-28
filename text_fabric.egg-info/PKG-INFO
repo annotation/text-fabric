@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: text-fabric
-Version: 8.5.12
+Version: 8.5.13
 Summary: Processor and browser for Text Fabric Data
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
@@ -36,4 +36,4 @@ Classifier: Topic :: Sociology :: History
 Classifier: Topic :: Text Processing :: Filters
 Classifier: Topic :: Text Processing :: Linguistic
 Classifier: Topic :: Text Processing :: Markup
-Requires-Python: >=3.8.0
+Requires-Python: >=3.6.3

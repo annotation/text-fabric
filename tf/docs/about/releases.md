@@ -46,6 +46,12 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.13
+
+2021-06-28
+
+No changes except that the version requirement for Python is back to 3.6.3.
+
 #### 8.5.7,8,9,10,11,12
 
 2021-06-14

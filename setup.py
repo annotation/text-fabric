@@ -26,7 +26,7 @@ setup(
         "pygithub>=1.47",
         "pyyaml>=5.3",
     ],
-    python_requires=">=3.8.0",
+    python_requires=">=3.6.3",
     include_package_data=True,
     exclude_package_data={
         "": ["text_fabric.egg-info", "__pycache__", ".DS_Store", "docs"]
@@ -39,7 +39,7 @@ setup(
             "text-fabric-make = tf.client.make.build:main",
         ]
     },
-    version='8.5.12',
+    version='8.5.13',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="dirk.roorda@dans.knaw.nl",
