@@ -1026,7 +1026,7 @@ Api reference : {APIREF}
         addText(api)
         addSearch(api, silent)
         indent(level=0)
-        info("All features loaded/computed - for details use loadLog()")
+        info("All features loaded/computed - for details use TF.loadLog()")
         self.api = api
         return api
 
@@ -1066,4 +1066,4 @@ Api reference : {APIREF}
                                 delattr(api.F, fName)
                         fObj.unload()
         indent(level=0)
-        info("All additional features loaded - for details use loadLog()")
+        info("All additional features loaded - for details use TF.loadLog()")

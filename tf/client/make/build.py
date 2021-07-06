@@ -607,7 +607,10 @@ class Make:
 
         for (level, typeInfo) in layerSettings.items():
             nType = typeInfo.get("nType", level)
+            ntypesinit[level] = ntypesinitTF[nType]
+            ntypessize[level] = ntypessizeTF[nType]
             levels[level] = typeInfo.get("description", "")
+
             ti = typeInfo.get("layers", None)
             if ti is None:
                 continue
@@ -623,20 +626,7 @@ class Make:
                 )
                 for layer in ti
             }
-            ntypesinit[level] = ntypesinitTF[nType]
-            ntypessize[level] = ntypessizeTF[nType]
 
-        """
-        clientConfig |= dict(
-            ntypesinit=ntypesinit,
-            ntypessize=ntypessize,
-            dtypeOf={typeSeq[i + 1]: tp for (i, tp) in enumerate(typeSeq[0:-1])},
-            utypeOf={tp: typeSeq[i + 1] for (i, tp) in enumerate(typeSeq[0:-1])},
-            visible=visible,
-            levels=levels,
-            layers=layers,
-        )
-        """
         for (k, v) in (
             ("ntypesinit", ntypesinit),
             ("ntypessize", ntypessize),

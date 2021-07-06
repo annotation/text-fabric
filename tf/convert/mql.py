@@ -280,7 +280,10 @@ GO
                 unclean = [fVal for fVal in fValues if not isClean(fVal)]
                 console(
                     "\t{:<15}: {:>4} values, {} not a name, e.g. «{}»".format(
-                        ft, len(fValues), len(unclean), unclean[0],
+                        ft,
+                        len(fValues),
+                        len(unclean),
+                        unclean[0],
                     )
                 )
                 continue
@@ -298,7 +301,9 @@ GO
         tmObj = self.tmObj
         info = tmObj.info
 
-        fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        fValues = sorted(
+            set(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        )
         if len(fValues):
             info(f"Writing an all-in-one enum with {len(fValues):>4} values")
             fValuesEnumerated = ",\n\t".join(
@@ -354,7 +359,8 @@ GO
         indent(level=0)
         info(
             "Mapping {} features onto {} object types".format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         otypeSupport = {}
@@ -420,7 +426,8 @@ GO
 
         info(
             "Writing {} features as data in {} object types".format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         oslotsData = self.tfFeatures[WARP[1]].data
@@ -518,8 +525,8 @@ uniscan = re.compile(r"(?:\\x..)+")
 
 
 def makeuni(match):
-    """ Make proper unicode of a text that contains byte escape codes
-        such as backslash xb6
+    """Make proper unicode of a text that contains byte escape codes
+    such as backslash xb6
     """
     byts = eval('"' + match.group(0) + '"')
     return byts.encode("latin1").decode("utf-8")

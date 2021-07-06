@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 8.5
 
+#### 8.5.14
+
+2021-07-06
+
+Small fix in the search client: the totals of nodes where displayed as undefined
+for node types for which no layers have been defined.
+
 #### 8.5.13
 
 2021-06-28
