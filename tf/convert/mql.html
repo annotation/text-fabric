@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L0-L849" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L0-L856" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -407,7 +407,10 @@ GO
                 unclean = [fVal for fVal in fValues if not isClean(fVal)]
                 console(
                     &#34;\t{:&lt;15}: {:&gt;4} values, {} not a name, e.g. «{}»&#34;.format(
-                        ft, len(fValues), len(unclean), unclean[0],
+                        ft,
+                        len(fValues),
+                        len(unclean),
+                        unclean[0],
                     )
                 )
                 continue
@@ -425,7 +428,9 @@ GO
         tmObj = self.tmObj
         info = tmObj.info
 
-        fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        fValues = sorted(
+            set(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        )
         if len(fValues):
             info(f&#34;Writing an all-in-one enum with {len(fValues):&gt;4} values&#34;)
             fValuesEnumerated = &#34;,\n\t&#34;.join(
@@ -481,7 +486,8 @@ GO
         indent(level=0)
         info(
             &#34;Mapping {} features onto {} object types&#34;.format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         otypeSupport = {}
@@ -547,7 +553,8 @@ GO
 
         info(
             &#34;Writing {} features as data in {} object types&#34;.format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         oslotsData = self.tfFeatures[WARP[1]].data
@@ -645,8 +652,8 @@ uniscan = re.compile(r&#34;(?:\\x..)+&#34;)
 
 
 def makeuni(match):
-    &#34;&#34;&#34; Make proper unicode of a text that contains byte escape codes
-        such as backslash xb6
+    &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
+    such as backslash xb6
     &#34;&#34;&#34;
     byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
     return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)
@@ -993,11 +1000,11 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L520-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L527-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
-    &#34;&#34;&#34; Make proper unicode of a text that contains byte escape codes
-        such as backslash xb6
+    &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
+    such as backslash xb6
     &#34;&#34;&#34;
     byts = eval(&#39;&#34;&#39; + match.group(0) + &#39;&#34;&#39;)
     return byts.encode(&#34;latin1&#34;).decode(&#34;utf-8&#34;)</code></pre>
@@ -1011,7 +1018,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L544-L745" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L551-L752" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1225,7 +1232,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L748-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L755-L857" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1340,7 +1347,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L532-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L539-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     error = tmObj.error
@@ -1362,7 +1369,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L528-L529" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L535-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1382,7 +1389,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L143-L512" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L143-L519" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
@@ -1524,7 +1531,10 @@ GO
                 unclean = [fVal for fVal in fValues if not isClean(fVal)]
                 console(
                     &#34;\t{:&lt;15}: {:&gt;4} values, {} not a name, e.g. «{}»&#34;.format(
-                        ft, len(fValues), len(unclean), unclean[0],
+                        ft,
+                        len(fValues),
+                        len(unclean),
+                        unclean[0],
                     )
                 )
                 continue
@@ -1542,7 +1552,9 @@ GO
         tmObj = self.tmObj
         info = tmObj.info
 
-        fValues = list(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        fValues = sorted(
+            set(chain.from_iterable((set(fV) for fV in self.enums.values())))
+        )
         if len(fValues):
             info(f&#34;Writing an all-in-one enum with {len(fValues):&gt;4} values&#34;)
             fValuesEnumerated = &#34;,\n\t&#34;.join(
@@ -1598,7 +1610,8 @@ GO
         indent(level=0)
         info(
             &#34;Mapping {} features onto {} object types&#34;.format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         otypeSupport = {}
@@ -1664,7 +1677,8 @@ GO
 
         info(
             &#34;Writing {} features as data in {} object types&#34;.format(
-                len(self.featureList), len(self.levels),
+                len(self.featureList),
+                len(self.levels),
             )
         )
         oslotsData = self.tfFeatures[WARP[1]].data
@@ -1765,7 +1779,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7e1ea0a55e85854b6cfa37fc8205e486473a879a/tf/convert/mql.py#L157-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/convert/mql.py#L157-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     tmObj = self.tmObj
