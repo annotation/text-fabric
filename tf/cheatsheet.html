@@ -691,9 +691,7 @@
 </dd>
 </dl>
 <hr>
-<h2 id="_1"></h2>
-<p>Secti
-ons</p>
+<h2 id="sections">Sections</h2>
 <p>Rigid 1 or 2 or 3 sectioning system</p>
 <dl>
 <dt><pre><code>T.sectionTuple(node)
@@ -1231,10 +1229,30 @@ from tf.lib import writeSets
 e.g. <a href="https://github.com/annotation/app-default/blob/master/code/config.yaml">app-default</a></p>
 </dd>
 </dl>
+<h1 id="layered-search">Layered search</h1>
+<p>(these are commandline instructions)</p>
+<dl>
+<dt><pre><code>text-fabric-make {dataset} {client} ship
+</code></pre></dt>
+<dd>
+<p>generate a static site with a search interface in client-side javascript and
+publish it to GitHub pages.
+If <code>{client}</code> is left out, generate all clients that are defined for this
+dataset.
+Clients are defined in the <code>app-{dataset}</code> repo, under <code>layeredsearch</code>.</p>
+</dd>
+<dt><pre><code>text-fabric-make {dataset} serve
+</code></pre></dt>
+<dd>
+<p>serve the search interfaces defined for <code>{dataset}</code> locally.</p>
+</dd>
+</dl>
+<p>More commands
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py">here</a>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d5251b0e56c33692d1d1dcd24fb902e8583e2c14/tf/cheatsheet.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/cheatsheet.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1322,7 +1340,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#special-edge-feature-oslots">Special edge feature oslots</a></li>
 <li><a href="#l-locality">L. Locality</a></li>
 <li><a href="#t-text">T. Text</a></li>
-<li><a href="#_1"></a></li>
+<li><a href="#sections">Sections</a></li>
 <li><a href="#structure">Structure</a></li>
 <li><a href="#s-search-low-level">S. Search (low level)</a><ul>
 <li><a href="#preparation">Preparation</a></li>
@@ -1350,6 +1368,7 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><a href="#tf-app-development">TF-App development</a></li>
+<li><a href="#layered-search">Layered search</a></li>
 </ul>
 </div>
 <ul id="index">
