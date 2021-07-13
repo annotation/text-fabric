@@ -518,9 +518,7 @@ T.text(node, fmt=..., ...)
 
 ---
 
-## 
-Secti
-ons
+## Sections
 
 Rigid 1 or 2 or 3 sectioning system
 
@@ -965,3 +963,23 @@ mmm = loadModule("mmm", *args)
 :   `tf.advanced.settings`
     e.g. [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
 
+# Layered search
+
+(these are commandline instructions)
+
+```
+text-fabric-make {dataset} {client} ship
+```
+:   generate a static site with a search interface in client-side javascript and
+    publish it to GitHub pages.
+    If `{client}` is left out, generate all clients that are defined for this
+    dataset.
+    Clients are defined in the `app-{dataset}` repo, under `layeredsearch`.
+
+```
+text-fabric-make {dataset} serve
+```
+:   serve the search interfaces defined for `{dataset}` locally.
+
+More commands
+[here](https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py).
