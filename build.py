@@ -193,7 +193,8 @@ def makeDist(pypi=True):
     distPath = f"{DIST}/{distFileCompressed}"
     distPath = f"{DIST}/*"
     print(distPath)
-    rmtree(DIST)
+    if os.path.exists(DIST):
+        rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     run(["python3", "setup.py", "sdist", "bdist_wheel"])
     if pypi:
