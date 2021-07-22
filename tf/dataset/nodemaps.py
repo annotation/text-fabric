@@ -126,7 +126,7 @@ A simpler example, using this code is
 ## Usage
 
 ```python
-from tf.compose import Versions
+from tf.dataset import Versions
 
 V = Versions(api, va, vb, slotMap)
 V.makeVersionMapping()
@@ -406,7 +406,7 @@ class Versions:
             If `None`, you get information about all nodes.
 
         label: char, optional `None`
-            If given, it is a diagnostic label (see `tf.compose.nodemaps`),
+            If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
             has the given label; if that is a node type, a tuple is returned of all
@@ -459,7 +459,7 @@ class Versions:
         the result can be categorized according to severity.
 
         This function shows that classification.
-        See also `tf.compose.nodemaps`.
+        See also `tf.dataset.nodemaps`.
         """
 
         for (acro, desc) in STAT_LABELS.items():
@@ -485,7 +485,7 @@ class Versions:
                 "about": "Mapping from the slots of version {} to version {}".format(
                     va, vb
                 ),
-                "encoder": "Text-Fabric tf.compose.nodemaps",
+                "encoder": "Text-Fabric tf.dataset.nodemaps",
                 "valueType": "int",
                 "edgeValues": True,
             }

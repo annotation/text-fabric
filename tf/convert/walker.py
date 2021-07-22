@@ -139,7 +139,7 @@ import collections
 import functools
 import re
 
-from ..core.data import WARP
+from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.helpers import itemize, isInt
 
 
@@ -394,9 +394,9 @@ class CV(object):
 
         self.metaData = {
             "": generic,
-            WARP[0]: {"valueType": "str"},
-            WARP[1]: {"valueType": "str"},
-            WARP[2]: otext,
+            OTYPE: {"valueType": "str"},
+            OSLOTS: {"valueType": "str"},
+            OTEXT: otext,
         }
         metaData = self.metaData
 
@@ -502,7 +502,7 @@ class CV(object):
             info(f'{fmt:<20} {", ".join(sorted(feats))}', tm=False)
         indent(level=1)
 
-        for feat in WARP[0:3] + ("",):
+        for feat in WARP + ("",):
             if feat in intFeatures:
                 if feat == "":
                     errors["intFeatures"].append(
@@ -541,15 +541,15 @@ class CV(object):
         good = True
 
         if checkRegular:
-            if feat in WARP[0:3] + ("",):
+            if feat in WARP + ("",):
                 if feat == "":
                     errors["featureMeta"].append(
                         'Specify the generic feature meta data in "generic"'
                     )
                     good = False
-                elif feat == WARP[2]:
+                elif feat == OTEXT:
                     errors["featureMeta"].append(
-                        f'Specify the "{WARP[2]}" feature in "otext"'
+                        f'Specify the "{OTEXT}" feature in "otext"'
                     )
                     good = False
                 else:

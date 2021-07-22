@@ -193,7 +193,7 @@ This logic existed in a notebook that explores versions of the Hebrew Bible:
 [versionMappings](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
 Whereas the code to map slots between versions is highly dependent on the dataset in question,
 the code to extend a slot mapping to a node mapping is generic.
-That code is now in `tf.compose.nodemaps`.
+That code is now in "tf.compose.nodemaps" (as of version 9 in `tf.dataset.nodemaps`).
 It is used in the 
 [missieven](https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb)
 corpus.

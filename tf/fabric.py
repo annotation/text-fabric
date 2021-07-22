@@ -15,15 +15,16 @@ It is responsible for feature data loading and saving.
 
     However, Text-Fabric comes with several *apps* that make working
     with specific `tf.about.corpora` easier.
-    The result of those apps (which may only exist of a (zero-content) *config.yaml* file,
+    The result of those apps
+    (which may only exist of a (zero-content) *config.yaml* file,
     is available through the advanced API: `A`, see `tf.app`.
 """
 
 import os
 
 import collections
-from .parameters import VERSION, NAME, APIREF, LOCATIONS
-from .core.data import Data, WARP, WARP2_DEFAULT, MEM_MSG
+from .parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
+from .core.data import Data, MEM_MSG
 from .core.helpers import (
     itemize,
     setDir,
@@ -61,19 +62,26 @@ from .core.api import (
 from .convert.mql import MQL, tfFromMql
 
 
+OTEXT_DEFAULT = dict(sectionFeatures="", sectionTypes="")
+
 PRECOMPUTE = (
-    (False, "__levels__", levels, WARP),
-    (False, "__order__", order, WARP[0:2] + ("__levels__",)),
-    (False, "__rank__", rank, (WARP[0], "__order__")),
-    (False, "__levUp__", levUp, WARP[0:2] + ("__rank__",)),
-    (False, "__levDown__", levDown, (WARP[0], "__levUp__", "__rank__")),
-    (False, "__boundary__", boundary, WARP[0:2] + ("__rank__",)),
-    (True, "__sections__", sections, WARP + ("__levUp__", "__levels__")),
+    (False, "__levels__", levels, (OTYPE, OSLOTS, OTEXT)),
+    (False, "__order__", order, (OTYPE, OSLOTS) + ("__levels__",)),
+    (False, "__rank__", rank, (OTYPE, "__order__")),
+    (False, "__levUp__", levUp, (OTYPE, OSLOTS) + ("__rank__",)),
+    (False, "__levDown__", levDown, (OTYPE, "__levUp__", "__rank__")),
+    (False, "__boundary__", boundary, (OTYPE, OSLOTS) + ("__rank__",)),
+    (
+        True,
+        "__sections__",
+        sections,
+        (OTYPE, OSLOTS, OTEXT) + ("__levUp__", "__levels__"),
+    ),
     (
         True,
         "__structure__",
         structure,
-        WARP
+        (OTYPE, OSLOTS, OTEXT)
         + (
             "__rank__",
             "__levUp__",
@@ -168,7 +176,7 @@ class Fabric(object):
     !!! note "otext@ in modules"
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
-        regular `otext` feature (which is a `tf.core.data.WARP` feature).
+        regular `otext` feature (which is a `tf.parameters.WARP` feature).
         In this way, modules that define new features for text representation,
         also can add new formats to the Text-API.
 
@@ -295,6 +303,7 @@ Api reference : {APIREF}
         warning = tmObj.warning
         error = tmObj.error
         cache = tmObj.cache
+        reset = tmObj.reset
 
         if silent is not None:
             wasSilent = isSilent()
@@ -312,14 +321,14 @@ Api reference : {APIREF}
                 self.featuresRequested += featuresRequested
             else:
                 self.featuresRequested = featuresRequested
-            for fName in list(WARP):
-                self._loadFeature(fName, optional=fName == WARP[2])
+            for fName in (OTYPE, OSLOTS, OTEXT):
+                self._loadFeature(fName, optional=fName == OTEXT)
         if self.good:
             self.textFeatures = set()
-            if WARP[2] in self.features:
-                otextMeta = self.features[WARP[2]].metaData
+            if OTEXT in self.features:
+                otextMeta = self.features[OTEXT].metaData
                 for otextMod in self.features:
-                    if otextMod.startswith(WARP[2] + "@"):
+                    if otextMod.startswith(OTEXT + "@"):
                         self._loadFeature(otextMod)
                         otextMeta.update(self.features[otextMod].metaData)
                 self.sectionFeats = itemize(otextMeta.get("sectionFeatures", ""), ",")
@@ -334,7 +343,7 @@ Api reference : {APIREF}
                 ):
                     if not add:
                         warning(
-                            f"Dataset without sections in {WARP[2]}:"
+                            f"Dataset without sections in {OTEXT}:"
                             f"no section functions in the T-API"
                         )
                     self.sectionsOK = False
@@ -350,17 +359,18 @@ Api reference : {APIREF}
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
                         info(
-                            f"Dataset without structure sections in {WARP[2]}:"
+                            f"Dataset without structure sections in {OTEXT}:"
                             f"no structure functions in the T-API"
                         )
                     self.structureOK = False
                 else:
                     self.textFeatures |= set(self.structureFeats)
 
-                self.textFeatures |= set(self.formatFeats)
+                formatFeats = set(self.formatFeats)
+                self.textFeatures |= formatFeats
 
                 for fName in self.textFeatures:
-                    self._loadFeature(fName)
+                    self._loadFeature(fName, optional=fName in formatFeats)
 
             else:
                 self.sectionsOK = False
@@ -369,25 +379,30 @@ Api reference : {APIREF}
         if self.good:
             self._precompute()
         if self.good:
+            reset()
             for fName in self.featuresRequested:
                 self._loadFeature(fName)
-        if not self.good:
-            indent(level=0)
-            error("Not all features could be loaded/computed")
-            cache()
-            result = False
-        elif add:
-            try:
-                self._updateApi()
-            except MemoryError:
-                console(MEM_MSG)
-                result = False
-        else:
-            try:
-                result = self._makeApi()
-            except MemoryError:
-                console(MEM_MSG)
-                result = False
+                if not self.good:
+                    indent(level=0)
+                    cache()
+                    error("Not all features could be loaded/computed")
+                    result = False
+                    break
+                reset()
+        indent(level=0)
+        if self.good:
+            if add:
+                try:
+                    self._updateApi()
+                except MemoryError:
+                    console(MEM_MSG)
+                    result = False
+            else:
+                try:
+                    result = self._makeApi()
+                except MemoryError:
+                    console(MEM_MSG)
+                    result = False
         if silent is not None:
             setSilent(wasSilent)
         if not add:
@@ -483,7 +498,7 @@ Api reference : {APIREF}
         """
 
         api = self.load("", silent=silent)
-        allFeatures = self.explore(silent=silent or True, show=True)
+        allFeatures = self.explore(silent=silent, show=True)
         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
         self.load(loadableFeatures, add=True, silent=silent)
         return api
@@ -640,22 +655,22 @@ Api reference : {APIREF}
         maxSlot = None
         maxNode = None
         slotType = None
-        if WARP[0] in nodeFeatures:
-            info(f"VALIDATING {WARP[1]} feature")
-            otypeData = nodeFeatures[WARP[0]]
+        if OTYPE in nodeFeatures:
+            info(f"VALIDATING {OSLOTS} feature")
+            otypeData = nodeFeatures[OTYPE]
             if type(otypeData) is tuple:
                 (otypeData, slotType, maxSlot, maxNode) = otypeData
             elif 1 in otypeData:
                 slotType = otypeData[1]
                 maxSlot = max(n for n in otypeData if otypeData[n] == slotType)
                 maxNode = max(otypeData)
-        if WARP[1] in edgeFeatures:
-            info(f"VALIDATING {WARP[1]} feature")
-            oslotsData = edgeFeatures[WARP[1]]
+        if OSLOTS in edgeFeatures:
+            info(f"VALIDATING {OSLOTS} feature")
+            oslotsData = edgeFeatures[OSLOTS]
             if type(oslotsData) is tuple:
                 (oslotsData, maxSlot, maxNode) = oslotsData
             if maxSlot is None or maxNode is None:
-                error(f"ERROR: cannot check validity of {WARP[1]} feature")
+                error(f"ERROR: cannot check validity of {OSLOTS} feature")
                 good = False
             else:
                 info(f"maxSlot={maxSlot:>11}")
@@ -680,15 +695,15 @@ Api reference : {APIREF}
                             unmappedNodes.append(n)
 
                 if mappedSlotNodes:
-                    error(f"ERROR: {WARP[1]} maps slot nodes")
+                    error(f"ERROR: {OSLOTS} maps slot nodes")
                     error(makeExamples(mappedSlotNodes), tm=False)
                     good = False
                 if fakeNodes:
-                    error(f"ERROR: {WARP[1]} maps nodes that are not in {WARP[0]}")
+                    error(f"ERROR: {OSLOTS} maps nodes that are not in {OTYPE}")
                     error(makeExamples(fakeNodes), tm=False)
                     good = False
                 if unmappedNodes:
-                    error(f"ERROR: {WARP[1]} fails to map nodes:")
+                    error(f"ERROR: {OSLOTS} fails to map nodes:")
                     unmappedByType = {}
                     for n in unmappedNodes:
                         unmappedByType.setdefault(
@@ -702,7 +717,7 @@ Api reference : {APIREF}
                     good = False
 
             if good:
-                info(f"OK: {WARP[1]} is valid")
+                info(f"OK: {OSLOTS} is valid")
 
         for (fName, data, isEdge, isConfig) in todo:
             edgeValues = False
@@ -723,7 +738,7 @@ Api reference : {APIREF}
                 edgeValues=edgeValues,
             )
             tag = "config" if isConfig else "edge" if isEdge else "node"
-            if fObj.save(nodeRanges=fName == WARP[0], overwrite=True):
+            if fObj.save(nodeRanges=fName == OTYPE, overwrite=True):
                 total[tag] += 1
             else:
                 failed[tag] += 1
@@ -879,36 +894,36 @@ Api reference : {APIREF}
         )
 
         good = True
-        for fName in WARP:
+        for fName in (OTYPE, OSLOTS, OTEXT):
             if fName not in self.features:
-                if fName == WARP[2]:
+                if fName == OTEXT:
                     info(
                         (
-                            f'Warp feature "{WARP[2]}" not found. Working without Text-API\n'
+                            f'Warp feature "{OTEXT}" not found. Working without Text-API\n'
                         )
                     )
-                    self.features[WARP[2]] = Data(
-                        f"{WARP[2]}.tf",
+                    self.features[OTEXT] = Data(
+                        f"{OTEXT}.tf",
                         self.tmObj,
                         isConfig=True,
-                        metaData=WARP2_DEFAULT,
+                        metaData=OTEXT_DEFAULT,
                     )
-                    self.features[WARP[2]].dataLoaded = True
+                    self.features[OTEXT].dataLoaded = True
                 else:
                     info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
                     good = False
-            elif fName == WARP[2]:
+            elif fName == OTEXT:
                 self._loadFeature(fName, optional=True)
         if not good:
             return False
-        self.warpDir = self.features[WARP[0]].dirName
+        self.warpDir = self.features[OTYPE].dirName
         self.precomputeList = []
         for (dep2, fName, method, dependencies) in PRECOMPUTE:
             thisGood = True
-            if dep2 and WARP[2] not in self.features:
+            if dep2 and OTEXT not in self.features:
                 continue
             if dep2:
-                otextMeta = self.features[WARP[2]].metaData
+                otextMeta = self.features[OTEXT].metaData
                 sFeatures = f"{KIND[fName]}Features"
                 sFeats = tuple(itemize(otextMeta.get(sFeatures, ""), ","))
                 dependencies = dependencies + sFeats
@@ -973,11 +988,11 @@ Api reference : {APIREF}
         silent = isSilent()
         api = Api(self)
 
-        w0info = self.features[WARP[0]]
-        w1info = self.features[WARP[1]]
+        w0info = self.features[OTYPE]
+        w1info = self.features[OSLOTS]
 
-        setattr(api.F, WARP[0], OtypeFeature(api, w0info.metaData, w0info.data))
-        setattr(api.E, WARP[1], OslotsFeature(api, w1info.metaData, w1info.data))
+        setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
+        setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
 
         requestedSet = set(self.featuresRequested)
 
@@ -996,7 +1011,7 @@ Api reference : {APIREF}
                             delattr(api.C, feat)
                 else:
                     if fName in requestedSet | self.textFeatures:
-                        if fName in WARP:
+                        if fName in (OTYPE, OSLOTS, OTEXT):
                             continue
                         elif fObj.isEdge:
                             setattr(
@@ -1011,7 +1026,10 @@ Api reference : {APIREF}
                                 api.F, fName, NodeFeature(api, fObj.metaData, fObj.data)
                             )
                     else:
-                        if fName in WARP or fName in self.textFeatures:
+                        if (
+                            fName in (OTYPE, OSLOTS, OTEXT)
+                            or fName in self.textFeatures
+                        ):
                             continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName):
@@ -1045,7 +1063,7 @@ Api reference : {APIREF}
             if fObj.dataLoaded and not fObj.isConfig:
                 if not fObj.method:
                     if fName in requestedSet | self.textFeatures:
-                        if fName in WARP:
+                        if fName in (OTYPE, OSLOTS, OTEXT):
                             continue
                         elif fObj.isEdge:
                             apiFobj = EdgeFeature(
@@ -1056,7 +1074,10 @@ Api reference : {APIREF}
                             apiFobj = NodeFeature(api, fObj.metaData, fObj.data)
                             setattr(api.F, fName, apiFobj)
                     else:
-                        if fName in WARP or fName in self.textFeatures:
+                        if (
+                            fName in (OTYPE, OSLOTS, OTEXT)
+                            or fName in self.textFeatures
+                        ):
                             continue
                         elif fObj.isEdge:
                             if hasattr(api.E, fName):

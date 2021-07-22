@@ -526,6 +526,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 nestingProblems[
                     f"section {sTypes[2]} without containing {sTypes[1]}"
                 ] += 1
+                print(f"{sTypes[2]} {n2} without containing {sTypes[1]}")
                 continue
             n1 = n1s[0]
             n1s = sFeats[1][n1]

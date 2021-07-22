@@ -60,7 +60,7 @@ command:
 
 -h
 --help
-help  : print help and exit
+
 
 docs  : serve docs locally
 pdocs : build docs
@@ -192,7 +192,6 @@ def makeDist(pypi=True):
     distFileCompressed = f"{distFile}.tar.gz"
     distPath = f"{DIST}/{distFileCompressed}"
     distPath = f"{DIST}/*"
-    print(distPath)
     if os.path.exists(DIST):
         rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)

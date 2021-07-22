@@ -9,7 +9,7 @@ There are several things to accomplish here, such as
 *   handle multilingual section labels;
 *   switch between various text representations.
 
-The details of the Text API are dependent on the `tf.core.data.WARP` feature `otext`,
+The details of the Text API are dependent on the `tf.parameters.WARP` feature `otext`,
 which is a config feature.
 
 !!! hint "T"
@@ -322,7 +322,7 @@ features to furnish a decent representation.
     specify it as `\n` and `\t`.
 """
 
-from .data import WARP
+from ..parameters import OTEXT
 
 DEFAULT_FORMAT = "text-orig-full"
 DEFAULT_FORMAT_TYPE = "{}-default"
@@ -361,7 +361,7 @@ class Text(object):
 
         self.nameFromNode = {}
         self.nodeFromName = {}
-        config = api.TF.features[WARP[2]].metaData if WARP[2] in api.TF.features else {}
+        config = api.TF.features[OTEXT].metaData if OTEXT in api.TF.features else {}
         self.sectionTypes = TF.sectionTypes
         self.sectionTypeSet = set(TF.sectionTypes)
         self.sectionFeats = TF.sectionFeats
@@ -1212,19 +1212,24 @@ EXPLANATION: T.text() called with parameters:
         Fs = api.Fs
         if len(feat) == 1:
             ft = feat[0]
-            f = Fs(ft).data
+            fObj = Fs(ft)
+            f = fObj.data if fObj else {}
             return lambda n: f.get(n, default)
         elif len(feat) == 2:
             (ft1, ft2) = feat
-            f1 = Fs(ft1).data
-            f2 = Fs(ft2).data
+            f1Obj = Fs(ft1)
+            f2Obj = Fs(ft2)
+            f1 = f1Obj.data if f1Obj else {}
+            f2 = f2Obj.data if f2Obj else {}
             return lambda n: (f1.get(n, f2.get(n, default)))
         else:
 
             def _getVal(n):
                 v = None
                 for ft in feat:
-                    v = Fs(ft).data.get(n, None)
+                    fObj = Fs(ft)
+                    f = fObj.data if fObj else {}
+                    v = f.get(n, None)
                     if v is not None:
                         break
                 return v or default

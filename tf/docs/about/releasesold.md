@@ -97,7 +97,8 @@ Thanks to Ernst Boogert for spotting them.
 
 2019-12-16
 
-Add behaviour to the `tf.compose.modify()` function
+Add behaviour to the "tf.compose.modify()"  function
+(as of version 9 `tf.dataset.modify()`)
 so that you can output modified features only instead of a whole dataset.
 (Following a suggestion by Cody Kingham).
 
@@ -268,10 +269,11 @@ by `silent=True`.
 
 The biggest addition is
 a new `tf.compose` package with operators to manipulate TF data sets:
-`combine()` and `modify()`.
+`modify()` and `combine()`.
 
-See `tf.compose`.
-and the
+As of version 9: `tf.dataset.modify` and `tf.volumes.collect`.
+
+See
 [compose chapter](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb)
 in the Banks tutorial, where you can see it in action
 on (2 copies of) the nice little 100-word example corpus.

@@ -3,7 +3,7 @@
 
 In order to make the API work, Text-Fabric prepares some data and saves it in
 quick-load format. Most of this data are the features, but there is some extra
-data needed for the special functions of the `tf.core.data.WARP` features and the
+data needed for the special functions of the `tf.parameters.WARP` features and the
 `tf.core.locality.Locality` API.
 
 Normally, you do not use this data, but since it is there, it might be valuable,

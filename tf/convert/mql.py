@@ -120,7 +120,7 @@ rm dataset ; mql -b 3 < dataset.mql
 import os
 import re
 from itertools import chain
-from ..core.data import WARP
+from ..parameters import WARP, OTYPE, OSLOTS
 from ..core.helpers import (
     cleanName,
     isClean,
@@ -214,7 +214,7 @@ class MQL(object):
             self.featureList.append(cleanF)
             self.features[cleanF] = fo
         good = True
-        for feat in (WARP[0], WARP[1], "__levels__"):
+        for feat in (OTYPE, OSLOTS, "__levels__"):
             if feat not in self.tfFeatures:
                 error(
                     "{} feature {} is missing from data set".format(
@@ -430,7 +430,7 @@ GO
                 len(self.levels),
             )
         )
-        oslotsData = self.tfFeatures[WARP[1]].data
+        oslotsData = self.tfFeatures[OSLOTS].data
         self.oslots = oslotsData[0]
         self.maxSlot = oslotsData[1]
         for (otype, av, start, end) in self.levels:

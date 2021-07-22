@@ -4,7 +4,7 @@
 ## Usage
 
 ```python
-from tf.compose import modify
+from tf.dataset import modify
 modify(
     location,
     targetLocation,
@@ -25,13 +25,9 @@ modify(
 import collections
 
 from ..fabric import Fabric
-from ..core.data import WARP
+from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.timestamp import Timestamp
 from ..core.helpers import itemize, isInt, collectFormats, dirEmpty
-
-OTYPE = WARP[0]
-OSLOTS = WARP[1]
-OTEXT = WARP[2]
 
 VALTP = "valueType"
 

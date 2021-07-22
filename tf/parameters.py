@@ -63,6 +63,34 @@ App requirement lower than TF API version
     downgrade Text-Fabric
 """
 
+OTYPE = "otype"
+"""Name of a central feature in a TF data set:
+`otype` maps nodes to their types."""
+
+OSLOTS = "oslots"
+"""Name of a central feature in a TF data set:
+`oslots` maps non-slot nodes to the sets of slots they occupy."""
+
+OTEXT = "otext"
+"""Name of a central (but optional) feature in a TF data set:
+`otext` has configuration settings for sections, structure, and text formats."""
+
+OVOLUME = "ovolume"
+"""Name of the feature that maps nodes of a work dataset
+to nodes in individual volumes in that work."""
+
+OWORK = "owork"
+"""Name of the feature that maps nodes in an individual volume of a work
+to nodes in that work."""
+
+WARP = (OTYPE, OSLOTS, OTEXT)
+"""The names of the central features of TF data sets.
+
+The features `otype` and `oslots` are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.
+"""
+
 GZIP_LEVEL = 2
 """Compression level when compressing tf files."""
 

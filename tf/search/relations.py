@@ -8,15 +8,11 @@ import types
 import re
 from itertools import chain
 
-from ..core.data import WARP
+from ..parameters import OTYPE, OSLOTS
 from ..core.helpers import makeIndex
 from .syntax import reTp
 
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
-
-
-OTYPE = WARP[0]
-OSLOTS = WARP[1]
 
 
 def _l_em(n):

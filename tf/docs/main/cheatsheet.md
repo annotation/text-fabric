@@ -820,30 +820,46 @@ clean()
 
 ---
 
+# Volume support
+
+TF datasets per volume of a work.
+
+```
+from tf.volumes import collect
+
+collect(volumes, work, ...)
+```
+:   Collects several volumes into a new work
+:   `tf.volumes.collect`
+
+```
+from tf.volumes import extract
+
+extract(work, volumes, ...)
+```
+:   Extracts volumes from a work
+:   `tf.volumes.extract`
+
+---
+
 # Dataset Operations
 
 ```
-from tf.compose import combine, modify
-```
+from tf.dataset import modify
 
-```
-combine((source1, source2, ...), target)
-```
-:   Combines several TF datasets into one new TF dataset
-:   `tf.compose.combine`
-
-```
 modify(source, target, ...)
 ```
 :   Modifies a TF datasets into one new TF dataset
-:   `tf.compose.modify`
+:   `tf.dataset.modify`
 
 ```
+from tf.dataset import Versions
+
 Versions(api, va, vb, slotMap)
 ```
 :   Extends a slot mapping between versions of a TF dataset
     to a complete node mapping
-:   `tf.compose.nodemaps`
+:   `tf.dataset.nodemaps`
 
 ---
 

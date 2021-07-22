@@ -5,7 +5,7 @@ import collections
 from array import array
 import time
 from datetime import datetime
-from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL
+from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL, OTYPE, OSLOTS, OTEXT
 from .helpers import (
     setFromSpec,
     valueFromTf,
@@ -17,20 +17,6 @@ from .helpers import (
 )
 
 ERROR_CUTOFF = 20
-
-WARP = (
-    "otype",
-    "oslots",
-    "otext",
-)
-"""The names of the central features of TF data sets.
-
-The features `otype` and `oslots` are crucial to every TF dataset.
-Without them, a dataset is not a TF dataset, although it could still be a
-TF data module.
-"""
-
-WARP2_DEFAULT = dict(sectionFeatures="", sectionTypes="")
 
 DATA_TYPES = ("str", "int")
 
@@ -347,7 +333,7 @@ class Data(object):
                 error(f"\t and {lnk - ERROR_CUTOFF} more cases", tm=False)
         self.data = data
         if not errors:
-            if self.fileName == WARP[0]:
+            if self.fileName == OTYPE:
                 slotType = data[1]
                 otype = []
                 maxSlot = 1
@@ -358,7 +344,7 @@ class Data(object):
                     otype.append(data[n])
                 maxNode = len(data)
                 self.data = (tuple(otype), maxSlot, maxNode, slotType)
-            elif self.fileName == WARP[1]:
+            elif self.fileName == OSLOTS:
                 nodeList = sorted(data)
                 maxSlot = (
                     nodeList[0] - 1
@@ -368,7 +354,7 @@ class Data(object):
                 nodesMapped = len(nodeList)
                 if nodeRange > nodesMapped:
                     error(
-                        f"ERROR: {WARP[1]} fails to map {nodeRange - nodesMapped} nodes"
+                        f"ERROR: {OSLOTS} fails to map {nodeRange - nodesMapped} nodes"
                     )
                     errors = True
                 elif nodeRange < nodesMapped:
@@ -435,7 +421,7 @@ class Data(object):
             info,
             error,
             *[
-                dep.metaData if dep.fileName == WARP[2] else dep.data
+                dep.metaData if dep.fileName == OTEXT else dep.data
                 for dep in self.dependencies
             ],
         )
@@ -520,18 +506,18 @@ class Data(object):
             # just in case the WARP data is present as a sequence and not a dict
             # in case it has been loaded from a binary representation
             fName = self.fileName
-            if fName not in {WARP[0], WARP[1]}:
+            if fName not in {OTYPE, OSLOTS}:
                 error("Data type tuple not suitable for non-WARP feature")
                 return False
-            maxSlot = data[2] if fName == WARP[0] else data[1]
-            slotType = data[1] if fName == WARP[0] else None
+            maxSlot = data[2] if fName == OTYPE else data[1]
+            slotType = data[1] if fName == OTYPE else None
             data = data[0]
-            if fName == WARP[0]:
+            if fName == OTYPE:
                 data = dict(((k, slotType) for k in range(1, maxSlot + 1)))
                 data.update(
                     dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
                 )
-            elif self.fileName == WARP[1]:
+            elif self.fileName == OSLOTS:
                 data = dict(((k + 1 + maxSlot, data[k]) for k in range(len(data))))
         edgeValues = self.edgeValues
         if self.isEdge:

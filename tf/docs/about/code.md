@@ -60,9 +60,14 @@ with the results:
 This interface be served by a local web server provided with data from a TF kernel.
 (`tf.server.start`, `tf.server.kernel` and `tf.server.web`).
 
-## Compose
+## Dataset
 
-(`tf.compose`) There is a bit of machinery to manipulate datasets as a whole.
+(`tf.dataset`) There is a bit of machinery to manipulate datasets as a whole.
+
+## Volumes
+
+(`tf.volumes`) There is a bit of machinery to support the idea that a TF dataset
+is a work that consists of volumes.
 
 ## Convert
 

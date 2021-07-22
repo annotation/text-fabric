@@ -23,7 +23,8 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 * File Format (`tf.about.fileformats`, `tf.about.optimizations`)
 * Converting to TF (`tf.convert.walker`, `tf.convert.mql`)
 * Exporting data and reimporting it with enrichments (`tf.convert.recorder`)
-* Dataset manipulation (`tf.compose.combine` and `tf.compose.modify`)
+* Volume support (`tf.volumes.collect` and `tf.volumes.extract`)
+* Dataset manipulation (`tf.dataset.modify` and `tf.dataset.Versions`)
 * Crossing versions of datasets (`tf.compose.nodemaps`)
 * Code Organisation (`tf.about.code`)
 
