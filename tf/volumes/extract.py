@@ -17,8 +17,8 @@ extract(
 import collections
 from shutil import rmtree
 
-from ..fabric import Fabric
-from ..parameters import OTYPE, OSLOTS, OWORK
+from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
+from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
 from ..core.helpers import dirEmpty, unexpanduser
 
@@ -53,7 +53,7 @@ def extract(
     If no specification is given, a volume will be created for every single
     top-level section.
 
-    Volumes will get a feature `owork` which maps nodes in the volume to
+    Volumes will get a node feature `owork` which maps nodes in the volume to
     nodes in the work.
 
     !!! note "use of feature owork
@@ -64,6 +64,44 @@ def extract(
         with slots the union of the slots of those nodes in the volumes.
 
         See also `tf.volumes.collect`.
+
+    !!! caution "inter-volume edges"
+        Some edge features may link nodes across volumes.
+        When creating a volume, we leave out those edges.
+        Doing so, we loose information, which prevents us to reinstate
+        inter volume edges when we collect volumes.
+        That's why we'll save those inter-volume edges in two special features.
+
+    Volumes will also get two node features `ointerfrom` and `ointerto`.
+
+    For each node *f* in the volume, `ointerfrom` has a value composed of
+    all work nodes *t* outside the volume that are reached by an edge
+    named *e* from *f* with value *val*.
+
+    For each node *t* in the volume, `ointerto` has a value composed of
+    all work nodes *f* outside the volume that reach *t* by an edge
+    named *e* with value *val*.
+
+    More precisely, the keys of `ointerf` and `ointert` are nodes *nW* of the
+    *original work* that correspond with nodes in the volume that have outgoing resp.
+    incoming edges to resp. from other volumes.
+
+    Each value of `oninterf` and `ointert` is a semicolon separated list of
+
+    *mW*, *e*, *doValues*, *valueType* , *value*
+
+    where
+
+    *mW* is the node in the *original work* reached by *nW* or that reaches *nW*
+
+    *e* is the name of the edge feature in question
+
+    *doValues* is `v` if the edge feature has values and `x` otherwise
+
+    *valueType* is "i" (int) or "s" (str)
+
+    *value* is the value assigned by the edge feature to the edge from *nW* to *mW*
+    or from *mW* to *nW*. If the edge does not have values it is a dummy value `x`.
 
     Parameters
     ----------
@@ -82,7 +120,7 @@ def extract(
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    volumes: dict or tuple of (string or tuple)
+    volumes: dict or tuple
         If not given or None, extracts all top-level sections into separate volumes.
         If given, it must be dict or tuple.
 
@@ -173,7 +211,7 @@ def extract(
     if api:
         TF = api.TF
     else:
-        TF = Fabric(locations=workLocation, silent=silent)
+        TF = FabricCore(locations=workLocation, silent=silent)
         api = TF.loadAll(silent=silent)
 
     if not api:
@@ -209,13 +247,15 @@ def extract(
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
     nodeFeatureData = {feat: Fs(feat).data for feat in Fall() if feat != OTYPE}
-    edgeFeatureDataV = {
-        feat: Es(feat).data for feat in Eall() if feat != OSLOTS and Es(feat).doValues
-    }
     edgeFeatureData = {
-        feat: Es(feat).data
+        feat: (
+            Es(feat).doValues,
+            "i" if Es(feat).metadata["valueType"] == "int" else "s",
+            Es(feat).data,
+            Es(feat).dataInv,
+        )
         for feat in Eall()
-        if feat != OSLOTS and not Es(feat).doValues
+        if feat != OSLOTS
     }
 
     nTypeInfo = {}
@@ -227,11 +267,11 @@ def extract(
     def getTopLevels():
         nodes = F.otype.s(toplevelType)
 
-        for (i, n) in enumerate(nodes):
-            head = T.sectionFromNode(n)[0] if byTitle else i + 1
+        for (i, nW) in enumerate(nodes):
+            head = T.sectionFromNode(nW)[0] if byTitle else i + 1
             toplevels[head] = dict(
-                firstSlot=L.d(n, otype=slotType)[0],
-                lastSlot=L.d(n, otype=slotType)[-1],
+                firstSlot=L.d(nW, otype=slotType)[0],
+                lastSlot=L.d(nW, otype=slotType)[-1],
             )
 
         info(f"Work consists of {len(toplevels)} {toplevelType}s:", tm=False)
@@ -318,7 +358,7 @@ def extract(
             owork = {}
             allNodes = set()
             allSlots = set()
-            curSlot = 0
+            sV = 0
 
             heads = v["heads"]
 
@@ -329,32 +369,32 @@ def extract(
                 nSlots = lastSlot - firstSlot + 1
                 info(f"{toplevelType} {head:<20} with {nSlots} slots")
 
-                for s in range(firstSlot, lastSlot + 1):
-                    curSlot += 1
-                    allSlots.add(s)
-                    owork[curSlot] = s
-                    allNodes |= set(up[s - 1])
+                for sW in range(firstSlot, lastSlot + 1):
+                    sV += 1
+                    allSlots.add(sW)
+                    owork[sV] = sW
+                    allNodes |= set(up[sW - 1])
 
             indent(level=1)
 
             allNodes = sorted(allNodes)
 
             nodesByType = collections.defaultdict(list)
-            for n in allNodes:
-                nType = fOtypeData[n - maxSlot - 1]
-                nodesByType[nType].append(n)
+            for nW in allNodes:
+                nType = fOtypeData[nW - maxSlot - 1]
+                nodesByType[nType].append(nW)
 
-            curNode = curSlot + 1
+            nV = sV + 1
 
             indent(level=2)
-            for (nType, nodes) in nodesByType.items():
-                startNode = curNode
-                for n in nodes:
-                    owork[curNode] = n
-                    curNode += 1
+            for (nType, nodesW) in nodesByType.items():
+                startV = nV
+                for nW in nodesW:
+                    owork[nV] = nW
+                    nV += 1
                 if DEBUG:
                     info(
-                        f"node type {nType:<20}: {startNode:>8} - {curNode - 1:>8}",
+                        f"node type {nType:<20}: {startV:>8} - {nV - 1:>8}",
                         tm=False,
                     )
             indent(level=1)
@@ -362,10 +402,7 @@ def extract(
             v[ALLSLOTS] = allSlots
             v[OWORK] = owork
             v[OWORKI] = {m: k for (k, m) in owork.items()}
-            info(
-                f"volume {name:<20} with {curSlot} slots"
-                f" and {len(owork):>8} nodes ..."
-            )
+            info(f"volume {name:<20} with {sV} slots" f" and {len(owork):>8} nodes ...")
 
         indent(level=0)
         info("distribution done")
@@ -391,20 +428,28 @@ def extract(
                 metaData[feat] = {k: m for (k, m) in meta.items()}
                 metaData[feat]["volume"] = name
 
-            metaData[OWORK] = {k: m for (k, m) in metaData[OTYPE].items()}
-            metaData[OWORK][
-                "description"
-            ] = "mapping from nodes in the volume to nodes in the work"
-            metaData[OWORK]["valueType"] = "int"
+            for (tp, feat, desc) in (
+                ("int", OWORK, "mapping from nodes in the volume to nodes in the work"),
+                ("str", OINTERF, "all outgoing inter-volume edges"),
+                ("str", OINTERT, "all incoming inter-volume edges"),
+            ):
+                metaData[feat] = {k: m for (k, m) in metaData[OTYPE].items()}
+                metaData[feat]["description"] = desc
+                metaData[feat]["valueType"] = tp
 
             # node features
 
             nodeFeatures = {}
             v["nodeFeatures"] = nodeFeatures
 
-            otype = {}
-            nodeFeatures[OTYPE] = otype
             nodeFeatures[OWORK] = owork
+
+            otype = {}
+            ointerf = {}
+            ointert = {}
+            nodeFeatures[OTYPE] = otype
+            nodeFeatures[OINTERF] = ointerf
+            nodeFeatures[OINTERT] = ointert
 
             # edge features
 
@@ -414,36 +459,77 @@ def extract(
             oslots = {}
             edgeFeatures[OSLOTS] = oslots
 
-            for (nP, n) in owork.items():
-                otype[nP] = slotType if n <= maxSlot else fOtypeData[n - maxSlot - 1]
+            for (nV, nW) in owork.items():
+                otype[nV] = slotType if nW <= maxSlot else fOtypeData[nW - maxSlot - 1]
 
-                if n > maxSlot:
-                    oslots[nP] = set(
-                        oworki[s] for s in eOslotsData[n - maxSlot - 1] if s in allSlots
+                if nW > maxSlot:
+                    oslots[nV] = set(
+                        oworki[s]
+                        for s in eOslotsData[nW - maxSlot - 1]
+                        if s in allSlots
                     )
-                    if not oslots[nP]:
-                        error(f"{otype[nP]} node {nP=} {n=} has no slots", tm=False)
+                    if not oslots[nV]:
+                        error(f"{otype[nV]} node {nV=} {nW=} has no slots", tm=False)
 
                 for (feat, featD) in nodeFeatureData.items():
-                    val = featD.get(n, None)
+                    val = featD.get(nW, None)
                     if val is not None:
-                        nodeFeatures.setdefault(feat, {})[nP] = val
+                        nodeFeatures.setdefault(feat, {})[nV] = val
 
-                for (feat, featD) in edgeFeatureData.items():
-                    valData = featD.get(n, None)
+                for (feat, (doValues, valTp, featF, featT)) in edgeFeatureData.items():
+                    # outgoing edges are used to construct the in-volume edge
+                    # and the inter-volume outgoing edges
+                    valData = featF.get(nW, None)
+                    doValuesRep = "v" if doValues else "x"
                     if valData is not None:
-                        value = frozenset(oworki[t] for t in valData if t in oworki)
+                        value = {} if doValues else set()
+                        interItems = []
+
+                        for tW in valData:
+                            tV = oworki.get(tW, None)
+                            if doValues:
+                                val = valData[tW]
+                            if tV is None:
+                                valRep = str(val) if doValues else "x"
+                                interItems.append = (
+                                    nW,
+                                    tW,
+                                    feat,
+                                    doValuesRep,
+                                    valTp,
+                                    valRep,
+                                )
+                            else:
+                                if doValues:
+                                    value[tV] = val
+                                else:
+                                    value.add(tV)
                         if value:
-                            edgeFeatures.setdefault(feat, {})[nP] = value
-                for (feat, featD) in edgeFeatureDataV.items():
-                    valData = featD.get(n, None)
+                            edgeFeatures.setdefault(feat, {})[nV] = value
+                        if interItems:
+                            ointerf[nW] = ";".join(
+                                ",".join(str(i) for i in item) for item in interItems
+                            )
+                    # incoming edges are only used to construct
+                    # the inter-volume incoming edges
+
+                    valData = featT.get(nW, None)
                     if valData is not None:
-                        for (t, val) in valData.items():
-                            tP = oworki.get(t, None)
-                            if tP is not None:
-                                edgeFeatures.setdefault(feat, {}).setdefault(nP, {})[
-                                    tP
-                                ] = val
+                        value = set()
+                        interItems = []
+
+                        for fW in valData:
+                            fV = oworki.get(fW, None)
+                            if fV is None:
+                                interItems.append(
+                                    (nW, fW, feat, valData[fW])
+                                    if doValues
+                                    else (nV, fW, feat)
+                                )
+                        if interItems:
+                            ointert[nW] = ";".join(
+                                ",".join(item) for item in interItems
+                            )
 
         indent(level=0)
         info("remapping done")
@@ -460,7 +546,7 @@ def extract(
             edgeFeatures = v["edgeFeatures"]
             loc = f"{volumesLocation}/{name}"
             v["loc"] = loc
-            TF = Fabric(locations=loc, silent=True)
+            TF = FabricCore(locations=loc, silent=True)
             TF.save(
                 metaData=metaData,
                 nodeFeatures=nodeFeatures,

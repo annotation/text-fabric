@@ -83,6 +83,14 @@ OWORK = "owork"
 """Name of the feature that maps nodes in an individual volume of a work
 to nodes in that work."""
 
+OINTERF = "ointerfrom"
+"""Name of the feature that stores the outgoing inter-volume edges
+of a volume."""
+
+OINTERT = "ointerto"
+"""Name of the feature that stores the incoming inter-volume edges
+of a volume."""
+
 WARP = (OTYPE, OSLOTS, OTEXT)
 """The names of the central features of TF data sets.
 
@@ -209,18 +217,21 @@ TEMP_DIR = "_temp"
     in the `.gitignore` file.
 """
 
-LOCATIONS = [
-    "~/Downloads/text-fabric-data",
-    "~/text-fabric-data",
-    "~/github/text-fabric-data",
-    "~/Dropbox/text-fabric-data",
-    "/mnt/shared/text-fabric-data",
-]
+LOCATIONS = ["~/text-fabric-data"]
 """Default locations for tf data files.
 
 If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
 this is the default.
 Text-Fabric will search all these directories as for `.tf` modules of files.
+"""
+
+LOCAL = "_local"
+"""Name of auxiliary directories.
+
+Examples where this is used:
+
+*   volume support: inside a TF dataset, the directory `_local` contains
+    volumes of that dataset
 """
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)

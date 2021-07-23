@@ -33,8 +33,8 @@ import os
 import collections
 from shutil import rmtree
 
-from ..fabric import Fabric
-from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK
+from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT
+from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
 from ..core.helpers import dirEmpty, unexpanduser
 
@@ -84,6 +84,15 @@ def collect(
     The node and edge features will be remapped, so that they have
     the same values in the work as they had in the individual
     volumes.
+
+    !!! caution "inter-volume edges"
+        The edge features of each volume only contain edges between nodes
+        in that volume. But the work as a whole may have had edges
+        between nodes of different volumes.
+        These can be restored from two extra features that may exist in the
+        volumes: `ointerfrom` and `ointerto`.
+
+        See also `tf.volumes.extract`.
 
     The volumes may contain a feature `owork` which maps each node in a volume
     to the corresponding node in the work.
@@ -306,8 +315,8 @@ def collect(
     allSlots = set()
     volumeMap = {}
     volumeMapI = {}
-    maxSlotTotal = None
-    maxNodeTotal = None
+    maxSlotW = None
+    maxNodeW = None
     metaData = collections.defaultdict(dict)
     nodeFeatures = {}
     edgeFeatures = {}
@@ -335,7 +344,7 @@ def collect(
     def loadVolumes():
         for (name, loc) in volumes.items():
             info(f"Loading volume {name} from {unexpanduser(loc)} ...")
-            TFs[name] = Fabric(locations=loc, silent=silent)
+            TFs[name] = FabricCore(locations=loc, silent=silent)
             apis[name] = TFs[name].loadAll(silent=silent)
         return True
 
@@ -475,7 +484,7 @@ def collect(
         indent(level=1, reset=True)
         nodesByType = collections.defaultdict(list)
 
-        curSlot = 0
+        sW = 0
 
         indent(level=2, reset=True)
 
@@ -491,23 +500,23 @@ def collect(
             getOworks[name] = getOwork
 
             maxSlotI = E.oslots.maxSlot
-            volumeOslots[name] = set(range(curSlot + 1, curSlot + 1 + maxSlotI))
+            volumeOslots[name] = set(range(sW + 1, sW + 1 + maxSlotI))
 
             overlap = 0
 
-            for s in range(1, maxSlotI + 1):
-                curSlot += 1
-                vs = (name, s)
+            for sV in range(1, maxSlotI + 1):
+                sW += 1
+                nameSv = (name, sV)
                 if getOwork:
-                    sWork = getOwork(s)
+                    sWork = getOwork(sV)
                     if sWork:
                         if sWork in fromWork:
                             overlap += 1
                         fromWork[sWork] = None
 
-                allSlots.add(curSlot)
-                volumeMap[curSlot] = vs
-                volumeMapI[vs] = curSlot
+                allSlots.add(sW)
+                volumeMap[sW] = nameSv
+                volumeMapI[nameSv] = sW
 
                 if overlap:
                     error(f"Overlapping slots: {overlap}")
@@ -526,47 +535,47 @@ def collect(
             maxSlotI = E.oslots.maxSlot
             maxNodeI = E.oslots.maxNode
 
-            for n in range(maxSlotI + 1, maxNodeI + 1):
-                nType = fOtypeData[n - maxSlotI - 1]
-                nodesByType[nType].append((name, n))
+            for nV in range(maxSlotI + 1, maxNodeI + 1):
+                nType = fOtypeData[nV - maxSlotI - 1]
+                nodesByType[nType].append((name, nV))
 
-        curNode = curSlot
+        nW = sW
 
         indent(level=1)
         info("mapping nodes ...")
         indent(level=2)
         for (nType, nodes) in nodesByType.items():
-            startNode = curNode
-            for vn in nodes:
-                (name, n) = vn
+            startW = nW
+            for nameNv in nodes:
+                (name, nV) = nameNv
                 getOwork = getOworks[name]
                 if getOwork:
-                    nWork = getOwork[n]
-                    if nWork in fromWork:
-                        fromWork[nWork].append(vn)
+                    nW = getOwork[nV]
+                    if nW in fromWork:
+                        fromWork[nW].append(nameNv)
                         continue
                     else:
-                        fromWork[nWork] = []
-                curNode += 1
-                volumeMap[curNode] = vn
-                volumeMapI[vn] = curNode
+                        fromWork[nW] = []
+                nW += 1
+                volumeMap[nW] = nameNv
+                volumeMapI[nameNv] = nW
             if DEBUG:
                 info(
-                    f"node type {nType:<20}: {startNode + 1:>8} - {curNode:>8}",
+                    f"node type {nType:<20}: {startW + 1:>8} - {nW:>8}",
                     tm=False,
                 )
 
         nVolumeNodes = len(volumes) if volumeFeature else 0
-        nNodes = len(volumeMap) + nVolumeNodes
+        nNodesW = len(volumeMap) + nVolumeNodes
 
         indent(level=1)
-        info(f"The new work has {nNodes} nodes of which {len(allSlots)} slots")
+        info(f"The new work has {nNodesW} nodes of which {len(allSlots)} slots")
 
-        nonlocal maxSlotTotal
-        nonlocal maxNodeTotal
+        nonlocal maxSlotW
+        nonlocal maxNodeW
 
-        maxSlotTotal = curSlot
-        maxNodeTotal = curNode
+        maxSlotW = sW
+        maxNodeW = nW
 
         indent(level=0)
         info("collection done")
@@ -587,15 +596,50 @@ def collect(
         oslots = {}
         edgeFeatures[OSLOTS] = oslots
 
+        ointerf = {}
+        ointert = {}
         fOtypeDatas = {}
         eOslotsDatas = {}
         maxSlots = {}
         maxNodes = {}
         nodeFeatureDatas = {}
-        edgeFeatureDataVs = {}
         edgeFeatureDatas = {}
 
+        getOworkWI = {}
+
+        # get the mapping from nodes in the original work
+        # to nodes in all volumes
+
         for name in volumes:
+            getOwork = getOworks[name]
+            if getOwork:
+                maxNode = maxNodes[name]
+                for nV in range(1, maxNode):
+                    nW = getOwork[nV]
+                    getOworkWI[nW] = (name, nV)
+
+        for name in volumes:
+            for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
+                interSource = apis[name].fs(OINTER)
+                if not interSource:
+                    continue
+                interSource = interSource.data
+
+                interData = {}
+                ointer[name] = interData
+
+                for (nW, interEdges) in interSource.items():
+                    (mW, feat, doValues, isInt, val) = interEdges.split(";")
+                    doValues = doValues == "v"
+                    isInt = isInt == "i"
+                    dest = interData.setdefault(feat, {}).setdefault(
+                        nW, {} if doValues else set()
+                    )
+                    if doValues:
+                        dest[mW] = int(val) if isInt else val
+                    else:
+                        dest.add(mW)
+
             fOtypeDatas[name] = apis[name].F.otype.data
             eOslotsDatas[name] = apis[name].E.oslots.data
             maxSlots[name] = apis[name].E.oslots.maxSlot
@@ -605,68 +649,125 @@ def collect(
                 for feat in apis[name].Fall()
                 if feat != OTYPE
             }
-            edgeFeatureDataVs[name] = {
-                feat: apis[name].Es(feat).data
-                for feat in apis[name].Eall()
-                if feat != OSLOTS and apis[name].Es(feat).doValues
-            }
             edgeFeatureDatas[name] = {
-                feat: apis[name].Es(feat).data
+                feat: (
+                    apis[name].Es(feat).doValues,
+                    apis[name].Es(feat).data,
+                    apis[name].Es(feat).dataInv,
+                )
                 for feat in apis[name].Eall()
-                if feat != OSLOTS and not apis[name].Es(feat).doValues
+                if feat != OSLOTS
             }
 
         ovolume = nodeFeatures[OVOLUME]
 
-        for (n, (name, nV)) in volumeMap.items():
-            ovolume[n] = f"{name},{nV}"
+        for (nW, (name, nV)) in volumeMap.items():
+            ovolume[nW] = f"{name},{nV}"
             maxSlotI = maxSlots[name]
 
-            otype[n] = (
-                slotType if n <= maxSlotTotal else fOtypeDatas[name][nV - maxSlotI - 1]
+            otype[nW] = (
+                slotType if nW <= maxSlotW else fOtypeDatas[name][nV - maxSlotI - 1]
             )
 
-            if n > maxSlotTotal:
-                oslots[n] = set(
-                    volumeMapI[(name, s)] for s in eOslotsDatas[name][nV - maxSlotI - 1]
+            if nW > maxSlotW:
+                oslots[nW] = set(
+                    volumeMapI[(name, sV)]
+                    for sV in eOslotsDatas[name][nV - maxSlotI - 1]
                 )
-                if n in fromWork:
-                    for (name2, nV2) in fromWork[n]:
-                        oslots[n] |= set(
-                            volumeMapI[(name2, s)]
-                            for s in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
+                if nW in fromWork:
+                    for (name2, nV2) in fromWork[nW]:
+                        oslots[nW] |= set(
+                            volumeMapI[(name2, sV)]
+                            for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
                         )
 
             for (feat, featD) in nodeFeatureDatas[name].items():
                 val = featD.get(nV, None)
                 if val is not None:
-                    nodeFeatures.setdefault(feat, {})[n] = val
+                    nodeFeatures.setdefault(feat, {})[nW] = val
 
-            for (feat, featD) in edgeFeatureDatas[name].items():
-                valData = featD.get(nV, None)
+            for (feat, (doValues, featT, featF)) in edgeFeatureDatas[name].items():
+                valData = featT.get(nV, None)
                 if valData is not None:
-                    value = frozenset(
-                        volumeMapI[(name, t)]
-                        for t in valData
-                        if (name, t) in volumeMapI
-                    )
+                    value = {} if doValues else set()
+                    for tV in valData:
+                        tW = volumeMapI[(name, tV)]
+                        if doValues:
+                            value[tW] = val
+                        else:
+                            value.add(tW)
                     if value:
-                        edgeFeatures.setdefault(feat, {})[n] = value
+                        edgeFeatures.setdefault(feat, {})[nW] = value
 
-            for (feat, featD) in edgeFeatureDataVs[name].items():
-                valData = featD.get(nV, None)
-                if valData is not None:
-                    for (t, val) in valData.items():
-                        tT = volumeMapI[(name, t)]
-                        edgeFeatures.setdefault(feat, {}).setdefault(n, {})[tT] = val
+        # add inter-volume edges
+        # the ointerf and ointert features have in their values a node
+        # from the original work.
+        # We have to infer the volume and the corresponding node in that volume.
+        # And then we can get the corresponding node in the collected work.
+
+        # If this sounds like a detour that can be cut short:
+        # the new collection we are making does not have to be identical
+        # to the original work.
+        # It could very well be that we have extracted all volumes from a work
+        # and are now collecting only certain volumes for the new work.
+
+        # Indeed, when splitting the original work into volumes,
+        # it might have been the case that certain top-level sections
+        # of the orginal work do not end up in one of the volumes.
+
+        # OUTGOING edges
+
+        for (name, interData) in ointerf.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (fW, interValueData) in interFeatData.items():
+                    for tOW in interValueData:
+                        if tOW not in getOworkWI:
+                            # edge goes outside the new work
+                            continue
+                        else:
+                            (nameT, tV) = getOworkWI[tOW]
+                            tW = volumeMapI[(nameT, tV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
+
+        # INCOMING edges
+
+        for (name, interData) in ointert.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (tW, interValueData) in interFeatData.items():
+                    for fOW in interValueData:
+                        if fOW not in getOworkWI:
+                            # edge comes from outside the new work
+                            continue
+                        else:
+                            (nameF, fV) = getOworkWI[fOW]
+                            fW = volumeMapI[(nameF, fV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
 
         if volumeFeature:
-            curNode = maxNodeTotal
+            nW = maxNodeW
 
             for name in volumes:
-                curNode += 1
-                nodeFeatures.setdefault(volumeFeature, {})[curNode] = name
-                edgeFeatures[OSLOTS][curNode] = volumeOslots[name]
+                nW += 1
+                nodeFeatures.setdefault(volumeFeature, {})[nW] = name
+                edgeFeatures[OSLOTS][nW] = volumeOslots[name]
 
         indent(level=0)
         info("remapping done")
@@ -674,7 +775,7 @@ def collect(
 
     def writeTf():
         info("write work as TF data set")
-        TF = Fabric(locations=workLocation, silent=True)
+        TF = FabricCore(locations=workLocation, silent=True)
         TF.save(
             metaData=metaData,
             nodeFeatures=nodeFeatures,
