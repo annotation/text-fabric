@@ -17,9 +17,9 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 import os
 
 import collections
-from .parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
-from .core.data import Data, MEM_MSG
-from .core.helpers import (
+from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
+from .data import Data, MEM_MSG
+from .helpers import (
     itemize,
     setDir,
     expandDir,
@@ -29,8 +29,8 @@ from .core.helpers import (
     console,
     makeExamples,
 )
-from .core.timestamp import Timestamp
-from .core.prepare import (
+from .timestamp import Timestamp
+from .prepare import (
     levels,
     order,
     rank,
@@ -40,12 +40,12 @@ from .core.prepare import (
     sections,
     structure,
 )
-from .core.computed import Computed
-from .core.nodefeature import NodeFeature
-from .core.edgefeature import EdgeFeature
-from .core.otypefeature import OtypeFeature
-from .core.oslotsfeature import OslotsFeature
-from .core.api import (
+from .computed import Computed
+from .nodefeature import NodeFeature
+from .edgefeature import EdgeFeature
+from .otypefeature import OtypeFeature
+from .oslotsfeature import OslotsFeature
+from .api import (
     Api,
     addNodes,
     addOtype,
@@ -53,7 +53,7 @@ from .core.api import (
     addText,
     addSearch,
 )
-from .convert.mql import MQL, tfFromMql
+from ..convert.mql import MQL, tfFromMql
 
 
 OTEXT_DEFAULT = dict(sectionFeatures="", sectionTypes="")
@@ -284,9 +284,9 @@ Api reference : {APIREF}
         Returns
         -------
         boolean | object
-            If `add` is `True` nothing is returned. Otherwise,
-            the result is a new `tf.core.api.Api` if the feature could be loaded,
-            else `False`.
+            If `add` is `True` a boolean indicating success is returned.
+            Otherwise, the result is a new `tf.core.api.Api`
+            if the feature could be loaded, else `False`.
         """
 
         tmObj = self.tmObj
@@ -388,6 +388,7 @@ Api reference : {APIREF}
             if add:
                 try:
                     self._updateApi()
+                    result = True
                 except MemoryError:
                     console(MEM_MSG)
                     result = False
@@ -397,10 +398,11 @@ Api reference : {APIREF}
                 except MemoryError:
                     console(MEM_MSG)
                     result = False
+        else:
+            result = False
         if silent is not None:
             setSilent(wasSilent)
-        if not add:
-            return result
+        return result
 
     def explore(self, silent=None, show=True):
         """Makes categorization of all features in the dataset.
@@ -987,6 +989,9 @@ Api reference : {APIREF}
 
         setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
         setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
+
+        if self.volume:
+            self.volumeInfo = self.features[OTYPE].metaData.get("volume", None)
 
         requestedSet = set(self.featuresRequested)
 

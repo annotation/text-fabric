@@ -150,6 +150,53 @@ class Api(object):
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
+    def isLoaded(self, fName):
+        """Whether a feature is loaded. If so, what kind the feature is.
+
+        Parameters
+        ----------
+        fName: string
+            The name of a feature
+
+        Returns
+        -------
+        dict
+            If `fName` is not loaded, returns `{}`
+            If `fName` is loaded, returns a dictionary with items:
+
+            *   `kind` is the kind of the feature: `node`, `edge`, `config`, `computed`;
+            *   `type` is the type of values of the feature: `int`, or `str` or `""`;
+            *   `edgeValues` is a boolean that indicates whether the feature is an
+                edge and has values. It is `None` if the feature is not an edge.
+
+        """
+
+        fType = None
+        edgeValues = None
+
+        if hasattr(self.F, fName):
+            fObj = getattr(self.F, fName)
+            fKind = 'node'
+            fType = fObj.meta["valueType"]
+        elif hasattr(self.E, fName):
+            fObj = getattr(self.E, fName)
+            fKind = 'edge'
+            fType = fObj.meta["valueType"]
+            edgeValues = fObj.doValues
+        elif hasattr(self.C, fName):
+            fObj = getattr(self.C, fName)
+            fKind = 'computed'
+        elif fName in self.TF.features:
+            fObj = self.TF.features[fName]
+            if fObj.isConfig:
+                fKind = "config"
+            else:
+                return {}
+        else:
+            return {}
+
+        return dict(kind=fKind, type=fType, edgeValues=edgeValues)
+
     def makeAvailableIn(self, scope):
         """Exports members of the API to the global namespace.
 
@@ -169,13 +216,13 @@ class Api(object):
             `N` | `Nodes`
             `F` | `Feature`
             `Fs` | `FeatureString`
-            `Fall`  `AllFeatures`
+            `Fall` | `AllFeatures`
             `E` | `Edge`
             `Es` | `EdgeString`
             `Eall`  `AllEdges`
             `C` | `Computed`
             `Cs`  `ComputedString`
-            `Call`  `AllComputeds`
+            `Call` | `AllComputeds`
             `L` | `Locality`
             `T` | `Text`
             `S` | `Search`

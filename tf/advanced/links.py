@@ -33,6 +33,12 @@ def linksApi(app, silent):
     It also computes several provenance and documentation links from the
     configuration settings of the corpus.
 
+
+    If a single volume has been loaded, there will be added a provenance notice
+    to the provenance data of the work as a whole,
+    essentially stating which volume from the work is being used and what top-level
+    sections of the work are part of it.
+
     Parameters
     ----------
     app: obj
@@ -64,8 +70,13 @@ def linksApi(app, silent):
     extraUrl = f"{APP_URL}/app-{appName}"
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
+    dataName = repo.upper()
+    volumeInfo = app.volumeInfo
+    if volumeInfo:
+        dataName += f" volume {volumeInfo}"
+
     dataLink = (
-        outLink(repo.upper(), docUrl, f"provenance of {corpus}")
+        outLink(dataName, docUrl, f"provenance of {corpus}")
         if isCompatible and repo is not None and docUrl
         else "/".join(x for x in (appPath, appName, version) if x)
     )

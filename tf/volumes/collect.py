@@ -343,7 +343,7 @@ def collect(
 
     def loadVolumes():
         for (name, loc) in volumes.items():
-            info(f"Loading volume {name} from {unexpanduser(loc)} ...")
+            info(f"Loading volume {name:<60} from {unexpanduser(loc)} ...")
             TFs[name] = FabricCore(locations=loc, silent=silent)
             apis[name] = TFs[name].loadAll(silent=silent)
         return True
@@ -434,7 +434,7 @@ def collect(
         indent(level=1, reset=True)
 
         for name in volumes:
-            info(f"volume {name}")
+            info(f"volume {name}", tm=False)
             api = apis[name]
             if not api:
                 good = False
@@ -486,12 +486,14 @@ def collect(
 
         sW = 0
 
-        indent(level=2, reset=True)
-
         good = True
 
+        # check whether volumes have overlapping slots
+        # we use the original work slots, provided by the owork feature
+        # if it exists; otherwise we cannot know whether slots are overlapping
+        info("Check against overlapping slots ...")
+        indent(level=2, reset=True)
         for name in volumes:
-            info(f"{name}: slots")
             api = apis[name]
             E = api.E
             getOwork = api.Fs(OWORK)
@@ -500,6 +502,7 @@ def collect(
             getOworks[name] = getOwork
 
             maxSlotI = E.oslots.maxSlot
+            info(f"{name:<60}: {maxSlotI:>8} slots", tm=False)
             volumeOslots[name] = set(range(sW + 1, sW + 1 + maxSlotI))
 
             overlap = 0
@@ -508,11 +511,11 @@ def collect(
                 sW += 1
                 nameSv = (name, sV)
                 if getOwork:
-                    sWork = getOwork(sV)
-                    if sWork:
-                        if sWork in fromWork:
+                    sOW = getOwork(sV)
+                    if sOW:
+                        if sOW in fromWork:
                             overlap += 1
-                        fromWork[sWork] = None
+                        fromWork[sOW] = None
 
                 allSlots.add(sW)
                 volumeMap[sW] = nameSv
@@ -521,12 +524,16 @@ def collect(
                 if overlap:
                     error(f"Overlapping slots: {overlap}")
                     good = False
+        indent(level=1)
+        if overlap == 0:
+            info("no overlap")
 
         if not good:
             return False
 
+        info("Group non-slot nodes by type")
+        indent(level=2, reset=True)
         for name in volumes:
-            info(f"{name}: grouping other nodes by type")
             api = apis[name]
 
             E = api.E
@@ -534,6 +541,7 @@ def collect(
             fOtypeData = F.otype.data
             maxSlotI = E.oslots.maxSlot
             maxNodeI = E.oslots.maxNode
+            info(f"{name:<60}: {maxSlotI + 1:>8}-{maxNodeI:>8}", tm=False)
 
             for nV in range(maxSlotI + 1, maxNodeI + 1):
                 nType = fOtypeData[nV - maxSlotI - 1]
@@ -542,7 +550,7 @@ def collect(
         nW = sW
 
         indent(level=1)
-        info("mapping nodes ...")
+        info("Mapping nodes from volume to/from work ...")
         indent(level=2)
         for (nType, nodes) in nodesByType.items():
             startW = nW
@@ -550,20 +558,20 @@ def collect(
                 (name, nV) = nameNv
                 getOwork = getOworks[name]
                 if getOwork:
-                    nW = getOwork[nV]
-                    if nW in fromWork:
-                        fromWork[nW].append(nameNv)
+                    nOW = getOwork(nV)
+                    if nOW in fromWork:
+                        fromWork[nOW].append(nameNv)
                         continue
                     else:
-                        fromWork[nW] = []
+                        fromWork[nOW] = []
                 nW += 1
                 volumeMap[nW] = nameNv
                 volumeMapI[nameNv] = nW
-            if DEBUG:
-                info(
-                    f"node type {nType:<20}: {startW + 1:>8} - {nW:>8}",
-                    tm=False,
-                )
+
+            info(
+                f"{nType:<20}: {startW + 1:>8} - {nW:>8}",
+                tm=False,
+            )
 
         nVolumeNodes = len(volumes) if volumeFeature else 0
         nNodesW = len(volumeMap) + nVolumeNodes
@@ -605,22 +613,9 @@ def collect(
         nodeFeatureDatas = {}
         edgeFeatureDatas = {}
 
-        getOworkWI = {}
-
-        # get the mapping from nodes in the original work
-        # to nodes in all volumes
-
-        for name in volumes:
-            getOwork = getOworks[name]
-            if getOwork:
-                maxNode = maxNodes[name]
-                for nV in range(1, maxNode):
-                    nW = getOwork[nV]
-                    getOworkWI[nW] = (name, nV)
-
         for name in volumes:
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
-                interSource = apis[name].fs(OINTER)
+                interSource = apis[name].Fs(OINTER)
                 if not interSource:
                     continue
                 interSource = interSource.data
@@ -715,6 +710,19 @@ def collect(
         # it might have been the case that certain top-level sections
         # of the orginal work do not end up in one of the volumes.
 
+        getOworkWI = {}
+
+        # get the mapping from nodes in the original work
+        # to nodes in all volumes
+
+        for name in volumes:
+            getOwork = getOworks[name]
+            if getOwork:
+                maxNode = maxNodes[name]
+                for nV in range(1, maxNode):
+                    nW = getOwork(nV)
+                    getOworkWI[nW] = (name, nV)
+
         # OUTGOING edges
 
         for (name, interData) in ointerf.items():
@@ -776,15 +784,17 @@ def collect(
     def writeTf():
         info("write work as TF data set")
         TF = FabricCore(locations=workLocation, silent=True)
-        TF.save(
+        good = TF.save(
             metaData=metaData,
             nodeFeatures=nodeFeatures,
             edgeFeatures=edgeFeatures,
             silent=False if DEBUG else silent or True,
         )
         indent(level=0)
+        if not good:
+            return False
         info("writing done")
-        return True
+        return good
 
     def process():
         indent(level=0, reset=True)

@@ -3,9 +3,9 @@
 ## Initialisation, configuration, meta data, and linking
 
 ```
-A = use('corpus', hoist=globals())
+A = use('corpus', volume=None, hoist=globals())
 ```
-:   start up
+:   start up and load the work or one of its volumes
 :   `tf.app.use`
 
 ```
@@ -31,6 +31,12 @@ A.webLink(n, ...)
 ```
 :   hyperlink to node n on the web
 :   `tf.advanced.links.webLink`
+
+```
+A.isLoaded(feature)
+```
+:   whether the feature is loaded, and if so, basic info about it
+:   `tf.core.api.Api.isLoaded`
 
 ---
 
@@ -157,6 +163,24 @@ A.structureStrFromNode(...)
 ```
 :   lookup structure heading for node
 :   `tf.advanced.sections.structureStrFromNode`
+
+---
+
+## Volumes
+
+```
+A.extract(volumes, ...)
+```
+:   export volumes based on a volume specification
+:   `tf.fabric.Fabric.extract`
+
+
+```
+A.collect(volumes, ...)
+```
+:   collect several volumes into a new work
+:   `tf.advanced.display.export`
+:   `tf.fabric.Fabric.collect`
 
 ---
 
@@ -734,9 +758,9 @@ C.structure.data
 ## Loading
 
 ```
-TF = Fabric(locations=directories, modules=subdirectories, silent=False)
+TF = Fabric(locations=directories, modules=subdirectories, volume=None, silent=False)
 ```
-:   Initialize API on dataset from explicit directories.
+:   Initialize API on work or single volume of a work from explicit directories.
     Use `tf.app.use` instead wherever you can.
 :   `tf.fabric.Fabric`
 
@@ -783,6 +807,22 @@ TF.loadLog()
 :   `tf.core.timestamp.Timestamp.cache`
 
 ---
+
+## Volumes
+
+```
+TF.extract(volumes, ...)
+```
+:   export volumes based on a volume specification
+:   `tf.fabric.Fabric.extract`
+
+
+```
+TF.collect(volumes, ...)
+```
+:   collect several volumes into a new work
+:   `tf.advanced.display.export`
+:   `tf.fabric.Fabric.collect`
 
 ## Saving
 

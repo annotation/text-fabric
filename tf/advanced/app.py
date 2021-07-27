@@ -10,6 +10,7 @@ from ..core.helpers import console, setDir, mergeDict
 from .find import findAppConfig, findAppClass
 from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
+from .volumes import volumesApi
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -51,6 +52,7 @@ class App:
         mod=None,
         locations=None,
         modules=None,
+        volume=None,
         api=None,
         setFile="",
         silent=False,
@@ -186,6 +188,13 @@ class App:
                 It acts as the main `locations` argument,
                 and will be combined with the `modules` argument.
 
+        volume: string
+            This parameters triggers the loading of a single volume of
+            the work. The volume is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumesupport`.
+
         api: object, optional, `None`
             So far, the TF app will construct an advanced API
             with a more or less standard set of features
@@ -259,6 +268,7 @@ class App:
             appName=appName,
             api=api,
             version=version,
+            volume=volume,
             silent=silent,
             _browse=_browse,
         ).items():
@@ -286,17 +296,22 @@ class App:
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
-                TF = Fabric(locations=locations, modules=modules, silent=silent or True)
-                api = TF.load("", silent=silent or True)
+                TF = Fabric(
+                    locations=locations,
+                    modules=modules,
+                    volume=volume,
+                    silent=silent,
+                )
+                api = TF.load("", silent=True)
                 if api:
                     self.api = api
                     excludedFeatures = aContext.excludedFeatures
-                    allFeatures = TF.explore(silent=silent or True, show=True)
+                    allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
                     useFeatures = [
                         f for f in loadableFeatures if f not in excludedFeatures
                     ]
-                    result = TF.load(useFeatures, add=True, silent=silent or True)
+                    result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
                         self.api = None
             else:
@@ -307,19 +322,25 @@ class App:
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
             self.getText = types.MethodType(getText, self)
+            volumesApi(self)
             linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
             displayApi(self, silent)
             textApi(self)
+            setattr(self, "isLoaded", self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if not silent:
                     dh(
                         "<div><b>Text-Fabric API:</b> names "
-                        + outLink("N F E L T S C TF", APIREF, title="doc",)
+                        + outLink(
+                            "N F E L T S C TF",
+                            APIREF,
+                            title="doc",
+                        )
                         + " directly usable</div><hr>"
                     )
 
@@ -501,7 +522,8 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
     except Exception as e:
         if appClass is not App:
             console(
-                f"There was an error loading TF-app {appName} from {appPath}", error=True
+                f"There was an error loading TF-app {appName} from {appPath}",
+                error=True,
             )
             console(repr(e), error=True)
         traceback.print_exc()

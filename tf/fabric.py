@@ -27,11 +27,11 @@ Fabric is an extension of `tf.core.fabric` where volume support is added.
 
 import os
 
-from .parameters import LOCATIONS, LOCAL
+from .parameters import LOCATIONS, LOCAL, OWORK
 from .core.helpers import itemize, setDir, expandDir, unexpanduser
 from .core.fabric import FabricCore
-
-from ..volumes.extract import extract
+from .core.timestamp import Timestamp
+from .volumes import extract, collect
 
 
 class Fabric(FabricCore):
@@ -45,23 +45,11 @@ class Fabric(FabricCore):
 
     Parameters
     ----------
-    volume: string | tuple, optional
-        If absent or None, the whole corpus will be loaded.
-        Otherwise it is the name of a volume.
-        If the volume exists, it will be loaded instead of the whole corpus.
-        If it does not exist, it will be created based on `volumeSpec`.
-     volumeSpec: tuple, optional, None
-        If a volume needs to be created, this is the specification of that volume.
-        It is a tuple of top-level section headings (see `byTitle`)
-        that are to be comprised in the volume.
-        If volumeSpec is absent or None, volumes are created for each individual
-        top-level section.
-    byTitle: boolean, optional False
-        Whether the headings of the top-level sections are taken as their section
-        titles or their sequence numbers.
-    overwrite: boolean, optional `False`
-        If True, overwrites volume directories by cleaning them first.
-        If False, refuses to proceed if a volume directory already exists.
+    volume: string, optional `None`
+        If absent or None, or the empty string: the whole corpus will be loaded.
+        Otherwise, if the volume exists, it will be loaded instead of the whole corpus.
+        If the volume does not exist (after the creation of volumes based on
+        the `volumes` parameter), an error will be generated.
 
     When determining whether the volume exists, only the first members of `locations`
     and `modules` will be used.
@@ -76,59 +64,104 @@ class Fabric(FabricCore):
         modules=None,
         silent=False,
         volume=None,
-        volumeSpec=None,
-        byTitle=True,
-        overwrite=False,
     ):
-        newVolumeLoc = None
+        self.volume = volume
+
+        if modules is None:
+            module = [""]
+        elif type(modules) is str:
+            module = [x.strip() for x in itemize(modules, "\n")]
+        else:
+            module = modules
+        module = module[0] if module else ""
+        module = module.strip("/").strip("\\")
+
+        if locations is None:
+            location = LOCATIONS if LOCATIONS else [""]
+        elif type(locations) is str:
+            location = [x.strip() for x in itemize(locations, "\n")]
+        else:
+            location = locations
+        location = location[0] if location else ""
+        location = location.rstrip("/").rstrip("\\")
+
+        setDir(self)
+        location = expandDir(self, location)
+        sep = "/" if location and module else ""
+
+        location = f"{location}{sep}{module}"
+        sep = "/" if location else ""
+        volumeBase = f"{location}{sep}{LOCAL}"
+        self.volumeBase = volumeBase
 
         if volume:
-            if modules is None:
-                module = ""
-            elif type(modules) is str:
-                module = [x.strip() for x in itemize(modules, "\n")]
-                module = module[0] if module else ""
-            module = module.strip("/").strip("\\")
+            volumeLoc = f"{volumeBase}/{volume}"
+            self.volumeLoc = volumeLoc
+            locations = volumeLoc
+            modules = [""]
+            if not os.path.exists(locations):
+                TM = Timestamp()
+                TM.error(f"Volume {volume} not found under {unexpanduser(volumeLoc)}")
 
-            if locations is None:
-                location = LOCATIONS[0] if LOCATIONS else ""
-            elif type(locations) is str:
-                location = [x.strip() for x in itemize(locations, "\n")]
-                location = location[0] if location else ""
-            location = location.rstrip("/").rstrip("\\")
+        super().__init__(locations=locations, modules=modules, silent=silent)
 
-            setDir(self)
-            location = expandDir(self, location)
-            sep = "/" if location and module else ""
+    def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
+        """Extract volumes from the currently loaded work.
 
-            location = f"{location}{sep}{module}"
-            sep = "/" if location else ""
-            location = f"{location}{sep}{LOCAL}/{volume}"
+        This functions is only provided if the dataset is a work,
+        i.e. it is loaded as a whole.
+        When a single volume of a work is loaded, there is no `extract` method.
 
-            if os.path.exists(location):
-                locations = location
-                modules = [""]
-            else:
-                newVolumeLoc = location
+        See `tf.volumes.extract` and note that parameters
+        `workLocation`, `volumesLocation`, `api`
+        will be supplied automatically.
+        """
 
-        super().__init__(locations=locations, silent=silent)
+        volume = self.volume
+        volumeBase = self.volumeBase
+        api = self.api
 
-        if newVolumeLoc is not None:
-            self.info(f"Generating new volume {volume}")
-            api = self.loadAll(silent=silent)
-            volumes = None if volumeSpec is None else dict(volume=volumeSpec)
-            volumeInfo = extract(
-                None,
-                newVolumeLoc,
-                byTitle=byTitle,
-                volumes=volumes,
-                silent=silent,
-                api=api,
-                overwrite=overwrite,
-            )
-            if volumeInfo:
-                super().__init(locations=newVolumeLoc, silent=silent)
-            else:
-                self.error(
-                    f"Could not create volume {volume} at {unexpanduser(newVolumeLoc)}"
-                )
+        if volume:
+            self.error("Cannot extract volumes from a single volume of a work")
+            return
+
+        return extract(
+            None,
+            volumeBase,
+            volumes,
+            byTitle=byTitle,
+            silent=silent,
+            api=api,
+            overwrite=overwrite,
+            checkOnly=False,
+        )
+
+    def collect(
+        self,
+        volumes,
+        volumeType=None,
+        volumeFeature=None,
+        mergeTypes=None,
+        featureMeta=None,
+        silent=False,
+        overwrite=None,
+    ):
+        """Creates a work out of a number of volumes.
+
+        See `tf.volumes.collect` and note that parameter
+        `workLocation`
+        will be supplied automatically.
+        """
+
+        volumeBase = self.volumeBase
+
+        return collect(
+            volumes,
+            volumeBase,
+            volumeType=volumeType,
+            volumeFeature=volumeFeature,
+            mergeTypes=mergeTypes,
+            featureMeta=featureMeta,
+            silent=silent,
+            overwrite=overwrite,
+        )

@@ -38,11 +38,12 @@ isSilent = TM.isSilent
 def extract(
     workLocation,
     volumesLocation,
+    volumes,
     byTitle=True,
-    volumes=None,
     silent=False,
     api=None,
-    overwrite=False,
+    overwrite=None,
+    checkOnly=False,
 ):
     """Extracts volumes of a work.
 
@@ -50,7 +51,7 @@ def extract(
     Volumes of a work consist of collections of its top-level sections.
 
     You can define volumes by passing a volume specification.
-    If no specification is given, a volume will be created for every single
+    If the specification `True` is given, a volume will be created for every single
     top-level section.
 
     Volumes will get a node feature `owork` which maps nodes in the volume to
@@ -113,21 +114,13 @@ def extract(
         The directory under which the feature files of the volumes
         will be written.
 
-    byTitle: boolean, optional `True`
-        Whether the top-level sections are named by their sequence numbers
-        (starting at 1).
-        or by their titles.
-        Default: by their titles.
-        Note, that depending on the work, section titles may be strings or integers.
-
-    volumes: dict or tuple
-        If not given or None, extracts all top-level sections into separate volumes.
-        If given, it must be dict or tuple.
+    volumes: boolean or dict or set
+        If True, extracts all top-level sections into separate volumes.
 
         If it is a dict, the keys are names for the volumes, and the values
-        are iterables of top-level sections that make up the volumes.
+        are tuples or lists of top-level sections that make up the volumes.
 
-        If it is a tuple, each member is an iterable of top-level sections that
+        If it is a set, each member is an tuple of top-level sections that
         belong to that volume.
         In this case, each volume gets a generated name.
 
@@ -136,6 +129,13 @@ def extract(
 
         If names for volumes have to be generated,
         they will consist of the top-level section specifications, separated by a "-".
+
+    byTitle: boolean, optional `True`
+        Whether the top-level sections are named by their sequence numbers
+        (starting at 1).
+        or by their titles.
+        Default: by their titles.
+        Note, that depending on the work, section titles may be strings or integers.
 
     silent: boolean, optional `False`
         Suppress or enable informational messages.
@@ -147,9 +147,19 @@ def extract(
         If absent or `None`, the dataset at `workLocation`
         will be loaded by Text-Fabric, and its api will be used subsequently.
 
-    overwrite: boolean, optional `False`
-        If True, overwrites volume directories by cleaning them first.
-        If False, refuses to proceed if a volume directory already exists.
+    overwrite: boolean, optional `None`
+        If True, the volumes defined by `volumes` will be
+        all be created and will replace any existing volumes of the same names.
+        If None, only missing volumes will be created. No check will be performed
+        as to whether existing volumes conform to the volume specifications.
+        If False, refuses to proceed if any of the volume directories already exist.
+
+    checkOnly: boolean, optional `False`
+        If True, only checks whether there is work to do based on the values
+        of the `volumes` and `overwrite` parameters.
+        If there is an error, returns False, otherwise returns the volumes in as
+        far as they have to be extracted.
+
 
     Returns
     -------
@@ -208,11 +218,94 @@ def extract(
     `thora` with the first 5 books and `poetry` with two poetic books.
     """
 
+    volumeInfo = {}
+
+    def checkVolumeLocs():
+        good = True
+
+        removable = set()
+        for name in volumeInfo:
+            loc = f"{volumesLocation}/{name}"
+            if not dirEmpty(loc):
+                if overwrite is None:
+                    info(
+                        f"Volume {name} already exists and will not be recreated",
+                        tm=False,
+                    )
+                    removable.add(name)
+                else:
+                    if overwrite:
+                        rmtree(loc)
+                        info(f"Volume {name} exists and will be recreated", tm=False)
+                    else:
+                        good = False
+                        error(
+                            f"Volume {name} already exists in {unexpanduser(loc)}",
+                            tm=False,
+                        )
+        for name in removable:
+            del volumeInfo[name]
+        return good
+
+    def checkVolumes():
+        info("Check volumes ...")
+        indent(level=1)
+
+        good = True
+        if volumes is not True:
+            if type(volumes) is dict:
+                for (name, heads) in volumes.items():
+                    volumeInfo[name] = dict(heads=heads)
+            else:
+                for heads in volumes:
+                    volumeInfo["-".join(str(head) for head in heads)] = dict(
+                        heads=heads
+                    )
+
+            for (name, v) in volumeInfo.items():
+                heads = v["heads"]
+                if not heads:
+                    error("Empty volumes not allowed")
+                    good = False
+                    continue
+
+            good = checkVolumeLocs()
+        return good
+
+    def checkVolumes2():
+        if volumes is True:
+            for head in toplevels:
+                volumeInfo[head] = dict(heads=(head,))
+            if not checkVolumeLocs():
+                return False
+
+        good = True
+        errors = set()
+
+        for (name, v) in volumeInfo.items():
+            thisGood = True
+            for head in v["heads"]:
+                if head not in toplevels:
+                    errors.add(head)
+                    thisGood = False
+            if not thisGood:
+                good = False
+
+        if errors:
+            extra = "title" if byTitle else "number"
+            for head in sorted(errors):
+                error(f"No such {toplevelType} {extra}: {head}")
+
+        indent(level=0)
+        if good:
+            info("volumes ok")
+        return good
+
     if api:
         TF = api.TF
     else:
         TF = FabricCore(locations=workLocation, silent=silent)
-        api = TF.loadAll(silent=silent)
+        api = TF.load("", silent=silent) if checkOnly else TF.loadAll(silent=silent)
 
     if not api:
         return False
@@ -250,7 +343,7 @@ def extract(
     edgeFeatureData = {
         feat: (
             Es(feat).doValues,
-            "i" if Es(feat).metadata["valueType"] == "int" else "s",
+            "i" if Es(feat).meta["valueType"] == "int" else "s",
             Es(feat).data,
             Es(feat).dataInv,
         )
@@ -288,70 +381,12 @@ def extract(
         indent(level=0)
         return True
 
-    def checkVolumes():
-        nonlocal volumes
-
-        info("Check volumes ...")
-
-        if volumes is None:
-            volumes = {head: dict(heads=(head,)) for head in toplevels}
-        else:
-            if type(volumes) is tuple:
-                volumes = {
-                    "-".join(str(head) for head in heads): dict(heads=heads)
-                    for heads in volumes
-                }
-
-            good = True
-            errors = set()
-
-            for (name, v) in volumes.items():
-                thisGood = True
-                heads = v["heads"]
-                if not heads:
-                    error("Empty volumes not allowed")
-                    thisGood = False
-                    continue
-                for head in heads:
-                    if head not in toplevels:
-                        errors.add(head)
-                        thisGood = False
-                if not thisGood:
-                    good = False
-
-            if errors:
-                extra = "title" if byTitle else "number"
-                for head in sorted(errors):
-                    error(f"No such {toplevelType} {extra}: {head}")
-
-            if not good:
-                return None
-
-        for name in volumes:
-            loc = f"{volumesLocation}/{name}"
-            if not dirEmpty(loc):
-                if overwrite:
-                    rmtree(loc)
-                else:
-                    error(
-                        f"Volume directory is not empty: {unexpanduser(loc)}"
-                        " Clean it or remove it or choose another location",
-                        tm=False,
-                    )
-                    good = False
-
-        if not good:
-            return None
-
-        indent(level=0)
-        info("volumes ok")
-
     def distributeNodes():
         info("Distribute nodes over volumes ...")
         indent(level=1, reset=True)
         up = C.levUp.data
 
-        for (name, v) in volumes.items():
+        for (name, v) in volumeInfo.items():
             info(f"volume {name} ...")
             indent(level=2, reset=True)
 
@@ -412,7 +447,7 @@ def extract(
         info("Remap features ...")
         indent(level=1, reset=True)
 
-        for (name, v) in volumes.items():
+        for (name, v) in volumeInfo.items():
             owork = v[OWORK]
             oworki = v[OWORKI]
             allSlots = v[ALLSLOTS]
@@ -423,10 +458,12 @@ def extract(
 
             metaData = {}
             v["metaData"] = metaData
+            headStr = "-".join(str(head) for head in v["heads"])
+            volumeMeta = name if headStr == name else f"{name}:{headStr}"
 
             for (feat, meta) in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
-                metaData[feat]["volume"] = name
+                metaData[feat]["volume"] = volumeMeta
 
             for (tp, feat, desc) in (
                 ("int", OWORK, "mapping from nodes in the volume to nodes in the work"),
@@ -491,13 +528,8 @@ def extract(
                                 val = valData[tW]
                             if tV is None:
                                 valRep = str(val) if doValues else "x"
-                                interItems.append = (
-                                    nW,
-                                    tW,
-                                    feat,
-                                    doValuesRep,
-                                    valTp,
-                                    valRep,
+                                interItems.append(
+                                    (nW, tW, feat, doValuesRep, valTp, valRep)
                                 )
                             else:
                                 if doValues:
@@ -520,15 +552,16 @@ def extract(
 
                         for fW in valData:
                             fV = oworki.get(fW, None)
+                            if doValues:
+                                val = valData[fW]
                             if fV is None:
+                                valRep = str(val) if doValues else "x"
                                 interItems.append(
-                                    (nW, fW, feat, valData[fW])
-                                    if doValues
-                                    else (nV, fW, feat)
+                                    (nW, fW, feat, doValuesRep, valTp, valRep)
                                 )
                         if interItems:
                             ointert[nW] = ";".join(
-                                ",".join(item) for item in interItems
+                                ",".join(str(i) for i in item) for item in interItems
                             )
 
         indent(level=0)
@@ -539,7 +572,9 @@ def extract(
         info("Write volumes as TF datasets")
         indent(level=1, reset=True)
 
-        for (name, v) in volumes.items():
+        good = True
+
+        for (name, v) in volumeInfo.items():
             info(f"Writing volume {name}")
             metaData = v["metaData"]
             nodeFeatures = v["nodeFeatures"]
@@ -547,25 +582,32 @@ def extract(
             loc = f"{volumesLocation}/{name}"
             v["loc"] = loc
             TF = FabricCore(locations=loc, silent=True)
-            TF.save(
+            if not TF.save(
                 metaData=metaData,
                 nodeFeatures=nodeFeatures,
                 edgeFeatures=edgeFeatures,
                 silent=False if DEBUG else silent or True,
-            )
+            ):
+                good = False
         indent(level=0)
+        if not good:
+            return False
         info("writing done")
-        return True
+        return good
 
     def process():
-        nonlocal volumes
-
         indent(level=0, reset=True)
+        if not checkVolumes():
+            return False
+        if checkOnly:
+            if not volumeInfo:
+                return {name: v["heads"] for (name, v) in volumeInfo.items()}
         if not getTopLevels():
             return False
-        volumes = checkVolumes()
-        if volumes is None:
+        if not checkVolumes2():
             return False
+        if checkOnly:
+            return {name: v["heads"] for (name, v) in volumeInfo.items()}
         if not distributeNodes():
             return False
         if not remapFeatures():
@@ -573,7 +615,7 @@ def extract(
         if not writeTf():
             return False
         info("All done")
-        return {name: v["loc"] for (name, v) in volumes.items()}
+        return {name: f"{volumesLocation}/{name}" for name in volumeInfo}
 
     wasSilent = isSilent()
     setSilent(silent)
