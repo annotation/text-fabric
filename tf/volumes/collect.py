@@ -33,10 +33,10 @@ import os
 import collections
 from shutil import rmtree
 
-from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT
+from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser
+from ..core.helpers import dirEmpty, unexpanduser as ux
 
 DEBUG = False
 
@@ -137,13 +137,19 @@ def collect(
         or you can give them a name and pass `(name, location)` instead,
         or pass them as a dictionary with names as keys and locations as values.
         If you do not give names to volumes, their locations will be used as name.
+        However, names are only used if you pass `volumeType` and /or `volumeFeature`.
 
     workLocation: string
         The directory into which the feature files of the work will be written.
 
-    overwrite: boolean, optional `False`
-        If True, overwrites work directory by cleaning it first.
-        If False, refuses to proceed if work directory exists.
+    overwrite: boolean, optional `None`
+        If True, the target collection will be
+        be created and will replace any existing collection/volume of the same name.
+        If None, the collection will only be created if it does not exist.
+        No check will be performed as to whether an existing collection
+        is equal to what would have been created by this call.
+        If False, refuses to proceed if the collection directory already exists.
+
 
     volumeType, volumeFeature: string, optional `None`
         If a string value for one of these is passed,
@@ -220,6 +226,11 @@ def collect(
     silent: boolean, optional `False`
         Suppress or enable informational messages.
 
+    Returns
+    -------
+    boolean
+        Whether the creation was successful.
+
     Example
     -------
         collect(
@@ -287,18 +298,41 @@ def collect(
         @writtenBy=Text-Fabric
         @dateWritten=2019-05-28T10:55:06Z
 
+    !!! caution "inter-version edges"
+        Features with names starting in `omap@` contain node maps from
+        older to newer versions.
+        These will be excluded from collection.
+
     """
 
     if not dirEmpty(workLocation):
-        if overwrite:
-            rmtree(workLocation)
-        else:
-            error(
-                "Work directory is not empty."
-                " Clean it or remove it or choose another location",
+        name = os.path.basename(workLocation)
+        loc = ux(os.path.dirname(workLocation))
+        proceed = True
+        good = True
+
+        if overwrite is None:
+            info(
+                f"Collection {name} already exists and will not be recreated",
                 tm=False,
             )
-            return False
+            proceed = False
+        else:
+            if overwrite:
+                rmtree(workLocation)
+                info(
+                    f"Collection {name} exists and will be recreated", tm=False
+                )
+            else:
+                good = False
+                proceed = False
+                error(
+                    f"Collection {name} already exists at {loc}",
+                    tm=False,
+                )
+
+        if not good or not proceed:
+            return good
 
     if volumeType:
         if not volumeFeature:
@@ -343,7 +377,7 @@ def collect(
 
     def loadVolumes():
         for (name, loc) in volumes.items():
-            info(f"Loading volume {name:<60} from {unexpanduser(loc)} ...")
+            info(f"Loading volume {name:<60} from {ux(loc)} ...")
             TFs[name] = FabricCore(locations=loc, silent=silent)
             apis[name] = TFs[name].loadAll(silent=silent)
         return True
@@ -355,6 +389,8 @@ def collect(
         )
 
         for (feat, keys) in (featureMeta or {}).items():
+            if feat.startswith(OMAP):
+                continue
             for (key, value) in keys.items():
                 if value is not None:
                     meta[feat][key][value] = {""}
@@ -365,6 +401,8 @@ def collect(
 
         for name in volumes:
             for (feat, fObj) in TFs[name].features.items():
+                if feat.startswith(OMAP):
+                    continue
                 if fObj.method:
                     continue
                 thisMeta = fObj.metaData
@@ -374,6 +412,7 @@ def collect(
                     continue
                 if fObj.isEdge:
                     allEdgeFeatures.add(feat)
+                    meta[feat]["edgeValues"][fObj.edgeValues].add(name)
                 else:
                     allNodeFeatures.add(feat)
 
@@ -597,7 +636,8 @@ def collect(
 
         otype = {}
         nodeFeatures[OTYPE] = otype
-        nodeFeatures[OVOLUME] = {}
+        ovolume = {}
+        nodeFeatures[OVOLUME] = ovolume
 
         # edge features
 
@@ -615,25 +655,26 @@ def collect(
 
         for name in volumes:
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
-                interSource = apis[name].Fs(OINTER)
-                if not interSource:
+                if not apis[name].isLoaded(OINTER):
                     continue
-                interSource = interSource.data
+                interSource = apis[name].Fs(OINTER).data
 
                 interData = {}
                 ointer[name] = interData
 
-                for (nW, interEdges) in interSource.items():
-                    (mW, feat, doValues, isInt, val) = interEdges.split(";")
-                    doValues = doValues == "v"
-                    isInt = isInt == "i"
-                    dest = interData.setdefault(feat, {}).setdefault(
-                        nW, {} if doValues else set()
-                    )
-                    if doValues:
-                        dest[mW] = int(val) if isInt else val
-                    else:
-                        dest.add(mW)
+                for (nW, interEdgesStr) in interSource.items():
+                    interEdges = interEdgesStr.split(";")
+                    for interEdge in interEdges:
+                        (mW, feat, doValues, isInt, val) = interEdge.split(",")
+                        doValues = doValues == "v"
+                        isInt = isInt == "i"
+                        dest = interData.setdefault(feat, {}).setdefault(
+                            nW, {} if doValues else set()
+                        )
+                        if doValues:
+                            dest[mW] = int(val) if isInt else val
+                        else:
+                            dest.add(mW)
 
             fOtypeDatas[name] = apis[name].F.otype.data
             eOslotsDatas[name] = apis[name].E.oslots.data
@@ -651,10 +692,8 @@ def collect(
                     apis[name].Es(feat).dataInv,
                 )
                 for feat in apis[name].Eall()
-                if feat != OSLOTS
+                if not feat.startswith(OMAP) and feat != OSLOTS
             }
-
-        ovolume = nodeFeatures[OVOLUME]
 
         for (nW, (name, nV)) in volumeMap.items():
             ovolume[nW] = f"{name},{nV}"
@@ -681,13 +720,14 @@ def collect(
                 if val is not None:
                     nodeFeatures.setdefault(feat, {})[nW] = val
 
-            for (feat, (doValues, featT, featF)) in edgeFeatureDatas[name].items():
-                valData = featT.get(nV, None)
+            for (feat, (doValues, featF, featT)) in edgeFeatureDatas[name].items():
+                valData = featF.get(nV, None)
                 if valData is not None:
                     value = {} if doValues else set()
                     for tV in valData:
                         tW = volumeMapI[(name, tV)]
                         if doValues:
+                            val = valData.get(tV, None)
                             value[tW] = val
                         else:
                             value.add(tW)

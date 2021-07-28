@@ -83,7 +83,7 @@ class EdgeFeature(object):
 
         Returns
         -------
-        set | dict
+        set | tuple
             The nodes reached by the edges **from** a certain node.
             The members of the result are just nodes, if this feature does not
             assign values to edges.
@@ -115,7 +115,7 @@ class EdgeFeature(object):
 
         Returns
         -------
-        set | dict
+        set | tuple
             The nodes where the edges **to** a certain node start.
             The members of the result are just nodes, if this feature does not
             assign values to edges.

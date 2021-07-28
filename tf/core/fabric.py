@@ -990,9 +990,6 @@ Api reference : {APIREF}
         setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
         setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
 
-        if self.volume:
-            self.volumeInfo = self.features[OTYPE].metaData.get("volume", None)
-
         requestedSet = set(self.featuresRequested)
 
         for fName in self.features:

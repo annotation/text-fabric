@@ -91,6 +91,12 @@ OINTERT = "ointerto"
 """Name of the feature that stores the incoming inter-volume edges
 of a volume."""
 
+OMAP = "omap"
+"""Name prefix of features with a node map from an older version to a newer version.
+
+The full name of such a feature is `omap@`*oldversion*`-`*newversion*
+"""
+
 WARP = (OTYPE, OSLOTS, OTEXT)
 """The names of the central features of TF data sets.
 

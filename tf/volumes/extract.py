@@ -17,10 +17,10 @@ extract(
 import collections
 from shutil import rmtree
 
-from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
+from ..parameters import OTYPE, OSLOTS, OTEXT, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser
+from ..core.helpers import dirEmpty, unexpanduser as ux
 
 DEBUG = False
 OWORKI = "oworki"
@@ -72,6 +72,11 @@ def extract(
         Doing so, we loose information, which prevents us to reinstate
         inter volume edges when we collect volumes.
         That's why we'll save those inter-volume edges in two special features.
+
+    !!! caution "inter-version edges"
+        Features with names starting in `omap@` contain node maps from
+        older to newer versions.
+        These will be excluded from volumes.
 
     Volumes will also get two node features `ointerfrom` and `ointerto`.
 
@@ -164,9 +169,10 @@ def extract(
     Returns
     -------
     dict
-        For each new volume an item,
-        whose key is the name of the volume and whose value is its location
-        on disk.
+        For each volume an item,
+        whose key is the name of the volume and whose value is a dict with
+        items `location` (on disk) and `new` (whether the volume has been created
+        by this call).
 
     Example
     -------
@@ -240,7 +246,7 @@ def extract(
                     else:
                         good = False
                         error(
-                            f"Volume {name} already exists in {unexpanduser(loc)}",
+                            f"Volume {name} already exists in {ux(loc)}",
                             tm=False,
                         )
         for name in removable:
@@ -336,7 +342,9 @@ def extract(
     fOtypeData = F.otype.data
     eOslotsData = E.oslots.data
 
-    allFeatures = tuple(feat for feat in TF.features if not TF.features[feat].method)
+    allFeatures = tuple(
+        sorted(set(Fall()) | {f for f in Eall() if not f.startswith(OMAP)} | {OTEXT})
+    )
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
     nodeFeatureData = {feat: Fs(feat).data for feat in Fall() if feat != OTYPE}
@@ -348,7 +356,7 @@ def extract(
             Es(feat).dataInv,
         )
         for feat in Eall()
-        if feat != OSLOTS
+        if feat != OSLOTS and not feat.startswith(OMAP)
     }
 
     nTypeInfo = {}
@@ -476,7 +484,7 @@ def extract(
 
             # node features
 
-            nodeFeatures = {}
+            nodeFeatures = {feat: {} for feat in nodeFeatureData}
             v["nodeFeatures"] = nodeFeatures
 
             nodeFeatures[OWORK] = owork
@@ -490,7 +498,7 @@ def extract(
 
             # edge features
 
-            edgeFeatures = {}
+            edgeFeatures = {feat: {} for feat in edgeFeatureData}
             v["edgeFeatures"] = edgeFeatures
 
             oslots = {}
@@ -516,6 +524,8 @@ def extract(
                 for (feat, (doValues, valTp, featF, featT)) in edgeFeatureData.items():
                     # outgoing edges are used to construct the in-volume edge
                     # and the inter-volume outgoing edges
+                    if doValues:
+                        metaData[feat]["edgeValues"] = True
                     valData = featF.get(nW, None)
                     doValuesRep = "v" if doValues else "x"
                     if valData is not None:
@@ -529,7 +539,7 @@ def extract(
                             if tV is None:
                                 valRep = str(val) if doValues else "x"
                                 interItems.append(
-                                    (nW, tW, feat, doValuesRep, valTp, valRep)
+                                    (tW, feat, doValuesRep, valTp, valRep)
                                 )
                             else:
                                 if doValues:
@@ -557,7 +567,7 @@ def extract(
                             if fV is None:
                                 valRep = str(val) if doValues else "x"
                                 interItems.append(
-                                    (nW, fW, feat, doValuesRep, valTp, valRep)
+                                    (fW, feat, doValuesRep, valTp, valRep)
                                 )
                         if interItems:
                             ointert[nW] = ";".join(
@@ -615,7 +625,10 @@ def extract(
         if not writeTf():
             return False
         info("All done")
-        return {name: f"{volumesLocation}/{name}" for name in volumeInfo}
+        return {
+            name: dict(location=f"{volumesLocation}/{name}", new=name in volumeInfo)
+            for name in volumes
+        }
 
     wasSilent = isSilent()
     setSilent(silent)

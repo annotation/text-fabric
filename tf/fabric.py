@@ -27,7 +27,7 @@ Fabric is an extension of `tf.core.fabric` where volume support is added.
 
 import os
 
-from .parameters import LOCATIONS, LOCAL, OWORK
+from .parameters import LOCATIONS, LOCAL, OTYPE
 from .core.helpers import itemize, setDir, expandDir, unexpanduser
 from .core.fabric import FabricCore
 from .core.timestamp import Timestamp
@@ -65,7 +65,6 @@ class Fabric(FabricCore):
         silent=False,
         volume=None,
     ):
-        self.volume = volume
 
         if modules is None:
             module = [""]
@@ -92,7 +91,6 @@ class Fabric(FabricCore):
         location = f"{location}{sep}{module}"
         sep = "/" if location else ""
         volumeBase = f"{location}{sep}{LOCAL}"
-        self.volumeBase = volumeBase
 
         if volume:
             volumeLoc = f"{volumeBase}/{volume}"
@@ -104,6 +102,14 @@ class Fabric(FabricCore):
                 TM.error(f"Volume {volume} not found under {unexpanduser(volumeLoc)}")
 
         super().__init__(locations=locations, modules=modules, silent=silent)
+        self.volumeBase = volumeBase
+        self.volume = volume
+
+    def _makeApi(self):
+        api = super()._makeApi()
+        if self.volume:
+            self.volumeInfo = self.features[OTYPE].metaData.get("volume", None)
+        return api
 
     def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
         """Extract volumes from the currently loaded work.
@@ -139,6 +145,7 @@ class Fabric(FabricCore):
     def collect(
         self,
         volumes,
+        collection,
         volumeType=None,
         volumeFeature=None,
         mergeTypes=None,
@@ -148,16 +155,24 @@ class Fabric(FabricCore):
     ):
         """Creates a work out of a number of volumes.
 
-        See `tf.volumes.collect` and note that parameter
-        `workLocation`
-        will be supplied automatically.
+        Parameters
+        ----------
+
+        volumes: tuple
+            Just the names of the volumes that you want to collect.
+
+        collection: string
+            The name of the new collection
+
+        See `tf.volumes.collect` for the other parameters and note that parameter
+        `workLocation` will be supplied automatically from `collection`.
         """
 
         volumeBase = self.volumeBase
 
         return collect(
-            volumes,
-            volumeBase,
+            tuple(f"{volumeBase}/{name}" for name in volumes),
+            f"{volumeBase}/{collection}",
             volumeType=volumeType,
             volumeFeature=volumeFeature,
             mergeTypes=mergeTypes,
