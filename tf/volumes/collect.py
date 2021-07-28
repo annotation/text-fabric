@@ -36,7 +36,7 @@ from shutil import rmtree
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
 
 DEBUG = False
 
@@ -231,6 +231,9 @@ def collect(
     boolean
         Whether the creation was successful.
 
+        All features in the resulting collection will get a metadata key
+        `volume` with as value the name of the collection and its component volumes.
+
     Example
     -------
         collect(
@@ -306,14 +309,14 @@ def collect(
     """
 
     if not dirEmpty(workLocation):
-        name = os.path.basename(workLocation)
+        collection = os.path.basename(workLocation)
         loc = ux(os.path.dirname(workLocation))
         proceed = True
         good = True
 
         if overwrite is None:
             info(
-                f"Collection {name} already exists and will not be recreated",
+                f"Collection {collection} already exists and will not be recreated",
                 tm=False,
             )
             proceed = False
@@ -321,13 +324,13 @@ def collect(
             if overwrite:
                 rmtree(workLocation)
                 info(
-                    f"Collection {name} exists and will be recreated", tm=False
+                    f"Collection {collection} exists and will be recreated", tm=False
                 )
             else:
                 good = False
                 proceed = False
                 error(
-                    f"Collection {name} already exists at {loc}",
+                    f"Collection {collection} already exists at {loc}",
                     tm=False,
                 )
 
@@ -388,9 +391,13 @@ def collect(
             lambda: collections.defaultdict(lambda: collections.defaultdict(set))
         )
 
+        volumeStr = ",".join(volumes)
+        collectionMeta = f"{collection}:{volumeStr}"
+
         for (feat, keys) in (featureMeta or {}).items():
             if feat.startswith(OMAP):
                 continue
+            meta[feat]["collection"][collectionMeta] = {"+"}
             for (key, value) in keys.items():
                 if value is not None:
                     meta[feat][key][value] = {""}
@@ -400,11 +407,11 @@ def collect(
             meta[volumeFeature]["description"][f"label of {volumeType}"] = {""}
 
         for name in volumes:
+            allFeatures = getAllFeatures(apis[name])
             for (feat, fObj) in TFs[name].features.items():
-                if feat.startswith(OMAP):
+                if feat not in allFeatures:
                     continue
-                if fObj.method:
-                    continue
+                meta[feat]["collection"][collectionMeta].add(name)
                 thisMeta = fObj.metaData
                 for (k, v) in thisMeta.items():
                     meta[feat][k][v].add(name)
@@ -436,7 +443,7 @@ def collect(
                     hasCombinedValue = False
                     for (v, names) in vs.items():
                         for name in names:
-                            if name == "" and not isGenerated:
+                            if name == "+" or name == "" and not isGenerated:
                                 hasCombinedValue = True
                                 key = k
                             elif name == "":
@@ -654,10 +661,12 @@ def collect(
         edgeFeatureDatas = {}
 
         for name in volumes:
+            api = apis[name]
+            allFeatures = getAllFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
-                if not apis[name].isLoaded(OINTER):
+                if not api.isLoaded(OINTER):
                     continue
-                interSource = apis[name].Fs(OINTER).data
+                interSource = api.Fs(OINTER).data
 
                 interData = {}
                 ointer[name] = interData
@@ -676,23 +685,23 @@ def collect(
                         else:
                             dest.add(mW)
 
-            fOtypeDatas[name] = apis[name].F.otype.data
-            eOslotsDatas[name] = apis[name].E.oslots.data
-            maxSlots[name] = apis[name].E.oslots.maxSlot
-            maxNodes[name] = apis[name].E.oslots.maxNode
+            fOtypeDatas[name] = api.F.otype.data
+            eOslotsDatas[name] = api.E.oslots.data
+            maxSlots[name] = api.E.oslots.maxSlot
+            maxNodes[name] = api.E.oslots.maxNode
             nodeFeatureDatas[name] = {
-                feat: apis[name].Fs(feat).data
-                for feat in apis[name].Fall()
-                if feat != OTYPE
+                feat: api.Fs(feat).data
+                for feat in api.Fall()
+                if feat != OTYPE and feat in allFeatures
             }
             edgeFeatureDatas[name] = {
                 feat: (
-                    apis[name].Es(feat).doValues,
-                    apis[name].Es(feat).data,
-                    apis[name].Es(feat).dataInv,
+                    api.Es(feat).doValues,
+                    api.Es(feat).data,
+                    api.Es(feat).dataInv,
                 )
-                for feat in apis[name].Eall()
-                if not feat.startswith(OMAP) and feat != OSLOTS
+                for feat in api.Eall()
+                if not feat.startswith(OMAP) and feat != OSLOTS and feat in allFeatures
             }
 
         for (nW, (name, nV)) in volumeMap.items():

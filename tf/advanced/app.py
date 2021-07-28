@@ -53,6 +53,7 @@ class App:
         locations=None,
         modules=None,
         volume=None,
+        collection=None,
         api=None,
         setFile="",
         silent=False,
@@ -188,6 +189,13 @@ class App:
                 It acts as the main `locations` argument,
                 and will be combined with the `modules` argument.
 
+        collection: string
+            This parameters triggers the loading of a single collection of
+            volumes of the work. The collection is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumesupport`.
+
         volume: string
             This parameters triggers the loading of a single volume of
             the work. The volume is a directory with `.tf` files,
@@ -269,6 +277,7 @@ class App:
             api=api,
             version=version,
             volume=volume,
+            collection=collection,
             silent=silent,
             _browse=_browse,
         ).items():
@@ -300,6 +309,7 @@ class App:
                     locations=locations,
                     modules=modules,
                     volume=volume,
+                    collection=collection,
                     silent=silent,
                 )
                 api = TF.load("", silent=True)

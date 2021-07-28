@@ -35,9 +35,14 @@ def volumesApi(app):
 
     TF = app.api.TF
 
+    app.collectionInfo = None
     app.volumeInfo = None
-    if TF.volume:
-        app.volumeInfo = TF.volumeInfo
+
+    if TF.collection:
+        app.collectionInfo = TF.collectionInfo
+    else:
+        if TF.volume:
+            app.volumeInfo = TF.volumeInfo
 
 
 def extract(app, *args, **kwargs):

@@ -71,9 +71,13 @@ def linksApi(app, silent):
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = repo.upper()
-    volumeInfo = app.volumeInfo
-    if volumeInfo:
-        dataName += f" volume {volumeInfo}"
+    collectionInfo = app.collectionInfo
+    if collectionInfo:
+        dataName += f" collection {collectionInfo}"
+    else:
+        volumeInfo = app.volumeInfo
+        if volumeInfo:
+            dataName += f" volume {volumeInfo}"
 
     dataLink = (
         outLink(dataName, docUrl, f"provenance of {corpus}")

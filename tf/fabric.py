@@ -28,7 +28,7 @@ Fabric is an extension of `tf.core.fabric` where volume support is added.
 import os
 
 from .parameters import LOCATIONS, LOCAL, OTYPE
-from .core.helpers import itemize, setDir, expandDir, unexpanduser
+from .core.helpers import itemize, setDir, expandDir, unexpanduser as ux
 from .core.fabric import FabricCore
 from .core.timestamp import Timestamp
 from .volumes import extract, collect
@@ -45,17 +45,22 @@ class Fabric(FabricCore):
 
     Parameters
     ----------
+    collection: string, optional `None`
+        If the collection exists, it will be loaded instead of the whole corpus.
+        If the collection does not exist an error will be generated.
+
     volume: string, optional `None`
-        If absent or None, or the empty string: the whole corpus will be loaded.
-        Otherwise, if the volume exists, it will be loaded instead of the whole corpus.
-        If the volume does not exist (after the creation of volumes based on
-        the `volumes` parameter), an error will be generated.
+        If the volume exists, it will be loaded instead of the whole corpus.
+        If the volume does not exist an error will be generated.
 
     When determining whether the volume exists, only the first members of `locations`
     and `modules` will be used.
     There the volumes reside under a directory `_local`.
     You may want to add `_local` to your `.gitignore`, so that volumes generated
     in a GitHub directory will not be pushed.
+
+    !!! caution "Volumes and collections"
+        It is an error to load a volume as a collection and vice-versa
     """
 
     def __init__(
@@ -64,6 +69,7 @@ class Fabric(FabricCore):
         modules=None,
         silent=False,
         volume=None,
+        collection=None,
     ):
 
         if modules is None:
@@ -91,24 +97,56 @@ class Fabric(FabricCore):
         location = f"{location}{sep}{module}"
         sep = "/" if location else ""
         volumeBase = f"{location}{sep}{LOCAL}"
+        collectionBase = f"{location}{sep}{LOCAL}"
 
-        if volume:
+        TM = Timestamp()
+
+        if collection:
+            collectionLoc = f"{collectionBase}/{collection}"
+            self.collectionLoc = collectionLoc
+            locations = collectionLoc
+            modules = [""]
+            if not os.path.exists(locations):
+                TM = Timestamp()
+                TM.error(
+                    f"Collection {collection} not found under {ux(collectionLoc)}"
+                )
+        elif volume:
             volumeLoc = f"{volumeBase}/{volume}"
             self.volumeLoc = volumeLoc
             locations = volumeLoc
             modules = [""]
             if not os.path.exists(locations):
-                TM = Timestamp()
-                TM.error(f"Volume {volume} not found under {unexpanduser(volumeLoc)}")
+                TM.error(f"Volume {volume} not found under {ux(volumeLoc)}")
+
+        if collection and volume:
+            TM.warning(
+                f"Both collection={collection} and volume={volume} specified.", tm=False
+            )
+            TM.warning("Ignoring the volume", tm=False)
 
         super().__init__(locations=locations, modules=modules, silent=silent)
         self.volumeBase = volumeBase
-        self.volume = volume
+        self.collectionBase = collectionBase
+        self.collection = collection
+        self.volume = None if collection else volume
 
     def _makeApi(self):
         api = super()._makeApi()
-        if self.volume:
+
+        if self.collection:
+            self.collectionInfo = self.features[OTYPE].metaData.get("collection", None)
+            if self.collectionInfo is None:
+                self.error("This is not a collection!")
+                self.good = False
+                return None
+
+        elif self.volume:
             self.volumeInfo = self.features[OTYPE].metaData.get("volume", None)
+            if self.volumeInfo is None:
+                self.error("This is not a volume!")
+                self.good = False
+                return None
         return api
 
     def extract(self, volumes, byTitle=True, silent=False, overwrite=None):

@@ -2,6 +2,9 @@ import os
 import sys
 import re
 
+from ..parameters import OMAP
+
+
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 VALID = set("_0123456789") | LETTER
 
@@ -414,3 +417,28 @@ def mergeDict(source, overrides):
             mergeDict(source[k], v)
         else:
             source[k] = v
+
+
+def getAllFeatures(api):
+    """Get all config features and all loaded node and edge features.
+
+    Except `omap@v-w` features.
+    When we take volumes or collections from works,
+    we need to pass these features on.
+
+    This will exclude the computed features and the node/edge features
+    that are not loaded by default.
+    """
+
+    TF = api.TF
+    allFeatures = set()
+
+    for (feat, fObj) in TF.features.items():
+        if fObj.method:
+            continue
+        if fObj.isConfig:
+            allFeatures.add(feat)
+
+    allFeatures |= set(api.Fall())
+    allFeatures |= set(e for e in api.Eall() if not e.startswith(OMAP))
+    return allFeatures

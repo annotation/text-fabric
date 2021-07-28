@@ -17,10 +17,10 @@ extract(
 import collections
 from shutil import rmtree
 
-from ..parameters import OTYPE, OSLOTS, OTEXT, OWORK, OINTERF, OINTERT, OMAP
+from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
 
 DEBUG = False
 OWORKI = "oworki"
@@ -224,13 +224,13 @@ def extract(
     `thora` with the first 5 books and `poetry` with two poetic books.
     """
 
-    volumeInfo = {}
+    volumeData = {}
 
     def checkVolumeLocs():
         good = True
 
         removable = set()
-        for name in volumeInfo:
+        for name in volumeData:
             loc = f"{volumesLocation}/{name}"
             if not dirEmpty(loc):
                 if overwrite is None:
@@ -250,7 +250,7 @@ def extract(
                             tm=False,
                         )
         for name in removable:
-            del volumeInfo[name]
+            del volumeData[name]
         return good
 
     def checkVolumes():
@@ -261,14 +261,14 @@ def extract(
         if volumes is not True:
             if type(volumes) is dict:
                 for (name, heads) in volumes.items():
-                    volumeInfo[name] = dict(heads=heads)
+                    volumeData[name] = dict(heads=heads)
             else:
                 for heads in volumes:
-                    volumeInfo["-".join(str(head) for head in heads)] = dict(
+                    volumeData["-".join(str(head) for head in heads)] = dict(
                         heads=heads
                     )
 
-            for (name, v) in volumeInfo.items():
+            for (name, v) in volumeData.items():
                 heads = v["heads"]
                 if not heads:
                     error("Empty volumes not allowed")
@@ -281,14 +281,14 @@ def extract(
     def checkVolumes2():
         if volumes is True:
             for head in toplevels:
-                volumeInfo[head] = dict(heads=(head,))
+                volumeData[head] = dict(heads=(head,))
             if not checkVolumeLocs():
                 return False
 
         good = True
         errors = set()
 
-        for (name, v) in volumeInfo.items():
+        for (name, v) in volumeData.items():
             thisGood = True
             for head in v["heads"]:
                 if head not in toplevels:
@@ -342,12 +342,12 @@ def extract(
     fOtypeData = F.otype.data
     eOslotsData = E.oslots.data
 
-    allFeatures = tuple(
-        sorted(set(Fall()) | {f for f in Eall() if not f.startswith(OMAP)} | {OTEXT})
-    )
+    allFeatures = getAllFeatures(api)
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
-    nodeFeatureData = {feat: Fs(feat).data for feat in Fall() if feat != OTYPE}
+    nodeFeatureData = {
+        feat: Fs(feat).data for feat in Fall() if feat != OTYPE and feat in allFeatures
+    }
     edgeFeatureData = {
         feat: (
             Es(feat).doValues,
@@ -356,7 +356,7 @@ def extract(
             Es(feat).dataInv,
         )
         for feat in Eall()
-        if feat != OSLOTS and not feat.startswith(OMAP)
+        if feat != OSLOTS and feat in allFeatures
     }
 
     nTypeInfo = {}
@@ -394,7 +394,7 @@ def extract(
         indent(level=1, reset=True)
         up = C.levUp.data
 
-        for (name, v) in volumeInfo.items():
+        for (name, v) in volumeData.items():
             info(f"volume {name} ...")
             indent(level=2, reset=True)
 
@@ -455,7 +455,7 @@ def extract(
         info("Remap features ...")
         indent(level=1, reset=True)
 
-        for (name, v) in volumeInfo.items():
+        for (name, v) in volumeData.items():
             owork = v[OWORK]
             oworki = v[OWORKI]
             allSlots = v[ALLSLOTS]
@@ -584,7 +584,7 @@ def extract(
 
         good = True
 
-        for (name, v) in volumeInfo.items():
+        for (name, v) in volumeData.items():
             info(f"Writing volume {name}")
             metaData = v["metaData"]
             nodeFeatures = v["nodeFeatures"]
@@ -610,14 +610,14 @@ def extract(
         if not checkVolumes():
             return False
         if checkOnly:
-            if not volumeInfo:
-                return {name: v["heads"] for (name, v) in volumeInfo.items()}
+            if not volumeData:
+                return {name: v["heads"] for (name, v) in volumeData.items()}
         if not getTopLevels():
             return False
         if not checkVolumes2():
             return False
         if checkOnly:
-            return {name: v["heads"] for (name, v) in volumeInfo.items()}
+            return {name: v["heads"] for (name, v) in volumeData.items()}
         if not distributeNodes():
             return False
         if not remapFeatures():
@@ -626,7 +626,7 @@ def extract(
             return False
         info("All done")
         return {
-            name: dict(location=f"{volumesLocation}/{name}", new=name in volumeInfo)
+            name: dict(location=f"{volumesLocation}/{name}", new=name in volumeData)
             for name in volumes
         }
 
