@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>tf.compose.modify API documentation</title>
+<title>tf.dataset.modify API documentation</title>
 <meta name="description" content="Modify …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -20,12 +20,12 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.compose.modify</code></h1>
+<h1 class="title">Module <code>tf.dataset.modify</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="modify">Modify</h1>
 <h2 id="usage">Usage</h2>
-<pre><code class="language-python">from tf.compose import modify
+<pre><code class="language-python">from tf.dataset import modify
 modify(
     location,
     targetLocation,
@@ -42,7 +42,7 @@ modify(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/modify.py#L0-L1102" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/modify.py#L0-L1093" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Modify
@@ -50,7 +50,7 @@ modify(
 ## Usage
 
 ```python
-from tf.compose import modify
+from tf.dataset import modify
 modify(
     location,
     targetLocation,
@@ -71,13 +71,9 @@ modify(
 import collections
 
 from ..fabric import Fabric
-from ..core.data import WARP
+from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.timestamp import Timestamp
-from ..core.helpers import itemize, isInt, collectFormats, dirEmpty
-
-OTYPE = WARP[0]
-OSLOTS = WARP[1]
-OTEXT = WARP[2]
+from ..core.helpers import itemize, fitemize, isInt, collectFormats, dirEmpty
 
 VALTP = &#34;valueType&#34;
 
@@ -116,10 +112,6 @@ info = TM.info
 error = TM.error
 isSilent = TM.isSilent
 setSilent = TM.setSilent
-
-
-def _itemize(arg):
-    return [] if not arg else itemize(arg) if type(arg) is str else list(arg)
 
 
 def _rep(iterable):
@@ -191,7 +183,7 @@ def modify(
         -------
             mergeFeatures=dict(
                 resultFeature1=[feat1, feat2],
-                resultFeature2=[feat3, feat4],
+                resultFeature2=&#34;feat3, feat4&#34;,
             ),
 
         If the resulting feature is new, or needs a new description, you can
@@ -199,8 +191,8 @@ def modify(
         For new features you may want to set the `valueType`, although we try
         hard to deduce it from the data available.
 
-    deleteFeatures: dict, optional `None`
-        This should be either a boolean value `True` or an iterable or space
+    deleteFeatures: boolean | string | iterable, optional `None`
+        This should be either a boolean value `True` or an iterable or space/comma
         separated string of features that you want to delete from the result.
 
         `True` means: all features will be deleted that are not the result of merging
@@ -252,10 +244,7 @@ def modify(
                     &#39;inType1&#39;,
                     &#39;inType2&#39;,
                 ),
-                outTypeB=(
-                    &#39;inType3&#39;,
-                    &#39;inType4&#39;,
-                ),
+                outTypeB=&#34;inType3, inType4&#34;,
             )
 
         Example
@@ -306,7 +295,7 @@ def modify(
             Merging is all about non-slot types.
             It is an error if a new type or an old type is a slot type.
 
-    deleteTypes: dict, optional `None`
+    deleteTypes: string | iterable, optional `None`
         You can delete node types from the result altogether.
         You can specify a list of node types as an iterable or as a space
         separated string.
@@ -321,7 +310,7 @@ def modify(
 
         Example
         -------
-            deleteTypes=(&#39; line sentence &#39;)
+            deleteTypes=&#34;line sentence&#34;
 
         !!! caution &#34;slot types&#34;
             Deleting is all about non-slot types.
@@ -370,10 +359,12 @@ def modify(
             You can add any number of features.
             Per feature you have to provide the mapping that defines the feature.
 
-            These features may be new, or they may already be present in the original data.
+            These features may be new,
+            or they may already be present in the original data.
 
             If these features have values to nodes that are not within the boundaries
-            of the new node type, those values will not be assigned but silently discarded.
+            of the new node type,
+            those values will not be assigned but silently discarded.
 
             Example
             -------
@@ -454,11 +445,11 @@ def modify(
     if type(deleteFeatures) is bool and deleteFeatures:
         deleteFeatures = set()
         onlyDeliverUpdatedFeatures = True
-    deleteFeatures = set(_itemize(deleteFeatures))
+    deleteFeatures = set(fitemize(deleteFeatures))
     mergeFeatures = mergeFeatures or {}
 
     addTypes = addTypes or {}
-    deleteTypes = set(_itemize(deleteTypes))
+    deleteTypes = set(fitemize(deleteTypes))
     mergeTypes = mergeTypes or {}
 
     featureMeta = featureMeta or {}
@@ -570,7 +561,7 @@ def modify(
         for (outFeat, inFeats) in mergeFeatures.items():
             eItem = f&#34;{outFeat}: &#34;
 
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if outFeat in WARP:
                 err(&#34;Can not merge into standard features&#34;)
                 continue
@@ -854,7 +845,7 @@ def modify(
 
         for (outFeat, inFeats) in mergeFeatures.items():
             data = {}
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if all(f in origNodeFeatures for f in inFeats):
                 featSrc = Fs
                 featDst = nodeFeatures
@@ -1156,7 +1147,7 @@ def modify(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.compose.modify.modify"><code class="name flex">
+<dt id="tf.dataset.modify.modify"><code class="name flex">
 <span>def <span class="ident">modify</span></span>(<span>location, targetLocation, mergeFeatures=None, deleteFeatures=None, addFeatures=None, mergeTypes=None, deleteTypes=None, addTypes=None, featureMeta=None, silent=False)</span>
 </code></dt>
 <dd>
@@ -1205,7 +1196,7 @@ Again, the merge result wins.</p>
 <h2 id="example">Example</h2>
 <pre><code>mergeFeatures=dict(
     resultFeature1=[feat1, feat2],
-    resultFeature2=[feat3, feat4],
+    resultFeature2="feat3, feat4",
 ),
 </code></pre>
 <p>If the resulting feature is new, or needs a new description, you can
@@ -1213,9 +1204,9 @@ provide metadata in the <code>featureMeta</code> argument.
 For new features you may want to set the <code>valueType</code>, although we try
 hard to deduce it from the data available.</p>
 </dd>
-<dt><strong><code>deleteFeatures</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dt><strong><code>deleteFeatures</code></strong> :&ensp;<code>boolean | string | iterable</code>, optional <code>None</code></dt>
 <dd>
-<p>This should be either a boolean value <code>True</code> or an iterable or space
+<p>This should be either a boolean value <code>True</code> or an iterable or space/comma
 separated string of features that you want to delete from the result.</p>
 <p><code>True</code> means: all features will be deleted that are not the result of merging
 or adding features (see <code>mergeFeatures</code> above and <code>addFeatures</code> below.</p>
@@ -1260,10 +1251,7 @@ These features can be used to discriminate between the merged types.</p>
         'inType1',
         'inType2',
     ),
-    outTypeB=(
-        'inType3',
-        'inType4',
-    ),
+    outTypeB="inType3, inType4",
 )
 </code></pre>
 <h2 id="example_3">Example</h2>
@@ -1307,7 +1295,7 @@ with the old types, after merging the following assignments will be made:</p>
 It is an error if a new type or an old type is a slot type.</p>
 </div>
 </dd>
-<dt><strong><code>deleteTypes</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dt><strong><code>deleteTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
 <dd>
 <p>You can delete node types from the result altogether.
 You can specify a list of node types as an iterable or as a space
@@ -1319,7 +1307,7 @@ those assignments removed.</p>
 <pre><code>deleteTypes=('line', 'sentence')
 </code></pre>
 <h2 id="example_5">Example</h2>
-<pre><code>deleteTypes=(' line sentence ')
+<pre><code>deleteTypes="line sentence"
 </code></pre>
 <div class="admonition caution">
 <p class="admonition-title">slot types</p>
@@ -1366,9 +1354,11 @@ You cannot use this function to add slots to your data set.</p>
 <p class="admonition-title">nodeFeatures, edgeFeatures</p>
 <p>You can add any number of features.
 Per feature you have to provide the mapping that defines the feature.</p>
-<p>These features may be new, or they may already be present in the original data.</p>
+<p>These features may be new,
+or they may already be present in the original data.</p>
 <p>If these features have values to nodes that are not within the boundaries
-of the new node type, those values will not be assigned but silently discarded.</p>
+of the new node type,
+those values will not be assigned but silently discarded.</p>
 <h2 id="example_7">Example</h2>
 <pre><code>dict(
     feat1=dict(
@@ -1440,7 +1430,7 @@ parameter will be merged into existing meta data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/modify.py#L83-L1103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/modify.py#L75-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def modify(
     location,
@@ -1507,7 +1497,7 @@ parameter will be merged into existing meta data.</p>
         -------
             mergeFeatures=dict(
                 resultFeature1=[feat1, feat2],
-                resultFeature2=[feat3, feat4],
+                resultFeature2=&#34;feat3, feat4&#34;,
             ),
 
         If the resulting feature is new, or needs a new description, you can
@@ -1515,8 +1505,8 @@ parameter will be merged into existing meta data.</p>
         For new features you may want to set the `valueType`, although we try
         hard to deduce it from the data available.
 
-    deleteFeatures: dict, optional `None`
-        This should be either a boolean value `True` or an iterable or space
+    deleteFeatures: boolean | string | iterable, optional `None`
+        This should be either a boolean value `True` or an iterable or space/comma
         separated string of features that you want to delete from the result.
 
         `True` means: all features will be deleted that are not the result of merging
@@ -1568,10 +1558,7 @@ parameter will be merged into existing meta data.</p>
                     &#39;inType1&#39;,
                     &#39;inType2&#39;,
                 ),
-                outTypeB=(
-                    &#39;inType3&#39;,
-                    &#39;inType4&#39;,
-                ),
+                outTypeB=&#34;inType3, inType4&#34;,
             )
 
         Example
@@ -1622,7 +1609,7 @@ parameter will be merged into existing meta data.</p>
             Merging is all about non-slot types.
             It is an error if a new type or an old type is a slot type.
 
-    deleteTypes: dict, optional `None`
+    deleteTypes: string | iterable, optional `None`
         You can delete node types from the result altogether.
         You can specify a list of node types as an iterable or as a space
         separated string.
@@ -1637,7 +1624,7 @@ parameter will be merged into existing meta data.</p>
 
         Example
         -------
-            deleteTypes=(&#39; line sentence &#39;)
+            deleteTypes=&#34;line sentence&#34;
 
         !!! caution &#34;slot types&#34;
             Deleting is all about non-slot types.
@@ -1686,10 +1673,12 @@ parameter will be merged into existing meta data.</p>
             You can add any number of features.
             Per feature you have to provide the mapping that defines the feature.
 
-            These features may be new, or they may already be present in the original data.
+            These features may be new,
+            or they may already be present in the original data.
 
             If these features have values to nodes that are not within the boundaries
-            of the new node type, those values will not be assigned but silently discarded.
+            of the new node type,
+            those values will not be assigned but silently discarded.
 
             Example
             -------
@@ -1770,11 +1759,11 @@ parameter will be merged into existing meta data.</p>
     if type(deleteFeatures) is bool and deleteFeatures:
         deleteFeatures = set()
         onlyDeliverUpdatedFeatures = True
-    deleteFeatures = set(_itemize(deleteFeatures))
+    deleteFeatures = set(fitemize(deleteFeatures))
     mergeFeatures = mergeFeatures or {}
 
     addTypes = addTypes or {}
-    deleteTypes = set(_itemize(deleteTypes))
+    deleteTypes = set(fitemize(deleteTypes))
     mergeTypes = mergeTypes or {}
 
     featureMeta = featureMeta or {}
@@ -1886,7 +1875,7 @@ parameter will be merged into existing meta data.</p>
         for (outFeat, inFeats) in mergeFeatures.items():
             eItem = f&#34;{outFeat}: &#34;
 
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if outFeat in WARP:
                 err(&#34;Can not merge into standard features&#34;)
                 continue
@@ -2170,7 +2159,7 @@ parameter will be merged into existing meta data.</p>
 
         for (outFeat, inFeats) in mergeFeatures.items():
             data = {}
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if all(f in origNodeFeatures for f in inFeats):
                 featSrc = Fs
                 featDst = nodeFeatures
@@ -2534,12 +2523,12 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.compose" href="index.html">tf.compose</a></code></li>
+<li><code><a title="tf.dataset" href="index.html">tf.dataset</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.compose.modify.modify" href="#tf.compose.modify.modify">modify</a></code></li>
+<li><code><a title="tf.dataset.modify.modify" href="#tf.dataset.modify.modify">modify</a></code></li>
 </ul>
 </li>
 </ul>

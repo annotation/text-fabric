@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>tf.compose.nodemaps API documentation</title>
+<title>tf.dataset.nodemaps API documentation</title>
 <meta name="description" content="Nodemaps …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -20,7 +20,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.compose.nodemaps</code></h1>
+<h1 class="title">Module <code>tf.dataset.nodemaps</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="nodemaps">Nodemaps</h1>
@@ -125,7 +125,7 @@ these are nodes for which no match could be found.</li>
 <p>A simpler example, using this code is
 <a href="https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb">map.ipynb</a>.</p>
 <h2 id="usage">Usage</h2>
-<pre><code class="language-python">from tf.compose import Versions
+<pre><code class="language-python">from tf.dataset import Versions
 
 V = Versions(api, va, vb, slotMap)
 V.makeVersionMapping()
@@ -133,7 +133,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L0-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L0-L589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Nodemaps
@@ -263,7 +263,7 @@ A simpler example, using this code is
 ## Usage
 
 ```python
-from tf.compose import Versions
+from tf.dataset import Versions
 
 V = Versions(api, va, vb, slotMap)
 V.makeVersionMapping()
@@ -543,7 +543,7 @@ class Versions:
             If `None`, you get information about all nodes.
 
         label: char, optional `None`
-            If given, it is a diagnostic label (see `tf.compose.nodemaps`),
+            If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
             has the given label; if that is a node type, a tuple is returned of all
@@ -596,7 +596,7 @@ class Versions:
         the result can be categorized according to severity.
 
         This function shows that classification.
-        See also `tf.compose.nodemaps`.
+        See also `tf.dataset.nodemaps`.
         &#34;&#34;&#34;
 
         for (acro, desc) in STAT_LABELS.items():
@@ -622,7 +622,7 @@ class Versions:
                 &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                     va, vb
                 ),
-                &#34;encoder&#34;: &#34;Text-Fabric tf.compose.nodemaps&#34;,
+                &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
                 &#34;valueType&#34;: &#34;int&#34;,
                 &#34;edgeValues&#34;: True,
             }
@@ -734,7 +734,7 @@ class Versions:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.compose.nodemaps.caption"><code class="name flex">
+<dt id="tf.dataset.nodemaps.caption"><code class="name flex">
 <span>def <span class="ident">caption</span></span>(<span>level, heading, good=None, newLine=True, continuation=False)</span>
 </code></dt>
 <dd>
@@ -742,7 +742,7 @@ class Versions:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L172-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L172-L229" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def caption(level, heading, good=None, newLine=True, continuation=False):
     prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
@@ -809,7 +809,7 @@ class Versions:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="tf.compose.nodemaps.Versions"><code class="flex name class">
+<dt id="tf.dataset.nodemaps.Versions"><code class="flex name class">
 <span>class <span class="ident">Versions</span></span>
 <span>(</span><span>api, va, vb, slotMap=None)</span>
 </code></dt>
@@ -834,7 +834,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L232-L590" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L232-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, slotMap=None):
@@ -1013,7 +1013,7 @@ it can map node features between the versions.</p>
             If `None`, you get information about all nodes.
 
         label: char, optional `None`
-            If given, it is a diagnostic label (see `tf.compose.nodemaps`),
+            If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
             has the given label; if that is a node type, a tuple is returned of all
@@ -1066,7 +1066,7 @@ it can map node features between the versions.</p>
         the result can be categorized according to severity.
 
         This function shows that classification.
-        See also `tf.compose.nodemaps`.
+        See also `tf.dataset.nodemaps`.
         &#34;&#34;&#34;
 
         for (acro, desc) in STAT_LABELS.items():
@@ -1092,7 +1092,7 @@ it can map node features between the versions.</p>
                 &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                     va, vb
                 ),
-                &#34;encoder&#34;: &#34;Text-Fabric tf.compose.nodemaps&#34;,
+                &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
                 &#34;valueType&#34;: &#34;int&#34;,
                 &#34;edgeValues&#34;: True,
             }
@@ -1198,7 +1198,7 @@ it can map node features between the versions.</p>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="tf.compose.nodemaps.Versions.exploreNodeMapping"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.exploreNodeMapping"><code class="name flex">
 <span>def <span class="ident">exploreNodeMapping</span></span>(<span>self, nodeType)</span>
 </code></dt>
 <dd>
@@ -1206,7 +1206,7 @@ it can map node features between the versions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L364-L388" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L364-L388" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1235,7 +1235,7 @@ it can map node features between the versions.</p>
         caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount))</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.getDiagnosis"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.getDiagnosis"><code class="name flex">
 <span>def <span class="ident">getDiagnosis</span></span>(<span>self, node=None, label=None)</span>
 </code></dt>
 <dd>
@@ -1256,7 +1256,7 @@ If an int, it is a node, and you get information about that node.
 If <code>None</code>, you get information about all nodes.</dd>
 <dt><strong><code>label</code></strong> :&ensp;<code>char</code>, optional <code>None</code></dt>
 <dd>
-<p>If given, it is a diagnostic label (see <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.compose.nodemaps</a></code>),
+<p>If given, it is a diagnostic label (see <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dataset.nodemaps</a></code>),
 and the result is dependent on the value passed to <em>node</em>:
 if that is a single node, a boolean is returned telling whether that node
 has the given label; if that is a node type, a tuple is returned of all
@@ -1273,7 +1273,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L390-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L390-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1294,7 +1294,7 @@ by diagnostic label but now for all nodes.</p>
         If `None`, you get information about all nodes.
 
     label: char, optional `None`
-        If given, it is a diagnostic label (see `tf.compose.nodemaps`),
+        If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
         and the result is dependent on the value passed to *node*:
         if that is a single node, a boolean is returned telling whether that node
         has the given label; if that is a node type, a tuple is returned of all
@@ -1341,7 +1341,7 @@ by diagnostic label but now for all nodes.</p>
         )</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.legend"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.legend"><code class="name flex">
 <span>def <span class="ident">legend</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1349,11 +1349,11 @@ by diagnostic label but now for all nodes.</p>
 <p>When the mapping turns out to be not perfect for a node,
 the result can be categorized according to severity.</p>
 <p>This function shows that classification.
-See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.compose.nodemaps</a></code>.</p></div>
+See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dataset.nodemaps</a></code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L455-L466" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L455-L466" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1362,14 +1362,14 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
     the result can be categorized according to severity.
 
     This function shows that classification.
-    See also `tf.compose.nodemaps`.
+    See also `tf.dataset.nodemaps`.
     &#34;&#34;&#34;
 
     for (acro, desc) in STAT_LABELS.items():
         print(f&#34;{acro} = {desc}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.makeNodeMapping"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.makeNodeMapping"><code class="name flex">
 <span>def <span class="ident">makeNodeMapping</span></span>(<span>self, nodeType)</span>
 </code></dt>
 <dd>
@@ -1377,7 +1377,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L282-L362" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L282-L362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     va = self.va
@@ -1462,7 +1462,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
     caption(0, &#34;\tDone&#34;)</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.makeVersionMapping"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.makeVersionMapping"><code class="name flex">
 <span>def <span class="ident">makeVersionMapping</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1470,7 +1470,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L499-L510" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L499-L510" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1486,7 +1486,7 @@ See also <code><a title="tf.compose.nodemaps" href="#tf.compose.nodemaps">tf.com
     self.writeMap()</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.migrateFeatures"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.migrateFeatures"><code class="name flex">
 <span>def <span class="ident">migrateFeatures</span></span>(<span>self, featureNames, location=None)</span>
 </code></dt>
 <dd>
@@ -1505,7 +1505,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L512-L590" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L512-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1588,7 +1588,7 @@ Otherwise it is a path where the new features should be saved.</dd>
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.omapName"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.omapName"><code class="name flex">
 <span>def <span class="ident">omapName</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1596,7 +1596,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L468-L471" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L468-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -1604,7 +1604,7 @@ Otherwise it is a path where the new features should be saved.</dd>
     return f&#34;omap#{va}-{vb}&#34;</code></pre>
 </details>
 </dd>
-<dt id="tf.compose.nodemaps.Versions.writeMap"><code class="name flex">
+<dt id="tf.dataset.nodemaps.Versions.writeMap"><code class="name flex">
 <span>def <span class="ident">writeMap</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1612,7 +1612,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/compose/nodemaps.py#L473-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/dataset/nodemaps.py#L473-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
@@ -1629,7 +1629,7 @@ Otherwise it is a path where the new features should be saved.</dd>
             &#34;about&#34;: &#34;Mapping from the slots of version {} to version {}&#34;.format(
                 va, vb
             ),
-            &#34;encoder&#34;: &#34;Text-Fabric tf.compose.nodemaps&#34;,
+            &#34;encoder&#34;: &#34;Text-Fabric tf.dataset.nodemaps&#34;,
             &#34;valueType&#34;: &#34;int&#34;,
             &#34;edgeValues&#34;: True,
         }
@@ -1714,27 +1714,27 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.compose" href="index.html">tf.compose</a></code></li>
+<li><code><a title="tf.dataset" href="index.html">tf.dataset</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.compose.nodemaps.caption" href="#tf.compose.nodemaps.caption">caption</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.caption" href="#tf.dataset.nodemaps.caption">caption</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="tf.compose.nodemaps.Versions" href="#tf.compose.nodemaps.Versions">Versions</a></code></h4>
+<h4><code><a title="tf.dataset.nodemaps.Versions" href="#tf.dataset.nodemaps.Versions">Versions</a></code></h4>
 <ul class="two-column">
-<li><code><a title="tf.compose.nodemaps.Versions.exploreNodeMapping" href="#tf.compose.nodemaps.Versions.exploreNodeMapping">exploreNodeMapping</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.getDiagnosis" href="#tf.compose.nodemaps.Versions.getDiagnosis">getDiagnosis</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.legend" href="#tf.compose.nodemaps.Versions.legend">legend</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.makeNodeMapping" href="#tf.compose.nodemaps.Versions.makeNodeMapping">makeNodeMapping</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.makeVersionMapping" href="#tf.compose.nodemaps.Versions.makeVersionMapping">makeVersionMapping</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.migrateFeatures" href="#tf.compose.nodemaps.Versions.migrateFeatures">migrateFeatures</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.omapName" href="#tf.compose.nodemaps.Versions.omapName">omapName</a></code></li>
-<li><code><a title="tf.compose.nodemaps.Versions.writeMap" href="#tf.compose.nodemaps.Versions.writeMap">writeMap</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.exploreNodeMapping" href="#tf.dataset.nodemaps.Versions.exploreNodeMapping">exploreNodeMapping</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.getDiagnosis" href="#tf.dataset.nodemaps.Versions.getDiagnosis">getDiagnosis</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.legend" href="#tf.dataset.nodemaps.Versions.legend">legend</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.makeNodeMapping" href="#tf.dataset.nodemaps.Versions.makeNodeMapping">makeNodeMapping</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.makeVersionMapping" href="#tf.dataset.nodemaps.Versions.makeVersionMapping">makeVersionMapping</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.migrateFeatures" href="#tf.dataset.nodemaps.Versions.migrateFeatures">migrateFeatures</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.omapName" href="#tf.dataset.nodemaps.Versions.omapName">omapName</a></code></li>
+<li><code><a title="tf.dataset.nodemaps.Versions.writeMap" href="#tf.dataset.nodemaps.Versions.writeMap">writeMap</a></code></li>
 </ul>
 </li>
 </ul>

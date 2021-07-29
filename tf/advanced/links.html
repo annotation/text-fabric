@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L0-L541" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L0-L556" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -64,6 +64,12 @@ def linksApi(app, silent):
     It also computes several provenance and documentation links from the
     configuration settings of the corpus.
 
+
+    If a single volume has been loaded, there will be added a provenance notice
+    to the provenance data of the work as a whole,
+    essentially stating which volume from the work is being used and what top-level
+    sections of the work are part of it.
+
     Parameters
     ----------
     app: obj
@@ -95,8 +101,17 @@ def linksApi(app, silent):
     extraUrl = f&#34;{APP_URL}/app-{appName}&#34;
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
+    dataName = repo.upper()
+    collectionInfo = app.collectionInfo
+    if collectionInfo:
+        dataName += f&#34; collection {collectionInfo}&#34;
+    else:
+        volumeInfo = app.volumeInfo
+        if volumeInfo:
+            dataName += f&#34; volume {volumeInfo}&#34;
+
     dataLink = (
-        outLink(repo.upper(), docUrl, f&#34;provenance of {corpus}&#34;)
+        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
         else &#34;/&#34;.join(x for x in (appPath, appName, version) if x)
     )
@@ -590,7 +605,7 @@ and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L132-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L147-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -639,6 +654,10 @@ and it is packed with provenance and documentation links.</p></div>
 <p>The link API provides methods to maps nodes to urls of web resources.
 It also computes several provenance and documentation links from the
 configuration settings of the corpus.</p>
+<p>If a single volume has been loaded, there will be added a provenance notice
+to the provenance data of the work as a whole,
+essentially stating which volume from the work is being used and what top-level
+sections of the work are part of it.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
@@ -651,7 +670,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L29-L129" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L29-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent):
     &#34;&#34;&#34;Produce the link API.
@@ -659,6 +678,12 @@ we force <code>silent=True</code>.</p></div>
     The link API provides methods to maps nodes to urls of web resources.
     It also computes several provenance and documentation links from the
     configuration settings of the corpus.
+
+
+    If a single volume has been loaded, there will be added a provenance notice
+    to the provenance data of the work as a whole,
+    essentially stating which volume from the work is being used and what top-level
+    sections of the work are part of it.
 
     Parameters
     ----------
@@ -691,8 +716,17 @@ we force <code>silent=True</code>.</p></div>
     extraUrl = f&#34;{APP_URL}/app-{appName}&#34;
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
+    dataName = repo.upper()
+    collectionInfo = app.collectionInfo
+    if collectionInfo:
+        dataName += f&#34; collection {collectionInfo}&#34;
+    else:
+        volumeInfo = app.volumeInfo
+        if volumeInfo:
+            dataName += f&#34; volume {volumeInfo}&#34;
+
     dataLink = (
-        outLink(repo.upper(), docUrl, f&#34;provenance of {corpus}&#34;)
+        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
         else &#34;/&#34;.join(x for x in (appPath, appName, version) if x)
     )
@@ -780,7 +814,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L328-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L343-L370" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -834,7 +868,7 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L505-L542" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L520-L557" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(org, repo, version, commit, release, local, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -897,7 +931,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L295-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L310-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -975,7 +1009,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/links.py#L171-L292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/links.py#L186-L307" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

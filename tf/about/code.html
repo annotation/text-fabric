@@ -73,8 +73,14 @@ with the results:</p>
 </ul>
 <p>This interface be served by a local web server provided with data from a TF kernel.
 (<code><a title="tf.server.start" href="../server/start.html">tf.server.start</a></code>, <code><a title="tf.server.kernel" href="../server/kernel.html">tf.server.kernel</a></code> and <code><a title="tf.server.web" href="../server/web.html">tf.server.web</a></code>).</p>
-<h2 id="compose">Compose</h2>
-<p>(<code><a title="tf.compose" href="../compose/index.html">tf.compose</a></code>) There is a bit of machinery to manipulate datasets as a whole.</p>
+<h2 id="volumes-and-collections">Volumes and collections</h2>
+<p>(<code><a title="tf.volumes" href="../volumes/index.html">tf.volumes</a></code>) Machinery to support the idea that a TF dataset
+is a work that consists of volumes. Volumes and collections of volumes
+can be loaded without loading the whole work while still maintaining
+a profound connection with the whole work through additional features such as <code>owork</code>.
+See also <code><a title="tf.about.volumes" href="volumes.html">tf.about.volumes</a></code>.</p>
+<h2 id="dataset">Dataset</h2>
+<p>(<code><a title="tf.dataset" href="../dataset/index.html">tf.dataset</a></code>) Machinery to manipulate datasets as a whole.</p>
 <h2 id="convert">Convert</h2>
 <p>(<code><a title="tf.convert" href="../convert/index.html">tf.convert</a></code>) There is support for conversion to and from MQL and for converting
 arbitrary structured data (such as database dumps or TEI files) to TF
@@ -87,7 +93,7 @@ and conversions between them and Unicode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/about/code.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/about/code.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/code.md
@@ -163,7 +169,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#search">Search</a></li>
 <li><a href="#advanced">Advanced</a></li>
 <li><a href="#web-interface">Web interface</a></li>
-<li><a href="#compose">Compose</a></li>
+<li><a href="#volumes-and-collections">Volumes and collections</a></li>
+<li><a href="#dataset">Dataset</a></li>
 <li><a href="#convert">Convert</a></li>
 <li><a href="#writing">Writing</a></li>
 </ul>

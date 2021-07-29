@@ -25,6 +25,392 @@
 <section id="section-intro">
 <p>Newer releases: <code><a title="tf.about.releases" href="releases.html">tf.about.releases</a></code></p>
 <h1 id="older-releases">Older releases</h1>
+<h2 id="8">8</h2>
+<h3 id="85">8.5</h3>
+<h4 id="8514">8.5.14</h4>
+<p>2021-07-06</p>
+<p>Small fix in the search client: the totals of nodes where displayed as undefined
+for node types for which no layers have been defined.</p>
+<h4 id="8513">8.5.13</h4>
+<p>2021-06-28</p>
+<p>No changes except that the version requirement for Python is back to 3.6.3.</p>
+<h4 id="85789101112">8.5.7,8,9,10,11,12</h4>
+<p>2021-06-14</p>
+<p>Small fixes in the distribution of tf.client.make</p>
+<h4 id="856">8.5.6</h4>
+<p>2021-06-09</p>
+<ul>
+<li>Updates in <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code>: a function <code>releaseData</code> that releases
+a version of TF data of a corpus to GitHub.
+The release number gets bumped, the data is zipped and attached to the release.
+This helps to write pipeline scripts that transfer corpus updates to the TF
+eco-system.</li>
+</ul>
+<h4 id="855">8.5.5</h4>
+<p>2021-06-08</p>
+<ul>
+<li>Updates in the <code><a title="tf.client" href="../client/index.html">tf.client</a></code>: more ways of building the layeredsearch client.
+Driven by the NENA pipeline.</li>
+</ul>
+<h4 id="854">8.5.4</h4>
+<p>2021-05-20</p>
+<ul>
+<li>Updates in the <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code>: a new method to export positions using
+much less data, provided certain assumptions hold.</li>
+<li>Updates in the <code><a title="tf.client" href="../client/index.html">tf.client</a></code>: a more memory-friendly way to store
+the corpus data, especially the positions data.
+The method can be switched on and off, depending whether the corpus
+satisfies the preliminaries for this space optimization.</li>
+</ul>
+<h4 id="853">8.5.3</h4>
+<p>2021-05-11</p>
+<p>Updates in the layered search app and its distribution.
+The Recorder API has some additions <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code></p>
+<h4 id="852">8.5.2</h4>
+<p>2021-05-06</p>
+<p>Updates in the layered search app and its distribution.</p>
+<h4 id="851">8.5.1</h4>
+<p>2021-05-04</p>
+<p>Small fixes in the the layered search app and its documentation.</p>
+<h4 id="850">8.5.0</h4>
+<p>2021-05-03</p>
+<p>There is a new piece of functionality in Text-Fabric: making search interfaces for existing TF-apps.
+These are static HTML+CSS+Javascript pages, that provide <em>layered search</em>.
+Text-Fabric has a new command <code>text-fabric-make dataset interfacename</code> which generates such an app
+from a bit of configuration and code, which you have to provide in the <code>app-</code><em>dataset</em> repo.</p>
+<p>See <code><a title="tf.client" href="../client/index.html">tf.client</a></code>.</p>
+<h3 id="84">8.4</h3>
+<h4 id="8414">8.4.14</h4>
+<p>2021-04-20</p>
+<p>A minor addition: you can now get the CSS of an app and re-use it in notebooks without
+loading the whole API.
+See <code>advanced.display.getCss</code>.</p>
+<h4 id="8413">8.4.13</h4>
+<p>2021-03-22</p>
+<p>A few minor improvements:</p>
+<ul>
+<li>the <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code> is improved. It can now save postion files per node type.</li>
+<li>the <code><a title="tf.core.timestamp.Timestamp.indent" href="../core/timestamp.html#tf.core.timestamp.Timestamp.indent">Timestamp.indent()</a></code> method now accepts a boolean for its <code>level</code> parameter.
+By this you can increase and decrease the current indentation level of messages.</li>
+</ul>
+<h4 id="8412">8.4.12</h4>
+<p>2021-02-11</p>
+<p>Fix in <code><a title="tf.convert.recorder.Recorder.read" href="../convert/recorder.html#tf.convert.recorder.Recorder.read">Recorder.read()</a></code>:
+this method wrote to the positions file, rather than reading from it.
+Thanks to Sophie Arnoult for spotting it.</p>
+<h4 id="8411">8.4.11</h4>
+<p>2021-02-03</p>
+<p>Enhancement: the TF-browser can now export the contents of the node pad, decorated
+with location information and text content. Previously, you only got a
+bare list of nodes in <code>nodes.tsv</code>. Now you also get a <code>nodesx.tsv</code>,
+analogously to <code>resultsx.tsv</code>. See <code><a title="tf.about.browser" href="browser.html">tf.about.browser</a></code>.
+However, such a list of node tuples may not be as uniform as a list of query results.
+Non-uniform lists lead to a messy output table, but still usable.</p>
+<p>Thanks to Jorik Groen for asking for this.</p>
+<p>This also affects the <code>A.export()</code> function (<code><a title="tf.advanced.display.export" href="../advanced/display.html#tf.advanced.display.export">export()</a></code>),
+which was only able to export uniform lists.
+Now it can also export non-uniform lists.</p>
+<h4 id="8410">8.4.10</h4>
+<p>2021-02-01</p>
+<p>Bug fix: when loading an additional feature into an existing TF API,
+the feature did not get properly reloaded if it had already been loaded
+and the feature data had changed.</p>
+<h4 id="849">8.4.9</h4>
+<p>2021-02-01</p>
+<p>Updated links to the documentation.
+The documentation has now a working search interface.</p>
+<h4 id="848">8.4.8</h4>
+<p>2021-01-30</p>
+<p>Added logic to map nodes between versions of TF datasets.
+This logic existed in a notebook that explores versions of the Hebrew Bible:
+<a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb">versionMappings</a>.
+Whereas the code to map slots between versions is highly dependent on the dataset in question,
+the code to extend a slot mapping to a node mapping is generic.
+That code is now in "tf.compose.nodemaps" (as of version 9 in <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code>).
+It is used in the
+<a href="https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb">missieven</a>
+corpus.</p>
+<h4 id="847">8.4.7</h4>
+<p>2021-01-20</p>
+<p>Renamed some CSS classes in the display style sheet of Text-Fabric.
+These names interfered with class names used in Jupyter Book.</p>
+<p>Added several transcriptions for Arabic characters.
+See <code><a title="tf.writing.arabic" href="../writing/arabic.html">tf.writing.arabic</a></code>.</p>
+<h4 id="846">8.4.6</h4>
+<p>2020-12-30</p>
+<p>Small fixes in the functions that load a TF app: you could already
+directly load the data of an app-less corpus from disk, now you can do the
+same if such data resides on GitHub.</p>
+<p>Various other things had to be tweaked a little.</p>
+<h4 id="845">8.4.5</h4>
+<p>2020-10-29</p>
+<p>Small fix of a problem introduced by the previous enhancement.</p>
+<h4 id="844">8.4.4</h4>
+<p>2020-10-15</p>
+<p>Enhancement in web links to nodes:
+there is a new setting <code>webOffset</code> in the configuration of a TF app that let you specify
+an offset between a logical page number and a physical page number.
+See the webOffset setting of <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>.
+It is needed by the new
+<a href="https://github.com/annotation/app-missieven/blob/master/code/config.yaml">missieven corpus</a>.</p>
+<h4 id="843">8.4.3</h4>
+<p>2020-09-25</p>
+<p>Minor fix in the display:</p>
+<ul>
+<li><strong>Left-to-right transcriptions in right-to-left corpora still had rtl tendencies</strong>
+Fixed by using the CSS mechanism <code>unicode-bidi: embed</code> more consistently.</li>
+</ul>
+<h4 id="842">8.4.2</h4>
+<p>2020-09-20</p>
+<p>Minor fixes in the display:</p>
+<ul>
+<li><strong>The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.</strong>
+Fixed by using CSS mechanisms such as <code>display: inline-block</code> and <code>unicode-bidi: embed</code>.</li>
+<li><strong>Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible</strong>.
+Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
+zoom level, the dots become better visible.
+It seems that using the <code>rem</code> unit for specifying border-sizes contributes to this behaviour.
+So I specified all border widths in <code>px</code>, assuming 20px = 1rem.</li>
+</ul>
+<h4 id="841">8.4.1</h4>
+<p>2020-09-08</p>
+<p>Better error message if a standard module of a data set cannot be found.
+E.g. the parallels modules for the BHSA, DSS.</p>
+<p>Addition in <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code>, in the <code>cv.node()</code> function to add nodes:
+it accepts an additional optional parameter to link an explicit set of
+slots to a node.</p>
+<h4 id="840">8.4.0</h4>
+<p>2020-07-09</p>
+<p>Added the <code><a title="tf.convert.tf.explode" href="../convert/tf.html#tf.convert.tf.explode">explode()</a></code> function, by which you can <em>explode</em> feature files
+into TF files without optimizations. </p>
+<h3 id="83">8.3</h3>
+<h4 id="835">8.3.5</h4>
+<p>2020-06-29</p>
+<p>Fixed an error when opening the Uruk corpus in the Text-Fabric browser.</p>
+<h4 id="834">8.3.4</h4>
+<p>2020-06-26</p>
+<p>Various small fixes:</p>
+<ul>
+<li>Fix in result display in TF browser: the members of a result
+form a row again instead of a column.</li>
+<li>Better error message in some cases in <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code>.</li>
+<li>Moved documentation of the walker functions into the docstrings of those functions.</li>
+</ul>
+<h4 id="833">8.3.3</h4>
+<p>Small fix by Cody Kingham: when calling <code>use(api=...)</code> with an TF api constructed
+before, the <code>TF</code> attribute of this api is not transported to the app object.</p>
+<p>2020-06-13</p>
+<h4 id="831-832">8.3.1, 8.3.2</h4>
+<p>2020-06-11</p>
+<p>Gentium Plus font installed.
+Greek Character table added.
+Small fixes, one blocking for the Text-Fabric browser.</p>
+<h4 id="830">8.3.0</h4>
+<p>2020-06-10</p>
+<h4 id="backward-incompatibility">Backward incompatibility</h4>
+<div class="admonition caution">
+<p class="admonition-title">corpus apps</p>
+<p>The API between TF and its apps has changed.
+If you upgrade TF to this version, you also have to upgrade the
+TF apps you work with.
+You can do that by adding the checkout specifier <code>latest</code> when
+you call the corpus, e.g. for the BHSA (one time is enough):</p>
+</div>
+<pre><code class="language-python">A = use(&quot;bhsa:latest&quot;, hoist=globals()&quot;)
+</code></pre>
+<p>Text-Fabric is now better in detecting if you load an incompatible app and will give
+you a useful hint.</p>
+<p>The post-incantation messages of TF are now better formatted and more modest.
+Most information is collapsed and expandible by a triangle.</p>
+<p>Under the hood improvement of the display algorithm.
+Both <code>plain</code> and <code>pretty</code> rely on the same <em>unravel</em> algorithm
+that turns a graph fragment into a tree for display.</p>
+<p>See <code><a title="tf.advanced.unravel" href="../advanced/unravel.html">tf.advanced.unravel</a></code>.</p>
+<p>The unravel function is also exposed as <code>A.unravel(node)</code>,
+see <code><a title="tf.advanced.unravel.unravel" href="../advanced/unravel.html#tf.advanced.unravel.unravel">unravel()</a></code>.</p>
+<p>Now you can define your own rendering function, taking the unraveled tree as input.</p>
+<h4 id="new-display-settings">New display settings</h4>
+<p>See <code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>.</p>
+<ul>
+<li><code>plainGaps</code>: normally, gaps are shown in plain displays.
+But the control is yours, with <code>plainGaps=False</code> gaps are suppressed.</li>
+<li>
+<p><code>hiddenTypes</code>: you can prevent node types from adding to the structure of the
+display, which might become very cluttered. E.g. the atom types of the
+BHSA, and also the subphrases and half verses.
+Before, it was a binary choice: the app determines which node types are hidden
+by default, and the user can switch them all on or all off.</p>
+<p>Now the app still determines the default, but the user can hide/unhide all
+combinations of node types.</p>
+</li>
+</ul>
+<h4 id="tf-browser">TF browser</h4>
+<p>Various fixes:</p>
+<ul>
+<li>Starting in v8, the ports through which the TF-browser communicates are no longer
+hardwired in the app config, but are determined at run time: the first
+available ports are choses.
+This had the negative consequence that different corpora could use the same port in turn,
+thereby wreaking havoc with the sessions for those corpora.
+Now the ports are determined as a function of the arguments to <code>text-fabric</code>.</li>
+<li>Text alignment and line wrapping has improved, especially in plain displays.</li>
+</ul>
+<h3 id="82">8.2</h3>
+<h4 id="822">8.2.2</h4>
+<p>2020-06-02</p>
+<p>When you load a corpus by means of <code>use</code>, you can now also override the config settings of the
+app on the fly. See <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code></p>
+<h4 id="821">8.2.1</h4>
+<p>2020-05-30</p>
+<p>Fixed two silly bugs, one of which a show stopper, preventing precomputation after
+download of data to complete.</p>
+<h4 id="820">8.2.0</h4>
+<p>2020-05-29</p>
+<p>Improved display algorithm: corpora need less configuration for TF
+to generate good displays.
+In particular, the atom types of the BHSA are now handled without
+tricky branches in the code.</p>
+<p>See <code><a title="tf.advanced.display" href="../advanced/display.html">tf.advanced.display</a></code>.</p>
+<p>Core API: a bit of streamlining:
+all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">new</p>
+<p>If you want to talk to yourself in markdown or HTML you can use
+<code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.</p>
+<p>See <code><a title="tf.advanced.helpers.dm" href="../advanced/helpers.html#tf.advanced.helpers.dm">dm()</a></code> and <code><a title="tf.advanced.helpers.dh" href="../advanced/helpers.html#tf.advanced.helpers.dh">dh()</a></code>.</p>
+</div>
+<h4 id="backward-incompatibility_1">Backward incompatibility</h4>
+<div class="admonition caution">
+<p class="admonition-title">corpus apps</p>
+<p>The API between TF and its apps has changed.
+If you upgrade TF to this version, you also have to upgrade the
+TF apps you work with.
+You can do that by adding the checkout specifier <code>latest</code> when
+you call the corpus, e.g. for the BHSA (one time is enough):</p>
+</div>
+<pre><code class="language-python">A = use(&quot;bhsa:latest&quot;, hoist=globals()&quot;)
+</code></pre>
+<div class="admonition caution">
+<p class="admonition-title">logging functions</p>
+<p>The methods <code>info</code> <code>error</code> <code>warning</code> are no longer hoisted to the
+global name space.</p>
+<p>Use <code>A.info</code> or <code>TF.info</code> for these methods.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">node functions</p>
+<p><code>N()</code> has become: <code>N.walk()</code></p>
+<p><code>sortNodes</code>, <code>sortKey</code>, <code>sortkeyTuple</code>, <code>sortkeyChunk</code>
+and <code>otypeRank</code> are no longer hoisted to the global name space.</p>
+<p>Use <code>N.sortNodes</code> etc. instead for all these methods.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">fix the compatibility relatively easily</p>
+<p>If you use the functions in question a lot in a program or notebook,
+define them right after the incantation as follows:</p>
+</div>
+<pre><code class="language-python">A = use('xxx', hoist=globals())
+
+info = A.info
+error = A.error
+silentOn = A.silentOn
+...
+sortNodes = N.sortNodes
+...
+</code></pre>
+<p>etc.</p>
+<h3 id="81">8.1</h3>
+<h4 id="812">8.1.2</h4>
+<p>2020-05-22</p>
+<p>Thoroughly reorganized docs.
+All available documentation has now moved into docstrings.
+The formatted docstrings form the online documentation as well.
+See <code><a title="tf" href="../index.html">tf</a></code>.</p>
+<h4 id="810-811">8.1.0, 8.1.1</h4>
+<p>2020-05-14</p>
+<ul>
+<li>New method in the
+<code>L</code>-API (<code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>): <code>L.i(node, otype=nodeTypes)</code>.
+It delivers the <em>intersectors</em> of a node, i.e. the nodes that share slots
+with the given <code>node</code>.</li>
+<li>Fixed a subtle bug in the <code>A.pretty()</code> which manifested itself in the Old Babylonian corpus.
+A line with clusters in it displayed the clusters twice if <code>baseTypes</code> has a non slot type.
+When doing a <code>plain</code> within a <code>pretty</code>,
+the displayer "forgot" the nodes encountered in <code>plain</code>, so they could not be skipped by the
+rest of <code>pretty</code>.</li>
+<li>More improvements in the display logic where things refuse to be hierarchical.</li>
+<li>To the display option <code>extraFeatures</code> you may also pass values like <code>type:feature</code>,
+see options (<code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>) under list of display parameters.</li>
+</ul>
+<h3 id="80">8.0</h3>
+<h4 id="803">8.0.3</h4>
+<p>2020-05-12</p>
+<ul>
+<li><code>A.header()</code> was used by the TF-browser to produce a colofon.
+Now it can be used in a Jupyter Notebook to produce the overview of features used,
+normally displayed after the incantantation.</li>
+<li>There is a new <code>A.showProvenance()</code> that can be used to show detailed provenance of
+the corpus data and all its modules. When you exported from the TF-browser, this data was
+included (and still is), but now you can invoke it from a program as well (typically in
+a Jupter notebook)</li>
+<li><strong>Provenance</strong> When exporting data from the TF-browser, a provenance sheet is generated
+with entries for the data modules. Now you can generate this sheet in a Jupyter notebook
+as well, by means of <code>A.showProvenance()</code>.</li>
+<li>Online data fetching/checking does not happen by default anymore if there is already
+local data. This reduces the number of GitHub API requests greatly, and users are less prone
+to hit the limit.</li>
+</ul>
+<h4 id="802">8.0.2</h4>
+<p>2020-05-11</p>
+<p>Small fix in <code>webLink()</code>.</p>
+<h4 id="801">8.0.1</h4>
+<p>2020-05-10</p>
+<p>Small fixes in order to accomodate NBviewer.</p>
+<p>There were two problems</p>
+<ul>
+<li>the online nbviewer clipped many boxes in the display
+(cause: name conflict between CSS class names in Text-Fabric and in NBviewer)</li>
+<li>the lineheight in the classic Jupyter notebook is fixed on a value that is too low,
+in Jupyter lab it is ok. Fix: we add CSS code that unsets the line height that
+the classic notebook sets.</li>
+</ul>
+<h4 id="800">8.0.0</h4>
+<p>2020-05-08</p>
+<p><strong>NB: This is a backwards incompatible change. Strongly recommended:</strong></p>
+<pre><code class="language-sh">pip3 install --upgrade text-fabric
+</code></pre>
+<p><strong>All known TF-apps (the ones in under the <code>annotation</code> org on GitHub) have been
+adapted to this change.</strong></p>
+<p><strong>Text-Fabric auto-downloads the newest version of an app by default.
+As a consequence, if you have not upgraded Text-Fabric, it will fail.</strong></p>
+<ul>
+<li>The functionality offered by TF-apps is now called the <em>Advanced API</em>, as opposed to the
+<em>core API</em>. Everything under <code>A</code> is the advanced API. The things under <code>F</code>, <code>E</code>, <code>L</code>, <code>T</code>,
+etc. are the core API.</li>
+<li><code>A</code> will work also for TF datasets without an app. The advanced API will compute
+reasonable defaults based on what it finds in the TF data. It is still possible to
+write full-fledged TF apps that extend the capabilities of the advanced API.</li>
+<li>Several special effects of individual TF apps are now supported by the advanced API.
+The most intricate it support for displaying discontinuous types piece by piece, as
+in the BHSA. The other one is support for graphics inclusion as in the Uruk corpus.</li>
+<li>Improvements in <code>plain()</code> and <code>pretty()</code>: they deliver better results and
+they make it easier for tf-app developers.<ul>
+<li>Pretty displays can be tamed by cutting of the unfolding of structure at some level
+and replacing it by plain displays (<code>baseTypes</code> display option).</li>
+<li>Highlights in plain display will be done, also for nodes deeply buried in the top node.
+This is determined by <code>baseTypes</code>: a node of type in <code>baseTypes</code> will get full
+highlighting, all other nodes will get highlighting by boxes around the material.</li>
+</ul>
+</li>
+<li>Core API improvement:
+The <code>Locality</code> (<code>L</code>) functions <code>d()</code>, <code>u()</code>, <code>l()</code>, <code>r()</code> take an optional
+parameter <code>otype</code> holding the node type of the related nodes that will be delivered.
+This can now also be an iterable of types (preferably a set of frozenset).</li>
+<li>Text-Fabric will detect when apps have a version mismatch with the general framework.
+If so, it will issue warnings and it will gracefully fall back to the core API.
+Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.</li>
+</ul>
+<h2 id="older-releases_1">Older releases</h2>
+<p>See <code><a title="tf.about.releasesold" href="#tf.about.releasesold">tf.about.releasesold</a></code></p>
 <h2 id="7">7</h2>
 <h3 id="711">7.11</h3>
 <h4 id="7112">7.11.2</h4>
@@ -97,7 +483,9 @@ walker conversion, see <code><a title="tf.convert.walker" href="../convert/walke
 <p>Thanks to Ernst Boogert for spotting them.</p>
 <h4 id="790">7.9.0</h4>
 <p>2019-12-16</p>
-<p>Add behaviour to the <code><a title="tf.compose.modify" href="../compose/modify.html">tf.compose.modify</a></code> function
+<p>Add behaviour to the "tf.compose.modify()"
+function
+(as of version 9 <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code>)
 so that you can output modified features only instead of a whole dataset.
 (Following a suggestion by Cody Kingham).</p>
 <p>2019-07-24</p>
@@ -205,10 +593,10 @@ by <code>silent=True</code>.</p>
 <p>2019-05-30</p>
 <h5 id="compose">Compose</h5>
 <p>The biggest addition is
-a new <code><a title="tf.compose" href="../compose/index.html">tf.compose</a></code> package with operators to manipulate TF data sets:
-<code>combine()</code> and <code>modify()</code>.</p>
-<p>See <code><a title="tf.compose" href="../compose/index.html">tf.compose</a></code>.
-and the
+a new "tf.compose" package with operators to manipulate TF data sets:
+<code>modify()</code> and <code>combine()</code>.</p>
+<p>As of version 9: <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> and <code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code>.</p>
+<p>See
 <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb">compose chapter</a>
 in the Banks tutorial, where you can see it in action
 on (2 copies of) the nice little 100-word example corpus.</p>
@@ -1557,7 +1945,7 @@ with the <code>IN</code> relationship of MQL, like <code>[chapter book IN (Genes
 <p>Edges with edge values did not allow for the absence of values. Now they do.</p>
 <h4 id="306">3.0.6</h4>
 <p>2017-10-05</p>
-<p>A major tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it can
+<p>A major tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.importMQL">FabricCore.importMQL()</a></code> function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>. In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -1565,12 +1953,12 @@ Hebrew Bible. I transform a gapped sequence of monads into a continuous sequence
 of slots.</p>
 <h4 id="305">3.0.5</h4>
 <p>2017-10-05</p>
-<p>Another little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it
+<p>Another little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.importMQL">FabricCore.importMQL()</a></code> function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the <a href="https://github.com/etcbc/bhsa">BHSA</a>.</p>
 <h4 id="304">3.0.4</h4>
 <p>2017-10-04</p>
-<p>Little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code> function so that it can handle
+<p>Little tweak in the <code><a title="tf.fabric.Fabric.importMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.importMQL">FabricCore.importMQL()</a></code> function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 <a href="https://github.com/etcbc/extrabiblical">extrabiblical</a> material.</p>
 <h4 id="302-303">3.0.2, 3.0.3</h4>
@@ -1584,7 +1972,7 @@ has moved from <a href="https://github.com/etcbc">ETCBC</a> to
 <h4 id="300">3.0.0</h4>
 <p>2017-10-02</p>
 <p>MQL! You can now convert MQL data into a TF dataset:
-<code><a title="tf.fabric.Fabric.importMQL" href="../fabric.html#tf.fabric.Fabric.importMQL">Fabric.importMQL()</a></code>. We had already <code><a title="tf.fabric.Fabric.exportMQL" href="../fabric.html#tf.fabric.Fabric.exportMQL">Fabric.exportMQL()</a></code>.</p>
+<code><a title="tf.fabric.Fabric.importMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.importMQL">FabricCore.importMQL()</a></code>. We had already <code><a title="tf.fabric.Fabric.exportMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.exportMQL">FabricCore.exportMQL()</a></code>.</p>
 <p>The consequence is that we can operate with much agility between the worlds of
 MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
@@ -1792,7 +2180,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/about/releasesold.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/about/releasesold.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
@@ -1864,6 +2252,71 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#older-releases">Older releases</a><ul>
+<li><a href="#8">8</a><ul>
+<li><a href="#85">8.5</a><ul>
+<li><a href="#8514">8.5.14</a></li>
+<li><a href="#8513">8.5.13</a></li>
+<li><a href="#85789101112">8.5.7,8,9,10,11,12</a></li>
+<li><a href="#856">8.5.6</a></li>
+<li><a href="#855">8.5.5</a></li>
+<li><a href="#854">8.5.4</a></li>
+<li><a href="#853">8.5.3</a></li>
+<li><a href="#852">8.5.2</a></li>
+<li><a href="#851">8.5.1</a></li>
+<li><a href="#850">8.5.0</a></li>
+</ul>
+</li>
+<li><a href="#84">8.4</a><ul>
+<li><a href="#8414">8.4.14</a></li>
+<li><a href="#8413">8.4.13</a></li>
+<li><a href="#8412">8.4.12</a></li>
+<li><a href="#8411">8.4.11</a></li>
+<li><a href="#8410">8.4.10</a></li>
+<li><a href="#849">8.4.9</a></li>
+<li><a href="#848">8.4.8</a></li>
+<li><a href="#847">8.4.7</a></li>
+<li><a href="#846">8.4.6</a></li>
+<li><a href="#845">8.4.5</a></li>
+<li><a href="#844">8.4.4</a></li>
+<li><a href="#843">8.4.3</a></li>
+<li><a href="#842">8.4.2</a></li>
+<li><a href="#841">8.4.1</a></li>
+<li><a href="#840">8.4.0</a></li>
+</ul>
+</li>
+<li><a href="#83">8.3</a><ul>
+<li><a href="#835">8.3.5</a></li>
+<li><a href="#834">8.3.4</a></li>
+<li><a href="#833">8.3.3</a></li>
+<li><a href="#831-832">8.3.1, 8.3.2</a></li>
+<li><a href="#830">8.3.0</a></li>
+<li><a href="#backward-incompatibility">Backward incompatibility</a></li>
+<li><a href="#new-display-settings">New display settings</a></li>
+<li><a href="#tf-browser">TF browser</a></li>
+</ul>
+</li>
+<li><a href="#82">8.2</a><ul>
+<li><a href="#822">8.2.2</a></li>
+<li><a href="#821">8.2.1</a></li>
+<li><a href="#820">8.2.0</a></li>
+<li><a href="#backward-incompatibility_1">Backward incompatibility</a></li>
+</ul>
+</li>
+<li><a href="#81">8.1</a><ul>
+<li><a href="#812">8.1.2</a></li>
+<li><a href="#810-811">8.1.0, 8.1.1</a></li>
+</ul>
+</li>
+<li><a href="#80">8.0</a><ul>
+<li><a href="#803">8.0.3</a></li>
+<li><a href="#802">8.0.2</a></li>
+<li><a href="#801">8.0.1</a></li>
+<li><a href="#800">8.0.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#older-releases_1">Older releases</a></li>
 <li><a href="#7">7</a><ul>
 <li><a href="#711">7.11</a><ul>
 <li><a href="#7112">7.11.2</a></li>

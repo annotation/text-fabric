@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/parameters.py#L0-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/parameters.py#L0-L263" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -40,7 +40,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;8.5.14&#39;
+VERSION = &#39;9.0.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -93,6 +93,48 @@ App requirement higher than TF API version
 App requirement lower than TF API version
 :   The user is advised to obtain a newer version of the app, or alternatively,
     downgrade Text-Fabric
+&#34;&#34;&#34;
+
+OTYPE = &#34;otype&#34;
+&#34;&#34;&#34;Name of a central feature in a TF data set:
+`otype` maps nodes to their types.&#34;&#34;&#34;
+
+OSLOTS = &#34;oslots&#34;
+&#34;&#34;&#34;Name of a central feature in a TF data set:
+`oslots` maps non-slot nodes to the sets of slots they occupy.&#34;&#34;&#34;
+
+OTEXT = &#34;otext&#34;
+&#34;&#34;&#34;Name of a central (but optional) feature in a TF data set:
+`otext` has configuration settings for sections, structure, and text formats.&#34;&#34;&#34;
+
+OVOLUME = &#34;ovolume&#34;
+&#34;&#34;&#34;Name of the feature that maps nodes of a work dataset
+to nodes in individual volumes in that work.&#34;&#34;&#34;
+
+OWORK = &#34;owork&#34;
+&#34;&#34;&#34;Name of the feature that maps nodes in an individual volume of a work
+to nodes in that work.&#34;&#34;&#34;
+
+OINTERF = &#34;ointerfrom&#34;
+&#34;&#34;&#34;Name of the feature that stores the outgoing inter-volume edges
+of a volume.&#34;&#34;&#34;
+
+OINTERT = &#34;ointerto&#34;
+&#34;&#34;&#34;Name of the feature that stores the incoming inter-volume edges
+of a volume.&#34;&#34;&#34;
+
+OMAP = &#34;omap&#34;
+&#34;&#34;&#34;Name prefix of features with a node map from an older version to a newer version.
+
+The full name of such a feature is `omap@`*oldversion*`-`*newversion*
+&#34;&#34;&#34;
+
+WARP = (OTYPE, OSLOTS, OTEXT)
+&#34;&#34;&#34;The names of the central features of TF data sets.
+
+The features `otype` and `oslots` are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.
 &#34;&#34;&#34;
 
 GZIP_LEVEL = 2
@@ -213,18 +255,21 @@ TEMP_DIR = &#34;_temp&#34;
     in the `.gitignore` file.
 &#34;&#34;&#34;
 
-LOCATIONS = [
-    &#34;~/Downloads/text-fabric-data&#34;,
-    &#34;~/text-fabric-data&#34;,
-    &#34;~/github/text-fabric-data&#34;,
-    &#34;~/Dropbox/text-fabric-data&#34;,
-    &#34;/mnt/shared/text-fabric-data&#34;,
-]
+LOCATIONS = [&#34;~/text-fabric-data&#34;]
 &#34;&#34;&#34;Default locations for tf data files.
 
 If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
 this is the default.
 Text-Fabric will search all these directories as for `.tf` modules of files.
+&#34;&#34;&#34;
+
+LOCAL = &#34;_local&#34;
+&#34;&#34;&#34;Name of auxiliary directories.
+
+Examples where this is used:
+
+*   volume support: inside a TF dataset, the directory `_local` contains
+    volumes of that dataset
 &#34;&#34;&#34;
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
@@ -340,6 +385,15 @@ with this name.</p></div>
 <dd>
 <div class="desc"><p>Compression level when compressing tf files.</p></div>
 </dd>
+<dt id="tf.parameters.LOCAL"><code class="name">var <span class="ident">LOCAL</span></code></dt>
+<dd>
+<div class="desc"><p>Name of auxiliary directories.</p>
+<p>Examples where this is used:</p>
+<ul>
+<li>volume support: inside a TF dataset, the directory <code>_local</code> contains
+volumes of that dataset</li>
+</ul></div>
+</dd>
 <dt id="tf.parameters.LOCATIONS"><code class="name">var <span class="ident">LOCATIONS</span></code></dt>
 <dd>
 <div class="desc"><p>Default locations for tf data files.</p>
@@ -351,10 +405,50 @@ Text-Fabric will search all these directories as for <code>.<a title="tf" href="
 <dd>
 <div class="desc"><p>The name of the game: this program.</p></div>
 </dd>
+<dt id="tf.parameters.OINTERF"><code class="name">var <span class="ident">OINTERF</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that stores the outgoing inter-volume edges
+of a volume.</p></div>
+</dd>
+<dt id="tf.parameters.OINTERT"><code class="name">var <span class="ident">OINTERT</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that stores the incoming inter-volume edges
+of a volume.</p></div>
+</dd>
+<dt id="tf.parameters.OMAP"><code class="name">var <span class="ident">OMAP</span></code></dt>
+<dd>
+<div class="desc"><p>Name prefix of features with a node map from an older version to a newer version.</p>
+<p>The full name of such a feature is <code>omap@</code><em>oldversion</em><code>-</code><em>newversion</em></p></div>
+</dd>
 <dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
 <dd>
 <div class="desc"><p>GitHub organization name.</p>
 <p>This is where the repo that contains Text-Fabric resides.</p></div>
+</dd>
+<dt id="tf.parameters.OSLOTS"><code class="name">var <span class="ident">OSLOTS</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central feature in a TF data set:
+<code>oslots</code> maps non-slot nodes to the sets of slots they occupy.</p></div>
+</dd>
+<dt id="tf.parameters.OTEXT"><code class="name">var <span class="ident">OTEXT</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central (but optional) feature in a TF data set:
+<code>otext</code> has configuration settings for sections, structure, and text formats.</p></div>
+</dd>
+<dt id="tf.parameters.OTYPE"><code class="name">var <span class="ident">OTYPE</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central feature in a TF data set:
+<code>otype</code> maps nodes to their types.</p></div>
+</dd>
+<dt id="tf.parameters.OVOLUME"><code class="name">var <span class="ident">OVOLUME</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that maps nodes of a work dataset
+to nodes in individual volumes in that work.</p></div>
+</dd>
+<dt id="tf.parameters.OWORK"><code class="name">var <span class="ident">OWORK</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that maps nodes in an individual volume of a work
+to nodes in that work.</p></div>
 </dd>
 <dt id="tf.parameters.PACK_VERSION"><code class="name">var <span class="ident">PACK_VERSION</span></code></dt>
 <dd>
@@ -440,6 +534,13 @@ on top of this url.</p></div>
 <div class="desc"><p>Program version.</p>
 <p>This value is under control of the update process, as run by
 <code>build.py</code> in the top-level directory of the repo.</p></div>
+</dd>
+<dt id="tf.parameters.WARP"><code class="name">var <span class="ident">WARP</span></code></dt>
+<dd>
+<div class="desc"><p>The names of the central features of TF data sets.</p>
+<p>The features <code>otype</code> and <code>oslots</code> are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.</p></div>
 </dd>
 <dt id="tf.parameters.YARN_RATIO"><code class="name">var <span class="ident">YARN_RATIO</span></code></dt>
 <dd>
@@ -545,9 +646,18 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.EXPRESS_SYNC_LEGACY" href="#tf.parameters.EXPRESS_SYNC_LEGACY">EXPRESS_SYNC_LEGACY</a></code></li>
 <li><code><a title="tf.parameters.GH_BASE" href="#tf.parameters.GH_BASE">GH_BASE</a></code></li>
 <li><code><a title="tf.parameters.GZIP_LEVEL" href="#tf.parameters.GZIP_LEVEL">GZIP_LEVEL</a></code></li>
+<li><code><a title="tf.parameters.LOCAL" href="#tf.parameters.LOCAL">LOCAL</a></code></li>
 <li><code><a title="tf.parameters.LOCATIONS" href="#tf.parameters.LOCATIONS">LOCATIONS</a></code></li>
 <li><code><a title="tf.parameters.NAME" href="#tf.parameters.NAME">NAME</a></code></li>
+<li><code><a title="tf.parameters.OINTERF" href="#tf.parameters.OINTERF">OINTERF</a></code></li>
+<li><code><a title="tf.parameters.OINTERT" href="#tf.parameters.OINTERT">OINTERT</a></code></li>
+<li><code><a title="tf.parameters.OMAP" href="#tf.parameters.OMAP">OMAP</a></code></li>
 <li><code><a title="tf.parameters.ORG" href="#tf.parameters.ORG">ORG</a></code></li>
+<li><code><a title="tf.parameters.OSLOTS" href="#tf.parameters.OSLOTS">OSLOTS</a></code></li>
+<li><code><a title="tf.parameters.OTEXT" href="#tf.parameters.OTEXT">OTEXT</a></code></li>
+<li><code><a title="tf.parameters.OTYPE" href="#tf.parameters.OTYPE">OTYPE</a></code></li>
+<li><code><a title="tf.parameters.OVOLUME" href="#tf.parameters.OVOLUME">OVOLUME</a></code></li>
+<li><code><a title="tf.parameters.OWORK" href="#tf.parameters.OWORK">OWORK</a></code></li>
 <li><code><a title="tf.parameters.PACK_VERSION" href="#tf.parameters.PACK_VERSION">PACK_VERSION</a></code></li>
 <li><code><a title="tf.parameters.PICKLE_PROTOCOL" href="#tf.parameters.PICKLE_PROTOCOL">PICKLE_PROTOCOL</a></code></li>
 <li><code><a title="tf.parameters.RELATIVE" href="#tf.parameters.RELATIVE">RELATIVE</a></code></li>
@@ -563,6 +673,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
 <li><code><a title="tf.parameters.URL_TFDOC" href="#tf.parameters.URL_TFDOC">URL_TFDOC</a></code></li>
 <li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
+<li><code><a title="tf.parameters.WARP" href="#tf.parameters.WARP">WARP</a></code></li>
 <li><code><a title="tf.parameters.YARN_RATIO" href="#tf.parameters.YARN_RATIO">YARN_RATIO</a></code></li>
 <li><code><a title="tf.parameters.ZIP_OPTIONS" href="#tf.parameters.ZIP_OPTIONS">ZIP_OPTIONS</a></code></li>
 </ul>

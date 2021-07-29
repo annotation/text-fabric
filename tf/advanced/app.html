@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/app.py#L0-L509" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/app.py#L0-L547" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -40,6 +40,7 @@ from ..core.helpers import console, setDir, mergeDict
 from .find import findAppConfig, findAppClass
 from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
+from .volumes import volumesApi
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -81,6 +82,8 @@ class App:
         mod=None,
         locations=None,
         modules=None,
+        volume=None,
+        collection=None,
         api=None,
         setFile=&#34;&#34;,
         silent=False,
@@ -216,6 +219,20 @@ class App:
                 It acts as the main `locations` argument,
                 and will be combined with the `modules` argument.
 
+        collection: string
+            Triggers the loading of a single collection of
+            volumes of the work. The collection is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumes`.
+
+        volume: string
+            Triggers the loading of a single volume of
+            the work. The volume is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumes`.
+
         api: object, optional, `None`
             So far, the TF app will construct an advanced API
             with a more or less standard set of features
@@ -268,6 +285,12 @@ class App:
             The list of those settings is spelled out in
             `tf.advanced.settings`.
 
+        !!! caution &#34;Volumes and collections&#34;
+            It is an error to load a volume as a collection and vice-versa
+
+            You get a warning if you pass both a volume and a collection.
+            The collection takes precedence, and the volume is ignored in that case.
+
         See Also
         --------
         tf.about.corpora: list of corpora with an official TF app
@@ -289,6 +312,8 @@ class App:
             appName=appName,
             api=api,
             version=version,
+            volume=volume,
+            collection=collection,
             silent=silent,
             _browse=_browse,
         ).items():
@@ -316,17 +341,23 @@ class App:
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f&#34;{self.repoLocation}/{TEMP_DIR}&#34;
-                TF = Fabric(locations=locations, modules=modules, silent=silent or True)
-                api = TF.load(&#34;&#34;, silent=silent or True)
+                TF = Fabric(
+                    locations=locations,
+                    modules=modules,
+                    volume=volume,
+                    collection=collection,
+                    silent=silent,
+                )
+                api = TF.load(&#34;&#34;, silent=True)
                 if api:
                     self.api = api
                     excludedFeatures = aContext.excludedFeatures
-                    allFeatures = TF.explore(silent=silent or True, show=True)
+                    allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                     useFeatures = [
                         f for f in loadableFeatures if f not in excludedFeatures
                     ]
-                    result = TF.load(useFeatures, add=True, silent=silent or True)
+                    result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
                         self.api = None
             else:
@@ -337,19 +368,25 @@ class App:
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
             self.getText = types.MethodType(getText, self)
+            volumesApi(self)
             linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
             displayApi(self, silent)
             textApi(self)
+            setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if not silent:
                     dh(
                         &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                        + outLink(&#34;N F E L T S C TF&#34;, APIREF, title=&#34;doc&#34;,)
+                        + outLink(
+                            &#34;N F E L T S C TF&#34;,
+                            APIREF,
+                            title=&#34;doc&#34;,
+                        )
                         + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
                     )
 
@@ -531,7 +568,8 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
     except Exception as e:
         if appClass is not App:
             console(
-                f&#34;There was an error loading TF-app {appName} from {appPath}&#34;, error=True
+                f&#34;There was an error loading TF-app {appName} from {appPath}&#34;,
+                error=True,
             )
             console(repr(e), error=True)
         traceback.print_exc()
@@ -581,7 +619,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/app.py#L398-L510" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/app.py#L435-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -689,7 +727,8 @@ class.</dd>
     except Exception as e:
         if appClass is not App:
             console(
-                f&#34;There was an error loading TF-app {appName} from {appPath}&#34;, error=True
+                f&#34;There was an error loading TF-app {appName} from {appPath}&#34;,
+                error=True,
             )
             console(repr(e), error=True)
         traceback.print_exc()
@@ -705,7 +744,7 @@ class.</dd>
 <dl>
 <dt id="tf.advanced.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>cfg, appName, appPath, commit, release, local, _browse, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, api=None, setFile='', silent=False, **configOverrides)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, _browse, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent=False, **configOverrides)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
@@ -835,6 +874,18 @@ It acts as the main <code>locations</code> argument,
 and will be combined with the <code>modules</code> argument.</p>
 </div>
 </dd>
+<dt><strong><code>collection</code></strong> :&ensp;<code>string</code></dt>
+<dd>Triggers the loading of a single collection of
+volumes of the work. The collection is a directory with <code>.<a title="tf" href="../index.html">tf</a></code> files,
+located under the directory <code>_local</code> which is in the
+same directory as the <code>.<a title="tf" href="../index.html">tf</a></code> files of the work.
+See <code><a title="tf.about.volumes" href="../about/volumes.html">tf.about.volumes</a></code>.</dd>
+<dt><strong><code>volume</code></strong> :&ensp;<code>string</code></dt>
+<dd>Triggers the loading of a single volume of
+the work. The volume is a directory with <code>.<a title="tf" href="../index.html">tf</a></code> files,
+located under the directory <code>_local</code> which is in the
+same directory as the <code>.<a title="tf" href="../index.html">tf</a></code> files of the work.
+See <code><a title="tf.about.volumes" href="../about/volumes.html">tf.about.volumes</a></code>.</dd>
 <dt><strong><code>api</code></strong> :&ensp;<code>object</code>, optional<code>, </code>None``</dt>
 <dd>
 <p>So far, the TF app will construct an advanced API
@@ -876,6 +927,12 @@ that are specified in the app's <code>config.yaml</code> file.
 The list of those settings is spelled out in
 <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code>.</dd>
 </dl>
+<div class="admonition caution">
+<p class="admonition-title">Volumes and collections</p>
+<p>It is an error to load a volume as a collection and vice-versa</p>
+<p>You get a warning if you pass both a volume and a collection.
+The collection takes precedence, and the volume is ignored in that case.</p>
+</div>
 <h2 id="see-also">See Also</h2>
 <dl>
 <dt><code><a title="tf.about.corpora" href="../about/corpora.html">tf.about.corpora</a></code></dt>
@@ -886,7 +943,7 @@ The list of those settings is spelled out in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/app.py#L38-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/app.py#L39-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -904,6 +961,8 @@ The list of those settings is spelled out in
         mod=None,
         locations=None,
         modules=None,
+        volume=None,
+        collection=None,
         api=None,
         setFile=&#34;&#34;,
         silent=False,
@@ -1039,6 +1098,20 @@ The list of those settings is spelled out in
                 It acts as the main `locations` argument,
                 and will be combined with the `modules` argument.
 
+        collection: string
+            Triggers the loading of a single collection of
+            volumes of the work. The collection is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumes`.
+
+        volume: string
+            Triggers the loading of a single volume of
+            the work. The volume is a directory with `.tf` files,
+            located under the directory `_local` which is in the
+            same directory as the `.tf` files of the work.
+            See `tf.about.volumes`.
+
         api: object, optional, `None`
             So far, the TF app will construct an advanced API
             with a more or less standard set of features
@@ -1091,6 +1164,12 @@ The list of those settings is spelled out in
             The list of those settings is spelled out in
             `tf.advanced.settings`.
 
+        !!! caution &#34;Volumes and collections&#34;
+            It is an error to load a volume as a collection and vice-versa
+
+            You get a warning if you pass both a volume and a collection.
+            The collection takes precedence, and the volume is ignored in that case.
+
         See Also
         --------
         tf.about.corpora: list of corpora with an official TF app
@@ -1112,6 +1191,8 @@ The list of those settings is spelled out in
             appName=appName,
             api=api,
             version=version,
+            volume=volume,
+            collection=collection,
             silent=silent,
             _browse=_browse,
         ).items():
@@ -1139,17 +1220,23 @@ The list of those settings is spelled out in
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f&#34;{self.repoLocation}/{TEMP_DIR}&#34;
-                TF = Fabric(locations=locations, modules=modules, silent=silent or True)
-                api = TF.load(&#34;&#34;, silent=silent or True)
+                TF = Fabric(
+                    locations=locations,
+                    modules=modules,
+                    volume=volume,
+                    collection=collection,
+                    silent=silent,
+                )
+                api = TF.load(&#34;&#34;, silent=True)
                 if api:
                     self.api = api
                     excludedFeatures = aContext.excludedFeatures
-                    allFeatures = TF.explore(silent=silent or True, show=True)
+                    allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                     useFeatures = [
                         f for f in loadableFeatures if f not in excludedFeatures
                     ]
-                    result = TF.load(useFeatures, add=True, silent=silent or True)
+                    result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
                         self.api = None
             else:
@@ -1160,19 +1247,25 @@ The list of those settings is spelled out in
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
             self.getText = types.MethodType(getText, self)
+            volumesApi(self)
             linksApi(self, silent)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
             displayApi(self, silent)
             textApi(self)
+            setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if not silent:
                     dh(
                         &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                        + outLink(&#34;N F E L T S C TF&#34;, APIREF, title=&#34;doc&#34;,)
+                        + outLink(
+                            &#34;N F E L T S C TF&#34;,
+                            APIREF,
+                            title=&#34;doc&#34;,
+                        )
                         + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
                     )
 
@@ -1267,7 +1360,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/app.py#L339-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/app.py#L376-L381" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1302,7 +1395,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9670183fbd0d1c8965f0247898067f575a178fc2/tf/advanced/app.py#L346-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/advanced/app.py#L383-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
