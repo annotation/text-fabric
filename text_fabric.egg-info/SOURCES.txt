@@ -37,6 +37,7 @@ tf/about/searchdesign.py
 tf/about/searchusage.py
 tf/about/tests.py
 tf/about/use.py
+tf/about/volumes.py
 tf/advanced/__init__.py
 tf/advanced/app.py
 tf/advanced/condense.py
@@ -55,6 +56,7 @@ tf/advanced/settings.py
 tf/advanced/tables.py
 tf/advanced/text.py
 tf/advanced/unravel.py
+tf/advanced/volumes.py
 tf/advanced/zipdata.py
 tf/client/__init__.py
 tf/client/make/__init__.py
@@ -88,10 +90,6 @@ tf/client/static/png/.DS_Store
 tf/client/static/png/github.png
 tf/client/static/png/maker.png
 tf/client/static/png/tf.png
-tf/compose/__init__.py
-tf/compose/combine.py
-tf/compose/modify.py
-tf/compose/nodemaps.py
 tf/convert/__init__.py
 tf/convert/mql.py
 tf/convert/recorder.py
@@ -102,6 +100,7 @@ tf/core/api.py
 tf/core/computed.py
 tf/core/data.py
 tf/core/edgefeature.py
+tf/core/fabric.py
 tf/core/helpers.py
 tf/core/locality.py
 tf/core/nodefeature.py
@@ -111,6 +110,9 @@ tf/core/otypefeature.py
 tf/core/prepare.py
 tf/core/text.py
 tf/core/timestamp.py
+tf/dataset/__init__.py
+tf/dataset/modify.py
+tf/dataset/nodemaps.py
 tf/search/__init__.py
 tf/search/graph.py
 tf/search/relations.py
@@ -183,6 +185,9 @@ tf/server/static/fonts/fa-solid-900.woff
 tf/server/static/fonts/fa-solid-900.woff2
 tf/server/templates/export.html
 tf/server/templates/index.html
+tf/volumes/__init__.py
+tf/volumes/collect.py
+tf/volumes/extract.py
 tf/writing/__init__.py
 tf/writing/arabic.py
 tf/writing/greek.py

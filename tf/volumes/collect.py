@@ -139,6 +139,9 @@ def collect(
         If you do not give names to volumes, their locations will be used as name.
         However, names are only used if you pass `volumeType` and /or `volumeFeature`.
 
+        !!! caution "Disjointness"
+            A collection can not contain the same volume more than once.
+
     workLocation: string
         The directory into which the feature files of the work will be written.
 
@@ -308,9 +311,10 @@ def collect(
 
     """
 
+    collection = os.path.basename(workLocation)
+    loc = ux(os.path.dirname(workLocation))
+
     if not dirEmpty(workLocation):
-        collection = os.path.basename(workLocation)
-        loc = ux(os.path.dirname(workLocation))
         proceed = True
         good = True
 
@@ -362,6 +366,8 @@ def collect(
     volumeOslots = {}
     fromWork = {}
 
+    good = True
+
     if type(volumes) is not dict:
         volProto = {}
         volNames = set()
@@ -370,13 +376,28 @@ def collect(
                 name = os.path.basename(loc)
             else:
                 (name, loc) = loc
-            i = 0
-            while name in volNames:
-                i += 1
-                name = f"{name}_{i}"
-            volNames.add(name)
+            if name in volNames:
+                error(f"Volume {name} is already part of the collection")
+                good = False
+            else:
+                volNames.add(name)
             volProto[name] = loc
         volumes = volProto
+
+    if not good:
+        return False
+
+    volumeIndex = {}
+    for (name, loc) in volumes.items():
+        seenName = volumeIndex.get(loc, None)
+        if seenName:
+            error(
+                f"Volume {seenName} at location {loc} reoccurs as volume {name}")
+            good = False
+        volumeIndex[loc] = name
+
+    if not good:
+        return False
 
     def loadVolumes():
         for (name, loc) in volumes.items():
@@ -664,7 +685,7 @@ def collect(
             api = apis[name]
             allFeatures = getAllFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
-                if not api.isLoaded(OINTER):
+                if api.isLoaded(features=OINTER)[OINTER] is None:
                     continue
                 interSource = api.Fs(OINTER).data
 

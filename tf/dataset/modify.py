@@ -27,7 +27,7 @@ import collections
 from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.timestamp import Timestamp
-from ..core.helpers import itemize, isInt, collectFormats, dirEmpty
+from ..core.helpers import itemize, fitemize, isInt, collectFormats, dirEmpty
 
 VALTP = "valueType"
 
@@ -66,10 +66,6 @@ info = TM.info
 error = TM.error
 isSilent = TM.isSilent
 setSilent = TM.setSilent
-
-
-def _itemize(arg):
-    return [] if not arg else itemize(arg) if type(arg) is str else list(arg)
 
 
 def _rep(iterable):
@@ -141,7 +137,7 @@ def modify(
         -------
             mergeFeatures=dict(
                 resultFeature1=[feat1, feat2],
-                resultFeature2=[feat3, feat4],
+                resultFeature2="feat3, feat4",
             ),
 
         If the resulting feature is new, or needs a new description, you can
@@ -149,8 +145,8 @@ def modify(
         For new features you may want to set the `valueType`, although we try
         hard to deduce it from the data available.
 
-    deleteFeatures: dict, optional `None`
-        This should be either a boolean value `True` or an iterable or space
+    deleteFeatures: boolean | string | iterable, optional `None`
+        This should be either a boolean value `True` or an iterable or space/comma
         separated string of features that you want to delete from the result.
 
         `True` means: all features will be deleted that are not the result of merging
@@ -202,10 +198,7 @@ def modify(
                     'inType1',
                     'inType2',
                 ),
-                outTypeB=(
-                    'inType3',
-                    'inType4',
-                ),
+                outTypeB="inType3, inType4",
             )
 
         Example
@@ -256,7 +249,7 @@ def modify(
             Merging is all about non-slot types.
             It is an error if a new type or an old type is a slot type.
 
-    deleteTypes: dict, optional `None`
+    deleteTypes: string | iterable, optional `None`
         You can delete node types from the result altogether.
         You can specify a list of node types as an iterable or as a space
         separated string.
@@ -271,7 +264,7 @@ def modify(
 
         Example
         -------
-            deleteTypes=(' line sentence ')
+            deleteTypes="line sentence"
 
         !!! caution "slot types"
             Deleting is all about non-slot types.
@@ -320,10 +313,12 @@ def modify(
             You can add any number of features.
             Per feature you have to provide the mapping that defines the feature.
 
-            These features may be new, or they may already be present in the original data.
+            These features may be new,
+            or they may already be present in the original data.
 
             If these features have values to nodes that are not within the boundaries
-            of the new node type, those values will not be assigned but silently discarded.
+            of the new node type,
+            those values will not be assigned but silently discarded.
 
             Example
             -------
@@ -404,11 +399,11 @@ def modify(
     if type(deleteFeatures) is bool and deleteFeatures:
         deleteFeatures = set()
         onlyDeliverUpdatedFeatures = True
-    deleteFeatures = set(_itemize(deleteFeatures))
+    deleteFeatures = set(fitemize(deleteFeatures))
     mergeFeatures = mergeFeatures or {}
 
     addTypes = addTypes or {}
-    deleteTypes = set(_itemize(deleteTypes))
+    deleteTypes = set(fitemize(deleteTypes))
     mergeTypes = mergeTypes or {}
 
     featureMeta = featureMeta or {}
@@ -520,7 +515,7 @@ def modify(
         for (outFeat, inFeats) in mergeFeatures.items():
             eItem = f"{outFeat}: "
 
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if outFeat in WARP:
                 err("Can not merge into standard features")
                 continue
@@ -804,7 +799,7 @@ def modify(
 
         for (outFeat, inFeats) in mergeFeatures.items():
             data = {}
-            inFeats = _itemize(inFeats)
+            inFeats = fitemize(inFeats)
             if all(f in origNodeFeatures for f in inFeats):
                 featSrc = Fs
                 featDst = nodeFeatures

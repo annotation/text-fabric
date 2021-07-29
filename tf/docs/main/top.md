@@ -5,7 +5,7 @@
 A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
 Text-Fabric makes that knowledge accessible to programmers and non-programmers.
 
-Text-Fabric is a piece of machinery for processing such corpora as annotated graphs.
+Text-Fabric is machinery for processing such corpora as annotated graphs.
 
 ## Straight to ...
 
@@ -15,17 +15,18 @@ Text-Fabric is a piece of machinery for processing such corpora as annotated gra
 * Browser (`tf.about.browser`)
 * Search Client (`tf.about.clientmanual`) simplified (`tf.about.manual`)
 * Use (`tf.about.use`)
+* Volumes and collections (`tf.about.volumes`)
 * Search (`tf.about.searchusage`)
 * API (`tf.cheatsheet`)
 * Corpora (`tf.about.corpora`)
 * Data sharing (`tf.about.datasharing`)
-* Data Structures and Algorithms (`tf.about.datamodel`, `tf.about.searchdesign`, `tf.about.displaydesign`)
+* Data Structures and Algorithms
+  (`tf.about.datamodel`, `tf.about.searchdesign`, `tf.about.displaydesign`)
 * File Format (`tf.about.fileformats`, `tf.about.optimizations`)
 * Converting to TF (`tf.convert.walker`, `tf.convert.mql`)
 * Exporting data and reimporting it with enrichments (`tf.convert.recorder`)
-* Volume support (`tf.volumes.collect` and `tf.volumes.extract`)
-* Dataset manipulation (`tf.dataset.modify` and `tf.dataset.Versions`)
-* Crossing versions of datasets (`tf.compose.nodemaps`)
+* Dataset manipulation (`tf.dataset.modify` and `tf.dataset.nodemaps.Versions`)
+* Crossing versions of datasets (`tf.dataset.nodemaps`)
 * Code Organisation (`tf.about.code`)
 
 ## Author

@@ -342,6 +342,16 @@ def itemize(string, sep=None):
     return string.strip().split(sep)
 
 
+def fitemize(value):
+    if not value:
+        return []
+    if type(value) is str:
+        return SEP_RE.split(value)
+    if type(value) in {bool, int, float}:
+        return [str(value)]
+    return list(value)
+
+
 def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
         return {r[0] for r in iterableOfTuples}

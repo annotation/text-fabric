@@ -190,18 +190,18 @@ class App:
                 and will be combined with the `modules` argument.
 
         collection: string
-            This parameters triggers the loading of a single collection of
+            Triggers the loading of a single collection of
             volumes of the work. The collection is a directory with `.tf` files,
             located under the directory `_local` which is in the
             same directory as the `.tf` files of the work.
-            See `tf.about.volumesupport`.
+            See `tf.about.volumes`.
 
         volume: string
-            This parameters triggers the loading of a single volume of
+            Triggers the loading of a single volume of
             the work. The volume is a directory with `.tf` files,
             located under the directory `_local` which is in the
             same directory as the `.tf` files of the work.
-            See `tf.about.volumesupport`.
+            See `tf.about.volumes`.
 
         api: object, optional, `None`
             So far, the TF app will construct an advanced API
@@ -254,6 +254,12 @@ class App:
             that are specified in the app's `config.yaml` file.
             The list of those settings is spelled out in
             `tf.advanced.settings`.
+
+        !!! caution "Volumes and collections"
+            It is an error to load a volume as a collection and vice-versa
+
+            You get a warning if you pass both a volume and a collection.
+            The collection takes precedence, and the volume is ignored in that case.
 
         See Also
         --------

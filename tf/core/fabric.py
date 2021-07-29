@@ -21,6 +21,7 @@ from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
     itemize,
+    fitemize,
     setDir,
     expandDir,
     collectFormats,
@@ -308,9 +309,7 @@ Api reference : {APIREF}
         self.structureOK = True
         self.good = True
         if self.good:
-            featuresRequested = (
-                itemize(features) if type(features) is str else sorted(features)
-            )
+            featuresRequested = sorted(fitemize(features))
             if add:
                 self.featuresRequested += featuresRequested
             else:
@@ -1042,6 +1041,7 @@ Api reference : {APIREF}
         indent(level=0)
         info("All features loaded/computed - for details use TF.loadLog()")
         self.api = api
+        setattr(self, "isLoaded", self.api.isLoaded)
         return api
 
     def _updateApi(self):

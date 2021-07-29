@@ -46,12 +46,15 @@ def volumesApi(app):
 
 
 def extract(app, *args, **kwargs):
+    """Calls `tf.fabric.Fabric.extract` from an app object."""
+
     TF = app.api.TF
 
     return TF.extract(*args, **kwargs)
 
 
 def collect(app, *args, **kwargs):
+    """Calls `tf.fabric.Fabric.collect` from an app object."""
     TF = app.api.TF
 
     return TF.collect(*args, **kwargs)

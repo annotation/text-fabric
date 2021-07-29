@@ -61,6 +61,9 @@ class Fabric(FabricCore):
 
     !!! caution "Volumes and collections"
         It is an error to load a volume as a collection and vice-versa
+
+        You get a warning if you pass both a volume and a collection.
+        The collection takes precedence, and the volume is ignored in that case.
     """
 
     def __init__(
@@ -152,7 +155,7 @@ class Fabric(FabricCore):
     def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
         """Extract volumes from the currently loaded work.
 
-        This functions is only provided if the dataset is a work,
+        This function is only provided if the dataset is a work,
         i.e. it is loaded as a whole.
         When a single volume of a work is loaded, there is no `extract` method.
 

@@ -3,9 +3,10 @@
 ## Initialisation, configuration, meta data, and linking
 
 ```
-A = use('corpus', volume=None, hoist=globals())
+A = use('corpus', volume=None, collection=None, hoist=globals())
 ```
-:   start up and load the work or one of its volumes
+:   start up and load the work or one of its volumes.
+    See also `tf.about.volumes`.
 :   `tf.app.use`
 
 ```
@@ -33,9 +34,9 @@ A.webLink(n, ...)
 :   `tf.advanced.links.webLink`
 
 ```
-A.isLoaded(feature)
+A.isLoaded(features=None)
 ```
-:   whether the feature is loaded, and if so, basic info about it
+:   Show information about loaded features
 :   `tf.core.api.Api.isLoaded`
 
 ---
@@ -166,7 +167,9 @@ A.structureStrFromNode(...)
 
 ---
 
-## Volumes
+## Volumes and collections
+
+See also `tf.about.volumes`.
 
 ```
 A.extract(volumes, ...)
@@ -178,7 +181,7 @@ A.extract(volumes, ...)
 ```
 A.collect(volumes, ...)
 ```
-:   collect several volumes into a new work
+:   collect several volumes into a new collection
 :   `tf.advanced.display.export`
 :   `tf.fabric.Fabric.collect`
 
@@ -758,11 +761,20 @@ C.structure.data
 ## Loading
 
 ```
-TF = Fabric(locations=directories, modules=subdirectories, volume=None, silent=False)
+TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=False)
 ```
-:   Initialize API on work or single volume of a work from explicit directories.
+:   Initialize API on work or single volume or collection of a work
+    from explicit directories.
     Use `tf.app.use` instead wherever you can.
+    See also `tf.about.volumes`.
 :   `tf.fabric.Fabric`
+
+
+```
+TF.isLoaded(features=None)
+```
+:   Show information about loaded features
+:   `tf.core.api.Api.isLoaded`
 
 ```
 TF.explore(show=True)
@@ -810,6 +822,8 @@ TF.loadLog()
 
 ## Volumes
 
+See also `tf.about.volumes`.
+
 ```
 TF.extract(volumes, ...)
 ```
@@ -820,7 +834,7 @@ TF.extract(volumes, ...)
 ```
 TF.collect(volumes, ...)
 ```
-:   collect several volumes into a new work
+:   collect several volumes into a new collection
 :   `tf.advanced.display.export`
 :   `tf.fabric.Fabric.collect`
 
@@ -862,14 +876,15 @@ clean()
 
 # Volume support
 
-TF datasets per volume of a work.
+TF datasets per volume or collection of a work.
+See also `tf.about.volumes`.
 
 ```
 from tf.volumes import collect
 
 collect(volumes, work, ...)
 ```
-:   Collects several volumes into a new work
+:   Collects several volumes into a new collection
 :   `tf.volumes.collect`
 
 ```

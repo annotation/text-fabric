@@ -4,7 +4,7 @@
 It provides methods to navigate nodes and edges and lookup features.
 """
 
-from .helpers import flattenToSet, console
+from .helpers import flattenToSet, console, fitemize
 from .nodes import Nodes
 from .locality import Locality
 from .nodefeature import NodeFeatures
@@ -133,69 +133,80 @@ class Api(object):
         return getattr(self.C, fName)
 
     def Fall(self):
-        """Returns a sorted list of all usable, loaded node feature names.
-        """
+        """Returns a sorted list of all usable, loaded node feature names."""
 
         return sorted(x[0] for x in self.F.__dict__.items())
 
     def Eall(self):
-        """Returns a sorted list of all usable, loaded edge feature names.
-        """
+        """Returns a sorted list of all usable, loaded edge feature names."""
 
         return sorted(x[0] for x in self.E.__dict__.items())
 
     def Call(self):
-        """Returns a sorted list of all usable, loaded computed data names.
-        """
+        """Returns a sorted list of all usable, loaded computed data names."""
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
-    def isLoaded(self, fName):
-        """Whether a feature is loaded. If so, what kind the feature is.
+    def isLoaded(self, features=None):
+        """Show information about loaded features.
 
         Parameters
         ----------
-        fName: string
-            The name of a feature
+        features: iterable | string, optional `None`
+            The features to test.
+            If absent or None: all features seen by TF.
+            If a string, it is a comma and/or space spearated list of feature names.
+            Otherwise the items of the iterable are feature names.
 
         Returns
         -------
-        dict
-            If `fName` is not loaded, returns `{}`
-            If `fName` is loaded, returns a dictionary with items:
+        dict of dict
+            The features are keys, the value per feature is None or a dict with the
+            following information:
 
-            *   `kind` is the kind of the feature: `node`, `edge`, `config`, `computed`;
-            *   `type` is the type of values of the feature: `int`, or `str` or `""`;
-            *   `edgeValues` is a boolean that indicates whether the feature is an
-                edge and has values. It is `None` if the feature is not an edge.
+            `None` if  the feature is not loaded.
 
+            If the feature is loaded:
+
+            *   `kind`: `node`, `edge`, `config`, `computed`;
+            *   `type` is the type of values: `int`, or `str` or `""`;
+            *   `edgeValues`: if an edge feature it indicates whether
+                the edges have values. Otherwise `None`.
         """
 
-        fType = None
-        edgeValues = None
+        fNames = fitemize(features)
+        info = {}
 
-        if hasattr(self.F, fName):
-            fObj = getattr(self.F, fName)
-            fKind = 'node'
-            fType = fObj.meta["valueType"]
-        elif hasattr(self.E, fName):
-            fObj = getattr(self.E, fName)
-            fKind = 'edge'
-            fType = fObj.meta["valueType"]
-            edgeValues = fObj.doValues
-        elif hasattr(self.C, fName):
-            fObj = getattr(self.C, fName)
-            fKind = 'computed'
-        elif fName in self.TF.features:
-            fObj = self.TF.features[fName]
-            if fObj.isConfig:
-                fKind = "config"
+        for fName in fNames:
+            fType = None
+            edgeValues = None
+            hasInfo = True
+
+            if hasattr(self.F, fName):
+                fObj = getattr(self.F, fName)
+                fKind = "node"
+                fType = fObj.meta["valueType"]
+            elif hasattr(self.E, fName):
+                fObj = getattr(self.E, fName)
+                fKind = "edge"
+                fType = fObj.meta["valueType"]
+                edgeValues = fObj.doValues
+            elif hasattr(self.C, fName):
+                fObj = getattr(self.C, fName)
+                fKind = "computed"
+            elif fName in self.TF.features:
+                fObj = self.TF.features[fName]
+                if fObj.isConfig:
+                    fKind = "config"
+                else:
+                    hasInfo = False
             else:
-                return {}
-        else:
-            return {}
+                hasInfo = False
 
-        return dict(kind=fKind, type=fType, edgeValues=edgeValues)
+            info[fName] = (
+                dict(kind=fKind, type=fType, edgeValues=edgeValues) if hasInfo else None
+            )
+        return info
 
     def makeAvailableIn(self, scope):
         """Exports members of the API to the global namespace.
@@ -309,7 +320,9 @@ class Api(object):
                 needToLoad.add(fName)
         if len(needToLoad):
             TF.load(
-                needToLoad, add=True, silent="deep",
+                needToLoad,
+                add=True,
+                silent="deep",
             )
             loadedFeatures |= needToLoad
         return loadedFeatures

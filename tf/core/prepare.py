@@ -6,7 +6,7 @@ The precomputed data has a similar function as indexes in a database.
 
 Precomputation is triggered when `tf.fabric.Fabric` loads features, and
 the order and nature of the steps is configured in
-`tf.fabric.PRECOMPUTE`.
+`tf.core.fabric.PRECOMPUTE`.
 
 The functions in this module implement those tasks.
 """

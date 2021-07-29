@@ -135,6 +135,10 @@ def extract(
         If names for volumes have to be generated,
         they will consist of the top-level section specifications, separated by a "-".
 
+        !!! caution "Disjointness"
+            All volumes must be disjoint, they cannot have top-level sections
+            in common.
+
     byTitle: boolean, optional `True`
         Whether the top-level sections are named by their sequence numbers
         (starting at 1).
@@ -268,14 +272,25 @@ def extract(
                         heads=heads
                     )
 
+            headIndex = {}
+
             for (name, v) in volumeData.items():
                 heads = v["heads"]
                 if not heads:
                     error("Empty volumes not allowed")
                     good = False
                     continue
+                for head in heads:
+                    seenName = headIndex.get(head, None)
+                    if seenName:
+                        error(
+                            f"Section {head} of volume {seenName}"
+                            f" reoccurs in volume {name}")
+                        good = False
+                    headIndex[head] = name
 
-            good = checkVolumeLocs()
+            if good:
+                good = checkVolumeLocs()
         return good
 
     def checkVolumes2():
