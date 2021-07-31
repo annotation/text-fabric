@@ -214,7 +214,22 @@ On the one hand, the `extract()` function with its volume specification argument
 so flexible, that you do not need a function to collect volumes together: you could have
 extracted the collection as a volume straight away.
 
-On the other hand, collecting several volumes into one collection is an inverse of
+But consider this scenario:
+
+* you have extracted all books of the Hebrew Bible as single volumes;
+* now you want to query across several books, say the poetry books
+* then you feel the need to also query the prophetic books
+
+For this you create collections, out of the book volumes.
+You can build your queries, run them against your collections.
+You can transform the results (which are tuples of tuples of nodes) into results
+against the individual volumes or against the whole work, using the `owork`
+features of volumes and collections.
+
+For the moment Text-Fabric is still lacking in handy functions to apply these
+node maps, but that will probably change in subsequent versions.
+
+A more intrinsic reason to develop the collect function is that it is an inverse of
 extracting several volumes from one work. Moreover, collecting extracted volumes
 is a test whether the problems of extraction have been dealt with correctly.
 Extraction produces extra data and collection uses that extra data.
