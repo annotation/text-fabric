@@ -180,7 +180,20 @@ edges that are no longer dangling in the collection of volumes.</p>
 <p>On the one hand, the <code>extract()</code> function with its volume specification argument is
 so flexible, that you do not need a function to collect volumes together: you could have
 extracted the collection as a volume straight away.</p>
-<p>On the other hand, collecting several volumes into one collection is an inverse of
+<p>But consider this scenario:</p>
+<ul>
+<li>you have extracted all books of the Hebrew Bible as single volumes;</li>
+<li>now you want to query across several books, say the poetry books</li>
+<li>then you feel the need to also query the prophetic books</li>
+</ul>
+<p>For this you create collections, out of the book volumes.
+You can build your queries, run them against your collections.
+You can transform the results (which are tuples of tuples of nodes) into results
+against the individual volumes or against the whole work, using the <code>owork</code>
+features of volumes and collections.</p>
+<p>For the moment Text-Fabric is still lacking in handy functions to apply these
+node maps, but that will probably change in subsequent versions.</p>
+<p>A more intrinsic reason to develop the collect function is that it is an inverse of
 extracting several volumes from one work. Moreover, collecting extracted volumes
 is a test whether the problems of extraction have been dealt with correctly.
 Extraction produces extra data and collection uses that extra data.</p>
@@ -304,7 +317,7 @@ time. </p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/400882f8bbf9c368639ad5da6b333474a76eb882/tf/about/volumes.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/70483c9fc7920a9380e010f78f5483ebb84ed24f/tf/about/volumes.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/volumes.md
