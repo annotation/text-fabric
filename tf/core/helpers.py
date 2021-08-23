@@ -349,7 +349,7 @@ def fitemize(value):
         return SEP_RE.split(value)
     if type(value) in {bool, int, float}:
         return [str(value)]
-    return list(value)
+    return list(str(v) for v in value)
 
 
 def project(iterableOfTuples, maxDimension):

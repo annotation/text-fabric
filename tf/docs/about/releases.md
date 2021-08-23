@@ -46,6 +46,17 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.0.1
+
+2021-08-23
+
+**Fixes**
+
+* Bug reported by Jaime Toledo (https://github.com/annotation/text-fabric/issues/73)
+* Bug reported by Christian Jensen (https://github.com/annotation/text-fabric/issues/74)
+
+Thanks for reporting!
+
 #### 9.0.0
 
 2021-07-29

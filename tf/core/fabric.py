@@ -218,12 +218,16 @@ Api reference : {APIREF}
             modules = [""]
         elif type(modules) is str:
             modules = [x.strip() for x in itemize(modules, "\n")]
+        else:
+            modules = [str(x) for x in modules]
         self.modules = modules
 
         if locations is None:
             locations = LOCATIONS
         elif type(locations) is str:
             locations = [x.strip() for x in itemize(locations, "\n")]
+        else:
+            locations = [str(x) for x in locations]
         setDir(self)
         self.locations = []
         for loc in locations:

@@ -529,7 +529,7 @@ def extract(
                         if s in allSlots
                     )
                     if not oslots[nV]:
-                        error(f"{otype[nV]} node {nV=} {nW=} has no slots", tm=False)
+                        error(f"{otype[nV]} node v={nV} w={nW} has no slots", tm=False)
 
                 for (feat, featD) in nodeFeatureData.items():
                     val = featD.get(nW, None)

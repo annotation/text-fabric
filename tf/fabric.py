@@ -78,18 +78,18 @@ class Fabric(FabricCore):
         if modules is None:
             module = [""]
         elif type(modules) is str:
-            module = [x.strip() for x in itemize(modules, "\n")]
+            module = [x for x in itemize(modules, "\n")]
         else:
-            module = modules
+            module = [str(x) for x in modules]
         module = module[0] if module else ""
         module = module.strip("/").strip("\\")
 
         if locations is None:
             location = LOCATIONS if LOCATIONS else [""]
         elif type(locations) is str:
-            location = [x.strip() for x in itemize(locations, "\n")]
+            location = [x for x in itemize(locations, "\n")]
         else:
-            location = locations
+            location = [str(x) for x in locations]
         location = location[0] if location else ""
         location = location.rstrip("/").rstrip("\\")
 

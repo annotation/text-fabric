@@ -160,14 +160,14 @@ class AppData(object):
             if locations is None
             else [expandDir(app, x.strip()) for x in itemize(locations, "\n")]
             if type(locations) is str
-            else locations
+            else [str(x) for x in locations]
         )
         givenModules = (
             []
             if modules is None
             else [x.strip() for x in itemize(modules, "\n")]
             if type(modules) is str
-            else modules
+            else [str(x) for x in modules]
         )
 
         self.locations = mLocations + givenLocations
