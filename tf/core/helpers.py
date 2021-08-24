@@ -17,7 +17,7 @@ MSG64 = """Running on 64-bit Python"""
 
 HOME_DIR = os.path.expanduser("~").replace("\\", "/")
 
-SEP_RE = re.compile(r"[ ,]+")
+SEP_RE = re.compile(r"[\n\t ,]+")
 STRIP_RE = re.compile(r"(?:^[\n\t ,]+)|(?:[\n\t ,]+$)", re.S)
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
