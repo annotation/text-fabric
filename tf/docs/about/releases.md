@@ -46,6 +46,18 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.0.2
+
+2021-08-24
+
+**Fixes**
+
+* Bug reported by Gyusang Jin: when a string specification of features that must be loaded
+  contains newlines, an error will occur.
+* TF.loadLog() did not provide useful information anymore. Instead, there is now
+  TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`). For compatibility,
+  loadLog still can be called, but is identical to isLoaded.
+
 #### 9.0.1
 
 2021-08-23

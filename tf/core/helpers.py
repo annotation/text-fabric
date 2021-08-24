@@ -18,6 +18,7 @@ MSG64 = """Running on 64-bit Python"""
 HOME_DIR = os.path.expanduser("~").replace("\\", "/")
 
 SEP_RE = re.compile(r"[ ,]+")
+STRIP_RE = re.compile(r"(?:^[\n\t ,]+)|(?:[\n\t ,]+$)", re.S)
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
@@ -346,7 +347,7 @@ def fitemize(value):
     if not value:
         return []
     if type(value) is str:
-        return SEP_RE.split(value)
+        return SEP_RE.split(STRIP_RE.sub("", value))
     if type(value) in {bool, int, float}:
         return [str(value)]
     return list(str(v) for v in value)

@@ -812,12 +812,6 @@ TF.ignored
 :   Which features have been overridden.
 :   `tf.core.api.Api.ignored`
 
-```
-TF.loadLog()
-```
-:   Log of the feature loading process
-:   `tf.core.timestamp.Timestamp.cache`
-
 ---
 
 ## Volumes

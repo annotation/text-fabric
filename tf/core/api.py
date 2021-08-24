@@ -4,7 +4,7 @@
 It provides methods to navigate nodes and edges and lookup features.
 """
 
-from .helpers import flattenToSet, console, fitemize
+from .helpers import flattenToSet, console, fitemize, unexpanduser as ux
 from .nodes import Nodes
 from .locality import Locality
 from .nodefeature import NodeFeatures
@@ -72,7 +72,6 @@ class Api(object):
         TF.cache = tmObj.cache
         TF.reset = tmObj.reset
         TF.indent = tmObj.indent
-        TF.loadLog = tmObj.cache
 
         """All messages produced during the feature loading process.
 
@@ -89,6 +88,7 @@ class Api(object):
         setattr(self, "AllFeatures", self.Fall)
         setattr(self, "AllEdges", self.Eall)
         setattr(self, "AllComputeds", self.Call)
+        setattr(self, "loadLog", self.isLoaded)
 
     def Fs(self, fName):
         """Get the node feature sub API.
@@ -147,7 +147,7 @@ class Api(object):
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
-    def isLoaded(self, features=None):
+    def isLoaded(self, features=None, pretty=True):
         """Show information about loaded features.
 
         Parameters
@@ -157,6 +157,11 @@ class Api(object):
             If absent or None: all features seen by TF.
             If a string, it is a comma and/or space spearated list of feature names.
             Otherwise the items of the iterable are feature names.
+
+        pretty: boolean, optional `True`
+            If True, it prints an overview of all features seen by TF with
+            information about kind, type, source location and loaded status.
+            Otherwise, it returns this information as a dict.
 
         Returns
         -------
@@ -172,30 +177,34 @@ class Api(object):
             *   `type` is the type of values: `int`, or `str` or `""`;
             *   `edgeValues`: if an edge feature it indicates whether
                 the edges have values. Otherwise `None`.
+
+            If `pretty`, nothing is returned, but the dict is pretty printed.
         """
 
-        fNames = fitemize(features)
+        fNames = list(self.TF.features) if features is None else fitemize(features)
         info = {}
 
         for fName in fNames:
             fType = None
             edgeValues = None
+            fSource = None
             hasInfo = True
+            if fName in self.TF.features:
+                fObj = self.TF.features[fName]
+                fSource = ux(fObj.dirName)
 
             if hasattr(self.F, fName):
-                fObj = getattr(self.F, fName)
+                flObj = getattr(self.F, fName)
                 fKind = "node"
-                fType = fObj.meta["valueType"]
+                fType = flObj.meta["valueType"]
             elif hasattr(self.E, fName):
-                fObj = getattr(self.E, fName)
+                flObj = getattr(self.E, fName)
                 fKind = "edge"
-                fType = fObj.meta["valueType"]
-                edgeValues = fObj.doValues
-            elif hasattr(self.C, fName):
-                fObj = getattr(self.C, fName)
+                fType = flObj.meta["valueType"]
+                edgeValues = False if fName == "oslots" else flObj.doValues
+            elif fName.startswith("__") and fName.endswith("__") and hasattr(self.C, fName.strip("_")):
                 fKind = "computed"
             elif fName in self.TF.features:
-                fObj = self.TF.features[fName]
                 if fObj.isConfig:
                     fKind = "config"
                 else:
@@ -204,8 +213,28 @@ class Api(object):
                 hasInfo = False
 
             info[fName] = (
-                dict(kind=fKind, type=fType, edgeValues=edgeValues) if hasInfo else None
+                dict(kind=fKind, type=fType, source=fSource, edgeValues=edgeValues)
+                if hasInfo
+                else None
             )
+        if pretty:
+            for (fName, fInfo) in sorted(info.items()):
+                if fInfo is None:
+                    msg = f"{fName:<20} NOT LOADED"
+                else:
+                    fKind = fInfo["kind"]
+                    fType = fInfo.get("type", "")
+                    fSource = fInfo.get("source", "")
+                    fEV = fInfo.get("edgeValues", "")
+                    kind = (
+                        f"node ({fType})" if fKind == "node" else
+                        f"edge ({fType})" if fKind == "edge" and fEV else
+                        "edge" if fKind == "edge" else
+                        f"{fKind}"
+                    )
+                    msg = f"{fName:<20} {kind:<10} {fSource}"
+                print(msg)
+            return None
         return info
 
     def makeAvailableIn(self, scope):

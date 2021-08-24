@@ -685,7 +685,7 @@ def collect(
             api = apis[name]
             allFeatures = getAllFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
-                if api.isLoaded(features=OINTER)[OINTER] is None:
+                if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
                     continue
                 interSource = api.Fs(OINTER).data
 
