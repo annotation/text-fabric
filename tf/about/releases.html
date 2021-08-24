@@ -54,6 +54,16 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="902">9.0.2</h4>
+<p>2021-08-24</p>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>Bug reported by Gyusang Jin: when a string specification of features that must be loaded
+contains newlines, an error will occur.</li>
+<li>TF.loadLog() did not provide useful information anymore. Instead, there is now
+TF.isLoaded and A.isLoaded (<code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>). For compatibility,
+loadLog still can be called, but is identical to isLoaded.</li>
+</ul>
 <h4 id="901">9.0.1</h4>
 <p>2021-08-23</p>
 <p><strong>Fixes</strong></p>
@@ -98,7 +108,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -172,6 +182,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#902">9.0.2</a></li>
 <li><a href="#901">9.0.1</a></li>
 <li><a href="#900">9.0.0</a></li>
 </ul>

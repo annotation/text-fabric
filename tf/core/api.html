@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L0-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L0-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # The core API of TF.
@@ -36,7 +36,7 @@
 It provides methods to navigate nodes and edges and lookup features.
 &#34;&#34;&#34;
 
-from .helpers import flattenToSet, console, fitemize
+from .helpers import flattenToSet, console, fitemize, unexpanduser as ux
 from .nodes import Nodes
 from .locality import Locality
 from .nodefeature import NodeFeatures
@@ -104,7 +104,6 @@ class Api(object):
         TF.cache = tmObj.cache
         TF.reset = tmObj.reset
         TF.indent = tmObj.indent
-        TF.loadLog = tmObj.cache
 
         &#34;&#34;&#34;All messages produced during the feature loading process.
 
@@ -121,6 +120,7 @@ class Api(object):
         setattr(self, &#34;AllFeatures&#34;, self.Fall)
         setattr(self, &#34;AllEdges&#34;, self.Eall)
         setattr(self, &#34;AllComputeds&#34;, self.Call)
+        setattr(self, &#34;loadLog&#34;, self.isLoaded)
 
     def Fs(self, fName):
         &#34;&#34;&#34;Get the node feature sub API.
@@ -179,7 +179,7 @@ class Api(object):
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
-    def isLoaded(self, features=None):
+    def isLoaded(self, features=None, pretty=True):
         &#34;&#34;&#34;Show information about loaded features.
 
         Parameters
@@ -189,6 +189,11 @@ class Api(object):
             If absent or None: all features seen by TF.
             If a string, it is a comma and/or space spearated list of feature names.
             Otherwise the items of the iterable are feature names.
+
+        pretty: boolean, optional `True`
+            If True, it prints an overview of all features seen by TF with
+            information about kind, type, source location and loaded status.
+            Otherwise, it returns this information as a dict.
 
         Returns
         -------
@@ -204,30 +209,34 @@ class Api(object):
             *   `type` is the type of values: `int`, or `str` or `&#34;&#34;`;
             *   `edgeValues`: if an edge feature it indicates whether
                 the edges have values. Otherwise `None`.
+
+            If `pretty`, nothing is returned, but the dict is pretty printed.
         &#34;&#34;&#34;
 
-        fNames = fitemize(features)
+        fNames = list(self.TF.features) if features is None else fitemize(features)
         info = {}
 
         for fName in fNames:
             fType = None
             edgeValues = None
+            fSource = None
             hasInfo = True
+            if fName in self.TF.features:
+                fObj = self.TF.features[fName]
+                fSource = ux(fObj.dirName)
 
             if hasattr(self.F, fName):
-                fObj = getattr(self.F, fName)
+                flObj = getattr(self.F, fName)
                 fKind = &#34;node&#34;
-                fType = fObj.meta[&#34;valueType&#34;]
+                fType = flObj.meta[&#34;valueType&#34;]
             elif hasattr(self.E, fName):
-                fObj = getattr(self.E, fName)
+                flObj = getattr(self.E, fName)
                 fKind = &#34;edge&#34;
-                fType = fObj.meta[&#34;valueType&#34;]
-                edgeValues = fObj.doValues
-            elif hasattr(self.C, fName):
-                fObj = getattr(self.C, fName)
+                fType = flObj.meta[&#34;valueType&#34;]
+                edgeValues = False if fName == &#34;oslots&#34; else flObj.doValues
+            elif fName.startswith(&#34;__&#34;) and fName.endswith(&#34;__&#34;) and hasattr(self.C, fName.strip(&#34;_&#34;)):
                 fKind = &#34;computed&#34;
             elif fName in self.TF.features:
-                fObj = self.TF.features[fName]
                 if fObj.isConfig:
                     fKind = &#34;config&#34;
                 else:
@@ -236,8 +245,28 @@ class Api(object):
                 hasInfo = False
 
             info[fName] = (
-                dict(kind=fKind, type=fType, edgeValues=edgeValues) if hasInfo else None
+                dict(kind=fKind, type=fType, source=fSource, edgeValues=edgeValues)
+                if hasInfo
+                else None
             )
+        if pretty:
+            for (fName, fInfo) in sorted(info.items()):
+                if fInfo is None:
+                    msg = f&#34;{fName:&lt;20} NOT LOADED&#34;
+                else:
+                    fKind = fInfo[&#34;kind&#34;]
+                    fType = fInfo.get(&#34;type&#34;, &#34;&#34;)
+                    fSource = fInfo.get(&#34;source&#34;, &#34;&#34;)
+                    fEV = fInfo.get(&#34;edgeValues&#34;, &#34;&#34;)
+                    kind = (
+                        f&#34;node ({fType})&#34; if fKind == &#34;node&#34; else
+                        f&#34;edge ({fType})&#34; if fKind == &#34;edge&#34; and fEV else
+                        &#34;edge&#34; if fKind == &#34;edge&#34; else
+                        f&#34;{fKind}&#34;
+                    )
+                    msg = f&#34;{fName:&lt;20} {kind:&lt;10} {fSource}&#34;
+                print(msg)
+            return None
         return info
 
     def makeAvailableIn(self, scope):
@@ -402,7 +431,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L338-L340" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L367-L369" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addLocality(api):
     api.L = Locality(api)
@@ -417,7 +446,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L343-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L372-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addNodes(api):
     api.N = Nodes(api)
@@ -432,7 +461,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L331-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L360-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
@@ -449,7 +478,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L353-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L382-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addSearch(api, silent):
     api.S = Search(api, silent)
@@ -464,7 +493,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L348-L350" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L377-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addText(api):
     api.T = Text(api)
@@ -485,7 +514,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L47-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L47-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api(object):
     def __init__(self, TF):
@@ -515,7 +544,6 @@ def addSearch(api, silent):
         TF.cache = tmObj.cache
         TF.reset = tmObj.reset
         TF.indent = tmObj.indent
-        TF.loadLog = tmObj.cache
 
         &#34;&#34;&#34;All messages produced during the feature loading process.
 
@@ -532,6 +560,7 @@ def addSearch(api, silent):
         setattr(self, &#34;AllFeatures&#34;, self.Fall)
         setattr(self, &#34;AllEdges&#34;, self.Eall)
         setattr(self, &#34;AllComputeds&#34;, self.Call)
+        setattr(self, &#34;loadLog&#34;, self.isLoaded)
 
     def Fs(self, fName):
         &#34;&#34;&#34;Get the node feature sub API.
@@ -590,7 +619,7 @@ def addSearch(api, silent):
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
-    def isLoaded(self, features=None):
+    def isLoaded(self, features=None, pretty=True):
         &#34;&#34;&#34;Show information about loaded features.
 
         Parameters
@@ -600,6 +629,11 @@ def addSearch(api, silent):
             If absent or None: all features seen by TF.
             If a string, it is a comma and/or space spearated list of feature names.
             Otherwise the items of the iterable are feature names.
+
+        pretty: boolean, optional `True`
+            If True, it prints an overview of all features seen by TF with
+            information about kind, type, source location and loaded status.
+            Otherwise, it returns this information as a dict.
 
         Returns
         -------
@@ -615,30 +649,34 @@ def addSearch(api, silent):
             *   `type` is the type of values: `int`, or `str` or `&#34;&#34;`;
             *   `edgeValues`: if an edge feature it indicates whether
                 the edges have values. Otherwise `None`.
+
+            If `pretty`, nothing is returned, but the dict is pretty printed.
         &#34;&#34;&#34;
 
-        fNames = fitemize(features)
+        fNames = list(self.TF.features) if features is None else fitemize(features)
         info = {}
 
         for fName in fNames:
             fType = None
             edgeValues = None
+            fSource = None
             hasInfo = True
+            if fName in self.TF.features:
+                fObj = self.TF.features[fName]
+                fSource = ux(fObj.dirName)
 
             if hasattr(self.F, fName):
-                fObj = getattr(self.F, fName)
+                flObj = getattr(self.F, fName)
                 fKind = &#34;node&#34;
-                fType = fObj.meta[&#34;valueType&#34;]
+                fType = flObj.meta[&#34;valueType&#34;]
             elif hasattr(self.E, fName):
-                fObj = getattr(self.E, fName)
+                flObj = getattr(self.E, fName)
                 fKind = &#34;edge&#34;
-                fType = fObj.meta[&#34;valueType&#34;]
-                edgeValues = fObj.doValues
-            elif hasattr(self.C, fName):
-                fObj = getattr(self.C, fName)
+                fType = flObj.meta[&#34;valueType&#34;]
+                edgeValues = False if fName == &#34;oslots&#34; else flObj.doValues
+            elif fName.startswith(&#34;__&#34;) and fName.endswith(&#34;__&#34;) and hasattr(self.C, fName.strip(&#34;_&#34;)):
                 fKind = &#34;computed&#34;
             elif fName in self.TF.features:
-                fObj = self.TF.features[fName]
                 if fObj.isConfig:
                     fKind = &#34;config&#34;
                 else:
@@ -647,8 +685,28 @@ def addSearch(api, silent):
                 hasInfo = False
 
             info[fName] = (
-                dict(kind=fKind, type=fType, edgeValues=edgeValues) if hasInfo else None
+                dict(kind=fKind, type=fType, source=fSource, edgeValues=edgeValues)
+                if hasInfo
+                else None
             )
+        if pretty:
+            for (fName, fInfo) in sorted(info.items()):
+                if fInfo is None:
+                    msg = f&#34;{fName:&lt;20} NOT LOADED&#34;
+                else:
+                    fKind = fInfo[&#34;kind&#34;]
+                    fType = fInfo.get(&#34;type&#34;, &#34;&#34;)
+                    fSource = fInfo.get(&#34;source&#34;, &#34;&#34;)
+                    fEV = fInfo.get(&#34;edgeValues&#34;, &#34;&#34;)
+                    kind = (
+                        f&#34;node ({fType})&#34; if fKind == &#34;node&#34; else
+                        f&#34;edge ({fType})&#34; if fKind == &#34;edge&#34; and fEV else
+                        &#34;edge&#34; if fKind == &#34;edge&#34; else
+                        f&#34;{fKind}&#34;
+                    )
+                    msg = f&#34;{fName:&lt;20} {kind:&lt;10} {fSource}&#34;
+                print(msg)
+            return None
         return info
 
     def makeAvailableIn(self, scope):
@@ -789,7 +847,7 @@ that is loaded later.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L145-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L145-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Call(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -809,7 +867,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L121-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L121-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Cs(self, fName):
     &#34;&#34;&#34;Get the computed data sub API.
@@ -834,7 +892,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L140-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L140-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Eall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.&#34;&#34;&#34;
@@ -854,7 +912,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L107-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L107-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Es(self, fName):
     &#34;&#34;&#34;Get the edge feature sub API.
@@ -879,7 +937,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L135-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L135-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.&#34;&#34;&#34;
@@ -899,7 +957,7 @@ you can not use <code>F.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L93-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L93-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fs(self, fName):
     &#34;&#34;&#34;Get the node feature sub API.
@@ -938,7 +996,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L285-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L314-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ensureLoaded(self, features):
     &#34;&#34;&#34;Checks if features are loaded and if not loads them.
@@ -987,7 +1045,7 @@ without directory information and without extension.</dd>
 </details>
 </dd>
 <dt id="tf.core.api.Api.isLoaded"><code class="name flex">
-<span>def <span class="ident">isLoaded</span></span>(<span>self, features=None)</span>
+<span>def <span class="ident">isLoaded</span></span>(<span>self, features=None, pretty=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Show information about loaded features.</p>
@@ -998,6 +1056,10 @@ without directory information and without extension.</dd>
 If absent or None: all features seen by TF.
 If a string, it is a comma and/or space spearated list of feature names.
 Otherwise the items of the iterable are feature names.</dd>
+<dt><strong><code>pretty</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>If True, it prints an overview of all features seen by TF with
+information about kind, type, source location and loaded status.
+Otherwise, it returns this information as a dict.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1014,14 +1076,15 @@ the feature is not loaded.</p>
 <li><code>edgeValues</code>: if an edge feature it indicates whether
 the edges have values. Otherwise <code>None</code>.</li>
 </ul>
+<p>If <code>pretty</code>, nothing is returned, but the dict is pretty printed.</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L150-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L150-L238" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def isLoaded(self, features=None):
+<pre><code class="python">def isLoaded(self, features=None, pretty=True):
     &#34;&#34;&#34;Show information about loaded features.
 
     Parameters
@@ -1031,6 +1094,11 @@ the edges have values. Otherwise <code>None</code>.</li>
         If absent or None: all features seen by TF.
         If a string, it is a comma and/or space spearated list of feature names.
         Otherwise the items of the iterable are feature names.
+
+    pretty: boolean, optional `True`
+        If True, it prints an overview of all features seen by TF with
+        information about kind, type, source location and loaded status.
+        Otherwise, it returns this information as a dict.
 
     Returns
     -------
@@ -1046,30 +1114,34 @@ the edges have values. Otherwise <code>None</code>.</li>
         *   `type` is the type of values: `int`, or `str` or `&#34;&#34;`;
         *   `edgeValues`: if an edge feature it indicates whether
             the edges have values. Otherwise `None`.
+
+        If `pretty`, nothing is returned, but the dict is pretty printed.
     &#34;&#34;&#34;
 
-    fNames = fitemize(features)
+    fNames = list(self.TF.features) if features is None else fitemize(features)
     info = {}
 
     for fName in fNames:
         fType = None
         edgeValues = None
+        fSource = None
         hasInfo = True
+        if fName in self.TF.features:
+            fObj = self.TF.features[fName]
+            fSource = ux(fObj.dirName)
 
         if hasattr(self.F, fName):
-            fObj = getattr(self.F, fName)
+            flObj = getattr(self.F, fName)
             fKind = &#34;node&#34;
-            fType = fObj.meta[&#34;valueType&#34;]
+            fType = flObj.meta[&#34;valueType&#34;]
         elif hasattr(self.E, fName):
-            fObj = getattr(self.E, fName)
+            flObj = getattr(self.E, fName)
             fKind = &#34;edge&#34;
-            fType = fObj.meta[&#34;valueType&#34;]
-            edgeValues = fObj.doValues
-        elif hasattr(self.C, fName):
-            fObj = getattr(self.C, fName)
+            fType = flObj.meta[&#34;valueType&#34;]
+            edgeValues = False if fName == &#34;oslots&#34; else flObj.doValues
+        elif fName.startswith(&#34;__&#34;) and fName.endswith(&#34;__&#34;) and hasattr(self.C, fName.strip(&#34;_&#34;)):
             fKind = &#34;computed&#34;
         elif fName in self.TF.features:
-            fObj = self.TF.features[fName]
             if fObj.isConfig:
                 fKind = &#34;config&#34;
             else:
@@ -1078,8 +1150,28 @@ the edges have values. Otherwise <code>None</code>.</li>
             hasInfo = False
 
         info[fName] = (
-            dict(kind=fKind, type=fType, edgeValues=edgeValues) if hasInfo else None
+            dict(kind=fKind, type=fType, source=fSource, edgeValues=edgeValues)
+            if hasInfo
+            else None
         )
+    if pretty:
+        for (fName, fInfo) in sorted(info.items()):
+            if fInfo is None:
+                msg = f&#34;{fName:&lt;20} NOT LOADED&#34;
+            else:
+                fKind = fInfo[&#34;kind&#34;]
+                fType = fInfo.get(&#34;type&#34;, &#34;&#34;)
+                fSource = fInfo.get(&#34;source&#34;, &#34;&#34;)
+                fEV = fInfo.get(&#34;edgeValues&#34;, &#34;&#34;)
+                kind = (
+                    f&#34;node ({fType})&#34; if fKind == &#34;node&#34; else
+                    f&#34;edge ({fType})&#34; if fKind == &#34;edge&#34; and fEV else
+                    &#34;edge&#34; if fKind == &#34;edge&#34; else
+                    f&#34;{fKind}&#34;
+                )
+                msg = f&#34;{fName:&lt;20} {kind:&lt;10} {fSource}&#34;
+            print(msg)
+        return None
     return info</code></pre>
 </details>
 </dd>
@@ -1184,7 +1276,7 @@ So we have to pass it on.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c9edd20adf07b063d249e1ef50e8bbec0f7cf150/tf/core/api.py#L211-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c115e83be29a6e5311cea07ddafe648ba2215263/tf/core/api.py#L240-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAvailableIn(self, scope):
     &#34;&#34;&#34;Exports members of the API to the global namespace.
