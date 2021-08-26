@@ -4,7 +4,11 @@ from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
 from ..core.helpers import mdEsc, htmlEsc, unexpanduser, QUAD
+from ..core.text import DEFAULT_FORMAT
 
+
+NORMAL = "normal"
+ORIG = "orig"
 
 RESULT = "result"
 NB = "\u00a0"
@@ -12,6 +16,19 @@ EM = "*empty*"
 
 SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
+
+
+def _getLtr(app, options):
+    aContext = app.context
+    direction = aContext.direction
+
+    fmt = options.fmt or DEFAULT_FORMAT
+
+    return (
+        "rtl"
+        if direction == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
+        else ("" if direction == "ltr" else "ltr")
+    )
 
 
 def dm(md):
@@ -204,6 +221,9 @@ def htmlSafe(text, isHtml):
 def getText(
     app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None
 ):
+    display = app.display
+    dContext = display.distill(options or {})
+    ltr = _getLtr(app, dContext) or "ltr"
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
@@ -221,9 +241,9 @@ def getText(
     tplFilled = (
         (
             (
-                '<span class="tfsechead">'
+                f"""<span class="tfsechead {ltr}"><span class="ltr">"""
                 + (NB if passage else app.sectionStrFromNode(n))
-                + "</span>"
+                + "</span></span>"
             )
             if nType in sectionTypeSet
             else f'<span class="structure">{app.structureStrFromNode(n)}</span>'

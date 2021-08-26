@@ -9,11 +9,10 @@ It is described at length in `tf.about.displaydesign`.
 
 from collections import namedtuple
 from itertools import chain
-from ..core.helpers import rangesFromList, console
+from ..core.helpers import rangesFromList, console, QUAD
 from ..core.text import DEFAULT_FORMAT
-from .settings import ORIG
 from .highlight import getHlAtt
-from .helpers import QUAD
+from .helpers import _getLtr
 
 
 __pdoc__ = {}
@@ -577,19 +576,6 @@ def _getTextCls(app, fmt):
     defaultClsOrig = aContext.defaultClsOrig
 
     return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
-
-
-def _getLtr(app, options):
-    aContext = app.context
-    direction = aContext.direction
-
-    fmt = options.fmt or DEFAULT_FORMAT
-
-    return (
-        "rtl"
-        if direction == "rtl" and (f"{ORIG}-" in fmt or f"-{ORIG}" in fmt)
-        else ("" if direction == "ltr" else "ltr")
-    )
 
 
 def _getBigType(app, isPretty, options, nType):

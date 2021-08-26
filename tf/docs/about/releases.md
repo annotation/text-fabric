@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.0.4
+
+2021-08-26
+
+**Fixes**
+
+* Section headings in the BHSA were not always rendered in ltr mode. Fixed.
+
 #### 9.0.2, 9.0.3
 
 2021-08-24

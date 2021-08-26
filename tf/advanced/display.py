@@ -53,12 +53,12 @@ import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc
-from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict
+from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .options import Options
 from .render import render
-from .unravel import unravel, _getLtr
+from .unravel import unravel
 
 LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
@@ -550,7 +550,10 @@ def plainTuple(
             if _browse
             else app.webLink(passageNode, _asString=True)
         )
-        passageRef = f'<span class="tfsechead ltr">{passageRef}</span>'
+        passageRef = (
+            f"""<span class="tfsechead {ltr}">"""
+            f"""<span class="ltr">{passageRef}</span></span>"""
+        )
     else:
         passageRef = ""
 

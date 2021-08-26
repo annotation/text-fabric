@@ -26,8 +26,7 @@ from ..core.helpers import htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    """Renders a node, in plain or pretty mode.
-    """
+    """Renders a node, in plain or pretty mode."""
 
     display = app.display
 
@@ -96,7 +95,12 @@ def _render(
             )
         (label, featurePart) = _prettyTree(tree, outer, first, last, level, nodePlain)
         (containerB, containerE) = _prettyPre(
-            tree, outer, label, featurePart, boundaryCls, html,
+            tree,
+            outer,
+            label,
+            featurePart,
+            boundaryCls,
+            html,
         )
         cls = props.cls
         childCls = cls["children"]
@@ -170,7 +174,13 @@ def _plainPost(contribE, html):
 
 
 def _plainTree(
-    tree, outer, first, last, level, boundaryCls, passage,
+    tree,
+    outer,
+    first,
+    last,
+    level,
+    boundaryCls,
+    passage,
 ):
     (chunk, info, subTrees) = tree
 
@@ -375,7 +385,10 @@ def _getPassage(isPretty, info, n):
     passage = webLink(n, _asString=True)
     wrap = "div" if isPretty else "span"
     sep = "" if isPretty else NB * 2
-    return f'<{wrap} class="tfsechead {ltr}">{passage}</{wrap}>{sep}'
+    return (
+        f"""<{wrap} class="tfsechead {ltr}">"""
+        f"""<span class="ltr">{passage}</span></{wrap}>{sep}"""
+    )
 
 
 def _getNodePart(isPretty, info, n, outer, switched):

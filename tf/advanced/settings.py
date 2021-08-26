@@ -889,7 +889,7 @@ import types
 from ..parameters import URL_GH, URL_NB, URL_TFDOC
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
-from .helpers import parseFeatures, transitiveClosure, showDict
+from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -919,9 +919,6 @@ DEFAULT_CLS_SRC = "txto"
 DEFAULT_CLS_ORIG = "txtu"
 DEFAULT_CLS_TRANS = "txtt"
 DEFAULT_CLS_PHONO = "txtp"
-
-NORMAL = "normal"
-ORIG = "orig"
 
 FORMAT_CLS = (
     (NORMAL, DEFAULT_CLS),
