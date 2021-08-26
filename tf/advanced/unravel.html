@@ -30,7 +30,7 @@ That sounds simple, but quite a few ideas have to work together to make it work.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L0-L662" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L0-L648" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Unravel
@@ -43,11 +43,10 @@ It is described at length in `tf.about.displaydesign`.
 
 from collections import namedtuple
 from itertools import chain
-from ..core.helpers import rangesFromList, console
+from ..core.helpers import rangesFromList, console, QUAD
 from ..core.text import DEFAULT_FORMAT
-from .settings import ORIG
 from .highlight import getHlAtt
-from .helpers import QUAD
+from .helpers import _getLtr
 
 
 __pdoc__ = {}
@@ -613,19 +612,6 @@ def _getTextCls(app, fmt):
     return formatCls.get(fmt or DEFAULT_FORMAT, defaultClsOrig)
 
 
-def _getLtr(app, options):
-    aContext = app.context
-    direction = aContext.direction
-
-    fmt = options.fmt or DEFAULT_FORMAT
-
-    return (
-        &#34;rtl&#34;
-        if direction == &#34;rtl&#34; and (f&#34;{ORIG}-&#34; in fmt or f&#34;-{ORIG}&#34; in fmt)
-        else (&#34;&#34; if direction == &#34;ltr&#34; else &#34;ltr&#34;)
-    )
-
-
 def _getBigType(app, isPretty, options, nType):
     api = app.api
     T = api.T
@@ -742,7 +728,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L177-L213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L176-L212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
@@ -797,7 +783,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L79-L83" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L78-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NodeProps:
     &#34;&#34;&#34;Node properties during plain() or pretty().
@@ -890,7 +876,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L22-L26" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L21-L25" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OuterSettings:
     &#34;&#34;&#34;Common properties during plain() and pretty().
@@ -964,7 +950,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L160-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L159-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TreeInfo:
     &#34;&#34;&#34;Tree properties during plain() or pretty().
@@ -992,7 +978,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L173-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L172-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -1006,7 +992,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/unravel.py#L169-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/unravel.py#L168-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, **specs):
     for (k, v) in specs.items():

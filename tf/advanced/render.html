@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/render.py#L0-L511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/render.py#L0-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -70,8 +70,7 @@ from ..core.helpers import htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    &#34;&#34;&#34;Renders a node, in plain or pretty mode.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
 
     display = app.display
 
@@ -140,7 +139,12 @@ def _render(
             )
         (label, featurePart) = _prettyTree(tree, outer, first, last, level, nodePlain)
         (containerB, containerE) = _prettyPre(
-            tree, outer, label, featurePart, boundaryCls, html,
+            tree,
+            outer,
+            label,
+            featurePart,
+            boundaryCls,
+            html,
         )
         cls = props.cls
         childCls = cls[&#34;children&#34;]
@@ -214,7 +218,13 @@ def _plainPost(contribE, html):
 
 
 def _plainTree(
-    tree, outer, first, last, level, boundaryCls, passage,
+    tree,
+    outer,
+    first,
+    last,
+    level,
+    boundaryCls,
+    passage,
 ):
     (chunk, info, subTrees) = tree
 
@@ -419,7 +429,10 @@ def _getPassage(isPretty, info, n):
     passage = webLink(n, _asString=True)
     wrap = &#34;div&#34; if isPretty else &#34;span&#34;
     sep = &#34;&#34; if isPretty else NB * 2
-    return f&#39;&lt;{wrap} class=&#34;tfsechead {ltr}&#34;&gt;{passage}&lt;/{wrap}&gt;{sep}&#39;
+    return (
+        f&#34;&#34;&#34;&lt;{wrap} class=&#34;tfsechead {ltr}&#34;&gt;&#34;&#34;&#34;
+        f&#34;&#34;&#34;&lt;span class=&#34;ltr&#34;&gt;{passage}&lt;/span&gt;&lt;/{wrap}&gt;{sep}&#34;&#34;&#34;
+    )
 
 
 def _getNodePart(isPretty, info, n, outer, switched):
@@ -571,11 +584,10 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/2804fc5f979e13e4fafa647e56138fe230b9d54a/tf/advanced/render.py#L28-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/render.py#L28-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    &#34;&#34;&#34;Renders a node, in plain or pretty mode.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
 
     display = app.display
 
