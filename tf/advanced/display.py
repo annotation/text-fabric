@@ -407,6 +407,8 @@ def table(app, tuples, _asString=False, **options):
     if not display.check("table", options):
         return ""
 
+    _browse = app._browse
+
     api = app.api
     F = api.F
     fOtypev = F.otype.v
@@ -463,7 +465,8 @@ def table(app, tuples, _asString=False, **options):
             )
         )
     html = "<table>" + "\n".join(html) + "</table>"
-    if _asString:
+
+    if _browse or _asString:
         return html
     dh(html)
 
@@ -670,7 +673,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     Result
     ------
     html string or `None`
-        Depending on *asString* above.
+        Depending on `_asString` above.
     """
 
     return render(app, False, n, _inTuple, _asString, explain, **options)
@@ -679,7 +682,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
 # PRETTY and FRIENDS
 
 
-def show(app, tuples, **options):
+def show(app, tuples, _asString=False, **options):
     """Displays an iterable of tuples of nodes.
 
     The elements of the list are displayed by `A.prettyTuple()`.
@@ -694,13 +697,18 @@ def show(app, tuples, **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     """
 
@@ -708,6 +716,9 @@ def show(app, tuples, **options):
 
     if not display.check("show", options):
         return ""
+
+    _browse = app._browse
+    asString = _browse or _asString
 
     dContext = display.distill(options)
     end = dContext.end
@@ -732,12 +743,27 @@ def show(app, tuples, **options):
 
     newOptions = display.consume(options, "skipCols")
 
+    html = []
+
     for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
-        prettyTuple(app, tup, i, item=item, skipCols=set(), **newOptions)
+        thisResult = prettyTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            skipCols=set(),
+            _asString=asString,
+            **newOptions,
+        )
+        if asString:
+            html.append(thisResult)
+
+    if asString:
+        return "".join(html)
 
 
-def prettyTuple(app, tup, seq, item=RESULT, **options):
+def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     """Displays the material that corresponds to a tuple of nodes in a graphical way.
 
     The member nodes of the tuple will be collected into containers, which
@@ -754,13 +780,18 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
         a sequence of tuples of nodes.
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     """
 
@@ -777,12 +808,13 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    asString = _browse or _asString
 
     if skipCols:
         tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
-        if _browse:
+        if asString:
             return ""
         else:
             return
@@ -794,9 +826,9 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if not _browse:
+    if not asString:
         dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
-    if _browse:
+    if asString:
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
@@ -804,13 +836,13 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
             highlights=highlights,
             **display.consume(options, "highlights"),
         )
-        if _browse:
+        if asString:
             html.append(h)
-    if _browse:
+    if asString:
         return "".join(html)
 
 
-def pretty(app, n, explain=False, **options):
+def pretty(app, n, explain=False, _asString=False, **options):
     """Displays the material that corresponds to a node in a graphical way.
 
     The internal structure of the nodes that are involved is also revealed.
@@ -834,15 +866,19 @@ def pretty(app, n, explain=False, **options):
     explain: boolean, optional `False`
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
+    asString: boolean, optional `False`
+        If True, the result is returned as string
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
-        as HTML. Otherwise the result is directly displayed in a notebook.
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML.
+        Otherwise the result is directly displayed in a notebook.
     """
 
-    return render(app, True, n, False, False, explain, **options)
+    return render(app, True, n, False, _asString, explain, **options)
 
 
 def _getRefMember(otypeRank, fOtypev, tup, dContext):

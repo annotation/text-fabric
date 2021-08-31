@@ -128,7 +128,7 @@ A.unravel(node, ...)
 :   `tf.advanced.unravel.unravel`
 
 ```
-A.getCss(
+A.getCss()
 ```
 :   get the complete CSS stylesheet for this app
 :   `tf.advanced.display.getCss`

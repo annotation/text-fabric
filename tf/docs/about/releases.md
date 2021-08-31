@@ -46,6 +46,35 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1
+
+2021-09-01
+
+**Additions to the API**
+
+The display functions are
+
+* `tf.advanced.display.table`
+* `tf.advanced.display.plainTuple`
+* `tf.advanced.display.plain`
+* `tf.advanced.display.show`
+* `tf.advanced.display.prettyTuple`
+* `tf.advanced.display.pretty`
+
+Some of them are defined with the parameter `asString=False`.
+When omitted or False, the result will be displayed in the notebook.
+But when used by the TF-browser, the result will not be displayed, but returned
+as HTML. Text-Fabric knows when it is used by the TF browser or not.
+
+But there are cases when you want to tell Text-Fabric to not display the result,
+but to deliver it as HTML. For that the `_asString` parameter was used.
+However, it was not defined for all of these display functions.
+
+The improvement is, that it now works for *all* of the above display functions.
+
+When you pass `asString=True`, the result will not be displayed (in the notebook),
+but returned as HTML.
+
 #### 9.0.4
 
 2021-08-26
