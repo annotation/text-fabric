@@ -48,7 +48,7 @@ text-fabric appName:hot
 
 #### 9.1
 
-2021-09-01
+2021-09-10
 
 **Additions to the API**
 
