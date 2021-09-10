@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L0-L864" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L0-L900" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -475,6 +475,8 @@ def table(app, tuples, _asString=False, **options):
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
 
+    _browse = app._browse
+
     api = app.api
     F = api.F
     fOtypev = F.otype.v
@@ -531,7 +533,8 @@ def table(app, tuples, _asString=False, **options):
             )
         )
     html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
-    if _asString:
+
+    if _browse or _asString:
         return html
     dh(html)
 
@@ -738,7 +741,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     Result
     ------
     html string or `None`
-        Depending on *asString* above.
+        Depending on `_asString` above.
     &#34;&#34;&#34;
 
     return render(app, False, n, _inTuple, _asString, explain, **options)
@@ -747,7 +750,7 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
 # PRETTY and FRIENDS
 
 
-def show(app, tuples, **options):
+def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
 
     The elements of the list are displayed by `A.prettyTuple()`.
@@ -762,13 +765,18 @@ def show(app, tuples, **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
@@ -776,6 +784,9 @@ def show(app, tuples, **options):
 
     if not display.check(&#34;show&#34;, options):
         return &#34;&#34;
+
+    _browse = app._browse
+    asString = _browse or _asString
 
     dContext = display.distill(options)
     end = dContext.end
@@ -800,12 +811,27 @@ def show(app, tuples, **options):
 
     newOptions = display.consume(options, &#34;skipCols&#34;)
 
+    html = []
+
     for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
-        prettyTuple(app, tup, i, item=item, skipCols=set(), **newOptions)
+        thisResult = prettyTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            skipCols=set(),
+            _asString=asString,
+            **newOptions,
+        )
+        if asString:
+            html.append(thisResult)
+
+    if asString:
+        return &#34;&#34;.join(html)
 
 
-def prettyTuple(app, tup, seq, item=RESULT, **options):
+def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
 
     The member nodes of the tuple will be collected into containers, which
@@ -822,13 +848,18 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
         a sequence of tuples of nodes.
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
@@ -845,12 +876,13 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    asString = _browse or _asString
 
     if skipCols:
         tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
-        if _browse:
+        if asString:
             return &#34;&#34;
         else:
             return
@@ -862,9 +894,9 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if not _browse:
+    if not asString:
         dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
-    if _browse:
+    if asString:
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
@@ -872,13 +904,13 @@ def prettyTuple(app, tup, seq, item=RESULT, **options):
             highlights=highlights,
             **display.consume(options, &#34;highlights&#34;),
         )
-        if _browse:
+        if asString:
             html.append(h)
-    if _browse:
+    if asString:
         return &#34;&#34;.join(html)
 
 
-def pretty(app, n, explain=False, **options):
+def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
 
     The internal structure of the nodes that are involved is also revealed.
@@ -902,15 +934,19 @@ def pretty(app, n, explain=False, **options):
     explain: boolean, optional `False`
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
+    asString: boolean, optional `False`
+        If True, the result is returned as string
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
-        as HTML. Otherwise the result is directly displayed in a notebook.
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML.
+        Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
-    return render(app, True, n, False, False, explain, **options)
+    return render(app, True, n, False, _asString, explain, **options)
 
 
 def _getRefMember(otypeRank, fOtypev, tup, dContext):
@@ -966,7 +1002,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L67-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L67-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent):
     &#34;&#34;&#34;Produce the display API.
@@ -1030,7 +1066,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L170-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L170-L187" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1088,7 +1124,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L134-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L134-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1146,7 +1182,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L112-L131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L112-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1271,7 +1307,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L253-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L253-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1413,7 +1449,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L221-L250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L221-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1468,7 +1504,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L190-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L190-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1529,11 +1565,11 @@ calls have contributed to the end result.</dd>
 </dl>
 <h2 id="result">Result</h2>
 <p>html string or <code>None</code>
-Depending on <em>asString</em> above.</p></div>
+Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L645-L676" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L648-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1563,7 +1599,7 @@ Depending on <em>asString</em> above.</p></div>
     Result
     ------
     html string or `None`
-        Depending on *asString* above.
+        Depending on `_asString` above.
     &#34;&#34;&#34;
 
     return render(app, False, n, _inTuple, _asString, explain, **options)</code></pre>
@@ -1617,7 +1653,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L471-L642" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L474-L645" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1822,17 +1858,21 @@ display (primarily for <code><a title="tf.advanced.display.export" href="#tf.adv
 <dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to print a trace of which nodes have been visited and how these
 calls have contributed to the end result.</dd>
+<dt><strong><code>asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the result is returned as string</dd>
 </dl>
 <h2 id="result">Result</h2>
 <p>html string or <code>None</code>
-When used for the TF browser (<code>app._browse</code> is true), the result is returned
-as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
+as HTML.
+Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L813-L845" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L845-L881" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def pretty(app, n, explain=False, **options):
+<pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
 
     The internal structure of the nodes that are involved is also revealed.
@@ -1856,15 +1896,19 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     explain: boolean, optional `False`
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
+    asString: boolean, optional `False`
+        If True, the result is returned as string
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
-        as HTML. Otherwise the result is directly displayed in a notebook.
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML.
+        Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
-    return render(app, True, n, False, False, explain, **options)</code></pre>
+    return render(app, True, n, False, _asString, explain, **options)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.prettyTuple"><code class="name flex">
@@ -1885,19 +1929,24 @@ This prepares the way for displaying query results, which come as
 a sequence of tuples of nodes.</dd>
 <dt><strong><code>item</code></strong> :&ensp;<code>string</code>, optional <code>result</code></dt>
 <dd>A name for the tuple: it could be a result, or a chapter, or a line.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
 <dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
 </dl>
 <h2 id="result">Result</h2>
 <p>html string or <code>None</code>
-When used for the TF browser (<code>app._browse</code> is true), the result is returned
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
 as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L740-L810" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L766-L842" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def prettyTuple(app, tup, seq, item=RESULT, **options):
+<pre><code class="python">def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
 
     The member nodes of the tuple will be collected into containers, which
@@ -1914,13 +1963,18 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
         a sequence of tuples of nodes.
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
@@ -1937,12 +1991,13 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    asString = _browse or _asString
 
     if skipCols:
         tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
-        if _browse:
+        if asString:
             return &#34;&#34;
         else:
             return
@@ -1954,9 +2009,9 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
-    if not _browse:
+    if not asString:
         dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
-    if _browse:
+    if asString:
         html = []
     for t in sorted(containers, key=sortKey):
         h = app.pretty(
@@ -1964,9 +2019,9 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
             highlights=highlights,
             **display.consume(options, &#34;highlights&#34;),
         )
-        if _browse:
+        if asString:
             html.append(h)
-    if _browse:
+    if asString:
         return &#34;&#34;.join(html)</code></pre>
 </details>
 </dd>
@@ -1987,19 +2042,24 @@ See <code><a title="tf.advanced.options" href="options.html">tf.advanced.options
 <dl>
 <dt><strong><code>tuples</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>integer</code></dt>
 <dd>The integers are the nodes, together they form a table.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
 <dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
 </dl>
 <h2 id="result">Result</h2>
 <p>html string or <code>None</code>
-When used for the TF browser (<code>app._browse</code> is true), the result is returned
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
 as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L682-L737" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L685-L763" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def show(app, tuples, **options):
+<pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
 
     The elements of the list are displayed by `A.prettyTuple()`.
@@ -2014,13 +2074,18 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
+    _asString: boolean, optional `False`
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
     options: dict
         Display options, see `tf.advanced.options`.
 
     Result
     ------
     html string or `None`
-        When used for the TF browser (`app._browse` is true), the result is returned
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
         as HTML. Otherwise the result is directly displayed in a notebook.
     &#34;&#34;&#34;
 
@@ -2028,6 +2093,9 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     if not display.check(&#34;show&#34;, options):
         return &#34;&#34;
+
+    _browse = app._browse
+    asString = _browse or _asString
 
     dContext = display.distill(options)
     end = dContext.end
@@ -2052,9 +2120,24 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     newOptions = display.consume(options, &#34;skipCols&#34;)
 
+    html = []
+
     for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
-        prettyTuple(app, tup, i, item=item, skipCols=set(), **newOptions)</code></pre>
+        thisResult = prettyTuple(
+            app,
+            tup,
+            i,
+            item=item,
+            skipCols=set(),
+            _asString=asString,
+            **newOptions,
+        )
+        if asString:
+            html.append(thisResult)
+
+    if asString:
+        return &#34;&#34;.join(html)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.table"><code class="name flex">
@@ -2086,7 +2169,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/advanced/display.py#L380-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/advanced/display.py#L380-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -2117,6 +2200,8 @@ HTML string.</dd>
 
     if not display.check(&#34;table&#34;, options):
         return &#34;&#34;
+
+    _browse = app._browse
 
     api = app.api
     F = api.F
@@ -2174,7 +2259,8 @@ HTML string.</dd>
             )
         )
     html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
-    if _asString:
+
+    if _browse or _asString:
         return html
     dh(html)</code></pre>
 </details>

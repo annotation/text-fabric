@@ -54,6 +54,28 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="91">9.1</h4>
+<p>2021-09-10</p>
+<p><strong>Additions to the API</strong></p>
+<p>The display functions are</p>
+<ul>
+<li><code><a title="tf.advanced.display.table" href="../advanced/display.html#tf.advanced.display.table">table()</a></code></li>
+<li><code><a title="tf.advanced.display.plainTuple" href="../advanced/display.html#tf.advanced.display.plainTuple">plainTuple()</a></code></li>
+<li><code><a title="tf.advanced.display.plain" href="../advanced/display.html#tf.advanced.display.plain">plain()</a></code></li>
+<li><code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.advanced.display.show">show()</a></code></li>
+<li><code><a title="tf.advanced.display.prettyTuple" href="../advanced/display.html#tf.advanced.display.prettyTuple">prettyTuple()</a></code></li>
+<li><code><a title="tf.advanced.display.pretty" href="../advanced/display.html#tf.advanced.display.pretty">pretty()</a></code></li>
+</ul>
+<p>Some of them are defined with the parameter <code>asString=False</code>.
+When omitted or False, the result will be displayed in the notebook.
+But when used by the TF-browser, the result will not be displayed, but returned
+as HTML. Text-Fabric knows when it is used by the TF browser or not.</p>
+<p>But there are cases when you want to tell Text-Fabric to not display the result,
+but to deliver it as HTML. For that the <code>_asString</code> parameter was used.
+However, it was not defined for all of these display functions.</p>
+<p>The improvement is, that it now works for <em>all</em> of the above display functions.</p>
+<p>When you pass <code>asString=True</code>, the result will not be displayed (in the notebook),
+but returned as HTML.</p>
 <h4 id="904">9.0.4</h4>
 <p>2021-08-26</p>
 <p><strong>Fixes</strong></p>
@@ -114,7 +136,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1aebac1e48faca2500ba21cd906924313873d139/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0b6a986d21b09b4ff63ec0653668a5502329a44e/tf/about/releases.py#L0-L2" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -188,6 +210,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#91">9.1</a></li>
 <li><a href="#904">9.0.4</a></li>
 <li><a href="#902-903">9.0.2, 9.0.3</a></li>
 <li><a href="#901">9.0.1</a></li>
