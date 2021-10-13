@@ -35,10 +35,6 @@ TF_BASE = f"{AN_BASE}/{REPO}"
 TEST_BASE = f"{TF_BASE}/test"
 APP_BASE = f"{TF_BASE}/apps"
 
-SRC = "site"
-REMOTE = "origin"
-BRANCH = "gh-pages"
-
 currentVersion = None
 newVersion = None
 
