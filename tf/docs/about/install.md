@@ -67,10 +67,10 @@ sudo chown -R username:username /opt/JupyterLab
 No extra instructions. Two installers will be launched, let them work with the same default
 location for installation.
 
+### Install Text-Fabric
+
 Wow, now you have both Python and JupyterLab, you are all set to do Text-Fabric work, including
 installing it.
-
-### Install Text-Fabric
 
 Open the JupyterLab desktop application that you just have installed.
 You have a fresh, empty notebook in front of you.
@@ -78,7 +78,7 @@ You have a fresh, empty notebook in front of you.
 In the first cell, type
 
 ``` sh
-pip install text-fabric
+%pip install text-fabric
 ```
 
 You will see that Text-Fabric is downloaded and installed, together with the modules
