@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L0-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L0-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # The core API of TF.
@@ -431,7 +431,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L367-L369" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L367-L369" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addLocality(api):
     api.L = Locality(api)
@@ -446,7 +446,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L372-L374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L372-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addNodes(api):
     api.N = Nodes(api)
@@ -461,7 +461,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L360-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L360-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
@@ -478,7 +478,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L382-L384" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L382-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addSearch(api, silent):
     api.S = Search(api, silent)
@@ -493,7 +493,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L377-L379" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L377-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addText(api):
     api.T = Text(api)
@@ -514,7 +514,7 @@ def addSearch(api, silent):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L47-L357" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L47-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api(object):
     def __init__(self, TF):
@@ -847,7 +847,7 @@ that is loaded later.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L145-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L145-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Call(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -867,7 +867,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L121-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L121-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Cs(self, fName):
     &#34;&#34;&#34;Get the computed data sub API.
@@ -892,7 +892,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L140-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L140-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Eall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.&#34;&#34;&#34;
@@ -912,7 +912,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L107-L119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L107-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Es(self, fName):
     &#34;&#34;&#34;Get the edge feature sub API.
@@ -937,7 +937,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L135-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L135-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fall(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.&#34;&#34;&#34;
@@ -957,7 +957,7 @@ you can not use <code>F.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L93-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L93-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fs(self, fName):
     &#34;&#34;&#34;Get the node feature sub API.
@@ -996,7 +996,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L314-L357" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L314-L357" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ensureLoaded(self, features):
     &#34;&#34;&#34;Checks if features are loaded and if not loads them.
@@ -1082,7 +1082,7 @@ the edges have values. Otherwise <code>None</code>.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L150-L238" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L150-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isLoaded(self, features=None, pretty=True):
     &#34;&#34;&#34;Show information about loaded features.
@@ -1276,7 +1276,7 @@ So we have to pass it on.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e6ec37466e1dbedd32db8b8118579f816a3c50cc/tf/core/api.py#L240-L309" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/47e54cd593e9fdc3340cb3f3b6e111b2338107a1/tf/core/api.py#L240-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAvailableIn(self, scope):
     &#34;&#34;&#34;Exports members of the API to the global namespace.
