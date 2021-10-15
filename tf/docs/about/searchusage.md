@@ -397,7 +397,7 @@ do not have values).
     *   If the feature in question is not defined for a node, or has the value `None`
         the outcome is always `False`.
 *   *regular expression* must be a string that conforms to the Python
-    [regular axpression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+    [regular expression syntax](https://docs.python.org/3/library/re.html#regular-expression-syntax).
     *   If you need a space in your regular expression, you have to escape it with a
         `\`.
     *   You can do regular expressions only on string-valued features, not on
