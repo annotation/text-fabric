@@ -46,6 +46,17 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.1
+
+2021-10-25
+
+**Layered search**
+
+The layered search app hints in which browsers multiple highlighting is supported.
+It now works in Safari 15.0 on the Mac.
+It also works in browsers on iOs and iPadOs.
+The hints have been updated.
+
 #### 9.1
 
 2021-09-10

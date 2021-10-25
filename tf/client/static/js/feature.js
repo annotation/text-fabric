@@ -29,8 +29,8 @@ const indices = {
 ✅ Chrome >=90<br>
 ✅ Firefox >=90<br>
 ✅ Wondows: Edge >=88<br>
-❎ MacOS: Safari >14.2 upcoming <br>
-❎ i(Pad)OS: all browsers >14.5 upcoming<br>
+✅ MacOS: Safari >15.0<br>
+✅ i(Pad)OS: all browsers in iOS >14.5<br>
 `,
 
   data: {

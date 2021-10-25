@@ -22,10 +22,11 @@ i              : increase version
 config         : build corpus config file
 corpus         : build corpus data file
 client         : build the layered-search client in the destination repo app-«dataset»
-clientdebug    : same as taks client but put it in debug mode
+clientdebug    : same as above but put it in debug mode
 debug on|off   : set debug flag of the client on or off
 publish        : publish the layered search client on the Github Pages of app-«dataset»
-ship           : performs all build steps: i, config, corpus, client, debug off, publish
+ship           : performs all build steps:
+                 i, config, corpus, client, debug off, publish;
                  if {client} is given, ships this client,
                  otherwise ships all clients for the dataset
 make folder    : performs build steps, but does not increase the version.

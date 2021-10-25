@@ -12,7 +12,7 @@ export class LogProvider {
   }
 
   async init() {
-    /* warn the developer that DEBU is still true
+    /* warn the developer that DEBUG is still true
      */
     this.tell("!!! IS ON !!!")
 
