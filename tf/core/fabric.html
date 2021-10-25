@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>tf.core.fabric API documentation</title>
 <meta name="description" content="FabricCore …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L1-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L0-L1089" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -1237,7 +1237,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L115-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L115-L1090" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -2275,7 +2275,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L505-L528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L505-L528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2341,7 +2341,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L410-L486" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L410-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2448,7 +2448,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L760-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L760-L790" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2523,7 +2523,7 @@ the metadata of all features. Handy to add provenance data here:<pre><code>meta 
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L792-L840" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L792-L840" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2611,7 +2611,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L265-L408" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L265-L408" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2774,7 +2774,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L488-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L488-L503" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2878,7 +2878,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7a3fd8b223131ebc64d970c4364facdf9d8f3ba9/tf/core/fabric.py#L530-L758" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9c6e4613867b76895e10af01b52ea067a93bb400/tf/core/fabric.py#L530-L758" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -3210,7 +3210,7 @@ setTimeout(() => input.focus(), 100);
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 <a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 </body>
 </html>
