@@ -17,6 +17,8 @@ All about Text-Fabric is in the
 Want to contribute?
 Start with the [contribution notes](codestyle/contributing.md).
 
+Found a vulnerability? Please read the [security note](SECURITY.md).
+
 ---
 
 **This repository is being archived continuously by the 
