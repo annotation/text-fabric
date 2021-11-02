@@ -50,9 +50,9 @@ Corpora prefixed with a star do not have dedicated TF apps.
     **[Transcriptions with morphology based on Martin Abegg's data files](https://github.com/ETCBC/dss/blob/master/docs/about.md)**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
-`*` [fusus](https://nbviewer.jupyter.org/github/among/fusus/blob/master/source/useTf.ipynb)
+[fususl](https://github.com/annotation/app-fususl)
 :   *Arabic*
-    Fusus Al Hikram,  1165- 2000,
+    Fusus Al Hikam,  1165- 2000,
     **[editions of Ibn Arabi's Fusus plus commentaries in the centuries thereafter](https://github.com/among/fusus)**,
     Cornelis van Lit, Dirk Roorda
     *Work in progress*
