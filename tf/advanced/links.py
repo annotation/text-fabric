@@ -234,6 +234,7 @@ def webLink(
     webLang = aContext.webLang
     webOffset = aContext.webOffset
     webUrl = aContext.webUrl
+    webUrlZeros = aContext.webUrlZeros or {}
     webUrlLex = aContext.webUrlLex
     webLexId = aContext.webLexId
     webHint = aContext.webHint
@@ -275,6 +276,10 @@ def webLink(
                     else defaultOffset
                 )
                 value = "" if heading is None else str(heading + offset)
+                leadingZeros = webUrlZeros.get(i + 1, 0)
+                if 0 < len(value) < leadingZeros:
+                    value = '0' * (leadingZeros - len(value)) + value
+
                 href = href.replace(f"<{i + 1}>", value)
         else:
             href = None

@@ -438,10 +438,12 @@ Default:
 
 ### `webOffset`
 
-If present, it is a dictionary that specifies offsets between page numbers as derived from section headings
-and page numbers as needed in the query string for te url of the online resource (see `webUrl`).
+If present, it is a dictionary that specifies offsets between page numbers as derived
+from section headings and page numbers as needed in the query string for te url
+of the online resource (see `webUrl`).
 
-Suppose we need to offset sections of level 2 depending on the section of level 1 they are in.
+Suppose we need to offset sections of level 2 depending on the section of level 1
+they are in.
 For example, in the
 [missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml)
 we have section levels 1=volume, 2=page, 3=line.
@@ -453,7 +455,8 @@ The value of this parameter is a dict of dicts.
 The first level of keys specifies the section level of the sections that needs offsets.
 In our example case we specify offsets for pages (level 1), so the key is `2`.
 
-The second level of keys are the values of section headings of the containing sections, the volumes.
+The second level of keys are the values of section headings of the containing sections,
+the volumes.
 In our example these are integers 1 - 13.
 
 Finally, the value is the offset that will be applied for pages in that volume.
@@ -462,8 +465,8 @@ Missing values translate to 0 or the empty string.
 
 !!! note "integer or string"
     Headings may be integers or strings.
-    If a heading is an integer, the offset will be added to it, if it is a string, the
-    offset will be concatenated to it.
+    If a heading is an integer, the offset will be added to it, if it is a string,
+    the offset will be concatenated to it.
 
 ### `webUrl`
 
@@ -480,6 +483,26 @@ The following place holders will be honoured:
 
 Default:
 :   string `null`
+
+---
+
+### `webUrlZeros`
+
+If present, it specifies for each section level whether its heading
+should be padded with zeros.
+This padding will be applied to the real values substituted for `<1>`, `<2>` and `<3>`
+in the `webUrl` setting.
+If there is no value or the value is 0 for a section level, there will be
+no padding.
+Otherwise is specifies the length to which values should be padded.
+
+E.g. if a value is `123` and the amount of padding specified is 5, two `0`s
+will be prepended.
+This holds also for values that are not integers:
+if the value is `a35` and the padding is 5, again two `0`s will be prepended.
+
+Default:
+:   dict `null`
 
 ---
 
@@ -970,6 +993,7 @@ PROVENANCE_DEFAULTS = (
     ("webLexId", None),
     ("webOffset", None),
     ("webUrl", None),
+    ("webUrlZeros", None),
     ("webUrlLex", None),
     ("webLexId", None),
     ("webHint", None),

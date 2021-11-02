@@ -46,6 +46,14 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.2
+
+2021-11-02
+
+In TF-apps, in the config.yaml where you specify an online location based on
+section headings, you can configure the app to put leading zeroes before 
+section headings. See `tf.advanced.settings.webUrlZeros`.
+
 #### 9.1.1
 
 2021-10-25
