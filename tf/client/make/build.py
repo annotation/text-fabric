@@ -360,7 +360,7 @@ class Make:
 
             d = dict(
                 dataLocation="«gh»/«data.org»/«data.repo»/«data.rel»",
-                dataUrl="«ghUrl»/«data.org»/«data.repo»/tree/master/tf/«data.version»",
+                dataUrl="«ghUrl»/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
                 writingUrl="https://«org».«ghPages»/text-fabric/tf/writing/«writing».html",
                 urls=dict(
                     cheatsheet=(

@@ -996,7 +996,7 @@ from tf.convert.tf import explode
 ```
 
 ```
-explode(inLocation, outLocation
+explode(inLocation, outLocation)
 ```
 :   explode TF feature files to straight data files without optimizations
 :   `tf.convert.tf.explode`
