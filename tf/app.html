@@ -34,7 +34,7 @@ and can be invoked by a simple incantation: <code><a title="tf.app.use" href="#t
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/92a2962bc4ae91b50b75de5e8b0e7b7c50939799/tf/app.py#L0-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1bfb97d4ed70ebb07bdea196f548d504c6a4ab38/tf/app.py#L0-L70" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Start the advanced API of TF.
@@ -80,10 +80,10 @@ def use(appName, *args, **kwargs):
         Name of the corpus, or a local directory.
         Used to find the appropriate TF app, if there is one.
 
-    *args:
+    args:
         Do not pass any other positional argument!
 
-    **kwargs:
+    kwargs:
         See `tf.advanced.app.App`.
         In any case, either an object of class `tf.advanced.app.App`
         or a corpus-specific derived class `TfAPP` of it is initialized
@@ -143,15 +143,15 @@ advanced API; if present, additional settings, code and styling is loaded.</li>
 <dd>Name of the corpus, or a local directory.
 Used to find the appropriate TF app, if there is one.</dd>
 </dl>
-<p>*args:
+<p>args:
 Do not pass any other positional argument!</p>
-<p><em><em>kwargs:
+<p>kwargs:
 See <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>.
 In any case, either an object of class <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>
 or a corpus-specific derived class <code>TfAPP</code> of it is initialized
 with the remaining parameters.
 Head over to there for a discription of those parameters, including more
-about </em>appName</em>.</p>
+about <em>appName</em>.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>A</code></strong> :&ensp;<code>object</code></dt>
@@ -162,7 +162,7 @@ about </em>appName</em>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/92a2962bc4ae91b50b75de5e8b0e7b7c50939799/tf/app.py#L20-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1bfb97d4ed70ebb07bdea196f548d504c6a4ab38/tf/app.py#L20-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, **kwargs):
     &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
@@ -189,10 +189,10 @@ about </em>appName</em>.</p>
         Name of the corpus, or a local directory.
         Used to find the appropriate TF app, if there is one.
 
-    *args:
+    args:
         Do not pass any other positional argument!
 
-    **kwargs:
+    kwargs:
         See `tf.advanced.app.App`.
         In any case, either an object of class `tf.advanced.app.App`
         or a corpus-specific derived class `TfAPP` of it is initialized
