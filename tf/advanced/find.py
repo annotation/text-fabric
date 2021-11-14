@@ -125,7 +125,7 @@ def findAppClass(appName, appPath):
     -------
     class | None
         If `TfApp` can be found and imported, it is the result.
-        Otherwise we return `none`.
+        Otherwise we return `None`.
     """
 
     appClass = None

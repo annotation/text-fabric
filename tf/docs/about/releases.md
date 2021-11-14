@@ -46,6 +46,15 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.4
+
+2021-11-14
+
+* Small fix in the `tf.volumes.collect.collect` function.
+* Small fix in search when run from the TF browser.
+  Features that are mentioned in feature comparison relations
+  were not shown in the search results. Now they do.
+
 #### 9.1.2,3
 
 2021-11-03

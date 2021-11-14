@@ -42,10 +42,10 @@ def use(appName, *args, **kwargs):
         Name of the corpus, or a local directory.
         Used to find the appropriate TF app, if there is one.
 
-    *args:
+    args:
         Do not pass any other positional argument!
 
-    **kwargs:
+    kwargs:
         See `tf.advanced.app.App`.
         In any case, either an object of class `tf.advanced.app.App`
         or a corpus-specific derived class `TfAPP` of it is initialized

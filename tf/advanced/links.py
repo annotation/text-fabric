@@ -58,7 +58,7 @@ def linksApi(app, silent):
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
-    repo = aContext.repo
+    repo = aContext.repo or ""
     version = aContext.version
     corpus = aContext.corpus
     featureBase = aContext.featureBase

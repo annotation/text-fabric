@@ -164,7 +164,7 @@ def runSearch(app, query, cache):
     features = ()
     if exe:
         qnodes = getattr(exe, "qnodes", [])
-        nodeMap = getattr(S.exe, "nodeMap", {})
+        nodeMap = getattr(exe, "nodeMap", {})
         features = tuple(
             (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
             for (i, q) in enumerate(qnodes)

@@ -327,9 +327,7 @@ def collect(
         else:
             if overwrite:
                 rmtree(workLocation)
-                info(
-                    f"Collection {collection} exists and will be recreated", tm=False
-                )
+                info(f"Collection {collection} exists and will be recreated", tm=False)
             else:
                 good = False
                 proceed = False
@@ -391,8 +389,7 @@ def collect(
     for (name, loc) in volumes.items():
         seenName = volumeIndex.get(loc, None)
         if seenName:
-            error(
-                f"Volume {seenName} at location {loc} reoccurs as volume {name}")
+            error(f"Volume {seenName} at location {loc} reoccurs as volume {name}")
             good = False
         volumeIndex[loc] = name
 
@@ -563,7 +560,11 @@ def collect(
         for name in volumes:
             api = apis[name]
             E = api.E
-            getOwork = api.Fs(OWORK)
+            getOwork = (
+                None
+                if api.isLoaded(features=OWORK, pretty=False)[OWORK] is None
+                else api.Fs(OWORK)
+            )
             if getOwork:
                 getOwork = getOwork.v
             getOworks[name] = getOwork
@@ -845,6 +846,7 @@ def collect(
             for name in volumes:
                 nW += 1
                 nodeFeatures.setdefault(volumeFeature, {})[nW] = name
+                nodeFeatures[OTYPE][nW] = volumeType
                 edgeFeatures[OSLOTS][nW] = volumeOslots[name]
 
         indent(level=0)
