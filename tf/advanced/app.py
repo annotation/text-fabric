@@ -373,6 +373,35 @@ The app "{appName}" will not work!
                     error=True,
                 )
 
+    def load(self, features, silent=False):
+        """Loads extra features in addition to the main dataset.
+
+        This is the same as `tf.core.fabric.load` when called with `add=True`.
+
+        Parameters
+        ----------
+        features: string | iterable
+            Either a string containing space separated feature names, or an
+            iterable of feature names.
+            The feature names are just the names of `.tf` files
+            without directory information and without extension.
+        silent: boolean, optional `None`
+            If `False`, the features will be loaded rather silently,
+            most messages will be suppressed.
+            Time consuming operations will always be announced,
+            so that you know what Text-Fabric is doing.
+            If `True` is passed, all informational messages will be suppressed.
+            This is handy I you want to load data as part of other methods, on-the-fly.
+
+        Returns
+        -------
+        boolean
+            Whether the feature has been successfully loaded.
+        """
+
+        TF = self.TF
+        return TF.load(features, add=True, silent=silent)
+
     def reinit(self):
         """TF-Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.

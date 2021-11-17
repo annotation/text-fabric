@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.5
+
+2021-11-17
+
+Added an extra method `A.load()` by which you can load extra features
+after loading the main dataset.
+
 #### 9.1.4
 
 2021-11-14

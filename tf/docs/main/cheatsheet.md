@@ -10,6 +10,12 @@ A = use('corpus', volume=None, collection=None, hoist=globals())
 :   `tf.app.use`
 
 ```
+A.load(features)
+```
+:   Load an extra bunch of features. 
+:   `tf.advanced.app.App.load`
+
+```
 A.showContext(...)
 ```
 :   show app settings
