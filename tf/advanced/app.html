@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L0-L547" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L0-L576" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -403,6 +403,35 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
+    def load(self, features, silent=False):
+        &#34;&#34;&#34;Loads extra features in addition to the main dataset.
+
+        This is the same as `tf.core.fabric.load` when called with `add=True`.
+
+        Parameters
+        ----------
+        features: string | iterable
+            Either a string containing space separated feature names, or an
+            iterable of feature names.
+            The feature names are just the names of `.tf` files
+            without directory information and without extension.
+        silent: boolean, optional `None`
+            If `False`, the features will be loaded rather silently,
+            most messages will be suppressed.
+            Time consuming operations will always be announced,
+            so that you know what Text-Fabric is doing.
+            If `True` is passed, all informational messages will be suppressed.
+            This is handy I you want to load data as part of other methods, on-the-fly.
+
+        Returns
+        -------
+        boolean
+            Whether the feature has been successfully loaded.
+        &#34;&#34;&#34;
+
+        TF = self.TF
+        return TF.load(features, add=True, silent=silent)
+
     def reinit(self):
         &#34;&#34;&#34;TF-Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.
@@ -619,7 +648,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L435-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L464-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -943,7 +972,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L39-L432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L39-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1282,6 +1311,35 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
+    def load(self, features, silent=False):
+        &#34;&#34;&#34;Loads extra features in addition to the main dataset.
+
+        This is the same as `tf.core.fabric.load` when called with `add=True`.
+
+        Parameters
+        ----------
+        features: string | iterable
+            Either a string containing space separated feature names, or an
+            iterable of feature names.
+            The feature names are just the names of `.tf` files
+            without directory information and without extension.
+        silent: boolean, optional `None`
+            If `False`, the features will be loaded rather silently,
+            most messages will be suppressed.
+            Time consuming operations will always be announced,
+            so that you know what Text-Fabric is doing.
+            If `True` is passed, all informational messages will be suppressed.
+            This is handy I you want to load data as part of other methods, on-the-fly.
+
+        Returns
+        -------
+        boolean
+            Whether the feature has been successfully loaded.
+        &#34;&#34;&#34;
+
+        TF = self.TF
+        return TF.load(features, add=True, silent=silent)
+
     def reinit(self):
         &#34;&#34;&#34;TF-Apps may override this method.
         It is called by `reuse`. Hence it needs to be present.
@@ -1351,6 +1409,67 @@ The app &#34;{appName}&#34; will not work!
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.advanced.app.App.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>self, features, silent=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads extra features in addition to the main dataset.</p>
+<p>This is the same as <code>tf.core.fabric.load</code> when called with <code>add=True</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>features</code></strong> :&ensp;<code>string | iterable</code></dt>
+<dd>Either a string containing space separated feature names, or an
+iterable of feature names.
+The feature names are just the names of <code>.<a title="tf" href="../index.html">tf</a></code> files
+without directory information and without extension.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>If <code>False</code>, the features will be loaded rather silently,
+most messages will be suppressed.
+Time consuming operations will always be announced,
+so that you know what Text-Fabric is doing.
+If <code>True</code> is passed, all informational messages will be suppressed.
+This is handy I you want to load data as part of other methods, on-the-fly.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the feature has been successfully loaded.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L376-L403" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def load(self, features, silent=False):
+    &#34;&#34;&#34;Loads extra features in addition to the main dataset.
+
+    This is the same as `tf.core.fabric.load` when called with `add=True`.
+
+    Parameters
+    ----------
+    features: string | iterable
+        Either a string containing space separated feature names, or an
+        iterable of feature names.
+        The feature names are just the names of `.tf` files
+        without directory information and without extension.
+    silent: boolean, optional `None`
+        If `False`, the features will be loaded rather silently,
+        most messages will be suppressed.
+        Time consuming operations will always be announced,
+        so that you know what Text-Fabric is doing.
+        If `True` is passed, all informational messages will be suppressed.
+        This is handy I you want to load data as part of other methods, on-the-fly.
+
+    Returns
+    -------
+    boolean
+        Whether the feature has been successfully loaded.
+    &#34;&#34;&#34;
+
+    TF = self.TF
+    return TF.load(features, add=True, silent=silent)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.app.App.reinit"><code class="name flex">
 <span>def <span class="ident">reinit</span></span>(<span>self)</span>
 </code></dt>
@@ -1360,7 +1479,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L376-L381" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L405-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1395,7 +1514,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L383-L432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/advanced/app.py#L412-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
@@ -1527,6 +1646,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code></h4>
 <ul class="">
 <li><code><a title="tf.advanced.app.App.context" href="#tf.advanced.app.App.context">context</a></code></li>
+<li><code><a title="tf.advanced.app.App.load" href="#tf.advanced.app.App.load">load</a></code></li>
 <li><code><a title="tf.advanced.app.App.reinit" href="#tf.advanced.app.App.reinit">reinit</a></code></li>
 <li><code><a title="tf.advanced.app.App.reuse" href="#tf.advanced.app.App.reuse">reuse</a></code></li>
 </ul>
