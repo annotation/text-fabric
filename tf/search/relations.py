@@ -1449,11 +1449,11 @@ def basicRelations(searchExe, api):
         ),
         (
             (".f>g.", 0.4, leftFgreaterRightGR, "left.f > right.g"),
-            (".g<f.", 0.4, leftGlesserRightFR, None),
+            (".f<g.", 0.4, leftFlesserRightGR, None),
         ),
         (
-            (".f<g.", 0.4, leftFlesserRightGR, "left.f > right.g"),
-            (".g>f.", 0.4, leftGgreaterRightFR, None),
+            (".f<g.", 0.4, leftFlesserRightGR, "left.f < right.g"),
+            (".f>g.", 0.4, leftFgreaterRightGR, None),
         ),
     ]
 

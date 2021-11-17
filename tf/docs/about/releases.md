@@ -46,6 +46,18 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.6
+
+2021-11-17
+
+Bug in search, spotted by Oliver Glanz, with thanks to him for reporting it.
+Queries with `.f<g.` constructs in it (numeric feature comparison)
+delivered wrong results.
+The root cause waas clear: I declared the converse of `.f<g.` to be `.g>f.`.
+But this is not the converse, the two are identical.
+The converse is `.f>g.`.
+See [code](https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L1450-L1457)
+
 #### 9.1.5
 
 2021-11-17
