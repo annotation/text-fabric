@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/search/relations.py#L0-L1689" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L0-L1689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search by relational patterns between nodes
@@ -1480,11 +1480,11 @@ def basicRelations(searchExe, api):
         ),
         (
             (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, &#34;left.f &gt; right.g&#34;),
-            (&#34;.g&lt;f.&#34;, 0.4, leftGlesserRightFR, None),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, None),
         ),
         (
-            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &gt; right.g&#34;),
-            (&#34;.g&gt;f.&#34;, 0.4, leftGgreaterRightFR, None),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &lt; right.g&#34;),
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, None),
         ),
     ]
 
@@ -1736,7 +1736,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/search/relations.py#L1574-L1638" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L1574-L1638" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_F_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1813,7 +1813,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/search/relations.py#L1531-L1571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L1531-L1571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_K_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1866,7 +1866,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/search/relations.py#L1641-L1690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L1641-L1690" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_V_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1928,7 +1928,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4fbf272b7a61ece60b7ef4e73d3d6f4a35b50960/tf/search/relations.py#L50-L1528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L50-L1528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basicRelations(searchExe, api):
     C = api.C
@@ -3332,11 +3332,11 @@ def add_V_Relations(searchExe, varRels):
         ),
         (
             (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, &#34;left.f &gt; right.g&#34;),
-            (&#34;.g&lt;f.&#34;, 0.4, leftGlesserRightFR, None),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, None),
         ),
         (
-            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &gt; right.g&#34;),
-            (&#34;.g&gt;f.&#34;, 0.4, leftGgreaterRightFR, None),
+            (&#34;.f&lt;g.&#34;, 0.4, leftFlesserRightGR, &#34;left.f &lt; right.g&#34;),
+            (&#34;.f&gt;g.&#34;, 0.4, leftFgreaterRightGR, None),
         ),
     ]
 
