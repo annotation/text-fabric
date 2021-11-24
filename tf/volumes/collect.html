@@ -1,0 +1,2106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>tf.volumes.collect API documentation</title>
+<meta name="description" content="Collect …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.volumes.collect</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="collect">Collect</h1>
+<h2 id="usage">Usage</h2>
+<pre><code class="language-python">from tf.volumes import collect
+collect(
+  (
+      location1,
+      location2,
+  ),
+  workLocation,
+)
+</code></pre>
+<pre><code>collect(
+  (
+      (name1, location1),
+      (name2, location2),
+  ),
+  workLocation,
+  volumeType=None,
+  volumeFeature=None,
+  featureMeta=None,
+  **otext,
+)
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/volumes/collect.py#L0-L891" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Collect
+
+## Usage
+
+```python
+from tf.volumes import collect
+collect(
+  (
+      location1,
+      location2,
+  ),
+  workLocation,
+)
+```
+
+```
+collect(
+  (
+      (name1, location1),
+      (name2, location2),
+  ),
+  workLocation,
+  volumeType=None,
+  volumeFeature=None,
+  featureMeta=None,
+  **otext,
+)
+```
+&#34;&#34;&#34;
+
+import os
+import collections
+from shutil import rmtree
+
+from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
+from ..core.fabric import FabricCore
+from ..core.timestamp import Timestamp
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
+
+DEBUG = False
+
+GENERATED = set(
+    &#34;&#34;&#34;
+    writtenBy
+    dateWritten
+    version
+    volume
+&#34;&#34;&#34;.strip().split()
+)
+
+TM = Timestamp()
+indent = TM.indent
+info = TM.info
+warning = TM.warning
+error = TM.error
+setSilent = TM.setSilent
+isSilent = TM.isSilent
+
+
+def collect(
+    volumes,
+    workLocation,
+    volumeType=None,
+    volumeFeature=None,
+    mergeTypes=None,
+    featureMeta=None,
+    silent=False,
+    overwrite=False,
+):
+    &#34;&#34;&#34;Creates a work out of a number of volumes.
+
+    The volumes are individual TF data sets, the work is a new TF data set.
+
+    You may pass as many volume data sources as you want.
+
+    The work will be the union of all nodes of the volumes,
+    rearranged according to their types, where node types with the
+    same names will be merged.
+
+    The slots of the work are the concatenation of the slots of the
+    volumes, which must all have the same slot type.
+
+    The node and edge features will be remapped, so that they have
+    the same values in the work as they had in the individual
+    volumes.
+
+    !!! caution &#34;inter-volume edges&#34;
+        The edge features of each volume only contain edges between nodes
+        in that volume. But the work as a whole may have had edges
+        between nodes of different volumes.
+        These can be restored from two extra features that may exist in the
+        volumes: `ointerfrom` and `ointerto`.
+
+        See also `tf.volumes.extract`.
+
+    The volumes may contain a feature `owork` which maps each node in a volume
+    to the corresponding node in the work.
+    Some non-slot nodes in the work may have slots in multiple volumes.
+
+    !!! hint &#34;Lexeme nodes&#34;
+        Think of lexeme nodes that have slots for all occurrences of that lexeme.
+        When a work is split into volumes, the lexeme nodes map to
+        separate lexeme nodes in each volume where these lexemes occur.
+        When we collect volumes into works, we want to merge these lexeme
+        nodes again.
+
+    When non-slot nodes across volumes have the same value for their `owork` feature,
+    they will be merged into the work. That means: only one node will be created
+    in the work, and the slots of that node will be the union of the
+    slots these nodes have in the individual volumes.
+
+    !!! caution &#34;Overlapping slots&#34;
+        It is an error if volumes have overlapping slots.
+        Overlapping slots are those whose values of `owork` are identical.
+
+    A feature `ovolume` will be created which maps each node of the work
+    to the corresponding node(s) in the individual volume(s).
+
+    Optionally, nodes corresponding to the volumes themselves will be
+    added to the work.
+
+    Care will be taken of the metadata of the features and the contents
+    of the `otext.tf` feature, which consists of metadata only.
+
+    All details of the work can be steered by means of parameters.
+
+    You can use this function to recombine volumes that have been obtained
+    by extracting them from a work by means of `tf.volumes.extract`.
+    In this case, there is no need to pass `volumeType` and `volumeFeature`.
+
+    Parameters
+    ----------
+
+    volumes: dict or tuple of (string or tuple)
+        You can either pass just the locations of the volumes,
+        or you can give them a name and pass `(name, location)` instead,
+        or pass them as a dictionary with names as keys and locations as values.
+        If you do not give names to volumes, their locations will be used as name.
+        However, names are only used if you pass `volumeType` and /or `volumeFeature`.
+
+        !!! caution &#34;Disjointness&#34;
+            A collection can not contain the same volume more than once.
+
+    workLocation: string
+        The directory into which the feature files of the work will be written.
+
+    overwrite: boolean, optional `None`
+        If True, the target collection will be
+        be created and will replace any existing collection/volume of the same name.
+        If None, the collection will only be created if it does not exist.
+        No check will be performed as to whether an existing collection
+        is equal to what would have been created by this call.
+        If False, refuses to proceed if the collection directory already exists.
+
+
+    volumeType, volumeFeature: string, optional `None`
+        If a string value for one of these is passed,
+        a new node type will be added to the work,
+        with one new node for each volume: the volume node.
+        There will also be a new feature, that assigns the name of a volume
+        to the node of that volume.
+
+        The name of the new node type is the value of `volumeType`
+        if it is a non-empty string, else it is the value of `volumeFeature`.
+
+        The name of the new feature is `volumeFeature`
+        if it is a non-empty string, else it is the value of `volumeType`.
+
+        !!! caution &#34;volumeType must be fresh&#34;
+            It is an error if the `volumeType` is a node type that already
+            occurs in one of the volumes.
+
+        !!! note &#34;volumeFeature may exist&#34;
+            The `volumeFeature` may already exist in one or more volumes.
+            In that case the new feature values for nodes of `volumeType` will
+            just be added to it.
+
+        Example
+        -------
+            collect(
+                dict(
+                    banks=&#39;banks/tf/0.2&#39;,
+                    river=&#39;banks/tf/0.4&#39;,
+                ),
+                &#39;riverbanks/tf/1.0&#39;,
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+            )
+
+        This results in a work with nodes and features from the volumes
+        found at the indicated places on your file system.
+        After combination, the volumes are visible in the work as nodes
+        of type `volume`, and the feature `vol` provides the names `banks` and `river`
+        for those nodes.
+
+    featureMeta: dict, optional `None`
+        The meta data of the volumes involved will be merged.
+        If feature metadata of the same feature is encountered in different volumes,
+        and if volumes specify different values for the same keys,
+        the different values will be stored under a key with the name of
+        the volume appended to the key, separated by a `!`.
+
+        The special metadata field `valueType` will just be reduced
+        to one single value `str` if some volumes have it as `str` and others as `int`.
+        If the volumes assign the same value type to a feature, that value type
+        will be assigned to the combined feature.
+
+        If you want to assign other meta data to specific features,
+        or pass meta data for new features that orginate from the merging process,
+        you can pass them in the parameter `featureMeta` as in the following example,
+        where we pass meta data for a feature called `level` with integer values.
+
+        The contents of the `otext.tf` features are also metadata,
+        and their contents will be merged in exactly the same way.
+
+        So if the section/structure specifications and the formats are not
+        the same for all volumes, you will see them spread out
+        in fields qualified by the volume name with a `!` sign between
+        the key and the volume.
+
+        But you can add new specifications explicitly,
+        as meta data of the `otext` feature.
+        by passing them as keyword arguments.
+        They will be passed directly to the combined `otext.tf` feature
+        and will override anything with the same key
+        that is already in one of the volumes.
+
+    silent: boolean, optional `False`
+        Suppress or enable informational messages.
+
+    Returns
+    -------
+    boolean
+        Whether the creation was successful.
+
+        All features in the resulting collection will get a metadata key
+        `volume` with as value the name of the collection and its component volumes.
+
+    Example
+    -------
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+              level=dict(
+                valueType=&#39;int&#39;,
+                description=&#39;level of a section node&#39;,
+              ),
+            ),
+        )
+
+    Example
+    -------
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+                otext=dict(
+                    volumeType=&#39;volume&#39;,
+                    volumeFeature=&#39;vol&#39;,
+                    sectionTypes=&#39;volume,chapter,line&#39;,
+                    sectionFeatures=&#39;title,number,number&#39;,
+                ),
+            ),
+            silent=False,
+        )
+
+    This will give rise to something like this (assuming that `banks` and
+    `rivers` have some deviating material in their `otext.tf`:
+
+        @config
+        @compiler=Dirk Roorda
+        @dateWritten=2019-05-20T19:12:23Z
+        @fmt:line-default={letters:XXX}{terminator}
+        @fmt:line-term=line#{terminator}
+        @fmt:text-orig-extra={letters}{punc}{gap}
+        @fmt:text-orig-full={letters}
+        @fmt:text-orig-full!banks={letters}{punc}
+        @fmt:text-orig-full!rivers={letters}{gap}
+        @name=Culture quotes from Iain Banks
+        @purpose=exposition
+        @sectionFeatures=title,number,number
+        @sectionFeatures!banks=title,number,number
+        @sectionFeatures!rivers=number,number,number
+        @sectionTypes=volume,chapter,line
+        @sectionTypes!banks=book,chapter,sentence
+        @sectionTypes!rivers=chapter,sentence,line
+        @source=Good Reads
+        @status=with for similarities in a separate module
+        @structureFeatures!banks=title,number,number,number
+        @structureFeatures!rivers=title,number,number
+        @structureTypes!banks=book,chapter,sentence,line
+        @structureTypes!rivers=book,chapter,sentence
+        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+        @version=0.2
+        @writtenBy=Text-Fabric
+        @writtenBy=Text-Fabric
+        @dateWritten=2019-05-28T10:55:06Z
+
+    !!! caution &#34;inter-version edges&#34;
+        Features with names starting in `omap@` contain node maps from
+        older to newer versions.
+        These will be excluded from collection.
+
+    &#34;&#34;&#34;
+
+    collection = os.path.basename(workLocation)
+    loc = ux(os.path.dirname(workLocation))
+
+    if not dirEmpty(workLocation):
+        proceed = True
+        good = True
+
+        if overwrite is None:
+            info(
+                f&#34;Collection {collection} already exists and will not be recreated&#34;,
+                tm=False,
+            )
+            proceed = False
+        else:
+            if overwrite:
+                rmtree(workLocation)
+                info(f&#34;Collection {collection} exists and will be recreated&#34;, tm=False)
+            else:
+                good = False
+                proceed = False
+                error(
+                    f&#34;Collection {collection} already exists at {loc}&#34;,
+                    tm=False,
+                )
+
+        if not good or not proceed:
+            return good
+
+    if volumeType:
+        if not volumeFeature:
+            volumeFeature = volumeType
+    else:
+        if volumeFeature:
+            volumeType = volumeFeature
+
+    TFs = {}
+    apis = {}
+    getOworks = {}
+
+    slotType = None
+    allSlots = set()
+    volumeMap = {}
+    volumeMapI = {}
+    maxSlotW = None
+    maxNodeW = None
+    metaData = collections.defaultdict(dict)
+    nodeFeatures = {}
+    edgeFeatures = {}
+    allNodeFeatures = set()
+    allEdgeFeatures = set()
+    volumeOslots = {}
+    fromWork = {}
+
+    good = True
+
+    if type(volumes) is not dict:
+        volProto = {}
+        volNames = set()
+        for loc in volumes:
+            if type(loc) is str:
+                name = os.path.basename(loc)
+            else:
+                (name, loc) = loc
+            if name in volNames:
+                error(f&#34;Volume {name} is already part of the collection&#34;)
+                good = False
+            else:
+                volNames.add(name)
+            volProto[name] = loc
+        volumes = volProto
+
+    if not good:
+        return False
+
+    volumeIndex = {}
+    for (name, loc) in volumes.items():
+        seenName = volumeIndex.get(loc, None)
+        if seenName:
+            error(f&#34;Volume {seenName} at location {loc} reoccurs as volume {name}&#34;)
+            good = False
+        volumeIndex[loc] = name
+
+    if not good:
+        return False
+
+    def loadVolumes():
+        for (name, loc) in volumes.items():
+            info(f&#34;Loading volume {name:&lt;60} from {ux(loc)} ...&#34;)
+            TFs[name] = FabricCore(locations=loc, silent=silent)
+            apis[name] = TFs[name].loadAll(silent=silent)
+        return True
+
+    def getMetas():
+        info(&#34;inspect metadata ...&#34;)
+        meta = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(set))
+        )
+
+        volumeStr = &#34;,&#34;.join(volumes)
+        collectionMeta = f&#34;{collection}:{volumeStr}&#34;
+
+        for (feat, keys) in (featureMeta or {}).items():
+            if feat.startswith(OMAP):
+                continue
+            meta[feat][&#34;collection&#34;][collectionMeta] = {&#34;+&#34;}
+            for (key, value) in keys.items():
+                if value is not None:
+                    meta[feat][key][value] = {&#34;&#34;}
+
+        if volumeFeature:
+            meta[volumeFeature][&#34;valueType&#34;][&#34;str&#34;] = {&#34;&#34;}
+            meta[volumeFeature][&#34;description&#34;][f&#34;label of {volumeType}&#34;] = {&#34;&#34;}
+
+        for name in volumes:
+            allFeatures = getAllFeatures(apis[name])
+            for (feat, fObj) in TFs[name].features.items():
+                if feat not in allFeatures:
+                    continue
+                meta[feat][&#34;collection&#34;][collectionMeta].add(name)
+                thisMeta = fObj.metaData
+                for (k, v) in thisMeta.items():
+                    meta[feat][k][v].add(name)
+                if fObj.isConfig:
+                    continue
+                if fObj.isEdge:
+                    allEdgeFeatures.add(feat)
+                    meta[feat][&#34;edgeValues&#34;][fObj.edgeValues].add(name)
+                else:
+                    allNodeFeatures.add(feat)
+
+        for (feat, ks) in meta.items():
+            for (k, vs) in ks.items():
+                isGenerated = k in GENERATED
+                if k == &#34;valueType&#34;:
+                    if len(vs) &gt; 1:
+                        warning(
+                            (
+                                f&#34;WARNING: {feat}: &#34;
+                                &#34;valueType varies in volumes; will be str&#34;
+                            ),
+                            tm=False,
+                        )
+                    else:
+                        metaData[feat][k] = sorted(vs)[0]
+                elif len(vs) == 1:
+                    metaData[feat][k] = list(vs)[0]
+                else:
+                    hasCombinedValue = False
+                    for (v, names) in vs.items():
+                        for name in names:
+                            if name == &#34;+&#34; or name == &#34;&#34; and not isGenerated:
+                                hasCombinedValue = True
+                                key = k
+                            elif name == &#34;&#34;:
+                                key = k
+                            else:
+                                key = f&#34;{k}!{name}&#34;
+                            metaData[feat][key] = v
+                    if not hasCombinedValue and not isGenerated:
+                        warning(
+                            f&#34;WARNING: {feat}.{k} metadata varies across volumes&#34;,
+                            tm=False,
+                        )
+        metaData[OVOLUME] = {k: m for (k, m) in metaData[OTYPE].items()}
+        metaData[OVOLUME][&#34;description&#34;] = (
+            &#34;mapping from a node in the work to the volume it comes from&#34;
+            &#34; and its corresponding node there&#34;
+        )
+        metaData[OVOLUME][&#34;valueType&#34;] = &#34;str&#34;
+
+        indent(level=0)
+        info(&#34;metadata sorted out&#34;)
+        return True
+
+    def checkTypes():
+        nonlocal slotType
+
+        slotTypes = set()
+        otherTypes = set()
+
+        clashes = set()
+
+        good = True
+        info(&#34;check nodetypes ...&#34;)
+        indent(level=1, reset=True)
+
+        for name in volumes:
+            info(f&#34;volume {name}&#34;, tm=False)
+            api = apis[name]
+            if not api:
+                good = False
+                continue
+            C = api.C
+            nTypeInfo = C.levels.data
+            for (t, (nType, av, nF, nT)) in enumerate(nTypeInfo):
+                if nType == volumeType:
+                    clashes.add(name)
+                if t == len(nTypeInfo) - 1:
+                    slotTypes.add(nType)
+                else:
+                    otherTypes.add(nType)
+        if len(slotTypes) &gt; 1:
+            slotRep = &#34;, &#34;.join(sorted(slotTypes))
+            error(f&#34;Multiple slot types: {slotRep}&#34;, tm=False)
+            good = False
+
+        commonTypes = slotTypes &amp; otherTypes
+        if len(commonTypes):
+            error(
+                &#34;Some node types are slots in one volume and non-slots in another&#34;,
+                tm=False,
+            )
+            error(&#34;, &#34;.sorted(commonTypes), tm=False)
+            good = False
+
+        if clashes:
+            clashRep = &#34;, &#34;.join(f&#34;{name}&#34; for name in clashes)
+            error(
+                f&#34;Volume type {volumeType} occurs inside volumes {clashRep}&#34;,
+                tm=False,
+            )
+            good = False
+
+        if good:
+            slotType = list(slotTypes)[0]
+        else:
+            return False
+
+        indent(level=0)
+        info(&#34;node types ok&#34;)
+        return True
+
+    def collectNodes():
+        info(&#34;Collect nodes from volumes ...&#34;)
+        indent(level=1, reset=True)
+        nodesByType = collections.defaultdict(list)
+
+        sW = 0
+
+        good = True
+
+        # check whether volumes have overlapping slots
+        # we use the original work slots, provided by the owork feature
+        # if it exists; otherwise we cannot know whether slots are overlapping
+        info(&#34;Check against overlapping slots ...&#34;)
+        indent(level=2, reset=True)
+        for name in volumes:
+            api = apis[name]
+            E = api.E
+            getOwork = (
+                None
+                if api.isLoaded(features=OWORK, pretty=False)[OWORK] is None
+                else api.Fs(OWORK)
+            )
+            if getOwork:
+                getOwork = getOwork.v
+            getOworks[name] = getOwork
+
+            maxSlotI = E.oslots.maxSlot
+            info(f&#34;{name:&lt;60}: {maxSlotI:&gt;8} slots&#34;, tm=False)
+            volumeOslots[name] = set(range(sW + 1, sW + 1 + maxSlotI))
+
+            overlap = 0
+
+            for sV in range(1, maxSlotI + 1):
+                sW += 1
+                nameSv = (name, sV)
+                if getOwork:
+                    sOW = getOwork(sV)
+                    if sOW:
+                        if sOW in fromWork:
+                            overlap += 1
+                        fromWork[sOW] = None
+
+                allSlots.add(sW)
+                volumeMap[sW] = nameSv
+                volumeMapI[nameSv] = sW
+
+                if overlap:
+                    error(f&#34;Overlapping slots: {overlap}&#34;)
+                    good = False
+        indent(level=1)
+        if overlap == 0:
+            info(&#34;no overlap&#34;)
+
+        if not good:
+            return False
+
+        info(&#34;Group non-slot nodes by type&#34;)
+        indent(level=2, reset=True)
+        for name in volumes:
+            api = apis[name]
+
+            E = api.E
+            F = api.F
+            fOtypeData = F.otype.data
+            maxSlotI = E.oslots.maxSlot
+            maxNodeI = E.oslots.maxNode
+            info(f&#34;{name:&lt;60}: {maxSlotI + 1:&gt;8}-{maxNodeI:&gt;8}&#34;, tm=False)
+
+            for nV in range(maxSlotI + 1, maxNodeI + 1):
+                nType = fOtypeData[nV - maxSlotI - 1]
+                nodesByType[nType].append((name, nV))
+
+        nW = sW
+
+        indent(level=1)
+        info(&#34;Mapping nodes from volume to/from work ...&#34;)
+        indent(level=2)
+        for (nType, nodes) in nodesByType.items():
+            startW = nW
+            for nameNv in nodes:
+                (name, nV) = nameNv
+                getOwork = getOworks[name]
+                if getOwork:
+                    nOW = getOwork(nV)
+                    if nOW in fromWork:
+                        fromWork[nOW].append(nameNv)
+                        continue
+                    else:
+                        fromWork[nOW] = []
+                nW += 1
+                volumeMap[nW] = nameNv
+                volumeMapI[nameNv] = nW
+
+            info(
+                f&#34;{nType:&lt;20}: {startW + 1:&gt;8} - {nW:&gt;8}&#34;,
+                tm=False,
+            )
+
+        nVolumeNodes = len(volumes) if volumeFeature else 0
+        nNodesW = len(volumeMap) + nVolumeNodes
+
+        indent(level=1)
+        info(f&#34;The new work has {nNodesW} nodes of which {len(allSlots)} slots&#34;)
+
+        nonlocal maxSlotW
+        nonlocal maxNodeW
+
+        maxSlotW = sW
+        maxNodeW = nW
+
+        indent(level=0)
+        info(&#34;collection done&#34;)
+        return True
+
+    def remapFeatures():
+        info(&#34;remap features ...&#34;)
+        indent(level=1, reset=True)
+
+        # node features
+
+        otype = {}
+        nodeFeatures[OTYPE] = otype
+        ovolume = {}
+        nodeFeatures[OVOLUME] = ovolume
+
+        # edge features
+
+        oslots = {}
+        edgeFeatures[OSLOTS] = oslots
+
+        ointerf = {}
+        ointert = {}
+        fOtypeDatas = {}
+        eOslotsDatas = {}
+        maxSlots = {}
+        maxNodes = {}
+        nodeFeatureDatas = {}
+        edgeFeatureDatas = {}
+
+        for name in volumes:
+            api = apis[name]
+            allFeatures = getAllFeatures(api)
+            for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
+                if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
+                    continue
+                interSource = api.Fs(OINTER).data
+
+                interData = {}
+                ointer[name] = interData
+
+                for (nW, interEdgesStr) in interSource.items():
+                    interEdges = interEdgesStr.split(&#34;;&#34;)
+                    for interEdge in interEdges:
+                        (mW, feat, doValues, isInt, val) = interEdge.split(&#34;,&#34;)
+                        doValues = doValues == &#34;v&#34;
+                        isInt = isInt == &#34;i&#34;
+                        dest = interData.setdefault(feat, {}).setdefault(
+                            nW, {} if doValues else set()
+                        )
+                        if doValues:
+                            dest[mW] = int(val) if isInt else val
+                        else:
+                            dest.add(mW)
+
+            fOtypeDatas[name] = api.F.otype.data
+            eOslotsDatas[name] = api.E.oslots.data
+            maxSlots[name] = api.E.oslots.maxSlot
+            maxNodes[name] = api.E.oslots.maxNode
+            nodeFeatureDatas[name] = {
+                feat: api.Fs(feat).data
+                for feat in api.Fall()
+                if feat != OTYPE and feat in allFeatures
+            }
+            edgeFeatureDatas[name] = {
+                feat: (
+                    api.Es(feat).doValues,
+                    api.Es(feat).data,
+                    api.Es(feat).dataInv,
+                )
+                for feat in api.Eall()
+                if not feat.startswith(OMAP) and feat != OSLOTS and feat in allFeatures
+            }
+
+        for (nW, (name, nV)) in volumeMap.items():
+            ovolume[nW] = f&#34;{name},{nV}&#34;
+            maxSlotI = maxSlots[name]
+
+            otype[nW] = (
+                slotType if nW &lt;= maxSlotW else fOtypeDatas[name][nV - maxSlotI - 1]
+            )
+
+            if nW &gt; maxSlotW:
+                oslots[nW] = set(
+                    volumeMapI[(name, sV)]
+                    for sV in eOslotsDatas[name][nV - maxSlotI - 1]
+                )
+                if nW in fromWork:
+                    for (name2, nV2) in fromWork[nW]:
+                        oslots[nW] |= set(
+                            volumeMapI[(name2, sV)]
+                            for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
+                        )
+
+            for (feat, featD) in nodeFeatureDatas[name].items():
+                val = featD.get(nV, None)
+                if val is not None:
+                    nodeFeatures.setdefault(feat, {})[nW] = val
+
+            for (feat, (doValues, featF, featT)) in edgeFeatureDatas[name].items():
+                valData = featF.get(nV, None)
+                if valData is not None:
+                    value = {} if doValues else set()
+                    for tV in valData:
+                        tW = volumeMapI[(name, tV)]
+                        if doValues:
+                            val = valData.get(tV, None)
+                            value[tW] = val
+                        else:
+                            value.add(tW)
+                    if value:
+                        edgeFeatures.setdefault(feat, {})[nW] = value
+
+        # add inter-volume edges
+        # the ointerf and ointert features have in their values a node
+        # from the original work.
+        # We have to infer the volume and the corresponding node in that volume.
+        # And then we can get the corresponding node in the collected work.
+
+        # If this sounds like a detour that can be cut short:
+        # the new collection we are making does not have to be identical
+        # to the original work.
+        # It could very well be that we have extracted all volumes from a work
+        # and are now collecting only certain volumes for the new work.
+
+        # Indeed, when splitting the original work into volumes,
+        # it might have been the case that certain top-level sections
+        # of the orginal work do not end up in one of the volumes.
+
+        getOworkWI = {}
+
+        # get the mapping from nodes in the original work
+        # to nodes in all volumes
+
+        for name in volumes:
+            getOwork = getOworks[name]
+            if getOwork:
+                maxNode = maxNodes[name]
+                for nV in range(1, maxNode):
+                    nW = getOwork(nV)
+                    getOworkWI[nW] = (name, nV)
+
+        # OUTGOING edges
+
+        for (name, interData) in ointerf.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (fW, interValueData) in interFeatData.items():
+                    for tOW in interValueData:
+                        if tOW not in getOworkWI:
+                            # edge goes outside the new work
+                            continue
+                        else:
+                            (nameT, tV) = getOworkWI[tOW]
+                            tW = volumeMapI[(nameT, tV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
+
+        # INCOMING edges
+
+        for (name, interData) in ointert.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (tW, interValueData) in interFeatData.items():
+                    for fOW in interValueData:
+                        if fOW not in getOworkWI:
+                            # edge comes from outside the new work
+                            continue
+                        else:
+                            (nameF, fV) = getOworkWI[fOW]
+                            fW = volumeMapI[(nameF, fV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
+
+        if volumeFeature:
+            nW = maxNodeW
+
+            for name in volumes:
+                nW += 1
+                nodeFeatures.setdefault(volumeFeature, {})[nW] = name
+                nodeFeatures[OTYPE][nW] = volumeType
+                edgeFeatures[OSLOTS][nW] = volumeOslots[name]
+
+        indent(level=0)
+        info(&#34;remapping done&#34;)
+        return True
+
+    def writeTf():
+        info(&#34;write work as TF data set&#34;)
+        TF = FabricCore(locations=workLocation, silent=True)
+        good = TF.save(
+            metaData=metaData,
+            nodeFeatures=nodeFeatures,
+            edgeFeatures=edgeFeatures,
+            silent=False if DEBUG else silent or True,
+        )
+        indent(level=0)
+        if not good:
+            return False
+        info(&#34;writing done&#34;)
+        return good
+
+    def process():
+        indent(level=0, reset=True)
+        if not loadVolumes():
+            return False
+        if not getMetas():
+            return False
+        if not checkTypes():
+            return False
+        if not collectNodes():
+            return False
+        if not remapFeatures():
+            return False
+        if not writeTf():
+            return False
+        info(&#34;done&#34;)
+        return True
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    result = process()
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.volumes.collect.collect"><code class="name flex">
+<span>def <span class="ident">collect</span></span>(<span>volumes, workLocation, volumeType=None, volumeFeature=None, mergeTypes=None, featureMeta=None, silent=False, overwrite=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a work out of a number of volumes.</p>
+<p>The volumes are individual TF data sets, the work is a new TF data set.</p>
+<p>You may pass as many volume data sources as you want.</p>
+<p>The work will be the union of all nodes of the volumes,
+rearranged according to their types, where node types with the
+same names will be merged.</p>
+<p>The slots of the work are the concatenation of the slots of the
+volumes, which must all have the same slot type.</p>
+<p>The node and edge features will be remapped, so that they have
+the same values in the work as they had in the individual
+volumes.</p>
+<div class="admonition caution">
+<p class="admonition-title">inter-volume edges</p>
+<p>The edge features of each volume only contain edges between nodes
+in that volume. But the work as a whole may have had edges
+between nodes of different volumes.
+These can be restored from two extra features that may exist in the
+volumes: <code>ointerfrom</code> and <code>ointerto</code>.</p>
+<p>See also <code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code>.</p>
+</div>
+<p>The volumes may contain a feature <code>owork</code> which maps each node in a volume
+to the corresponding node in the work.
+Some non-slot nodes in the work may have slots in multiple volumes.</p>
+<div class="admonition hint">
+<p class="admonition-title">Lexeme nodes</p>
+<p>Think of lexeme nodes that have slots for all occurrences of that lexeme.
+When a work is split into volumes, the lexeme nodes map to
+separate lexeme nodes in each volume where these lexemes occur.
+When we collect volumes into works, we want to merge these lexeme
+nodes again.</p>
+</div>
+<p>When non-slot nodes across volumes have the same value for their <code>owork</code> feature,
+they will be merged into the work. That means: only one node will be created
+in the work, and the slots of that node will be the union of the
+slots these nodes have in the individual volumes.</p>
+<div class="admonition caution">
+<p class="admonition-title">Overlapping slots</p>
+<p>It is an error if volumes have overlapping slots.
+Overlapping slots are those whose values of <code>owork</code> are identical.</p>
+</div>
+<p>A feature <code>ovolume</code> will be created which maps each node of the work
+to the corresponding node(s) in the individual volume(s).</p>
+<p>Optionally, nodes corresponding to the volumes themselves will be
+added to the work.</p>
+<p>Care will be taken of the metadata of the features and the contents
+of the <code>otext.tf</code> feature, which consists of metadata only.</p>
+<p>All details of the work can be steered by means of parameters.</p>
+<p>You can use this function to recombine volumes that have been obtained
+by extracting them from a work by means of <code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code>.
+In this case, there is no need to pass <code>volumeType</code> and <code>volumeFeature</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>volumes</code></strong> :&ensp;<code>dict</code> or <code>tuple</code> of <code>(string</code> or <code>tuple)</code></dt>
+<dd>
+<p>You can either pass just the locations of the volumes,
+or you can give them a name and pass <code>(name, location)</code> instead,
+or pass them as a dictionary with names as keys and locations as values.
+If you do not give names to volumes, their locations will be used as name.
+However, names are only used if you pass <code>volumeType</code> and /or <code>volumeFeature</code>.</p>
+<div class="admonition caution">
+<p class="admonition-title">Disjointness</p>
+<p>A collection can not contain the same volume more than once.</p>
+</div>
+</dd>
+<dt><strong><code>workLocation</code></strong> :&ensp;<code>string</code></dt>
+<dd>The directory into which the feature files of the work will be written.</dd>
+<dt><strong><code>overwrite</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>If True, the target collection will be
+be created and will replace any existing collection/volume of the same name.
+If None, the collection will only be created if it does not exist.
+No check will be performed as to whether an existing collection
+is equal to what would have been created by this call.
+If False, refuses to proceed if the collection directory already exists.</dd>
+<dt><strong><code>volumeType</code></strong>, <strong><code>volumeFeature</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If a string value for one of these is passed,
+a new node type will be added to the work,
+with one new node for each volume: the volume node.
+There will also be a new feature, that assigns the name of a volume
+to the node of that volume.</p>
+<p>The name of the new node type is the value of <code>volumeType</code>
+if it is a non-empty string, else it is the value of <code>volumeFeature</code>.</p>
+<p>The name of the new feature is <code>volumeFeature</code>
+if it is a non-empty string, else it is the value of <code>volumeType</code>.</p>
+<div class="admonition caution">
+<p class="admonition-title">volumeType must be fresh</p>
+<p>It is an error if the <code>volumeType</code> is a node type that already
+occurs in one of the volumes.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">volumeFeature may exist</p>
+<p>The <code>volumeFeature</code> may already exist in one or more volumes.
+In that case the new feature values for nodes of <code>volumeType</code> will
+just be added to it.</p>
+</div>
+<h2 id="example">Example</h2>
+<pre><code>collect(
+    dict(
+        banks='banks/tf/0.2',
+        river='banks/tf/0.4',
+    ),
+    'riverbanks/tf/1.0',
+    volumeType='volume',
+    volumeFeature='vol',
+)
+</code></pre>
+<p>This results in a work with nodes and features from the volumes
+found at the indicated places on your file system.
+After combination, the volumes are visible in the work as nodes
+of type <code>volume</code>, and the feature <code>vol</code> provides the names <code>banks</code> and <code>river</code>
+for those nodes.</p>
+</dd>
+<dt><strong><code>featureMeta</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>The meta data of the volumes involved will be merged.
+If feature metadata of the same feature is encountered in different volumes,
+and if volumes specify different values for the same keys,
+the different values will be stored under a key with the name of
+the volume appended to the key, separated by a <code>!</code>.</p>
+<p>The special metadata field <code>valueType</code> will just be reduced
+to one single value <code>str</code> if some volumes have it as <code>str</code> and others as <code>int</code>.
+If the volumes assign the same value type to a feature, that value type
+will be assigned to the combined feature.</p>
+<p>If you want to assign other meta data to specific features,
+or pass meta data for new features that orginate from the merging process,
+you can pass them in the parameter <code>featureMeta</code> as in the following example,
+where we pass meta data for a feature called <code>level</code> with integer values.</p>
+<p>The contents of the <code>otext.tf</code> features are also metadata,
+and their contents will be merged in exactly the same way.</p>
+<p>So if the section/structure specifications and the formats are not
+the same for all volumes, you will see them spread out
+in fields qualified by the volume name with a <code>!</code> sign between
+the key and the volume.</p>
+<p>But you can add new specifications explicitly,
+as meta data of the <code>otext</code> feature.
+by passing them as keyword arguments.
+They will be passed directly to the combined <code>otext.tf</code> feature
+and will override anything with the same key
+that is already in one of the volumes.</p>
+</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Suppress or enable informational messages.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>
+<p>Whether the creation was successful.</p>
+<p>All features in the resulting collection will get a metadata key
+<code>volume</code> with as value the name of the collection and its component volumes.</p>
+</dd>
+</dl>
+<h2 id="example_1">Example</h2>
+<pre><code>collect(
+    dict(
+        banks='banks/tf/0.2',
+        river='banks/tf/0.4',
+    ),
+    'riverbanks/tf/1.0',
+    featureMeta=dict(
+      level=dict(
+        valueType='int',
+        description='level of a section node',
+      ),
+    ),
+)
+</code></pre>
+<h2 id="example_2">Example</h2>
+<pre><code>collect(
+    dict(
+        banks='banks/tf/0.2',
+        river='banks/tf/0.4',
+    ),
+    'riverbanks/tf/1.0',
+    featureMeta=dict(
+        otext=dict(
+            volumeType='volume',
+            volumeFeature='vol',
+            sectionTypes='volume,chapter,line',
+            sectionFeatures='title,number,number',
+        ),
+    ),
+    silent=False,
+)
+</code></pre>
+<p>This will give rise to something like this (assuming that <code>banks</code> and
+<code>rivers</code> have some deviating material in their <code>otext.tf</code>:</p>
+<pre><code>@config
+@compiler=Dirk Roorda
+@dateWritten=2019-05-20T19:12:23Z
+@fmt:line-default={letters:XXX}{terminator}
+@fmt:line-term=line#{terminator}
+@fmt:text-orig-extra={letters}{punc}{gap}
+@fmt:text-orig-full={letters}
+@fmt:text-orig-full!banks={letters}{punc}
+@fmt:text-orig-full!rivers={letters}{gap}
+@name=Culture quotes from Iain Banks
+@purpose=exposition
+@sectionFeatures=title,number,number
+@sectionFeatures!banks=title,number,number
+@sectionFeatures!rivers=number,number,number
+@sectionTypes=volume,chapter,line
+@sectionTypes!banks=book,chapter,sentence
+@sectionTypes!rivers=chapter,sentence,line
+@source=Good Reads
+@status=with for similarities in a separate module
+@structureFeatures!banks=title,number,number,number
+@structureFeatures!rivers=title,number,number
+@structureTypes!banks=book,chapter,sentence,line
+@structureTypes!rivers=book,chapter,sentence
+@url=&lt;https://www.goodreads.com/work/quotes/14366-consider-phlebas&gt;
+@version=0.2
+@writtenBy=Text-Fabric
+@writtenBy=Text-Fabric
+@dateWritten=2019-05-28T10:55:06Z
+</code></pre>
+<div class="admonition caution">
+<p class="admonition-title">inter-version edges</p>
+<p>Features with names starting in <code>omap@</code> contain node maps from
+older to newer versions.
+These will be excluded from collection.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def collect(
+    volumes,
+    workLocation,
+    volumeType=None,
+    volumeFeature=None,
+    mergeTypes=None,
+    featureMeta=None,
+    silent=False,
+    overwrite=False,
+):
+    &#34;&#34;&#34;Creates a work out of a number of volumes.
+
+    The volumes are individual TF data sets, the work is a new TF data set.
+
+    You may pass as many volume data sources as you want.
+
+    The work will be the union of all nodes of the volumes,
+    rearranged according to their types, where node types with the
+    same names will be merged.
+
+    The slots of the work are the concatenation of the slots of the
+    volumes, which must all have the same slot type.
+
+    The node and edge features will be remapped, so that they have
+    the same values in the work as they had in the individual
+    volumes.
+
+    !!! caution &#34;inter-volume edges&#34;
+        The edge features of each volume only contain edges between nodes
+        in that volume. But the work as a whole may have had edges
+        between nodes of different volumes.
+        These can be restored from two extra features that may exist in the
+        volumes: `ointerfrom` and `ointerto`.
+
+        See also `tf.volumes.extract`.
+
+    The volumes may contain a feature `owork` which maps each node in a volume
+    to the corresponding node in the work.
+    Some non-slot nodes in the work may have slots in multiple volumes.
+
+    !!! hint &#34;Lexeme nodes&#34;
+        Think of lexeme nodes that have slots for all occurrences of that lexeme.
+        When a work is split into volumes, the lexeme nodes map to
+        separate lexeme nodes in each volume where these lexemes occur.
+        When we collect volumes into works, we want to merge these lexeme
+        nodes again.
+
+    When non-slot nodes across volumes have the same value for their `owork` feature,
+    they will be merged into the work. That means: only one node will be created
+    in the work, and the slots of that node will be the union of the
+    slots these nodes have in the individual volumes.
+
+    !!! caution &#34;Overlapping slots&#34;
+        It is an error if volumes have overlapping slots.
+        Overlapping slots are those whose values of `owork` are identical.
+
+    A feature `ovolume` will be created which maps each node of the work
+    to the corresponding node(s) in the individual volume(s).
+
+    Optionally, nodes corresponding to the volumes themselves will be
+    added to the work.
+
+    Care will be taken of the metadata of the features and the contents
+    of the `otext.tf` feature, which consists of metadata only.
+
+    All details of the work can be steered by means of parameters.
+
+    You can use this function to recombine volumes that have been obtained
+    by extracting them from a work by means of `tf.volumes.extract`.
+    In this case, there is no need to pass `volumeType` and `volumeFeature`.
+
+    Parameters
+    ----------
+
+    volumes: dict or tuple of (string or tuple)
+        You can either pass just the locations of the volumes,
+        or you can give them a name and pass `(name, location)` instead,
+        or pass them as a dictionary with names as keys and locations as values.
+        If you do not give names to volumes, their locations will be used as name.
+        However, names are only used if you pass `volumeType` and /or `volumeFeature`.
+
+        !!! caution &#34;Disjointness&#34;
+            A collection can not contain the same volume more than once.
+
+    workLocation: string
+        The directory into which the feature files of the work will be written.
+
+    overwrite: boolean, optional `None`
+        If True, the target collection will be
+        be created and will replace any existing collection/volume of the same name.
+        If None, the collection will only be created if it does not exist.
+        No check will be performed as to whether an existing collection
+        is equal to what would have been created by this call.
+        If False, refuses to proceed if the collection directory already exists.
+
+
+    volumeType, volumeFeature: string, optional `None`
+        If a string value for one of these is passed,
+        a new node type will be added to the work,
+        with one new node for each volume: the volume node.
+        There will also be a new feature, that assigns the name of a volume
+        to the node of that volume.
+
+        The name of the new node type is the value of `volumeType`
+        if it is a non-empty string, else it is the value of `volumeFeature`.
+
+        The name of the new feature is `volumeFeature`
+        if it is a non-empty string, else it is the value of `volumeType`.
+
+        !!! caution &#34;volumeType must be fresh&#34;
+            It is an error if the `volumeType` is a node type that already
+            occurs in one of the volumes.
+
+        !!! note &#34;volumeFeature may exist&#34;
+            The `volumeFeature` may already exist in one or more volumes.
+            In that case the new feature values for nodes of `volumeType` will
+            just be added to it.
+
+        Example
+        -------
+            collect(
+                dict(
+                    banks=&#39;banks/tf/0.2&#39;,
+                    river=&#39;banks/tf/0.4&#39;,
+                ),
+                &#39;riverbanks/tf/1.0&#39;,
+                volumeType=&#39;volume&#39;,
+                volumeFeature=&#39;vol&#39;,
+            )
+
+        This results in a work with nodes and features from the volumes
+        found at the indicated places on your file system.
+        After combination, the volumes are visible in the work as nodes
+        of type `volume`, and the feature `vol` provides the names `banks` and `river`
+        for those nodes.
+
+    featureMeta: dict, optional `None`
+        The meta data of the volumes involved will be merged.
+        If feature metadata of the same feature is encountered in different volumes,
+        and if volumes specify different values for the same keys,
+        the different values will be stored under a key with the name of
+        the volume appended to the key, separated by a `!`.
+
+        The special metadata field `valueType` will just be reduced
+        to one single value `str` if some volumes have it as `str` and others as `int`.
+        If the volumes assign the same value type to a feature, that value type
+        will be assigned to the combined feature.
+
+        If you want to assign other meta data to specific features,
+        or pass meta data for new features that orginate from the merging process,
+        you can pass them in the parameter `featureMeta` as in the following example,
+        where we pass meta data for a feature called `level` with integer values.
+
+        The contents of the `otext.tf` features are also metadata,
+        and their contents will be merged in exactly the same way.
+
+        So if the section/structure specifications and the formats are not
+        the same for all volumes, you will see them spread out
+        in fields qualified by the volume name with a `!` sign between
+        the key and the volume.
+
+        But you can add new specifications explicitly,
+        as meta data of the `otext` feature.
+        by passing them as keyword arguments.
+        They will be passed directly to the combined `otext.tf` feature
+        and will override anything with the same key
+        that is already in one of the volumes.
+
+    silent: boolean, optional `False`
+        Suppress or enable informational messages.
+
+    Returns
+    -------
+    boolean
+        Whether the creation was successful.
+
+        All features in the resulting collection will get a metadata key
+        `volume` with as value the name of the collection and its component volumes.
+
+    Example
+    -------
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+              level=dict(
+                valueType=&#39;int&#39;,
+                description=&#39;level of a section node&#39;,
+              ),
+            ),
+        )
+
+    Example
+    -------
+        collect(
+            dict(
+                banks=&#39;banks/tf/0.2&#39;,
+                river=&#39;banks/tf/0.4&#39;,
+            ),
+            &#39;riverbanks/tf/1.0&#39;,
+            featureMeta=dict(
+                otext=dict(
+                    volumeType=&#39;volume&#39;,
+                    volumeFeature=&#39;vol&#39;,
+                    sectionTypes=&#39;volume,chapter,line&#39;,
+                    sectionFeatures=&#39;title,number,number&#39;,
+                ),
+            ),
+            silent=False,
+        )
+
+    This will give rise to something like this (assuming that `banks` and
+    `rivers` have some deviating material in their `otext.tf`:
+
+        @config
+        @compiler=Dirk Roorda
+        @dateWritten=2019-05-20T19:12:23Z
+        @fmt:line-default={letters:XXX}{terminator}
+        @fmt:line-term=line#{terminator}
+        @fmt:text-orig-extra={letters}{punc}{gap}
+        @fmt:text-orig-full={letters}
+        @fmt:text-orig-full!banks={letters}{punc}
+        @fmt:text-orig-full!rivers={letters}{gap}
+        @name=Culture quotes from Iain Banks
+        @purpose=exposition
+        @sectionFeatures=title,number,number
+        @sectionFeatures!banks=title,number,number
+        @sectionFeatures!rivers=number,number,number
+        @sectionTypes=volume,chapter,line
+        @sectionTypes!banks=book,chapter,sentence
+        @sectionTypes!rivers=chapter,sentence,line
+        @source=Good Reads
+        @status=with for similarities in a separate module
+        @structureFeatures!banks=title,number,number,number
+        @structureFeatures!rivers=title,number,number
+        @structureTypes!banks=book,chapter,sentence,line
+        @structureTypes!rivers=book,chapter,sentence
+        @url=https://www.goodreads.com/work/quotes/14366-consider-phlebas
+        @version=0.2
+        @writtenBy=Text-Fabric
+        @writtenBy=Text-Fabric
+        @dateWritten=2019-05-28T10:55:06Z
+
+    !!! caution &#34;inter-version edges&#34;
+        Features with names starting in `omap@` contain node maps from
+        older to newer versions.
+        These will be excluded from collection.
+
+    &#34;&#34;&#34;
+
+    collection = os.path.basename(workLocation)
+    loc = ux(os.path.dirname(workLocation))
+
+    if not dirEmpty(workLocation):
+        proceed = True
+        good = True
+
+        if overwrite is None:
+            info(
+                f&#34;Collection {collection} already exists and will not be recreated&#34;,
+                tm=False,
+            )
+            proceed = False
+        else:
+            if overwrite:
+                rmtree(workLocation)
+                info(f&#34;Collection {collection} exists and will be recreated&#34;, tm=False)
+            else:
+                good = False
+                proceed = False
+                error(
+                    f&#34;Collection {collection} already exists at {loc}&#34;,
+                    tm=False,
+                )
+
+        if not good or not proceed:
+            return good
+
+    if volumeType:
+        if not volumeFeature:
+            volumeFeature = volumeType
+    else:
+        if volumeFeature:
+            volumeType = volumeFeature
+
+    TFs = {}
+    apis = {}
+    getOworks = {}
+
+    slotType = None
+    allSlots = set()
+    volumeMap = {}
+    volumeMapI = {}
+    maxSlotW = None
+    maxNodeW = None
+    metaData = collections.defaultdict(dict)
+    nodeFeatures = {}
+    edgeFeatures = {}
+    allNodeFeatures = set()
+    allEdgeFeatures = set()
+    volumeOslots = {}
+    fromWork = {}
+
+    good = True
+
+    if type(volumes) is not dict:
+        volProto = {}
+        volNames = set()
+        for loc in volumes:
+            if type(loc) is str:
+                name = os.path.basename(loc)
+            else:
+                (name, loc) = loc
+            if name in volNames:
+                error(f&#34;Volume {name} is already part of the collection&#34;)
+                good = False
+            else:
+                volNames.add(name)
+            volProto[name] = loc
+        volumes = volProto
+
+    if not good:
+        return False
+
+    volumeIndex = {}
+    for (name, loc) in volumes.items():
+        seenName = volumeIndex.get(loc, None)
+        if seenName:
+            error(f&#34;Volume {seenName} at location {loc} reoccurs as volume {name}&#34;)
+            good = False
+        volumeIndex[loc] = name
+
+    if not good:
+        return False
+
+    def loadVolumes():
+        for (name, loc) in volumes.items():
+            info(f&#34;Loading volume {name:&lt;60} from {ux(loc)} ...&#34;)
+            TFs[name] = FabricCore(locations=loc, silent=silent)
+            apis[name] = TFs[name].loadAll(silent=silent)
+        return True
+
+    def getMetas():
+        info(&#34;inspect metadata ...&#34;)
+        meta = collections.defaultdict(
+            lambda: collections.defaultdict(lambda: collections.defaultdict(set))
+        )
+
+        volumeStr = &#34;,&#34;.join(volumes)
+        collectionMeta = f&#34;{collection}:{volumeStr}&#34;
+
+        for (feat, keys) in (featureMeta or {}).items():
+            if feat.startswith(OMAP):
+                continue
+            meta[feat][&#34;collection&#34;][collectionMeta] = {&#34;+&#34;}
+            for (key, value) in keys.items():
+                if value is not None:
+                    meta[feat][key][value] = {&#34;&#34;}
+
+        if volumeFeature:
+            meta[volumeFeature][&#34;valueType&#34;][&#34;str&#34;] = {&#34;&#34;}
+            meta[volumeFeature][&#34;description&#34;][f&#34;label of {volumeType}&#34;] = {&#34;&#34;}
+
+        for name in volumes:
+            allFeatures = getAllFeatures(apis[name])
+            for (feat, fObj) in TFs[name].features.items():
+                if feat not in allFeatures:
+                    continue
+                meta[feat][&#34;collection&#34;][collectionMeta].add(name)
+                thisMeta = fObj.metaData
+                for (k, v) in thisMeta.items():
+                    meta[feat][k][v].add(name)
+                if fObj.isConfig:
+                    continue
+                if fObj.isEdge:
+                    allEdgeFeatures.add(feat)
+                    meta[feat][&#34;edgeValues&#34;][fObj.edgeValues].add(name)
+                else:
+                    allNodeFeatures.add(feat)
+
+        for (feat, ks) in meta.items():
+            for (k, vs) in ks.items():
+                isGenerated = k in GENERATED
+                if k == &#34;valueType&#34;:
+                    if len(vs) &gt; 1:
+                        warning(
+                            (
+                                f&#34;WARNING: {feat}: &#34;
+                                &#34;valueType varies in volumes; will be str&#34;
+                            ),
+                            tm=False,
+                        )
+                    else:
+                        metaData[feat][k] = sorted(vs)[0]
+                elif len(vs) == 1:
+                    metaData[feat][k] = list(vs)[0]
+                else:
+                    hasCombinedValue = False
+                    for (v, names) in vs.items():
+                        for name in names:
+                            if name == &#34;+&#34; or name == &#34;&#34; and not isGenerated:
+                                hasCombinedValue = True
+                                key = k
+                            elif name == &#34;&#34;:
+                                key = k
+                            else:
+                                key = f&#34;{k}!{name}&#34;
+                            metaData[feat][key] = v
+                    if not hasCombinedValue and not isGenerated:
+                        warning(
+                            f&#34;WARNING: {feat}.{k} metadata varies across volumes&#34;,
+                            tm=False,
+                        )
+        metaData[OVOLUME] = {k: m for (k, m) in metaData[OTYPE].items()}
+        metaData[OVOLUME][&#34;description&#34;] = (
+            &#34;mapping from a node in the work to the volume it comes from&#34;
+            &#34; and its corresponding node there&#34;
+        )
+        metaData[OVOLUME][&#34;valueType&#34;] = &#34;str&#34;
+
+        indent(level=0)
+        info(&#34;metadata sorted out&#34;)
+        return True
+
+    def checkTypes():
+        nonlocal slotType
+
+        slotTypes = set()
+        otherTypes = set()
+
+        clashes = set()
+
+        good = True
+        info(&#34;check nodetypes ...&#34;)
+        indent(level=1, reset=True)
+
+        for name in volumes:
+            info(f&#34;volume {name}&#34;, tm=False)
+            api = apis[name]
+            if not api:
+                good = False
+                continue
+            C = api.C
+            nTypeInfo = C.levels.data
+            for (t, (nType, av, nF, nT)) in enumerate(nTypeInfo):
+                if nType == volumeType:
+                    clashes.add(name)
+                if t == len(nTypeInfo) - 1:
+                    slotTypes.add(nType)
+                else:
+                    otherTypes.add(nType)
+        if len(slotTypes) &gt; 1:
+            slotRep = &#34;, &#34;.join(sorted(slotTypes))
+            error(f&#34;Multiple slot types: {slotRep}&#34;, tm=False)
+            good = False
+
+        commonTypes = slotTypes &amp; otherTypes
+        if len(commonTypes):
+            error(
+                &#34;Some node types are slots in one volume and non-slots in another&#34;,
+                tm=False,
+            )
+            error(&#34;, &#34;.sorted(commonTypes), tm=False)
+            good = False
+
+        if clashes:
+            clashRep = &#34;, &#34;.join(f&#34;{name}&#34; for name in clashes)
+            error(
+                f&#34;Volume type {volumeType} occurs inside volumes {clashRep}&#34;,
+                tm=False,
+            )
+            good = False
+
+        if good:
+            slotType = list(slotTypes)[0]
+        else:
+            return False
+
+        indent(level=0)
+        info(&#34;node types ok&#34;)
+        return True
+
+    def collectNodes():
+        info(&#34;Collect nodes from volumes ...&#34;)
+        indent(level=1, reset=True)
+        nodesByType = collections.defaultdict(list)
+
+        sW = 0
+
+        good = True
+
+        # check whether volumes have overlapping slots
+        # we use the original work slots, provided by the owork feature
+        # if it exists; otherwise we cannot know whether slots are overlapping
+        info(&#34;Check against overlapping slots ...&#34;)
+        indent(level=2, reset=True)
+        for name in volumes:
+            api = apis[name]
+            E = api.E
+            getOwork = (
+                None
+                if api.isLoaded(features=OWORK, pretty=False)[OWORK] is None
+                else api.Fs(OWORK)
+            )
+            if getOwork:
+                getOwork = getOwork.v
+            getOworks[name] = getOwork
+
+            maxSlotI = E.oslots.maxSlot
+            info(f&#34;{name:&lt;60}: {maxSlotI:&gt;8} slots&#34;, tm=False)
+            volumeOslots[name] = set(range(sW + 1, sW + 1 + maxSlotI))
+
+            overlap = 0
+
+            for sV in range(1, maxSlotI + 1):
+                sW += 1
+                nameSv = (name, sV)
+                if getOwork:
+                    sOW = getOwork(sV)
+                    if sOW:
+                        if sOW in fromWork:
+                            overlap += 1
+                        fromWork[sOW] = None
+
+                allSlots.add(sW)
+                volumeMap[sW] = nameSv
+                volumeMapI[nameSv] = sW
+
+                if overlap:
+                    error(f&#34;Overlapping slots: {overlap}&#34;)
+                    good = False
+        indent(level=1)
+        if overlap == 0:
+            info(&#34;no overlap&#34;)
+
+        if not good:
+            return False
+
+        info(&#34;Group non-slot nodes by type&#34;)
+        indent(level=2, reset=True)
+        for name in volumes:
+            api = apis[name]
+
+            E = api.E
+            F = api.F
+            fOtypeData = F.otype.data
+            maxSlotI = E.oslots.maxSlot
+            maxNodeI = E.oslots.maxNode
+            info(f&#34;{name:&lt;60}: {maxSlotI + 1:&gt;8}-{maxNodeI:&gt;8}&#34;, tm=False)
+
+            for nV in range(maxSlotI + 1, maxNodeI + 1):
+                nType = fOtypeData[nV - maxSlotI - 1]
+                nodesByType[nType].append((name, nV))
+
+        nW = sW
+
+        indent(level=1)
+        info(&#34;Mapping nodes from volume to/from work ...&#34;)
+        indent(level=2)
+        for (nType, nodes) in nodesByType.items():
+            startW = nW
+            for nameNv in nodes:
+                (name, nV) = nameNv
+                getOwork = getOworks[name]
+                if getOwork:
+                    nOW = getOwork(nV)
+                    if nOW in fromWork:
+                        fromWork[nOW].append(nameNv)
+                        continue
+                    else:
+                        fromWork[nOW] = []
+                nW += 1
+                volumeMap[nW] = nameNv
+                volumeMapI[nameNv] = nW
+
+            info(
+                f&#34;{nType:&lt;20}: {startW + 1:&gt;8} - {nW:&gt;8}&#34;,
+                tm=False,
+            )
+
+        nVolumeNodes = len(volumes) if volumeFeature else 0
+        nNodesW = len(volumeMap) + nVolumeNodes
+
+        indent(level=1)
+        info(f&#34;The new work has {nNodesW} nodes of which {len(allSlots)} slots&#34;)
+
+        nonlocal maxSlotW
+        nonlocal maxNodeW
+
+        maxSlotW = sW
+        maxNodeW = nW
+
+        indent(level=0)
+        info(&#34;collection done&#34;)
+        return True
+
+    def remapFeatures():
+        info(&#34;remap features ...&#34;)
+        indent(level=1, reset=True)
+
+        # node features
+
+        otype = {}
+        nodeFeatures[OTYPE] = otype
+        ovolume = {}
+        nodeFeatures[OVOLUME] = ovolume
+
+        # edge features
+
+        oslots = {}
+        edgeFeatures[OSLOTS] = oslots
+
+        ointerf = {}
+        ointert = {}
+        fOtypeDatas = {}
+        eOslotsDatas = {}
+        maxSlots = {}
+        maxNodes = {}
+        nodeFeatureDatas = {}
+        edgeFeatureDatas = {}
+
+        for name in volumes:
+            api = apis[name]
+            allFeatures = getAllFeatures(api)
+            for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
+                if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
+                    continue
+                interSource = api.Fs(OINTER).data
+
+                interData = {}
+                ointer[name] = interData
+
+                for (nW, interEdgesStr) in interSource.items():
+                    interEdges = interEdgesStr.split(&#34;;&#34;)
+                    for interEdge in interEdges:
+                        (mW, feat, doValues, isInt, val) = interEdge.split(&#34;,&#34;)
+                        doValues = doValues == &#34;v&#34;
+                        isInt = isInt == &#34;i&#34;
+                        dest = interData.setdefault(feat, {}).setdefault(
+                            nW, {} if doValues else set()
+                        )
+                        if doValues:
+                            dest[mW] = int(val) if isInt else val
+                        else:
+                            dest.add(mW)
+
+            fOtypeDatas[name] = api.F.otype.data
+            eOslotsDatas[name] = api.E.oslots.data
+            maxSlots[name] = api.E.oslots.maxSlot
+            maxNodes[name] = api.E.oslots.maxNode
+            nodeFeatureDatas[name] = {
+                feat: api.Fs(feat).data
+                for feat in api.Fall()
+                if feat != OTYPE and feat in allFeatures
+            }
+            edgeFeatureDatas[name] = {
+                feat: (
+                    api.Es(feat).doValues,
+                    api.Es(feat).data,
+                    api.Es(feat).dataInv,
+                )
+                for feat in api.Eall()
+                if not feat.startswith(OMAP) and feat != OSLOTS and feat in allFeatures
+            }
+
+        for (nW, (name, nV)) in volumeMap.items():
+            ovolume[nW] = f&#34;{name},{nV}&#34;
+            maxSlotI = maxSlots[name]
+
+            otype[nW] = (
+                slotType if nW &lt;= maxSlotW else fOtypeDatas[name][nV - maxSlotI - 1]
+            )
+
+            if nW &gt; maxSlotW:
+                oslots[nW] = set(
+                    volumeMapI[(name, sV)]
+                    for sV in eOslotsDatas[name][nV - maxSlotI - 1]
+                )
+                if nW in fromWork:
+                    for (name2, nV2) in fromWork[nW]:
+                        oslots[nW] |= set(
+                            volumeMapI[(name2, sV)]
+                            for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
+                        )
+
+            for (feat, featD) in nodeFeatureDatas[name].items():
+                val = featD.get(nV, None)
+                if val is not None:
+                    nodeFeatures.setdefault(feat, {})[nW] = val
+
+            for (feat, (doValues, featF, featT)) in edgeFeatureDatas[name].items():
+                valData = featF.get(nV, None)
+                if valData is not None:
+                    value = {} if doValues else set()
+                    for tV in valData:
+                        tW = volumeMapI[(name, tV)]
+                        if doValues:
+                            val = valData.get(tV, None)
+                            value[tW] = val
+                        else:
+                            value.add(tW)
+                    if value:
+                        edgeFeatures.setdefault(feat, {})[nW] = value
+
+        # add inter-volume edges
+        # the ointerf and ointert features have in their values a node
+        # from the original work.
+        # We have to infer the volume and the corresponding node in that volume.
+        # And then we can get the corresponding node in the collected work.
+
+        # If this sounds like a detour that can be cut short:
+        # the new collection we are making does not have to be identical
+        # to the original work.
+        # It could very well be that we have extracted all volumes from a work
+        # and are now collecting only certain volumes for the new work.
+
+        # Indeed, when splitting the original work into volumes,
+        # it might have been the case that certain top-level sections
+        # of the orginal work do not end up in one of the volumes.
+
+        getOworkWI = {}
+
+        # get the mapping from nodes in the original work
+        # to nodes in all volumes
+
+        for name in volumes:
+            getOwork = getOworks[name]
+            if getOwork:
+                maxNode = maxNodes[name]
+                for nV in range(1, maxNode):
+                    nW = getOwork(nV)
+                    getOworkWI[nW] = (name, nV)
+
+        # OUTGOING edges
+
+        for (name, interData) in ointerf.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (fW, interValueData) in interFeatData.items():
+                    for tOW in interValueData:
+                        if tOW not in getOworkWI:
+                            # edge goes outside the new work
+                            continue
+                        else:
+                            (nameT, tV) = getOworkWI[tOW]
+                            tW = volumeMapI[(nameT, tV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
+
+        # INCOMING edges
+
+        for (name, interData) in ointert.items():
+            for (feat, interFeatData) in interData.items():
+                doValues = edgeFeatureDatas[name][feat][0]
+                thisEdgeFeature = edgeFeatures.setdefault(feat, {})
+                for (tW, interValueData) in interFeatData.items():
+                    for fOW in interValueData:
+                        if fOW not in getOworkWI:
+                            # edge comes from outside the new work
+                            continue
+                        else:
+                            (nameF, fV) = getOworkWI[fOW]
+                            fW = volumeMapI[(nameF, fV)]
+
+                            dest = thisEdgeFeature[feat].setdefault(
+                                fW, {} if doValues else set()
+                            )
+                            if doValues:
+                                dest[tW] = interValueData[tOW]
+                            else:
+                                dest.add(tW)
+
+        if volumeFeature:
+            nW = maxNodeW
+
+            for name in volumes:
+                nW += 1
+                nodeFeatures.setdefault(volumeFeature, {})[nW] = name
+                nodeFeatures[OTYPE][nW] = volumeType
+                edgeFeatures[OSLOTS][nW] = volumeOslots[name]
+
+        indent(level=0)
+        info(&#34;remapping done&#34;)
+        return True
+
+    def writeTf():
+        info(&#34;write work as TF data set&#34;)
+        TF = FabricCore(locations=workLocation, silent=True)
+        good = TF.save(
+            metaData=metaData,
+            nodeFeatures=nodeFeatures,
+            edgeFeatures=edgeFeatures,
+            silent=False if DEBUG else silent or True,
+        )
+        indent(level=0)
+        if not good:
+            return False
+        info(&#34;writing done&#34;)
+        return good
+
+    def process():
+        indent(level=0, reset=True)
+        if not loadVolumes():
+            return False
+        if not getMetas():
+            return False
+        if not checkTypes():
+            return False
+        if not collectNodes():
+            return False
+        if not remapFeatures():
+            return False
+        if not writeTf():
+            return False
+        info(&#34;done&#34;)
+        return True
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    result = process()
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#collect">Collect</a><ul>
+<li><a href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.volumes" href="index.html">tf.volumes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.volumes.collect.collect" href="#tf.volumes.collect.collect">collect</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>tf.server.kernel API documentation</title>
+<meta name="description" content="Text-Fabric kernel …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.server.kernel</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="text-fabric-kernel">Text-Fabric kernel</h1>
+<p>Text-Fabric can be used as a service.
+The full API of Text-Fabric needs a lot of memory, which makes it unusably for
+rapid successions of loading and unloading, like when used in a web server context.</p>
+<p>However, you can start TF as a service process,
+after which many clients can connect to it,
+all looking at the same (read-only) data. We call this a <strong>TF kernel</strong>.</p>
+<p>The API that the TF kernel offers is limited,
+it is primarily template search that is offered.
+see <em>Kernel API</em> below.</p>
+<h2 id="start">Start</h2>
+<p>You can run the TF kernel as follows:</p>
+<pre><code class="language-sh">python3 -m tf.server.kernel ddd
+</code></pre>
+<p>where <code>ddd</code> points to a corpus, see <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>See the
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/server/start.py">start-up script</a>
+of the text-fabric browser.</p>
+</div>
+<h2 id="connect">Connect</h2>
+<p>The TF kernel can be connected by an other Python program as follows:</p>
+<pre><code class="language-python">from tf.server.kernel import makeTfConnection
+TF = makeTfConnection(host, port)
+api = TF.connect()
+</code></pre>
+<p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
+<p>See the web server of the text-fabric browser, <code><a title="tf.server.web" href="web.html">tf.server.web</a></code>.</p>
+<h2 id="kernel-api">Kernel API</h2>
+<p>The API of the TF kernel is created by the function <code><a title="tf.server.kernel.makeTfKernel" href="#tf.server.kernel.makeTfKernel">makeTfKernel()</a></code>.</p>
+<p>It returns a class <code>TfKernel</code> with a number of exposed methods
+that can be called by other programs.</p>
+<p>For the machinery of interprocess communication we rely on the
+<a href="https://github.com/tomerfiliba/rpyc">rpyc</a> module.
+See especially the docs on
+<a href="https://rpyc.readthedocs.io/en/latest/docs/services.html#services">services</a>.</p>
+<div class="admonition explanation">
+<p class="admonition-title">Shadow objects</p>
+<p>The way rpyc works in the case of data transmission has a pitfall.
+When a service returns a Python object to the client, it
+does not return the object itself, but only a shadow object
+so called <em>netref</em> objects. This strategy is called
+<a href="https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing">boxing</a>.
+To the client the shadow object looks like the real thing,
+but when the client needs to access members, they will be fetched
+on the fly.</p>
+<p>This is a performance problem when the service sends a big list or dict,
+and the client iterates over all its items. Each item will be fetched in
+a separate interprocess call, which causes an enormous overhead.</p>
+<p>Boxing only happens for mutable objects. And here lies the work-around:</p>
+<p>The service must send big chunks of data as immutable objects,
+such as tuples. They are sent within a single interprocess call,
+and fly swiftly through the connecting pipe.</p>
+</div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/server/kernel.py#L0-L670" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Text-Fabric kernel
+
+Text-Fabric can be used as a service.
+The full API of Text-Fabric needs a lot of memory, which makes it unusably for
+rapid successions of loading and unloading, like when used in a web server context.
+
+However, you can start TF as a service process,
+after which many clients can connect to it,
+all looking at the same (read-only) data. We call this a **TF kernel**.
+
+The API that the TF kernel offers is limited,
+it is primarily template search that is offered.
+see *Kernel API* below.
+
+## Start
+
+You can run the TF kernel as follows:
+
+```sh
+python3 -m tf.server.kernel ddd
+```
+
+where `ddd` points to a corpus, see `tf.app.use`.
+
+!!! example
+    See the
+    [start-up script](https://github.com/annotation/text-fabric/blob/master/tf/server/start.py)
+    of the text-fabric browser.
+
+## Connect
+
+The TF kernel can be connected by an other Python program as follows:
+
+```python
+from tf.server.kernel import makeTfConnection
+TF = makeTfConnection(host, port)
+api = TF.connect()
+```
+
+After this, `api` can be used to obtain information from the TF kernel.
+
+See the web server of the text-fabric browser, `tf.server.web`.
+
+## Kernel API
+
+The API of the TF kernel is created by the function `makeTfKernel`.
+
+It returns a class `TfKernel` with a number of exposed methods
+that can be called by other programs.
+
+For the machinery of interprocess communication we rely on the
+[rpyc](https://github.com/tomerfiliba/rpyc) module.
+See especially the docs on
+[services](https://rpyc.readthedocs.io/en/latest/docs/services.html#services).
+
+!!! explanation &#34;Shadow objects&#34;
+    The way rpyc works in the case of data transmission has a pitfall.
+    When a service returns a Python object to the client, it
+    does not return the object itself, but only a shadow object
+    so called *netref* objects. This strategy is called
+    [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
+    To the client the shadow object looks like the real thing,
+    but when the client needs to access members, they will be fetched
+    on the fly.
+
+    This is a performance problem when the service sends a big list or dict,
+    and the client iterates over all its items. Each item will be fetched in
+    a separate interprocess call, which causes an enormous overhead.
+
+    Boxing only happens for mutable objects. And here lies the work-around:
+
+    The service must send big chunks of data as immutable objects,
+    such as tuples. They are sent within a single interprocess call,
+    and fly swiftly through the connecting pipe.
+&#34;&#34;&#34;
+
+import sys
+import pickle
+from functools import reduce
+
+import rpyc
+from rpyc.utils.server import ThreadedServer
+
+from ..core.helpers import console
+from ..advanced.app import findApp
+from ..advanced.highlight import getPassageHighlights
+from ..advanced.search import runSearch, runSearchCondensed
+from ..advanced.helpers import getRowsX
+from ..advanced.tables import compose, composeP, composeT
+
+from .command import argKernel
+
+TF_DONE = &#34;TF setup done.&#34;
+TF_ERROR = &#34;Could not set up TF&#34;
+
+
+# KERNEL CREATION
+
+
+def makeTfKernel(app, appName, port):
+    if not app.api:
+        console(f&#34;{TF_ERROR}&#34;)
+        return False
+    TF = app.api.TF
+    reset = TF.reset
+    cache = TF.cache
+
+    reset()
+    cache = {}
+    console(f&#34;{TF_DONE}\nKernel listening at port {port}&#34;)
+
+    class TfKernel(rpyc.Service):
+        def on_connect(self, conn):
+            self.app = app
+            pass
+
+        def on_disconnect(self, conn):
+            self.app = None
+            pass
+
+        def exposed_monitor(self):
+            &#34;&#34;&#34;A utility function that spits out some information from the kernel
+            to the outside world.
+
+            At this moment it is only used for debugging, but later it can be useful
+            to monitor the kernel or manage it while it remains running.
+            &#34;&#34;&#34;
+
+            app = self.app
+            api = app.api
+            S = api.S
+
+            searchExe = getattr(S, &#34;exe&#34;, None)
+            if searchExe:
+                searchExe = searchExe.outerTemplate
+
+            _msgCache = cache(_asString=True)
+
+            data = dict(searchExe=searchExe, _msgCache=_msgCache)
+            return data
+
+        def exposed_header(self):
+            &#34;&#34;&#34;Fetches all the stuff to create a header.
+
+            This is shown after loading a data set.
+            It contains links to data and documentation of the data source.
+            &#34;&#34;&#34;
+
+            app = self.app
+            return app.header()
+
+        def exposed_provenance(self):
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.&#34;&#34;&#34;
+
+            app = self.app
+            aContext = app.context
+            commit = aContext.commit
+            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+            return (appProvenance, app.provenance)
+
+        def exposed_setNames(self):
+            &#34;&#34;&#34;Gets the names of the custom sets that the kernel has loaded.
+
+            The kernel can load additional sets of data triggered by the
+            `--sets=` command line argument with which the kernel
+            was started.
+
+            A web server kan use this informatiomn to write out provenance info.
+            &#34;&#34;&#34;
+
+            app = self.app
+            return (
+                tuple(sorted(app.sets.keys()))
+                if hasattr(app, &#34;sets&#34;) and type(app.sets) is dict
+                else ()
+            )
+
+        def exposed_css(self):
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.&#34;&#34;&#34;
+
+            app = self.app
+            return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
+
+        def exposed_context(self):
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;
+
+            app = self.app
+
+            return pickle.dumps(app.context)
+
+        def exposed_passage(
+            self,
+            features,
+            query,
+            sec0,
+            sec1=None,
+            sec2=None,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Gets passages, i.e. sections of level 1 (chapter-like).
+
+            The material will be displayed as a sequence of plain
+            representations of the sec2s (verse-like), which can be expanded to pretty
+            displays when the user chooses to do so.
+
+            Parameters
+            ----------
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            query: string
+                The query whose results should be highlighted in the passage display.
+
+            sec0: string | int
+                The level 0 section (book)-like label in which the passage occurs
+
+            sec1: string | int, optional `None`
+                The level 1 section (chapter)-like label to fetch
+
+            sec2: string | int, optional `None`
+                The level 2 section (verse-like) label that should get focus
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.advanced.options`.
+            &#34;&#34;&#34;
+
+            app = self.app
+            api = app.api
+            F = api.F
+            L = api.L
+            T = api.T
+
+            aContext = app.context
+            browseNavLevel = aContext.browseNavLevel
+            browseContentPretty = aContext.browseContentPretty
+
+            sectionFeatureTypes = T.sectionFeatureTypes
+            sec0Type = T.sectionTypes[0]
+            sec1Type = T.sectionTypes[1]
+            sectionDepth = len(T.sectionTypes)
+            browseNavLevel = min((sectionDepth, browseNavLevel))
+            finalSecType = T.sectionTypes[browseNavLevel]
+            finalSec = (sec0, sec1, sec2)[browseNavLevel]
+
+            if sec0:
+                if sectionFeatureTypes[0] == &#34;int&#34;:
+                    sec0 = int(sec0)
+            if sec1 and browseNavLevel == 2:
+                if sectionFeatureTypes[1] == &#34;int&#34;:
+                    sec1 = int(sec1)
+
+            sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
+            sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+
+            contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
+
+            if getx is not None:
+                if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
+                    getx = int(getx)
+
+            sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
+            sec1s = ()
+            if browseNavLevel == 2:
+                sec1s = (
+                    ()
+                    if sec0Node is None
+                    else tuple(
+                        T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type)
+                    )
+                )
+
+            items = (
+                contentNode
+                if browseContentPretty
+                else L.d(contentNode, otype=finalSecType)
+                if contentNode
+                else []
+            )
+
+            highlights = (
+                getPassageHighlights(app, contentNode, query, cache) if items else set()
+            )
+
+            passage = &#34;&#34;
+
+            if items:
+                passage = composeP(
+                    app,
+                    browseNavLevel,
+                    finalSecType,
+                    features,
+                    items,
+                    opened,
+                    finalSec,
+                    getx=getx,
+                    highlights=highlights,
+                    **options,
+                )
+
+            return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
+
+        def exposed_rawSearch(self, query):
+            app = self.app
+            rawSearch = app.api.S.search
+
+            (results, messages) = rawSearch(query, _msgCache=True)
+            if messages:
+                # console(messages, error=True)
+                results = ()
+            else:
+                results = tuple(sorted(results))
+                # console(f&#39;{len(results)} results&#39;)
+            return (results, messages)
+
+        def exposed_table(
+            self,
+            kind,
+            task,
+            features,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
+
+            Parameters
+            ----------
+            kind: string
+                Either `sections` or `tuples`:
+                whether to find section material or tuple material.
+
+            task: iterable
+                The list of things (sections or tuples) to retrieve the material for;
+                Typically coming from the *section pad* / *node pad* in the browser.
+
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.advanced.options`.
+            &#34;&#34;&#34;
+
+            app = self.app
+
+            if kind == &#34;sections&#34;:
+                results = []
+                messages = []
+                if task:
+                    lines = task.split(&#34;\n&#34;)
+                    for (i, line) in enumerate(lines):
+                        line = line.strip()
+                        node = app.nodeFromSectionStr(line)
+                        if type(node) is not int:
+                            messages.append(str(node))
+                        else:
+                            results.append((i + 1, (node,)))
+                results = tuple(results)
+                messages = &#34;\n&#34;.join(messages)
+            elif kind == &#34;tuples&#34;:
+                results = ()
+                messages = &#34;&#34;
+                if task:
+                    lines = task.split(&#34;\n&#34;)
+                    try:
+                        results = tuple(
+                            (i + 1, tuple(int(n) for n in t.strip().split(&#34;,&#34;)))
+                            for (i, t) in enumerate(lines)
+                            if t.strip()
+                        )
+                    except Exception as e:
+                        messages = f&#34;{e}&#34;
+
+            allResults = ((None, kind),) + results
+            table = composeT(app, features, allResults, opened, getx=getx, **options)
+            return (table, messages)
+
+        def exposed_search(
+            self,
+            query,
+            batch,
+            position=1,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
+
+            The very work horse of this API.
+
+            Formatted results for additional nodes and sections are also retrieved.
+
+            Parameters
+            ----------
+            query: string
+                The query whose results should be highlighted in the passage display.
+                Typically coming from the *search pad* in the browser.
+
+            batch: int
+                The number of table rows to show on one page in the browser.
+
+            position: integer, optional `1`
+                The position that is in focus in the browser.
+                The navigation links take this position as the central point,
+                and enable the user to navigate to neighbouring results,
+                in ever bigger strides.
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display.
+                Normally, only the information to provide a *plain*
+                representation of a result is being fetched,
+                but for the opened ones information is gathered for
+                pretty displays.
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+            &#34;&#34;&#34;
+
+            app = self.app
+            display = app.display
+            dContext = display.distill(options)
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
+
+            total = 0
+
+            results = ()
+            messages = &#34;&#34;
+            if query:
+                (results, messages, features) = (
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if condensed and condenseType
+                    else runSearch(app, query, cache)
+                )
+
+                if messages:
+                    results = ()
+                total += len(results)
+
+            (start, end) = _batchAround(total, position, batch)
+
+            selectedResults = results[start - 1 : end]
+            opened = set(opened)
+
+            before = {n for n in opened if n &gt; 0 and n &lt; start}
+            after = {n for n in opened if n &gt; end and n &lt;= len(results)}
+            beforeResults = tuple((n, results[n - 1]) for n in sorted(before))
+            afterResults = tuple((n, results[n - 1]) for n in sorted(after))
+
+            allResults = (
+                ((None, &#34;results&#34;),)
+                + beforeResults
+                + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
+                + afterResults
+            )
+            features = set(reduce(set.union, (x[1] for x in features), set()))
+            featureStr = &#34; &#34;.join(sorted(features))
+            table = compose(
+                app,
+                allResults,
+                featureStr,
+                position,
+                opened,
+                start=start,
+                getx=getx,
+                **options,
+            )
+            return (table, messages, featureStr, start, total)
+
+        def exposed_csvs(self, query, tuples, sections, **options):
+            &#34;&#34;&#34;Gets query results etc. in plain csv format.
+
+            The query results, tuples, and sections are retrieved, as in
+            `exposed_search`, but this function only needs some features per node.
+            &#34;&#34;&#34;
+
+            app = self.app
+            display = app.display
+            dContext = display.distill(options)
+            fmt = dContext.fmt
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
+
+            sectionResults = []
+            if sections:
+                sectionLines = sections.split(&#34;\n&#34;)
+                for sectionLine in sectionLines:
+                    sectionLine = sectionLine.strip()
+                    node = app.nodeFromSectionStr(sectionLine)
+                    if type(node) is int:
+                        sectionResults.append((node,))
+            sectionResults = tuple(sectionResults)
+
+            tupleResults = ()
+            if tuples:
+                tupleLines = tuples.split(&#34;\n&#34;)
+                try:
+                    tupleResults = tuple(
+                        tuple(int(n) for n in t.strip().split(&#34;,&#34;))
+                        for t in tupleLines
+                        if t.strip()
+                    )
+                except Exception:
+                    pass
+
+            queryResults = ()
+            queryMessages = &#34;&#34;
+            features = ()
+            if query:
+                (queryResults, queryMessages, features) = runSearch(app, query, cache)
+                (queryResultsC, queryMessagesC, featuresC) = (
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if not queryMessages and condensed and condenseType
+                    else (None, None, None)
+                )
+
+                if queryMessages:
+                    queryResults = ()
+                if queryMessagesC:
+                    queryResultsC = ()
+
+            csvs = (
+                (&#34;sections&#34;, sectionResults),
+                (&#34;nodes&#34;, tupleResults),
+                (&#34;results&#34;, queryResults),
+            )
+            if condensed and condenseType:
+                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+
+            tupleResultsX = getRowsX(
+                app,
+                tupleResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            queryResultsX = getRowsX(
+                app,
+                queryResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            return (
+                queryMessages,
+                pickle.dumps(csvs),
+                pickle.dumps(tupleResultsX),
+                pickle.dumps(queryResultsX),
+            )
+
+    return TfKernel()
+    return ThreadedServer(
+        TfKernel(),
+        port=int(port),
+        protocol_config={
+            # &#39;allow_pickle&#39;: True,
+            # &#39;allow_public_attrs&#39;: True,
+        },
+    )
+
+
+# KERNEL CONNECTION
+
+
+def makeTfConnection(host, port, timeout):
+    class TfConnection(object):
+        def connect(self):
+            try:
+                connection = rpyc.connect(
+                    host, port, config=dict(sync_request_timeout=timeout)
+                )
+                self.connection = connection
+            except ConnectionRefusedError as e:
+                self.connection = None
+                return str(e)
+            return connection.root
+
+    return TfConnection()
+
+
+# TOP LEVEL
+
+
+def main(cargs=sys.argv):
+    args = argKernel(cargs)
+    if not args:
+        return
+
+    (dataSource, portKernel) = args
+    appName = dataSource[&#34;appName&#34;]
+    checkout = dataSource[&#34;checkout&#34;]
+    checkoutApp = dataSource[&#34;checkoutApp&#34;]
+    moduleRefs = dataSource[&#34;moduleRefs&#34;]
+    locations = dataSource[&#34;locations&#34;]
+    modules = dataSource[&#34;modules&#34;]
+    setFile = dataSource[&#34;setFile&#34;]
+    version = dataSource[&#34;version&#34;]
+
+    if checkout is None:
+        checkout = &#34;&#34;
+
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    console(
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+    )
+    app = findApp(
+        appName,
+        checkoutApp,
+        True,
+        checkout=checkout,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        version=version,
+    )
+    if app is None:
+        return
+
+    kernel = makeTfKernel(app, appName, portKernel)
+    if kernel:
+        server = ThreadedServer(
+            kernel,
+            port=int(portKernel),
+            protocol_config={
+                # &#39;allow_pickle&#39;: True,
+                # &#39;allow_public_attrs&#39;: True,
+            },
+        )
+        server.start()
+
+
+# LOWER LEVEL
+
+
+def _batchAround(nResults, position, batch):
+    halfBatch = int((batch + 1) / 2)
+    left = min(max(position - halfBatch, 1), nResults)
+    right = max(min(position + halfBatch, nResults), 1)
+    discrepancy = batch - (right - left + 1)
+    if discrepancy != 0:
+        right += discrepancy
+    if right &gt; nResults:
+        right = nResults
+    return (left, right)
+
+
+if __name__ == &#34;__main__&#34;:
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.server.kernel.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.9/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/server/kernel.py#L606-L652" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main(cargs=sys.argv):
+    args = argKernel(cargs)
+    if not args:
+        return
+
+    (dataSource, portKernel) = args
+    appName = dataSource[&#34;appName&#34;]
+    checkout = dataSource[&#34;checkout&#34;]
+    checkoutApp = dataSource[&#34;checkoutApp&#34;]
+    moduleRefs = dataSource[&#34;moduleRefs&#34;]
+    locations = dataSource[&#34;locations&#34;]
+    modules = dataSource[&#34;modules&#34;]
+    setFile = dataSource[&#34;setFile&#34;]
+    version = dataSource[&#34;version&#34;]
+
+    if checkout is None:
+        checkout = &#34;&#34;
+
+    versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
+    console(
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+    )
+    app = findApp(
+        appName,
+        checkoutApp,
+        True,
+        checkout=checkout,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        version=version,
+    )
+    if app is None:
+        return
+
+    kernel = makeTfKernel(app, appName, portKernel)
+    if kernel:
+        server = ThreadedServer(
+            kernel,
+            port=int(portKernel),
+            protocol_config={
+                # &#39;allow_pickle&#39;: True,
+                # &#39;allow_public_attrs&#39;: True,
+            },
+        )
+        server.start()</code></pre>
+</details>
+</dd>
+<dt id="tf.server.kernel.makeTfConnection"><code class="name flex">
+<span>def <span class="ident">makeTfConnection</span></span>(<span>host, port, timeout)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/server/kernel.py#L587-L600" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeTfConnection(host, port, timeout):
+    class TfConnection(object):
+        def connect(self):
+            try:
+                connection = rpyc.connect(
+                    host, port, config=dict(sync_request_timeout=timeout)
+                )
+                self.connection = connection
+            except ConnectionRefusedError as e:
+                self.connection = None
+                return str(e)
+            return connection.root
+
+    return TfConnection()</code></pre>
+</details>
+</dd>
+<dt id="tf.server.kernel.makeTfKernel"><code class="name flex">
+<span>def <span class="ident">makeTfKernel</span></span>(<span>app, appName, port)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/server/kernel.py#L101-L581" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeTfKernel(app, appName, port):
+    if not app.api:
+        console(f&#34;{TF_ERROR}&#34;)
+        return False
+    TF = app.api.TF
+    reset = TF.reset
+    cache = TF.cache
+
+    reset()
+    cache = {}
+    console(f&#34;{TF_DONE}\nKernel listening at port {port}&#34;)
+
+    class TfKernel(rpyc.Service):
+        def on_connect(self, conn):
+            self.app = app
+            pass
+
+        def on_disconnect(self, conn):
+            self.app = None
+            pass
+
+        def exposed_monitor(self):
+            &#34;&#34;&#34;A utility function that spits out some information from the kernel
+            to the outside world.
+
+            At this moment it is only used for debugging, but later it can be useful
+            to monitor the kernel or manage it while it remains running.
+            &#34;&#34;&#34;
+
+            app = self.app
+            api = app.api
+            S = api.S
+
+            searchExe = getattr(S, &#34;exe&#34;, None)
+            if searchExe:
+                searchExe = searchExe.outerTemplate
+
+            _msgCache = cache(_asString=True)
+
+            data = dict(searchExe=searchExe, _msgCache=_msgCache)
+            return data
+
+        def exposed_header(self):
+            &#34;&#34;&#34;Fetches all the stuff to create a header.
+
+            This is shown after loading a data set.
+            It contains links to data and documentation of the data source.
+            &#34;&#34;&#34;
+
+            app = self.app
+            return app.header()
+
+        def exposed_provenance(self):
+            &#34;&#34;&#34;Fetches provenance metadata to be shown on exported data pages.&#34;&#34;&#34;
+
+            app = self.app
+            aContext = app.context
+            commit = aContext.commit
+            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+            return (appProvenance, app.provenance)
+
+        def exposed_setNames(self):
+            &#34;&#34;&#34;Gets the names of the custom sets that the kernel has loaded.
+
+            The kernel can load additional sets of data triggered by the
+            `--sets=` command line argument with which the kernel
+            was started.
+
+            A web server kan use this informatiomn to write out provenance info.
+            &#34;&#34;&#34;
+
+            app = self.app
+            return (
+                tuple(sorted(app.sets.keys()))
+                if hasattr(app, &#34;sets&#34;) and type(app.sets) is dict
+                else ()
+            )
+
+        def exposed_css(self):
+            &#34;&#34;&#34;Delivers the CSS code to be inserted on the browser page.&#34;&#34;&#34;
+
+            app = self.app
+            return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
+
+        def exposed_context(self):
+            &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;
+
+            app = self.app
+
+            return pickle.dumps(app.context)
+
+        def exposed_passage(
+            self,
+            features,
+            query,
+            sec0,
+            sec1=None,
+            sec2=None,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Gets passages, i.e. sections of level 1 (chapter-like).
+
+            The material will be displayed as a sequence of plain
+            representations of the sec2s (verse-like), which can be expanded to pretty
+            displays when the user chooses to do so.
+
+            Parameters
+            ----------
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            query: string
+                The query whose results should be highlighted in the passage display.
+
+            sec0: string | int
+                The level 0 section (book)-like label in which the passage occurs
+
+            sec1: string | int, optional `None`
+                The level 1 section (chapter)-like label to fetch
+
+            sec2: string | int, optional `None`
+                The level 2 section (verse-like) label that should get focus
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.advanced.options`.
+            &#34;&#34;&#34;
+
+            app = self.app
+            api = app.api
+            F = api.F
+            L = api.L
+            T = api.T
+
+            aContext = app.context
+            browseNavLevel = aContext.browseNavLevel
+            browseContentPretty = aContext.browseContentPretty
+
+            sectionFeatureTypes = T.sectionFeatureTypes
+            sec0Type = T.sectionTypes[0]
+            sec1Type = T.sectionTypes[1]
+            sectionDepth = len(T.sectionTypes)
+            browseNavLevel = min((sectionDepth, browseNavLevel))
+            finalSecType = T.sectionTypes[browseNavLevel]
+            finalSec = (sec0, sec1, sec2)[browseNavLevel]
+
+            if sec0:
+                if sectionFeatureTypes[0] == &#34;int&#34;:
+                    sec0 = int(sec0)
+            if sec1 and browseNavLevel == 2:
+                if sectionFeatureTypes[1] == &#34;int&#34;:
+                    sec1 = int(sec1)
+
+            sec0Node = T.nodeFromSection((sec0,)) if sec0 else None
+            sec1Node = T.nodeFromSection((sec0, sec1)) if sec0 and sec1 else None
+
+            contentNode = (sec0Node, sec1Node)[browseNavLevel - 1]
+
+            if getx is not None:
+                if sectionFeatureTypes[browseNavLevel] == &#34;int&#34;:
+                    getx = int(getx)
+
+            sec0s = tuple(T.sectionFromNode(s)[0] for s in F.otype.s(sec0Type))
+            sec1s = ()
+            if browseNavLevel == 2:
+                sec1s = (
+                    ()
+                    if sec0Node is None
+                    else tuple(
+                        T.sectionFromNode(s)[1] for s in L.d(sec0Node, otype=sec1Type)
+                    )
+                )
+
+            items = (
+                contentNode
+                if browseContentPretty
+                else L.d(contentNode, otype=finalSecType)
+                if contentNode
+                else []
+            )
+
+            highlights = (
+                getPassageHighlights(app, contentNode, query, cache) if items else set()
+            )
+
+            passage = &#34;&#34;
+
+            if items:
+                passage = composeP(
+                    app,
+                    browseNavLevel,
+                    finalSecType,
+                    features,
+                    items,
+                    opened,
+                    finalSec,
+                    getx=getx,
+                    highlights=highlights,
+                    **options,
+                )
+
+            return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
+
+        def exposed_rawSearch(self, query):
+            app = self.app
+            rawSearch = app.api.S.search
+
+            (results, messages) = rawSearch(query, _msgCache=True)
+            if messages:
+                # console(messages, error=True)
+                results = ()
+            else:
+                results = tuple(sorted(results))
+                # console(f&#39;{len(results)} results&#39;)
+            return (results, messages)
+
+        def exposed_table(
+            self,
+            kind,
+            task,
+            features,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Fetches material corresponding to a list of sections or tuples of nodes.
+
+            Parameters
+            ----------
+            kind: string
+                Either `sections` or `tuples`:
+                whether to find section material or tuple material.
+
+            task: iterable
+                The list of things (sections or tuples) to retrieve the material for;
+                Typically coming from the *section pad* / *node pad* in the browser.
+
+            features: string | iterable
+                The features that should be displayed in pretty displays when expanding
+                a plain representation of a sec2 into a pretty display
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+
+            options: dict
+                Additional, optional display options, see `tf.advanced.options`.
+            &#34;&#34;&#34;
+
+            app = self.app
+
+            if kind == &#34;sections&#34;:
+                results = []
+                messages = []
+                if task:
+                    lines = task.split(&#34;\n&#34;)
+                    for (i, line) in enumerate(lines):
+                        line = line.strip()
+                        node = app.nodeFromSectionStr(line)
+                        if type(node) is not int:
+                            messages.append(str(node))
+                        else:
+                            results.append((i + 1, (node,)))
+                results = tuple(results)
+                messages = &#34;\n&#34;.join(messages)
+            elif kind == &#34;tuples&#34;:
+                results = ()
+                messages = &#34;&#34;
+                if task:
+                    lines = task.split(&#34;\n&#34;)
+                    try:
+                        results = tuple(
+                            (i + 1, tuple(int(n) for n in t.strip().split(&#34;,&#34;)))
+                            for (i, t) in enumerate(lines)
+                            if t.strip()
+                        )
+                    except Exception as e:
+                        messages = f&#34;{e}&#34;
+
+            allResults = ((None, kind),) + results
+            table = composeT(app, features, allResults, opened, getx=getx, **options)
+            return (table, messages)
+
+        def exposed_search(
+            self,
+            query,
+            batch,
+            position=1,
+            opened=set(),
+            getx=None,
+            **options,
+        ):
+            &#34;&#34;&#34;Executes a TF search template, retrieves formatted results.
+
+            The very work horse of this API.
+
+            Formatted results for additional nodes and sections are also retrieved.
+
+            Parameters
+            ----------
+            query: string
+                The query whose results should be highlighted in the passage display.
+                Typically coming from the *search pad* in the browser.
+
+            batch: int
+                The number of table rows to show on one page in the browser.
+
+            position: integer, optional `1`
+                The position that is in focus in the browser.
+                The navigation links take this position as the central point,
+                and enable the user to navigate to neighbouring results,
+                in ever bigger strides.
+
+            opened: set, optional, `set()`
+                The set of items that are currently expanded into pretty display.
+                Normally, only the information to provide a *plain*
+                representation of a result is being fetched,
+                but for the opened ones information is gathered for
+                pretty displays.
+
+            getx: string | int, optional `None`
+                If given, only a single sec2 (verse) will be fetched, but in pretty
+                display.
+                `getx` is the identifier (section label, verse number) of the item/
+            &#34;&#34;&#34;
+
+            app = self.app
+            display = app.display
+            dContext = display.distill(options)
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
+
+            total = 0
+
+            results = ()
+            messages = &#34;&#34;
+            if query:
+                (results, messages, features) = (
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if condensed and condenseType
+                    else runSearch(app, query, cache)
+                )
+
+                if messages:
+                    results = ()
+                total += len(results)
+
+            (start, end) = _batchAround(total, position, batch)
+
+            selectedResults = results[start - 1 : end]
+            opened = set(opened)
+
+            before = {n for n in opened if n &gt; 0 and n &lt; start}
+            after = {n for n in opened if n &gt; end and n &lt;= len(results)}
+            beforeResults = tuple((n, results[n - 1]) for n in sorted(before))
+            afterResults = tuple((n, results[n - 1]) for n in sorted(after))
+
+            allResults = (
+                ((None, &#34;results&#34;),)
+                + beforeResults
+                + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
+                + afterResults
+            )
+            features = set(reduce(set.union, (x[1] for x in features), set()))
+            featureStr = &#34; &#34;.join(sorted(features))
+            table = compose(
+                app,
+                allResults,
+                featureStr,
+                position,
+                opened,
+                start=start,
+                getx=getx,
+                **options,
+            )
+            return (table, messages, featureStr, start, total)
+
+        def exposed_csvs(self, query, tuples, sections, **options):
+            &#34;&#34;&#34;Gets query results etc. in plain csv format.
+
+            The query results, tuples, and sections are retrieved, as in
+            `exposed_search`, but this function only needs some features per node.
+            &#34;&#34;&#34;
+
+            app = self.app
+            display = app.display
+            dContext = display.distill(options)
+            fmt = dContext.fmt
+            condensed = dContext.condensed
+            condenseType = dContext.condenseType
+
+            sectionResults = []
+            if sections:
+                sectionLines = sections.split(&#34;\n&#34;)
+                for sectionLine in sectionLines:
+                    sectionLine = sectionLine.strip()
+                    node = app.nodeFromSectionStr(sectionLine)
+                    if type(node) is int:
+                        sectionResults.append((node,))
+            sectionResults = tuple(sectionResults)
+
+            tupleResults = ()
+            if tuples:
+                tupleLines = tuples.split(&#34;\n&#34;)
+                try:
+                    tupleResults = tuple(
+                        tuple(int(n) for n in t.strip().split(&#34;,&#34;))
+                        for t in tupleLines
+                        if t.strip()
+                    )
+                except Exception:
+                    pass
+
+            queryResults = ()
+            queryMessages = &#34;&#34;
+            features = ()
+            if query:
+                (queryResults, queryMessages, features) = runSearch(app, query, cache)
+                (queryResultsC, queryMessagesC, featuresC) = (
+                    runSearchCondensed(app, query, cache, condenseType)
+                    if not queryMessages and condensed and condenseType
+                    else (None, None, None)
+                )
+
+                if queryMessages:
+                    queryResults = ()
+                if queryMessagesC:
+                    queryResultsC = ()
+
+            csvs = (
+                (&#34;sections&#34;, sectionResults),
+                (&#34;nodes&#34;, tupleResults),
+                (&#34;results&#34;, queryResults),
+            )
+            if condensed and condenseType:
+                csvs += ((f&#34;resultsBy{condenseType}&#34;, queryResultsC),)
+
+            tupleResultsX = getRowsX(
+                app,
+                tupleResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            queryResultsX = getRowsX(
+                app,
+                queryResults,
+                features,
+                condenseType,
+                fmt=fmt,
+            )
+            return (
+                queryMessages,
+                pickle.dumps(csvs),
+                pickle.dumps(tupleResultsX),
+                pickle.dumps(queryResultsX),
+            )
+
+    return TfKernel()
+    return ThreadedServer(
+        TfKernel(),
+        port=int(port),
+        protocol_config={
+            # &#39;allow_pickle&#39;: True,
+            # &#39;allow_public_attrs&#39;: True,
+        },
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#text-fabric-kernel">Text-Fabric kernel</a><ul>
+<li><a href="#start">Start</a></li>
+<li><a href="#connect">Connect</a></li>
+<li><a href="#kernel-api">Kernel API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.server" href="index.html">tf.server</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.server.kernel.main" href="#tf.server.kernel.main">main</a></code></li>
+<li><code><a title="tf.server.kernel.makeTfConnection" href="#tf.server.kernel.makeTfConnection">makeTfConnection</a></code></li>
+<li><code><a title="tf.server.kernel.makeTfKernel" href="#tf.server.kernel.makeTfKernel">makeTfKernel</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
