@@ -7,9 +7,18 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
-[![Join the chat](https://badges.gitter.im/annotation/text-fabric.svg)](https://gitter.im/annotation/text-fabric?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ---
+
+A corpus of ancient texts and (linguistic) annotations represents a large body of knowledge.
+Text-Fabric makes that knowledge accessible to programmers and non-programmers.
+
+Text-Fabric is machinery for processing such corpora as annotated graphs.
+It treats corpora and annotations as data, much like big tables, but without
+loosing the rich structure of text, such as embedding and multiple representations.
+It deals with text in a state where all markup is gone, but where the complete logical
+structure still sits in the data.
 
 All about Text-Fabric is in the
 [docs](https://annotation.github.io/text-fabric/tf).
@@ -18,6 +27,8 @@ Want to contribute?
 Start with the [contribution notes](codestyle/contributing.md).
 
 Found a vulnerability? Please read the [security note](SECURITY.md).
+
+Author: [Dirk Roorda](https://github.com/dirkroorda)
 
 ---
 

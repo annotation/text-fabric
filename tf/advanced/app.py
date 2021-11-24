@@ -376,7 +376,7 @@ The app "{appName}" will not work!
     def load(self, features, silent=False):
         """Loads extra features in addition to the main dataset.
 
-        This is the same as `tf.core.fabric.load` when called with `add=True`.
+        This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
 
         Parameters
         ----------

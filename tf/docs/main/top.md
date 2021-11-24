@@ -2,10 +2,28 @@
 
 # Text-Fabric
 
-A corpus of ancient texts and linguistic annotations represents a large body of knowledge.
+A corpus of ancient texts and (linguistic) annotations represents a large body of knowledge.
 Text-Fabric makes that knowledge accessible to programmers and non-programmers.
 
 Text-Fabric is machinery for processing such corpora as annotated graphs.
+It treats corpora and annotations as data, much like big tables, but without
+loosing the rich structure of text, such as embedding and multiple representations.
+It deals with text in a state where all markup is gone, but where the complete logical
+structure still sits in the data.
+
+Whether a corpus comes from plain texts, OCR output, databases, XML, TEI: Text-Fabric has support
+to convert it to single column files, where each file corresponds with a *feature* of the text.
+
+The Python library `tf` can be used to collect a bunch of features and display it as an annotated text.
+What ties the features together are natural numbers, that serve to anchor the elementary positions
+in the text as well as the relevant structures within the text.
+
+When Text-Fabric loads a dataset of features, you can instruct it to get the features from anywhere.
+That means it supports workflows where annotations are produced by third parties
+and can be used against the original corpus, *without additional work*.
+It also facilitates mappings between ongoing versions of the corpus,
+so that annotations made on older versions can be ported to newer versions without
+redoing the annotation creation.
 
 ## Straight to ...
 
