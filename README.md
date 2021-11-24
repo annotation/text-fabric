@@ -3,11 +3,8 @@
 # Text-Fabric
 
 [![SWH](https://archive.softwareheritage.org/badge/origin/https://github.com/annotation/text-fabric/)](https://archive.softwareheritage.org/browse/origin/https://github.com/annotation/text-fabric/)
-
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
-
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
-
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 ---
 
@@ -28,7 +25,9 @@ Start with the [contribution notes](codestyle/contributing.md).
 
 Found a vulnerability? Please read the [security note](SECURITY.md).
 
-Author: [Dirk Roorda](https://github.com/dirkroorda)
+# Author
+
+[Dirk Roorda](https://github.com/dirkroorda)
 
 ---
 
