@@ -192,3 +192,7 @@ out of portions without the need of having the whole work in RAM.
 *   "tf.compose.combine" has been replaced by `tf.volumes.collect`
 *   "tf.compose.nodemaps" has moved to `tf.dataset.nodemaps`
 *   "tf.compose.Versions" has moved to `tf.dataset.nodemaps.Versions`
+
+## Older releases
+
+See `tf.about.releasesold`.
