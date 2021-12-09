@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L1-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L1-L1111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -842,6 +842,8 @@ Api reference : {APIREF}
 
         Parameters
         ----------
+        mqlFile: string
+            Path to the file which contains the MQL code.
         slotType: string
             You have to tell which object type in the MQL file acts as the slot type,
             because TF cannot see that on its own.
@@ -857,14 +859,33 @@ Api reference : {APIREF}
                 }
 
         meta: dict
-            Likewise, you can add a dictionary of keys and values that will added to
-            the metadata of all features. Handy to add provenance data here:
+            Likewise, you can add a dictionary keyed by features
+            that will added to the metadata of the corresponding features.
 
-                meta = dict(
-                    dataset=&#39;DLC&#39;,
-                    datasetName=&#39;Digital Language Corpus&#39;,
-                    author=&#34;That &#39;s me&#34;,
-                )
+            You may also add metadata for the empty feature `&#34;&#34;`,
+            this will be added to the metadata of all features.
+            Handy to add provenance data there.
+
+            Example:
+
+                meta = {
+                    &#34;&#34;: dict(
+                        dataset=&#39;DLC&#39;,
+                        datasetName=&#39;Digital Language Corpus&#39;,
+                        author=&#34;That &#39;s me&#34;,
+                    ),
+                    &#34;sp&#34;: dict(
+                        description: &#34;part-of-speech&#34;,
+                    ),
+                }
+
+            !!! note &#34;description&#34;
+                Text-Fabric will display all metadata information under the
+                key `description` in a more prominent place than the other
+                metadata.
+
+            !!! caution &#34;valueType&#34;
+                Do not pass the value types of the features here.
         &#34;&#34;&#34;
 
         tmObj = self.tmObj
@@ -1237,7 +1258,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L115-L1090" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L115-L1111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1929,6 +1950,8 @@ Api reference : {APIREF}
 
         Parameters
         ----------
+        mqlFile: string
+            Path to the file which contains the MQL code.
         slotType: string
             You have to tell which object type in the MQL file acts as the slot type,
             because TF cannot see that on its own.
@@ -1944,14 +1967,33 @@ Api reference : {APIREF}
                 }
 
         meta: dict
-            Likewise, you can add a dictionary of keys and values that will added to
-            the metadata of all features. Handy to add provenance data here:
+            Likewise, you can add a dictionary keyed by features
+            that will added to the metadata of the corresponding features.
 
-                meta = dict(
-                    dataset=&#39;DLC&#39;,
-                    datasetName=&#39;Digital Language Corpus&#39;,
-                    author=&#34;That &#39;s me&#34;,
-                )
+            You may also add metadata for the empty feature `&#34;&#34;`,
+            this will be added to the metadata of all features.
+            Handy to add provenance data there.
+
+            Example:
+
+                meta = {
+                    &#34;&#34;: dict(
+                        dataset=&#39;DLC&#39;,
+                        datasetName=&#39;Digital Language Corpus&#39;,
+                        author=&#34;That &#39;s me&#34;,
+                    ),
+                    &#34;sp&#34;: dict(
+                        description: &#34;part-of-speech&#34;,
+                    ),
+                }
+
+            !!! note &#34;description&#34;
+                Text-Fabric will display all metadata information under the
+                key `description` in a more prominent place than the other
+                metadata.
+
+            !!! caution &#34;valueType&#34;
+                Do not pass the value types of the features here.
         &#34;&#34;&#34;
 
         tmObj = self.tmObj
@@ -2275,7 +2317,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L505-L528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L505-L528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2341,7 +2383,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L410-L486" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L410-L486" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2448,7 +2490,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L760-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L760-L790" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2498,6 +2540,8 @@ In fact, the rules are exactly the same as for <code>save()</code>.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>mqlFile</code></strong> :&ensp;<code>string</code></dt>
+<dd>Path to the file which contains the MQL code.</dd>
 <dt><strong><code>slotType</code></strong> :&ensp;<code>string</code></dt>
 <dd>You have to tell which object type in the MQL file acts as the slot type,
 because TF cannot see that on its own.</dd>
@@ -2511,19 +2555,40 @@ Pass it as a dictionary of keys and values, like so:<pre><code>otext = {
 </code></pre>
 </dd>
 <dt><strong><code>meta</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Likewise, you can add a dictionary of keys and values that will added to
-the metadata of all features. Handy to add provenance data here:<pre><code>meta = dict(
-    dataset='DLC',
-    datasetName='Digital Language Corpus',
-    author="That 's me",
-)
+<dd>
+<p>Likewise, you can add a dictionary keyed by features
+that will added to the metadata of the corresponding features.</p>
+<p>You may also add metadata for the empty feature <code>""</code>,
+this will be added to the metadata of all features.
+Handy to add provenance data there.</p>
+<p>Example:</p>
+<pre><code>meta = {
+    "": dict(
+        dataset='DLC',
+        datasetName='Digital Language Corpus',
+        author="That 's me",
+    ),
+    "sp": dict(
+        description: "part-of-speech",
+    ),
+}
 </code></pre>
+<div class="admonition note">
+<p class="admonition-title">description</p>
+<p>Text-Fabric will display all metadata information under the
+key <code>description</code> in a more prominent place than the other
+metadata.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">valueType</p>
+<p>Do not pass the value types of the features here.</p>
+</div>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L792-L840" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L792-L861" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2538,6 +2603,8 @@ the metadata of all features. Handy to add provenance data here:<pre><code>meta 
 
     Parameters
     ----------
+    mqlFile: string
+        Path to the file which contains the MQL code.
     slotType: string
         You have to tell which object type in the MQL file acts as the slot type,
         because TF cannot see that on its own.
@@ -2553,14 +2620,33 @@ the metadata of all features. Handy to add provenance data here:<pre><code>meta 
             }
 
     meta: dict
-        Likewise, you can add a dictionary of keys and values that will added to
-        the metadata of all features. Handy to add provenance data here:
+        Likewise, you can add a dictionary keyed by features
+        that will added to the metadata of the corresponding features.
 
-            meta = dict(
-                dataset=&#39;DLC&#39;,
-                datasetName=&#39;Digital Language Corpus&#39;,
-                author=&#34;That &#39;s me&#34;,
-            )
+        You may also add metadata for the empty feature `&#34;&#34;`,
+        this will be added to the metadata of all features.
+        Handy to add provenance data there.
+
+        Example:
+
+            meta = {
+                &#34;&#34;: dict(
+                    dataset=&#39;DLC&#39;,
+                    datasetName=&#39;Digital Language Corpus&#39;,
+                    author=&#34;That &#39;s me&#34;,
+                ),
+                &#34;sp&#34;: dict(
+                    description: &#34;part-of-speech&#34;,
+                ),
+            }
+
+        !!! note &#34;description&#34;
+            Text-Fabric will display all metadata information under the
+            key `description` in a more prominent place than the other
+            metadata.
+
+        !!! caution &#34;valueType&#34;
+            Do not pass the value types of the features here.
     &#34;&#34;&#34;
 
     tmObj = self.tmObj
@@ -2611,7 +2697,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L265-L408" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L265-L408" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2774,7 +2860,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L488-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L488-L503" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2878,7 +2964,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/core/fabric.py#L530-L758" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/core/fabric.py#L530-L758" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L1-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L1-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -521,6 +521,7 @@ def _featuresPerModule(app):
                 else f&#34;{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}&#34;
             )
         html += f&#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;{corpus}&lt;/b&gt;&lt;/summary&gt;&#34;
+        html += &#39;&lt;div class=&#34;fcorpus&#34;&gt;&#39;
 
         seen = set()
 
@@ -536,9 +537,15 @@ def _featuresPerModule(app):
             featureInfo = TF.features[feature]
             featurePath = ux(featureInfo.path)
             isEdge = featureInfo.isEdge
-            pre = &#34;&lt;b&gt;&lt;i&gt;&#34; if isEdge else &#34;&#34;
-            post = &#34;&lt;/i&gt;&lt;/b&gt;&#34; if isEdge else &#34;&#34;
-            html += f&#34;{pre}&#34;
+            valueType = featureInfo.dataType
+            edgeValues = featureInfo.edgeValues
+            typeRep = &#34;none&#34; if isEdge and not edgeValues else valueType
+            meta = featureInfo.metaData
+            description = meta.get(&#34;description&#34;, &#34;&#34;)
+
+            edgeRep = &#34;edge&#34; if isEdge else &#34;&#34;
+            html += &#39;&lt;div class=&#34;frow&#34;&gt;&#39;
+            html += f&#39;&lt;div class=&#34;fnamecat {edgeRep}&#34;&gt;&#39;
             html += (
                 outLink(
                     featureRep,
@@ -548,7 +555,22 @@ def _featuresPerModule(app):
                 if docUrl
                 else f&#39;&lt;span title=&#34;{featurePath}&#34;&gt;{featureRep}&lt;/span&gt;&#39;
             )
-            html += f&#34;{post}&lt;br&gt;&#34;
+            html += &#34;&lt;/div&gt;&#34;
+            html += f&#39;&lt;div class=&#34;fmono&#34;&gt;{typeRep}&lt;/div&gt;&#39;
+            html += &#34;&lt;details&gt;&#34;
+            html += f&#34;&lt;summary&gt;{description}&lt;/summary&gt;&#34;
+            html += &#39;&lt;div class=&#34;fmeta&#34;&gt;&#39;
+            for (k, v) in sorted(meta.items()):
+                if k not in {&#34;valueType&#34;, &#34;description&#34;}:
+                    k = htmlEsc(k)
+                    v = htmlEsc(v)
+                    html += &#39;&lt;div class=&#34;fmetarow&#34;&gt;&#39;
+                    html += f&#39;&lt;div class=&#34;fmetakey&#34;&gt;{k}:&lt;/div&gt;&lt;div&gt;{v}&lt;/div&gt;&#39;
+                    html += &#34;&lt;/div&gt;&#34;
+            html += &#34;&lt;/div&gt;&#34;
+            html += &#34;&lt;/details&gt;&#34;
+            html += &#34;&lt;/div&gt;&#34;
+        html += &#34;&lt;/div&gt;&#34;
         html += &#34;&lt;/details&gt;&#34;
     return html
 
@@ -610,7 +632,7 @@ and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L147-L183" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L147-L183" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -675,7 +697,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L29-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L29-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent):
     &#34;&#34;&#34;Produce the link API.
@@ -819,7 +841,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L348-L375" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L348-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -873,7 +895,7 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L525-L562" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L547-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(org, repo, version, commit, release, local, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -936,7 +958,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L315-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L315-L345" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1014,7 +1036,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/advanced/links.py#L186-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/advanced/links.py#L186-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

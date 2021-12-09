@@ -54,6 +54,26 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="917">9.1.7</h4>
+<p>2021-12-08</p>
+<p>More information on the metadata of features on the interface.</p>
+<ul>
+<li>After <code>use("xxx")</code> you get an expandable list of features.
+Formerly, a feature was represented by its name, hyperlinked to the feature documentation.
+Now you see also the data type of the feature, its description, and you can expand
+further to see all metadata of a feature.</li>
+<li>TF.isLoaded and A.isLoaded (<code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>) can show/hide more information,
+such as the file path to a feature, its data type, its description, and all of its
+metadata.</li>
+<li>importMQL (<code>tf.core.fabric.Fabric.importMQL</code>) accepts a parameter <code>meta</code> which
+one can use to specify metadata that is common to all features.
+Now you can use it to pass feature-specific metadata as well.</li>
+<li>Several datasources have been converted by means of importMQL:
+bhsa, extrabiblical and calap.
+Of these, I have updated the BHSA to have richer metadata in their features
+(only version 2021) including the standard modules phono, parallels, trees.
+And while I was at it, also did the non-standard modules valence and bridging.</li>
+</ul>
 <h4 id="916">9.1.6</h4>
 <p>2021-11-17</p>
 <p>Bug in search, spotted by Oliver Glanz, with thanks to him for reporting it.
@@ -173,7 +193,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ddca21c94de7262b96ce824bde671bd040e2cb20/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffc7886fee8b8f6537390b4c981e7427ab12ed53/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -247,6 +267,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#917">9.1.7</a></li>
 <li><a href="#916">9.1.6</a></li>
 <li><a href="#915">9.1.5</a></li>
 <li><a href="#914">9.1.4</a></li>
