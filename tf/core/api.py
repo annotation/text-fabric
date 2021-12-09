@@ -147,13 +147,15 @@ class Api(object):
 
         return sorted(x[0] for x in self.C.__dict__.items())
 
-    def isLoaded(self, features=None, pretty=True):
+    def isLoaded(
+        self, features=None, pretty=True, valueType=True, path=False, meta="description"
+    ):
         """Show information about loaded features.
 
         Parameters
         ----------
         features: iterable | string, optional `None`
-            The features to test.
+            The features to get info for.
             If absent or None: all features seen by TF.
             If a string, it is a comma and/or space spearated list of feature names.
             Otherwise the items of the iterable are feature names.
@@ -161,7 +163,29 @@ class Api(object):
         pretty: boolean, optional `True`
             If True, it prints an overview of all features seen by TF with
             information about kind, type, source location and loaded status.
+            The amount of information printed can be tweaked by other parameters.
             Otherwise, it returns this information as a dict.
+
+        valueType: boolean, optional `True`
+            Only relevant if `pretty=True`: whether to print the value type of
+            the values in the feature file.
+
+        path: boolean, optional `True`
+            Only relevant if `pretty=True`: whether to print the path name of
+            the feature file.
+
+        meta: string|list|boolean, optional `"description"`
+            Only relevant if `pretty=True`: controls what metadata of the feature
+            should be printed.
+
+            If it is None, False, or the empty string ir empty list:
+            no metadata will be printed.
+
+            It it is the boolean value True: all metadata will be printed.
+
+            If it is a list of key names or a string with key names
+            separated by white space and/or commas, only these metadata keys
+            will be printed.
 
         Returns
         -------
@@ -177,6 +201,7 @@ class Api(object):
             *   `type` is the type of values: `int`, or `str` or `""`;
             *   `edgeValues`: if an edge feature it indicates whether
                 the edges have values. Otherwise `None`.
+            *   `meta`: dictionary containing the metadata of the feature
 
             If `pretty`, nothing is returned, but the dict is pretty printed.
         """
@@ -185,6 +210,7 @@ class Api(object):
         info = {}
 
         for fName in fNames:
+            fMeta = {}
             fType = None
             edgeValues = None
             fSource = None
@@ -192,17 +218,24 @@ class Api(object):
             if fName in self.TF.features:
                 fObj = self.TF.features[fName]
                 fSource = ux(fObj.dirName)
+                fMeta = fObj.metaData
+                fType = fMeta.get("valueType", "")
+                fMeta = {k: v for (k, v) in fMeta.items() if k != "valueType"}
 
-            if hasattr(self.F, fName):
-                flObj = getattr(self.F, fName)
-                fKind = "node"
-                fType = flObj.meta["valueType"]
-            elif hasattr(self.E, fName):
-                flObj = getattr(self.E, fName)
-                fKind = "edge"
-                fType = flObj.meta["valueType"]
-                edgeValues = False if fName == "oslots" else flObj.doValues
-            elif fName.startswith("__") and fName.endswith("__") and hasattr(self.C, fName.strip("_")):
+            isLoadedF = hasattr(self.F, fName)
+            isLoadedE = hasattr(self.E, fName)
+            if isLoadedF or isLoadedE:
+                if isLoadedF:
+                    fKind = "node"
+                elif isLoadedE:
+                    fKind = "edge"
+                    flObj = getattr(self.E, fName)
+                    edgeValues = False if fName == "oslots" else flObj.doValues
+            elif (
+                fName.startswith("__")
+                and fName.endswith("__")
+                and hasattr(self.C, fName.strip("_"))
+            ):
                 fKind = "computed"
             elif fName in self.TF.features:
                 if fObj.isConfig:
@@ -213,26 +246,62 @@ class Api(object):
                 hasInfo = False
 
             info[fName] = (
-                dict(kind=fKind, type=fType, source=fSource, edgeValues=edgeValues)
+                dict(
+                    kind=fKind,
+                    type=fType,
+                    meta=fMeta,
+                    source=fSource,
+                    edgeValues=edgeValues,
+                )
                 if hasInfo
                 else None
             )
         if pretty:
             for (fName, fInfo) in sorted(info.items()):
                 if fInfo is None:
-                    msg = f"{fName:<20} NOT LOADED"
+                    kind = "NOT LOADED"
+                    kind = f" {kind:<10}"
+                    fSource = ""
+                    metaRep = ""
                 else:
                     fKind = fInfo["kind"]
+                    fMeta = fInfo.get("meta", {})
                     fType = fInfo.get("type", "")
-                    fSource = fInfo.get("source", "")
+                    fSource = fInfo.get("source", "") if path else ""
+                    fSource = f" {fSource}" if fSource else ""
                     fEV = fInfo.get("edgeValues", "")
-                    kind = (
-                        f"node ({fType})" if fKind == "node" else
-                        f"edge ({fType})" if fKind == "edge" and fEV else
-                        "edge" if fKind == "edge" else
-                        f"{fKind}"
-                    )
-                    msg = f"{fName:<20} {kind:<10} {fSource}"
+                    if valueType:
+                        kind = (
+                            f"node ({fType})"
+                            if fKind == "node"
+                            else f"edge ({fType})"
+                            if fKind == "edge" and fEV
+                            else "edge"
+                            if fKind == "edge"
+                            else f"{fKind}"
+                        )
+                        kind = f" {kind:<10}" if kind else ""
+                    else:
+                        kind = ""
+                    if meta is True:
+                        metaKeys = sorted(fMeta.keys())
+                        metaInfo = fMeta
+                    elif not meta:
+                        metaInfo = {}
+                    else:
+                        metaKeys = fitemize(meta)
+                        metaInfo = {k: fMeta[k] for k in metaKeys if k in fMeta}
+
+                    metaRep = ""
+                    if metaInfo:
+                        if len(metaKeys) == 1:
+                            metaRep = metaInfo.get(metaKeys[0], "")
+                            metaRep = f" {metaRep}" if metaRep else ""
+                        else:
+                            for k in metaKeys:
+                                metaRep += f"\n\t{k:<20} = {metaInfo.get(k, '')}"
+
+                msg = f"{fName:<20}{kind}{fSource}{metaRep}"
                 print(msg)
             return None
         return info

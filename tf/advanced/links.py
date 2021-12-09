@@ -490,6 +490,7 @@ def _featuresPerModule(app):
                 else f"{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
             )
         html += f"<details><summary><b>{corpus}</b></summary>"
+        html += '<div class="fcorpus">'
 
         seen = set()
 
@@ -505,9 +506,15 @@ def _featuresPerModule(app):
             featureInfo = TF.features[feature]
             featurePath = ux(featureInfo.path)
             isEdge = featureInfo.isEdge
-            pre = "<b><i>" if isEdge else ""
-            post = "</i></b>" if isEdge else ""
-            html += f"{pre}"
+            valueType = featureInfo.dataType
+            edgeValues = featureInfo.edgeValues
+            typeRep = "none" if isEdge and not edgeValues else valueType
+            meta = featureInfo.metaData
+            description = meta.get("description", "")
+
+            edgeRep = "edge" if isEdge else ""
+            html += '<div class="frow">'
+            html += f'<div class="fnamecat {edgeRep}">'
             html += (
                 outLink(
                     featureRep,
@@ -517,7 +524,22 @@ def _featuresPerModule(app):
                 if docUrl
                 else f'<span title="{featurePath}">{featureRep}</span>'
             )
-            html += f"{post}<br>"
+            html += "</div>"
+            html += f'<div class="fmono">{typeRep}</div>'
+            html += "<details>"
+            html += f"<summary>{description}</summary>"
+            html += '<div class="fmeta">'
+            for (k, v) in sorted(meta.items()):
+                if k not in {"valueType", "description"}:
+                    k = htmlEsc(k)
+                    v = htmlEsc(v)
+                    html += '<div class="fmetarow">'
+                    html += f'<div class="fmetakey">{k}:</div><div>{v}</div>'
+                    html += "</div>"
+            html += "</div>"
+            html += "</details>"
+            html += "</div>"
+        html += "</div>"
         html += "</details>"
     return html
 

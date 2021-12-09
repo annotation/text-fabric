@@ -802,6 +802,8 @@ Api reference : {APIREF}
 
         Parameters
         ----------
+        mqlFile: string
+            Path to the file which contains the MQL code.
         slotType: string
             You have to tell which object type in the MQL file acts as the slot type,
             because TF cannot see that on its own.
@@ -817,14 +819,33 @@ Api reference : {APIREF}
                 }
 
         meta: dict
-            Likewise, you can add a dictionary of keys and values that will added to
-            the metadata of all features. Handy to add provenance data here:
+            Likewise, you can add a dictionary keyed by features
+            that will added to the metadata of the corresponding features.
 
-                meta = dict(
-                    dataset='DLC',
-                    datasetName='Digital Language Corpus',
-                    author="That 's me",
-                )
+            You may also add metadata for the empty feature `""`,
+            this will be added to the metadata of all features.
+            Handy to add provenance data there.
+
+            Example:
+
+                meta = {
+                    "": dict(
+                        dataset='DLC',
+                        datasetName='Digital Language Corpus',
+                        author="That 's me",
+                    ),
+                    "sp": dict(
+                        description: "part-of-speech",
+                    ),
+                }
+
+            !!! note "description"
+                Text-Fabric will display all metadata information under the
+                key `description` in a more prominent place than the other
+                metadata.
+
+            !!! caution "valueType"
+                Do not pass the value types of the features here.
         """
 
         tmObj = self.tmObj

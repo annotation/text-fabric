@@ -453,3 +453,37 @@ def getAllFeatures(api):
     allFeatures |= set(api.Fall())
     allFeatures |= set(e for e in api.Eall() if not e.startswith(OMAP))
     return allFeatures
+
+
+def formatMeta(featureMeta):
+    """Reorder meta data.
+
+    Parameters
+    ----------
+    meta: dict
+        Dictionary of meta data: keyed by feature, valued by a dict
+        of metadata in the form of key values
+
+    Returns
+    -------
+    dict
+        A copy of the dict but with the values for metadata keys
+        `desc` and `eg` merged under a new key `description`,
+        and the keys `desc` and `eg` deleted.
+    """
+
+    result = {}
+    for (f, meta) in featureMeta.items():
+        fmeta = {}
+        for (k, v) in meta.items():
+            if k == "eg" and "desc" in meta:
+                continue
+            if k == "desc":
+                eg = meta.get("eg", "")
+                egRep = f" ({eg})" if eg else ""
+                fmeta["description"] = f"{v}{egRep}"
+            else:
+                fmeta[k] = v
+        result[f] = fmeta
+
+    return result

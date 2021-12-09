@@ -537,6 +537,15 @@ def uni(line):
 
 
 def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
+    """Generate TF from MQL
+
+    Parameters
+    ----------
+    tmObj: object
+        A `tf.core.timestamp.Timestamp` object
+    mqlFile, slotType, otype, meta: various
+        See `tf.core.fabric.Fabric.importMQL
+    """
     error = tmObj.error
 
     if slotType is None:
@@ -772,7 +781,12 @@ def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     metaData = dict()
 
     # metadata that ends up in every feature
-    metaData[""] = {} if meta is None else meta
+    metaData[""] = meta.get("", {})
+    distinctFeatures = chain(chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values()))
+    for f in distinctFeatures:
+        metaInfo = meta.get(f, None)
+        if metaInfo is not None:
+            metaData[f] = metaInfo
 
     # the config feature otext
     metaData["otext"] = otext

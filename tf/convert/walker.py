@@ -1009,8 +1009,7 @@ class CV(object):
     def get(self, feature, *args):
         """Retrieve feature values.
 
-            cv.get(feature, n)` and `cv.get(feature, nf, nt)
-
+            cv.get(feature, n) and cv.get(feature, nf, nt)
 
         `feature` is the name of the feature.
 

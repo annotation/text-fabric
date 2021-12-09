@@ -356,6 +356,51 @@ div.pval {
     flex: 1 1 auto;
 }
 
+/* TF header */
+
+.fcorpus {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.frow {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.fmeta {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.fmetarow {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.fmetakey {
+  width: 10rem;
+  font-family: monospace;
+}
+.fnamecat {
+  width: 10rem;
+}
+.fnamecat.edge {
+  font-weight: bold;
+  font-style: italic;
+}
+.fmono {
+    font-family: monospace;
+}
+
 :root {
 	--node:               hsla(120, 100%,  20%, 1.0  );
 	--label:              hsla(  0, 100%,  20%, 1.0  );

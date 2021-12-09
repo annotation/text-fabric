@@ -1,6 +1,6 @@
 If you find a security vulnerability in the code of Text-Fabric,
 you can responsibly disclose it to me by sending an email to
-[Dirk Roorda](mailto:dirk.roorda@dans.knaw.nl).
+[Dirk Roorda](mailto:text.annotation@icloud.com).
 
 I will then address and remedy the vulnerability as soon as I can,
 and after having fixed it, I will report it in a new issue on Github.

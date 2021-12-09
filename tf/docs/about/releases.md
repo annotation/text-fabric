@@ -46,6 +46,28 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.7
+
+2021-12-08
+
+More information on the metadata of features on the interface.
+
+*   After `use("xxx")` you get an expandable list of features.
+    Formerly, a feature was represented by its name, hyperlinked to the feature documentation.
+    Now you see also the data type of the feature, its description, and you can expand
+    further to see all metadata of a feature.
+*   TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`) can show/hide more information,
+    such as the file path to a feature, its data type, its description, and all of its
+    metadata.
+*   importMQL (`tf.core.fabric.Fabric.importMQL`) accepts a parameter `meta` which
+    one can use to specify metadata that is common to all features.
+    Now you can use it to pass feature-specific metadata as well.
+*   Several datasources have been converted by means of importMQL:
+    bhsa, extrabiblical and calap.
+    Of these, I have updated the BHSA to have richer metadata in their features
+    (only version 2021) including the standard modules phono, parallels, trees.
+    And while I was at it, also did the non-standard modules valence and bridging.
+
 #### 9.1.6
 
 2021-11-17

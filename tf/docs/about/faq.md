@@ -138,7 +138,7 @@ Look back at the terminal or command prompt where you started `text-fabric`.
 
 If somewhere down the road you see `Error`, I offer you my apologies!
 
-Copy and paste that error and send it to [me](mailto:dirk.roorda@dans.knaw.nl),
+Copy and paste that error and send it to [me](mailto:text.annotation@icloud.com),
 and I'll fix it as soon as I can, and I let you know on the
 [issue list](https://github.com/annotation/text-fabric/issues).
 
