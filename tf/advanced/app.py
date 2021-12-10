@@ -137,11 +137,11 @@ class App:
         mod: string, optional `None`
             A comma-separated list of modules in one of the forms
 
-               {org}/{repo}/{path}`
+               {org}/{repo}/{path}
 
             or
 
-               {org}/{repo}/{path}:specifier`
+               {org}/{repo}/{path}:specifier
 
             All features of all those modules will be loaded.
             If they are not yet present, they will be downloaded from GitHub first.
@@ -149,7 +149,7 @@ class App:
             For example, there is an easter egg module on GitHub,
             and you can obtain it by
 
-               mod='etcbc/lingo/easter/tf'`
+               mod='etcbc/lingo/easter/tf'
 
             Here the `{org}` is `etcbc`, the `{repo}` is `lingo`,
             and the `{path}` is `easter/tf` under which

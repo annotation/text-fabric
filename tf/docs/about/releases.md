@@ -46,9 +46,21 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.8
+
+2021-12-10
+
+Fixed missing expander triangles in the feature overview after the incantation.
+This happened in the classical notebook, not in jupyter lab.
+The classical notebook styles the summary element in such a way as
+to rob it from the triangle.
+A simple overriding CSS instruction was enough.
+
+Thanks to Oliver Glanz for spotting it.
+
 #### 9.1.7
 
-2021-12-08
+2021-12-09
 
 More information on the metadata of features on the interface.
 
@@ -59,7 +71,7 @@ More information on the metadata of features on the interface.
 *   TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`) can show/hide more information,
     such as the file path to a feature, its data type, its description, and all of its
     metadata.
-*   importMQL (`tf.core.fabric.Fabric.importMQL`) accepts a parameter `meta` which
+*   importMQL (`tf.core.fabric.FabricCore.importMQL`) accepts a parameter `meta` which
     one can use to specify metadata that is common to all features.
     Now you can use it to pass feature-specific metadata as well.
 *   Several datasources have been converted by means of importMQL:

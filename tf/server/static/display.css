@@ -358,6 +358,13 @@ div.pval {
 
 /* TF header */
 
+summary {
+  /* needed to override the normalize.less
+   * in the classical jupyter notebook
+   */
+  display: list-item ! important;
+}
+
 .fcorpus {
   display: flex;
   flex-flow: column nowrap;
@@ -387,11 +394,11 @@ div.pval {
   align-content: flex-start;
 }
 .fmetakey {
-  width: 10rem;
+  min-width: 10rem;
   font-family: monospace;
 }
 .fnamecat {
-  width: 10rem;
+  min-width: 10rem;
 }
 .fnamecat.edge {
   font-weight: bold;
