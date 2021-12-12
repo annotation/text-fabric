@@ -4,10 +4,10 @@ from shutil import rmtree
 from zipfile import ZipFile
 
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
-from ..core.helpers import console, splitModRef
+from ..core.helpers import console, splitModRef, normpath, expanduser
 
-GH = os.path.expanduser(GH_BASE)
-DW = os.path.expanduser(DOWNLOADS)
+GH = expanduser(GH_BASE)
+DW = expanduser(DOWNLOADS)
 
 HELP = """
 USAGE
@@ -43,9 +43,10 @@ EXCLUDE = {".DS_Store"}
 def zipData(
     org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
 ):
+    relative = normpath(relative)
     console(f"Create release data for {org}/{repo}/{relative}")
-    sourceBase = f"{source}/{org}"
-    destBase = f"{dest}/{org}-release"
+    sourceBase = normpath(f"{source}/{org}")
+    destBase = normpath(f"{dest}/{org}-release")
     sourceDir = f"{sourceBase}/{repo}/{relative}"
     destDir = f"{destBase}/{repo}"
     dataFiles = {}
@@ -152,6 +153,7 @@ def main(cargs=sys.argv):
         return
 
     (org, repo, relative, checkout) = parts
+    relative = normpath(relative)
 
     tf = (
         relative == "tf"

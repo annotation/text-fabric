@@ -62,7 +62,7 @@ from importlib import util
 # from tf.fabric import Fabric
 from tf.app import use
 from tf.fabric import Fabric
-from tf.core.helpers import specFromRanges, rangesFromSet
+from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath, expanduser
 
 from .gh import deploy
 from .help import HELP
@@ -70,8 +70,8 @@ from .help import HELP
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED, compresslevel=6)
 T_F = "text-fabric"
 LS = "layeredsearch"
-CONFIG_FILE = f"{os.path.dirname(os.path.abspath(__file__))}/config.yaml"
-STATIC_DIR = f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}/static"
+CONFIG_FILE = normpath(f"{os.path.dirname(abspath(__file__))}/config.yaml")
+STATIC_DIR = normpath(f"{os.path.dirname(os.path.dirname(abspath(__file__)))}/static")
 
 
 def console(*args, error=False):
@@ -195,8 +195,8 @@ class Make:
         self.C = C
         self.dataset = dataset
         self.client = client
-        self.folder = folder
-        self.appFolder = appFolder
+        self.folder = normpath(folder)
+        self.appFolder = normpath(appFolder)
         self.debugState = debugState
         self.good = True
 
@@ -251,7 +251,7 @@ class Make:
             client=client,
             lsVersion=lsVersion,
             mainConfig=mainConfig,
-            gh=os.path.expanduser("~/github"),
+            gh=expanduser("~/github"),
             ghUrl="https://github.com",
             nbUrl="https://nbviewer.jupyter.org/github",
             ghPages="github.io",
@@ -1214,9 +1214,7 @@ class Make:
 def makeSearchClients(dataset, folder, appFolder, dataDir=None):
     DEBUG_STATE = "off"
 
-    Mk = Make(
-        dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE
-    )
+    Mk = Make(dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE)
     clients = Mk.getAllClients()
     # version = Mk.C.data["version"]
 

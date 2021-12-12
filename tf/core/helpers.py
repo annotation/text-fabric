@@ -5,6 +5,46 @@ import re
 from ..parameters import OMAP
 
 
+def normpath(path):
+    return path.replace("\\", "/")
+
+
+def abspath(path):
+    return normpath(os.path.abspath(path))
+
+
+def expanduser(path):
+    return normpath(os.path.expanduser(path))
+
+
+HOME_DIR = expanduser("~")
+
+
+def unexpanduser(path):
+    return normpath(path).replace(HOME_DIR, "~")
+
+
+def setDir(obj):
+    obj.homeDir = expanduser("~")
+    obj.curDir = normpath(os.getcwd())
+    (obj.parentDir, x) = os.path.split(obj.curDir)
+
+
+def expandDir(obj, dirName):
+    if dirName.startswith("~"):
+        dirName = dirName.replace("~", obj.homeDir, 1)
+    elif dirName.startswith(".."):
+        dirName = dirName.replace("..", obj.parentDir, 1)
+    elif dirName.startswith("."):
+        dirName = dirName.replace(".", obj.curDir, 1)
+    return dirName
+
+
+def dirEmpty(target):
+    target = normpath(target)
+    return not os.path.exists(target) or not os.listdir(target)
+
+
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 VALID = set("_0123456789") | LETTER
 
@@ -15,22 +55,12 @@ Consider installing a 64-bit Python.
 
 MSG64 = """Running on 64-bit Python"""
 
-HOME_DIR = os.path.expanduser("~").replace("\\", "/")
-
 SEP_RE = re.compile(r"[\n\t ,]+")
 STRIP_RE = re.compile(r"(?:^[\n\t ,]+)|(?:[\n\t ,]+$)", re.S)
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
 QUAD = "  "
-
-
-def unexpanduser(path):
-    return path.replace(HOME_DIR, "~")
-
-
-def dirEmpty(target):
-    return not os.path.exists(target) or not os.listdir(target)
 
 
 def isInt(val):
@@ -174,22 +204,6 @@ def flattenToSet(features):
                 feature = feature[1]
                 theseFeatures |= setFromValue(feature)
     return theseFeatures
-
-
-def setDir(obj):
-    obj.homeDir = os.path.expanduser("~").replace("\\", "/")
-    obj.curDir = os.getcwd().replace("\\", "/")
-    (obj.parentDir, x) = os.path.split(obj.curDir)
-
-
-def expandDir(obj, dirName):
-    if dirName.startswith("~"):
-        dirName = dirName.replace("~", obj.homeDir, 1)
-    elif dirName.startswith(".."):
-        dirName = dirName.replace("..", obj.parentDir, 1)
-    elif dirName.startswith("."):
-        dirName = dirName.replace(".", obj.curDir, 1)
-    return dirName
 
 
 def setFromSpec(spec):

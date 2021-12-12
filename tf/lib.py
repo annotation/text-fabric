@@ -8,7 +8,7 @@ import os
 import pickle
 import gzip
 from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
-from .core.helpers import console
+from .core.helpers import console, expanduser
 
 
 def writeSets(sets, dest):
@@ -33,7 +33,7 @@ def writeSets(sets, dest):
         `True` if all went well, `False` otherwise.
     """
 
-    destPath = os.path.expanduser(dest)
+    destPath = expanduser(dest)
     (baseDir, fileName) = os.path.split(destPath)
     if not os.path.exists(baseDir):
         try:
@@ -65,7 +65,7 @@ def readSets(source):
 
     """
 
-    sourcePath = os.path.expanduser(source)
+    sourcePath = expanduser(source)
     if not os.path.exists(sourcePath):
         console(f'Sets file "{source}" does not exist.')
         return False

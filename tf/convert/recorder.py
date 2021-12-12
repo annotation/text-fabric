@@ -110,7 +110,12 @@ To see it in action, see this
 import os
 from itertools import chain
 
-from tf.core.helpers import specFromRangesLogical, specFromRanges, rangesFromSet
+from ..core.helpers import (
+    specFromRangesLogical,
+    specFromRanges,
+    rangesFromSet,
+    normpath,
+)
 
 ZWJ = "\u200d"  # zero width joiner
 
@@ -522,7 +527,8 @@ where `api` is the result of
             Optimize file size. Only relevant if `byType` is True.
         """
 
-        posPath = posPath or f"{textPath}.pos"
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f"{textPath}.pos")
 
         with open(textPath, "w", encoding="utf8") as fh:
             fh.write(self.text())
@@ -597,7 +603,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         """
 
-        posPath = posPath or f"{textPath}.pos"
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f"{textPath}.pos")
         self.context = {}
 
         with open(textPath, encoding="utf8") as fh:
@@ -639,6 +646,7 @@ where `api` is the result of
             be used as headers.
         """
 
+        featurePath = normpath(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}

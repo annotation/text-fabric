@@ -379,7 +379,7 @@ from ..parameters import (
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
 )
-from ..core.helpers import console, htmlEsc
+from ..core.helpers import console, htmlEsc, expanduser
 from .helpers import dh
 from .zipdata import zipData
 
@@ -400,8 +400,8 @@ class Repo:
         self.folder = folder
         self.version = version
         self.increase = increase
-        self.source = os.path.expanduser(source)
-        self.dest = os.path.expanduser(dest)
+        self.source = expanduser(source)
+        self.dest = expanduser(dest)
 
         self.repoOnline = None
         self.ghConn = None
@@ -736,14 +736,14 @@ class Checkout(object):
         self.baseGh = f"{URL_GH}/{org}/{repo}{relativeGh}{versionRep}"
         self.dataDir = f"{relative}{versionRep}"
 
-        self.baseLocal = os.path.expanduser(self.dest)
+        self.baseLocal = expanduser(self.dest)
         self.dataRelLocal = f"{org}/{repo}{relativeRep}"
         self.dirPathSaveLocal = f"{self.baseLocal}/{org}/{repo}"
         self.dirPathLocal = f"{self.baseLocal}/{self.dataRelLocal}{versionRep}"
         self.dataPathLocal = f"{self.dataRelLocal}{versionRep}"
         self.filePathLocal = f"{self.dirPathLocal}/{EXPRESS_SYNC}"
 
-        self.baseClone = os.path.expanduser(self.source)
+        self.baseClone = expanduser(self.source)
         self.dataRelClone = f"{org}/{repo}{relativeRep}"
         self.dirPathClone = f"{self.baseClone}/{self.dataRelClone}{versionRep}"
         self.dataPathClone = f"{self.dataRelClone}{versionRep}"

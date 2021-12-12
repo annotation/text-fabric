@@ -3,7 +3,7 @@ import os
 from IPython.display import display, Markdown, HTML
 
 from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
-from ..core.helpers import mdEsc, htmlEsc, unexpanduser, QUAD
+from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD
 from ..core.text import DEFAULT_FORMAT
 
 
@@ -79,18 +79,18 @@ def getLocalDir(cfg, local, version):
     if not base:
         base = EXPRESS_BASE
 
-    return os.path.expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
+    return expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
 
 
 def hasData(local, org, repo, version, relative):
     versionRep = f"/{version}" if version else ""
     if local == "clone":
-        ghBase = os.path.expanduser(GH_BASE)
+        ghBase = expanduser(GH_BASE)
         ghTarget = f"{ghBase}/{org}/{repo}/{relative}{versionRep}"
         if os.path.exists(ghTarget):
             return ghBase
 
-    expressBase = os.path.expanduser(EXPRESS_BASE)
+    expressBase = expanduser(EXPRESS_BASE)
     expressTarget = f"{expressBase}/{org}/{repo}/{relative}{versionRep}"
     if os.path.exists(expressTarget):
         return expressBase

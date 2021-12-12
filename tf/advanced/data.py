@@ -1,4 +1,4 @@
-from ..core.helpers import itemize, splitModRef, expandDir
+from ..core.helpers import itemize, splitModRef, normpath, expandDir
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -112,7 +112,7 @@ class AppData(object):
                 self.good = False
                 continue
 
-            (org, repo, relative, thisCheckoutData) = parts
+            parts[2] = normpath(parts[2])  # the relative bit
 
             if not self.getModule(*parts):
                 self.good = False
@@ -165,9 +165,9 @@ class AppData(object):
         givenModules = (
             []
             if modules is None
-            else [x.strip() for x in itemize(modules, "\n")]
+            else [normpath(x.strip()) for x in itemize(modules, "\n")]
             if type(modules) is str
-            else [str(x) for x in modules]
+            else [normpath(str(x)) for x in modules]
         )
 
         self.locations = mLocations + givenLocations
@@ -206,6 +206,8 @@ class AppData(object):
         app = self.app
         _browse = app._browse
         aContext = app.context
+
+        relative = normpath(relative)
 
         moduleRef = f"{org}/{repo}/{relative}"
         if moduleRef in self.seen:

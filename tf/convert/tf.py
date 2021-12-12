@@ -5,10 +5,11 @@
 import sys
 import os
 
+from ..core.helpers import normpath, expanduser, unexpanduser
+
 
 DATA_TYPES = ("str", "int")
 DATA_TYPE_STR = ", ".join(DATA_TYPES)
-HOME_DIR = os.path.expanduser("~").replace("\\", "/")
 
 
 def explode(inPath, outPath):
@@ -66,8 +67,10 @@ def explode(inPath, outPath):
         whether the operation was successful.
     """
 
-    inLoc = os.path.expanduser(inPath)
-    outLoc = os.path.expanduser(outPath)
+    inPath = normpath(inPath)
+    outPath = normpath(outPath)
+    inLoc = expanduser(inPath)
+    outLoc = expanduser(outPath)
     if not os.path.exists(inLoc):
         return f"No such file or directory: `{inPath}`"
 
@@ -312,7 +315,3 @@ def _setFromSpec(spec):
             for n in range(b, e + 1):
                 covered.add(n)
     return covered
-
-
-def unexpanduser(path):
-    return path.replace(HOME_DIR, "~")

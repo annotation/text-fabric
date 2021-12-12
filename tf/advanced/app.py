@@ -6,7 +6,7 @@ from ..parameters import ORG, APP_CODE
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
-from ..core.helpers import console, setDir, mergeDict
+from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
 from .find import findAppConfig, findAppClass
 from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
@@ -495,9 +495,11 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
     (commit, release, local) = (None, None, None)
     extraMod = None
 
+    appName = normpath(appName)
+
     if not appName or ("/" in appName and checkoutApp == ""):
-        appPath = os.path.expanduser(appName) if appName else ""
-        absPath = os.path.abspath(appPath)
+        appPath = expanduser(appName) if appName else ""
+        absPath = abspath(appPath)
 
         if os.path.isdir(absPath):
             (appDir, appName) = os.path.split(absPath)

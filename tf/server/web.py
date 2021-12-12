@@ -86,7 +86,7 @@ from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
 from ..parameters import HOST
-from ..core.helpers import console
+from ..core.helpers import console, abspath
 from ..server.kernel import makeTfConnection
 from .command import argWeb
 from .serve import (
@@ -100,7 +100,7 @@ from .serve import (
 )
 
 
-MY_DIR = os.path.dirname(os.path.abspath(__file__))
+MY_DIR = os.path.dirname(abspath(__file__))
 
 
 class Web(object):

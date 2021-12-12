@@ -18,7 +18,7 @@ import re
 from shutil import rmtree
 
 from .parameters import PACK_VERSION
-from .core.helpers import unexpanduser as ux
+from .core.helpers import expanduser, unexpanduser as ux
 
 TFD = "text-fabric-data"
 GH = "github"
@@ -74,14 +74,14 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     """
 
     if specific is not None:
-        bases = [os.path.expanduser(specific)]
+        bases = [expanduser(specific)]
     else:
         bases = []
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
                 out(f"skipped {root}\n")
                 continue
-            bases.append(os.path.expanduser(f"~/{root}"))
+            bases.append(expanduser(f"~/{root}"))
 
     for base in bases:
         for triple in os.walk(base):

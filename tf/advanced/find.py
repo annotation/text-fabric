@@ -9,7 +9,7 @@ from ..parameters import (
     APP_DISPLAY,
     API_VERSION as avTf,
 )
-from ..core.helpers import console
+from ..core.helpers import console, normpath
 from .helpers import getLocalDir
 
 
@@ -29,6 +29,7 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
     tf.advanced.settings: options allowed in `config.yaml`
     """
 
+    appPath = normpath(appPath)
     configPath = f"{appPath}/{APP_CONFIG}"
     configPathOld = f"{appPath}/{APP_CONFIG_OLD}"
     cssPath = f"{appPath}/{APP_DISPLAY}"
@@ -128,6 +129,7 @@ def findAppClass(appName, appPath):
         Otherwise we return `None`.
     """
 
+    appPath = normpath(appPath)
     appClass = None
     moduleName = f"tf.apps.{appName}.app"
     filePath = f"{appPath}/app.py"
@@ -161,6 +163,7 @@ def loadModule(moduleName, *args):
     """
 
     (appName, appPath) = args[1:3]
+    appPath = normpath(appPath)
     try:
         spec = util.spec_from_file_location(
             f"tf.apps.{appName}.{moduleName}", f"{appPath}/{moduleName}.py",

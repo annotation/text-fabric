@@ -46,6 +46,17 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.9
+
+Upcoming
+
+Made sure that path names of files and directories, when retrieved by means of
+os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
+These two functions might introduces path with backslashes when on Windows.
+The rest of TF works with forward slashes exclusively.
+We want prevent paths with mixed forward slashes and backslashes.
+
+
 #### 9.1.8
 
 2021-12-10

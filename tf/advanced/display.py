@@ -52,7 +52,7 @@ import os
 import types
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.helpers import mdEsc
+from ..core.helpers import mdEsc, normpath, abspath, expanduser
 from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
@@ -235,9 +235,10 @@ def getCss(app):
     appCss = aContext.css
 
     cssPath = (
-        f"{os.path.dirname(os.path.dirname(os.path.abspath(__file__)))}"
+        f"{os.path.dirname(os.path.dirname(abspath(__file__)))}"
         f"{SERVER_DISPLAY_BASE}"
     )
+    cssPath = normpath(cssPath)
     genericCss = ""
     for cssFile in SERVER_DISPLAY:
         with open(f"{cssPath}/{cssFile}", encoding="utf8") as fh:
@@ -357,9 +358,11 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     tupleFeatures = dContext.tupleFeatures
 
     if toDir is None:
-        toDir = os.path.expanduser(DOWNLOADS)
-        if not os.path.exists(toDir):
-            os.makedirs(toDir, exist_ok=True)
+        toDir = expanduser(DOWNLOADS)
+    else:
+        toDir = normpath(toDir)
+    if not os.path.exists(toDir):
+        os.makedirs(toDir, exist_ok=True)
     toPath = f"{toDir}/{toFile}"
 
     resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)

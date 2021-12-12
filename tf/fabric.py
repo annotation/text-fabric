@@ -28,7 +28,7 @@ Fabric is an extension of `tf.core.fabric` where volume support is added.
 import os
 
 from .parameters import LOCATIONS, LOCAL, OTYPE
-from .core.helpers import itemize, setDir, expandDir, unexpanduser as ux
+from .core.helpers import itemize, setDir, expandDir, normpath, unexpanduser as ux
 from .core.fabric import FabricCore
 from .core.timestamp import Timestamp
 from .volumes import extract, collect
@@ -78,20 +78,20 @@ class Fabric(FabricCore):
         if modules is None:
             module = [""]
         elif type(modules) is str:
-            module = [x for x in itemize(modules, "\n")]
+            module = [normpath(x.strip()) for x in itemize(modules, "\n")]
         else:
-            module = [str(x) for x in modules]
+            module = [normpath(str(x)) for x in modules]
         module = module[0] if module else ""
-        module = module.strip("/").strip("\\")
+        module = module.strip("/")
 
         if locations is None:
             location = LOCATIONS if LOCATIONS else [""]
         elif type(locations) is str:
-            location = [x for x in itemize(locations, "\n")]
+            location = [normpath(x.strip()) for x in itemize(locations, "\n")]
         else:
-            location = [str(x) for x in locations]
+            location = [normpath(str(x)) for x in locations]
         location = location[0] if location else ""
-        location = location.rstrip("/").rstrip("\\")
+        location = location.rstrip("/")
 
         setDir(self)
         location = expandDir(self, location)

@@ -29,6 +29,8 @@ from .helpers import (
     check32,
     console,
     makeExamples,
+    normpath,
+    expanduser,
 )
 from .timestamp import Timestamp
 from .prepare import (
@@ -217,17 +219,17 @@ Api reference : {APIREF}
         if modules is None:
             modules = [""]
         elif type(modules) is str:
-            modules = [x.strip() for x in itemize(modules, "\n")]
+            modules = [normpath(x.strip()) for x in itemize(modules, "\n")]
         else:
-            modules = [str(x) for x in modules]
+            modules = [normpath(str(x)) for x in modules]
         self.modules = modules
 
         if locations is None:
             locations = LOCATIONS
         elif type(locations) is str:
-            locations = [x.strip() for x in itemize(locations, "\n")]
+            locations = [normpath(x.strip()) for x in itemize(locations, "\n")]
         else:
-            locations = [str(x) for x in locations]
+            locations = [normpath(str(x)) for x in locations]
         setDir(self)
         self.locations = []
         for loc in locations:
@@ -308,7 +310,6 @@ Api reference : {APIREF}
             wasSilent = isSilent()
             setSilent(silent)
         indent(level=0, reset=True)
-        info("loading features ...")
         self.sectionsOK = True
         self.structureOK = True
         self.good = True
@@ -966,7 +967,7 @@ Api reference : {APIREF}
 
     def _getWriteLoc(self, location=None, module=None):
         writeLoc = (
-            os.path.expanduser(location)
+            expanduser(location)
             if location is not None
             else ""
             if len(self.locations) == 0
@@ -986,11 +987,14 @@ Api reference : {APIREF}
         )
 
     def _precompute(self):
+        tmObj = self.tmObj
+        info = tmObj.info
         good = True
         for (fName, dep2) in self.precomputeList:
             ok = getattr(self, f'{fName.strip("_")}OK', False)
             if dep2 and not ok:
                 continue
+            info(f"... {fName} ...")
             if not self.features[fName].load():
                 good = False
                 break
