@@ -35,7 +35,7 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/clean.py#L1-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/clean.py#L1-L116" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Clean
@@ -57,7 +57,7 @@ import re
 from shutil import rmtree
 
 from .parameters import PACK_VERSION
-from .core.helpers import unexpanduser as ux
+from .core.helpers import expanduser, unexpanduser as ux
 
 TFD = &#34;text-fabric-data&#34;
 GH = &#34;github&#34;
@@ -113,14 +113,14 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     &#34;&#34;&#34;
 
     if specific is not None:
-        bases = [os.path.expanduser(specific)]
+        bases = [expanduser(specific)]
     else:
         bases = []
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
                 out(f&#34;skipped {root}\n&#34;)
                 continue
-            bases.append(os.path.expanduser(f&#34;~/{root}&#34;))
+            bases.append(expanduser(f&#34;~/{root}&#34;))
 
     for base in bases:
         for triple in os.walk(base):
@@ -196,7 +196,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/clean.py#L44-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/clean.py#L44-L116" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
@@ -231,14 +231,14 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
     &#34;&#34;&#34;
 
     if specific is not None:
-        bases = [os.path.expanduser(specific)]
+        bases = [expanduser(specific)]
     else:
         bases = []
         for root in ROOTS:
             if root == TFD and not tfd or root == GH and not gh:
                 out(f&#34;skipped {root}\n&#34;)
                 continue
-            bases.append(os.path.expanduser(f&#34;~/{root}&#34;))
+            bases.append(expanduser(f&#34;~/{root}&#34;))
 
     for base in bases:
         for triple in os.walk(base):
@@ -281,7 +281,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/clean.py#L38-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/clean.py#L38-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
@@ -297,7 +297,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/clean.py#L32-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/clean.py#L32-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;

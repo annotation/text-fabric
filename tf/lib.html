@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/lib.py#L1-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/lib.py#L1-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Uitility functions
@@ -40,7 +40,7 @@ import os
 import pickle
 import gzip
 from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
-from .core.helpers import console
+from .core.helpers import console, expanduser
 
 
 def writeSets(sets, dest):
@@ -65,7 +65,7 @@ def writeSets(sets, dest):
         `True` if all went well, `False` otherwise.
     &#34;&#34;&#34;
 
-    destPath = os.path.expanduser(dest)
+    destPath = expanduser(dest)
     (baseDir, fileName) = os.path.split(destPath)
     if not os.path.exists(baseDir):
         try:
@@ -97,7 +97,7 @@ def readSets(source):
 
     &#34;&#34;&#34;
 
-    sourcePath = os.path.expanduser(source)
+    sourcePath = expanduser(source)
     if not os.path.exists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
         return False
@@ -134,7 +134,7 @@ This file must contain a gzipped, pickled data structure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/lib.py#L49-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/lib.py#L49-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSets(source):
     &#34;&#34;&#34;Reads a dictionary of named sets from file.
@@ -155,7 +155,7 @@ This file must contain a gzipped, pickled data structure.</dd>
 
     &#34;&#34;&#34;
 
-    sourcePath = os.path.expanduser(source)
+    sourcePath = expanduser(source)
     if not os.path.exists(sourcePath):
         console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
         return False
@@ -188,7 +188,7 @@ The result will be written from this file.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/lib.py#L14-L46" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/lib.py#L14-L46" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeSets(sets, dest):
     &#34;&#34;&#34;Writes a dictionary of named sets to file.
@@ -212,7 +212,7 @@ The result will be written from this file.</dd>
         `True` if all went well, `False` otherwise.
     &#34;&#34;&#34;
 
-    destPath = os.path.expanduser(dest)
+    destPath = expanduser(dest)
     (baseDir, fileName) = os.path.split(destPath)
     if not os.path.exists(baseDir):
         try:

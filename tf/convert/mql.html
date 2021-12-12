@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L1-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L1-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -256,6 +256,7 @@ from ..core.helpers import (
     setFromSpec,
     nbytes,
     console,
+    normpath,
 )
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -271,6 +272,7 @@ class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
         error = tmObj.error
 
+        mqlDir = normpath(mqlDir)
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
         if cleanDb != mqlName:
@@ -673,6 +675,7 @@ def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     mqlFile, slotType, otype, meta: various
         See `tf.core.fabric.Fabric.importMQL
     &#34;&#34;&#34;
+    mqlFile = normpath(mqlFile)
     error = tmObj.error
 
     if slotType is None:
@@ -1014,7 +1017,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L527-L532" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L529-L534" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
@@ -1032,7 +1035,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L560-L761" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L563-L764" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1246,7 +1249,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L764-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L767-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1373,7 +1376,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L539-L557" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L541-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1385,6 +1388,7 @@ such as backslash xb6</p></div>
     mqlFile, slotType, otype, meta: various
         See `tf.core.fabric.Fabric.importMQL
     &#34;&#34;&#34;
+    mqlFile = normpath(mqlFile)
     error = tmObj.error
 
     if slotType is None:
@@ -1404,7 +1408,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L535-L536" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L537-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1424,12 +1428,13 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L143-L519" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L144-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
         error = tmObj.error
 
+        mqlDir = normpath(mqlDir)
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
         if cleanDb != mqlName:
@@ -1814,7 +1819,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/mql.py#L157-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/mql.py#L159-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     tmObj = self.tmObj

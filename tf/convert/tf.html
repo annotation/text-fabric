@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/tf.py#L1-L318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/tf.py#L1-L317" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimized data from TF files
@@ -36,10 +36,11 @@
 import sys
 import os
 
+from ..core.helpers import normpath, expanduser, unexpanduser
+
 
 DATA_TYPES = (&#34;str&#34;, &#34;int&#34;)
 DATA_TYPE_STR = &#34;, &#34;.join(DATA_TYPES)
-HOME_DIR = os.path.expanduser(&#34;~&#34;).replace(&#34;\\&#34;, &#34;/&#34;)
 
 
 def explode(inPath, outPath):
@@ -97,8 +98,10 @@ def explode(inPath, outPath):
         whether the operation was successful.
     &#34;&#34;&#34;
 
-    inLoc = os.path.expanduser(inPath)
-    outLoc = os.path.expanduser(outPath)
+    inPath = normpath(inPath)
+    outPath = normpath(outPath)
+    inLoc = expanduser(inPath)
+    outLoc = expanduser(outPath)
     if not os.path.exists(inLoc):
         return f&#34;No such file or directory: `{inPath}`&#34;
 
@@ -342,11 +345,7 @@ def _setFromSpec(spec):
                 (b, e) = (e, b)
             for n in range(b, e + 1):
                 covered.add(n)
-    return covered
-
-
-def unexpanduser(path):
-    return path.replace(HOME_DIR, &#34;~&#34;)</code></pre>
+    return covered</code></pre>
 </details>
 </section>
 <section>
@@ -407,7 +406,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/tf.py#L14-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/tf.py#L15-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explode(inPath, outPath):
     &#34;&#34;&#34;Explodes .tf files into non-optimized .tf files without metadata.
@@ -464,8 +463,10 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
         whether the operation was successful.
     &#34;&#34;&#34;
 
-    inLoc = os.path.expanduser(inPath)
-    outLoc = os.path.expanduser(outPath)
+    inPath = normpath(inPath)
+    outPath = normpath(outPath)
+    inLoc = expanduser(inPath)
+    outLoc = expanduser(outPath)
     if not os.path.exists(inLoc):
         return f&#34;No such file or directory: `{inPath}`&#34;
 
@@ -524,20 +525,6 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
             if not thisGood:
                 good = False
     return good</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.tf.unexpanduser"><code class="name flex">
-<span>def <span class="ident">unexpanduser</span></span>(<span>path)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/tf.py#L317-L318" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def unexpanduser(path):
-    return path.replace(HOME_DIR, &#34;~&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -612,7 +599,6 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.convert.tf.explode" href="#tf.convert.tf.explode">explode</a></code></li>
-<li><code><a title="tf.convert.tf.unexpanduser" href="#tf.convert.tf.unexpanduser">unexpanduser</a></code></li>
 </ul>
 </li>
 </ul>

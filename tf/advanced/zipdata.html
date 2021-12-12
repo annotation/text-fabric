@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/zipdata.py#L1-L169" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/zipdata.py#L1-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -34,10 +34,10 @@ from shutil import rmtree
 from zipfile import ZipFile
 
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
-from ..core.helpers import console, splitModRef
+from ..core.helpers import console, splitModRef, normpath, expanduser
 
-GH = os.path.expanduser(GH_BASE)
-DW = os.path.expanduser(DOWNLOADS)
+GH = expanduser(GH_BASE)
+DW = expanduser(DOWNLOADS)
 
 HELP = &#34;&#34;&#34;
 USAGE
@@ -73,9 +73,10 @@ EXCLUDE = {&#34;.DS_Store&#34;}
 def zipData(
     org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
 ):
+    relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
-    sourceBase = f&#34;{source}/{org}&#34;
-    destBase = f&#34;{dest}/{org}-release&#34;
+    sourceBase = normpath(f&#34;{source}/{org}&#34;)
+    destBase = normpath(f&#34;{dest}/{org}-release&#34;)
     sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}
@@ -182,6 +183,7 @@ def main(cargs=sys.argv):
         return
 
     (org, repo, relative, checkout) = parts
+    relative = normpath(relative)
 
     tf = (
         relative == &#34;tf&#34;
@@ -214,7 +216,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/zipdata.py#L140-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/zipdata.py#L141-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -231,6 +233,7 @@ if __name__ == &#34;__main__&#34;:
         return
 
     (org, repo, relative, checkout) = parts
+    relative = normpath(relative)
 
     tf = (
         relative == &#34;tf&#34;
@@ -252,14 +255,15 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/zipdata.py#L43-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/zipdata.py#L43-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
 ):
+    relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
-    sourceBase = f&#34;{source}/{org}&#34;
-    destBase = f&#34;{dest}/{org}-release&#34;
+    sourceBase = normpath(f&#34;{source}/{org}&#34;)
+    destBase = normpath(f&#34;{dest}/{org}-release&#34;)
     sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}

@@ -180,7 +180,7 @@ recorder.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L1-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L1-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -294,7 +294,12 @@ To see it in action, see this
 import os
 from itertools import chain
 
-from tf.core.helpers import specFromRangesLogical, specFromRanges, rangesFromSet
+from ..core.helpers import (
+    specFromRangesLogical,
+    specFromRanges,
+    rangesFromSet,
+    normpath,
+)
 
 ZWJ = &#34;\u200d&#34;  # zero width joiner
 
@@ -706,7 +711,8 @@ where `api` is the result of
             Optimize file size. Only relevant if `byType` is True.
         &#34;&#34;&#34;
 
-        posPath = posPath or f&#34;{textPath}.pos&#34;
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
 
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
@@ -781,7 +787,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
 
-        posPath = posPath or f&#34;{textPath}.pos&#34;
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
         self.context = {}
 
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -823,6 +830,7 @@ where `api` is the result of
             be used as headers.
         &#34;&#34;&#34;
 
+        featurePath = normpath(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}
@@ -881,7 +889,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L118-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L123-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder:
     def __init__(self, api=None):
@@ -1290,7 +1298,8 @@ where `api` is the result of
             Optimize file size. Only relevant if `byType` is True.
         &#34;&#34;&#34;
 
-        posPath = posPath or f&#34;{textPath}.pos&#34;
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
 
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
@@ -1365,7 +1374,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
 
-        posPath = posPath or f&#34;{textPath}.pos&#34;
+        textPath = normpath(textPath)
+        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
         self.context = {}
 
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -1407,6 +1417,7 @@ where `api` is the result of
             be used as headers.
         &#34;&#34;&#34;
 
+        featurePath = normpath(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}
@@ -1481,7 +1492,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L176-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L181-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     &#34;&#34;&#34;Add text to the accumulator.
@@ -1519,7 +1530,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L164-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L169-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     &#34;&#34;&#34;End a node.
@@ -1569,7 +1580,7 @@ character positions in the text where node <code>n</code> is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L289-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L294-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def iPositions(self, byType=False, logical=True, asEntries=False):
         &#34;&#34;&#34;Get the node positions as mapping from nodes.
@@ -1674,7 +1685,7 @@ be used as headers.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L611-L671" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L618-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     &#34;&#34;&#34;Read a tab-separated file of annotation data and convert it to features.
@@ -1707,6 +1718,7 @@ be used as headers.</dd>
         be used as headers.
     &#34;&#34;&#34;
 
+    featurePath = normpath(featurePath)
     nodesByPos = self.nodesByPos
 
     features = {}
@@ -1775,7 +1787,7 @@ that were active at character position <code>i</code> in the text.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L207-L287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L212-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def positions(self, byType=False, simple=False):
         &#34;&#34;&#34;Get the node positions as mapping from character positions.
@@ -1923,7 +1935,7 @@ If not, we return a string with diagnostic information.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L361-L492" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L366-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rPositions(self, acceptMaterialOutsideNodes=False):
     &#34;&#34;&#34;Get the first textual position for each node
@@ -2077,7 +2089,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L586-L609" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L592-L616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     &#34;&#34;&#34;Read recorder information from disk.
@@ -2093,7 +2105,8 @@ on each line a tab-separated list of active nodes.</dd>
         on each line a tab-separated list of active nodes.
     &#34;&#34;&#34;
 
-    posPath = posPath or f&#34;{textPath}.pos&#34;
+    textPath = normpath(textPath)
+    posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
     self.context = {}
 
     with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -2119,7 +2132,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L152-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L157-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     &#34;&#34;&#34;Start a node.
@@ -2147,7 +2160,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L197-L205" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L202-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     &#34;&#34;&#34;Get the accumulated text.
@@ -2192,7 +2205,7 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/convert/recorder.py#L494-L584" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/convert/recorder.py#L499-L590" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self, textPath, posPath=None, byType=False, optimize=True):
     &#34;&#34;&#34;Write the recorder information to disk.
@@ -2225,7 +2238,8 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
         Optimize file size. Only relevant if `byType` is True.
     &#34;&#34;&#34;
 
-    posPath = posPath or f&#34;{textPath}.pos&#34;
+    textPath = normpath(textPath)
+    posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
 
     with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
         fh.write(self.text())

@@ -26,9 +26,9 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L1-L283" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L1-L285" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">from ..core.helpers import itemize, splitModRef, expandDir
+<pre><code class="python">from ..core.helpers import itemize, splitModRef, normpath, expandDir
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -142,7 +142,7 @@ class AppData(object):
                 self.good = False
                 continue
 
-            (org, repo, relative, thisCheckoutData) = parts
+            parts[2] = normpath(parts[2])  # the relative bit
 
             if not self.getModule(*parts):
                 self.good = False
@@ -195,9 +195,9 @@ class AppData(object):
         givenModules = (
             []
             if modules is None
-            else [x.strip() for x in itemize(modules, &#34;\n&#34;)]
+            else [normpath(x.strip()) for x in itemize(modules, &#34;\n&#34;)]
             if type(modules) is str
-            else [str(x) for x in modules]
+            else [normpath(str(x)) for x in modules]
         )
 
         self.locations = mLocations + givenLocations
@@ -236,6 +236,8 @@ class AppData(object):
         app = self.app
         _browse = app._browse
         aContext = app.context
+
+        relative = normpath(relative)
 
         moduleRef = f&#34;{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
@@ -334,7 +336,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L269-L283" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L271-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -391,7 +393,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L9-L266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L9-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
     def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
@@ -499,7 +501,7 @@ data fetching.</p></div>
                 self.good = False
                 continue
 
-            (org, repo, relative, thisCheckoutData) = parts
+            parts[2] = normpath(parts[2])  # the relative bit
 
             if not self.getModule(*parts):
                 self.good = False
@@ -552,9 +554,9 @@ data fetching.</p></div>
         givenModules = (
             []
             if modules is None
-            else [x.strip() for x in itemize(modules, &#34;\n&#34;)]
+            else [normpath(x.strip()) for x in itemize(modules, &#34;\n&#34;)]
             if type(modules) is str
-            else [str(x) for x in modules]
+            else [normpath(str(x)) for x in modules]
         )
 
         self.locations = mLocations + givenLocations
@@ -593,6 +595,8 @@ data fetching.</p></div>
         app = self.app
         _browse = app._browse
         aContext = app.context
+
+        relative = normpath(relative)
 
         moduleRef = f&#34;{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
@@ -669,7 +673,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L47-L72" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L47-L72" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -726,7 +730,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L176-L266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L176-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
     &#34;&#34;&#34;Prepare to load a single module.
@@ -761,6 +765,8 @@ location paths and the module paths.</p>
     app = self.app
     _browse = app._browse
     aContext = app.context
+
+    relative = normpath(relative)
 
     moduleRef = f&#34;{org}/{repo}/{relative}&#34;
     if moduleRef in self.seen:
@@ -830,7 +836,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L120-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L120-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -880,9 +886,9 @@ location paths and the module paths.</p>
     givenModules = (
         []
         if modules is None
-        else [x.strip() for x in itemize(modules, &#34;\n&#34;)]
+        else [normpath(x.strip()) for x in itemize(modules, &#34;\n&#34;)]
         if type(modules) is str
-        else [str(x) for x in modules]
+        else [normpath(str(x)) for x in modules]
     )
 
     self.locations = mLocations + givenLocations
@@ -898,7 +904,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L99-L118" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L99-L118" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -916,7 +922,7 @@ location paths and the module paths.</p>
             self.good = False
             continue
 
-        (org, repo, relative, thisCheckoutData) = parts
+        parts[2] = normpath(parts[2])  # the relative bit
 
         if not self.getModule(*parts):
             self.good = False</code></pre>
@@ -937,7 +943,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/advanced/data.py#L74-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/data.py#L74-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.

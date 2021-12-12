@@ -54,6 +54,13 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="919">9.1.9</h4>
+<p>Upcoming</p>
+<p>Made sure that path names of files and directories, when retrieved by means of
+os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
+These two functions might introduces path with backslashes when on Windows.
+The rest of TF works with forward slashes exclusively.
+We want prevent paths with mixed forward slashes and backslashes.</p>
 <h4 id="918">9.1.8</h4>
 <p>2021-12-10</p>
 <p>Fixed missing expander triangles in the feature overview after the incantation.
@@ -201,7 +208,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f5d1ee30c4a25fc66939141eb61040fcabad05e3/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -275,6 +282,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#919">9.1.9</a></li>
 <li><a href="#918">9.1.8</a></li>
 <li><a href="#917">9.1.7</a></li>
 <li><a href="#916">9.1.6</a></li>
