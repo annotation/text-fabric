@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L1-L579" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L1-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -79,7 +79,7 @@ class App:
         hoist=False,
         version=None,
         checkout=&#34;&#34;,
-        mod=None,
+        mod=[],
         locations=None,
         modules=None,
         volume=None,
@@ -164,8 +164,8 @@ class App:
                 Every properly designed data module must refer to a specific
                 version of the main source!
 
-        mod: string, optional `None`
-            A comma-separated list of modules in one of the forms
+        mod: string or iterable, optional `[]`
+            A comma-separated list or an iterable of modules in one of the forms
 
                {org}/{repo}/{path}
 
@@ -194,6 +194,17 @@ class App:
 
             Your TF app might be configured to download specific modules.
             See `moduleSpecs` in the app&#39;s `config.yaml` file.
+
+            If you need these specific module with a different checkout specifier,
+            you can override those by passing those modules in this parameter
+            explicitly.
+
+            !!! hint
+                This is needed for example if you specify a specific release
+                for the core data module. The associated standard modules probably
+                do not have that exact same release, so you have to look up their
+                releases in Github, and attach the release numbers found
+                to the module specifiers.
 
             !!! caution &#34;Let TF manage your text-fabric-data directory&#34;
                 It is better not to fiddle with your `~/text-fabric-data` directory
@@ -577,11 +588,15 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appPath = f&#34;{appBaseRep}{appDir}&#34;
 
         appClass = findAppClass(appName, appPath) or App
+
+    mod = kwargs.get(&#34;mod&#34;, [])
+    mod = mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
     if extraMod:
-        if kwargs.get(&#34;mod&#34;, None):
-            kwargs[&#34;mod&#34;] = f&#34;{extraMod},{kwargs[&#39;mod&#39;]}&#34;
+        if len(mod) &gt; 0:
+            mod = [extraMod, *mod]
         else:
-            kwargs[&#34;mod&#34;] = extraMod
+            mod = [extraMod]
+    kwargs[&#34;mod&#34;] = mod
     try:
         app = appClass(
             cfg,
@@ -650,7 +665,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L464-L579" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L475-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -738,11 +753,15 @@ class.</dd>
         appPath = f&#34;{appBaseRep}{appDir}&#34;
 
         appClass = findAppClass(appName, appPath) or App
+
+    mod = kwargs.get(&#34;mod&#34;, [])
+    mod = mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
     if extraMod:
-        if kwargs.get(&#34;mod&#34;, None):
-            kwargs[&#34;mod&#34;] = f&#34;{extraMod},{kwargs[&#39;mod&#39;]}&#34;
+        if len(mod) &gt; 0:
+            mod = [extraMod, *mod]
         else:
-            kwargs[&#34;mod&#34;] = extraMod
+            mod = [extraMod]
+    kwargs[&#34;mod&#34;] = mod
     try:
         app = appClass(
             cfg,
@@ -777,7 +796,7 @@ class.</dd>
 <dl>
 <dt id="tf.advanced.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>cfg, appName, appPath, commit, release, local, _browse, hoist=False, version=None, checkout='', mod=None, locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent=False, **configOverrides)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, _browse, hoist=False, version=None, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent=False, **configOverrides)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
@@ -857,9 +876,9 @@ Every properly designed data module must refer to a specific
 version of the main source!</p>
 </div>
 </dd>
-<dt><strong><code>mod</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dt><strong><code>mod</code></strong> :&ensp;<code>string</code> or <code>iterable</code>, optional <code>[]</code></dt>
 <dd>
-<p>A comma-separated list of modules in one of the forms</p>
+<p>A comma-separated list or an iterable of modules in one of the forms</p>
 <p>{org}/{repo}/{path}</p>
 <p>or</p>
 <p>{org}/{repo}/{path}:specifier</p>
@@ -878,6 +897,17 @@ if you know that it contains relevant features.</p>
 It is used to get data from a different point in the history.</p>
 <p>Your TF app might be configured to download specific modules.
 See <code>moduleSpecs</code> in the app's <code>config.yaml</code> file.</p>
+<p>If you need these specific module with a different checkout specifier,
+you can override those by passing those modules in this parameter
+explicitly.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This is needed for example if you specify a specific release
+for the core data module. The associated standard modules probably
+do not have that exact same release, so you have to look up their
+releases in Github, and attach the release numbers found
+to the module specifiers.</p>
+</div>
 <div class="admonition caution">
 <p class="admonition-title">Let TF manage your text-fabric-data directory</p>
 <p>It is better not to fiddle with your <code>~/text-fabric-data</code> directory
@@ -976,7 +1006,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L39-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L39-L472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -991,7 +1021,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         hoist=False,
         version=None,
         checkout=&#34;&#34;,
-        mod=None,
+        mod=[],
         locations=None,
         modules=None,
         volume=None,
@@ -1076,8 +1106,8 @@ The collection takes precedence, and the volume is ignored in that case.</p>
                 Every properly designed data module must refer to a specific
                 version of the main source!
 
-        mod: string, optional `None`
-            A comma-separated list of modules in one of the forms
+        mod: string or iterable, optional `[]`
+            A comma-separated list or an iterable of modules in one of the forms
 
                {org}/{repo}/{path}
 
@@ -1106,6 +1136,17 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 
             Your TF app might be configured to download specific modules.
             See `moduleSpecs` in the app&#39;s `config.yaml` file.
+
+            If you need these specific module with a different checkout specifier,
+            you can override those by passing those modules in this parameter
+            explicitly.
+
+            !!! hint
+                This is needed for example if you specify a specific release
+                for the core data module. The associated standard modules probably
+                do not have that exact same release, so you have to look up their
+                releases in Github, and attach the release numbers found
+                to the module specifiers.
 
             !!! caution &#34;Let TF manage your text-fabric-data directory&#34;
                 It is better not to fiddle with your `~/text-fabric-data` directory
@@ -1442,7 +1483,7 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L376-L403" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L387-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=False):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1483,7 +1524,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L405-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L416-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1518,7 +1559,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/advanced/app.py#L412-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/advanced/app.py#L423-L472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

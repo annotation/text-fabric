@@ -55,12 +55,19 @@ To get the newest unstable version:</p>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
 <h4 id="919">9.1.9</h4>
-<p>Upcoming</p>
-<p>Made sure that path names of files and directories, when retrieved by means of
+<p>2021-12-13</p>
+<ul>
+<li>Made sure that path names of files and directories, when retrieved by means of
 os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
 These two functions might introduces path with backslashes when on Windows.
 The rest of TF works with forward slashes exclusively.
-We want prevent paths with mixed forward slashes and backslashes.</p>
+We want prevent paths with mixed forward slashes and backslashes.</li>
+<li>The <code>mod</code> parameter in A.use() accepts not only comma separated strings of
+data modules, but also iterables of such modules.</li>
+<li>If you want to override the checkout specifiers of standard modules (e.g.
+the <code>etcbc/parallels/tf</code> or <code>etcbc/phono/tf</code> modules of the <code>bhsa</code>,
+you can now override them by passing these modules in the <code>mod</code> parameter.</li>
+</ul>
 <h4 id="918">9.1.8</h4>
 <p>2021-12-10</p>
 <p>Fixed missing expander triangles in the feature overview after the incantation.
@@ -208,7 +215,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ffa5a0af833343bfa9a32ae9df12806990bc5d43/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
