@@ -48,13 +48,18 @@ text-fabric appName:hot
 
 #### 9.1.9
 
-Upcoming
+2021-12-13
 
-Made sure that path names of files and directories, when retrieved by means of
-os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
-These two functions might introduces path with backslashes when on Windows.
-The rest of TF works with forward slashes exclusively.
-We want prevent paths with mixed forward slashes and backslashes.
+*   Made sure that path names of files and directories, when retrieved by means of
+    os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
+    These two functions might introduces path with backslashes when on Windows.
+    The rest of TF works with forward slashes exclusively.
+    We want prevent paths with mixed forward slashes and backslashes.
+*   The `mod` parameter in A.use() accepts not only comma separated strings of 
+    data modules, but also iterables of such modules.
+*   If you want to override the checkout specifiers of standard modules (e.g.
+    the `etcbc/parallels/tf` or `etcbc/phono/tf` modules of the `bhsa`,
+    you can now override them by passing these modules in the `mod` parameter.
 
 
 #### 9.1.8

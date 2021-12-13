@@ -37,7 +37,13 @@ class AppData(object):
 
         """
         self.app = app
-        self.moduleRefs = moduleRefs
+        self.moduleRefs = (
+            []
+            if moduleRefs is None
+            else moduleRefs.split(",")
+            if type(moduleRefs) is str
+            else list(moduleRefs)
+        )
         self.locationsArg = locations
         self.modulesArg = modules
         self.version = version
@@ -77,6 +83,11 @@ class AppData(object):
         These are specified in the `moduleSpecs` setting under
         `provenanceSpecs` in `config.yaml`.
 
+        They will be loaded *after* the extra modules specified in the **mod**
+        parameter, and only in as far they have not been specifief in the
+        **mod** parameter. In this way you can pass overriding
+        checkout specifiers to the standard modules.
+
         See Also
         --------
         tf.advanced.settings: options allowed in `config.yaml`
@@ -85,13 +96,22 @@ class AppData(object):
         app = self.app
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
+        seen = self.seen
 
         for m in moduleSpecs or []:
+            org = m["org"]
+            repo = m["repo"]
+            relative = m["relative"]
+            checkout = m.get("checkout", self.checkout)
+            ref = f"{org}/{repo}/{relative}"
+            if ref in seen:
+                continue
+
             if not self.getModule(
-                m["org"],
-                m["repo"],
-                m["relative"],
-                m.get("checkout", self.checkout),
+                org,
+                repo,
+                relative,
+                checkout,
                 specs=m,
             ):
                 self.good = False
@@ -100,11 +120,14 @@ class AppData(object):
         """Get data from additional modules.
 
         These are specified in the `moduleRefs` parameter of `AppData`.
+        We store the set of special modules in order to skip them
+        later when we are loading the standard modules.
         """
 
         refs = self.moduleRefs
-        for ref in refs.split(",") if refs else []:
-            if ref in self.seen:
+        for ref in refs:
+            refPure = ref.rsplit(":", 1)[0]
+            if refPure in self.seen:
                 continue
 
             parts = splitModRef(ref)
@@ -135,8 +158,8 @@ class AppData(object):
         self.seen = set()
 
         self.getMain()
-        self.getStandard()
         self.getRefs()
+        self.getStandard()
 
         version = self.version
         good = self.good
@@ -260,7 +283,9 @@ class AppData(object):
                 ("release", release or "none"),
                 (
                     "live",
-                    provenanceLink(org, repo, version, commit, local, release, relative),
+                    provenanceLink(
+                        org, repo, version, commit, local, release, relative
+                    ),
                 ),
                 ("doi", info["doi"]),
             )

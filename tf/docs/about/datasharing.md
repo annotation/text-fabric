@@ -66,9 +66,10 @@ Read more in `tf.about.browser`.
 The data sharing workflow is built around the following assumptions:
 
 main corpus
-:   You work with a main corpus for which a `config.yaml` is available
-    that holds settings for the location of the data repository on GitHub.
-    See `tf.about.corpora`.
+:   You work with a main corpus
+    (it is not necessary anymore that a TF-app exists for the main corpus).
+    The TF features of the corpus must be versioned, i.e. they must sit
+    in a subdirectory named after the version.
 
 versioned tf data
 :   The data you share consists of a set of TF features, tied to a specific
@@ -85,15 +86,15 @@ local github
 
     Your own data should be in such a repo as well, e.g.
 
-        ch-jensen/Semantic-mapping-of-participants/actor/tf
+    `ch-jensen/participants/actor/tf
 
     or
 
-       etcbc/lingo/heads/tf`
+    `etcbc/lingo/heads/tf`
 
     or
 
-       annotation/banks/sim/tf`
+    `annotation/banks/sim/tf`
 
 synchronized with GitHub
 :   You must have your local repo contents synchronized with that on GitHub.
@@ -117,7 +118,16 @@ released on GitHub
 get data
 :   In order to get data, the only thing Text-Fabric needs to know,
     is a string with the organisation or person, the repository,
-    and the path within the repository.
+    and the path within the repository up to the parent of 
+    the subdirectories corresponding corresponding to the versions of
+    the features.
+
+    !!! example "Module specs do not contain versions"
+        In the `bhsa` repository if the `etcbc` organization, there is a 
+        directory `tf` under which you see direcories `2021`, `2017`, `c`, etc.
+        which contain TF feature files.
+        In order to get these features, your module specififer is
+        `etcbc/bhsa/tf`.
 
     Based on the string `{org}/{repo}/{path}` it will find the online
     repository, check the latest release, find the zip file,
@@ -206,7 +216,7 @@ to do that.
 
 !!! caution "Write access"
     You can only do the following steps for repositories for which you have write access,
-    so do not try to perform this on `annotation/banks` but use a repo of your own.**
+    so do not try to perform this on `annotation/banks` but use a repo of your own.
 
 On the command line, go to the directory of your repository, and say
 
@@ -228,7 +238,16 @@ use('banks', mod=f'annotation/banks/sim/tf')
 without the `clone` option.
 If you do this, you get a freshly downloaded copy of your features in
 your `~/text-fabric-data` directory.
-And every time you do this again, a check for updates will be performed.
+And every time you do this again, the downloaded data is ready to use.
+If you want to make sure that you have the most recent stable release of that data,
+you may say
+
+```python
+use('banks', mod=f'annotation/banks/sim/tf:latest')
+```
+
+and then check for updates will be performed and if there is a newer release,
+it will be downloaded.
 
 ### Make a release
 
@@ -241,7 +260,7 @@ Then click *Draft a new release*
 
 ![releases](../images/add-draft.png)
 
-Fill in the details, especially the release version (something like `0.2`),
+Fill in the details, especially the release version (something like `0.2`, or `v0.2`),
 although nothing in the workflow depends on the exact form of the version number;
 you will see the release version in the provenance, though.
 
@@ -249,9 +268,11 @@ Click the button *Publish release*.
 
 Now your data is available to others.
 
-Now the users of your data can refer to that copy by means of the version number.
-By default, the data from the latest release will be downloaded,
-and subsequent unreleased commits will be ignored.
+The users of your data can refer to that copy by means of the version number:
+
+```python
+use('banks', mod=f'annotation/banks/sim/tf:0.2')
+```
 
 ### Package into zip files
 
@@ -338,7 +359,7 @@ The values of the checkout parameters tell you to use data that is:
 * `local`: locally present under `~/text-fabric-data` in the appropriate place
 * `latest`: from the latest online release
 * `hot`: from the latest online commit
-* `''`: (default):
+* `''`: (default): from your local copy, but if there is no local copy,
   from the latest online release, or if there are no releases,
   from the latest online commit
 * `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
@@ -346,15 +367,18 @@ The values of the checkout parameters tell you to use data that is:
 
 You pass the checkout values as follows:
 
-* for the TF-app:
+* For the TF-app:
   **after the app name**:
   `bhsa:clone`, `oldbabylonian:local`, `quran`.
-  If you leave it out, it defaults to the empty string: latest release or commit.
-* for the main data and standard data modules of the app:
+  If you leave it out, it defaults to the empty string: local copy or latest release or commit.
+* For the main data and standard data modules of the app:
   **in the `checkout` parameter**: 
   `checkout='clone'`, `checkout='local'`, `checkout=''`.
   If you omit `checkout` out, it defaults to the empty string: latest release or commit.
-* for the data that you call up as a module:
+  If you need a different checkout specifier for the main data and the standard
+  modules, you can pass the standard modules explicitly to the
+  `mod=` parameter of the `use()` command and give them the specifiers you need.
+* For the data that you call up as a module:
   **after the module name**:
   `annotation/banks/sim/tf:clone`, `annotation/banks/sim/tf:local`,
   `annotation/banks/sim/tf`.
@@ -406,7 +430,7 @@ word letters~th
 -sim=100> word
 ```
 
-and expand the first result in Genesis 1:1.
+and expand a result:
 
 The display looks like this:
 
@@ -416,120 +440,12 @@ And if you export the data, the extra module is listed in the provenance.
 
 ![sense](../images/add-sim-prov.png)
 
-!!! explanation "Feature display in the TF browser"
-    You can use new features in queries.
-    Pretty displays will show those features automatically, because
-    all features used in a query are displayed in the expanded view.
-
-If you want to see a feature that is not used in the query
-you can add it as a trivial search criterion.
-
-For example, if you want to see the `sense` feature when looking for phrases,
-add it like this
-
-```
-clause
-  phrase sense*
-```
-
-The `*` means: always true, so it will not influence the query result set,
-only its display;
-
-In fact, the feature sense is only present on nodes of type `word`.
-But mentioning a feature anywhere in the query
-will trigger the display wherever it occurs with a non-trivial values.
-
-The extra data modules are also shown in the provenance listings
-when you export data from the browser.
-
-!!! explanation "Feature display in a Jupyter notebook"
-    After the incantation, you see an overview of all features per module
-    where they come from, linked to their documentation or repository.
-
-You can use the new features exactly as you are used to, with `F` and `E`
-(for edge features).
-
-They will also automatically show up in `pretty` displays,
-provided you have run a query using them before.
-
-Alternatively, you can
-tell which features you want to add to the display.
-That can be done by `tf.advanced.display.displaySetup` and
-`tf.advanced.display.displayReset` using the parameter `extraFeatures`.
-
 ### More modules at the same time
 
 Now that we get the hang of it, we would like to use multiple modules
 added to a main data source.
 
-We go to the `bhsa` (Hebrew Bible) and use
-the `heads` feature that Cody Kingham prepared in
-[etcbc/lingo/heads](https://github.com/etcbc/lingo/tree/master/heads)
-as well as the `actor` feature that Christian Høygaard-Jensen prepared in
-[ch-jensen/Semantic-mapping-of-participants](https://github.com/ch-jensen/Semantic-mapping-of-participants)
-We'll include it next to the valence data, by calling the TF browser like this:
-
-```sh
-text-fabric bhsa --mod=etcbc/valence/tf,etcbc/lingo/heads/tf,ch-jensen/Semantic-mapping-of-participants/actor/tf
-```
-
-Unsurprisingly: the `heads` and `actor` features and friends
-are downloaded and made ready for import.
-
-You can test it by means of this query
-
-```
-book book=Leviticus
-  phrase sense*
-    phrase_atom actor=KHN
-  -heads> word
-```
-
-Note that `heads` is an edge feature.
-
-![sense](../images/add-heads.png)
-
-In a Jupyter notebook, it goes like this:
-
-```python
-from tf.app import use
-A = use(
-    'bhsa',
-    mod=(
-        'etcbc/valence/tf,'
-        'etcbc/lingo/heads/tf,'
-        'ch-jensen/Semantic-mapping-of-participants/actor/tf'
-    ),
-    hoist=globals(),
-)
-```
-
-![sense](../images/add-incantation.png)
-
-Now you can run the same query as before:
-
-```python
-results = A.search('''
-book book=Leviticus
-  phrase sense*
-    phrase_atom actor=KHN
-  -heads> word
-''')
-```
-
-And let's see results in pretty display.
-We have to manually declare that we want to see the `sense` and `actor` feature.
-
-```
-A.displaySetup(extraFeatures='sense actor')
-A.show(results, start=8, end=8, condensed=True, condenseType='verse')
-```
-
-See the
+This we do for the
+[BHSA](https://annotation.github.io/text-fabric/tf/about/corpora.html) in the
 [share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
 tutorial.
-
-## Exercise
-
-See whether you can find the quote in the Easter egg that is in
-`etcbc/lingo/easter/tf` !

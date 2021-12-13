@@ -49,7 +49,7 @@ class App:
         hoist=False,
         version=None,
         checkout="",
-        mod=None,
+        mod=[],
         locations=None,
         modules=None,
         volume=None,
@@ -134,8 +134,8 @@ class App:
                 Every properly designed data module must refer to a specific
                 version of the main source!
 
-        mod: string, optional `None`
-            A comma-separated list of modules in one of the forms
+        mod: string or iterable, optional `[]`
+            A comma-separated list or an iterable of modules in one of the forms
 
                {org}/{repo}/{path}
 
@@ -164,6 +164,17 @@ class App:
 
             Your TF app might be configured to download specific modules.
             See `moduleSpecs` in the app's `config.yaml` file.
+
+            If you need these specific module with a different checkout specifier,
+            you can override those by passing those modules in this parameter
+            explicitly.
+
+            !!! hint
+                This is needed for example if you specify a specific release
+                for the core data module. The associated standard modules probably
+                do not have that exact same release, so you have to look up their
+                releases in Github, and attach the release numbers found
+                to the module specifiers.
 
             !!! caution "Let TF manage your text-fabric-data directory"
                 It is better not to fiddle with your `~/text-fabric-data` directory
@@ -547,11 +558,15 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appPath = f"{appBaseRep}{appDir}"
 
         appClass = findAppClass(appName, appPath) or App
+
+    mod = kwargs.get("mod", [])
+    mod = mod.split(",") if type(mod) is str else list(mod)
     if extraMod:
-        if kwargs.get("mod", None):
-            kwargs["mod"] = f"{extraMod},{kwargs['mod']}"
+        if len(mod) > 0:
+            mod = [extraMod, *mod]
         else:
-            kwargs["mod"] = extraMod
+            mod = [extraMod]
+    kwargs["mod"] = mod
     try:
         app = appClass(
             cfg,
