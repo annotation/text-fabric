@@ -305,6 +305,7 @@ Api reference : {APIREF}
         error = tmObj.error
         cache = tmObj.cache
         reset = tmObj.reset
+        featuresOnly = self.featuresOnly
 
         if silent is not None:
             wasSilent = isSilent()
@@ -313,6 +314,7 @@ Api reference : {APIREF}
         self.sectionsOK = True
         self.structureOK = True
         self.good = True
+
         if self.good:
             featuresRequested = sorted(fitemize(features))
             if add:
@@ -320,9 +322,11 @@ Api reference : {APIREF}
             else:
                 self.featuresRequested = featuresRequested
             for fName in (OTYPE, OSLOTS, OTEXT):
-                self._loadFeature(fName, optional=fName == OTEXT)
-        if self.good:
-            self.textFeatures = set()
+                self._loadFeature(fName, optional=fName == OTEXT or featuresOnly)
+
+        self.textFeatures = set()
+
+        if self.good and not featuresOnly:
             if OTEXT in self.features:
                 otextMeta = self.features[OTEXT].metaData
                 for otextMod in self.features:
@@ -374,8 +378,9 @@ Api reference : {APIREF}
                 self.sectionsOK = False
                 self.structureOK = False
 
-        if self.good:
+        if self.good and not featuresOnly:
             self._precompute()
+
         if self.good:
             reset()
             for fName in self.featuresRequested:
@@ -387,6 +392,7 @@ Api reference : {APIREF}
                     result = False
                     break
                 reset()
+
         indent(level=0)
         if self.good:
             if add:
@@ -404,6 +410,7 @@ Api reference : {APIREF}
                     result = False
         else:
             result = False
+
         if silent is not None:
             setSilent(wasSilent)
         return result
@@ -914,55 +921,56 @@ Api reference : {APIREF}
             tm=False,
         )
 
-        good = True
-        for fName in (OTYPE, OSLOTS, OTEXT):
-            if fName not in self.features:
-                if fName == OTEXT:
-                    info(
-                        (
-                            f'Warp feature "{OTEXT}" not found. Working without Text-API\n'
-                        )
-                    )
-                    self.features[OTEXT] = Data(
-                        f"{OTEXT}.tf",
-                        self.tmObj,
-                        isConfig=True,
-                        metaData=OTEXT_DEFAULT,
-                    )
-                    self.features[OTEXT].dataLoaded = True
-                else:
-                    info(f'Warp feature "{fName}" not found in\n{self.locationRep}')
-                    good = False
-            elif fName == OTEXT:
-                self._loadFeature(fName, optional=True)
-        if not good:
-            return False
-        self.warpDir = self.features[OTYPE].dirName
-        self.precomputeList = []
-        for (dep2, fName, method, dependencies) in PRECOMPUTE:
-            thisGood = True
-            if dep2 and OTEXT not in self.features:
-                continue
-            if dep2:
-                otextMeta = self.features[OTEXT].metaData
-                sFeatures = f"{KIND[fName]}Features"
-                sFeats = tuple(itemize(otextMeta.get(sFeatures, ""), ","))
-                dependencies = dependencies + sFeats
-            for dep in dependencies:
-                if dep not in self.features:
-                    warning(
-                        f'Missing dependency for computed data feature "{fName}": "{dep}"'
-                    )
-                    thisGood = False
-            if not thisGood:
-                good = False
-            self.features[fName] = Data(
-                f"{self.warpDir}/{fName}.x",
-                self.tmObj,
-                method=method,
-                dependencies=[self.features.get(dep, None) for dep in dependencies],
+        self.featuresOnly = False
+
+        if OTYPE not in self.features or OSLOTS not in self.features:
+            info(
+                f"Not all of the warp features {OTYPE} and {OSLOTS} "
+                f"are present in\n{self.locationRep}"
             )
-            self.precomputeList.append((fName, dep2))
+            info("Only the Feature and Edge APIs will be enabled")
+            self.featuresOnly = True
+        if OTEXT in self.features:
+            self._loadFeature(OTEXT, optional=True)
+        else:
+            info((f'Warp feature "{OTEXT}" not found. Working without Text-API\n'))
+            self.features[OTEXT] = Data(
+                f"{OTEXT}.tf",
+                self.tmObj,
+                isConfig=True,
+                metaData=OTEXT_DEFAULT,
+            )
+            self.features[OTEXT].dataLoaded = True
+
+        good = True
+        if not self.featuresOnly:
+            self.warpDir = self.features[OTYPE].dirName
+            self.precomputeList = []
+            for (dep2, fName, method, dependencies) in PRECOMPUTE:
+                thisGood = True
+                if dep2 and OTEXT not in self.features:
+                    continue
+                if dep2:
+                    otextMeta = self.features[OTEXT].metaData
+                    sFeatures = f"{KIND[fName]}Features"
+                    sFeats = tuple(itemize(otextMeta.get(sFeatures, ""), ","))
+                    dependencies = dependencies + sFeats
+                for dep in dependencies:
+                    if dep not in self.features:
+                        warning(
+                            "Missing dependency for computed data feature "
+                            f'"{fName}": "{dep}"'
+                        )
+                        thisGood = False
+                if not thisGood:
+                    good = False
+                self.features[fName] = Data(
+                    f"{self.warpDir}/{fName}.x",
+                    self.tmObj,
+                    method=method,
+                    dependencies=[self.features.get(dep, None) for dep in dependencies],
+                )
+                self.precomputeList.append((fName, dep2))
         self.good = good
 
     def _getWriteLoc(self, location=None, module=None):
@@ -1008,15 +1016,19 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         indent = tmObj.indent
         info = tmObj.info
+        featuresOnly = self.featuresOnly
 
         silent = isSilent()
         api = Api(self)
+        api.featuresOnly = featuresOnly
 
-        w0info = self.features[OTYPE]
-        w1info = self.features[OSLOTS]
+        if not featuresOnly:
+            w0info = self.features[OTYPE]
+            w1info = self.features[OSLOTS]
 
-        setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
-        setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
+        if not featuresOnly:
+            setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
+            setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
 
         requestedSet = set(self.featuresRequested)
 
@@ -1024,15 +1036,18 @@ Api reference : {APIREF}
             fObj = self.features[fName]
             if fObj.dataLoaded and not fObj.isConfig:
                 if fObj.method:
-                    feat = fName.strip("_")
-                    ok = getattr(self, f"{feat}OK", False)
-                    ap = api.C
-                    if fName in [x[0] for x in self.precomputeList if not x[1] or ok]:
-                        setattr(ap, feat, Computed(api, fObj.data))
-                    else:
-                        fObj.unload()
-                        if hasattr(ap, feat):
-                            delattr(api.C, feat)
+                    if not featuresOnly:
+                        feat = fName.strip("_")
+                        ok = getattr(self, f"{feat}OK", False)
+                        ap = api.C
+                        if fName in [
+                            x[0] for x in self.precomputeList if not x[1] or ok
+                        ]:
+                            setattr(ap, feat, Computed(api, fObj.data))
+                        else:
+                            fObj.unload()
+                            if hasattr(ap, feat):
+                                delattr(api.C, feat)
                 else:
                     if fName in requestedSet | self.textFeatures:
                         if fName in (OTYPE, OSLOTS, OTEXT):
@@ -1062,11 +1077,12 @@ Api reference : {APIREF}
                             if hasattr(api.F, fName):
                                 delattr(api.F, fName)
                         fObj.unload()
-        addOtype(api)
-        addNodes(api)
-        addLocality(api)
-        addText(api)
-        addSearch(api, silent)
+        if not featuresOnly:
+            addOtype(api)
+            addNodes(api)
+            addLocality(api)
+            addText(api)
+            addSearch(api, silent)
         indent(level=0)
         info("All features loaded/computed - for details use TF.isLoaded()")
         self.api = api

@@ -4,6 +4,8 @@
 It provides methods to navigate nodes and edges and lookup features.
 """
 
+from textwrap import wrap
+
 from .helpers import flattenToSet, console, fitemize, unexpanduser as ux
 from .nodes import Nodes
 from .locality import Locality
@@ -263,6 +265,7 @@ class Api(object):
                     kind = f" {kind:<10}"
                     fSource = ""
                     metaRep = ""
+                    heading = f"{fName:<20}{kind}{fSource}"
                 else:
                     fKind = fInfo["kind"]
                     fMeta = fInfo.get("meta", {})
@@ -292,16 +295,22 @@ class Api(object):
                         metaKeys = fitemize(meta)
                         metaInfo = {k: fMeta[k] for k in metaKeys if k in fMeta}
 
+                    heading = f"{fName:<20}{kind}{fSource}"
                     metaRep = ""
+                    indent = " " * (len(heading) + 1)
                     if metaInfo:
                         if len(metaKeys) == 1:
-                            metaRep = metaInfo.get(metaKeys[0], "")
-                            metaRep = f" {metaRep}" if metaRep else ""
+                            value = metaInfo.get(metaKeys[0], "")
+                            value = "\n".join(wrap(value, width=80, subsequent_indent=indent))
+                            metaRep = f" {value}" if value else ""
                         else:
+                            indent = " " * 21
                             for k in metaKeys:
-                                metaRep += f"\n\t{k:<20} = {metaInfo.get(k, '')}"
+                                value = metaInfo.get(k, "")
+                                value = "\n".join(wrap(value, width=80, subsequent_indent=f"\t{indent}  "))
+                                metaRep += f"\n\t{k:<20} = {value}"
 
-                msg = f"{fName:<20}{kind}{fSource}{metaRep}"
+                msg = f"{heading}{metaRep}"
                 print(msg)
             return None
         return info

@@ -233,12 +233,26 @@ class Versions:
     def __init__(self, api, va, vb, slotMap=None):
         """Map the nodes of a nodetype between two versions of a TF dataset.
 
+        There are two scenarios in which you can use this object:
+
+        **Extend a slot map to a node mapping**.
+
         If this object is initialized with a `slotMap`, it can
         extend that mapping to a complete node mapping and save the mapping
-        as an `f"omap#{va}-{vb}"` edge feature in the dataset version `vb`.
+        as an `f"omap@{va}-{vb}"` edge feature in the dataset version `vb`.
 
-        Without a slotMap, and assuming such an omap edge is present,
-        it can map node features between the versions.
+        In this use case, the apis for both `va` and `vb` should be full TF APIs,
+        in particular, they should provide the `tf.core.locality` API.
+
+        **Use an existing node map to upgrade features from one version to another**.
+
+        In this use case, you do not have to pass a `slotMap`,
+        but in the `vb` dataset there should be an `omap@a-b` feature,
+        i.e. a node map from the nodes of `va` to those of `vb`.
+
+        The apis for both `va` and `vb` may be partial TF APIs, which means that they
+        only have to provide the `tf.core.nodefeature.NodeFeatures` (`F`) and
+        `tf.core.edgefeature.EdgeFeatures` (`E`) apis.
 
         Parameters
         ----------
@@ -264,8 +278,9 @@ class Versions:
         if not self.good:
             return
 
-        self.La = api[va].L
-        self.Lb = api[vb].L
+        # self.La = api[va].L
+        if slotMap is not None:
+            self.Lb = api[vb].L
         self.Ea = api[va].E
         self.Esa = api[va].Es
         self.Eb = api[vb].E
@@ -280,6 +295,12 @@ class Versions:
         self.diagnosis = {}
 
     def makeNodeMapping(self, nodeType):
+        edge = self.edge
+
+        if edge is None:
+            print("Cannot make node mapping if no slot mapping is given")
+            return False
+
         va = self.va
         vb = self.vb
         Lb = self.Lb
@@ -291,12 +312,6 @@ class Versions:
         Eosa = Ea.oslots.s
         Eosb = Eb.oslots.s
         otypesa = Fa.otype.s
-
-        edge = self.edge
-
-        if edge is None:
-            print("Cannot make node mapping if no slot mapping is given")
-            return False
 
         caption(2, "Mapping {} nodes {} ==> {}".format(nodeType, va, vb))
 
@@ -468,7 +483,7 @@ class Versions:
     def omapName(self):
         va = self.va
         vb = self.vb
-        return f"omap#{va}-{vb}"
+        return f"omap@{va}-{vb}"
 
     def writeMap(self):
         TFb = self.TFb
@@ -515,6 +530,29 @@ class Versions:
         If you have a dataset with several features, and if there is a node map between
         the versions, you can migrate features from the older version to the newer.
 
+        The naive approach per feature is:
+
+        For each node in the old version that has a value for the feature,
+        map the node to the new version.
+        That could be several nodes.
+        Then give all those nodes the value found on the node in the old set.
+
+        The problem with that is this:
+
+        Suppose node `n` in the old version maps to nodes `p` and `q` in the
+        new version, but not with the same quality.
+        Suppose the value is `v`. Then the feature assignment will assign
+        `v` to nodes `p` and `q`.
+
+        But there could very wel be a later node `m` with value `w` in the old version
+        that also maps to `p`, and with a lower quality.
+        Then later the node `p` in the new version will be assigned the value `w`
+        because of this, and this is sub otpimal.
+
+        So we make sure that for each feature and each node in the new version
+        the value assigned to it is the value of the node in the old version that
+        maps with the highest quality to the new node.
+
         Parameters
         ----------
         featureNames: tuple
@@ -528,7 +566,9 @@ class Versions:
         TFa = self.TFa
         TFb = self.TFb
         Fsa = self.Fsa
+        Esa = self.Esa
         Esb = self.Esb
+        va = self.va
         vb = self.vb
 
         emap = Esb(self.omapName()).f
@@ -537,21 +577,74 @@ class Versions:
         edgeFeatures = {}
         metaData = {}
 
+        def getBestMatches(n, dest):
+            result = []
+            mapped = emap(n)
+
+            if mapped:
+                perfect = [x for x in mapped if x[1] is None]
+                if perfect:
+                    return [perfect[0]]
+
+                nearPerfect = [x for x in mapped if x[1] == 0]
+                if nearPerfect:
+                    (m, q) = nearPerfect[0]
+                    if m not in dest or m in dest and dest[m][1] is not None:
+                        return [nearPerfect[0]]
+
+                for (m, q) in mapped:
+                    # these q cannot be None or 0
+                    if m in dest:
+                        (origVal, origQ) = dest[m]
+                        higherQuality = origQ is not None and q < origQ
+                        if origVal == val:
+                            if higherQuality:
+                                result.append((m, q))
+                        elif higherQuality:
+                            result.append((m, q))
+                    else:
+                        result.append((m, q))
+            return result
+
         for featureName in featureNames:
-            featureObj = Fsa(featureName)
+            isEdge = TFa.features[featureName].isEdge
+            featureObj = (Esa if isEdge else Fsa)(featureName)
             featureInfo = dict(featureObj.items())
             metaData[featureName] = featureObj.meta
+            metaData[featureName]["upgraded"] = f"from version {va} to {vb}"
 
-            isEdge = TFa.features[featureName].isEdge
             edgeValues = featureObj.doValues if isEdge else False
 
             dest = edgeFeatures if isEdge else nodeFeatures
             dest[featureName] = {}
             dest = dest[featureName]
 
+            # we will not only store the feature value in dest,
+            # but also the quality of the mapping that
+            # produced the value.
+            # We only override an existing value
+            # if the quality of the mapping is better.
+            # Moreover, if one mapping has quality 0,
+            # it means that the mapping is perfect regarding the material in both nodes
+            # but there are lesser mappings as well.
+            # In those cases we do not extend the value to those lesser mappings
+            # Later, we strip the qualities again.
+
             if isEdge:
                 if edgeValues:
                     for (n, ts) in featureInfo.items():
+                        matched = getBestMatches(n, dest)
+                        if matched:
+                            matchedTs = {}
+                            for (t, val) in ts.items():
+                                for (t, r) in getBestMatches(t, matchedTs):
+                                    matchedTs[t] = (val, r)
+                            for t in matchedTs:
+                                matchedTs[t] = matchedTs[t][0]
+                            for (m, q) in matched:
+                                dest[m] = (matchedTs, q)
+
+                        """
                         mapped = emap(n)
                         if mapped:
                             mappedts = {}
@@ -562,24 +655,38 @@ class Versions:
                                         mappedts[tEntry[0]] = val
                             for entry in mapped:
                                 dest[entry[0]] = mappedts
+                                """
                 else:
                     for (n, ts) in featureInfo.items():
+                        matched = getBestMatches(n, dest)
+                        if matched:
+                            matchedTs = {}
+                            for t in ts:
+                                for (t, r) in getBestMatches(t, matchedTs):
+                                    matchedTs[t] = (None, r)
+                            matchedTs = set(matchedTs)
+                            for (m, q) in matched:
+                                dest[m] = (matchedTs, q)
+
+                        """
                         mapped = emap(n)
                         if mapped:
                             mappedts = set()
                             for t in ts:
                                 tmapped = emap(t)
                                 if tmapped:
-                                    for tm in tmapped:
-                                        mappedts.add(tm)
-                            for m in mapped:
-                                dest[m] = mappedts
+                                    for tEntry in tmapped:
+                                        mappedts.add(tEntry[0])
+                            for entry in mapped:
+                                dest[entry[0]] = mappedts
+                                """
             else:
                 for (n, val) in featureInfo.items():
-                    mapped = emap(n)
-                    if mapped:
-                        for entry in mapped:
-                            dest[entry[0]] = val
+                    for (m, q) in getBestMatches(n, dest):
+                        dest[m] = (val, q)
+
+            for m in dest:
+                dest[m] = dest[m][0]
 
         TFb.save(
             nodeFeatures=nodeFeatures,

@@ -46,6 +46,16 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.10
+
+2021-12-15
+
+Improved `tf.dataset.nodemaps.Versions.migrateFeatures`.
+When migrating features from one data version to another along
+a node mapping between the two versions, the quality of the links
+between old nodes and new nodes is taken into account.
+We migrate feature values only through the best links available.
+
 #### 9.1.9
 
 2021-12-13
