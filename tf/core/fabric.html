@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L1-L1115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L1-L1131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -345,6 +345,7 @@ Api reference : {APIREF}
         error = tmObj.error
         cache = tmObj.cache
         reset = tmObj.reset
+        featuresOnly = self.featuresOnly
 
         if silent is not None:
             wasSilent = isSilent()
@@ -353,6 +354,7 @@ Api reference : {APIREF}
         self.sectionsOK = True
         self.structureOK = True
         self.good = True
+
         if self.good:
             featuresRequested = sorted(fitemize(features))
             if add:
@@ -360,9 +362,11 @@ Api reference : {APIREF}
             else:
                 self.featuresRequested = featuresRequested
             for fName in (OTYPE, OSLOTS, OTEXT):
-                self._loadFeature(fName, optional=fName == OTEXT)
-        if self.good:
-            self.textFeatures = set()
+                self._loadFeature(fName, optional=fName == OTEXT or featuresOnly)
+
+        self.textFeatures = set()
+
+        if self.good and not featuresOnly:
             if OTEXT in self.features:
                 otextMeta = self.features[OTEXT].metaData
                 for otextMod in self.features:
@@ -414,8 +418,9 @@ Api reference : {APIREF}
                 self.sectionsOK = False
                 self.structureOK = False
 
-        if self.good:
+        if self.good and not featuresOnly:
             self._precompute()
+
         if self.good:
             reset()
             for fName in self.featuresRequested:
@@ -427,6 +432,7 @@ Api reference : {APIREF}
                     result = False
                     break
                 reset()
+
         indent(level=0)
         if self.good:
             if add:
@@ -444,6 +450,7 @@ Api reference : {APIREF}
                     result = False
         else:
             result = False
+
         if silent is not None:
             setSilent(wasSilent)
         return result
@@ -954,55 +961,56 @@ Api reference : {APIREF}
             tm=False,
         )
 
-        good = True
-        for fName in (OTYPE, OSLOTS, OTEXT):
-            if fName not in self.features:
-                if fName == OTEXT:
-                    info(
-                        (
-                            f&#39;Warp feature &#34;{OTEXT}&#34; not found. Working without Text-API\n&#39;
-                        )
-                    )
-                    self.features[OTEXT] = Data(
-                        f&#34;{OTEXT}.tf&#34;,
-                        self.tmObj,
-                        isConfig=True,
-                        metaData=OTEXT_DEFAULT,
-                    )
-                    self.features[OTEXT].dataLoaded = True
-                else:
-                    info(f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;)
-                    good = False
-            elif fName == OTEXT:
-                self._loadFeature(fName, optional=True)
-        if not good:
-            return False
-        self.warpDir = self.features[OTYPE].dirName
-        self.precomputeList = []
-        for (dep2, fName, method, dependencies) in PRECOMPUTE:
-            thisGood = True
-            if dep2 and OTEXT not in self.features:
-                continue
-            if dep2:
-                otextMeta = self.features[OTEXT].metaData
-                sFeatures = f&#34;{KIND[fName]}Features&#34;
-                sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
-                dependencies = dependencies + sFeats
-            for dep in dependencies:
-                if dep not in self.features:
-                    warning(
-                        f&#39;Missing dependency for computed data feature &#34;{fName}&#34;: &#34;{dep}&#34;&#39;
-                    )
-                    thisGood = False
-            if not thisGood:
-                good = False
-            self.features[fName] = Data(
-                f&#34;{self.warpDir}/{fName}.x&#34;,
-                self.tmObj,
-                method=method,
-                dependencies=[self.features.get(dep, None) for dep in dependencies],
+        self.featuresOnly = False
+
+        if OTYPE not in self.features or OSLOTS not in self.features:
+            info(
+                f&#34;Not all of the warp features {OTYPE} and {OSLOTS} &#34;
+                f&#34;are present in\n{self.locationRep}&#34;
             )
-            self.precomputeList.append((fName, dep2))
+            info(&#34;Only the Feature and Edge APIs will be enabled&#34;)
+            self.featuresOnly = True
+        if OTEXT in self.features:
+            self._loadFeature(OTEXT, optional=True)
+        else:
+            info((f&#39;Warp feature &#34;{OTEXT}&#34; not found. Working without Text-API\n&#39;))
+            self.features[OTEXT] = Data(
+                f&#34;{OTEXT}.tf&#34;,
+                self.tmObj,
+                isConfig=True,
+                metaData=OTEXT_DEFAULT,
+            )
+            self.features[OTEXT].dataLoaded = True
+
+        good = True
+        if not self.featuresOnly:
+            self.warpDir = self.features[OTYPE].dirName
+            self.precomputeList = []
+            for (dep2, fName, method, dependencies) in PRECOMPUTE:
+                thisGood = True
+                if dep2 and OTEXT not in self.features:
+                    continue
+                if dep2:
+                    otextMeta = self.features[OTEXT].metaData
+                    sFeatures = f&#34;{KIND[fName]}Features&#34;
+                    sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
+                    dependencies = dependencies + sFeats
+                for dep in dependencies:
+                    if dep not in self.features:
+                        warning(
+                            &#34;Missing dependency for computed data feature &#34;
+                            f&#39;&#34;{fName}&#34;: &#34;{dep}&#34;&#39;
+                        )
+                        thisGood = False
+                if not thisGood:
+                    good = False
+                self.features[fName] = Data(
+                    f&#34;{self.warpDir}/{fName}.x&#34;,
+                    self.tmObj,
+                    method=method,
+                    dependencies=[self.features.get(dep, None) for dep in dependencies],
+                )
+                self.precomputeList.append((fName, dep2))
         self.good = good
 
     def _getWriteLoc(self, location=None, module=None):
@@ -1048,15 +1056,19 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         indent = tmObj.indent
         info = tmObj.info
+        featuresOnly = self.featuresOnly
 
         silent = isSilent()
         api = Api(self)
+        api.featuresOnly = featuresOnly
 
-        w0info = self.features[OTYPE]
-        w1info = self.features[OSLOTS]
+        if not featuresOnly:
+            w0info = self.features[OTYPE]
+            w1info = self.features[OSLOTS]
 
-        setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
-        setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
+        if not featuresOnly:
+            setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
+            setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
 
         requestedSet = set(self.featuresRequested)
 
@@ -1064,15 +1076,18 @@ Api reference : {APIREF}
             fObj = self.features[fName]
             if fObj.dataLoaded and not fObj.isConfig:
                 if fObj.method:
-                    feat = fName.strip(&#34;_&#34;)
-                    ok = getattr(self, f&#34;{feat}OK&#34;, False)
-                    ap = api.C
-                    if fName in [x[0] for x in self.precomputeList if not x[1] or ok]:
-                        setattr(ap, feat, Computed(api, fObj.data))
-                    else:
-                        fObj.unload()
-                        if hasattr(ap, feat):
-                            delattr(api.C, feat)
+                    if not featuresOnly:
+                        feat = fName.strip(&#34;_&#34;)
+                        ok = getattr(self, f&#34;{feat}OK&#34;, False)
+                        ap = api.C
+                        if fName in [
+                            x[0] for x in self.precomputeList if not x[1] or ok
+                        ]:
+                            setattr(ap, feat, Computed(api, fObj.data))
+                        else:
+                            fObj.unload()
+                            if hasattr(ap, feat):
+                                delattr(api.C, feat)
                 else:
                     if fName in requestedSet | self.textFeatures:
                         if fName in (OTYPE, OSLOTS, OTEXT):
@@ -1102,11 +1117,12 @@ Api reference : {APIREF}
                             if hasattr(api.F, fName):
                                 delattr(api.F, fName)
                         fObj.unload()
-        addOtype(api)
-        addNodes(api)
-        addLocality(api)
-        addText(api)
-        addSearch(api, silent)
+        if not featuresOnly:
+            addOtype(api)
+            addNodes(api)
+            addLocality(api)
+            addText(api)
+            addSearch(api, silent)
         indent(level=0)
         info(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
         self.api = api
@@ -1262,7 +1278,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L117-L1115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L117-L1131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1455,6 +1471,7 @@ Api reference : {APIREF}
         error = tmObj.error
         cache = tmObj.cache
         reset = tmObj.reset
+        featuresOnly = self.featuresOnly
 
         if silent is not None:
             wasSilent = isSilent()
@@ -1463,6 +1480,7 @@ Api reference : {APIREF}
         self.sectionsOK = True
         self.structureOK = True
         self.good = True
+
         if self.good:
             featuresRequested = sorted(fitemize(features))
             if add:
@@ -1470,9 +1488,11 @@ Api reference : {APIREF}
             else:
                 self.featuresRequested = featuresRequested
             for fName in (OTYPE, OSLOTS, OTEXT):
-                self._loadFeature(fName, optional=fName == OTEXT)
-        if self.good:
-            self.textFeatures = set()
+                self._loadFeature(fName, optional=fName == OTEXT or featuresOnly)
+
+        self.textFeatures = set()
+
+        if self.good and not featuresOnly:
             if OTEXT in self.features:
                 otextMeta = self.features[OTEXT].metaData
                 for otextMod in self.features:
@@ -1524,8 +1544,9 @@ Api reference : {APIREF}
                 self.sectionsOK = False
                 self.structureOK = False
 
-        if self.good:
+        if self.good and not featuresOnly:
             self._precompute()
+
         if self.good:
             reset()
             for fName in self.featuresRequested:
@@ -1537,6 +1558,7 @@ Api reference : {APIREF}
                     result = False
                     break
                 reset()
+
         indent(level=0)
         if self.good:
             if add:
@@ -1554,6 +1576,7 @@ Api reference : {APIREF}
                     result = False
         else:
             result = False
+
         if silent is not None:
             setSilent(wasSilent)
         return result
@@ -2064,55 +2087,56 @@ Api reference : {APIREF}
             tm=False,
         )
 
-        good = True
-        for fName in (OTYPE, OSLOTS, OTEXT):
-            if fName not in self.features:
-                if fName == OTEXT:
-                    info(
-                        (
-                            f&#39;Warp feature &#34;{OTEXT}&#34; not found. Working without Text-API\n&#39;
-                        )
-                    )
-                    self.features[OTEXT] = Data(
-                        f&#34;{OTEXT}.tf&#34;,
-                        self.tmObj,
-                        isConfig=True,
-                        metaData=OTEXT_DEFAULT,
-                    )
-                    self.features[OTEXT].dataLoaded = True
-                else:
-                    info(f&#39;Warp feature &#34;{fName}&#34; not found in\n{self.locationRep}&#39;)
-                    good = False
-            elif fName == OTEXT:
-                self._loadFeature(fName, optional=True)
-        if not good:
-            return False
-        self.warpDir = self.features[OTYPE].dirName
-        self.precomputeList = []
-        for (dep2, fName, method, dependencies) in PRECOMPUTE:
-            thisGood = True
-            if dep2 and OTEXT not in self.features:
-                continue
-            if dep2:
-                otextMeta = self.features[OTEXT].metaData
-                sFeatures = f&#34;{KIND[fName]}Features&#34;
-                sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
-                dependencies = dependencies + sFeats
-            for dep in dependencies:
-                if dep not in self.features:
-                    warning(
-                        f&#39;Missing dependency for computed data feature &#34;{fName}&#34;: &#34;{dep}&#34;&#39;
-                    )
-                    thisGood = False
-            if not thisGood:
-                good = False
-            self.features[fName] = Data(
-                f&#34;{self.warpDir}/{fName}.x&#34;,
-                self.tmObj,
-                method=method,
-                dependencies=[self.features.get(dep, None) for dep in dependencies],
+        self.featuresOnly = False
+
+        if OTYPE not in self.features or OSLOTS not in self.features:
+            info(
+                f&#34;Not all of the warp features {OTYPE} and {OSLOTS} &#34;
+                f&#34;are present in\n{self.locationRep}&#34;
             )
-            self.precomputeList.append((fName, dep2))
+            info(&#34;Only the Feature and Edge APIs will be enabled&#34;)
+            self.featuresOnly = True
+        if OTEXT in self.features:
+            self._loadFeature(OTEXT, optional=True)
+        else:
+            info((f&#39;Warp feature &#34;{OTEXT}&#34; not found. Working without Text-API\n&#39;))
+            self.features[OTEXT] = Data(
+                f&#34;{OTEXT}.tf&#34;,
+                self.tmObj,
+                isConfig=True,
+                metaData=OTEXT_DEFAULT,
+            )
+            self.features[OTEXT].dataLoaded = True
+
+        good = True
+        if not self.featuresOnly:
+            self.warpDir = self.features[OTYPE].dirName
+            self.precomputeList = []
+            for (dep2, fName, method, dependencies) in PRECOMPUTE:
+                thisGood = True
+                if dep2 and OTEXT not in self.features:
+                    continue
+                if dep2:
+                    otextMeta = self.features[OTEXT].metaData
+                    sFeatures = f&#34;{KIND[fName]}Features&#34;
+                    sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
+                    dependencies = dependencies + sFeats
+                for dep in dependencies:
+                    if dep not in self.features:
+                        warning(
+                            &#34;Missing dependency for computed data feature &#34;
+                            f&#39;&#34;{fName}&#34;: &#34;{dep}&#34;&#39;
+                        )
+                        thisGood = False
+                if not thisGood:
+                    good = False
+                self.features[fName] = Data(
+                    f&#34;{self.warpDir}/{fName}.x&#34;,
+                    self.tmObj,
+                    method=method,
+                    dependencies=[self.features.get(dep, None) for dep in dependencies],
+                )
+                self.precomputeList.append((fName, dep2))
         self.good = good
 
     def _getWriteLoc(self, location=None, module=None):
@@ -2158,15 +2182,19 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         indent = tmObj.indent
         info = tmObj.info
+        featuresOnly = self.featuresOnly
 
         silent = isSilent()
         api = Api(self)
+        api.featuresOnly = featuresOnly
 
-        w0info = self.features[OTYPE]
-        w1info = self.features[OSLOTS]
+        if not featuresOnly:
+            w0info = self.features[OTYPE]
+            w1info = self.features[OSLOTS]
 
-        setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
-        setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
+        if not featuresOnly:
+            setattr(api.F, OTYPE, OtypeFeature(api, w0info.metaData, w0info.data))
+            setattr(api.E, OSLOTS, OslotsFeature(api, w1info.metaData, w1info.data))
 
         requestedSet = set(self.featuresRequested)
 
@@ -2174,15 +2202,18 @@ Api reference : {APIREF}
             fObj = self.features[fName]
             if fObj.dataLoaded and not fObj.isConfig:
                 if fObj.method:
-                    feat = fName.strip(&#34;_&#34;)
-                    ok = getattr(self, f&#34;{feat}OK&#34;, False)
-                    ap = api.C
-                    if fName in [x[0] for x in self.precomputeList if not x[1] or ok]:
-                        setattr(ap, feat, Computed(api, fObj.data))
-                    else:
-                        fObj.unload()
-                        if hasattr(ap, feat):
-                            delattr(api.C, feat)
+                    if not featuresOnly:
+                        feat = fName.strip(&#34;_&#34;)
+                        ok = getattr(self, f&#34;{feat}OK&#34;, False)
+                        ap = api.C
+                        if fName in [
+                            x[0] for x in self.precomputeList if not x[1] or ok
+                        ]:
+                            setattr(ap, feat, Computed(api, fObj.data))
+                        else:
+                            fObj.unload()
+                            if hasattr(ap, feat):
+                                delattr(api.C, feat)
                 else:
                     if fName in requestedSet | self.textFeatures:
                         if fName in (OTYPE, OSLOTS, OTEXT):
@@ -2212,11 +2243,12 @@ Api reference : {APIREF}
                             if hasattr(api.F, fName):
                                 delattr(api.F, fName)
                         fObj.unload()
-        addOtype(api)
-        addNodes(api)
-        addLocality(api)
-        addText(api)
-        addSearch(api, silent)
+        if not featuresOnly:
+            addOtype(api)
+            addNodes(api)
+            addLocality(api)
+            addText(api)
+            addSearch(api, silent)
         indent(level=0)
         info(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
         self.api = api
@@ -2323,7 +2355,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L506-L529" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L513-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2389,7 +2421,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L411-L487" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L418-L494" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2496,7 +2528,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L761-L791" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L768-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2594,7 +2626,7 @@ metadata.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L793-L862" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L800-L869" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2703,7 +2735,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L267-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L267-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2746,6 +2778,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
     error = tmObj.error
     cache = tmObj.cache
     reset = tmObj.reset
+    featuresOnly = self.featuresOnly
 
     if silent is not None:
         wasSilent = isSilent()
@@ -2754,6 +2787,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
     self.sectionsOK = True
     self.structureOK = True
     self.good = True
+
     if self.good:
         featuresRequested = sorted(fitemize(features))
         if add:
@@ -2761,9 +2795,11 @@ if the feature could be loaded, else <code>False</code>.</dd>
         else:
             self.featuresRequested = featuresRequested
         for fName in (OTYPE, OSLOTS, OTEXT):
-            self._loadFeature(fName, optional=fName == OTEXT)
-    if self.good:
-        self.textFeatures = set()
+            self._loadFeature(fName, optional=fName == OTEXT or featuresOnly)
+
+    self.textFeatures = set()
+
+    if self.good and not featuresOnly:
         if OTEXT in self.features:
             otextMeta = self.features[OTEXT].metaData
             for otextMod in self.features:
@@ -2815,8 +2851,9 @@ if the feature could be loaded, else <code>False</code>.</dd>
             self.sectionsOK = False
             self.structureOK = False
 
-    if self.good:
+    if self.good and not featuresOnly:
         self._precompute()
+
     if self.good:
         reset()
         for fName in self.featuresRequested:
@@ -2828,6 +2865,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
                 result = False
                 break
             reset()
+
     indent(level=0)
     if self.good:
         if add:
@@ -2845,6 +2883,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
                 result = False
     else:
         result = False
+
     if silent is not None:
         setSilent(wasSilent)
     return result</code></pre>
@@ -2865,7 +2904,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L489-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L496-L511" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -2969,7 +3008,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/core/fabric.py#L531-L759" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/fabric.py#L538-L766" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

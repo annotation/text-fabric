@@ -54,6 +54,13 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="9110">9.1.10</h4>
+<p>2021-12-15</p>
+<p>Improved <code><a title="tf.dataset.nodemaps.Versions.migrateFeatures" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions.migrateFeatures">Versions.migrateFeatures()</a></code>.
+When migrating features from one data version to another along
+a node mapping between the two versions, the quality of the links
+between old nodes and new nodes is taken into account.
+We migrate feature values only through the best links available.</p>
 <h4 id="919">9.1.9</h4>
 <p>2021-12-13</p>
 <ul>
@@ -215,7 +222,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0a35e004f03b5b06cf098b69c4592f6f6a19269f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -289,6 +296,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#9110">9.1.10</a></li>
 <li><a href="#919">9.1.9</a></li>
 <li><a href="#918">9.1.8</a></li>
 <li><a href="#917">9.1.7</a></li>
