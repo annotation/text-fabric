@@ -46,6 +46,28 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.11
+
+2021-12-16
+
+Loading of features somehow became painfully slow.
+There binary representations of feature data are pickled Python datastructure.
+I now optimize the pickled strings before writing them to disk.
+Then they load much faster afterwards.
+
+In order to feel the effects: perform a `tf.core.fabric.Fabric.clearCache()`,
+which will wipe out all previously generated binary feature data, so that the next time
+the binary features will be created afresh.
+
+Further improvements:
+
+*   `omap@v-w` features will not be loaded by default by `tf.app.use()` calls.
+    If needed, they can be loaded afterwards
+    by `A.load("omap@v-w")` call
+*   When these mappings are needed by modules of TF, the module will have ensured
+    they are loaded.
+
+
 #### 9.1.10
 
 2021-12-15

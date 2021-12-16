@@ -1,5 +1,6 @@
 import os
 import pickle
+from pickletools import optimize
 import gzip
 import collections
 from array import array
@@ -72,7 +73,7 @@ class Data(object):
         if silent is not None:
             wasSilent = isSilent()
             setSilent(silent)
-        indent(level=1, reset=True)
+        indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
@@ -145,6 +146,7 @@ class Data(object):
 
         if silent is not None:
             setSilent(wasSilent)
+        indent(level=False)
         return good
 
     def unload(self):
@@ -622,7 +624,8 @@ class Data(object):
             return False
         try:
             with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
-                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:
             error(f'Cannot write to file "{self.binPath}" because: {str(e)}')
             self.cleanDataBin()

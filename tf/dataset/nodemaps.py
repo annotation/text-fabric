@@ -563,15 +563,17 @@ class Versions:
             Otherwise it is a path where the new features should be saved.
         """
 
+        omapName = self.omapName()
         TFa = self.TFa
         TFb = self.TFb
+        TFb.load(omapName, add=True, silent=True)
         Fsa = self.Fsa
         Esa = self.Esa
         Esb = self.Esb
         va = self.va
         vb = self.vb
 
-        emap = Esb(self.omapName()).f
+        emap = Esb(omapName).f
 
         nodeFeatures = {}
         edgeFeatures = {}
@@ -611,7 +613,7 @@ class Versions:
             featureObj = (Esa if isEdge else Fsa)(featureName)
             featureInfo = dict(featureObj.items())
             metaData[featureName] = featureObj.meta
-            metaData[featureName]["upgraded"] = f"from version {va} to {vb}"
+            metaData[featureName]["upgraded"] = f"‼️ from version {va} to {vb}"
 
             edgeValues = featureObj.doValues if isEdge else False
 

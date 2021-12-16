@@ -36,7 +36,7 @@ from shutil import rmtree
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
 
@@ -425,7 +425,7 @@ def collect(
             meta[volumeFeature]["description"][f"label of {volumeType}"] = {""}
 
         for name in volumes:
-            allFeatures = getAllFeatures(apis[name])
+            allFeatures = getAllRealFeatures(apis[name])
             for (feat, fObj) in TFs[name].features.items():
                 if feat not in allFeatures:
                     continue
@@ -684,7 +684,7 @@ def collect(
 
         for name in volumes:
             api = apis[name]
-            allFeatures = getAllFeatures(api)
+            allFeatures = getAllRealFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
                 if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
                     continue

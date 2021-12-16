@@ -20,7 +20,7 @@ from shutil import rmtree
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
 OWORKI = "oworki"
@@ -357,7 +357,7 @@ def extract(
     fOtypeData = F.otype.data
     eOslotsData = E.oslots.data
 
-    allFeatures = getAllFeatures(api)
+    allFeatures = getAllRealFeatures(api)
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
     nodeFeatureData = {

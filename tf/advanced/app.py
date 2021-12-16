@@ -2,7 +2,7 @@ import os
 import types
 import traceback
 
-from ..parameters import ORG, APP_CODE
+from ..parameters import ORG, APP_CODE, OMAP
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
@@ -33,6 +33,7 @@ FROM_TF_METHODS = """
     warning
     error
     indent
+    featuresOnly
 """.strip().split()
 
 
@@ -60,6 +61,41 @@ class App:
         **configOverrides,
     ):
         """Set up the advanced TF API.
+
+        It loads the features of a corpus plus extra modules, it loads the
+        Text-Fabric app or a customization of it, and makes it all available in an
+        API.
+
+        If any of the above mentioned ingredients is not locally available on your
+        computer, it will auto-download it, subject to checkout specifiers that you
+        provide.
+
+        !!! caution "Security warning"
+            Text-Fabric apps may be downloaded from GitHub and then
+            imported as a module and then *executed*.
+
+            Do you trust the downloaded code?
+
+            Text-Fabric will not fetch code from arbitrary places,
+            only from `https://github.com/annotation/app-`*xxx*
+            and this is a fixed number of repositories created by the
+            maker(s) of Text-Fabric.
+
+        !!! note "Security note"
+            Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+            but the downloaded material will be read as *data* and not executed as code.
+
+        When loading a corpus via this method, most of the features in view will
+        be loaded and made available.
+
+        However, some Text-Fabric apps may exclude some features from being
+        automatically loaded.
+
+        And in general, features whose names start with `omap@` will not be
+        automatically loaded.
+
+        Any of these features can be loaded on demand later by means of
+        `tf.advanced.App.load()`.
 
         Parameters
         ----------
@@ -336,7 +372,9 @@ class App:
                     allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
                     useFeatures = [
-                        f for f in loadableFeatures if f not in excludedFeatures
+                        f
+                        for f in loadableFeatures
+                        if f not in excludedFeatures and not f.startswith(OMAP)
                     ]
                     result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
@@ -348,14 +386,19 @@ class App:
             self.TF = self.api.TF
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
-            self.getText = types.MethodType(getText, self)
+
+            featuresOnly = self.featuresOnly
+
+            if not featuresOnly:
+                self.getText = types.MethodType(getText, self)
             volumesApi(self)
             linksApi(self, silent)
-            searchApi(self)
-            sectionsApi(self)
-            setAppSpecsApi(self, cfg)
-            displayApi(self, silent)
-            textApi(self)
+            if not featuresOnly:
+                searchApi(self)
+                sectionsApi(self)
+                setAppSpecsApi(self, cfg)
+                displayApi(self, silent)
+                textApi(self)
             setattr(self, "isLoaded", self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)

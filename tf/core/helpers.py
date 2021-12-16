@@ -444,7 +444,7 @@ def mergeDict(source, overrides):
             source[k] = v
 
 
-def getAllFeatures(api):
+def getAllRealFeatures(api):
     """Get all config features and all loaded node and edge features.
 
     Except `omap@v-w` features.
