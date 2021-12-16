@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/volumes/extract.py#L1-L652" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/volumes/extract.py#L1-L652" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -59,7 +59,7 @@ from shutil import rmtree
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
 OWORKI = &#34;oworki&#34;
@@ -396,7 +396,7 @@ def extract(
     fOtypeData = F.otype.data
     eOslotsData = E.oslots.data
 
-    allFeatures = getAllFeatures(api)
+    allFeatures = getAllRealFeatures(api)
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
     nodeFeatureData = {
@@ -854,7 +854,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/volumes/extract.py#L38-L652" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/volumes/extract.py#L38-L652" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1178,7 +1178,7 @@ Top-level section 13 will not be extracted into a volume.</p>
     fOtypeData = F.otype.data
     eOslotsData = E.oslots.data
 
-    allFeatures = getAllFeatures(api)
+    allFeatures = getAllRealFeatures(api)
 
     metaDataTotal = {feat: TF.features[feat].metaData for feat in allFeatures}
     nodeFeatureData = {

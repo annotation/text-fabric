@@ -26,10 +26,11 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L1-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L1-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import pickle
+from pickletools import optimize
 import gzip
 import collections
 from array import array
@@ -102,7 +103,7 @@ class Data(object):
         if silent is not None:
             wasSilent = isSilent()
             setSilent(silent)
-        indent(level=1, reset=True)
+        indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
@@ -175,6 +176,7 @@ class Data(object):
 
         if silent is not None:
             setSilent(wasSilent)
+        indent(level=False)
         return good
 
     def unload(self):
@@ -652,7 +654,8 @@ class Data(object):
             return False
         try:
             with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:
             error(f&#39;Cannot write to file &#34;{self.binPath}&#34; because: {str(e)}&#39;)
             self.cleanDataBin()
@@ -703,7 +706,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L31-L655" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L32-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -749,7 +752,7 @@ class Data(object):
         if silent is not None:
             wasSilent = isSilent()
             setSilent(silent)
-        indent(level=1, reset=True)
+        indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
@@ -822,6 +825,7 @@ class Data(object):
 
         if silent is not None:
             setSilent(wasSilent)
+        indent(level=False)
         return good
 
     def unload(self):
@@ -1299,7 +1303,8 @@ class Data(object):
             return False
         try:
             with gzip.open(self.binPath, &#34;wb&#34;, compresslevel=GZIP_LEVEL) as f:
-                pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
+                f.write(optimize(pickle.dumps(self.data, protocol=PICKLE_PROTOCOL)))
         except Exception as e:
             error(f&#39;Cannot write to file &#34;{self.binPath}&#34; because: {str(e)}&#39;)
             self.cleanDataBin()
@@ -1341,7 +1346,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L606-L608" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L608-L610" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1356,7 +1361,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L64-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L65-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=None):
     tmObj = self.tmObj
@@ -1369,7 +1374,7 @@ class Data(object):
     if silent is not None:
         wasSilent = isSilent()
         setSilent(silent)
-    indent(level=1, reset=True)
+    indent(level=True, reset=True)
     origTime = self._getModified()
     binTime = self._getModified(bin=True)
     sourceRep = (
@@ -1442,6 +1447,7 @@ class Data(object):
 
     if silent is not None:
         setSilent(wasSilent)
+    indent(level=False)
     return good</code></pre>
 </details>
 </dd>
@@ -1453,7 +1459,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L154-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L156-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
     tmObj = self.tmObj
@@ -1477,7 +1483,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/core/data.py#L150-L152" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L152-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

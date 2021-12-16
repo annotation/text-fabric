@@ -54,6 +54,23 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="9111">9.1.11</h4>
+<p>2021-12-16</p>
+<p>Loading of features somehow became painfully slow.
+There binary representations of feature data are pickled Python datastructure.
+I now optimize the pickled strings before writing them to disk.
+Then they load much faster afterwards.</p>
+<p>In order to feel the effects: perform a <code>tf.core.fabric.Fabric.clearCache()</code>,
+which will wipe out all previously generated binary feature data, so that the next time
+the binary features will be created afresh.</p>
+<p>Further improvements:</p>
+<ul>
+<li><code>omap@v-w</code> features will not be loaded by default by <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> calls.
+If needed, they can be loaded afterwards
+by <code>A.load("omap@v-w")</code> call</li>
+<li>When these mappings are needed by modules of TF, the module will have ensured
+they are loaded.</li>
+</ul>
 <h4 id="9110">9.1.10</h4>
 <p>2021-12-15</p>
 <p>Improved <code><a title="tf.dataset.nodemaps.Versions.migrateFeatures" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions.migrateFeatures">Versions.migrateFeatures()</a></code>.
@@ -222,7 +239,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -296,6 +313,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#9111">9.1.11</a></li>
 <li><a href="#9110">9.1.10</a></li>
 <li><a href="#919">9.1.9</a></li>
 <li><a href="#918">9.1.8</a></li>

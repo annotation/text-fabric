@@ -26,13 +26,13 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L1-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L1-L637" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
 import traceback
 
-from ..parameters import ORG, APP_CODE
+from ..parameters import ORG, APP_CODE, OMAP
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
@@ -63,6 +63,7 @@ FROM_TF_METHODS = &#34;&#34;&#34;
     warning
     error
     indent
+    featuresOnly
 &#34;&#34;&#34;.strip().split()
 
 
@@ -90,6 +91,41 @@ class App:
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
+
+        It loads the features of a corpus plus extra modules, it loads the
+        Text-Fabric app or a customization of it, and makes it all available in an
+        API.
+
+        If any of the above mentioned ingredients is not locally available on your
+        computer, it will auto-download it, subject to checkout specifiers that you
+        provide.
+
+        !!! caution &#34;Security warning&#34;
+            Text-Fabric apps may be downloaded from GitHub and then
+            imported as a module and then *executed*.
+
+            Do you trust the downloaded code?
+
+            Text-Fabric will not fetch code from arbitrary places,
+            only from `https://github.com/annotation/app-`*xxx*
+            and this is a fixed number of repositories created by the
+            maker(s) of Text-Fabric.
+
+        !!! note &#34;Security note&#34;
+            Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+            but the downloaded material will be read as *data* and not executed as code.
+
+        When loading a corpus via this method, most of the features in view will
+        be loaded and made available.
+
+        However, some Text-Fabric apps may exclude some features from being
+        automatically loaded.
+
+        And in general, features whose names start with `omap@` will not be
+        automatically loaded.
+
+        Any of these features can be loaded on demand later by means of
+        `tf.advanced.App.load()`.
 
         Parameters
         ----------
@@ -366,7 +402,9 @@ class App:
                     allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                     useFeatures = [
-                        f for f in loadableFeatures if f not in excludedFeatures
+                        f
+                        for f in loadableFeatures
+                        if f not in excludedFeatures and not f.startswith(OMAP)
                     ]
                     result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
@@ -378,14 +416,19 @@ class App:
             self.TF = self.api.TF
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
-            self.getText = types.MethodType(getText, self)
+
+            featuresOnly = self.featuresOnly
+
+            if not featuresOnly:
+                self.getText = types.MethodType(getText, self)
             volumesApi(self)
             linksApi(self, silent)
-            searchApi(self)
-            sectionsApi(self)
-            setAppSpecsApi(self, cfg)
-            displayApi(self, silent)
-            textApi(self)
+            if not featuresOnly:
+                searchApi(self)
+                sectionsApi(self)
+                setAppSpecsApi(self, cfg)
+                displayApi(self, silent)
+                textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
@@ -665,7 +708,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L475-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L518-L637" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -800,6 +843,35 @@ class.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
+<p>It loads the features of a corpus plus extra modules, it loads the
+Text-Fabric app or a customization of it, and makes it all available in an
+API.</p>
+<p>If any of the above mentioned ingredients is not locally available on your
+computer, it will auto-download it, subject to checkout specifiers that you
+provide.</p>
+<div class="admonition caution">
+<p class="admonition-title">Security warning</p>
+<p>Text-Fabric apps may be downloaded from GitHub and then
+imported as a module and then <em>executed</em>.</p>
+<p>Do you trust the downloaded code?</p>
+<p>Text-Fabric will not fetch code from arbitrary places,
+only from <code>https://github.com/annotation/app-</code><em>xxx</em>
+and this is a fixed number of repositories created by the
+maker(s) of Text-Fabric.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Security note</p>
+<p>Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+but the downloaded material will be read as <em>data</em> and not executed as code.</p>
+</div>
+<p>When loading a corpus via this method, most of the features in view will
+be loaded and made available.</p>
+<p>However, some Text-Fabric apps may exclude some features from being
+automatically loaded.</p>
+<p>And in general, features whose names start with <code>omap@</code> will not be
+automatically loaded.</p>
+<p>Any of these features can be loaded on demand later by means of
+<code>tf.advanced.App.load()</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
@@ -1006,7 +1078,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L39-L472" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L40-L515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1032,6 +1104,41 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
+
+        It loads the features of a corpus plus extra modules, it loads the
+        Text-Fabric app or a customization of it, and makes it all available in an
+        API.
+
+        If any of the above mentioned ingredients is not locally available on your
+        computer, it will auto-download it, subject to checkout specifiers that you
+        provide.
+
+        !!! caution &#34;Security warning&#34;
+            Text-Fabric apps may be downloaded from GitHub and then
+            imported as a module and then *executed*.
+
+            Do you trust the downloaded code?
+
+            Text-Fabric will not fetch code from arbitrary places,
+            only from `https://github.com/annotation/app-`*xxx*
+            and this is a fixed number of repositories created by the
+            maker(s) of Text-Fabric.
+
+        !!! note &#34;Security note&#34;
+            Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+            but the downloaded material will be read as *data* and not executed as code.
+
+        When loading a corpus via this method, most of the features in view will
+        be loaded and made available.
+
+        However, some Text-Fabric apps may exclude some features from being
+        automatically loaded.
+
+        And in general, features whose names start with `omap@` will not be
+        automatically loaded.
+
+        Any of these features can be loaded on demand later by means of
+        `tf.advanced.App.load()`.
 
         Parameters
         ----------
@@ -1308,7 +1415,9 @@ The collection takes precedence, and the volume is ignored in that case.</p>
                     allFeatures = TF.explore(silent=True, show=True)
                     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                     useFeatures = [
-                        f for f in loadableFeatures if f not in excludedFeatures
+                        f
+                        for f in loadableFeatures
+                        if f not in excludedFeatures and not f.startswith(OMAP)
                     ]
                     result = TF.load(useFeatures, add=True, silent=True)
                     if result is False:
@@ -1320,14 +1429,19 @@ The collection takes precedence, and the volume is ignored in that case.</p>
             self.TF = self.api.TF
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
-            self.getText = types.MethodType(getText, self)
+
+            featuresOnly = self.featuresOnly
+
+            if not featuresOnly:
+                self.getText = types.MethodType(getText, self)
             volumesApi(self)
             linksApi(self, silent)
-            searchApi(self)
-            sectionsApi(self)
-            setAppSpecsApi(self, cfg)
-            displayApi(self, silent)
-            textApi(self)
+            if not featuresOnly:
+                searchApi(self)
+                sectionsApi(self)
+                setAppSpecsApi(self, cfg)
+                displayApi(self, silent)
+                textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
@@ -1483,7 +1597,7 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L387-L414" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L430-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=False):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1524,7 +1638,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L416-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L459-L464" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1559,7 +1673,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/advanced/app.py#L423-L472" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L466-L515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

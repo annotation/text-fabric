@@ -49,7 +49,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/volumes/collect.py#L1-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/volumes/collect.py#L1-L892" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -89,7 +89,7 @@ from shutil import rmtree
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllFeatures
+from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
 
@@ -478,7 +478,7 @@ def collect(
             meta[volumeFeature][&#34;description&#34;][f&#34;label of {volumeType}&#34;] = {&#34;&#34;}
 
         for name in volumes:
-            allFeatures = getAllFeatures(apis[name])
+            allFeatures = getAllRealFeatures(apis[name])
             for (feat, fObj) in TFs[name].features.items():
                 if feat not in allFeatures:
                     continue
@@ -737,7 +737,7 @@ def collect(
 
         for name in volumes:
             api = apis[name]
-            allFeatures = getAllFeatures(api)
+            allFeatures = getAllRealFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
                 if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
                     continue
@@ -1181,7 +1181,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e2ae1dd9e78dd39b5faa0f9c370f62da8a13bbe9/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1550,7 +1550,7 @@ These will be excluded from collection.</p>
             meta[volumeFeature][&#34;description&#34;][f&#34;label of {volumeType}&#34;] = {&#34;&#34;}
 
         for name in volumes:
-            allFeatures = getAllFeatures(apis[name])
+            allFeatures = getAllRealFeatures(apis[name])
             for (feat, fObj) in TFs[name].features.items():
                 if feat not in allFeatures:
                     continue
@@ -1809,7 +1809,7 @@ These will be excluded from collection.</p>
 
         for name in volumes:
             api = apis[name]
-            allFeatures = getAllFeatures(api)
+            allFeatures = getAllRealFeatures(api)
             for (ointer, OINTER) in ((ointerf, OINTERF), (ointert, OINTERT)):
                 if api.isLoaded(features=OINTER, pretty=False)[OINTER] is None:
                     continue
