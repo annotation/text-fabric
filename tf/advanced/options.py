@@ -451,6 +451,7 @@ class Options:
             current = self.current
             for option in options:
                 if option not in defaults:
+                    print(defaults)
                     error(f'WARNING: unknown display option "{option}" will be ignored')
                     continue
                 current[option] = defaults[option]

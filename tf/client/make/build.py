@@ -166,9 +166,8 @@ def readArgs():
 
     elif command == "make":
         if len(args) < 1:
-            console(HELP)
-            console("Missing output folder argument")
-            return None
+            Args.folder = None
+            Args.appFolder = None
         else:
             Args.folder = args[1] if len(args) > 1 else args[0]
             Args.appFolder = args[0] if len(args) > 1 else None

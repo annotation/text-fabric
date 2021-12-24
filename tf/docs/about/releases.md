@@ -46,6 +46,20 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.12
+
+2021-12-24
+
+*   New data is computed and stored for a corpus: for each text format a frequency
+    list of the characters in the corpus when rendered in that text format:
+    `tf.core.prepare.characters`
+*   A new function `tf.advanced.app.text.specialCharacters` which provides
+    a widget from which you can easily copy the special characters in the corpus.
+    Call it as `A.specialCharacters(fmt=textformat)`.
+*   In the `tf.convert.walker` module there is an extra *cv* method:
+    `tf.convert.walker.CV.activeNodes`.
+*   Fix a bug that prevented the text-fabric browser to start up in some cases.
+
 #### 9.1.11
 
 2021-12-16
@@ -55,7 +69,7 @@ There binary representations of feature data are pickled Python datastructure.
 I now optimize the pickled strings before writing them to disk.
 Then they load much faster afterwards.
 
-In order to feel the effects: perform a `tf.core.fabric.Fabric.clearCache()`,
+In order to feel the effects: perform a `tf.core.fabric.FabricCore.clearCache()`,
 which will wipe out all previously generated binary feature data, so that the next time
 the binary features will be created afresh.
 

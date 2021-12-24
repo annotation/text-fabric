@@ -50,6 +50,7 @@ All about the nature and implementation of the display algorithm is in
 
 import os
 import types
+from textwrap import dedent
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc, normpath, abspath, expanduser
@@ -216,6 +217,21 @@ def loadCss(app):
 
     css = getCss(app)
     dh(css)
+    dh(
+        dedent(
+            """
+            <script>
+            const copyChar = (el, c) => {
+                for (const el of document.getElementsByClassName('ccon')) {
+                    el.className = 'ccoff'
+                }
+                el.className = 'ccon'
+                navigator.clipboard.writeText(String.fromCharCode(c))
+            }
+            </script>
+            """
+        )
+    )
 
 
 def getCss(app):

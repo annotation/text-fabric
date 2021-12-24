@@ -1,4 +1,5 @@
 import os
+import gc
 import pickle
 from pickletools import optimize
 import gzip
@@ -62,7 +63,14 @@ class Data(object):
         self.dataError = False
         self.dataType = "str"
 
-    def load(self, metaOnly=False, silent=None):
+    def load(self, metaOnly=False, silent=None, _withGc=True):
+        """Load a feature.
+
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        """
+
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -77,7 +85,9 @@ class Data(object):
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
-            ", ".join(dep.fileName for dep in self.dependencies)
+            ", ".join(
+                dep.fileName for dep in self.dependencies if isinstance(dep, Data)
+            )
             if self.method
             else self.dirName
         )
@@ -105,7 +115,7 @@ class Data(object):
             try:
                 if not origTime:
                     actionRep = "b"
-                    good = self._readDataBin()
+                    good = self._readDataBin(_withGc=_withGc)
                 elif not binTime or origTime > binTime:
                     actionRep = "C" if self.method else "T"
                     good = (
@@ -125,7 +135,7 @@ class Data(object):
                         if self.isConfig or metaOnly:
                             actionRep = "M"
                         else:
-                            good = self._readDataBin()
+                            good = self._readDataBin(_withGc=_withGc)
             except MemoryError:
                 console(MEM_MSG)
                 good = False
@@ -403,8 +413,9 @@ class Data(object):
 
         good = True
         for feature in self.dependencies:
-            if not feature.load():
-                good = False
+            if isinstance(feature, Data):
+                if not feature.load():
+                    good = False
         if not good:
             return False
 
@@ -423,7 +434,9 @@ class Data(object):
             info,
             error,
             *[
-                dep.metaData if dep.fileName == OTEXT else dep.data
+                (dep.metaData if dep.fileName == OTEXT else dep.data)
+                if isinstance(dep, Data)
+                else dep
                 for dep in self.dependencies
             ],
         )
@@ -538,7 +551,9 @@ class Data(object):
                         if tfValue is None:
                             fh.write(
                                 "{}{}{}\n".format(
-                                    nodeSpec, "\t" if nodeSpec else "", nodeSpec2,
+                                    nodeSpec,
+                                    "\t" if nodeSpec else "",
+                                    nodeSpec2,
                                 )
                             )
                         else:
@@ -575,7 +590,9 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             "{}{}{}\n".format(
-                                nodeSpec, "\t" if nodeSpec else "", tfValue,
+                                nodeSpec,
+                                "\t" if nodeSpec else "",
+                                tfValue,
                             )
                         )
             else:
@@ -588,20 +605,32 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             "{}{}{}\n".format(
-                                nodeSpec, "\t" if nodeSpec else "", tfValue,
+                                nodeSpec,
+                                "\t" if nodeSpec else "",
+                                tfValue,
                             )
                         )
         return True
 
-    def _readDataBin(self):
+    def _readDataBin(self, _withGc=True):
+        """Read binary feature data.
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        """
+
         tmObj = self.tmObj
         error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f'TF reading: feature file "{self.binPath}" does not exist')
             return False
+        if not _withGc:
+            gc.disable()
         with gzip.open(self.binPath, "rb") as f:
             self.data = pickle.load(f)
+        if not _withGc:
+            gc.enable()
         self.dataLoaded = time.time()
         return True
 
@@ -640,7 +669,11 @@ class Data(object):
             )
         else:
             if self.method:
-                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsInfo = [
+                    dep._getModified()
+                    for dep in self.dependencies
+                    if isinstance(dep, Data)
+                ]
                 depsModifieds = [d for d in depsInfo if d is not None]
                 depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
                 if depsModified is not None:

@@ -6,7 +6,7 @@ from ..parameters import OMAP
 
 
 def normpath(path):
-    return path.replace("\\", "/")
+    return None if path is None else path.replace("\\", "/")
 
 
 def abspath(path):

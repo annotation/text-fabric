@@ -356,6 +356,13 @@ div.pval {
     flex: 1 1 auto;
 }
 
+/* KEYBOARD */
+.ccoff {
+  background-color: inherit;
+}
+.ccon {
+  background-color: yellow ! important;
+}
 /* TF header */
 
 summary {

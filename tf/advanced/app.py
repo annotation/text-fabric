@@ -58,6 +58,7 @@ class App:
         api=None,
         setFile="",
         silent=False,
+        _withGc=True,
         **configOverrides,
     ):
         """Set up the advanced TF API.
@@ -95,7 +96,7 @@ class App:
         automatically loaded.
 
         Any of these features can be loaded on demand later by means of
-        `tf.advanced.App.load()`.
+        `tf.advanced.app.App.load()`.
 
         Parameters
         ----------
@@ -302,6 +303,10 @@ class App:
             The list of those settings is spelled out in
             `tf.advanced.settings`.
 
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+
         !!! caution "Volumes and collections"
             It is an error to load a volume as a collection and vice-versa
 
@@ -364,6 +369,7 @@ class App:
                     volume=volume,
                     collection=collection,
                     silent=silent,
+                    _withGc=_withGc,
                 )
                 api = TF.load("", silent=True)
                 if api:
@@ -603,7 +609,7 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appClass = findAppClass(appName, appPath) or App
 
     mod = kwargs.get("mod", [])
-    mod = mod.split(",") if type(mod) is str else list(mod)
+    mod = [] if mod is None else mod.split(",") if type(mod) is str else list(mod)
     if extraMod:
         if len(mod) > 0:
             mod = [extraMod, *mod]

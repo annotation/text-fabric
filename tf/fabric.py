@@ -73,6 +73,7 @@ class Fabric(FabricCore):
         silent=False,
         volume=None,
         collection=None,
+        **kwargs,
     ):
 
         if modules is None:
@@ -128,7 +129,7 @@ class Fabric(FabricCore):
             )
             TM.warning("Ignoring the volume", tm=False)
 
-        super().__init__(locations=locations, modules=modules, silent=silent)
+        super().__init__(locations=locations, modules=modules, silent=silent, **kwargs)
         self.volumeBase = volumeBase
         self.collectionBase = collectionBase
         self.collection = collection

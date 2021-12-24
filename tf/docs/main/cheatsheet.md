@@ -76,7 +76,7 @@ A.displayShow(...)
 ```
 A.displayReset(...)
 ```
-:   resetdisplay options
+:   reset display options
 :   `tf.advanced.display.displayReset`
 
 ```
@@ -84,12 +84,6 @@ A.displaySetup(...)
 ```
 :   set up display options
 :   `tf.advanced.display.displaySetup`
-
-```
-A.displayReset(...)
-```
-:   resetdisplay options
-:   `tf.advanced.display.displayReset`
 
 ```
 A.table(results, ...)
@@ -747,6 +741,12 @@ C.boundary.data
 :   feeds the `tf.core.locality.Locality.p` and `tf.core.locality.Locality.n`
     functions
 :   `tf.core.prepare.boundary`
+
+```
+C.characters.data
+```
+:   frequency list of characters in a corpus, separately for all the text formats
+:   `tf.core.prepare.characters`
 
 ```
 C.sections.data

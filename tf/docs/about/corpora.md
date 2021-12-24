@@ -44,6 +44,12 @@ Corpora prefixed with a star do not have dedicated TF apps.
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
     ETCBC + Dirk Roorda
 
+[dhammapada](https://github.com/annotation/app-dhammapada)
+:   *Pāli* and *Latin*
+    Ancient Buddhist verses, 300 BC and 1855 AD,
+    **[Transcription with Latin translations based on Viggo Fausbøll's book](https://github.com/ETCBC/dhammapada/blob/master/docs/about.md)**,
+    Bee Scherer, Yvonne Mataar, Dirk Roorda
+
 [dss](https://github.com/annotation/app-dss)
 :   *Hebrew*
     Dead Sea Scrolls, 300 BC - 100 AD,

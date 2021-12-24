@@ -426,6 +426,60 @@ def boundary(info, error, otype, oslots, rank):
     return (tuple(firstSlots), tuple(lastSlots))
 
 
+def characters(info, error, otext, tFormats, *tFeats):
+    """Computes character data.
+
+    For each text format, a frequency list of the characters in that format
+    is made.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otext: iterable
+        The data of the *otext* feature.
+    tFormats:
+        Dictionary keyed by text format and valued by the tuple of features
+        used in that format.
+    tFeats: iterable
+        Each tFeat is the name and the data of a text feature.
+        i.e. a feature used in text formats.
+
+    Returns
+    -------
+    dict
+        Keyed by format valued by a frequency dict, which is
+        itself keyed by single characters and valued by the frequency
+        of that character in the whole corpus when rendered with that format.
+    """
+
+    charFreqsByFeature = {}
+
+    for (tFeat, data) in tFeats:
+        freqList = collections.Counter()
+        for v in data.values():
+            freqList[v] += 1
+        charFreq = collections.defaultdict(lambda: 0)
+        for (v, freq) in freqList.items():
+            for c in v:
+                charFreq[c] += freq
+        charFreqsByFeature[tFeat] = charFreq
+
+    charFreqsByFmt = {}
+
+    for (fmt, tFeatures) in sorted(tFormats.items()):
+        charFreq = collections.defaultdict(lambda: 0)
+        for tFeat in tFeatures:
+            thisCharFreq = charFreqsByFeature[tFeat]
+            for (c, freq) in thisCharFreq.items():
+                charFreq[c] += freq
+        charFreqsByFmt[fmt] = sorted(x for x in charFreq.items())
+
+    return charFreqsByFmt
+
+
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     """Computes section data.
 
@@ -458,7 +512,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        The names of section features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------
@@ -579,7 +633,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     levUp: array
         The data of the *levUp* precompute step.
     sFeats: iterable
-        The names of structural features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------

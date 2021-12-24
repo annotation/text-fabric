@@ -123,6 +123,7 @@ that steer the graph building:
 *   `tf.convert.walker.CV.occurs`
 *   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.active`
+*   `tf.convert.walker.CV.activeNodes`
 *   `tf.convert.walker.CV.activeTypes`
 *   `tf.convert.walker.CV.get` and `cv.get(feature, nf, nt)`
 *   `tf.convert.walker.CV.stop`
@@ -314,6 +315,11 @@ class CV(object):
             to TF.
 
             See `tf.convert.walker` for more details.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful
         """
 
         tmObj = self.TF.tmObj
@@ -989,6 +995,29 @@ class CV(object):
         """
 
         return node in self.curEmbedders
+
+    def activeNodes(self, nTypes=None):
+        """The currently active nodes, i.e. the embedders.
+
+            nodes = cv.activeTypes()
+            nodes = cv.activeTypes(nTypes=("sentence", "clause"))
+
+        Parameters
+        ----------
+        nType: iterable optional `None`
+            If None, all active nodes are returned.
+            Else the iterable lists a few node types,
+            and only active nodes in these types are returned.
+
+        Returns
+        -------
+        set
+        """
+
+        if nTypes is None:
+            return set(self.curEmbedders)
+        nTypes = set(nTypes)
+        return {n for n in self.curEmbedders if n[0] in nTypes}
 
     def activeTypes(self):
         """The node types of the currently active nodes, i.e. the embedders.

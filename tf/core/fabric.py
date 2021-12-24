@@ -17,6 +17,8 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 import os
 
 import collections
+from itertools import chain
+
 from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
@@ -40,6 +42,7 @@ from .prepare import (
     levUp,
     levDown,
     boundary,
+    characters,
     sections,
     structure,
 )
@@ -62,20 +65,21 @@ from ..convert.mql import MQL, tfFromMql
 OTEXT_DEFAULT = dict(sectionFeatures="", sectionTypes="")
 
 PRECOMPUTE = (
-    (False, "__levels__", levels, (OTYPE, OSLOTS, OTEXT)),
-    (False, "__order__", order, (OTYPE, OSLOTS) + ("__levels__",)),
-    (False, "__rank__", rank, (OTYPE, "__order__")),
-    (False, "__levUp__", levUp, (OTYPE, OSLOTS) + ("__rank__",)),
-    (False, "__levDown__", levDown, (OTYPE, "__levUp__", "__rank__")),
-    (False, "__boundary__", boundary, (OTYPE, OSLOTS) + ("__rank__",)),
+    (0, "__levels__", levels, (OTYPE, OSLOTS, OTEXT)),
+    (0, "__order__", order, (OTYPE, OSLOTS) + ("__levels__",)),
+    (0, "__rank__", rank, (OTYPE, "__order__")),
+    (0, "__levUp__", levUp, (OTYPE, OSLOTS) + ("__rank__",)),
+    (0, "__levDown__", levDown, (OTYPE, "__levUp__", "__rank__")),
+    (1, "__characters__", characters, (OTEXT,)),
+    (0, "__boundary__", boundary, (OTYPE, OSLOTS) + ("__rank__",)),
     (
-        True,
+        2,
         "__sections__",
         sections,
         (OTYPE, OSLOTS, OTEXT) + ("__levUp__", "__levels__"),
     ),
     (
-        True,
+        2,
         "__structure__",
         structure,
         (OTYPE, OSLOTS, OTEXT)
@@ -170,6 +174,11 @@ class FabricCore(object):
         If `'deep'` is passed, all informational and warning messages are suppressed.
         Errors still pass through.
 
+    _withGc: boolean, optional True
+        If False, it disables the Python garbage collector before
+        loading features. Used to experiment with performance.
+
+
     !!! note "otext@ in modules"
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
@@ -183,8 +192,8 @@ class FabricCore(object):
         An object from which you can call up all the of methods of the core API.
     """
 
-    def __init__(self, locations=None, modules=None, silent=False):
-
+    def __init__(self, locations=None, modules=None, silent=False, _withGc=True):
+        self._withGc = _withGc
         self.silent = silent
         tmObj = Timestamp()
         self.tmObj = tmObj
@@ -340,6 +349,7 @@ Api reference : {APIREF}
                 )
                 self.structureTypes = itemize(otextMeta.get("structureTypes", ""), ",")
                 (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+
                 if not (0 < len(self.sectionTypes) <= 3) or not (
                     0 < len(self.sectionFeats) <= 3
                 ):
@@ -373,6 +383,23 @@ Api reference : {APIREF}
 
                 for fName in self.textFeatures:
                     self._loadFeature(fName, optional=fName in formatFeats)
+
+                dep1Feats = self.dep1Feats
+                if dep1Feats:
+                    cformats = self.cformats
+                    tFormats = {}
+                    tFeats = set()
+                    for (fmt, (tpl, featData)) in cformats.items():
+                        feats = set(chain.from_iterable(x[0] for x in featData))
+                        tFormats[fmt] = tuple(sorted(feats))
+                        tFeats |= feats
+                    tFeats = tuple(sorted(tFeats))
+                    extraDependencies = [tFormats]
+                    for tFeat in tFeats:
+                        featData = self.features[tFeat].data
+                        extraDependencies.append((tFeat, featData))
+                    for cFeat in dep1Feats:
+                        self.features[cFeat].dependencies += extraDependencies
 
             else:
                 self.sectionsOK = False
@@ -883,7 +910,7 @@ Api reference : {APIREF}
                 self.good = False
         else:
             # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
-            if not self.features[fName].load(silent=silent):
+            if not self.features[fName].load(silent=silent, _withGc=self._withGc):
                 self.good = False
 
     def _makeIndex(self):
@@ -946,11 +973,14 @@ Api reference : {APIREF}
         if not self.featuresOnly:
             self.warpDir = self.features[OTYPE].dirName
             self.precomputeList = []
+            self.dep1Feats = []
             for (dep2, fName, method, dependencies) in PRECOMPUTE:
                 thisGood = True
                 if dep2 and OTEXT not in self.features:
                     continue
-                if dep2:
+                if dep2 == 1:
+                    self.dep1Feats.append(fName)
+                elif dep2 == 2:
                     otextMeta = self.features[OTEXT].metaData
                     sFeatures = f"{KIND[fName]}Features"
                     sFeats = tuple(itemize(otextMeta.get(sFeatures, ""), ","))
@@ -995,14 +1025,11 @@ Api reference : {APIREF}
         )
 
     def _precompute(self):
-        tmObj = self.tmObj
-        info = tmObj.info
         good = True
         for (fName, dep2) in self.precomputeList:
             ok = getattr(self, f'{fName.strip("_")}OK', False)
-            if dep2 and not ok:
+            if dep2 == 2 and not ok:
                 continue
-            info(f"... {fName} ...")
             if not self.features[fName].load():
                 good = False
                 break
@@ -1041,7 +1068,9 @@ Api reference : {APIREF}
                         ok = getattr(self, f"{feat}OK", False)
                         ap = api.C
                         if fName in [
-                            x[0] for x in self.precomputeList if not x[1] or ok
+                            fn
+                            for (fn, dep2) in self.precomputeList
+                            if not dep2 == 2 or ok
                         ]:
                             setattr(ap, feat, Computed(api, fObj.data))
                         else:
