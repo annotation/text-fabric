@@ -26,9 +26,17 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/text.py#L1-L24" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/text.py#L1-L71" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def textApi(app):
+<pre><code class="python">import types
+from unicodedata import normalize
+
+from ..core.text import DEFAULT_FORMAT
+from ..core.helpers import htmlEsc
+from .helpers import dh
+
+
+def textApi(app):
     api = app.api
     T = api.T
     F = api.F
@@ -38,6 +46,7 @@
         return f&#34;{fOtype(n)}{n}&#34;
 
     formats = T.formats
+    app.plainFormats = set(formats)
     xFormats = T._xformats
     xdTypes = T._xdTypes
 
@@ -51,7 +60,45 @@
         func = getattr(app, f&#34;fmt_{method}&#34;, rescue)
         xFormats[fmt] = func
 
-    aContext.allowedValues[&#34;textFormat&#34;] = T.formats</code></pre>
+    aContext.allowedValues[&#34;textFormat&#34;] = T.formats
+    app.specialCharacters = types.MethodType(specialCharacters, app)
+
+
+def specialCharacters(app, fmt=None):
+    if fmt is None:
+        fmt = DEFAULT_FORMAT
+
+    formats = app.plainFormats
+
+    if fmt not in formats:
+        choices = &#34;\n\t&#34;.join(formats)
+        default = f&#34;or omit the fmt parameter to use {DEFAULT_FORMAT} by default&#34;
+        app.error(
+            f&#34;No such format: {fmt}. Choose one from\n\t{choices}\n{default}&#34;, tm=False
+        )
+        return None
+
+    api = app.api
+    C = api.C
+
+    characters = C.characters.data
+    freqList = characters[fmt]
+
+    specials = sorted(
+        (c for (c, f) in freqList if not c.isascii()),
+        key=lambda c: normalize(&#34;NFD&#34;, c.upper()),
+    )
+
+    html = []
+    html.append(f&#34;&#34;&#34;&lt;p&gt;&lt;b&gt;Special characters in &lt;code&gt;{fmt}&lt;/code&gt;&lt;/b&gt;&#34;&#34;&#34;)
+    for c in specials:
+        cc = ord(c)
+        html.append(
+            &#34;&#34;&#34;&lt;code class=&#34;ccoff&#34; &#34;&#34;&#34;
+            f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/code&gt;&#34;&#34;&#34;
+        )
+    html.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
+    return dh(&#34;\n&#34;.join(html))</code></pre>
 </details>
 </section>
 <section>
@@ -61,6 +108,53 @@
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.text.specialCharacters"><code class="name flex">
+<span>def <span class="ident">specialCharacters</span></span>(<span>app, fmt=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/text.py#L37-L71" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def specialCharacters(app, fmt=None):
+    if fmt is None:
+        fmt = DEFAULT_FORMAT
+
+    formats = app.plainFormats
+
+    if fmt not in formats:
+        choices = &#34;\n\t&#34;.join(formats)
+        default = f&#34;or omit the fmt parameter to use {DEFAULT_FORMAT} by default&#34;
+        app.error(
+            f&#34;No such format: {fmt}. Choose one from\n\t{choices}\n{default}&#34;, tm=False
+        )
+        return None
+
+    api = app.api
+    C = api.C
+
+    characters = C.characters.data
+    freqList = characters[fmt]
+
+    specials = sorted(
+        (c for (c, f) in freqList if not c.isascii()),
+        key=lambda c: normalize(&#34;NFD&#34;, c.upper()),
+    )
+
+    html = []
+    html.append(f&#34;&#34;&#34;&lt;p&gt;&lt;b&gt;Special characters in &lt;code&gt;{fmt}&lt;/code&gt;&lt;/b&gt;&#34;&#34;&#34;)
+    for c in specials:
+        cc = ord(c)
+        html.append(
+            &#34;&#34;&#34;&lt;code class=&#34;ccoff&#34; &#34;&#34;&#34;
+            f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/code&gt;&#34;&#34;&#34;
+        )
+    html.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
+    return dh(&#34;\n&#34;.join(html))</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.text.textApi"><code class="name flex">
 <span>def <span class="ident">textApi</span></span>(<span>app)</span>
 </code></dt>
@@ -69,7 +163,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/text.py#L1-L24" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/text.py#L9-L34" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
@@ -81,6 +175,7 @@
         return f&#34;{fOtype(n)}{n}&#34;
 
     formats = T.formats
+    app.plainFormats = set(formats)
     xFormats = T._xformats
     xdTypes = T._xdTypes
 
@@ -94,7 +189,8 @@
         func = getattr(app, f&#34;fmt_{method}&#34;, rescue)
         xFormats[fmt] = func
 
-    aContext.allowedValues[&#34;textFormat&#34;] = T.formats</code></pre>
+    aContext.allowedValues[&#34;textFormat&#34;] = T.formats
+    app.specialCharacters = types.MethodType(specialCharacters, app)</code></pre>
 </details>
 </dd>
 </dl>
@@ -166,6 +262,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.advanced.text.specialCharacters" href="#tf.advanced.text.specialCharacters">specialCharacters</a></code></li>
 <li><code><a title="tf.advanced.text.textApi" href="#tf.advanced.text.textApi">textApi</a></code></li>
 </ul>
 </li>

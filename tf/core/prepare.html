@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L1-L688" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L1-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Precompute data.
@@ -464,6 +464,60 @@ def boundary(info, error, otype, oslots, rank):
     return (tuple(firstSlots), tuple(lastSlots))
 
 
+def characters(info, error, otext, tFormats, *tFeats):
+    &#34;&#34;&#34;Computes character data.
+
+    For each text format, a frequency list of the characters in that format
+    is made.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otext: iterable
+        The data of the *otext* feature.
+    tFormats:
+        Dictionary keyed by text format and valued by the tuple of features
+        used in that format.
+    tFeats: iterable
+        Each tFeat is the name and the data of a text feature.
+        i.e. a feature used in text formats.
+
+    Returns
+    -------
+    dict
+        Keyed by format valued by a frequency dict, which is
+        itself keyed by single characters and valued by the frequency
+        of that character in the whole corpus when rendered with that format.
+    &#34;&#34;&#34;
+
+    charFreqsByFeature = {}
+
+    for (tFeat, data) in tFeats:
+        freqList = collections.Counter()
+        for v in data.values():
+            freqList[v] += 1
+        charFreq = collections.defaultdict(lambda: 0)
+        for (v, freq) in freqList.items():
+            for c in v:
+                charFreq[c] += freq
+        charFreqsByFeature[tFeat] = charFreq
+
+    charFreqsByFmt = {}
+
+    for (fmt, tFeatures) in sorted(tFormats.items()):
+        charFreq = collections.defaultdict(lambda: 0)
+        for tFeat in tFeatures:
+            thisCharFreq = charFreqsByFeature[tFeat]
+            for (c, freq) in thisCharFreq.items():
+                charFreq[c] += freq
+        charFreqsByFmt[fmt] = sorted(x for x in charFreq.items())
+
+    return charFreqsByFmt
+
+
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
 
@@ -496,7 +550,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        The names of section features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------
@@ -617,7 +671,7 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     levUp: array
         The data of the *levUp* precompute step.
     sFeats: iterable
-        The names of structural features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------
@@ -780,7 +834,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L370-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L370-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -841,6 +895,94 @@ reversed canonical order?</p>
     return (tuple(firstSlots), tuple(lastSlots))</code></pre>
 </details>
 </dd>
+<dt id="tf.core.prepare.characters"><code class="name flex">
+<span>def <span class="ident">characters</span></span>(<span>info, error, otext, tFormats, *tFeats)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Computes character data.</p>
+<p>For each text format, a frequency list of the characters in that format
+is made.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>info</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write informational messages to the console.</dd>
+<dt><strong><code>error</code></strong> :&ensp;<code>function</code></dt>
+<dd>Method to write error messages to the console.</dd>
+<dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>The data of the <em>otext</em> feature.</dd>
+<dt>tFormats:</dt>
+<dt>Dictionary keyed by text format and valued by the tuple of features</dt>
+<dt>used in that format.</dt>
+<dt><strong><code>tFeats</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>Each tFeat is the name and the data of a text feature.
+i.e. a feature used in text formats.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>Keyed by format valued by a frequency dict, which is
+itself keyed by single characters and valued by the frequency
+of that character in the whole corpus when rendered with that format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L429-L480" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
+    &#34;&#34;&#34;Computes character data.
+
+    For each text format, a frequency list of the characters in that format
+    is made.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otext: iterable
+        The data of the *otext* feature.
+    tFormats:
+        Dictionary keyed by text format and valued by the tuple of features
+        used in that format.
+    tFeats: iterable
+        Each tFeat is the name and the data of a text feature.
+        i.e. a feature used in text formats.
+
+    Returns
+    -------
+    dict
+        Keyed by format valued by a frequency dict, which is
+        itself keyed by single characters and valued by the frequency
+        of that character in the whole corpus when rendered with that format.
+    &#34;&#34;&#34;
+
+    charFreqsByFeature = {}
+
+    for (tFeat, data) in tFeats:
+        freqList = collections.Counter()
+        for v in data.values():
+            freqList[v] += 1
+        charFreq = collections.defaultdict(lambda: 0)
+        for (v, freq) in freqList.items():
+            for c in v:
+                charFreq[c] += freq
+        charFreqsByFeature[tFeat] = charFreq
+
+    charFreqsByFmt = {}
+
+    for (fmt, tFeatures) in sorted(tFormats.items()):
+        charFreq = collections.defaultdict(lambda: 0)
+        for tFeat in tFeatures:
+            thisCharFreq = charFreqsByFeature[tFeat]
+            for (c, freq) in thisCharFreq.items():
+                charFreq[c] += freq
+        charFreqsByFmt[fmt] = sorted(x for x in charFreq.items())
+
+    return charFreqsByFmt</code></pre>
+</details>
+</dd>
 <dt id="tf.core.prepare.levDown"><code class="name flex">
 <span>def <span class="ident">levDown</span></span>(<span>info, error, otype, levUp, rank)</span>
 </code></dt>
@@ -884,7 +1026,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L315-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L315-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -982,7 +1124,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L229-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L229-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1127,7 +1269,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1261,7 +1403,7 @@ is still fast.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L114-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L114-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1373,7 +1515,7 @@ is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L195-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L195-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1440,7 +1582,7 @@ contain the section headings.</p>
 <dt><strong><code>levels</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levels</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The names of section features.</dd>
+<dd>Each sFeat the data of a section feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1464,7 +1606,7 @@ spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L429-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L483-L600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1498,7 +1640,7 @@ spells out the names of the sections.</p></div>
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        The names of section features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------
@@ -1618,7 +1760,7 @@ contain the section headings.</p>
 <dt><strong><code>levUp</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>The names of structural features.</dd>
+<dd>Each sFeat the data of a section feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1645,7 +1787,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/prepare.py#L549-L688" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/prepare.py#L603-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
@@ -1680,7 +1822,7 @@ section key.</p></div>
     levUp: array
         The data of the *levUp* precompute step.
     sFeats: iterable
-        The names of structural features.
+        Each sFeat the data of a section feature.
 
     Returns
     -------
@@ -1861,6 +2003,7 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
 <li><code><a title="tf.core.prepare.boundary" href="#tf.core.prepare.boundary">boundary</a></code></li>
+<li><code><a title="tf.core.prepare.characters" href="#tf.core.prepare.characters">characters</a></code></li>
 <li><code><a title="tf.core.prepare.levDown" href="#tf.core.prepare.levDown">levDown</a></code></li>
 <li><code><a title="tf.core.prepare.levUp" href="#tf.core.prepare.levUp">levUp</a></code></li>
 <li><code><a title="tf.core.prepare.levels" href="#tf.core.prepare.levels">levels</a></code></li>

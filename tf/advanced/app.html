@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L1-L637" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L1-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -88,6 +88,7 @@ class App:
         api=None,
         setFile=&#34;&#34;,
         silent=False,
+        _withGc=True,
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
@@ -125,7 +126,7 @@ class App:
         automatically loaded.
 
         Any of these features can be loaded on demand later by means of
-        `tf.advanced.App.load()`.
+        `tf.advanced.app.App.load()`.
 
         Parameters
         ----------
@@ -332,6 +333,10 @@ class App:
             The list of those settings is spelled out in
             `tf.advanced.settings`.
 
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+
         !!! caution &#34;Volumes and collections&#34;
             It is an error to load a volume as a collection and vice-versa
 
@@ -394,6 +399,7 @@ class App:
                     volume=volume,
                     collection=collection,
                     silent=silent,
+                    _withGc=_withGc,
                 )
                 api = TF.load(&#34;&#34;, silent=True)
                 if api:
@@ -633,7 +639,7 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
         appClass = findAppClass(appName, appPath) or App
 
     mod = kwargs.get(&#34;mod&#34;, [])
-    mod = mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
+    mod = [] if mod is None else mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
     if extraMod:
         if len(mod) &gt; 0:
             mod = [extraMod, *mod]
@@ -708,7 +714,7 @@ class.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L518-L637" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L524-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
     &#34;&#34;&#34;Find a TF app by name and initialize an object of its main class.
@@ -798,7 +804,7 @@ class.</dd>
         appClass = findAppClass(appName, appPath) or App
 
     mod = kwargs.get(&#34;mod&#34;, [])
-    mod = mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
+    mod = [] if mod is None else mod.split(&#34;,&#34;) if type(mod) is str else list(mod)
     if extraMod:
         if len(mod) &gt; 0:
             mod = [extraMod, *mod]
@@ -871,7 +877,7 @@ automatically loaded.</p>
 <p>And in general, features whose names start with <code>omap@</code> will not be
 automatically loaded.</p>
 <p>Any of these features can be loaded on demand later by means of
-<code>tf.advanced.App.load()</code>.</p>
+<code><a title="tf.advanced.app.App.load" href="#tf.advanced.app.App.load">App.load()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
@@ -1061,6 +1067,9 @@ Error messages will still come through.</dd>
 that are specified in the app's <code>config.yaml</code> file.
 The list of those settings is spelled out in
 <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code>.</dd>
+<dt><strong><code>_withGc</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>If False, it disables the Python garbage collector before
+loading features. Used to experiment with performance.</dd>
 </dl>
 <div class="admonition caution">
 <p class="admonition-title">Volumes and collections</p>
@@ -1078,7 +1087,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L40-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L40-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1101,6 +1110,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         api=None,
         setFile=&#34;&#34;,
         silent=False,
+        _withGc=True,
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
@@ -1138,7 +1148,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         automatically loaded.
 
         Any of these features can be loaded on demand later by means of
-        `tf.advanced.App.load()`.
+        `tf.advanced.app.App.load()`.
 
         Parameters
         ----------
@@ -1345,6 +1355,10 @@ The collection takes precedence, and the volume is ignored in that case.</p>
             The list of those settings is spelled out in
             `tf.advanced.settings`.
 
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+
         !!! caution &#34;Volumes and collections&#34;
             It is an error to load a volume as a collection and vice-versa
 
@@ -1407,6 +1421,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
                     volume=volume,
                     collection=collection,
                     silent=silent,
+                    _withGc=_withGc,
                 )
                 api = TF.load(&#34;&#34;, silent=True)
                 if api:
@@ -1597,7 +1612,7 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L430-L457" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L436-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=False):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1638,7 +1653,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L459-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L465-L470" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1673,7 +1688,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/advanced/app.py#L466-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/advanced/app.py#L472-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

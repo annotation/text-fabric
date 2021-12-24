@@ -73,7 +73,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1-L1291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1-L1290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -243,9 +243,8 @@ def readArgs():
 
     elif command == &#34;make&#34;:
         if len(args) &lt; 1:
-            console(HELP)
-            console(&#34;Missing output folder argument&#34;)
-            return None
+            Args.folder = None
+            Args.appFolder = None
         else:
             Args.folder = args[1] if len(args) &gt; 1 else args[0]
             Args.appFolder = args[0] if len(args) &gt; 1 else None
@@ -1383,7 +1382,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L77-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L77-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1399,7 +1398,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L83-L90" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L83-L90" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1419,7 +1418,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1242-L1287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1241-L1286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Args = readArgs()
@@ -1477,7 +1476,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1214-L1239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1213-L1238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSearchClients(dataset, folder, appFolder, dataDir=None):
     DEBUG_STATE = &#34;off&#34;
@@ -1515,7 +1514,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L93-L182" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L93-L181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs():
     class Args:
@@ -1593,9 +1592,8 @@ if __name__ == &#34;__main__&#34;:
 
     elif command == &#34;make&#34;:
         if len(args) &lt; 1:
-            console(HELP)
-            console(&#34;Missing output folder argument&#34;)
-            return None
+            Args.folder = None
+            Args.appFolder = None
         else:
             Args.folder = args[1] if len(args) &gt; 1 else args[0]
             Args.appFolder = args[0] if len(args) &gt; 1 else None
@@ -1623,7 +1621,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L185-L1211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L184-L1210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(
@@ -2663,7 +2661,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1178-L1197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1177-L1196" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2695,7 +2693,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1128-L1139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1127-L1138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2719,7 +2717,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L708-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L707-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2746,7 +2744,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L233-L494" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L232-L493" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
@@ -3020,7 +3018,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L207-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L206-L230" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -3057,7 +3055,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L692-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L691-L705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -3084,7 +3082,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L724-L822" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L723-L821" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -3195,7 +3193,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1199-L1211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1198-L1210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -3220,7 +3218,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1147-L1167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1146-L1166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -3253,7 +3251,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L496-L522" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L495-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -3292,7 +3290,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1113-L1120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1112-L1119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -3312,7 +3310,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L642-L647" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L641-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
@@ -3330,7 +3328,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1083-L1088" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1082-L1087" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def make(self):
     self.makeConfig()
@@ -3362,7 +3360,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L953-L1023" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L952-L1022" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3445,7 +3443,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L524-L640" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L523-L639" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3574,7 +3572,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L824-L879" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L823-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeCombined(self):
         C = self.C
@@ -3642,7 +3640,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L649-L654" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L648-L653" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3660,7 +3658,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L676-L690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L675-L689" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3687,7 +3685,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L881-L951" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L880-L950" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeHtml(self):
         C = self.C
@@ -3770,7 +3768,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L656-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L655-L673" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     C = self.C
@@ -3801,7 +3799,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1062-L1071" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1061-L1070" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self, allClients=True):
     C = self.C
@@ -3823,7 +3821,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1141-L1145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1140-L1144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -3840,7 +3838,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1090-L1111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1089-L1110" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -3874,7 +3872,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1073-L1081" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1072-L1080" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
@@ -3895,7 +3893,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1169-L1176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1168-L1175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -3915,7 +3913,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1122-L1126" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1121-L1125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -3932,7 +3930,7 @@ to see the updated client working.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/client/make/build.py#L1025-L1060" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/client/make/build.py#L1024-L1059" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C

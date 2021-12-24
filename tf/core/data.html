@@ -26,9 +26,10 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L1-L658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L1-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
+import gc
 import pickle
 from pickletools import optimize
 import gzip
@@ -92,7 +93,14 @@ class Data(object):
         self.dataError = False
         self.dataType = &#34;str&#34;
 
-    def load(self, metaOnly=False, silent=None):
+    def load(self, metaOnly=False, silent=None, _withGc=True):
+        &#34;&#34;&#34;Load a feature.
+
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        &#34;&#34;&#34;
+
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -107,7 +115,9 @@ class Data(object):
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
-            &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+            &#34;, &#34;.join(
+                dep.fileName for dep in self.dependencies if isinstance(dep, Data)
+            )
             if self.method
             else self.dirName
         )
@@ -135,7 +145,7 @@ class Data(object):
             try:
                 if not origTime:
                     actionRep = &#34;b&#34;
-                    good = self._readDataBin()
+                    good = self._readDataBin(_withGc=_withGc)
                 elif not binTime or origTime &gt; binTime:
                     actionRep = &#34;C&#34; if self.method else &#34;T&#34;
                     good = (
@@ -155,7 +165,7 @@ class Data(object):
                         if self.isConfig or metaOnly:
                             actionRep = &#34;M&#34;
                         else:
-                            good = self._readDataBin()
+                            good = self._readDataBin(_withGc=_withGc)
             except MemoryError:
                 console(MEM_MSG)
                 good = False
@@ -433,8 +443,9 @@ class Data(object):
 
         good = True
         for feature in self.dependencies:
-            if not feature.load():
-                good = False
+            if isinstance(feature, Data):
+                if not feature.load():
+                    good = False
         if not good:
             return False
 
@@ -453,7 +464,9 @@ class Data(object):
             info,
             error,
             *[
-                dep.metaData if dep.fileName == OTEXT else dep.data
+                (dep.metaData if dep.fileName == OTEXT else dep.data)
+                if isinstance(dep, Data)
+                else dep
                 for dep in self.dependencies
             ],
         )
@@ -568,7 +581,9 @@ class Data(object):
                         if tfValue is None:
                             fh.write(
                                 &#34;{}{}{}\n&#34;.format(
-                                    nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2,
+                                    nodeSpec,
+                                    &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                    nodeSpec2,
                                 )
                             )
                         else:
@@ -605,7 +620,9 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
-                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                                nodeSpec,
+                                &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                tfValue,
                             )
                         )
             else:
@@ -618,20 +635,32 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
-                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                                nodeSpec,
+                                &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                tfValue,
                             )
                         )
         return True
 
-    def _readDataBin(self):
+    def _readDataBin(self, _withGc=True):
+        &#34;&#34;&#34;Read binary feature data.
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        &#34;&#34;&#34;
+
         tmObj = self.tmObj
         error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
             return False
+        if not _withGc:
+            gc.disable()
         with gzip.open(self.binPath, &#34;rb&#34;) as f:
             self.data = pickle.load(f)
+        if not _withGc:
+            gc.enable()
         self.dataLoaded = time.time()
         return True
 
@@ -670,7 +699,11 @@ class Data(object):
             )
         else:
             if self.method:
-                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsInfo = [
+                    dep._getModified()
+                    for dep in self.dependencies
+                    if isinstance(dep, Data)
+                ]
                 depsModifieds = [d for d in depsInfo if d is not None]
                 depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
                 if depsModified is not None:
@@ -706,7 +739,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L32-L658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L33-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -741,7 +774,14 @@ class Data(object):
         self.dataError = False
         self.dataType = &#34;str&#34;
 
-    def load(self, metaOnly=False, silent=None):
+    def load(self, metaOnly=False, silent=None, _withGc=True):
+        &#34;&#34;&#34;Load a feature.
+
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        &#34;&#34;&#34;
+
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -756,7 +796,9 @@ class Data(object):
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
         sourceRep = (
-            &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+            &#34;, &#34;.join(
+                dep.fileName for dep in self.dependencies if isinstance(dep, Data)
+            )
             if self.method
             else self.dirName
         )
@@ -784,7 +826,7 @@ class Data(object):
             try:
                 if not origTime:
                     actionRep = &#34;b&#34;
-                    good = self._readDataBin()
+                    good = self._readDataBin(_withGc=_withGc)
                 elif not binTime or origTime &gt; binTime:
                     actionRep = &#34;C&#34; if self.method else &#34;T&#34;
                     good = (
@@ -804,7 +846,7 @@ class Data(object):
                         if self.isConfig or metaOnly:
                             actionRep = &#34;M&#34;
                         else:
-                            good = self._readDataBin()
+                            good = self._readDataBin(_withGc=_withGc)
             except MemoryError:
                 console(MEM_MSG)
                 good = False
@@ -1082,8 +1124,9 @@ class Data(object):
 
         good = True
         for feature in self.dependencies:
-            if not feature.load():
-                good = False
+            if isinstance(feature, Data):
+                if not feature.load():
+                    good = False
         if not good:
             return False
 
@@ -1102,7 +1145,9 @@ class Data(object):
             info,
             error,
             *[
-                dep.metaData if dep.fileName == OTEXT else dep.data
+                (dep.metaData if dep.fileName == OTEXT else dep.data)
+                if isinstance(dep, Data)
+                else dep
                 for dep in self.dependencies
             ],
         )
@@ -1217,7 +1262,9 @@ class Data(object):
                         if tfValue is None:
                             fh.write(
                                 &#34;{}{}{}\n&#34;.format(
-                                    nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, nodeSpec2,
+                                    nodeSpec,
+                                    &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                    nodeSpec2,
                                 )
                             )
                         else:
@@ -1254,7 +1301,9 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
-                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                                nodeSpec,
+                                &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                tfValue,
                             )
                         )
             else:
@@ -1267,20 +1316,32 @@ class Data(object):
                     if tfValue is not None:
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
-                                nodeSpec, &#34;\t&#34; if nodeSpec else &#34;&#34;, tfValue,
+                                nodeSpec,
+                                &#34;\t&#34; if nodeSpec else &#34;&#34;,
+                                tfValue,
                             )
                         )
         return True
 
-    def _readDataBin(self):
+    def _readDataBin(self, _withGc=True):
+        &#34;&#34;&#34;Read binary feature data.
+        _withGc: boolean, optional True
+            If False, it disables the Python garbage collector before
+            loading features. Used to experiment with performance.
+        &#34;&#34;&#34;
+
         tmObj = self.tmObj
         error = tmObj.error
 
         if not os.path.exists(self.binPath):
             error(f&#39;TF reading: feature file &#34;{self.binPath}&#34; does not exist&#39;)
             return False
+        if not _withGc:
+            gc.disable()
         with gzip.open(self.binPath, &#34;rb&#34;) as f:
             self.data = pickle.load(f)
+        if not _withGc:
+            gc.enable()
         self.dataLoaded = time.time()
         return True
 
@@ -1319,7 +1380,11 @@ class Data(object):
             )
         else:
             if self.method:
-                depsInfo = [dep._getModified() for dep in self.dependencies]
+                depsInfo = [
+                    dep._getModified()
+                    for dep in self.dependencies
+                    if isinstance(dep, Data)
+                ]
                 depsModifieds = [d for d in depsInfo if d is not None]
                 depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
                 if depsModified is not None:
@@ -1346,7 +1411,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L608-L610" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L637-L639" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1357,13 +1422,23 @@ class Data(object):
 <span>def <span class="ident">load</span></span>(<span>self, metaOnly=False, silent=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Load a feature.</p>
+<p>_withGc: boolean, optional True
+If False, it disables the Python garbage collector before
+loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L65-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def load(self, metaOnly=False, silent=None):
+<pre><code class="python">def load(self, metaOnly=False, silent=None, _withGc=True):
+    &#34;&#34;&#34;Load a feature.
+
+    _withGc: boolean, optional True
+        If False, it disables the Python garbage collector before
+        loading features. Used to experiment with performance.
+    &#34;&#34;&#34;
+
     tmObj = self.tmObj
     isSilent = tmObj.isSilent
     setSilent = tmObj.setSilent
@@ -1378,7 +1453,9 @@ class Data(object):
     origTime = self._getModified()
     binTime = self._getModified(bin=True)
     sourceRep = (
-        &#34;, &#34;.join(dep.fileName for dep in self.dependencies)
+        &#34;, &#34;.join(
+            dep.fileName for dep in self.dependencies if isinstance(dep, Data)
+        )
         if self.method
         else self.dirName
     )
@@ -1406,7 +1483,7 @@ class Data(object):
         try:
             if not origTime:
                 actionRep = &#34;b&#34;
-                good = self._readDataBin()
+                good = self._readDataBin(_withGc=_withGc)
             elif not binTime or origTime &gt; binTime:
                 actionRep = &#34;C&#34; if self.method else &#34;T&#34;
                 good = (
@@ -1426,7 +1503,7 @@ class Data(object):
                     if self.isConfig or metaOnly:
                         actionRep = &#34;M&#34;
                     else:
-                        good = self._readDataBin()
+                        good = self._readDataBin(_withGc=_withGc)
         except MemoryError:
             console(MEM_MSG)
             good = False
@@ -1459,7 +1536,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L156-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
     tmObj = self.tmObj
@@ -1483,7 +1560,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/data.py#L152-L154" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

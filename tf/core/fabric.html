@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L1-L1131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L1-L1160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -57,6 +57,8 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 import os
 
 import collections
+from itertools import chain
+
 from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
@@ -80,6 +82,7 @@ from .prepare import (
     levUp,
     levDown,
     boundary,
+    characters,
     sections,
     structure,
 )
@@ -102,20 +105,21 @@ from ..convert.mql import MQL, tfFromMql
 OTEXT_DEFAULT = dict(sectionFeatures=&#34;&#34;, sectionTypes=&#34;&#34;)
 
 PRECOMPUTE = (
-    (False, &#34;__levels__&#34;, levels, (OTYPE, OSLOTS, OTEXT)),
-    (False, &#34;__order__&#34;, order, (OTYPE, OSLOTS) + (&#34;__levels__&#34;,)),
-    (False, &#34;__rank__&#34;, rank, (OTYPE, &#34;__order__&#34;)),
-    (False, &#34;__levUp__&#34;, levUp, (OTYPE, OSLOTS) + (&#34;__rank__&#34;,)),
-    (False, &#34;__levDown__&#34;, levDown, (OTYPE, &#34;__levUp__&#34;, &#34;__rank__&#34;)),
-    (False, &#34;__boundary__&#34;, boundary, (OTYPE, OSLOTS) + (&#34;__rank__&#34;,)),
+    (0, &#34;__levels__&#34;, levels, (OTYPE, OSLOTS, OTEXT)),
+    (0, &#34;__order__&#34;, order, (OTYPE, OSLOTS) + (&#34;__levels__&#34;,)),
+    (0, &#34;__rank__&#34;, rank, (OTYPE, &#34;__order__&#34;)),
+    (0, &#34;__levUp__&#34;, levUp, (OTYPE, OSLOTS) + (&#34;__rank__&#34;,)),
+    (0, &#34;__levDown__&#34;, levDown, (OTYPE, &#34;__levUp__&#34;, &#34;__rank__&#34;)),
+    (1, &#34;__characters__&#34;, characters, (OTEXT,)),
+    (0, &#34;__boundary__&#34;, boundary, (OTYPE, OSLOTS) + (&#34;__rank__&#34;,)),
     (
-        True,
+        2,
         &#34;__sections__&#34;,
         sections,
         (OTYPE, OSLOTS, OTEXT) + (&#34;__levUp__&#34;, &#34;__levels__&#34;),
     ),
     (
-        True,
+        2,
         &#34;__structure__&#34;,
         structure,
         (OTYPE, OSLOTS, OTEXT)
@@ -210,6 +214,11 @@ class FabricCore(object):
         If `&#39;deep&#39;` is passed, all informational and warning messages are suppressed.
         Errors still pass through.
 
+    _withGc: boolean, optional True
+        If False, it disables the Python garbage collector before
+        loading features. Used to experiment with performance.
+
+
     !!! note &#34;otext@ in modules&#34;
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
@@ -223,8 +232,8 @@ class FabricCore(object):
         An object from which you can call up all the of methods of the core API.
     &#34;&#34;&#34;
 
-    def __init__(self, locations=None, modules=None, silent=False):
-
+    def __init__(self, locations=None, modules=None, silent=False, _withGc=True):
+        self._withGc = _withGc
         self.silent = silent
         tmObj = Timestamp()
         self.tmObj = tmObj
@@ -380,6 +389,7 @@ Api reference : {APIREF}
                 )
                 self.structureTypes = itemize(otextMeta.get(&#34;structureTypes&#34;, &#34;&#34;), &#34;,&#34;)
                 (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+
                 if not (0 &lt; len(self.sectionTypes) &lt;= 3) or not (
                     0 &lt; len(self.sectionFeats) &lt;= 3
                 ):
@@ -413,6 +423,23 @@ Api reference : {APIREF}
 
                 for fName in self.textFeatures:
                     self._loadFeature(fName, optional=fName in formatFeats)
+
+                dep1Feats = self.dep1Feats
+                if dep1Feats:
+                    cformats = self.cformats
+                    tFormats = {}
+                    tFeats = set()
+                    for (fmt, (tpl, featData)) in cformats.items():
+                        feats = set(chain.from_iterable(x[0] for x in featData))
+                        tFormats[fmt] = tuple(sorted(feats))
+                        tFeats |= feats
+                    tFeats = tuple(sorted(tFeats))
+                    extraDependencies = [tFormats]
+                    for tFeat in tFeats:
+                        featData = self.features[tFeat].data
+                        extraDependencies.append((tFeat, featData))
+                    for cFeat in dep1Feats:
+                        self.features[cFeat].dependencies += extraDependencies
 
             else:
                 self.sectionsOK = False
@@ -923,7 +950,7 @@ Api reference : {APIREF}
                 self.good = False
         else:
             # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
-            if not self.features[fName].load(silent=silent):
+            if not self.features[fName].load(silent=silent, _withGc=self._withGc):
                 self.good = False
 
     def _makeIndex(self):
@@ -986,11 +1013,14 @@ Api reference : {APIREF}
         if not self.featuresOnly:
             self.warpDir = self.features[OTYPE].dirName
             self.precomputeList = []
+            self.dep1Feats = []
             for (dep2, fName, method, dependencies) in PRECOMPUTE:
                 thisGood = True
                 if dep2 and OTEXT not in self.features:
                     continue
-                if dep2:
+                if dep2 == 1:
+                    self.dep1Feats.append(fName)
+                elif dep2 == 2:
                     otextMeta = self.features[OTEXT].metaData
                     sFeatures = f&#34;{KIND[fName]}Features&#34;
                     sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
@@ -1035,14 +1065,11 @@ Api reference : {APIREF}
         )
 
     def _precompute(self):
-        tmObj = self.tmObj
-        info = tmObj.info
         good = True
         for (fName, dep2) in self.precomputeList:
             ok = getattr(self, f&#39;{fName.strip(&#34;_&#34;)}OK&#39;, False)
-            if dep2 and not ok:
+            if dep2 == 2 and not ok:
                 continue
-            info(f&#34;... {fName} ...&#34;)
             if not self.features[fName].load():
                 good = False
                 break
@@ -1081,7 +1108,9 @@ Api reference : {APIREF}
                         ok = getattr(self, f&#34;{feat}OK&#34;, False)
                         ap = api.C
                         if fName in [
-                            x[0] for x in self.precomputeList if not x[1] or ok
+                            fn
+                            for (fn, dep2) in self.precomputeList
+                            if not dep2 == 2 or ok
                         ]:
                             setattr(ap, feat, Computed(api, fObj.data))
                         else:
@@ -1262,6 +1291,11 @@ in <code>locations</code>.</p>
 If <code>True</code> is passed, banners and normal progress messages are suppressed.
 If <code>'deep'</code> is passed, all informational and warning messages are suppressed.
 Errors still pass through.</p>
+<dl>
+<dt><strong><code>_withGc</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>If False, it disables the Python garbage collector before
+loading features. Used to experiment with performance.</dd>
+</dl>
 <div class="admonition note">
 <p class="admonition-title">otext@ in modules</p>
 <p>If modules contain features with a name starting with <code>otext@</code>, then the format
@@ -1278,7 +1312,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L117-L1131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L121-L1160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1336,6 +1370,11 @@ also can add new formats to the Text-API.</p>
         If `&#39;deep&#39;` is passed, all informational and warning messages are suppressed.
         Errors still pass through.
 
+    _withGc: boolean, optional True
+        If False, it disables the Python garbage collector before
+        loading features. Used to experiment with performance.
+
+
     !!! note &#34;otext@ in modules&#34;
         If modules contain features with a name starting with `otext@`, then the format
         definitions in these features will be added to the format definitions in the
@@ -1349,8 +1388,8 @@ also can add new formats to the Text-API.</p>
         An object from which you can call up all the of methods of the core API.
     &#34;&#34;&#34;
 
-    def __init__(self, locations=None, modules=None, silent=False):
-
+    def __init__(self, locations=None, modules=None, silent=False, _withGc=True):
+        self._withGc = _withGc
         self.silent = silent
         tmObj = Timestamp()
         self.tmObj = tmObj
@@ -1506,6 +1545,7 @@ Api reference : {APIREF}
                 )
                 self.structureTypes = itemize(otextMeta.get(&#34;structureTypes&#34;, &#34;&#34;), &#34;,&#34;)
                 (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+
                 if not (0 &lt; len(self.sectionTypes) &lt;= 3) or not (
                     0 &lt; len(self.sectionFeats) &lt;= 3
                 ):
@@ -1539,6 +1579,23 @@ Api reference : {APIREF}
 
                 for fName in self.textFeatures:
                     self._loadFeature(fName, optional=fName in formatFeats)
+
+                dep1Feats = self.dep1Feats
+                if dep1Feats:
+                    cformats = self.cformats
+                    tFormats = {}
+                    tFeats = set()
+                    for (fmt, (tpl, featData)) in cformats.items():
+                        feats = set(chain.from_iterable(x[0] for x in featData))
+                        tFormats[fmt] = tuple(sorted(feats))
+                        tFeats |= feats
+                    tFeats = tuple(sorted(tFeats))
+                    extraDependencies = [tFormats]
+                    for tFeat in tFeats:
+                        featData = self.features[tFeat].data
+                        extraDependencies.append((tFeat, featData))
+                    for cFeat in dep1Feats:
+                        self.features[cFeat].dependencies += extraDependencies
 
             else:
                 self.sectionsOK = False
@@ -2049,7 +2106,7 @@ Api reference : {APIREF}
                 self.good = False
         else:
             # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
-            if not self.features[fName].load(silent=silent):
+            if not self.features[fName].load(silent=silent, _withGc=self._withGc):
                 self.good = False
 
     def _makeIndex(self):
@@ -2112,11 +2169,14 @@ Api reference : {APIREF}
         if not self.featuresOnly:
             self.warpDir = self.features[OTYPE].dirName
             self.precomputeList = []
+            self.dep1Feats = []
             for (dep2, fName, method, dependencies) in PRECOMPUTE:
                 thisGood = True
                 if dep2 and OTEXT not in self.features:
                     continue
-                if dep2:
+                if dep2 == 1:
+                    self.dep1Feats.append(fName)
+                elif dep2 == 2:
                     otextMeta = self.features[OTEXT].metaData
                     sFeatures = f&#34;{KIND[fName]}Features&#34;
                     sFeats = tuple(itemize(otextMeta.get(sFeatures, &#34;&#34;), &#34;,&#34;))
@@ -2161,14 +2221,11 @@ Api reference : {APIREF}
         )
 
     def _precompute(self):
-        tmObj = self.tmObj
-        info = tmObj.info
         good = True
         for (fName, dep2) in self.precomputeList:
             ok = getattr(self, f&#39;{fName.strip(&#34;_&#34;)}OK&#39;, False)
-            if dep2 and not ok:
+            if dep2 == 2 and not ok:
                 continue
-            info(f&#34;... {fName} ...&#34;)
             if not self.features[fName].load():
                 good = False
                 break
@@ -2207,7 +2264,9 @@ Api reference : {APIREF}
                         ok = getattr(self, f&#34;{feat}OK&#34;, False)
                         ap = api.C
                         if fName in [
-                            x[0] for x in self.precomputeList if not x[1] or ok
+                            fn
+                            for (fn, dep2) in self.precomputeList
+                            if not dep2 == 2 or ok
                         ]:
                             setattr(ap, feat, Computed(api, fObj.data))
                         else:
@@ -2355,7 +2414,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L513-L536" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L540-L563" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2421,7 +2480,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L418-L494" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L445-L521" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=None, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2528,7 +2587,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L768-L798" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L795-L825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2626,7 +2685,7 @@ metadata.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L800-L869" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L827-L896" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2735,7 +2794,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L267-L416" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L276-L443" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=None):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2813,6 +2872,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
             )
             self.structureTypes = itemize(otextMeta.get(&#34;structureTypes&#34;, &#34;&#34;), &#34;,&#34;)
             (self.cformats, self.formatFeats) = collectFormats(otextMeta)
+
             if not (0 &lt; len(self.sectionTypes) &lt;= 3) or not (
                 0 &lt; len(self.sectionFeats) &lt;= 3
             ):
@@ -2846,6 +2906,23 @@ if the feature could be loaded, else <code>False</code>.</dd>
 
             for fName in self.textFeatures:
                 self._loadFeature(fName, optional=fName in formatFeats)
+
+            dep1Feats = self.dep1Feats
+            if dep1Feats:
+                cformats = self.cformats
+                tFormats = {}
+                tFeats = set()
+                for (fmt, (tpl, featData)) in cformats.items():
+                    feats = set(chain.from_iterable(x[0] for x in featData))
+                    tFormats[fmt] = tuple(sorted(feats))
+                    tFeats |= feats
+                tFeats = tuple(sorted(tFeats))
+                extraDependencies = [tFormats]
+                for tFeat in tFeats:
+                    featData = self.features[tFeat].data
+                    extraDependencies.append((tFeat, featData))
+                for cFeat in dep1Feats:
+                    self.features[cFeat].dependencies += extraDependencies
 
         else:
             self.sectionsOK = False
@@ -2904,7 +2981,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L496-L511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L523-L538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=None):
     &#34;&#34;&#34;Load all loadable features.
@@ -3008,7 +3085,7 @@ But if you did not, you can also pass <code>silent=True</code> to this call.</dd
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d80fa906d692092f995a22bff6b8321f5250e009/tf/core/fabric.py#L538-L766" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/56876b3bc29940253d0c2eba97382e05fb4a635f/tf/core/fabric.py#L565-L793" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
