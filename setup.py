@@ -30,7 +30,7 @@ setup(
     python_requires=">=3.6.3",
     include_package_data=True,
     exclude_package_data={
-        "": ["text_fabric.egg-info", "__pycache__", ".DS_Store", "docs"]
+        "": ["text_fabric.egg-info", "__pycache__", ".DS_Store", "docs", "tests"],
     },
     zip_safe=False,
     entry_points={
@@ -40,7 +40,7 @@ setup(
             "text-fabric-make = tf.client.make.build:main",
         ]
     },
-    version='9.1.12',
+    version='9.1.13',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="text.annotation@icloud.com",

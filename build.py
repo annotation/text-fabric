@@ -191,7 +191,8 @@ def makeDist(pypi=True):
     if os.path.exists(DIST):
         rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
-    run(["python3", "setup.py", "sdist", "bdist_wheel"])
+    # run(["python3", "setup.py", "sdist", "bdist_wheel"])
+    run(["python3", "setup.py", "bdist_wheel"])
     if pypi:
         run(["twine", "upload", "-u", "dirkroorda", distPath])
         # run("./purge.sh", shell=True)

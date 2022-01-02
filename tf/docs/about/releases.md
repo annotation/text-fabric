@@ -46,6 +46,15 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.1.13
+
+2022-01-02
+
+Test release. Since 9.1.7 the text-fabric distribution has become bloated because
+setuptools includes a lot more files by default.
+I now distribute a wheel only, and took care that it has no more than the usual files
+included.
+
 #### 9.1.12
 
 2021-12-24
