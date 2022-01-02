@@ -35,6 +35,8 @@ data9/sparse.ipynb
 data9/sparse.py
 data9/strings.ipynb
 data9/tfcython.ipynb
+dist/text-fabric-9.1.12.tar.gz
+dist/text_fabric-9.1.12-py3-none-any.whl
 test/app.py
 test/hello.py
 test/srun.py

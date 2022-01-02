@@ -49,6 +49,8 @@ build/
 _build/
 __pycache__/
 _temp/
+_local
+dist
 .tf/
 .ipynb_checkpoints/
 
