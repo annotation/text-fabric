@@ -193,16 +193,16 @@ When you want to load the new features, you can use
 the `mod` parameter:
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf')
+use("annotation/banks", mod=f"annotation/banks/sim/tf")
 ```
 
 But TF then tries to download it from GitHub, or look it up from your `~/text-fabric-data`.
 Both will fail, especially when you let TF manage your `~/text-fabric-data` directory.
 
-You have to pass 'clone' as the checkout option: 
+You have to pass `clone` as the checkout option: 
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf:clone')
+use("annotation/banks", mod=f"annotation/banks/sim/tf:clone")
 ```
 
 The `clone` option means: use local data under `~/github`.
@@ -232,7 +232,7 @@ But very effectively.
 From now on, other users (and you too) can use that data by passing just the switch
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf')
+use("annotation/banks", mod=f"annotation/banks/sim/tf")
 ```
 
 without the `clone` option.
@@ -243,7 +243,7 @@ If you want to make sure that you have the most recent stable release of that da
 you may say
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf:latest')
+use("annotation/banks", mod=f"annotation/banks/sim/tf:latest")
 ```
 
 and then check for updates will be performed and if there is a newer release,
@@ -271,7 +271,7 @@ Now your data is available to others.
 The users of your data can refer to that copy by means of the version number:
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf:0.2')
+use("annotation/banks", mod=f"annotation/banks/sim/tf:0.2")
 ```
 
 ### Package into zip files
@@ -330,7 +330,7 @@ will still get the latest stable release.
 But users that say 
 
 ```python
-use('banks', mod=f'annotation/banks/sim/tf:hot')
+use("annotation/banks", mod=f"annotation/banks/sim/tf:hot")
 ```
 
 will get your cutting edge latest commit.
@@ -359,7 +359,7 @@ The values of the checkout parameters tell you to use data that is:
 * `local`: locally present under `~/text-fabric-data` in the appropriate place
 * `latest`: from the latest online release
 * `hot`: from the latest online commit
-* `''`: (default): from your local copy, but if there is no local copy,
+* `""`: (default): from your local copy, but if there is no local copy,
   from the latest online release, or if there are no releases,
   from the latest online commit
 * `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
@@ -373,7 +373,7 @@ You pass the checkout values as follows:
   If you leave it out, it defaults to the empty string: local copy or latest release or commit.
 * For the main data and standard data modules of the app:
   **in the `checkout` parameter**: 
-  `checkout='clone'`, `checkout='local'`, `checkout=''`.
+  `checkout="clone"`, `checkout="local"`, `checkout=""`.
   If you omit `checkout` out, it defaults to the empty string: latest release or commit.
   If you need a different checkout specifier for the main data and the standard
   modules, you can pass the standard modules explicitly to the
@@ -391,7 +391,7 @@ browser on the command line:
 (in a program)
 
 ```python
-use('banks:clone', checkout='latest', mod='annotation/banks/sim/tf:hot')
+use("annotation/banks:clone", checkout="latest", mod="annotation/banks/sim/tf:hot")
 ```
 
 (on the command line)
@@ -412,7 +412,7 @@ Suppose you have called up a data module:
 (in a program)
 
 ```python
-A = use('banks', mod='annotation/banks/sim/tf')
+A = use("annotation/banks", mod="annotation/banks/sim/tf")
 ```
 
 (on the command line)

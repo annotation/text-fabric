@@ -463,7 +463,7 @@ def characters(info, error, otext, tFormats, *tFeats):
             freqList[v] += 1
         charFreq = collections.defaultdict(lambda: 0)
         for (v, freq) in freqList.items():
-            for c in v:
+            for c in str(v):
                 charFreq[c] += freq
         charFreqsByFeature[tFeat] = charFreq
 

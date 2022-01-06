@@ -12,7 +12,7 @@ sometinmes slowly, other times rapidly:
 
 * text-fabric itself, the Python library that you obtained by `pip3 install text-fabric`;
 * TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
-  `text-fabric appName` or `A = use(appName)`;
+  `text-fabric org/repo` or `A = use("org/repo")`;
 * TF data, which was downloaded by that same statement that downloaded the app.
 
 See `tf.about.install` for instructions how to upgrade these things.

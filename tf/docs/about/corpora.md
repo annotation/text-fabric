@@ -17,105 +17,119 @@ Each repo named `app-`*appName* hosts the app named *appName*.
 
 Corpora prefixed with a star do not have dedicated TF apps.
 
+## [annotation](https://github.com/annotation)
 
-`*` [Greek Literature](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/GreekLiterature/start.ipynb)
-:   *Greek*
-    [Greek Literature, -400 - +400](https://github.com/pthu/greek_literature),
-    [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
-    [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
-    The result of a massive conversion effort by Ernst Boogert.
-
-[athenaeus](https://github.com/annotation/app-athenaeus)
-:   *Greek*
-    Works of Athenaeus, 80 - 170,
-    **[Deipnosophistae](https://en.wikipedia.org/wiki/Deipnosophistae)**,
-    Ernst Boogert
-
-[banks](https://github.com/annotation/app-banks)
+[annotation/banks](https://github.com/annotation/banks)
 :   *modern english*
     Iain M. Banks, 1984 - 1987,
     99 words from the SF novel
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
     Dirk Roorda
 
-[bhsa](https://github.com/annotation/app-bhsa)
-:   *Hebrew*
-    Hebrew Bible, 1000 BC - 900 AD,
-    **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
-    ETCBC + Dirk Roorda
-
-[dhammapada](https://github.com/annotation/app-dhammapada)
-:   *Pāli* and *Latin*
-    Ancient Buddhist verses, 300 BC and 1855 AD,
-    **[Transcription with Latin translations based on Viggo Fausbøll's book](https://github.com/ETCBC/dhammapada/blob/master/docs/about.md)**,
-    Bee Scherer, Yvonne Mataar, Dirk Roorda
-
-[dss](https://github.com/annotation/app-dss)
-:   *Hebrew*
-    Dead Sea Scrolls, 300 BC - 100 AD,
-    **[Transcriptions with morphology based on Martin Abegg's data files](https://github.com/ETCBC/dss/blob/master/docs/about.md)**,
-    Martijn Naaijer, Jarod Jacobs, Dirk Roorda
-
-[fusus](https://github.com/annotation/app-fusus)
-:   *Arabic*
-    Fusus Al Hikam,  1165- 2000,
-    **[editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter](https://github.com/among/fusus)**,
-    Cornelis van Lit, Dirk Roorda
-
-[missieven](https://github.com/annotation/app-missieven)
+[annotation/clariah-gm](https://github.com/annotation/clariah-gm)
 :   *Dutch* 
     General Missives, 1600 - 1800,
-    **[General Missives, Dutch East-Indian Company](https://github.com/Dans-labs/clariah-gm)**,
+    **General Missives, Dutch East-Indian Company**,
     Jesse van der Does, Sophie Arnoult, Dirk Roorda
 
-[nena](https://github.com/annotation/app-nena)
+## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
+
+[CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)
 :   *Aramaic*
     North Eastern Neo-Aramaic Corpus, 2000,
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
     Cody Kingham
 
-[oldassyrian](https://github.com/annotation/app-oldassyrian)
-:   *Akkadian / cuneiform*
-    Old Assyrian documents, 2000 - 1600 BC,
-    **[Documents from Ashur](https://github.com/Nino-cunei/oldassyrian/blob/master/docs/about.md)**
-    Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
+## [Cody Kingham](https://github.com/codykingham)
 
-[oldbabylonian](https://github.com/annotation/app-oldbabylonian)
-:   *Akkadian / cuneiform*
-    Old Babylonian letters, 1900 - 1600 BC,
-    **[Altbabylonische Briefe in Umschrift und Übersetzung](https://github.com/Nino-cunei/oldbabylonian/blob/master/docs/about.md)**,
-    Cale Johnson, Dirk Roorda
-
-[peshitta](https://github.com/annotation/app-peshitta)
-:   *Syriac*
-    Syriac Old Testament, 1000 BC - 900 AD,
-    **[Vetus Testamentum Syriace](https://github.com/ETCBC/peshitta/blob/master/docs/about.md)**,
-    Hannes Vlaardingerbroek, Dirk Roorda
-
-[quran](https://github.com/annotation/app-quran)
-:   *Arabic*
-    Quran, 600 - 900,
-    **[Quranic Arabic Corpus](https://github.com/q-ran/quran/blob/master/docs/about.md)**,
-    Cornelis van Lit, Dirk Roorda
-
-[syrnt](https://github.com/annotation/app-syrnt)
-:   *Syriac*
-    Syriac New Testament, 0 - 1000,
-    **[Novum Testamentum Syriace](https://github.com/ETCBC/syrnt/blob/master/docs/about.md)**,
-    Hannes Vlaardingerbroek, Dirk Roorda
-
-[tisch](https://github.com/annotation/app-tisch)
+[codykingham/tischendorf_tf](https://github.com/codykingham/tischendorf_tf)
 :   *Greek*
     New Testament, 50 - 450,
-    **[Greek New Testament in Tischendorf 8th Edition](https://github.com/codykingham/tischendorf_tf)**,
+    **Greek New Testament in Tischendorf 8th Edition**,
     Cody Kingham, Dirk Roorda
 
-[uruk](https://github.com/annotation/app-uruk)
-:   *proto-cuneiform*
-    Uruk, 4000 - 3100 BC,
-    **[Archaic tablets from Uruk](https://github.com/Nino-cunei/uruk/blob/master/docs/about.md)**,
+## [Eep Talstra Centre for Bible and Computer](https://github.com/etcbc)
+
+[etcbc/bhsa](https://github.com/etcbc/bhsa)
+:   *Hebrew*
+    Hebrew Bible, 1000 BC - 900 AD,
+    **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
+    ETCBC + Dirk Roorda
+
+[etcbc/dhammapada](https://github.com/etcbc/dhammapada)
+:   *Pāli* and *Latin*
+    Ancient Buddhist verses, 300 BC and 1855 AD,
+    **Transcription with Latin translations based on Viggo Fausbøll's book**,
+    Bee Scherer, Yvonne Mataar, Dirk Roorda
+
+[etcbc/dss](https://github.com/etcbc/dss)
+:   *Hebrew*
+    Dead Sea Scrolls, 300 BC - 100 AD,
+    **Transcriptions with morphology based on Martin Abegg's data files**,
+    Martijn Naaijer, Jarod Jacobs, Dirk Roorda
+
+[etcbc/peshitta](https://github.com/etcbc/peshitta)
+:   *Syriac*
+    Syriac Old Testament, 1000 BC - 900 AD,
+    **Vetus Testamentum Syriace**,
+    Hannes Vlaardingerbroek, Dirk Roorda
+
+[etcbc/syrnt](https://github.com/etcbc/syrnt)
+:   *Syriac*
+    Syriac New Testament, 0 - 1000,
+    **Novum Testamentum Syriace**,
+    Hannes Vlaardingerbroek, Dirk Roorda
+
+## [NINO Cuneiform](https://github.com/Nino-cunei)
+
+[Nino-cunei/oldassyrian](https://github.com/Nino-cunei/oldassyrian)
+:   *Akkadian / cuneiform*
+    Old Assyrian documents, 2000 - 1600 BC,
+    **Documents from Ashur**
+    Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
+
+[Nino-cunei/oldbabylonian](https://github.com/Nino-cunei/oldbabylonian)
+:   *Akkadian / cuneiform*
+    Old Babylonian letters, 1900 - 1600 BC,
+    **Altbabylonische Briefe in Umschrift und Übersetzung**,
     Cale Johnson, Dirk Roorda
 
+[Nino-cunei/uruk](https://github.com/Nino-cunei/uruk)
+:   *proto-cuneiform*
+    Uruk, 4000 - 3100 BC,
+    **Archaic tablets from Uruk**,
+    Cale Johnson, Dirk Roorda
+
+## [Protestant Theological University](https://github.com/pthu)
+
+`*` [Greek Literature](https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb)
+:   *Greek*
+    [Greek Literature, -400 - +400](https://github.com/pthu/greek_literature),
+    [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
+    [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
+    The result of a massive conversion effort by Ernst Boogert.
+
+[pthu/athenaeus](https://github.com/pthu/athenaeus)
+:   *Greek*
+    Works of Athenaeus, 80 - 170,
+    **[Deipnosophistae](https://en.wikipedia.org/wiki/Deipnosophistae)**,
+    Ernst Boogert
+
+## [Quran](https://github.com/q-ran)
+
+[q-ran/quran](https://github.com/q-ran/quran)
+:   *Arabic*
+    Quran, 600 - 900,
+    **Quranic Arabic Corpus**,
+    Cornelis van Lit, Dirk Roorda
+
+## [University of Utrecht: Cornelis van Lit](https://github.com/among)
+
+[among/fusus](https://github.com/among/fusus)
+:   *Arabic*
+    Fusus Al Hikam,  1165- 2000,
+    **editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter**,
+    Cornelis van Lit, Dirk Roorda
 
 ### Intentions
 
@@ -158,9 +172,9 @@ Then, when you invoke the app, pass the specifier `:clone`.
 This instructs Text-Fabric to look in your local GitHub clone, rather
 than online or in `text-fabric-data`, where downloaded data is stored.
 
-    use('xxxx:clone', checkout="clone")
+    use('org/repo:clone', checkout="clone")
 
-    text-fabric xxxx:clone --checkout=clone
+    text-fabric org/repo:clone --checkout=clone
 
 In this way, you can work with data that is under your control.
 

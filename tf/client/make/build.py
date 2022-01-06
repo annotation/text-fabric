@@ -13,11 +13,13 @@ after which it is usable for everyone.
 
 ## Prerequisites
 
-1.  A Text-Fabric dataset that is registered as a TF-App, e.g. `nena` in
-    [github.com/annotation/app-nena](https://github.com/annotation/app-nena).
+1.  A Text-Fabric dataset that has a TF-App, e.g. `CambridgeSemiticsLab/nena_tf`
+    [github.com/CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf).
     This is the normative example for now.
-1.  Within that app's repo, a subdirectory
-    [layeredsearch](https://github.com/annotation/app-nena/tree/master/layeredsearch)
+1.  An accompanying repository in the same organization, with the same name
+    but with `-search` appended to the name.
+1.  Within that `-search` repo, a subdirectory
+    [layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf-search/tree/master/layeredsearch)
     with definitions of search interfaces
     (you can define multiple search interfaces for one dataset).
     Within this directory:
@@ -56,21 +58,31 @@ from shutil import copy
 from datetime import datetime as dt
 from subprocess import Popen, PIPE
 from time import sleep
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZipFile
 from importlib import util
 
 # from tf.fabric import Fabric
 from tf.app import use
 from tf.fabric import Fabric
 from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath, expanduser
+from tf.parameters import (
+    REPO,
+    LS,
+    ZIP_OPTIONS,
+    URL_GH,
+    URL_NB,
+    GH_BASE,
+    URL_TFDOC,
+    APP_CONFIG,
+)
 
 from .gh import deploy
 from .help import HELP
 
-ZIP_OPTIONS = dict(compression=ZIP_DEFLATED, compresslevel=6)
-T_F = "text-fabric"
-LS = "layeredsearch"
-CONFIG_FILE = normpath(f"{os.path.dirname(abspath(__file__))}/config.yaml")
+ZIP_OPTIONS = {"compresslevel": 6, **ZIP_OPTIONS}
+GH = expanduser(GH_BASE)
+
+CONFIG_FILE = normpath(f"{os.path.dirname(abspath(__file__))}/{APP_CONFIG}")
 STATIC_DIR = normpath(f"{os.path.dirname(os.path.dirname(abspath(__file__)))}/static")
 
 
@@ -95,27 +107,25 @@ def readArgs():
         pass
 
     Args.dataset = None
+    Args.repo = None
     Args.client = None
     Args.command = None
 
     args = sys.argv[1:]
 
-    if not len(args) or args[0] in {"-h", "--help", "help"}:
+    if not len(args) or any(arg in {"-h", "--help", "help"} for arg in args):
         console(HELP)
-        console("Missing dataset")
+        return None
+
+    if not len(args):
+        console("Missing org/repo")
         return None
 
     dataset = args[0]
-    Args.dataset = dataset
     args = args[1:]
 
     if not len(args):
-        console(HELP)
         console("Missing client or command")
-        return None
-
-    if args[0] in {"-h", "--help", "help"}:
-        console(HELP)
         return None
 
     if args[0] in {"serve", "ship", "make"}:
@@ -126,15 +136,14 @@ def readArgs():
         client = args[0]
         args = args[1:]
 
-        if not len(args) or args[0] in {"-h", "--help", "help"}:
-            console(HELP)
-            if not len(args):
-                console("No command given")
+        if not len(args):
+            console("No command given")
             return None
 
         command = args[0]
         args = args[1:]
 
+    Args.dataset = dataset
     Args.client = client
     Args.command = command
     Args.folder = None
@@ -200,8 +209,10 @@ class Make:
         self.good = True
 
         if dataset:
+            console("configuring ...")
             if not self.config():
                 self.good = False
+            console("success" if self.good else "failed")
 
     def doCommand(self, command):
         if command == "serve":
@@ -231,7 +242,16 @@ class Make:
 
     def config(self):
         C = self.C
+
         dataset = self.dataset
+        parts = dataset.split("/")
+        if len(parts) != 2:
+            console("Dataset not given as org/repo")
+            return False
+        (org, repo) = parts
+        self.org = org
+        self.repo = repo
+
         client = self.client
         folder = self.folder
         appFolder = self.appFolder
@@ -246,29 +266,24 @@ class Make:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
         c = dict(
-            dataset=dataset,
+            org=org,
+            repo=repo,
             client=client,
             lsVersion=lsVersion,
             mainConfig=mainConfig,
-            gh=expanduser("~/github"),
-            ghUrl="https://github.com",
-            nbUrl="https://nbviewer.jupyter.org/github",
-            ghPages="github.io",
-            nbTutUrl="«nbUrl»/annotation/tutorials/tree/master",
-            lsDocUrl=f"https://«org».«ghPages»/{T_F}/tf/about/clientmanual.html",
-            lsDocSimpleUrl=f"https://«org».«ghPages»/{T_F}/tf/about/manual.html",
-            org="annotation",
-            repo="app-«dataset»",
+            lsDocUrl=f"{URL_TFDOC}/about/clientmanual.html",
+            lsDocSimpleUrl=f"{URL_TFDOC}/about/manual.html",
+            searchRepo="«repo»-search",
             rel="site",
-            generatorUrl=f"https://«org».«ghPages»/{T_F}/tf/client/make/build.html",
-            sourceUrl="«ghUrl»/«org»/«repo»/tree/master/layeredsearch",
-            issueUrl="«ghUrl»/«org»/«repo»/issues",
-            tutUrl="«nbTutUrl»/«dataset»/start.ipynb",
+            generatorUrl=f"{URL_TFDOC}/client/make/build.html",
+            sourceUrl=f"{URL_GH}/«org»/«searchRepo»/tree/master/layeredsearch",
+            issueUrl=f"{URL_GH}/«org»/«searchRepo»/issues",
+            tutUrl=f"{URL_NB}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
-            appDir="«gh»/«org»/«repo»",
+            appDir=f"{GH}/«org»/«searchRepo»",
             configDir=f"«appDir»/{LS}" if appFolder is None else f"{appFolder}/{LS}",
-            lsConfig="«configDir»/config.yaml",
-            clientConfigFile="«configDir»/«client»/config.yaml",
+            lsConfig=f"«configDir»/{APP_CONFIG}",
+            clientConfigFile=f"«configDir»/«client»/{APP_CONFIG}",
             clientMake="mkdata",
             clientMakeDir="«configDir»/«client»",
             clientMakeFile="«clientMakeDir»/«clientMake».py",
@@ -332,7 +347,7 @@ class Make:
 
         lsConfig = c["lsConfig"]
         if not os.path.exists(lsConfig):
-            console(f"No config.yaml found for {dataset}: {lsConfig}")
+            console(f"No {APP_CONFIG} found for {org}/{repo}: {lsConfig}")
             return None
 
         with open(lsConfig) as fh:
@@ -345,7 +360,7 @@ class Make:
             clientConfigFile = c["clientConfigFile"]
             if not os.path.exists(clientConfigFile):
                 console(
-                    f"No config.yaml found for {dataset}:{client}: {clientConfigFile}"
+                    f"No {APP_CONFIG} found for {org}/{repo}:{client}: {clientConfigFile}"
                 )
                 return None
 
@@ -358,9 +373,9 @@ class Make:
             self.importMake(c=c)
 
             d = dict(
-                dataLocation="«gh»/«data.org»/«data.repo»/«data.rel»",
-                dataUrl="«ghUrl»/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
-                writingUrl="https://«org».«ghPages»/text-fabric/tf/writing/«writing».html",
+                dataLocation=f"{GH}/«data.org»/«data.repo»/«data.rel»",
+                dataUrl=f"{URL_GH}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
+                writingUrl=f"{URL_TFDOC}/writing/«writing».html",
                 urls=dict(
                     cheatsheet=(
                         "regexp cheatsheet",
@@ -407,7 +422,7 @@ class Make:
                     ),
                     tf=(
                         None,
-                        "https://«org».«ghPages»/text-fabric/tf/",
+                        URL_TFDOC,
                         "Text-Fabric documentation website",
                     ),
                     lsdoc=(
@@ -431,12 +446,12 @@ class Make:
                         "online repository of the underlying text-fabric data",
                     ),
                     generator=(
-                        f"{T_F}/client",
+                        f"{REPO}/client",
                         "«generatorUrl»",
                         "the generator of this search interface",
                     ),
                     source=(
-                        "«repo»",
+                        "«searchRepo»",
                         "«sourceUrl»",
                         "source code of the definition of this search interface",
                     ),
@@ -456,7 +471,7 @@ class Make:
                         "characters and transliteration for «writing»",
                     ),
                     related=(
-                        "text-fabric «dataset»",
+                        "text-fabric «org»/«repo»",
                         "«tutUrl»",
                         "using Text-Fabric on the same corpus",
                     ),
@@ -494,7 +509,8 @@ class Make:
 
     def importMake(self, c=None):
         client = self.client
-        dataset = self.dataset
+        org = self.org
+        repo = self.repo
 
         if c is None:
             C = self.C
@@ -507,7 +523,7 @@ class Make:
             clientMakeFile = c["clientMakeFile"]
 
         try:
-            moduleName = f"tf.client.ls.{dataset}.{client}.{clientMake}"
+            moduleName = f"tf.client.ls.{org}.{repo}.{client}.{clientMake}"
             spec = util.spec_from_file_location(moduleName, clientMakeFile)
             code = util.module_from_spec(spec)
             sys.path.insert(0, clientMakeDir)
@@ -517,7 +533,7 @@ class Make:
             self.record = types.MethodType(code.record, self)
 
         except Exception as e:
-            console(f"Cannot make data for {dataset}:{client}: {str(e)}")
+            console(f"Cannot make data for {org}/{repo}:{client}: {str(e)}")
             return None
 
     def makeClientSettings(self):
@@ -543,7 +559,6 @@ class Make:
             mainConfig=C.mainConfig,
             defs=dict(
                 lsVersion=C.lsVersion,
-                dataset=C.dataset,
                 client=C.client,
                 org=C.org,
                 repo=C.repo,
@@ -640,9 +655,10 @@ class Make:
 
     def loadTf(self):
         C = self.C
-        dataset = C.dataset
+        org = C.org
+        repo = C.repo
         version = C.data["version"]
-        A = use(f"{dataset}:clone", checkout="clone", version=version)
+        A = use(f"{org}/{repo}:clone", checkout="clone", version=version)
         self.A = A
 
     def makeConfig(self):
@@ -886,7 +902,7 @@ class Make:
         clients = {}
 
         for thisClient in self.getAllClients():
-            thisConfig = f"{C.configDir}/{thisClient}/config.yaml"
+            thisConfig = f"{C.configDir}/{thisClient}/{APP_CONFIG}"
             if os.path.exists(thisConfig):
                 with open(thisConfig) as fh:
                     desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
@@ -896,7 +912,7 @@ class Make:
 
         with open(C.index) as fh:
             template = fh.read()
-            htmlIndex = template.replace("«dataset»", C.dataset)
+            htmlIndex = template.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlIndex = htmlIndex.replace("«client»", C.client)
 
             html = []
@@ -933,12 +949,12 @@ class Make:
             )
             htmlNormal = htmlNormal.replace("«corpus»", corpusScripts)
             htmlNormal = htmlNormal.replace("«v»", f"?v={lsVersion}")
-            htmlNormal = htmlNormal.replace("«dataset»", C.dataset)
+            htmlNormal = htmlNormal.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlNormal = htmlNormal.replace("«client»", C.client)
             htmlLocal = template.replace("«js»", f'''defer src="{C.jsAll}"''')
             htmlLocal = htmlLocal.replace("«corpus»", corpusScripts)
             htmlLocal = htmlLocal.replace("«v»", "")
-            htmlLocal = htmlLocal.replace("«dataset»", C.dataset)
+            htmlLocal = htmlLocal.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlLocal = htmlLocal.replace("«client»", C.client)
 
         with open(C.htmlClient, "w") as fh:
@@ -1062,12 +1078,13 @@ class Make:
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
-        dataset = self.dataset
+        org = self.org
+        repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        console(f"Publishing {dataset}:{','.join(clients)} from {siteDir} ...")
+        console(f"Publishing {org}/{repo}:{','.join(clients)} from {siteDir} ...")
         os.chdir(appDir)
-        deploy(C.org, C.repo)
+        deploy(C.org, C.searchRepo)
 
     def ship(self, publish=True):
         self.adjustVersion()
@@ -1213,7 +1230,9 @@ class Make:
 def makeSearchClients(dataset, folder, appFolder, dataDir=None):
     DEBUG_STATE = "off"
 
-    Mk = Make(dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE)
+    Mk = Make(
+        dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE
+    )
     clients = Mk.getAllClients()
     # version = Mk.C.data["version"]
 
@@ -1258,8 +1277,8 @@ def main():
             return
 
     Mk = Make(
-        Args.dataset,
-        Args.client,
+        dataset,
+        client,
         folder=folder,
         appFolder=appFolder,
         debugState=debugState,

@@ -284,6 +284,8 @@ volumes and collections.
 There are several ways to do so, we start with the easiest and highest level way,
 and go down to the lower level and more generic ways.
 
+Suppose we have a work in org/repo: `work` = `"org/repo"`.
+
 ### With `A = use()`
 
 If you have loaded a work like this: `A = use(work, ...)` then you can

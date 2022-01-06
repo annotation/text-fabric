@@ -8,7 +8,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '9.1.13'
+VERSION = '9.2.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -169,7 +169,9 @@ PROTOCOL = "http://"
 HOST = "localhost"
 PORT_BASE = 10000
 
-URL_TFDOC = f"https://{ORG}.github.io/{REPO}/tf"
+GH_PAGES = "github.io"
+
+URL_TFDOC = f"https://{ORG}.{GH_PAGES}/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""
 
 DOI_DEFAULT = "no DOI"
@@ -178,20 +180,11 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.github.io/{REPO}/tf/cheatsheet.html"
+APIREF = f"https://{ORG}.{GH_PAGES}/{REPO}/tf/cheatsheet.html"
 """Link to the Api docs of Text-Fabric."""
 
-SEARCHREF = f"https://{ORG}.github.io/{REPO}/tf/about/searchusage.html"
+SEARCHREF = f"https://{ORG}.{GH_PAGES}/{REPO}/tf/about/searchusage.html"
 """Link to the Search docs of Text-Fabric."""
-
-APP_URL = f"{URL_GH}/{ORG}"
-"""Url of the GitHub location that contains all the TF apps."""
-
-APP_NB_URL = f"{URL_NB}/{ORG}/tutorials/blob/master"
-"""Url of the NB-viewer location that contains all the TF tutorials."""
-
-APP_GITHUB = f"{GH_BASE}/annotation"
-"""Local GitHub location that contains all the TF apps."""
 
 APP_CONFIG = "config.yaml"
 """Name of the config file of a TF app."""
@@ -200,6 +193,9 @@ APP_CONFIG_OLD = "config.py"
 """Name of the config file of a an older, incompatible TF app."""
 
 APP_CODE = "code"
+"""Name of the top-level directory of a legacy TF app."""
+
+APP_APP = "app"
 """Name of the top-level directory of a TF app."""
 
 APP_DISPLAY = "static/display.css"
@@ -262,3 +258,11 @@ TRY_LIMIT_FROM = 40
 
 TRY_LIMIT_TO = 40
 """Performance parameter in the `tf.search.search` module."""
+
+LS = "layeredsearch"
+"""Directory where layered search code is stored.
+
+Layered search is client-side search, generated in a dedicated search repo.
+If the main data resides in org/repo, then the layered search code resides
+in org/repo-search/layeredsearch.
+"""

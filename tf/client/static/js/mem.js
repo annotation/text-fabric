@@ -6,7 +6,7 @@ export class MemProvider {
  * When we store/retrieve keys in localStorage,
  * we always prepend a prefix to the key:
  * - a fixed part, marking that it is a layered search app
- * - a Config dependent part: the name of the dataset
+ * - a Config dependent part: the org and repo of the data
  *
  * We also store the last key used.
  * All content goes through JSON.stringify upon storing
@@ -28,8 +28,8 @@ export class MemProvider {
   }
 
   init() {
-    const { Config: { dataset, client } } = this
-    this.appPrefix = `tf.client/${dataset}/${client}/`
+    const { Config: { org, repo, client } } = this
+    this.appPrefix = `tf.client/${org}/${repo}/${client}/`
     this.keyLast = `${this.appPrefix}LastJob`
     this.keyPrefix = `${this.appPrefix}Keys/`
     this.keyLength = this.keyPrefix.length

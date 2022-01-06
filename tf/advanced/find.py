@@ -13,7 +13,17 @@ from ..core.helpers import console, normpath
 from .helpers import getLocalDir
 
 
-def findAppConfig(appName, appPath, commit, release, local, version=None):
+def findAppConfig(
+    appName,
+    appPath,
+    commit,
+    release,
+    local,
+    org=None,
+    repo=None,
+    version=None,
+    straight=False,
+):
     """Find the config information of an app.
 
     If there is a `config.yaml` file, read it and check the compatibility
@@ -46,6 +56,9 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
         checkApiVersion = False
         if os.path.exists(configPathOld):
             isCompatible = False
+    if straight:
+        return cfg
+
     cfg.update(
         appName=appName, appPath=appPath, commit=commit, release=release, local=local
     )
@@ -54,6 +67,16 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
         version = cfg.setdefault("provenanceSpec", {}).get("version", None)
     else:
         cfg.setdefault("provenanceSpec", {})["version"] = version
+
+    if org is None:
+        org = cfg.get("provenanceSpec", {}).get("org", None)
+    else:
+        cfg["provenanceSpec"]["org"] = org
+
+    if repo is None:
+        repo = cfg.get("provenanceSpec", {}).get("repo", None)
+    else:
+        cfg["provenanceSpec"]["repo"] = repo
 
     if os.path.exists(cssPath):
         with open(cssPath, encoding="utf8") as fh:
@@ -66,9 +89,7 @@ def findAppConfig(appName, appPath, commit, release, local, version=None):
 
     avA = cfg.get("apiVersion", None)
     if isCompatible is None and checkApiVersion:
-        isCompatible = (
-            avA is not None and avA == avTf
-        )
+        isCompatible = avA is not None and avA == avTf
     if not isCompatible:
         if isCompatible is None:
             pass
@@ -80,19 +101,19 @@ Your copy of the TF app `{appName}` is outdated for this version of TF.
 Recommendation: obtain a newer version of `{appName}`.
 Hint: load the app in one of the following ways:
 
-    {appName}
-    {appName}:latest
-    {appName}:hot
+    {org}/{repo}
+    {org}/{repo}:latest
+    {org}/{repo}:hot
 
     For example:
 
     The Text-Fabric browser:
 
-        text-fabric {appName}:latest
+        text-fabric {org}/{repo}:latest
 
     In a program/notebook:
 
-        A = use('{appName}:latest', hoist=globals())
+        A = use('{org}/{repo}:latest', hoist=globals())
 
 """,
                 error=True,
@@ -100,8 +121,9 @@ Hint: load the app in one of the following ways:
         else:
             console(
                 f"""
-App `{appName}` requires API version {avA or 0} but Text-Fabric provides {avTf}.
-Your Text-Fabric is outdated and cannot use this version of the TF app `{appName}`.
+App `{appName}` or rather `{org}/{repo}` requires API version {avA or 0}
+but Text-Fabric provides {avTf}.
+Your Text-Fabric is outdated and cannot use this version of the TF app `{org}/{repo}`.
 Recommendation: upgrade Text-Fabric.
 Hint:
 
@@ -166,7 +188,8 @@ def loadModule(moduleName, *args):
     appPath = normpath(appPath)
     try:
         spec = util.spec_from_file_location(
-            f"tf.apps.{appName}.{moduleName}", f"{appPath}/{moduleName}.py",
+            f"tf.apps.{appName}.{moduleName}",
+            f"{appPath}/{moduleName}.py",
         )
         module = util.module_from_spec(spec)
         spec.loader.exec_module(module)

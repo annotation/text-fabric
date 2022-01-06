@@ -28,7 +28,7 @@ def use(appName, *args, **kwargs):
     !!! note "Start up sequence"
         During start-up the following happens:
 
-        1.  the corpus data is downloaded to your `~/text-fabric-data` directory,
+        1.  the corpus data may be downloaded to your `~/text-fabric-data` directory,
             if not already present there;
         2.  if your data has been freshly downloaded,
             a series of optimizations is executed;
@@ -40,7 +40,70 @@ def use(appName, *args, **kwargs):
     ----------
     appName: string
         Name of the corpus, or a local directory.
-        Used to find the appropriate TF app, if there is one.
+        Used to find the appropriate TF app, if there is one, or else the tf data.
+
+        To load a TF-app (which will load the associated data):
+
+        * `use("app:full/path/to/tf/app", ...)` :
+          find a TF app under `full/path/to/tf/app`;
+          if not present, fail;
+          you cannot add any `:` specifiers;
+        * `use("org/repo", ...)` :
+          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
+          if not present, download it from GitHub
+        * `use("org/repo:latest", ...)` :
+          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
+          if not present, fetch it from GitHub;
+          if GitHub has a newer release, fetch it from GitHub
+        * `use("org/repo:local", ...)` :
+          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
+          if not present, fail
+        * `use("org/repo:clone", ...)` :
+          find a TF app under `~/github/`*org*`/`*repo*`/app`
+        * `use("org/repo/xx/yy/zz", ...)` :
+          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/xx/yy/zz`;
+          you can add `:local`, `:clone`, etc., with the same meaning as above;
+
+        There is also a legacy method for TF-apps that are hosted in `app-`*xxx* repos
+        under the `annotation` organization:
+
+        * `use("corpus", ...)` :
+          find a TF app under `~/text-fabric-data/annotation/app-`*corpus*;
+          if not present, download it from GitHub
+          you can add `:local`, `:clone`, etc., behind `corpus`
+          with the same meaning as above;
+
+        !!! note "Versions"
+            In all of the above cases, the data resides in version
+            directories. The configuration of the TF-app specifies
+            which version will be used. You can override that by passing
+            the optional argument `version="x.y.z"`.
+
+        To load TF data, without an associated TF-app (a generic TF app
+        with default settings will be used):
+
+        * `use("data:full/path/to/tf/data/version", ...)` :
+          find TF data under `full/path/to/tf/data/version`;
+          if not present, fail;
+          you cannot add any `:` specifiers;
+        * `use("data:org/repo/tf:latest", ...)` :
+          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
+          if not present, fetch it from GitHub;
+          if GitHub has a newer release, fetch it from GitHub
+        * `use("data:org/repo/tf:local", ...)` :
+          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
+          if not present, fail
+        * `use("data:org/repo/tf:clone", ...)` :
+          find TF data under `~/github/`*org*`/`*repo*`/tf`
+          if not present, fail
+
+        !!! note "Versions"
+            Since we do not have a TF-app that specifies the version in this case,
+            you must either:
+
+            *   specify the paths so that they include the version directory
+            *   specify the path to the parent of the version directories
+                and pass `version="x.y.z"
 
     args:
         Do not pass any other positional argument!
@@ -63,9 +126,18 @@ def use(appName, *args, **kwargs):
     tf.advanced.app.App.reuse
     """
 
-    parts = appName.split(":", maxsplit=1)
-    if len(parts) == 1:
-        parts.append("")
-    (appName, checkoutApp) = parts
+    if appName.startswith("data:"):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith("app:"):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(":", maxsplit=1)
+        if len(parts) == 1:
+            parts.append("")
+        (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, False, *args, **kwargs)
+    return findApp(appName, checkoutApp, dataLoc, False, *args, **kwargs)

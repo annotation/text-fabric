@@ -109,7 +109,8 @@ def zipData(
     else:
         def collectFiles(base, path, results):
             thisPath = f"{base}/{path}" if path else base
-            internalBase = f"{relative}/{path}" if path else relative
+            # internalBase = f"{relative}/{path}" if path else relative
+            internalBase = path
             with os.scandir(thisPath) as sd:
                 for e in sd:
                     name = e.name

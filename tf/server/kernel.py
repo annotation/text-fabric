@@ -612,6 +612,7 @@ def main(cargs=sys.argv):
     appName = dataSource["appName"]
     checkout = dataSource["checkout"]
     checkoutApp = dataSource["checkoutApp"]
+    dataLoc = dataSource["dataLoc"]
     moduleRefs = dataSource["moduleRefs"]
     locations = dataSource["locations"]
     modules = dataSource["modules"]
@@ -628,6 +629,7 @@ def main(cargs=sys.argv):
     app = findApp(
         appName,
         checkoutApp,
+        dataLoc,
         True,
         checkout=checkout,
         mod=moduleRefs,

@@ -2,7 +2,7 @@ import os
 import types
 import traceback
 
-from ..parameters import ORG, APP_CODE, OMAP
+from ..parameters import ORG, APP_CODE, APP_APP, OMAP
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
@@ -267,7 +267,7 @@ class App:
 
             If you want the extra power of the TF app, you can wrap this `api`:
 
-               A = use('xxxx', api=api)`
+               A = use("org/repo", api=api)`
 
             !!! hint "Unloaded features"
                 Some apps do not load all available features of the corpus by default.
@@ -500,7 +500,16 @@ The app "{appName}" will not work!
         version = aContext.version
         api = self.api
 
-        cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+        cfg = findAppConfig(
+            appName,
+            appPath,
+            commit,
+            release,
+            local,
+            org=aContext.org,
+            repo=aContext.repo,
+            version=version,
+        )
         findAppClass(appName, appPath)
 
         setAppSpecs(self, cfg, reset=True)
@@ -521,26 +530,41 @@ The app "{appName}" will not work!
                 api.makeAvailableIn(hoist)
 
 
-def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **kwargs):
+def findApp(
+    appName, checkoutApp, dataLoc, _browse, *args, silent=False, version=None, **kwargs
+):
     """Find a TF app by name and initialize an object of its main class.
 
     Parameters
     ----------
-    appName: string
+    appName: string or None
         Either:
 
-        * the plain name of an official TF app (e.g. `bhsa`, `oldbabylonian`)
-        * or a local directory, containing at least one `/`:
-          * if it points to a directory under which an unofficial app sits:
-            that app will be loaded
-          * else it is assumed that the local directory is a TF data directory:
-            a vanilla app without extra configuration is initialized
-            and this local directory is supplied for its `locations`
-            parameter. This has the effect that the TF features here will
-            be loaded.
+        * None, but then dataLoc should have a value
+        * `app:`*path/to/tf/app*
+        * *org*/*repo*
+        * *org*/*repo*/*relative*
+        * *app*, i.e. the plain name of an official TF app
+          (e.g. `bhsa`, `oldbabylonian`)
+
+        The last case is legacy: instead of *app*, pass *org*/*repo*.
+
+    dataLoc: string or None
+        Either:
+
+        * None, but then appName should have a value
+        * path to a local directory
+        * *org*/*repo*
+        * *org*/*repo*/*relative*
+
+        Except for the first two cases, a trailing checkout specifier
+        is allowed, like `:clone`, `:local`, `:latest`, `:hot`
+
+        It is assumed that the location is a TF data directory;
+        a vanilla app without extra configuration is initialized.
 
     checkoutApp: string
-        The checkout specifier for the app code. See `tf.advanced.app.App`.
+        The checkout specifier for the TF-app. See `tf.advanced.app.App`.
 
     args: mixed
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
@@ -555,47 +579,133 @@ def findApp(appName, checkoutApp, _browse, *args, silent=False, version=None, **
     (commit, release, local) = (None, None, None)
     extraMod = None
 
-    appName = normpath(appName)
-
-    if not appName or ("/" in appName and checkoutApp == ""):
-        appPath = expanduser(appName) if appName else ""
-        absPath = abspath(appPath)
-
-        if os.path.isdir(absPath):
-            (appDir, appName) = os.path.split(absPath)
-            codePath = f"{absPath}/{APP_CODE}"
-            if os.path.isdir(codePath):
-                appDir = codePath
-            appBase = ""
-        else:
-            console(f"{absPath} is not an existing directory", error=True)
-            appBase = False
-            appDir = None
-        appPath = appDir
-    elif "/" in appName and checkoutApp != "":
-        appBase = ""
-        appDir = ""
-        appPath = appDir
-        extraMod = f"{appName}:{checkoutApp}"
+    appLoc = None
+    if appName is not None and appName.startswith("app:"):
+        appLoc = normpath(appName[4:])
     else:
-        (commit, release, local, appBase, appDir) = checkoutRepo(
-            _browse=_browse,
-            org=ORG,
-            repo=f"app-{appName}",
-            folder=APP_CODE,
-            checkout=checkoutApp,
-            withPaths=True,
-            keep=False,
-            silent=silent,
-            label="TF-app",
-        )
-        appBaseRep = f"{appBase}/" if appBase else ""
-        appPath = f"{appBaseRep}{appDir}"
+        appName = normpath(appName)
 
-    if appPath is None:
+    if dataLoc is None and appName is None:
+        console("No TF-app and no data location specified", error=True)
         return None
 
-    cfg = findAppConfig(appName, appPath, commit, release, local, version=version)
+    if dataLoc is not None and appName is not None:
+        console("Both a TF-app and a data location are specified", error=True)
+        return None
+
+    dataOrg = None
+    dataRepo = None
+
+    if dataLoc is None:
+        if appLoc:
+            if ":" in appLoc:
+                console(
+                    "When passing an app by `app:fullpath` you cannot use :-specifiers"
+                )
+                return None
+            appPath = expanduser(appLoc) if appLoc else ""
+            absPath = abspath(appPath)
+
+            if os.path.isdir(absPath):
+                appDir = absPath
+                appBase = ""
+            else:
+                console(f"{absPath} is not an existing directory", error=True)
+                appBase = False
+                appDir = None
+            appPath = appDir
+        elif "/" in appName:
+            (dataOrg, rest) = appName.split("/", maxsplit=1)
+            parts = rest.split("/", maxsplit=1)
+            if len(parts) == 1:
+                parts.append(APP_APP)
+            (dataRepo, folder) = parts
+            (commit, release, local, appBase, appDir) = checkoutRepo(
+                _browse=_browse,
+                org=dataOrg,
+                repo=dataRepo,
+                folder=folder,
+                checkout=checkoutApp,
+                withPaths=True,
+                keep=False,
+                silent=silent,
+                label="TF-app",
+            )
+            appBaseRep = f"{appBase}/" if appBase else ""
+            appPath = f"{appBaseRep}{appDir}"
+        else:
+            (commit, release, local, appBase, appDir) = checkoutRepo(
+                _browse=_browse,
+                org=ORG,
+                repo=f"app-{appName}",
+                folder=APP_CODE,
+                checkout=checkoutApp,
+                withPaths=True,
+                keep=False,
+                silent=silent,
+                label="TF-app",
+            )
+            appBaseRep = f"{appBase}/" if appBase else ""
+            appPath = f"{appBaseRep}{appDir}"
+            cfg = findAppConfig(appName, appPath, commit, release, local)
+
+            dataOrg = cfg.get("provenanceSpec", {}).get("org", None)
+            dataRepo = cfg.get("provenanceSpec", {}).get("repo", None)
+
+            if dataOrg:
+                console(
+                    (
+                        "WARNING: in the future, pass "
+                        f"`{dataOrg}/{appName}` instead of `{appName}`"
+                    ),
+                    error=True,
+                )
+                (commit, release, local, appBase, appDir) = checkoutRepo(
+                    _browse=_browse,
+                    org=dataOrg,
+                    repo=dataRepo,
+                    folder=APP_APP,
+                    checkout=checkoutApp,
+                    withPaths=True,
+                    keep=False,
+                    silent=silent,
+                    label="TF-app",
+                )
+                appBaseRep = f"{appBase}/" if appBase else ""
+                appPath = f"{appBaseRep}{appDir}"
+    else:
+        parts = dataLoc.split(":", maxsplit=1)
+        if len(parts) == 1:
+            parts.append("")
+        (dataLoc, checkoutData) = parts
+        if checkoutData == "":
+            appPath = expanduser(dataLoc) if dataLoc else ""
+            absPath = abspath(appPath)
+
+            if os.path.isdir(absPath):
+                (appDir, appName) = os.path.split(absPath)
+                appBase = ""
+            else:
+                console(f"{absPath} is not an existing directory", error=True)
+                appBase = False
+                appDir = None
+            appPath = appDir
+        else:
+            appBase = ""
+            appDir = ""
+            appPath = ""
+            extraMod = f"{dataLoc}:{checkoutData}"
+
+    cfg = findAppConfig(
+        appName,
+        appPath,
+        commit,
+        release,
+        local,
+        org=dataOrg,
+        repo=dataRepo,
+        version=version,
+    )
     version = cfg["provenanceSpec"].get("version", None)
     isCompatible = cfg["isCompatible"]
     if isCompatible is None:

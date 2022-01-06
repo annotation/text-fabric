@@ -55,11 +55,12 @@ def repSlug(slug):
     checkoutApp = info["checkoutApp"]
     if checkoutApp:
         checkoutApp = f":{checkoutApp}"
-    rep = f"{appName}{checkoutApp}"
+    dataLoc = info["dataLoc"]
+    rep = dataLoc or f"{appName}{checkoutApp}"
     args = " ".join(
         f"--{k}={v}"
         for (k, v) in sorted(info.items())
-        if k not in {"appName", "checkoutApp"} and v is not None
+        if k not in {"appName", "checkoutApp", "dataLoc"} and v is not None
     )
     if args:
         args = f" {args}"
@@ -67,7 +68,7 @@ def repSlug(slug):
 
 
 def argApp(cargs):
-    (appName, checkoutApp) = argParam(cargs)
+    (appName, checkoutApp, dataLoc) = argParam(cargs)
     checkout = argCollect("checkout", cargs)
     locations = argCollect("locations", cargs)
     modules = argCollect("modules", cargs)
@@ -80,6 +81,7 @@ def argApp(cargs):
             dict(
                 appName=appName,
                 checkoutApp=checkoutApp,
+                dataLoc=dataLoc,
                 checkout=checkout,
                 locations=locations,
                 modules=modules,
@@ -147,13 +149,23 @@ def argParam(cargs):
         break
 
     if appName is None:
-        return (None, None)
+        return (None, None, None)
 
-    parts = appName.split(":", maxsplit=1)
-    if len(parts) == 1:
-        parts.append("")
-    (appName, checkoutApp) = parts
-    return (appName, checkoutApp)
+    if appName.startswith("data:"):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith("app:"):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(":", maxsplit=1)
+        if len(parts) == 1:
+            parts.append("")
+        (appName, checkoutApp) = parts
+
+    return (appName, checkoutApp, dataLoc)
 
 
 def _enSlug(data):

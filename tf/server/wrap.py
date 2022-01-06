@@ -7,7 +7,7 @@ Lower level functions for wrapping TF data into actual HTML that can be served.
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, APP_URL
+from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, URL_GH
 from ..advanced.options import INTERFACE_OPTIONS
 
 
@@ -221,22 +221,23 @@ def wrapProvenance(form, provenance, setNames):
 
     for d in appProvenance:
         d = dict(d)
-        name = d["name"]
+        org = d["org"]
+        repo = d["repo"]
         commit = d["commit"]
-        url = f"{APP_URL}/app-{name}/tree/{commit}"
+        url = f"{URL_GH}/{org}/{repo}/tree/{commit}"
         liveHtml = f'<a href="{url}">{commit}</a>'
         liveMd = f"[{commit}]({url})"
         appHtml += f"""\
     <div class="pline">
       <div class="pname">TF App:</div>
-      <div class="pval">{name}</div>
+      <div class="pval">{org}/{repo}</div>
     </div>
     <div class="p2line">
       <div class="pname">commit</div>
       <div class="pval">{liveHtml}</div>
     </div>\
 """
-        appMd += f"""{sep}TF app | {name}
+        appMd += f"""{sep}TF app | {org}/{repo}
 commit | {liveMd}"""
         sep = "\n"
 

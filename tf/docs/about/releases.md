@@ -13,7 +13,7 @@ provided you call the app as follows:
 (in a program)
 
 ```python
-use('appName:latest', ... )
+use('org/repo:latest', ... )
 ```
 
 (on the command line)
@@ -28,7 +28,7 @@ To get the newest unstable version:
 (in a program)
 
 ```python
-use('appName:hot', ...)
+use('org/repo:hot', ...)
 ```
 
 (on the command line)
@@ -45,6 +45,35 @@ text-fabric appName:hot
 ## 9
 
 ### 9.0
+
+#### 9.2
+
+2022-01-06
+
+A big reorganization, so that all things related to a corpus can be stored in the
+same neighbourhood.
+Before this release we had the situation that
+
+*   a corpus is resides in org/corpus
+*   its tutorials resides in annotation/tutorials/corpus
+*   its tf-app resides in annotation/app-corpus
+*   its layered search interface is provided by annotation/app-corpus
+
+In the new situation we have
+
+*   a corpus is resides in org/corpus
+*   its tutorials resides in org//corpus/tutorial
+*   its tf-app resides in org/corpus/app
+*   its layered search interface is provided by org/corpus-search
+
+So, in order to make a full fledged TF corpus there is no longer any dependency
+on the annotation organization.
+
+Additional fixes: quite a bit, among which
+
+*   When downloading zip files from releases, the Uruk images got
+    the wrong paths. That has been fixed in zipData, used by
+    the text-fabric-zip command.
 
 #### 9.1.13
 

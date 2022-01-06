@@ -3,7 +3,7 @@
 ## Initialisation, configuration, meta data, and linking
 
 ```
-A = use('corpus', volume=None, collection=None, hoist=globals())
+A = use('org/repo', volume=None, collection=None, hoist=globals())
 ```
 :   start up and load the work or one of its volumes.
     See also `tf.about.volumes`.

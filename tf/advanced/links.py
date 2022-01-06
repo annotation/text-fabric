@@ -11,8 +11,8 @@ from ..parameters import (
     URL_TFDOC,
     SEARCHREF,
     APIREF,
-    APP_URL,
-    APP_NB_URL,
+    APP_APP,
+    URL_NB,
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
 from .repo import Checkout
@@ -59,6 +59,7 @@ def linksApi(app, silent):
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
+    org = aContext.org or ""
     repo = aContext.repo or ""
     version = aContext.version
     corpus = aContext.corpus
@@ -67,8 +68,7 @@ def linksApi(app, silent):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = f"{APP_NB_URL}/{appName}/start.ipynb"
-    extraUrl = f"{APP_URL}/app-{appName}"
+    tutUrl = f"{URL_NB}/{org}/{repo}/blob/master/tutorial/start.ipynb"
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = repo.upper()
@@ -107,8 +107,9 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
+    extraUrl = f"{URL_GH}/{org}/{repo}/blob/master/{APP_APP}"
     appLink = (
-        outLink(f"app-{appName}{apiVersionRep}", extraUrl, f"{appName} TF-app")
+        outLink(f"{org}/{repo}/app {apiVersionRep}", extraUrl, f"{appName} TF-app")
         if isCompatible and repo is not None
         else "no app configured"
     )
@@ -316,8 +317,8 @@ def webLink(
 def showProvenance(app, jobName="program code", author="program author"):
     """Shows the provenance that is normally displayed during data loading.
 
-    This comes in handy if you have started with `use(xxx, silence='deep')` and still
-    need to show the provenance.
+    This comes in handy if you have started with
+    `use("org/repo", silence='deep')` and still need to show the provenance.
     Moreover, the provenance is shown in a formatted way.
 
     Parameters
@@ -333,9 +334,10 @@ def showProvenance(app, jobName="program code", author="program author"):
     """
 
     aContext = app.context
-    appName = aContext.appName
+    org = aContext.org
+    repo = aContext.repo
     commit = aContext.commit
-    appProvenance = ((("name", appName), ("commit", commit)),)
+    appProvenance = ((("org", org), ("repo", repo), ("commit", commit)),)
     provenance = (appProvenance, app.provenance)
     setNames = (
         tuple(sorted(app.sets.keys()))

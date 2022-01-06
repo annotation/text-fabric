@@ -205,13 +205,13 @@ There are two instances where Text-Fabric wants to access GitHub:
 If you are still within the rate limit, just give the usual commands, such as
 
 ``` sh
-text-fabric corpus
+text-fabric org/repo
 ```
 
 or
 
 ``` python
-use('corpus', hoist=globals())
+use('org/repo', hoist=globals())
 ```
 
 where `corpus` should be replaced with the real name of your corpus.
@@ -269,7 +269,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('corpus:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
 This will instruct Text-Fabric to use the app and data from within your `~/github`
@@ -292,7 +292,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('corpus:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
 In the second case, do just this:
@@ -304,7 +304,7 @@ text-fabric corpus
 or, in a program,
 
 ``` python
-A = use('corpus', hoist=globals())
+A = use('org/repo', hoist=globals())
 ```
 
 See also `tf.advanced.app.App`.
@@ -332,7 +332,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('corpus:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
 If you have autoloaded it from GitHub, you have to add the `latest` or `hot` specifier:
@@ -344,7 +344,7 @@ text-fabric corpus:latest checkout=latest
 or, in a program,
 
 ``` python
-A = use('corpus:latest', checkData='latest', hoist=globals())
+A = use('org/repo:latest', checkData='latest', hoist=globals())
 ```
 
 And after that, you can omit `latest` or `hot` again, until you need new data again.

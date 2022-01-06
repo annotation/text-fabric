@@ -1,9 +1,9 @@
 description:
   simple: >- 
-    <div id="title">«dataset»-«client» search</div>
+    <div id="title">«org»/«repo»-«client» search</div>
   full: >-
     <details id="titledetails">
-      <summary id="title">«dataset»-«client» search</summary>
+      <summary id="title">«org»/«repo»-«client» search</summary>
       <div id="description"></div>
       <a
          id="makerlink" href="#"

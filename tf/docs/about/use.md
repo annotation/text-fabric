@@ -12,7 +12,7 @@ In both cases, the data will be automatically downloaded.
 The basic command to start the TF-browser (`tf.about.browser`) is:
 
 ``` sh
-text-fabric xxx
+text-fabric org/repo
 ```
 
 (More details in `tf.server.start`).
@@ -32,7 +32,7 @@ You can open a terminal, and type the command there.
 ``` python
 from tf.app import use
 
-A = use("xxx")
+A = use("org/repo")
 ```
 
 This `A` is your handle to the 

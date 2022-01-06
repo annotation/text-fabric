@@ -16,7 +16,7 @@ export class ConfigProvider {
 
     const {
       mainConfig,
-      defs: { lsVersion, org, repo, dataset, client, description, urls },
+      defs: { lsVersion, org, repo, client, description, urls },
       levels,
       focusType, simpleBase,
       ntypes, ntypesinit, ntypessize,
@@ -43,10 +43,6 @@ export class ConfigProvider {
     /* the Github repo of the app
      */
     this.repo = repo
-
-    /* the dataset name of the app
-     */
-    this.dataset = dataset
 
     /* the client name of the app
      */

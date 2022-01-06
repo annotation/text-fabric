@@ -104,7 +104,7 @@ And in a next cell, load the corpus data
 
 
 ```
-A = use("bhsa", hoist=globals())
+A = use("etcbc/bhsa", hoist=globals())
 ```
 
 If you have worked with the `bhsa` before on the same computer, the data is already there,
@@ -126,7 +126,7 @@ Open a new notebook, and in its first cell type
 
 ```
 %%sh
-text-fabric bhsa
+text-fabric etcbc/bhsa
 ```
 
 Wait a few seconds and you see a new window in your browser
