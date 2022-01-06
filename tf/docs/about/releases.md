@@ -91,7 +91,7 @@ included.
 *   New data is computed and stored for a corpus: for each text format a frequency
     list of the characters in the corpus when rendered in that text format:
     `tf.core.prepare.characters`
-*   A new function `tf.advanced.app.text.specialCharacters` which provides
+*   A new function `tf.advanced.text.specialCharacters` which provides
     a widget from which you can easily copy the special characters in the corpus.
     Call it as `A.specialCharacters(fmt=textformat)`.
 *   In the `tf.convert.walker` module there is an extra *cv* method:
