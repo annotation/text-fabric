@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.corpora API documentation</title>
+<meta name="description" content="Corpora …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.corpora</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="corpora">Corpora</h1>
+<p>Corpora are usually stored in an online repository, such as GitHub or a research data archive
+such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.</p>
+<p>Some corpora are supported by Text-Fabric <em>apps</em>.</p>
+<p>These apps provide a browser interface for the corpus, and they enhance the API for working
+with them programmatically.</p>
+<p>A TF app can also download and update the corpus <em>data</em>.</p>
+<p>All existing apps can be found in
+<a href="https://github.com/annotation">annotation</a> on GitHub.
+Each repo named <code>app-</code><em>appName</em> hosts the app named <em>appName</em>.</p>
+<p>Corpora prefixed with a star do not have dedicated TF apps.</p>
+<h2 id="annotation"><a href="https://github.com/annotation">annotation</a></h2>
+<dl>
+<dt><a href="https://github.com/annotation/banks">annotation/banks</a></dt>
+<dd><em>modern english</em>
+Iain M. Banks, 1984 - 1987,
+99 words from the SF novel
+<strong><a href="https://read.amazon.com/kp/kshare?asin=B002TXZRQI&amp;id=NpPGzf_HT5aADabyiDDSIQ&amp;reshareId=RZ91SGMZJPWK9S1Y4EZX&amp;reshareChannel=system">Consider Phlebas</a></strong>,
+Dirk Roorda</dd>
+<dt><a href="https://github.com/annotation/clariah-gm">annotation/clariah-gm</a></dt>
+<dd><em>Dutch</em>
+General Missives, 1600 - 1800,
+<strong>General Missives, Dutch East-Indian Company</strong>,
+Jesse van der Does, Sophie Arnoult, Dirk Roorda</dd>
+</dl>
+<h2 id="cambridge-semitics-lab"><a href="https://github.com/CambridgeSemiticsLab">Cambridge Semitics Lab</a></h2>
+<dl>
+<dt><a href="https://github.com/CambridgeSemiticsLab/nena_tf">CambridgeSemiticsLab/nena_tf</a></dt>
+<dd><em>Aramaic</em>
+North Eastern Neo-Aramaic Corpus, 2000,
+<strong><a href="https://nena.ames.cam.ac.uk">Nena Cambridge</a></strong>,
+Cody Kingham</dd>
+</dl>
+<h2 id="cody-kingham"><a href="https://github.com/codykingham">Cody Kingham</a></h2>
+<dl>
+<dt><a href="https://github.com/codykingham/tischendorf_tf">codykingham/tischendorf_tf</a></dt>
+<dd><em>Greek</em>
+New Testament, 50 - 450,
+<strong>Greek New Testament in Tischendorf 8th Edition</strong>,
+Cody Kingham, Dirk Roorda</dd>
+</dl>
+<h2 id="eep-talstra-centre-for-bible-and-computer"><a href="https://github.com/etcbc">Eep Talstra Centre for Bible and Computer</a></h2>
+<dl>
+<dt><a href="https://github.com/etcbc/bhsa">etcbc/bhsa</a></dt>
+<dd><em>Hebrew</em>
+Hebrew Bible, 1000 BC - 900 AD,
+<strong><a href="https://etcbc.github.io/bhsa/">Biblia Hebraica Stuttgartensia (Amstelodamensis)</a></strong>,
+ETCBC + Dirk Roorda</dd>
+<dt><a href="https://github.com/etcbc/dhammapada">etcbc/dhammapada</a></dt>
+<dd><em>Pāli</em> and <em>Latin</em>
+Ancient Buddhist verses, 300 BC and 1855 AD,
+<strong>Transcription with Latin translations based on Viggo Fausbøll's book</strong>,
+Bee Scherer, Yvonne Mataar, Dirk Roorda</dd>
+<dt><a href="https://github.com/etcbc/dss">etcbc/dss</a></dt>
+<dd><em>Hebrew</em>
+Dead Sea Scrolls, 300 BC - 100 AD,
+<strong>Transcriptions with morphology based on Martin Abegg's data files</strong>,
+Martijn Naaijer, Jarod Jacobs, Dirk Roorda</dd>
+<dt><a href="https://github.com/etcbc/peshitta">etcbc/peshitta</a></dt>
+<dd><em>Syriac</em>
+Syriac Old Testament, 1000 BC - 900 AD,
+<strong>Vetus Testamentum Syriace</strong>,
+Hannes Vlaardingerbroek, Dirk Roorda</dd>
+<dt><a href="https://github.com/etcbc/syrnt">etcbc/syrnt</a></dt>
+<dd><em>Syriac</em>
+Syriac New Testament, 0 - 1000,
+<strong>Novum Testamentum Syriace</strong>,
+Hannes Vlaardingerbroek, Dirk Roorda</dd>
+</dl>
+<h2 id="nino-cuneiform"><a href="https://github.com/Nino-cunei">NINO Cuneiform</a></h2>
+<dl>
+<dt><a href="https://github.com/Nino-cunei/oldassyrian">Nino-cunei/oldassyrian</a></dt>
+<dd><em>Akkadian / cuneiform</em>
+Old Assyrian documents, 2000 - 1600 BC,
+<strong>Documents from Ashur</strong>
+Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda</dd>
+<dt><a href="https://github.com/Nino-cunei/oldbabylonian">Nino-cunei/oldbabylonian</a></dt>
+<dd><em>Akkadian / cuneiform</em>
+Old Babylonian letters, 1900 - 1600 BC,
+<strong>Altbabylonische Briefe in Umschrift und Übersetzung</strong>,
+Cale Johnson, Dirk Roorda</dd>
+<dt><a href="https://github.com/Nino-cunei/uruk">Nino-cunei/uruk</a></dt>
+<dd><em>proto-cuneiform</em>
+Uruk, 4000 - 3100 BC,
+<strong>Archaic tablets from Uruk</strong>,
+Cale Johnson, Dirk Roorda</dd>
+</dl>
+<h2 id="protestant-theological-university"><a href="https://github.com/pthu">Protestant Theological University</a></h2>
+<dl>
+<dt><code>*</code> <a href="https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb">Greek Literature</a></dt>
+<dd><em>Greek</em>
+<a href="https://github.com/pthu/greek_literature">Greek Literature, -400 - +400</a>,
+<a href="https://github.com/PerseusDL/canonical-greekLit">Perseus Digital Library</a> and
+<a href="https://github.com/OpenGreekAndLatin/First1KGreek">Open Greek and Latin Project</a>
+The result of a massive conversion effort by Ernst Boogert.</dd>
+<dt><a href="https://github.com/pthu/athenaeus">pthu/athenaeus</a></dt>
+<dd><em>Greek</em>
+Works of Athenaeus, 80 - 170,
+<strong><a href="https://en.wikipedia.org/wiki/Deipnosophistae">Deipnosophistae</a></strong>,
+Ernst Boogert</dd>
+</dl>
+<h2 id="quran"><a href="https://github.com/q-ran">Quran</a></h2>
+<dl>
+<dt><a href="https://github.com/q-ran/quran">q-ran/quran</a></dt>
+<dd><em>Arabic</em>
+Quran, 600 - 900,
+<strong>Quranic Arabic Corpus</strong>,
+Cornelis van Lit, Dirk Roorda</dd>
+</dl>
+<h2 id="university-of-utrecht-cornelis-van-lit"><a href="https://github.com/among">University of Utrecht: Cornelis van Lit</a></h2>
+<dl>
+<dt><a href="https://github.com/among/fusus">among/fusus</a></dt>
+<dd><em>Arabic</em>
+Fusus Al Hikam,
+1165- 2000,
+<strong>editions (Lakhnawi and Afifi) of Ibn Arabi's Fusus plus commentaries in the centuries thereafter</strong>,
+Cornelis van Lit, Dirk Roorda</dd>
+</dl>
+<h3 id="intentions">Intentions</h3>
+<dl>
+<dt>oldroyal</dt>
+<dd><em>Akkadian-Sumerian cuneiform</em>
+Bilingual royal inscriptions, 2000 - 1600,
+<strong>more info to come</strong>, Martijn Kokken, Dirk Roorda</dd>
+</dl>
+<h2 id="get-corpora">Get corpora</h2>
+<h3 id="automatically">Automatically</h3>
+<p>Text-Fabric downloads apps from <a href="https://github.com/annotation">annotation</a> automatically
+when you use them.</p>
+<p>See <code><a title="tf.about.use" href="use.html">tf.about.use</a></code>.</p>
+<p>Data ends up in a logical place under your <code>~/text-fabric-data/</code>.</p>
+<p>The TF data is fairly compact.</p>
+<div class="admonition caution">
+<p class="admonition-title">Size of data</p>
+<p>There might be sizable additional data for some corpora,
+images for example.
+In that case, take care to have a good internet connection
+when you use a TF app for the first time.</p>
+</div>
+<h3 id="manually">Manually</h3>
+<p>Corpus data of app-supported corpora reside in a GitHub repo.
+You can manually clone such a data repository and point Text-Fabric to that data.</p>
+<p>First, take care that your clone ends up in <code>github/</code><em>orgName</em>
+(relative your home directory)
+where <em>orgName</em> is the organization or person on GitHub under which you have
+found the repo.</p>
+<p>Then, when you invoke the app, pass the specifier <code>:clone</code>.
+This instructs Text-Fabric to look in your local GitHub clone, rather
+than online or in <code>text-fabric-data</code>, where downloaded data is stored.</p>
+<pre><code>use('org/repo:clone', checkout="clone")
+
+text-fabric org/repo:clone --checkout=clone
+</code></pre>
+<p>In this way, you can work with data that is under your control.</p>
+<div class="admonition caution">
+<p class="admonition-title">Size of data</p>
+<p>Cloning a data repository is more costly then letting Text-Fabric download the data.
+A data repository may contain several versions and representations of the data,
+including the their change histories. There might also be other
+material in the repo, such as source data, tutorials, programs.</p>
+<p>For example, the <code>etcbc/bhsa</code> repo is several GB, but the TF data for a specific
+version is only 25MB.</p>
+</div>
+<h3 id="extra-data">Extra data</h3>
+<p>Researchers are continually adding new insights in the form of new feature
+data. TF apps make it easy to use that data alongside the main data source.
+Read more about the data life cycle in <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/2cf3efdb663825bae9d1b2d64217c556d0326a0e/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/corpora.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#corpora">Corpora</a><ul>
+<li><a href="#annotation">annotation</a></li>
+<li><a href="#cambridge-semitics-lab">Cambridge Semitics Lab</a></li>
+<li><a href="#cody-kingham">Cody Kingham</a></li>
+<li><a href="#eep-talstra-centre-for-bible-and-computer">Eep Talstra Centre for Bible and Computer</a></li>
+<li><a href="#nino-cuneiform">NINO Cuneiform</a></li>
+<li><a href="#protestant-theological-university">Protestant Theological University</a></li>
+<li><a href="#quran">Quran</a></li>
+<li><a href="#university-of-utrecht-cornelis-van-lit">University of Utrecht: Cornelis van Lit</a><ul>
+<li><a href="#intentions">Intentions</a></li>
+</ul>
+</li>
+<li><a href="#get-corpora">Get corpora</a><ul>
+<li><a href="#automatically">Automatically</a></li>
+<li><a href="#manually">Manually</a></li>
+<li><a href="#extra-data">Extra data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
