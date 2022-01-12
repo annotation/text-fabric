@@ -267,7 +267,7 @@ def estimateSpreads(searchExe, both=False):
             if yarnFl < TRY_LIMIT_F:
                 triesn = yarnF
             else:
-                triesn = set(yarnF[randrange(yarnFl)] for n in range(TRY_LIMIT_F))
+                triesn = {yarnF[randrange(yarnFl)] for n in range(TRY_LIMIT_F)}
 
             if len(triesn) == 0:
                 dest[e] = 0

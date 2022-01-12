@@ -267,7 +267,7 @@ def _validateFeature(
 
 def _validation(searchExe):
     levels = searchExe.api.C.levels.data
-    otypes = set(x[0] for x in levels)
+    otypes = {x[0] for x in levels}
     qnodes = searchExe.qnodes
     nodeLine = searchExe.nodeLine
     edgeMap = searchExe.edgeMap

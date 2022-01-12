@@ -735,16 +735,16 @@ def collect(
             )
 
             if nW > maxSlotW:
-                oslots[nW] = set(
+                oslots[nW] = {
                     volumeMapI[(name, sV)]
                     for sV in eOslotsDatas[name][nV - maxSlotI - 1]
-                )
+                }
                 if nW in fromWork:
                     for (name2, nV2) in fromWork[nW]:
-                        oslots[nW] |= set(
+                        oslots[nW] |= {
                             volumeMapI[(name2, sV)]
                             for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
-                        )
+                        }
 
             for (feat, featD) in nodeFeatureDatas[name].items():
                 val = featD.get(nV, None)

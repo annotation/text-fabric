@@ -88,7 +88,7 @@ def _spread_1_first(searchExe):
 
     newNodes = startS1[0]
     newEdges = startS1[1]
-    doneEdges = set(e[0] for e in newEdges)
+    doneEdges = {e[0] for e in newEdges}
 
     # we add all edges that are not yet in our startS1.
     # we add them two-fold: also with converse,

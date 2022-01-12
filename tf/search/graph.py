@@ -45,7 +45,7 @@ def connectedness(searchExe):
             componentIndex[t] = componentIndex[f]
             for u in componentIndex[f] - {f}:
                 componentIndex[u] = componentIndex[f]
-    components = sorted(set(frozenset(c) for c in componentIndex.values()))
+    components = sorted({frozenset(c) for c in componentIndex.values()})
     componentIndex = {}
     for c in components:
         for q in c:
@@ -226,7 +226,7 @@ def displayEdge(searchExe, e, dir, nodesSeen):
     info(
         "edge {:>8}-{:<13} {:^8} {:>2}-{:<13} {} choices{}".format(
             ",".join(str(x) for x in f),
-            ",".join(set(qnodes[x][0] for x in f)),
+            ",".join({qnodes[x][0] for x in f}),
             ",".join(relations[x]["acro"] for x in rela),
             ",".join(str(x) for x in set(t)),
             ",".join(qnodes[x][0] for x in set(t)),

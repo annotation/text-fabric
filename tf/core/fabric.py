@@ -909,7 +909,6 @@ Api reference : {APIREF}
                 error(f'Feature "{fName}" not available in\n{self.locationRep}')
                 self.good = False
         else:
-            # if not self.features[fName].load(silent=silent or (fName not in self.featuresRequested)):
             if not self.features[fName].load(silent=silent, _withGc=self._withGc):
                 self.good = False
 

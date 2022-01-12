@@ -355,7 +355,7 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
         iNodes = set(L.i(n))
 
     if hideTypes:
-        iNodes -= set(m for m in iNodes if fOtypeV(m) in hiddenTypes)
+        iNodes -= {m for m in iNodes if fOtypeV(m) in hiddenTypes}
 
     iNodes.add(n)
 

@@ -494,14 +494,14 @@ class Options:
             if not value:
                 value = set()
             elif type(value) is str:
-                value = set(int(v) for v in value.split()) if value else set()
+                value = {int(v) for v in value.split()} if value else set()
             elif type(value) not in {set, frozenset}:
                 value = set(value)
         elif option in {"withPassage"}:
             if not value:
                 value = False
             elif type(value) is str:
-                value = set(int(v) for v in value.split()) if value else set()
+                value = {int(v) for v in value.split()} if value else set()
             elif type(value) in {list, tuple, dict}:
                 value = set(value)
             elif type(value) is not set:

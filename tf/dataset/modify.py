@@ -532,7 +532,7 @@ def modify(
                     continue
                 deletedFt.add(inFeat)
 
-            missingIn = set(f for f in inFeats if f not in origFeatures)
+            missingIn = {f for f in inFeats if f not in origFeatures}
 
             if missingIn:
                 err(f"Missing features {_rep(missingIn)}")

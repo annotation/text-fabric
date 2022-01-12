@@ -465,7 +465,7 @@ def getAllRealFeatures(api):
             allFeatures.add(feat)
 
     allFeatures |= set(api.Fall())
-    allFeatures |= set(e for e in api.Eall() if not e.startswith(OMAP))
+    allFeatures |= {e for e in api.Eall() if not e.startswith(OMAP)}
     return allFeatures
 
 
