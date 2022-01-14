@@ -2,20 +2,17 @@
 
 Corpora are usually stored in an online repository, such as GitHub or a research data archive
 such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
+From there Text-Fabric knows how to download them for you.
 
 Some corpora are supported by Text-Fabric *apps*.
 
-These apps provide a browser interface for the corpus, and they enhance the API for working
-with them programmatically.
+These apps provide a browser interface for the corpus,
+and they customise/enhance the display of corpus fragments, and
+provide extra provenance information and links to online
+editions of the corpus.
 
-A TF app can also download and update the corpus *data*.
-
-All existing apps can be found in 
-[annotation](https://github.com/annotation) on GitHub.
-Each repo named `app-`*appName* hosts the app named *appName*.
-
-
-Corpora prefixed with a star do not have dedicated TF apps.
+Apps are published close to the TF-feature data of that corpus,
+in a directory `app` in the same repository.
 
 ## [annotation](https://github.com/annotation)
 
@@ -137,7 +134,7 @@ Corpora prefixed with a star do not have dedicated TF apps.
 
 ## [Protestant Theological University](https://github.com/pthu)
 
-`*` [Greek Literature](https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb)
+[Greek Literature](https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb)
 :   *Greek*
     [Greek Literature, -400 - +400](https://github.com/pthu/greek_literature),
     [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
@@ -178,8 +175,7 @@ oldroyal
 
 ### Automatically
 
-Text-Fabric downloads apps from [annotation](https://github.com/annotation) automatically
-when you use them.
+Text-Fabric downloads corpus data and apps from GitHub on demand.
 
 See `tf.about.use`.
 
@@ -195,7 +191,7 @@ The TF data is fairly compact.
 
 ### Manually
 
-Corpus data of app-supported corpora reside in a GitHub repo.
+TF data of corpora reside in a GitHub repo.
 You can manually clone such a data repository and point Text-Fabric to that data.
 
 First, take care that your clone ends up in `github/`*orgName*
@@ -205,7 +201,7 @@ found the repo.
 
 Then, when you invoke the app, pass the specifier `:clone`.
 This instructs Text-Fabric to look in your local GitHub clone, rather
-than online or in `text-fabric-data`, where downloaded data is stored.
+than online or in your local `text-fabric-data`, where downloaded data is stored.
 
     use('org/repo:clone', checkout="clone")
 
