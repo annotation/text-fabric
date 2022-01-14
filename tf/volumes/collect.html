@@ -49,7 +49,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a49e7c91d1df5c7da866ebb3b75be7ab4f71009/tf/volumes/collect.py#L1-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea6b1465bdde3eaa26271c5128074d969b95da66/tf/volumes/collect.py#L1-L892" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -788,16 +788,16 @@ def collect(
             )
 
             if nW &gt; maxSlotW:
-                oslots[nW] = set(
+                oslots[nW] = {
                     volumeMapI[(name, sV)]
                     for sV in eOslotsDatas[name][nV - maxSlotI - 1]
-                )
+                }
                 if nW in fromWork:
                     for (name2, nV2) in fromWork[nW]:
-                        oslots[nW] |= set(
+                        oslots[nW] |= {
                             volumeMapI[(name2, sV)]
                             for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
-                        )
+                        }
 
             for (feat, featD) in nodeFeatureDatas[name].items():
                 val = featD.get(nV, None)
@@ -1181,7 +1181,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a49e7c91d1df5c7da866ebb3b75be7ab4f71009/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea6b1465bdde3eaa26271c5128074d969b95da66/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1860,16 +1860,16 @@ These will be excluded from collection.</p>
             )
 
             if nW &gt; maxSlotW:
-                oslots[nW] = set(
+                oslots[nW] = {
                     volumeMapI[(name, sV)]
                     for sV in eOslotsDatas[name][nV - maxSlotI - 1]
-                )
+                }
                 if nW in fromWork:
                     for (name2, nV2) in fromWork[nW]:
-                        oslots[nW] |= set(
+                        oslots[nW] |= {
                             volumeMapI[(name2, sV)]
                             for sV in eOslotsDatas[name2][nV2 - maxSlots[name2] - 1]
-                        )
+                        }
 
             for (feat, featD) in nodeFeatureDatas[name].items():
                 val = featD.get(nV, None)

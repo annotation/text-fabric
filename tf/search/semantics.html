@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a49e7c91d1df5c7da866ebb3b75be7ab4f71009/tf/search/semantics.py#L1-L513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea6b1465bdde3eaa26271c5128074d969b95da66/tf/search/semantics.py#L1-L513" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Semantics of search templates
@@ -298,7 +298,7 @@ def _validateFeature(
 
 def _validation(searchExe):
     levels = searchExe.api.C.levels.data
-    otypes = set(x[0] for x in levels)
+    otypes = {x[0] for x in levels}
     qnodes = searchExe.qnodes
     nodeLine = searchExe.nodeLine
     edgeMap = searchExe.edgeMap
@@ -559,7 +559,7 @@ def _validation(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a49e7c91d1df5c7da866ebb3b75be7ab4f71009/tf/search/semantics.py#L14-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea6b1465bdde3eaa26271c5128074d969b95da66/tf/search/semantics.py#L14-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def semantics(searchExe):
     if not searchExe.good:
