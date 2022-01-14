@@ -26,12 +26,6 @@ Corpora prefixed with a star do not have dedicated TF apps.
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
     Dirk Roorda
 
-[annotation/clariah-gm](https://github.com/annotation/clariah-gm)
-:   *Dutch* 
-    General Missives, 1600 - 1800,
-    **General Missives, Dutch East-Indian Company**,
-    Jesse van der Does, Sophie Arnoult, Dirk Roorda
-
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
 [CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)
@@ -64,6 +58,22 @@ Corpora prefixed with a star do not have dedicated TF apps.
     converted from
     **James Tauber's [morphgnt/sblgnt](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
     Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas
+
+## [CLARIAH](https://github.com/CLARIAH)
+
+[CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
+:   *Dutch* 
+    General Missives, 1600 - 1800,
+    **General Missives, Dutch East-Indian Company**,
+    Jesse van der Does, Sophie Arnoult, Dirk Roorda
+
+[CLARIAH/wp6-daghregisters](https://github.com/CLARIAH/wp6-daghregisters)
+:   *Dutch* 
+    Dagh Registers Batavia, 1640 - 1641,
+    **Daily events at Batavia, Indonesia, historical source for
+    the operation of the Dutch Eaast-Indian Company**,
+    Lodewijk Petram, Dirk Roorda.
+    *work in progress, currently only volume 4*
 
 ## [Cody Kingham](https://github.com/codykingham)
 
