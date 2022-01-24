@@ -155,8 +155,12 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
+            org = aContext.org
+            repo = aContext.repo
             commit = aContext.commit
-            appProvenance = ((("name", appName), ("commit", commit)),)
+            appProvenance = (
+                (("name", appName), ("org", org), ("repo", repo), ("commit", commit)),
+            )
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):

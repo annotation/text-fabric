@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.2.1
+
+2022-01-24
+
+The text-fabric browser did not start-up well.
+That has been fixed.
+
 #### 9.2
 
 2022-01-06

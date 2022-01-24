@@ -39,6 +39,7 @@ test/app.py
 test/hello.py
 test/srun.py
 test/test.tf
+test/use.ipynb
 test/async/async.py
 test/async/test1.ipynb
 test/async/test2.ipynb
