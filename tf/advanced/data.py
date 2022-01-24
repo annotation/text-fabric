@@ -69,7 +69,10 @@ class AppData(object):
         appPath = aContext.appPath
         appName = aContext.appName
 
-        if org is None or repo is None:
+        if appName.startswith("app:"):
+            appParent = appPath.rsplit("/", 1)[0]
+            relative = f"{appParent}/{relative}"
+        elif org is None or repo is None:
             appPathRep = f"{appPath}/" if appPath else ""
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"

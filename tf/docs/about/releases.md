@@ -46,12 +46,13 @@ text-fabric appName:hot
 
 ### 9.0
 
-#### 9.2.1
+#### 9.2.1-2
 
 2022-01-24
 
 The text-fabric browser did not start-up well.
 That has been fixed.
+Loading an app from an arbitrary location on the local machine has been fixed.
 
 #### 9.2
 

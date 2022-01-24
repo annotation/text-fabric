@@ -56,6 +56,7 @@ def linksApi(app, silent):
 
     aContext = app.context
     appName = aContext.appName
+    appRelative = aContext.relative
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
@@ -83,7 +84,9 @@ def linksApi(app, silent):
     dataLink = (
         outLink(dataName, docUrl, f"provenance of {corpus}")
         if isCompatible and repo is not None and docUrl
-        else "/".join(x for x in (appPath, appName, version) if x)
+        else "/".join((x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version))
+        if appName.startswith("app:")
+        else "/".join((x or "") for x in (appPath, appName, version))
     )
     charLink = (
         (
