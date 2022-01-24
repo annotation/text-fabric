@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fff52fb1a5dc6aeea0f9e8a4dcb1900b6b8d636/tf/server/kernel.py#L1-L673" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d46e091845b138fa94725e175f62e5b3a2a036e3/tf/server/kernel.py#L1-L677" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -240,8 +240,12 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
+            org = aContext.org
+            repo = aContext.repo
             commit = aContext.commit
-            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+            appProvenance = (
+                ((&#34;name&#34;, appName), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),
+            )
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
@@ -773,7 +777,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fff52fb1a5dc6aeea0f9e8a4dcb1900b6b8d636/tf/server/kernel.py#L606-L654" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d46e091845b138fa94725e175f62e5b3a2a036e3/tf/server/kernel.py#L610-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -834,7 +838,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fff52fb1a5dc6aeea0f9e8a4dcb1900b6b8d636/tf/server/kernel.py#L587-L600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d46e091845b138fa94725e175f62e5b3a2a036e3/tf/server/kernel.py#L591-L604" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -860,7 +864,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8fff52fb1a5dc6aeea0f9e8a4dcb1900b6b8d636/tf/server/kernel.py#L101-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d46e091845b138fa94725e175f62e5b3a2a036e3/tf/server/kernel.py#L101-L585" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -919,8 +923,12 @@ if __name__ == &#34;__main__&#34;:
 
             app = self.app
             aContext = app.context
+            org = aContext.org
+            repo = aContext.repo
             commit = aContext.commit
-            appProvenance = (((&#34;name&#34;, appName), (&#34;commit&#34;, commit)),)
+            appProvenance = (
+                ((&#34;name&#34;, appName), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),
+            )
             return (appProvenance, app.provenance)
 
         def exposed_setNames(self):
