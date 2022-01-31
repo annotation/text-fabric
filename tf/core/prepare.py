@@ -367,65 +367,6 @@ def levDown(info, error, otype, levUp, rank):
     return tuple(embeddees)
 
 
-def boundary(info, error, otype, oslots, rank):
-    """Computes boundary data.
-
-    For each slot, the nodes that start at that slot and the nodes that end
-    at that slot are collected.
-
-    Boundary data is used by the API functions
-    `tf.core.locality.Locality.p`.
-    and
-    `tf.core.locality.Locality.n`.
-
-    Parameters
-    ----------
-    info: function
-        Method to write informational messages to the console.
-    error: function
-        Method to write error messages to the console.
-    otype: iterable
-        The data of the *otype* feature.
-    oslots: iterable
-        The data of the *oslots* feature.
-    rank: array
-        The data of the *rank* precompute step.
-
-    Returns
-    -------
-    tuple
-        *   first: tuple of array
-            The *n*-th member is the array of nodes that start at slot *n*,
-            ordered in *reversed* canonical order (`tf.core.nodes`);
-        *   last: tuple of array
-            The *n*-th member is the array of nodes that end at slot *n*,
-            ordered in canonical order;
-
-    Notes
-    -----
-    !!! hint "why  reversed canonical order?"
-        Just for symmetry.
-    """
-
-    (otype, maxSlot, maxNode, slotType) = otype
-    oslots = oslots[0]
-    firstSlotsD = {}
-    lastSlotsD = {}
-    for (k, mList) in enumerate(oslots):
-        firstSlotsD.setdefault(mList[0], []).append(k + 1 + maxSlot)
-        lastSlotsD.setdefault(mList[-1], []).append(k + 1 + maxSlot)
-    firstSlots = []
-    lastSlots = []
-    for n in range(1, maxSlot + 1):
-        firstSlots.append(
-            array("I", sorted(firstSlotsD.get(n, []), key=lambda k: -rank[k - 1]))
-        )
-        lastSlots.append(
-            array("I", sorted(lastSlotsD.get(n, []), key=lambda k: rank[k - 1]))
-        )
-    return (tuple(firstSlots), tuple(lastSlots))
-
-
 def characters(info, error, otext, tFormats, *tFeats):
     """Computes character data.
 
@@ -478,6 +419,66 @@ def characters(info, error, otext, tFormats, *tFeats):
         charFreqsByFmt[fmt] = sorted(x for x in charFreq.items())
 
     return charFreqsByFmt
+
+
+def boundary(info, error, otype, oslots, rank):
+    """Computes boundary data.
+
+    For each slot, the nodes that start at that slot and the nodes that end
+    at that slot are collected.
+
+    Boundary data is used by the API functions
+    `tf.core.locality.Locality.p`.
+    and
+    `tf.core.locality.Locality.n`.
+
+    Parameters
+    ----------
+    info: function
+        Method to write informational messages to the console.
+    error: function
+        Method to write error messages to the console.
+    otype: iterable
+        The data of the *otype* feature.
+    oslots: iterable
+        The data of the *oslots* feature.
+    rank: array
+        The data of the *rank* precompute step.
+
+    Returns
+    -------
+    tuple
+        *   first: tuple of array
+            The *n*-th member is the array of nodes that start at slot *n*,
+            ordered in *reversed* canonical order (`tf.core.nodes`);
+        *   last: tuple of array
+            The *n*-th member is the array of nodes that end at slot *n*,
+            ordered in canonical order;
+
+    Notes
+    -----
+    !!! hint "why  reversed canonical order?"
+        Just for symmetry.
+    """
+
+    (otype, maxSlot, maxNode, slotType) = otype
+    oslots = oslots[0]
+    firstSlotsD = {}
+    lastSlotsD = {}
+    for (node, slots) in enumerate(oslots):
+        realNode = node + 1 + maxSlot
+        firstSlotsD.setdefault(slots[0], []).append(realNode)
+        lastSlotsD.setdefault(slots[-1], []).append(realNode)
+    firstSlots = []
+    lastSlots = []
+    for n in range(1, maxSlot + 1):
+        firstSlots.append(
+            array("I", sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        )
+        lastSlots.append(
+            array("I", sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        )
+    return (tuple(firstSlots), tuple(lastSlots))
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):

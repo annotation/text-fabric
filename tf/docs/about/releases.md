@@ -46,6 +46,13 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.2.3
+
+2022-01-31
+
+Improvement in app loading: added an argument `legacy=True` to `use()`,
+so that older versions of older apps still can be loaded.
+
 #### 9.2.1-2
 
 2022-01-24

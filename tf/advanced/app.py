@@ -531,7 +531,15 @@ The app "{appName}" will not work!
 
 
 def findApp(
-    appName, checkoutApp, dataLoc, _browse, *args, silent=False, version=None, **kwargs
+    appName,
+    checkoutApp,
+    dataLoc,
+    _browse,
+    *args,
+    silent=False,
+    version=None,
+    legacy=False,
+    **kwargs,
 ):
     """Find a TF app by name and initialize an object of its main class.
 
@@ -574,6 +582,9 @@ def findApp(
         Keyword arguments that will be passed to the initializer of the
         `tf.advanced.app.App` class.
 
+    legacy: boolean, optional False
+        If true, accept that a legacy-app is called.
+        Do not give warning, and do not try to load the app in the non-legacy way.
     """
 
     (commit, release, local) = (None, None, None)
@@ -648,31 +659,38 @@ def findApp(
             appBaseRep = f"{appBase}/" if appBase else ""
             appPath = f"{appBaseRep}{appDir}"
             cfg = findAppConfig(appName, appPath, commit, release, local)
+            provenanceSpec = kwargs.get("provenanceSpec", {})
+            if provenanceSpec:
+                for k in ("org", "repo", "relative"):
+                    value = provenanceSpec.get(k, None)
+                    if value:
+                        cfg[k] = value
 
             dataOrg = cfg.get("provenanceSpec", {}).get("org", None)
             dataRepo = cfg.get("provenanceSpec", {}).get("repo", None)
 
-            if dataOrg:
-                console(
-                    (
-                        "WARNING: in the future, pass "
-                        f"`{dataOrg}/{appName}` instead of `{appName}`"
-                    ),
-                    error=True,
-                )
-                (commit, release, local, appBase, appDir) = checkoutRepo(
-                    _browse=_browse,
-                    org=dataOrg,
-                    repo=dataRepo,
-                    folder=APP_APP,
-                    checkout=checkoutApp,
-                    withPaths=True,
-                    keep=False,
-                    silent=silent,
-                    label="TF-app",
-                )
-                appBaseRep = f"{appBase}/" if appBase else ""
-                appPath = f"{appBaseRep}{appDir}"
+            if not legacy:
+                if dataOrg:
+                    console(
+                        (
+                            "WARNING: in the future, pass "
+                            f"`{dataOrg}/{appName}` instead of `{appName}`"
+                        ),
+                        error=True,
+                    )
+                    (commit, release, local, appBase, appDir) = checkoutRepo(
+                        _browse=_browse,
+                        org=dataOrg,
+                        repo=dataRepo,
+                        folder=APP_APP,
+                        checkout=checkoutApp,
+                        withPaths=True,
+                        keep=False,
+                        silent=silent,
+                        label="TF-app",
+                    )
+                    appBaseRep = f"{appBase}/" if appBase else ""
+                    appPath = f"{appBaseRep}{appDir}"
     else:
         parts = dataLoc.split(":", maxsplit=1)
         if len(parts) == 1:
