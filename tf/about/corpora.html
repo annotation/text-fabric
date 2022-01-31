@@ -27,13 +27,24 @@
 <p>Corpora are usually stored in an online repository, such as GitHub or a research data archive
 such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.
 From there Text-Fabric knows how to download them for you.</p>
-<p>Some corpora are supported by Text-Fabric <em>apps</em>.</p>
+<p>Most corpora are supported by Text-Fabric <em>apps</em>.</p>
 <p>These apps provide a browser interface for the corpus,
 and they customise/enhance the display of corpus fragments, and
 provide extra provenance information and links to online
 editions of the corpus.</p>
 <p>Apps are published close to the TF-feature data of that corpus,
 in a directory <code>app</code> in the same repository.</p>
+<p>Such corpora can be installed on the fly when you want to use them.
+If the corpus is located on GitHub under organization <code>org</code> and then repository <code>repo</code>,
+you can get the data loaded into a Python program by</p>
+<pre><code class="language-python">from tf.app import use
+A = use(&quot;org/repo&quot;)
+</code></pre>
+<p>And you can get it in the Text-Fabric browser by saying this on a command prompt:</p>
+<pre><code class="language-sh">text-fabric org/repo
+</code></pre>
+<p>Here is a list of corpora that can be loaded this way.
+Since everybody can put a Text-Fabric corpus on GitHub, the list may not be complete!</p>
 <h2 id="annotation"><a href="https://github.com/annotation">annotation</a></h2>
 <dl>
 <dt><a href="https://github.com/annotation/banks">annotation/banks</a></dt>
@@ -225,7 +236,7 @@ Read more about the data life cycle in <code><a title="tf.about.datasharing" hre
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d26f7d4080fc01b813373cf14b4c3a4f3dde7a98/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b55d94055eff37df53a781acb55d46d494eb851f/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/corpora.md

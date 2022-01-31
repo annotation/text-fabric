@@ -24,69 +24,40 @@
 </header>
 <section id="section-intro">
 <h1 id="install">Install</h1>
-<h2 id="as-it-is-now">As it is now &hellip;</h2>
+<h2 id="quick-fresh-start">Quick, fresh start</h2>
 <h3 id="python-and-jupyterlab">Python and JupyterLab</h3>
-<p>Text-Fabric is a Python package, so you absolutely need Python.</p>
 <p>JupyterLab is a convenient interface to run Python programs, and Text-Fabric has
 been developed with this environment in mind.
-If you have not seen Jupyter notebooks before, you can see what it is
-<a href="https://jupyterlab.readthedocs.io/en/latest/getting_started/overview.html">here</a>.</p>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Watch the introductory
-<a href="https://www.youtube.com/watch?v=A5YyoCKxEOU&amp;t=4s">video</a>
-over there.</p>
-</div>
-<p>If you are new to Python, you can now install both in one go, as a desktop application.
-There are apps for Macos, Linux and Windows.</p>
-<h3 id="download">Download</h3>
-<p>The apps can be downloaded from
+If you have not seen Jupyter notebooks before, look
+<a href="https://jupyterlab.readthedocs.io/en/latest/getting_started/overview.html">here</a>
+or watch this
+<a href="https://www.youtube.com/watch?v=DKiI6NfSIe8">video</a>.</p>
+<p>Install both Jupyter and Python in one go, as a desktop application running under.
+Macos, Linux or Windows.</p>
+<p>The Jupyter Desktop App can be downloaded from
 <a href="https://github.com/jupyterlab/jupyterlab-desktop">jupyterlab-desktop</a>,
 choose the one that fits your system.</p>
-<h3 id="install_1">Install</h3>
 <p>After downloading, go to your downloads folder and install the application in the way
 you are used to, but notice the following:</p>
-<div class="admonition caution">
-<p class="admonition-title">Macos security warning</p>
-<p>On the mac, if you just double click the <code>.pkg</code> file, you get a security
-warning (unidentified developer) and you are stuck.
-Remedy: right-click the <code>.pkg</code> file, answer the dialogbox with <code>OK</code>,
-and your installation will begin.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Installation should be for the current user</p>
-<p>Normally you install apps for all users on your computer.
-But this app works better if you install it for the current user only.
-Because you'll need to install extra Python modules, and when you do that
-the app needs permission to save those modules.
-When the app is installed for the current user, the app has permission
-to write those files.</p>
-</div>
-<p>How to install for the current user?
-It depends on the platform.
-See <a href="https://github.com/jupyterlab/jupyterlab-desktop/blob/master/user-guide.md#Customizing-the-Bundled-Python-Environment">here</a>
-if you like. It boils down to the following:</p>
-<p><strong>Macos</strong></p>
-<p>During installation, click "Change install location" and set it to "Install for me only"</p>
-<p><strong>Linux</strong></p>
-<p>After installation, run the following command from a terminal where <code>username</code> should be changed
-to your username on the system</p>
+<p><strong>on macos</strong>: right-click the <code>.pkg</code> file, answer the dialogbox with <code>OK</code>. </p>
+<p><strong>on all platforms</strong>: install for the current user, not for all users, otherwise
+you run into problems later on.</p>
+<p><em>macos</em>: click "Change install location" and set it to "Install for me only"</p>
+<p><em>linux</em>: after installation, run the following command from a terminal where <code>username</code> should be changed
+to your username on the system:</p>
 <pre><code class="language-sh">sudo chown -R username:username /opt/JupyterLab
 </code></pre>
-<p><strong>Windows</strong></p>
-<p>No extra instructions. Two installers will be launched, let them work with the same default
+<p><em>windows</em>: no extra instructions. Two installers will be launched, let them work with the same default
 location for installation.</p>
 <h3 id="install-text-fabric">Install Text-Fabric</h3>
-<p>Wow, now you have both Python and JupyterLab, you are all set to do Text-Fabric work, including
-installing it.</p>
 <p>Open the JupyterLab desktop application that you just have installed.
 You have a fresh, empty notebook in front of you.</p>
 <p>In the first cell, type</p>
 <pre><code class="language-sh">%pip install text-fabric
 </code></pre>
-<p>You will see that Text-Fabric is downloaded and installed, together with the modules
-it depends on.</p>
-<p>Now restart the kernel of this notebook by clicking the circular arrow in the toolbar:</p>
+<p>Text-Fabric is then downloaded and installed,
+together with the modules it depends on.</p>
+<p>Now restart this notebook by clicking the circular arrow in the toolbar:</p>
 <p><img alt="restart" src="../images/restartkernel.png">.</p>
 <p>This finishes the installation.
 You can wipe out this cell, or start a new notebook.</p>
@@ -94,32 +65,27 @@ You can wipe out this cell, or start a new notebook.</p>
 <p>In a notebook, put this <em>incantation</em> in a cell and run it:</p>
 <pre><code>from tf.app import use
 </code></pre>
-<p>And in a next cell, load the corpus data
-(here you see the <code>bhsa</code> = Hebrew Bible, see <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> for other options)</p>
-<pre><code>A = use(&quot;etcbc/bhsa&quot;, hoist=globals())
+<p>And in a next cell, load the data of some corpus, e.g. <code>annotation/banks</code>.</p>
+<pre><code>A = use(&quot;annotation/banks&quot;)
 </code></pre>
-<p>If you have worked with the <code>bhsa</code> before on the same computer, the data is already there,
-and this step will be quick.
-Otherwise you will see that the data is being downloaded and prepared for its first use.
-That takes a bit of work and produces a long list of all features of the <code>bhsa</code> on your screen.</p>
-<p>From here you can use the
-<a href="https://nbviewer.org/github/annotation/tutorials/blob/master/bhsa/start.ipynb">start tutorial</a>
-to get going, just after <strong>Incantation</strong>.</p>
+<p>The first time you do this you will see that the data is being downloaded and prepared for its first use.
+If you do this a second time, the data is already on your computer in preprocessed form, and Text-Fabric
+will see that data and load it quickly.</p>
+<p>From here you can use a
+<a href="https://nbviewer.org/github/annotation/banks/blob/master/tutorial/use.ipynb">tutorial</a>.</p>
+<p>More extensive tutorials are available for other corpora, see <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <h3 id="text-fabric-browser">Text-Fabric browser</h3>
 <p>You can also work with Text-Fabric outside any programming context, just in the browser.
 A bit like SHEBANQ, the difference is that now your own computer is the one
 that serves the website, not something on the internet.</p>
 <p>Open a new notebook, and in its first cell type</p>
 <pre><code>%%sh
-text-fabric etcbc/bhsa
+text-fabric annotation/banks
 </code></pre>
 <p>Wait a few seconds and you see a new window in your browser
 with an interface to submit queries to the corpus.</p>
 <p>When you are done, go back to the notebook, and close it.</p>
-<h2 id="as-it-was-before">As it was before &hellip;</h2>
-<p>Text Fabric is a Python package on the Python Package Index,
-so you can install it directly with <code>pip3</code> or <code>pip</code> from
-the command line.</p>
+<h2 id="the-long-story">The long story &hellip;</h2>
 <h3 id="computer">Computer</h3>
 <p>Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
 It should run Linux, Macos, or Windows.</p>
@@ -130,15 +96,12 @@ make sure that most of that minimum of 3GB RAM is actually available,
 and not in use by other programs.</p>
 </div>
 <h3 id="python">Python</h3>
-<p>Install or upgrade Python on your system to at least version 3.6.3.</p>
-<p>Go for the 64-bit version. Otherwise Python may not be able to address
-all the memory it needs.</p>
-<p>The leanest install is provided by <a href="https://www.python.org/downloads/">python.org</a>.</p>
+<p>Install Python on your system (minimum version is 3.6.3).
+Make sure to install the 64-bit version.</p>
+<p>The leanest install is the standard Python distribution by <a href="https://www.python.org/downloads/">python.org</a>.</p>
 <p>You can also install it from <a href="https://www.anaconda.com/download">anaconda.com</a>.</p>
 <h4 id="on-windows">On Windows?</h4>
-<p>Choose Anaconda over standard Python. The reason is that when you want to add Jupyter
-to the mix, you need to have additional developers' tools installed.
-The Anaconda distribution has Jupyter out of the box.</p>
+<p>Here Anaconda is more convenient than standard Python. </p>
 <p>When installing Python, make sure that the installer adds the path to Python
 to your environment variables.</p>
 <p><strong>Install Chrome or Firefox and set it as your default browser.</strong>
@@ -151,7 +114,7 @@ element.</p>
 But you have to install pip3 in order to add the Python package text-fabric.</p>
 <pre><code class="language-sh">sudo apt install python3-pip
 </code></pre>
-<h2 id="text-fabric">Text-Fabric</h2>
+<h3 id="text-fabric">Text-Fabric</h3>
 <h3 id="installation">Installation</h3>
 <p>(macos or linux (non-anaconda))</p>
 <pre><code class="language-sh">pip3 install text-fabric
@@ -183,11 +146,10 @@ export PATH
 <h3 id="upgrade-text-fabric">Upgrade Text-Fabric</h3>
 <pre><code class="language-sh">pip3 install --upgrade text-fabric
 </code></pre>
-<h3 id="tf-apps-and-data">TF apps and data</h3>
+<h3 id="tf-data">TF data</h3>
 <p>In order to work with a corpus you need its data.</p>
-<p>For some corpora there is a TF app, which takes care of downloading and updating that data.</p>
-<p><code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> tells you how to install and update a TF app and get the corpus data.</p>
-<h2 id="jupyter-notebook">Jupyter notebook</h2>
+<p><code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> tells you how to get the corpus data.</p>
+<h2 id="jupyter-notebooklab">Jupyter notebook/lab</h2>
 <p>Optionally install <a href="https://jupyter.org">Jupyter</a> as well:</p>
 <pre><code class="language-sh">pip3 install jupyter
 </code></pre>
@@ -197,20 +159,11 @@ the tutorials of Text-Fabric.
 Also when you want to copy and paste cells from one notebook
 to another.</p>
 <pre><code class="language-sh">pip3 install jupyterlab
-jupyter labextension install jupyterlab-toc
 </code></pre>
-<p>The toc-extension is handy to get an overview
-when working with the lengthy tutorial. It will create an extra
-tab in the Jupyter Lab interface with a table of contents of the
-current notebook.</p>
-<p>Jupyter lab is an interesting off-spring from the marriage between the
-Python world and the Javascript world.</p>
-<p>In order to install lab extensions you need to have
-<a href="https://nodejs.org/en/">Node</a> installed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d26f7d4080fc01b813373cf14b4c3a4f3dde7a98/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b55d94055eff37df53a781acb55d46d494eb851f/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/install.md
@@ -282,35 +235,31 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#install">Install</a><ul>
-<li><a href="#as-it-is-now">As it is now &hellip;</a><ul>
+<li><a href="#quick-fresh-start">Quick, fresh start</a><ul>
 <li><a href="#python-and-jupyterlab">Python and JupyterLab</a></li>
-<li><a href="#download">Download</a></li>
-<li><a href="#install_1">Install</a></li>
 <li><a href="#install-text-fabric">Install Text-Fabric</a></li>
 <li><a href="#work-with-text-fabric">Work with Text-Fabric</a></li>
 <li><a href="#text-fabric-browser">Text-Fabric browser</a></li>
 </ul>
 </li>
-<li><a href="#as-it-was-before">As it was before &hellip;</a><ul>
+<li><a href="#the-long-story">The long story &hellip;</a><ul>
 <li><a href="#computer">Computer</a></li>
 <li><a href="#python">Python</a><ul>
 <li><a href="#on-windows">On Windows?</a></li>
 <li><a href="#on-linux">On Linux?</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#text-fabric">Text-Fabric</a><ul>
+<li><a href="#text-fabric">Text-Fabric</a></li>
 <li><a href="#installation">Installation</a><ul>
 <li><a href="#to-3-or-not-to-3">To 3 or not to 3?</a></li>
 <li><a href="#on-linux_1">On Linux?</a></li>
 </ul>
 </li>
 <li><a href="#upgrade-text-fabric">Upgrade Text-Fabric</a></li>
-<li><a href="#tf-apps-and-data">TF apps and data</a></li>
+<li><a href="#tf-data">TF data</a></li>
 </ul>
 </li>
-<li><a href="#jupyter-notebook">Jupyter notebook</a></li>
+<li><a href="#jupyter-notebooklab">Jupyter notebook/lab</a></li>
 </ul>
 </li>
 </ul>
