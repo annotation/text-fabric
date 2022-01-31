@@ -4,7 +4,7 @@ Corpora are usually stored in an online repository, such as GitHub or a research
 such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
 From there Text-Fabric knows how to download them for you.
 
-Some corpora are supported by Text-Fabric *apps*.
+Most corpora are supported by Text-Fabric *apps*.
 
 These apps provide a browser interface for the corpus,
 and they customise/enhance the display of corpus fragments, and
@@ -13,6 +13,25 @@ editions of the corpus.
 
 Apps are published close to the TF-feature data of that corpus,
 in a directory `app` in the same repository.
+
+Such corpora can be installed on the fly when you want to use them.
+If the corpus is located on GitHub under organization `org` and then repository `repo`,
+you can get the data loaded into a Python program by
+
+``` python
+from tf.app import use
+A = use("org/repo")
+```
+
+And you can get it in the Text-Fabric browser by saying this on a command prompt:
+
+
+``` sh
+text-fabric org/repo
+```
+
+Here is a list of corpora that can be loaded this way.
+Since everybody can put a Text-Fabric corpus on GitHub, the list may not be complete!
 
 ## [annotation](https://github.com/annotation)
 

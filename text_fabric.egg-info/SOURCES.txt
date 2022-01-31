@@ -5,11 +5,8 @@ MANIFEST.in
 README.md
 SECURITY.md
 build.py
-commitapps.sh
-manageapps.sh
 purge.sh
 pyproject.toml
-releaseapps.sh
 setup.py
 codestyle/contributing.md
 codestyle/eslintrc.txt

@@ -595,7 +595,7 @@ Api reference : {APIREF}
             as values.
             This parameter holds all those dictionaries, keyed by feature name.
 
-        metadata: dict of  dict
+        metaData: dict of  dict
             The meta data for every feature to be saved is a key-value dictionary.
             This parameter holds all those dictionaries, keyed by feature name.
 
