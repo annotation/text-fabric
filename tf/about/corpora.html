@@ -24,19 +24,10 @@
 </header>
 <section id="section-intro">
 <h1 id="corpora">Corpora</h1>
-<p>Corpora are usually stored in an online repository, such as GitHub or a research data archive
-such as <a href="https://dans.knaw.nl/en/front-page?set_language=en">DANS</a>.
-From there Text-Fabric knows how to download them for you.</p>
-<p>Most corpora are supported by Text-Fabric <em>apps</em>.</p>
-<p>These apps provide a browser interface for the corpus,
-and they customise/enhance the display of corpus fragments, and
-provide extra provenance information and links to online
-editions of the corpus.</p>
-<p>Apps are published close to the TF-feature data of that corpus,
-in a directory <code>app</code> in the same repository.</p>
-<p>Such corpora can be installed on the fly when you want to use them.
-If the corpus is located on GitHub under organization <code>org</code> and then repository <code>repo</code>,
-you can get the data loaded into a Python program by</p>
+<p>Text-Fabric corpora are usually stored on GitHub and Text-Fabric
+knows how to download a corpus from GitHub if you specify the <em>org/repo</em>.</p>
+<p>Most corpora are configured by metadata in a directory <em>app</em> in the repo.</p>
+<p>You can load a corpus into a Python datastructure by</p>
 <pre><code class="language-python">from tf.app import use
 A = use(&quot;org/repo&quot;)
 </code></pre>
@@ -72,7 +63,7 @@ earliest extant Greek translation of Hebrew Bible books;
 Oliver Glanz, Adrian Negrea</dd>
 <dt><a href="https://github.com/CenterBLC/NA">CenterBLC/NA</a></dt>
 <dd><em>Greek</em>
-Greek New Testament, 100 - 400,
+New Testament, 100 - 400,
 <strong>GNT Nestle-Aland edition 1904 with new features by CentrBLC</strong>,
 converted from
 <a href="https://github.com/biblicalhumanities/Nestle1904">biblicalhumanities/Nestle1904</a>
@@ -80,7 +71,7 @@ contributed by Ulrik Sandborg Petersen, Jonathan Robie;
 Oliver Glanz</dd>
 <dt><a href="https://github.com/CenterBLC/SBLGNT">CenterBLC/SBLGNT</a></dt>
 <dd><em>Greek</em>
-Greek New Testament, 100 - 400,
+New Testament, 100 - 400,
 converted from
 <strong>James Tauber's <a href="https://github.com/morphgnt/sblgnt">morphgnt/sblgnt</a> with additional features by CenterBLC</strong>;
 Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas</dd>
@@ -105,14 +96,14 @@ Lodewijk Petram, Dirk Roorda.
 <dt><a href="https://github.com/codykingham/tischendorf_tf">codykingham/tischendorf_tf</a></dt>
 <dd><em>Greek</em>
 New Testament, 50 - 450,
-<strong>Greek New Testament in Tischendorf 8th Edition</strong>,
+<strong>Tischendorf 8th Edition</strong>,
 Cody Kingham, Dirk Roorda</dd>
 </dl>
 <h2 id="eep-talstra-centre-for-bible-and-computer"><a href="https://github.com/etcbc">Eep Talstra Centre for Bible and Computer</a></h2>
 <dl>
 <dt><a href="https://github.com/etcbc/bhsa">etcbc/bhsa</a></dt>
 <dd><em>Hebrew</em>
-Hebrew Bible, 1000 BC - 900 AD,
+Bible (Old Testament), 1000 BC - 900 AD,
 <strong><a href="https://etcbc.github.io/bhsa/">Biblia Hebraica Stuttgartensia (Amstelodamensis)</a></strong>,
 ETCBC + Dirk Roorda</dd>
 <dt><a href="https://github.com/etcbc/dhammapada">etcbc/dhammapada</a></dt>
@@ -127,12 +118,12 @@ Dead Sea Scrolls, 300 BC - 100 AD,
 Martijn Naaijer, Jarod Jacobs, Dirk Roorda</dd>
 <dt><a href="https://github.com/etcbc/peshitta">etcbc/peshitta</a></dt>
 <dd><em>Syriac</em>
-Syriac Old Testament, 1000 BC - 900 AD,
+Peshitta (Old Testament), 1000 BC - 900 AD,
 <strong>Vetus Testamentum Syriace</strong>,
 Hannes Vlaardingerbroek, Dirk Roorda</dd>
 <dt><a href="https://github.com/etcbc/syrnt">etcbc/syrnt</a></dt>
 <dd><em>Syriac</em>
-Syriac New Testament, 0 - 1000,
+New Testament, 0 - 1000,
 <strong>Novum Testamentum Syriace</strong>,
 Hannes Vlaardingerbroek, Dirk Roorda</dd>
 </dl>
@@ -158,7 +149,7 @@ Cale Johnson, Dirk Roorda</dd>
 <dl>
 <dt><a href="https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb">Greek Literature</a></dt>
 <dd><em>Greek</em>
-<a href="https://github.com/pthu/greek_literature">Greek Literature, -400 - +400</a>,
+<a href="https://github.com/pthu/greek_literature">Literature, -400 - +400</a>,
 <a href="https://github.com/PerseusDL/canonical-greekLit">Perseus Digital Library</a> and
 <a href="https://github.com/OpenGreekAndLatin/First1KGreek">Open Greek and Latin Project</a>
 The result of a massive conversion effort by Ernst Boogert.</dd>
@@ -236,7 +227,7 @@ Read more about the data life cycle in <code><a title="tf.about.datasharing" hre
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/da3b35cbd956a986fe153ccb8328634b7064f9f7/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6c4f4ad7c8d2233b3ae8603deaa8ddc1a50d3e06/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/corpora.md
