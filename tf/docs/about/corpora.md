@@ -1,22 +1,12 @@
 # Corpora
 
-Corpora are usually stored in an online repository, such as GitHub or a research data archive
-such as [DANS](https://dans.knaw.nl/en/front-page?set_language=en).
-From there Text-Fabric knows how to download them for you.
+Text-Fabric corpora are usually stored on GitHub and Text-Fabric
+knows how to download a corpus from GitHub if you specify the *org/repo*.
 
-Most corpora are supported by Text-Fabric *apps*.
+Most corpora are configured by metadata in a directory *app* in the repo.
 
-These apps provide a browser interface for the corpus,
-and they customise/enhance the display of corpus fragments, and
-provide extra provenance information and links to online
-editions of the corpus.
 
-Apps are published close to the TF-feature data of that corpus,
-in a directory `app` in the same repository.
-
-Such corpora can be installed on the fly when you want to use them.
-If the corpus is located on GitHub under organization `org` and then repository `repo`,
-you can get the data loaded into a Python program by
+You can load a corpus into a Python datastructure by
 
 ``` python
 from tf.app import use
@@ -61,7 +51,7 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [CenterBLC/NA](https://github.com/CenterBLC/NA)
 :   *Greek*
-    Greek New Testament, 100 - 400,
+    New Testament, 100 - 400,
     **GNT Nestle-Aland edition 1904 with new features by CentrBLC**,
     converted from 
     [biblicalhumanities/Nestle1904](https://github.com/biblicalhumanities/Nestle1904)
@@ -70,7 +60,7 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [CenterBLC/SBLGNT](https://github.com/CenterBLC/SBLGNT)
 :   *Greek*
-    Greek New Testament, 100 - 400,
+    New Testament, 100 - 400,
     converted from
     **James Tauber's [morphgnt/sblgnt](https://github.com/morphgnt/sblgnt) with additional features by CenterBLC**;
     Adrian Negrea, Clacir Virmes, Oliver Glanz, Krysten Thomas
@@ -96,14 +86,14 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 [codykingham/tischendorf_tf](https://github.com/codykingham/tischendorf_tf)
 :   *Greek*
     New Testament, 50 - 450,
-    **Greek New Testament in Tischendorf 8th Edition**,
+    **Tischendorf 8th Edition**,
     Cody Kingham, Dirk Roorda
 
 ## [Eep Talstra Centre for Bible and Computer](https://github.com/etcbc)
 
 [etcbc/bhsa](https://github.com/etcbc/bhsa)
 :   *Hebrew*
-    Hebrew Bible, 1000 BC - 900 AD,
+    Bible (Old Testament), 1000 BC - 900 AD,
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
     ETCBC + Dirk Roorda
 
@@ -121,13 +111,13 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [etcbc/peshitta](https://github.com/etcbc/peshitta)
 :   *Syriac*
-    Syriac Old Testament, 1000 BC - 900 AD,
+    Peshitta (Old Testament), 1000 BC - 900 AD,
     **Vetus Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
 [etcbc/syrnt](https://github.com/etcbc/syrnt)
 :   *Syriac*
-    Syriac New Testament, 0 - 1000,
+    New Testament, 0 - 1000,
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
@@ -155,7 +145,7 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [Greek Literature](https://nbviewer.jupyter.org/github/pthu/greek_literature/blob/master/tutorial/start.ipynb)
 :   *Greek*
-    [Greek Literature, -400 - +400](https://github.com/pthu/greek_literature),
+    [Literature, -400 - +400](https://github.com/pthu/greek_literature),
     [Perseus Digital Library](https://github.com/PerseusDL/canonical-greekLit) and 
     [Open Greek and Latin Project](https://github.com/OpenGreekAndLatin/First1KGreek)
     The result of a massive conversion effort by Ernst Boogert.

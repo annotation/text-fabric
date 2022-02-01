@@ -108,7 +108,7 @@ you can increase the limit to 5000 calls per hour by making yourself known.
 
 You might want to read this:
 
-* [Read more about rate limiting on Github](https://developer.github.com/v3/#rate-limiting)
+* [Read more about rate limiting on Github](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
 
 How to put your personal access token into an environment variable?
 
@@ -466,7 +466,7 @@ class Repo:
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html/")
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html#github")
 
             self.log(
                 f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
@@ -1244,7 +1244,7 @@ class Checkout(object):
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html/")
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html#github")
 
             self.log(
                 f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
