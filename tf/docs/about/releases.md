@@ -55,6 +55,8 @@ had a bug that caused misalignment if the feature data had explicit `None` value
 That has been fixed. Now it makes no difference anymore whether you save
 feature data where node `n` has value `None`, or where node `n` is absent.
 
+Thanks to Martijn Naaijer for spotting it.
+
 #### 9.2.3
 
 2022-01-31
