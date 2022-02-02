@@ -26,14 +26,13 @@
 <h1 id="a-advanced-api"><code>A.</code> Advanced API</h1>
 <h2 id="initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</h2>
 <dl>
-<dt><pre><code>A = use('org/repo', volume=None, collection=None, hoist=globals())
+<dt><pre><code>A = use('org/repo')
 </code></pre></dt>
 <dd>
-<p>start up and load the work or one of its volumes.
-See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.volumes</a></code>.</p>
+<p>start up and load a corpus from a repository and deliver its API.</p>
 </dd>
 <dd>
-<p><code><a title="tf.app.use" href="app.html#tf.app.use">use()</a></code></p>
+<p>See <code><a title="tf.about.usefunc" href="about/usefunc.html">tf.about.usefunc</a></code></p>
 </dd>
 <dt><pre><code>A.load(features)
 </code></pre></dt>
@@ -1338,7 +1337,7 @@ Clients are defined in the <code>app-{dataset}</code> repo, under <code>layereds
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c4f4ad7c8d2233b3ae8603deaa8ddc1a50d3e06/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md

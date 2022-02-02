@@ -35,12 +35,9 @@ the corpus data, but a bit of nudging will usually improve the results of displa
 structures of the corpus.</p>
 <p>For a list of current TF-apps, see <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <h2 id="components">Components</h2>
-<p>The <em>official</em> apps are those repos inside
-<a href="https://github.com/annotation">annotation</a>
-whose names start with <code>app-</code>.
-The part after the <code>app-</code> is the name of the app.</p>
-<p>But you can also create apps on your system and work with them.</p>
-<p>Each TF-<em>app</em> consists of a folder <code>code</code> with:</p>
+<p>Apps usually reside in a subdirectory <code>app</code> of a repository that holds the corpus data.
+Apps can be trivial, completely empty even.</p>
+<p>Each TF-<em>app</em> consists of a folder with these items, all optional:</p>
 <h3 id="static">static</h3>
 <p>A folder with styles, fonts and logos, to be used by web servers such as the the
 text-fabric browser, see <code><a title="tf.server.web" href="../server/web.html">tf.server.web</a></code>.</p>
@@ -73,28 +70,8 @@ name, so the Python importer will not conflate them.</p>
 The example is taken from the <code>uruk</code> app, which loads
 two modules, <code>atf</code> and <code>image</code>.</p>
 </div>
-<p><code>atf</code> is a bunch of functions that enrich the api of the app.
-The <code>atf</code> module contains a function that adds all these functions
-to an object:
-<a href="https://github.com/annotation/app-uruk/blob/master/code/atf.py"><code>atfApi</code></a></p>
-<pre><code class="language-python">from tf.advanced.app import loadModule
-
-class TfApp(App):
-    def __init__(app, *args, silent=False, **kwargs):
-        app.transform_ctype = types.MethodType(transform_ctype, app)
-        app.transform_prime = types.MethodType(transform_prime, app)
-        app.transform_atf = types.MethodType(transform_atf, app)
-
-        atf = loadModule(&quot;atf&quot;, *args)
-        atf.atfApi(app)
-        app.atf = atf
-        super().__init__(*args, silent=silent, **kwargs)
-        app.image = loadModule(&quot;image&quot;, *args)
-
-        app.image.getImagery(app, silent, checkout=kwargs.get(&quot;checkout&quot;, &quot;&quot;))
-
-        app.reinit()
-</code></pre>
+<p>See for example the
+<a href="https://github.com/Nino-cunei/uruk/tree/master/app">app in the Uruk corpus</a>.</p>
 <p>The place to put the <code>loadModule()</code> calls is in the <code>__init()__</code> method of the
 <code>TfApp</code> object, before the call to <code>super().__init()</code>.
 Here the name of the app and the path to the code directory of the
@@ -133,7 +110,7 @@ by a call to an IPython display method, or by returning raw HTML.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c4f4ad7c8d2233b3ae8603deaa8ddc1a50d3e06/tf/about/apps.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/about/apps.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/apps.md

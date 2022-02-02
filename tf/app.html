@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>tf.app API documentation</title>
-<meta name="description" content="Start the advanced API of TF …" />
+<meta name="description" content="Make use of a corpus …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,31 +23,32 @@
 <h1 class="title">Module <code>tf.app</code></h1>
 </header>
 <section id="section-intro">
-<p>Start the advanced API of TF.</p>
+<p>Make use of a corpus.</p>
 <p>The advanced-API provides extra functionality of top of the core of TF.
-The most notable things are donwloading corpus data and methods for (pretty)
+The most notable things are downloading corpus data and methods for (pretty)
 display corpus material.</p>
 <p>The real power of the advanced API is unleashed when there are well-tuned configuration
 settings for a corpus, and possibly some supporting application code and CSS styling.</p>
-<p>Depending on the settings, the advanced-API knows how to download the data,
-and can be invoked by a simple incantation: <code><a title="tf.app.use" href="#tf.app.use">use()</a></code>.</p>
+<p>This power can be invoked by a very simple command: <code>use("org/repo")</code>.</p>
+<p>For a detailed description, see <code><a title="tf.about.usefunc" href="about/usefunc.html">tf.about.usefunc</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c4f4ad7c8d2233b3ae8603deaa8ddc1a50d3e06/tf/app.py#L1-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/app.py#L1-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Start the advanced API of TF.
+Make use of a corpus.
 
 The advanced-API provides extra functionality of top of the core of TF.
-The most notable things are donwloading corpus data and methods for (pretty)
+The most notable things are downloading corpus data and methods for (pretty)
 display corpus material.
 
 The real power of the advanced API is unleashed when there are well-tuned configuration
 settings for a corpus, and possibly some supporting application code and CSS styling.
 
-Depending on the settings, the advanced-API knows how to download the data,
-and can be invoked by a simple incantation: `use`.
+This power can be invoked by a very simple command: `use(&#34;org/repo&#34;)`.
+
+For a detailed description, see `tf.about.usefunc`.
 &#34;&#34;&#34;
 
 from .advanced.app import findApp
@@ -56,103 +57,23 @@ from .advanced.app import findApp
 
 
 def use(appName, *args, **kwargs):
-    &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
+    &#34;&#34;&#34;Make use of a corpus.
 
-    Hint: think of the `use {database}` statements in MySQL and MongoDb.
-
-    Without further arguments, this will set up an TF core API
-    with most features loaded, wrapped in an corpus-specific advanced API.
-
-    !!! note &#34;Start up sequence&#34;
-        During start-up the following happens:
-
-        1.  the corpus data may be downloaded to your `~/text-fabric-data` directory,
-            if not already present there;
-        2.  if your data has been freshly downloaded,
-            a series of optimizations is executed;
-        3.  most features of the corpus are loaded into memory.
-        4.  the data is inspected to derive configuration information for the
-            advanced API; if present, additional settings, code and styling is loaded.
+    For a detailed description, see `tf.about.usefunc`.
 
     Parameters
     ----------
     appName: string
-        Name of the corpus, or a local directory.
-        Used to find the appropriate TF app, if there is one, or else the tf data.
-
-        To load a TF-app (which will load the associated data):
-
-        * `use(&#34;app:full/path/to/tf/app&#34;, ...)` :
-          find a TF app under `full/path/to/tf/app`;
-          if not present, fail;
-          you cannot add any `:` specifiers;
-        * `use(&#34;org/repo&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, download it from GitHub
-        * `use(&#34;org/repo:latest&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, fetch it from GitHub;
-          if GitHub has a newer release, fetch it from GitHub
-        * `use(&#34;org/repo:local&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, fail
-        * `use(&#34;org/repo:clone&#34;, ...)` :
-          find a TF app under `~/github/`*org*`/`*repo*`/app`
-        * `use(&#34;org/repo/xx/yy/zz&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/xx/yy/zz`;
-          you can add `:local`, `:clone`, etc., with the same meaning as above;
-
-        There is also a legacy method for TF-apps that are hosted in `app-`*xxx* repos
-        under the `annotation` organization:
-
-        * `use(&#34;corpus&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/annotation/app-`*corpus*;
-          if not present, download it from GitHub
-          you can add `:local`, `:clone`, etc., behind `corpus`
-          with the same meaning as above;
-
-        !!! note &#34;Versions&#34;
-            In all of the above cases, the data resides in version
-            directories. The configuration of the TF-app specifies
-            which version will be used. You can override that by passing
-            the optional argument `version=&#34;x.y.z&#34;`.
-
-        To load TF data, without an associated TF-app (a generic TF app
-        with default settings will be used):
-
-        * `use(&#34;data:full/path/to/tf/data/version&#34;, ...)` :
-          find TF data under `full/path/to/tf/data/version`;
-          if not present, fail;
-          you cannot add any `:` specifiers;
-        * `use(&#34;data:org/repo/tf:latest&#34;, ...)` :
-          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
-          if not present, fetch it from GitHub;
-          if GitHub has a newer release, fetch it from GitHub
-        * `use(&#34;data:org/repo/tf:local&#34;, ...)` :
-          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
-          if not present, fail
-        * `use(&#34;data:org/repo/tf:clone&#34;, ...)` :
-          find TF data under `~/github/`*org*`/`*repo*`/tf`
-          if not present, fail
-
-        !!! note &#34;Versions&#34;
-            Since we do not have a TF-app that specifies the version in this case,
-            you must either:
-
-            *   specify the paths so that they include the version directory
-            *   specify the path to the parent of the version directories
-                and pass `version=&#34;x.y.z&#34;
+    checkout: string, optional `&#34;&#34;`
+    version: string, optional None
 
     args:
         Do not pass any other positional argument!
 
     kwargs:
-        See `tf.advanced.app.App`.
-        In any case, either an object of class `tf.advanced.app.App`
-        or a corpus-specific derived class `TfAPP` of it is initialized
-        with the remaining parameters.
-        Head over to there for a discription of those parameters, including more
-        about *appName*.
+        Used to initialize the TF-app that we use.
+        That is either an uncustomized `tf.advanced.app.App` or
+        a customization of it.
 
     Returns
     -------
@@ -161,7 +82,7 @@ def use(appName, *args, **kwargs):
 
     See Also
     --------
-    tf.advanced.app.App.reuse
+    tf.advanced.app.App
     &#34;&#34;&#34;
 
     if appName.startswith(&#34;data:&#34;):
@@ -192,216 +113,53 @@ def use(appName, *args, **kwargs):
 <span>def <span class="ident">use</span></span>(<span>appName, *args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Make use of a corpus by offering the advanced API to access it.</p>
-<p>Hint: think of the <code>use {database}</code> statements in MySQL and MongoDb.</p>
-<p>Without further arguments, this will set up an TF core API
-with most features loaded, wrapped in an corpus-specific advanced API.</p>
-<div class="admonition note">
-<p class="admonition-title">Start up sequence</p>
-<p>During start-up the following happens:</p>
-<ol>
-<li>the corpus data may be downloaded to your <code>~/text-fabric-data</code> directory,
-if not already present there;</li>
-<li>if your data has been freshly downloaded,
-a series of optimizations is executed;</li>
-<li>most features of the corpus are loaded into memory.</li>
-<li>the data is inspected to derive configuration information for the
-advanced API; if present, additional settings, code and styling is loaded.</li>
-</ol>
-</div>
+<div class="desc"><p>Make use of a corpus.</p>
+<p>For a detailed description, see <code><a title="tf.about.usefunc" href="about/usefunc.html">tf.about.usefunc</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
-<dd>
-<p>Name of the corpus, or a local directory.
-Used to find the appropriate TF app, if there is one, or else the tf data.</p>
-<p>To load a TF-app (which will load the associated data):</p>
-<ul>
-<li><code>use("app:full/path/to/tf/app", ...)</code> :
-find a TF app under <code>full/path/to/tf/app</code>;
-if not present, fail;
-you cannot add any <code>:</code> specifiers;</li>
-<li><code>use("org/repo", ...)</code> :
-find a TF app under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/app</code>;
-if not present, download it from GitHub</li>
-<li><code>use("org/repo:latest", ...)</code> :
-find a TF app under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/app</code>;
-if not present, fetch it from GitHub;
-if GitHub has a newer release, fetch it from GitHub</li>
-<li><code>use("org/repo:local", ...)</code> :
-find a TF app under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/app</code>;
-if not present, fail</li>
-<li><code>use("org/repo:clone", ...)</code> :
-find a TF app under <code>~/github/</code><em>org</em><code>/</code><em>repo</em><code>/app</code></li>
-<li><code>use("org/repo/xx/yy/zz", ...)</code> :
-find a TF app under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/xx/yy/zz</code>;
-you can add <code>:local</code>, <code>:clone</code>, etc., with the same meaning as above;</li>
-</ul>
-<p>There is also a legacy method for TF-apps that are hosted in <code>app-</code><em>xxx</em> repos
-under the <code>annotation</code> organization:</p>
-<ul>
-<li><code>use("corpus", ...)</code> :
-find a TF app under <code>~/text-fabric-data/annotation/app-</code><em>corpus</em>;
-if not present, download it from GitHub
-you can add <code>:local</code>, <code>:clone</code>, etc., behind <code>corpus</code>
-with the same meaning as above;</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Versions</p>
-<p>In all of the above cases, the data resides in version
-directories. The configuration of the TF-app specifies
-which version will be used. You can override that by passing
-the optional argument <code>version="x.y.z"</code>.</p>
-</div>
-<p>To load TF data, without an associated TF-app (a generic TF app
-with default settings will be used):</p>
-<ul>
-<li><code>use("data:full/path/to/tf/data/version", ...)</code> :
-find TF data under <code>full/path/to/tf/data/version</code>;
-if not present, fail;
-you cannot add any <code>:</code> specifiers;</li>
-<li><code>use("data:org/repo/tf:latest", ...)</code> :
-find TF data under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/tf</code>;
-if not present, fetch it from GitHub;
-if GitHub has a newer release, fetch it from GitHub</li>
-<li><code>use("data:org/repo/tf:local", ...)</code> :
-find TF data under <code>~/text-fabric-data/</code><em>org</em><code>/</code><em>repo</em><code>/tf</code>;
-if not present, fail</li>
-<li><code>use("data:org/repo/tf:clone", ...)</code> :
-find TF data under <code>~/github/</code><em>org</em><code>/</code><em>repo</em><code>/tf</code>
-if not present, fail</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Versions</p>
-<p>Since we do not have a TF-app that specifies the version in this case,
-you must either:</p>
-<ul>
-<li>specify the paths so that they include the version directory</li>
-<li>specify the path to the parent of the version directories
-and pass `version="x.y.z"</li>
-</ul>
-</div>
-</dd>
+<dd>&nbsp;</dd>
+<dt><strong><code>checkout</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>&nbsp;</dd>
 </dl>
 <p>args:
 Do not pass any other positional argument!</p>
 <p>kwargs:
-See <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>.
-In any case, either an object of class <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code>
-or a corpus-specific derived class <code>TfAPP</code> of it is initialized
-with the remaining parameters.
-Head over to there for a discription of those parameters, including more
-about <em>appName</em>.</p>
+Used to initialize the TF-app that we use.
+That is either an uncustomized <code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code> or
+a customization of it.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>A</code></strong> :&ensp;<code>object</code></dt>
 <dd>The object whose attributes and methods constitute the advanced API.</dd>
 </dl>
 <h2 id="see-also">See Also</h2>
-<p><code><a title="tf.advanced.app.App.reuse" href="advanced/app.html#tf.advanced.app.App.reuse">App.reuse()</a></code></p></div>
+<p><code><a title="tf.advanced.app.App" href="advanced/app.html#tf.advanced.app.App">App</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6c4f4ad7c8d2233b3ae8603deaa8ddc1a50d3e06/tf/app.py#L20-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/app.py#L21-L64" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, **kwargs):
-    &#34;&#34;&#34;Make use of a corpus by offering the advanced API to access it.
+    &#34;&#34;&#34;Make use of a corpus.
 
-    Hint: think of the `use {database}` statements in MySQL and MongoDb.
-
-    Without further arguments, this will set up an TF core API
-    with most features loaded, wrapped in an corpus-specific advanced API.
-
-    !!! note &#34;Start up sequence&#34;
-        During start-up the following happens:
-
-        1.  the corpus data may be downloaded to your `~/text-fabric-data` directory,
-            if not already present there;
-        2.  if your data has been freshly downloaded,
-            a series of optimizations is executed;
-        3.  most features of the corpus are loaded into memory.
-        4.  the data is inspected to derive configuration information for the
-            advanced API; if present, additional settings, code and styling is loaded.
+    For a detailed description, see `tf.about.usefunc`.
 
     Parameters
     ----------
     appName: string
-        Name of the corpus, or a local directory.
-        Used to find the appropriate TF app, if there is one, or else the tf data.
-
-        To load a TF-app (which will load the associated data):
-
-        * `use(&#34;app:full/path/to/tf/app&#34;, ...)` :
-          find a TF app under `full/path/to/tf/app`;
-          if not present, fail;
-          you cannot add any `:` specifiers;
-        * `use(&#34;org/repo&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, download it from GitHub
-        * `use(&#34;org/repo:latest&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, fetch it from GitHub;
-          if GitHub has a newer release, fetch it from GitHub
-        * `use(&#34;org/repo:local&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/app`;
-          if not present, fail
-        * `use(&#34;org/repo:clone&#34;, ...)` :
-          find a TF app under `~/github/`*org*`/`*repo*`/app`
-        * `use(&#34;org/repo/xx/yy/zz&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/`*org*`/`*repo*`/xx/yy/zz`;
-          you can add `:local`, `:clone`, etc., with the same meaning as above;
-
-        There is also a legacy method for TF-apps that are hosted in `app-`*xxx* repos
-        under the `annotation` organization:
-
-        * `use(&#34;corpus&#34;, ...)` :
-          find a TF app under `~/text-fabric-data/annotation/app-`*corpus*;
-          if not present, download it from GitHub
-          you can add `:local`, `:clone`, etc., behind `corpus`
-          with the same meaning as above;
-
-        !!! note &#34;Versions&#34;
-            In all of the above cases, the data resides in version
-            directories. The configuration of the TF-app specifies
-            which version will be used. You can override that by passing
-            the optional argument `version=&#34;x.y.z&#34;`.
-
-        To load TF data, without an associated TF-app (a generic TF app
-        with default settings will be used):
-
-        * `use(&#34;data:full/path/to/tf/data/version&#34;, ...)` :
-          find TF data under `full/path/to/tf/data/version`;
-          if not present, fail;
-          you cannot add any `:` specifiers;
-        * `use(&#34;data:org/repo/tf:latest&#34;, ...)` :
-          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
-          if not present, fetch it from GitHub;
-          if GitHub has a newer release, fetch it from GitHub
-        * `use(&#34;data:org/repo/tf:local&#34;, ...)` :
-          find TF data under `~/text-fabric-data/`*org*`/`*repo*`/tf`;
-          if not present, fail
-        * `use(&#34;data:org/repo/tf:clone&#34;, ...)` :
-          find TF data under `~/github/`*org*`/`*repo*`/tf`
-          if not present, fail
-
-        !!! note &#34;Versions&#34;
-            Since we do not have a TF-app that specifies the version in this case,
-            you must either:
-
-            *   specify the paths so that they include the version directory
-            *   specify the path to the parent of the version directories
-                and pass `version=&#34;x.y.z&#34;
+    checkout: string, optional `&#34;&#34;`
+    version: string, optional None
 
     args:
         Do not pass any other positional argument!
 
     kwargs:
-        See `tf.advanced.app.App`.
-        In any case, either an object of class `tf.advanced.app.App`
-        or a corpus-specific derived class `TfAPP` of it is initialized
-        with the remaining parameters.
-        Head over to there for a discription of those parameters, including more
-        about *appName*.
+        Used to initialize the TF-app that we use.
+        That is either an uncustomized `tf.advanced.app.App` or
+        a customization of it.
 
     Returns
     -------
@@ -410,7 +168,7 @@ about <em>appName</em>.</p>
 
     See Also
     --------
-    tf.advanced.app.App.reuse
+    tf.advanced.app.App
     &#34;&#34;&#34;
 
     if appName.startswith(&#34;data:&#34;):
