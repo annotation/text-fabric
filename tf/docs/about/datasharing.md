@@ -34,7 +34,7 @@ system, or from GitHub:
 text-fabric bhsa --mod=etcbc/valence/tf
 ```
 
-See the incantation in `tf.app.use`.
+See the incantation in `tf.about.usefunc`.
 
 ## Using old data and apps
 

@@ -18,14 +18,10 @@ For a list of current TF-apps, see `tf.about.corpora`.
 
 ## Components
 
-The *official* apps are those repos inside 
-[annotation](https://github.com/annotation)
-whose names start with `app-`.
-The part after the `app-` is the name of the app.
+Apps usually reside in a subdirectory `app` of a repository that holds the corpus data.
+Apps can be trivial, completely empty even.
 
-But you can also create apps on your system and work with them.
-
-Each TF-*app* consists of a folder `code` with:
+Each TF-*app* consists of a folder with these items, all optional:
 
 ### static
 
@@ -67,30 +63,8 @@ to be imported by `app.py`, you can put them in this same directory.
     The example is taken from the `uruk` app, which loads
     two modules, `atf` and `image`.
 
-`atf` is a bunch of functions that enrich the api of the app.
-The `atf` module contains a function that adds all these functions
-to an object: 
-[`atfApi`](https://github.com/annotation/app-uruk/blob/master/code/atf.py)
-
-```python
-from tf.advanced.app import loadModule
-
-class TfApp(App):
-    def __init__(app, *args, silent=False, **kwargs):
-        app.transform_ctype = types.MethodType(transform_ctype, app)
-        app.transform_prime = types.MethodType(transform_prime, app)
-        app.transform_atf = types.MethodType(transform_atf, app)
-
-        atf = loadModule("atf", *args)
-        atf.atfApi(app)
-        app.atf = atf
-        super().__init__(*args, silent=silent, **kwargs)
-        app.image = loadModule("image", *args)
-
-        app.image.getImagery(app, silent, checkout=kwargs.get("checkout", ""))
-
-        app.reinit()
-```
+See for example the
+[app in the Uruk corpus](https://github.com/Nino-cunei/uruk/tree/master/app).
 
 The place to put the `loadModule()` calls is in the `__init()__` method of the
 `TfApp` object, before the call to `super().__init()`.

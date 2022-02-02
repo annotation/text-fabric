@@ -3,11 +3,10 @@
 ## Initialisation, configuration, meta data, and linking
 
 ```
-A = use('org/repo', volume=None, collection=None, hoist=globals())
+A = use('org/repo')
 ```
-:   start up and load the work or one of its volumes.
-    See also `tf.about.volumes`.
-:   `tf.app.use`
+:   start up and load a corpus from a repository and deliver its API.
+:   See `tf.about.usefunc`
 
 ```
 A.load(features)

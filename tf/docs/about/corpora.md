@@ -5,7 +5,6 @@ knows how to download a corpus from GitHub if you specify the *org/repo*.
 
 Most corpora are configured by metadata in a directory *app* in the repo.
 
-
 You can load a corpus into a Python datastructure by
 
 ``` python
@@ -77,7 +76,7 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 :   *Dutch* 
     Dagh Registers Batavia, 1640 - 1641,
     **Daily events at Batavia, Indonesia, historical source for
-    the operation of the Dutch Eaast-Indian Company**,
+    the operation of the Dutch East-Indian Company**,
     Lodewijk Petram, Dirk Roorda.
     *work in progress, currently only volume 4*
 

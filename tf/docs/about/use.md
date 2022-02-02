@@ -1,9 +1,5 @@
 # Usage
 
-Below `xxx` should be replaced by the name of an official
-TF-app, `tf.about.corpora`,
-or a path to an app on your system, or a path to TF dataset on your system.
-
 You can work with the TF-browser or with the TF-API.
 In both cases, the data will be automatically downloaded.
 
@@ -37,6 +33,8 @@ A = use("org/repo")
 
 This `A` is your handle to the 
 advanced API functions (`tf.advanced`).
+
+(More details in `tf.about.usefunc`).
 
 ## Search templates
 

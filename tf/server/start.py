@@ -69,6 +69,29 @@ text-fabric -k ddd
 
 will kill all such processes as far as they are for data source `ddd`.
 
+## Additional arguments
+
+You can direct the loading of corpus data by means of additional arguments,
+analogously to the `use()` command, documented in `tf.about.usefunc`.
+
+The main argument specifies the data source in the same way as the
+first argument of the `use()` function:
+
+*   `org/repo`
+*   `org/repo:specifier`
+*   `app:path/to/app`
+*   `data:path/to/data`
+
+The following arguments of the `use()` function can be used on the command line,
+prepended with `--`:
+
+*   `--checkout`
+*   `--mod`
+*   `--set`
+*   `--locations`
+*   `--modules`
+*   `--version`
+
 ## Implementation notes
 
 Different corpora will use different ports for the kernel and webserver communication.
@@ -76,7 +99,8 @@ Different corpora will use different ports for the kernel and webserver communic
 The ports are computed from the arguments with which text-fabric is called.
 
 That is done by the [crc32](https://docs.python.org/3.7/library/zlib.html#zlib.crc32) function.
-There is no guarantee that collisions occur, and that the ports computed this way are free.
+There is no guarantee that collisions occur,
+and that the ports computed this way are free.
 So we will look for the first available port after this.
 
 On the whole, the following things are fairly well taken care of:
@@ -87,13 +111,13 @@ On the whole, the following things are fairly well taken care of:
 In particular, the following invocations lead to different ports:
 
 ```sh
-text-fabric banks
+text-fabric annotation/banks
 ```
 
 and
 
 ```
-text-fabric banks:clone
+text-fabric annotation/banks:clone
 ```
 
 and likewise for all other arguments.
@@ -127,11 +151,11 @@ USAGE
 
 text-fabric --help
 text-fabric -v
-text-fabric -k [app]
-text-fabric -p [app]
+text-fabric -k [org/repo]
+text-fabric -p [org/repo]
 
-text-fabric ./path/to/app --locations=locations-string [--modules=modules-string] args
-text-fabric app[:specifier] args
+text-fabric org/repo
+text-fabric app:/path/to/app --locations=locations-string [--modules=modules-string]
 
 where all args are optional and args have one of these forms:
 
@@ -145,85 +169,19 @@ where all args are optional and args have one of these forms:
 
 EFFECT
 
-If an app is given and the -k and -p flags are not passed,
-a TF kernel for that app is started.
+See https://annotation.github.io/text-fabric/tf/server/start.html
+
+If an org/repo is given and the -k and -p flags are not passed,
+a TF kernel for that org/repo is started.
 When the TF kernel is ready, a web server is started
 serving a website that exposes the data through
 a query interface.
 
 The default browser will be opened, except when -noweb is passed.
 
-Instead of a standard app that is available on https://github.com/annotation
-you can also specify an app you have locally, or no app at all.
-
-
-"" (empty string): no app
-path-to-directory: the directory in which your app resides. This argument
-must have a / inside (e.g. ./myapp).
-The directory may contain zero or more of these app.py, config.yaml, static/display.css
-If they are found, they will be used.
-
-If no app is specified, TF features will be loaded according to the
---locations and --modules args.
-
-For standard apps, the following holds:
-
-:specifier (after the app)
---checkout=specifier
-
-The TF app itself can be downloaded on the fly from GitHub.
-The main data can be downloaded on the fly from GitHub.
-The specifier indicates a point in the history from where the app should be retrieved.
-  :specifier is used for the TF app code.
-  --checkout=specifier is used for the main data.
-
-Specifiers may be:
-  local                 - get the data from your local text-fabric-data directory
-  clone                 - get the data from your local github clone
-  latest                - get the latest release
-  hot                   - get the latest commit
-  tag (e.g. v1.3)       - get specific release
-  hash (e.g. 78a03b...) - get specific commit
-
-No specifier or the empty string means: latest release if there is one, else latest commit.
-
---mod=modules
-
-Optionally, you can pass a comma-separated list of modules.
-Modules are extra sets of features on top op the chosen data source.
-You specify a module by giving the github repository where it is created,
-in the form
-
-  {org}/{repo}/{path}
-  {org}/{repo}/{path}:specifier
-
-where
-  {org} is the github organization,
-  {repo} the name of the repository in that organization
-  {path} the path to the data within that repo.
-  {specifier} points to a release or commit in the history
-
-It is assumed that the data is stored in directories under {path},
-where the directories are named as the versions that exists in the main data source.
-
---set=file
-
-Optionally, you can pass a file name with the definition of custom sets in it.
-This must be a dictionary were the keys are names of sets, and the values
-are node sets.
-This dictionary will be passed to the TF kernel, which will use it when it runs
-queries.
-
-DATA LOADING
-
-Text-Fabric looks for data in ~/text-fabric-data.
-If data is not found there, it first downloads the relevant data from
-github.
-
 MISCELLANEOUS
 
 -noweb Do not start the default browser
-
 
 CLEAN UP
 
