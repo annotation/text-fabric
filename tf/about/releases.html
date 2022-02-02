@@ -56,7 +56,7 @@ To get the newest unstable version:</p>
 <h3 id="90">9.0</h3>
 <h4 id="924">9.2.4</h4>
 <p>2022-02-02</p>
-<p>Bug fix. When writing TF data to file, the function <code>tf.core.data.Data._writeDataTf</code>
+<p>Bug fix. When writing TF data to file, the function <code>_writeDataTf</code> in <code><a title="tf.core.data.Data" href="../core/data.html#tf.core.data.Data">Data</a></code>
 had a bug that caused misalignment if the feature data had explicit <code>None</code> values.
 That has been fixed. Now it makes no difference anymore whether you save
 feature data where node <code>n</code> has value <code>None</code>, or where node <code>n</code> is absent.</p>
@@ -299,7 +299,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ae8c1106e0d61c84aa0b70837767a8e81b878a1f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
