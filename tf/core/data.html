@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L1-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L1-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import gc
@@ -607,6 +607,7 @@ class Data(object):
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
+                print(f&#34;{sets=}&#34;)
                 implicitNode = 1
                 for (value, nset) in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
@@ -629,10 +630,10 @@ class Data(object):
                 implicitNode = 1
                 for n in sorted(data):
                     nodeSpec = &#34;&#34; if n == implicitNode else n
-                    implicitNode = n + 1
                     value = data[n]
                     tfValue = value if value is None else tfFromValue(value)
                     if tfValue is not None:
+                        implicitNode = n + 1
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
                                 nodeSpec,
@@ -739,7 +740,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L33-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L33-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -1288,6 +1289,7 @@ class Data(object):
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
+                print(f&#34;{sets=}&#34;)
                 implicitNode = 1
                 for (value, nset) in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
@@ -1310,10 +1312,10 @@ class Data(object):
                 implicitNode = 1
                 for n in sorted(data):
                     nodeSpec = &#34;&#34; if n == implicitNode else n
-                    implicitNode = n + 1
                     value = data[n]
                     tfValue = value if value is None else tfFromValue(value)
                     if tfValue is not None:
+                        implicitNode = n + 1
                         fh.write(
                             &#34;{}{}{}\n&#34;.format(
                                 nodeSpec,
@@ -1411,7 +1413,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L637-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L638-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1429,7 +1431,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=None, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -1536,7 +1538,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
     tmObj = self.tmObj
@@ -1560,7 +1562,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

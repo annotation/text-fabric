@@ -54,6 +54,12 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
+<h4 id="924">9.2.4</h4>
+<p>2022-02-02</p>
+<p>Bug fix. When writing TF data to file, the function <code>tf.core.data.Data._writeDataTf</code>
+had a bug that caused misalignment if the feature data had explicit <code>None</code> values.
+That has been fixed. Now it makes no difference anymore whether you save
+feature data where node <code>n</code> has value <code>None</code>, or where node <code>n</code> is absent.</p>
 <h4 id="923">9.2.3</h4>
 <p>2022-01-31</p>
 <p>Improvement in app loading: added an argument <code>legacy=True</code> to <code>use()</code>,
@@ -293,7 +299,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bf9d2409025fba80b200c076bcceb6a68c3ee5dc/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/347340b69a2f5ae3e7e27b2da54a5120cf5cc6b0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -367,6 +373,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
+<li><a href="#924">9.2.4</a></li>
 <li><a href="#923">9.2.3</a></li>
 <li><a href="#921-2">9.2.1-2</a></li>
 <li><a href="#92">9.2</a></li>
