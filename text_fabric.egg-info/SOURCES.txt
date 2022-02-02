@@ -315,6 +315,7 @@ tf/about/searchdesign.py
 tf/about/searchusage.py
 tf/about/tests.py
 tf/about/use.py
+tf/about/usefunc.py
 tf/about/volumes.py
 tf/advanced/__init__.py
 tf/advanced/app.py

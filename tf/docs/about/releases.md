@@ -46,6 +46,15 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.2.4
+
+2022-02-02
+
+Bug fix. When writing TF data to file, the function `tf.core.data.Data._writeDataTf`
+had a bug that caused misalignment if the feature data had explicit `None` values.
+That has been fixed. Now it makes no difference anymore whether you save
+feature data where node `n` has value `None`, or where node `n` is absent.
+
 #### 9.2.3
 
 2022-01-31

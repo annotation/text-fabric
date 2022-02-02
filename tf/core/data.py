@@ -577,6 +577,7 @@ class Data(object):
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
+                print(f"{sets=}")
                 implicitNode = 1
                 for (value, nset) in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])
@@ -599,10 +600,10 @@ class Data(object):
                 implicitNode = 1
                 for n in sorted(data):
                     nodeSpec = "" if n == implicitNode else n
-                    implicitNode = n + 1
                     value = data[n]
                     tfValue = value if value is None else tfFromValue(value)
                     if tfValue is not None:
+                        implicitNode = n + 1
                         fh.write(
                             "{}{}{}\n".format(
                                 nodeSpec,
