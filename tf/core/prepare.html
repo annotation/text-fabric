@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L1-L743" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L1-L754" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Precompute data.
@@ -551,7 +551,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each sFeat is the data of a section feature.
 
     Returns
     -------
@@ -574,7 +574,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
-    support = dict(((o[0], (o[2], o[3])) for o in levels))
+    support = {level[0]: (level[2], level[3]) for level in levels}
     sTypes = itemize(otext[&#34;sectionTypes&#34;], &#34;,&#34;)
     sec1 = {}
     sec2 = {}
@@ -614,6 +614,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 ] += 1
                 continue
             n0 = n0s[0]
+
             n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
             if not n1s:
                 nestingProblems[
@@ -621,14 +622,24 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 ] += 1
                 continue
             n1 = n1s[0]
-            n1s = sFeats[1][n1]
-            n2s = sFeats[2][n2]
+
+            n1head = sFeats[1].get(n1, None)
+            if n1head is None:
+                nestingProblems[
+                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
+                ] += 1
+            n2head = sFeats[2].get(n2, None)
+            if n2head is None:
+                nestingProblems[
+                    f&#34;{sTypes[2]}-node {n2} has no section heading&#34;
+                ] += 1
+
             if n0 not in sec1:
                 sec1[n0] = {}
-            if n1s not in sec1[n0]:
-                sec1[n0][n1s] = n1
+            if n1head not in sec1[n0]:
+                sec1[n0][n1head] = n1
                 c1 += 1
-            sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
+            sec2.setdefault(n0, {}).setdefault(n1head, {})[n2head] = n2
             c2 += 1
         info(f&#34;{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed&#34;)
 
@@ -835,7 +846,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L424-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L424-L481" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -929,7 +940,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L370-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L370-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -1028,7 +1039,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L315-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L315-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1126,7 +1137,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L229-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L229-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1271,7 +1282,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1405,7 +1416,7 @@ is still fast.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L114-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L114-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1517,7 +1528,7 @@ is still fast.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L195-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L195-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1584,7 +1595,7 @@ contain the section headings.</p>
 <dt><strong><code>levels</code></strong> :&ensp;<code>array</code></dt>
 <dd>The data of the <em>levels</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
-<dd>Each sFeat the data of a section feature.</dd>
+<dd>Each sFeat is the data of a section feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1608,7 +1619,7 @@ spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L484-L601" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L484-L612" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1642,7 +1653,7 @@ spells out the names of the sections.</p></div>
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each sFeat is the data of a section feature.
 
     Returns
     -------
@@ -1665,7 +1676,7 @@ spells out the names of the sections.</p></div>
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
-    support = dict(((o[0], (o[2], o[3])) for o in levels))
+    support = {level[0]: (level[2], level[3]) for level in levels}
     sTypes = itemize(otext[&#34;sectionTypes&#34;], &#34;,&#34;)
     sec1 = {}
     sec2 = {}
@@ -1705,6 +1716,7 @@ spells out the names of the sections.</p></div>
                 ] += 1
                 continue
             n0 = n0s[0]
+
             n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
             if not n1s:
                 nestingProblems[
@@ -1712,14 +1724,24 @@ spells out the names of the sections.</p></div>
                 ] += 1
                 continue
             n1 = n1s[0]
-            n1s = sFeats[1][n1]
-            n2s = sFeats[2][n2]
+
+            n1head = sFeats[1].get(n1, None)
+            if n1head is None:
+                nestingProblems[
+                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
+                ] += 1
+            n2head = sFeats[2].get(n2, None)
+            if n2head is None:
+                nestingProblems[
+                    f&#34;{sTypes[2]}-node {n2} has no section heading&#34;
+                ] += 1
+
             if n0 not in sec1:
                 sec1[n0] = {}
-            if n1s not in sec1[n0]:
-                sec1[n0][n1s] = n1
+            if n1head not in sec1[n0]:
+                sec1[n0][n1head] = n1
                 c1 += 1
-            sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
+            sec2.setdefault(n0, {}).setdefault(n1head, {})[n2head] = n2
             c2 += 1
         info(f&#34;{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed&#34;)
 
@@ -1789,7 +1811,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/efcf9c5f470b672c9d92674a0d5f946143747119/tf/core/prepare.py#L604-L743" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b97b7a33c1f6d7ca8f98661f59eb90d2e65a0e58/tf/core/prepare.py#L615-L754" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
