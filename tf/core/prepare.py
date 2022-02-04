@@ -513,7 +513,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     levels: array
         The data of the *levels* precompute step.
     sFeats: iterable
-        Each sFeat the data of a section feature.
+        Each sFeat is the data of a section feature.
 
     Returns
     -------
@@ -536,7 +536,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
-    support = dict(((o[0], (o[2], o[3])) for o in levels))
+    support = {level[0]: (level[2], level[3]) for level in levels}
     sTypes = itemize(otext["sectionTypes"], ",")
     sec1 = {}
     sec2 = {}
@@ -576,6 +576,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 ] += 1
                 continue
             n0 = n0s[0]
+
             n1s = tuple(x for x in levUp[n2 - 1] if otype[x - maxSlot - 1] == sTypes[1])
             if not n1s:
                 nestingProblems[
@@ -583,14 +584,24 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 ] += 1
                 continue
             n1 = n1s[0]
-            n1s = sFeats[1][n1]
-            n2s = sFeats[2][n2]
+
+            n1head = sFeats[1].get(n1, None)
+            if n1head is None:
+                nestingProblems[
+                    f"{sTypes[1]}-node {n1} has no section heading"
+                ] += 1
+            n2head = sFeats[2].get(n2, None)
+            if n2head is None:
+                nestingProblems[
+                    f"{sTypes[2]}-node {n2} has no section heading"
+                ] += 1
+
             if n0 not in sec1:
                 sec1[n0] = {}
-            if n1s not in sec1[n0]:
-                sec1[n0][n1s] = n1
+            if n1head not in sec1[n0]:
+                sec1[n0][n1head] = n1
                 c1 += 1
-            sec2.setdefault(n0, {}).setdefault(n1s, {})[n2s] = n2
+            sec2.setdefault(n0, {}).setdefault(n1head, {})[n2head] = n2
             c2 += 1
         info(f"{c1} {sTypes[1]}s and {c2} {sTypes[2]}s indexed")
 

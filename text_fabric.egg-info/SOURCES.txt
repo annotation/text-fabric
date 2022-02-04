@@ -271,6 +271,7 @@ test/query/test.ipynb
 test/query/testOb.ipynb
 test/query/utils.py
 test/varia/clean.ipynb
+test/varia/writetf.ipynb
 test/widgets/Widget List.ipynb
 test/widgets/Widget List.py
 test/widgets/editing.ipynb

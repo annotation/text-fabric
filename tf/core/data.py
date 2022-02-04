@@ -577,7 +577,6 @@ class Data(object):
             if nodeRanges:
                 for n in sorted(data):
                     sets.setdefault(data[n], []).append(n)
-                print(f"{sets=}")
                 implicitNode = 1
                 for (value, nset) in sorted(
                     sets.items(), key=lambda x: (x[1][0], x[1][-1])

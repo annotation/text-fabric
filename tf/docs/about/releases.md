@@ -46,6 +46,16 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.2.5
+
+2022-02-04
+
+When precomputing section data, better error messages are generated
+when section nodes do not have values for the features that are supposed
+to contain their headings.
+
+Removed a debug statement that I left previously.
+
 #### 9.2.4
 
 2022-02-02
