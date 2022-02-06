@@ -43,7 +43,7 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [CenterBLC/LXX](https://github.com/CenterBLC/LXX)
 :   *Greek*
-    [Septuagint](https://en.wikipedia.org/wiki/Septuagint), 300 - 100 BC,
+    [Septuagint](https://en.wikipedia.org/wiki/Septuagint), 300 - 100 BCE,
     **LXX Rahlf's edition 1935 plus additional features by CenterBLC**;
     earliest extant Greek translation of Hebrew Bible books;
     Oliver Glanz, Adrian Negrea
@@ -92,25 +92,25 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 [etcbc/bhsa](https://github.com/etcbc/bhsa)
 :   *Hebrew*
-    Bible (Old Testament), 1000 BC - 900 AD,
+    Bible (Old Testament), 1000 BCE - 900 AD,
     **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
     ETCBC + Dirk Roorda
 
 [etcbc/dhammapada](https://github.com/etcbc/dhammapada)
 :   *Pāli* and *Latin*
-    Ancient Buddhist verses, 300 BC and 1855 AD,
+    Ancient Buddhist verses, 300 BCE and 1855 AD,
     **Transcription with Latin translations based on Viggo Fausbøll's book**,
     Bee Scherer, Yvonne Mataar, Dirk Roorda
 
 [etcbc/dss](https://github.com/etcbc/dss)
 :   *Hebrew*
-    Dead Sea Scrolls, 300 BC - 100 AD,
+    Dead Sea Scrolls, 300 BCE - 100 AD,
     **Transcriptions with morphology based on Martin Abegg's data files**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
 [etcbc/peshitta](https://github.com/etcbc/peshitta)
 :   *Syriac*
-    Peshitta (Old Testament), 1000 BC - 900 AD,
+    Peshitta (Old Testament), 1000 BCE - 900 AD,
     **Vetus Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
@@ -122,21 +122,27 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
+[Nino-cunei/ninmed](https://github.com/Nino-cunei/ninmed)
+:   *Akkadian / cuneiform*
+    Medical Encyclopedia from Nineveh, ca. 800 BCE,
+    **Medical documents with lemma annotations**,
+    Cale Johnson, Dirk Roorda
+
 [Nino-cunei/oldassyrian](https://github.com/Nino-cunei/oldassyrian)
 :   *Akkadian / cuneiform*
-    Old Assyrian documents, 2000 - 1600 BC,
+    Old Assyrian documents, 2000 - 1600 BCE,
     **Documents from Ashur**
     Cale Johnson, Alba de Ridder, Martijn Kokken, Dirk Roorda
 
 [Nino-cunei/oldbabylonian](https://github.com/Nino-cunei/oldbabylonian)
 :   *Akkadian / cuneiform*
-    Old Babylonian letters, 1900 - 1600 BC,
+    Old Babylonian letters, 1900 - 1600 BCE,
     **Altbabylonische Briefe in Umschrift und Übersetzung**,
     Cale Johnson, Dirk Roorda
 
 [Nino-cunei/uruk](https://github.com/Nino-cunei/uruk)
 :   *proto-cuneiform*
-    Uruk, 4000 - 3100 BC,
+    Uruk, 4000 - 3100 BCE,
     **Archaic tablets from Uruk**,
     Cale Johnson, Dirk Roorda
 
