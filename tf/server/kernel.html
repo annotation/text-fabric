@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/kernel.py#L1-L677" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/kernel.py#L1-L684" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -173,6 +173,7 @@ from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
 from ..advanced.helpers import getRowsX
 from ..advanced.tables import compose, composeP, composeT
+from ..advanced.text import specialCharacters
 
 from .command import argKernel
 
@@ -270,6 +271,12 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
+
+        def exposed_characters(self, fmt=None):
+            &#34;&#34;&#34;Delivers the HTML for a widget of hard-to-type characters.&#34;&#34;&#34;
+
+            app = self.app
+            return specialCharacters(app, fmt=fmt, _browse=True)
 
         def exposed_context(self):
             &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;
@@ -777,7 +784,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/kernel.py#L610-L658" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/kernel.py#L617-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -838,7 +845,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/kernel.py#L591-L604" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/kernel.py#L598-L611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -864,7 +871,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/kernel.py#L101-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/kernel.py#L102-L592" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -953,6 +960,12 @@ if __name__ == &#34;__main__&#34;:
 
             app = self.app
             return f&#39;&lt;style type=&#34;text/css&#34;&gt;{app.loadCss()}&lt;/style&gt;&#39;
+
+        def exposed_characters(self, fmt=None):
+            &#34;&#34;&#34;Delivers the HTML for a widget of hard-to-type characters.&#34;&#34;&#34;
+
+            app = self.app
+            return specialCharacters(app, fmt=fmt, _browse=True)
 
         def exposed_context(self):
             &#34;&#34;&#34;Fetches the TF app context settings for the corpus.&#34;&#34;&#34;

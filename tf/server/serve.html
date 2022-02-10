@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L1-L369" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L1-L371" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -355,6 +355,7 @@ def serveAll(web, anything):
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
+    characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
@@ -383,6 +384,7 @@ def serveAll(web, anything):
 
     templateData = dict(
         css=css,
+        characters=characters,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
         options=options,
@@ -420,7 +422,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L302-L369" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L302-L371" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
@@ -442,6 +444,7 @@ def serveAll(web, anything):
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
+    characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = &#34;, &#34;.join(setNames)
@@ -470,6 +473,7 @@ def serveAll(web, anything):
 
     templateData = dict(
         css=css,
+        characters=characters,
         header=f&#34;{appLogo}{header}{tfLogo}&#34;,
         setNames=setNameHtml,
         options=options,
@@ -500,7 +504,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L239-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L239-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     aContext = web.context
@@ -573,7 +577,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -642,7 +646,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -689,7 +693,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -772,7 +776,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42d77fafa0427a5ea11801d04eba4de91965e84c/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ebd6c7f8b59624ef09012a5ffb1b46c24f58e261/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi
