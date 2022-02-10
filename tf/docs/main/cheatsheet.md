@@ -49,6 +49,12 @@ A.isLoaded(features=None)
 ## Displaying
 
 ```
+A.specialCharacters()
+```
+:   show all hard-to-type characters in the corpus in a widget
+:   `tf.advanced.text.specialCharacters`
+
+```
 A.dm(markdownString)
 ```
 :   display markdown string in notebook

@@ -46,6 +46,16 @@ text-fabric appName:hot
 
 ### 9.0
 
+#### 9.3
+
+2022-02-10
+
+The text-Fabric browser now displays hard-to-type characters, depending
+on the text format chosen.
+It is right below the query window.
+From there you can click to copy characters and then paste them in the
+query window.
+
 #### 9.2.5
 
 2022-02-04

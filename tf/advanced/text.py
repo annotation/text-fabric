@@ -1,4 +1,5 @@
 import types
+from textwrap import dedent
 from unicodedata import normalize
 
 from ..core.text import DEFAULT_FORMAT
@@ -34,11 +35,34 @@ def textApi(app):
     app.specialCharacters = types.MethodType(specialCharacters, app)
 
 
-def specialCharacters(app, fmt=None):
+def specialCharacters(app, fmt=None, _browse=False):
+    """Generate a widget for hard to type characters.
+
+    For each text format it is known which characters may occur in the text.
+    Some of those characters may be hard to type because they do not belong
+    to the ASCII range of characters.
+    All those characters will be listed in a widget, so that when you
+    click such a character it is copied to your clipboard.
+    The character will then turn yellow.
+
+    Parameters
+    ----------
+    fmt: string, optional `None`
+        The text format for which you want to display the character widget.
+        If not passed, the default format will be chosen.
+
+    Returns
+    -------
+    html
+        A piece of HTML.
+    """
     if fmt is None:
         fmt = DEFAULT_FORMAT
 
     formats = app.plainFormats
+
+    if fmt.startswith("layout-"):
+        fmt = "text" + fmt.removeprefix("layout")
 
     if fmt not in formats:
         choices = "\n\t".join(formats)
@@ -60,12 +84,21 @@ def specialCharacters(app, fmt=None):
     )
 
     html = []
-    html.append(f"""<p><b>Special characters in <code>{fmt}</code></b>""")
+    extraCls = '" class="ccline"' if _browse else ""
+    html.append(dedent(
+        f"""\
+        <p><b>Special characters in <code>{fmt}</code></b></p>
+        <p{extraCls}>
+        """))
     for c in specials:
         cc = ord(c)
         html.append(
-            """<code class="ccoff" """
+            f"""<code class="ccoff {extraCls}" """
             f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</code>"""
         )
     html.append("""</p>""")
-    return dh("\n".join(html))
+    html = "\n".join(html)
+
+    if _browse:
+        return html
+    return dh(html)

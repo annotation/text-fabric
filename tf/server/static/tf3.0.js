@@ -4,6 +4,17 @@
  *
  */
 
+// character widget
+
+const copyChar = (el, c) => {
+    for (const el of document.getElementsByClassName('ccon')) {
+        el.className = 'ccoff'
+    }
+    el.className = 'ccon'
+    navigator.clipboard.writeText(String.fromCharCode(c))
+}
+window.copyChar = copyChar
+
 const lastJobKey = 'tfLastJob'
 
 const switchMode = m => {
@@ -71,6 +82,7 @@ const modes = () => {
     ensureLoaded('query', 'pages', m)
   }
 }
+
 
 // switch to passage mode after clicking on a result
 

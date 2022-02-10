@@ -319,6 +319,7 @@ def serveAll(web, anything):
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
+    characters = kernelApi.characters(fmt=form["textFormat"])
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = ", ".join(setNames)
@@ -347,6 +348,7 @@ def serveAll(web, anything):
 
     templateData = dict(
         css=css,
+        characters=characters,
         header=f"{appLogo}{header}{tfLogo}",
         setNames=setNameHtml,
         options=options,

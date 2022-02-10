@@ -363,6 +363,14 @@ div.pval {
 .ccon {
   background-color: yellow ! important;
 }
+.ccon,.ccoff {
+  padding-right: 0.1rem;
+  padding-left: 0.1rem;
+}
+.ccline {
+  font-size: xx-large;
+  font-weight: bold;
+}
 /* TF header */
 
 summary {

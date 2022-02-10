@@ -254,6 +254,7 @@ test/load/test.py
 test/marshal/marshal.ipynb
 test/memory/pack.ipynb
 test/memory/pack.py
+test/memory/problem.ipynb
 test/memory/test.ipynb
 test/memory/testLeak.ipynb
 test/pandas/list.ipynb
@@ -414,6 +415,7 @@ tf/server/web.py
 tf/server/wrap.py
 tf/server/static/.DS_Store
 tf/server/static/base.css
+tf/server/static/chars.js
 tf/server/static/dans.png
 tf/server/static/display.css
 tf/server/static/export.css

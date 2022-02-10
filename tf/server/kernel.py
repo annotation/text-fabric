@@ -88,6 +88,7 @@ from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
 from ..advanced.helpers import getRowsX
 from ..advanced.tables import compose, composeP, composeT
+from ..advanced.text import specialCharacters
 
 from .command import argKernel
 
@@ -185,6 +186,12 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             return f'<style type="text/css">{app.loadCss()}</style>'
+
+        def exposed_characters(self, fmt=None):
+            """Delivers the HTML for a widget of hard-to-type characters."""
+
+            app = self.app
+            return specialCharacters(app, fmt=fmt, _browse=True)
 
         def exposed_context(self):
             """Fetches the TF app context settings for the corpus."""
