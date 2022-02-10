@@ -48,6 +48,8 @@ text-fabric appName:hot
 
 #### 9.3
 
+#### 9.3.0-1
+
 2022-02-10
 
 The text-Fabric browser now displays hard-to-type characters, depending

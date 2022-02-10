@@ -319,7 +319,6 @@ def serveAll(web, anything):
 
     (header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
-    characters = kernelApi.characters(fmt=form["textFormat"])
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     setNamesRep = ", ".join(setNames)
@@ -345,6 +344,8 @@ def serveAll(web, anything):
         chooser[option] = options
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+
+    characters = kernelApi.characters(fmt=form["textFormat"])
 
     templateData = dict(
         css=css,
