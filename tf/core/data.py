@@ -182,24 +182,27 @@ class Data(object):
 
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         dataTypesStr = ", ".join(DATA_TYPES)
         if "valueType" in self.metaData:
             dataType = self.metaData["valueType"]
             if dataType not in DATA_TYPES:
                 error(
-                    f'Unknown @valueType: "{dataType}". Should be one of {dataTypesStr}'
+                    f"{fileName}: Unknown @valueType: {dataType}. "
+                    f"Should be one of {dataTypesStr}"
                 )
                 self.dataType = DATA_TYPES[0]
             else:
                 self.dataType = dataType
         else:
-            error(f"Missing @valueType. Should be one of {dataTypesStr}")
+            error(f"{fileName}: Missing @valueType. Should be one of {dataTypesStr}")
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         path = self.path
         if not os.path.exists(path):
@@ -220,7 +223,7 @@ class Data(object):
                 elif text == "@config":
                     self.isConfig = True
                 else:
-                    error(f"Line {i}: missing @node/@edge/@config")
+                    error(f"{fileName}: Line {i}: missing @node/@edge/@config")
                     fh.close()
                     return False
                 continue
@@ -234,7 +237,7 @@ class Data(object):
                 continue
             else:
                 if text != "":
-                    error(f"Line {i}: missing blank line after metadata")
+                    error(f"{fileName}: Line {i}: missing blank line after metadata")
                     fh.close()
                     return False
                 else:
@@ -249,6 +252,7 @@ class Data(object):
     def _readDataTf(self, fh, firstI):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -337,8 +341,10 @@ class Data(object):
         for kind in errors:
             lnk = len(errors[kind])
             error(
-                "{} in lines {}".format(
-                    kind, ",".join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                "{}: {} in lines {}".format(
+                    fileName,
+                    kind,
+                    ",".join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF]),
                 )
             )
             if lnk > ERROR_CUTOFF:
@@ -515,6 +521,7 @@ class Data(object):
     def _writeDataTf(self, fh, nodeRanges=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         data = self.data
         if type(data) is tuple:
@@ -522,7 +529,7 @@ class Data(object):
             # in case it has been loaded from a binary representation
             fName = self.fileName
             if fName not in {OTYPE, OSLOTS}:
-                error("Data type tuple not suitable for non-WARP feature")
+                error(f"{fileName}: Data type tuple not suitable for non-WARP feature")
                 return False
             maxSlot = data[2] if fName == OTYPE else data[1]
             slotType = data[1] if fName == OTYPE else None
