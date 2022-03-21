@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/advanced/tables.py#L1-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/tables.py#L1-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import RESULT
@@ -227,6 +227,15 @@ def composeP(
 
     Typically invoked when a user of the TF-browser is browsing passages.
     The query is used to highlight its results in the passages that the user is browsing.
+
+    Parameters
+    ----------
+    items: int or list of int
+        A node or list of nodes.
+        Some corpora require a passage to be shown as a pretty display of the section node
+        in question, and then items is a single node.
+        Normally, the items is the list of section nodes one level lower than the
+        section node in question. See *browseContentPretty* in `tf.advanced.settings`.
     &#34;&#34;&#34;
 
     display = app.display
@@ -244,7 +253,7 @@ def composeP(
         return &#34;&#34;
 
     if type(items) is int:
-        return pretty(app, items)
+        return pretty(app, items, **options)
 
     if getx is not None:
         tup = None
@@ -369,7 +378,7 @@ it.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app, tuples, features, position, opened, getx=None, **options,
@@ -473,11 +482,20 @@ it.</p></div>
 <p>Like <code><a title="tf.advanced.tables.composeT" href="#tf.advanced.tables.composeT">composeT()</a></code>, but this is meant to compose the items at section level 2 (verses) within
 an item of section level 1 (chapter) within an item of section level 0 (a book).</p>
 <p>Typically invoked when a user of the TF-browser is browsing passages.
-The query is used to highlight its results in the passages that the user is browsing.</p></div>
+The query is used to highlight its results in the passages that the user is browsing.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>items</code></strong> :&ensp;<code>int</code> or <code>list</code> of <code>int</code></dt>
+<dd>A node or list of nodes.
+Some corpora require a passage to be shown as a pretty display of the section node
+in question, and then items is a single node.
+Normally, the items is the list of section nodes one level lower than the
+section node in question. See <em>browseContentPretty</em> in <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/advanced/tables.py#L182-L258" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/tables.py#L182-L267" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -497,6 +515,15 @@ The query is used to highlight its results in the passages that the user is brow
 
     Typically invoked when a user of the TF-browser is browsing passages.
     The query is used to highlight its results in the passages that the user is browsing.
+
+    Parameters
+    ----------
+    items: int or list of int
+        A node or list of nodes.
+        Some corpora require a passage to be shown as a pretty display of the section node
+        in question, and then items is a single node.
+        Normally, the items is the list of section nodes one level lower than the
+        section node in question. See *browseContentPretty* in `tf.advanced.settings`.
     &#34;&#34;&#34;
 
     display = app.display
@@ -514,7 +541,7 @@ The query is used to highlight its results in the passages that the user is brow
         return &#34;&#34;
 
     if type(items) is int:
-        return pretty(app, items)
+        return pretty(app, items, **options)
 
     if getx is not None:
         tup = None
@@ -569,7 +596,7 @@ in the TF-browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app, features, tuples, opened, getx=None, **options,

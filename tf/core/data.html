@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L1-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L1-L698" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import gc
@@ -212,24 +212,27 @@ class Data(object):
 
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
         if &#34;valueType&#34; in self.metaData:
             dataType = self.metaData[&#34;valueType&#34;]
             if dataType not in DATA_TYPES:
                 error(
-                    f&#39;Unknown @valueType: &#34;{dataType}&#34;. Should be one of {dataTypesStr}&#39;
+                    f&#34;{fileName}: Unknown @valueType: {dataType}. &#34;
+                    f&#34;Should be one of {dataTypesStr}&#34;
                 )
                 self.dataType = DATA_TYPES[0]
             else:
                 self.dataType = dataType
         else:
-            error(f&#34;Missing @valueType. Should be one of {dataTypesStr}&#34;)
+            error(f&#34;{fileName}: Missing @valueType. Should be one of {dataTypesStr}&#34;)
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         path = self.path
         if not os.path.exists(path):
@@ -250,7 +253,7 @@ class Data(object):
                 elif text == &#34;@config&#34;:
                     self.isConfig = True
                 else:
-                    error(f&#34;Line {i}: missing @node/@edge/@config&#34;)
+                    error(f&#34;{fileName}: Line {i}: missing @node/@edge/@config&#34;)
                     fh.close()
                     return False
                 continue
@@ -264,7 +267,7 @@ class Data(object):
                 continue
             else:
                 if text != &#34;&#34;:
-                    error(f&#34;Line {i}: missing blank line after metadata&#34;)
+                    error(f&#34;{fileName}: Line {i}: missing blank line after metadata&#34;)
                     fh.close()
                     return False
                 else:
@@ -279,6 +282,7 @@ class Data(object):
     def _readDataTf(self, fh, firstI):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -367,8 +371,10 @@ class Data(object):
         for kind in errors:
             lnk = len(errors[kind])
             error(
-                &#34;{} in lines {}&#34;.format(
-                    kind, &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                &#34;{}: {} in lines {}&#34;.format(
+                    fileName,
+                    kind,
+                    &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF]),
                 )
             )
             if lnk &gt; ERROR_CUTOFF:
@@ -545,6 +551,7 @@ class Data(object):
     def _writeDataTf(self, fh, nodeRanges=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         data = self.data
         if type(data) is tuple:
@@ -552,7 +559,7 @@ class Data(object):
             # in case it has been loaded from a binary representation
             fName = self.fileName
             if fName not in {OTYPE, OSLOTS}:
-                error(&#34;Data type tuple not suitable for non-WARP feature&#34;)
+                error(f&#34;{fileName}: Data type tuple not suitable for non-WARP feature&#34;)
                 return False
             maxSlot = data[2] if fName == OTYPE else data[1]
             slotType = data[1] if fName == OTYPE else None
@@ -739,7 +746,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L33-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L33-L698" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -893,24 +900,27 @@ class Data(object):
 
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         dataTypesStr = &#34;, &#34;.join(DATA_TYPES)
         if &#34;valueType&#34; in self.metaData:
             dataType = self.metaData[&#34;valueType&#34;]
             if dataType not in DATA_TYPES:
                 error(
-                    f&#39;Unknown @valueType: &#34;{dataType}&#34;. Should be one of {dataTypesStr}&#39;
+                    f&#34;{fileName}: Unknown @valueType: {dataType}. &#34;
+                    f&#34;Should be one of {dataTypesStr}&#34;
                 )
                 self.dataType = DATA_TYPES[0]
             else:
                 self.dataType = dataType
         else:
-            error(f&#34;Missing @valueType. Should be one of {dataTypesStr}&#34;)
+            error(f&#34;{fileName}: Missing @valueType. Should be one of {dataTypesStr}&#34;)
             self.dataType = DATA_TYPES[0]
 
     def _readTf(self, metaOnly=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         path = self.path
         if not os.path.exists(path):
@@ -931,7 +941,7 @@ class Data(object):
                 elif text == &#34;@config&#34;:
                     self.isConfig = True
                 else:
-                    error(f&#34;Line {i}: missing @node/@edge/@config&#34;)
+                    error(f&#34;{fileName}: Line {i}: missing @node/@edge/@config&#34;)
                     fh.close()
                     return False
                 continue
@@ -945,7 +955,7 @@ class Data(object):
                 continue
             else:
                 if text != &#34;&#34;:
-                    error(f&#34;Line {i}: missing blank line after metadata&#34;)
+                    error(f&#34;{fileName}: Line {i}: missing blank line after metadata&#34;)
                     fh.close()
                     return False
                 else:
@@ -960,6 +970,7 @@ class Data(object):
     def _readDataTf(self, fh, firstI):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         errors = collections.defaultdict(list)
         i = firstI
@@ -1048,8 +1059,10 @@ class Data(object):
         for kind in errors:
             lnk = len(errors[kind])
             error(
-                &#34;{} in lines {}&#34;.format(
-                    kind, &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF])
+                &#34;{}: {} in lines {}&#34;.format(
+                    fileName,
+                    kind,
+                    &#34;,&#34;.join(str(ln) for ln in errors[kind][0:ERROR_CUTOFF]),
                 )
             )
             if lnk &gt; ERROR_CUTOFF:
@@ -1226,6 +1239,7 @@ class Data(object):
     def _writeDataTf(self, fh, nodeRanges=False):
         tmObj = self.tmObj
         error = tmObj.error
+        fileName = self.fileName
 
         data = self.data
         if type(data) is tuple:
@@ -1233,7 +1247,7 @@ class Data(object):
             # in case it has been loaded from a binary representation
             fName = self.fileName
             if fName not in {OTYPE, OSLOTS}:
-                error(&#34;Data type tuple not suitable for non-WARP feature&#34;)
+                error(f&#34;{fileName}: Data type tuple not suitable for non-WARP feature&#34;)
                 return False
             maxSlot = data[2] if fName == OTYPE else data[1]
             slotType = data[1] if fName == OTYPE else None
@@ -1411,7 +1425,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L637-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L644-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1429,7 +1443,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=None, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -1536,7 +1550,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
     tmObj = self.tmObj
@@ -1560,7 +1574,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

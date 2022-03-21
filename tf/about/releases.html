@@ -55,6 +55,14 @@ To get the newest unstable version:</p>
 <h2 id="9">9</h2>
 <h3 id="90">9.0</h3>
 <h4 id="93">9.3</h4>
+<h4 id="932">9.3.2</h4>
+<p>2022-03-21</p>
+<p>Bug in Text-Fabric browser: corpora that show a pretty display for section items instead
+of a list of subsection items (setting <em>browseContentPretty</em> in <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>)
+did not respond to the display options, because in this particular case the options
+were not passed to the <code><a title="tf.advanced.display.pretty" href="../advanced/display.html#tf.advanced.display.pretty">pretty()</a></code> function. That has been
+remedied. The only corpus that makes use of this setting (that I know of) is the
+<a href="https://github.com/Nino-cunei/uruk">Nino-cunei/uruk</a> corpus.</p>
 <h4 id="930-1">9.3.0-1</h4>
 <p>2022-02-10</p>
 <p>The text-Fabric browser now displays hard-to-type characters, depending
@@ -314,7 +322,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d6af602ebce44a87b56390fdabd8d73f8fe0e299/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -389,6 +397,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#9">9</a><ul>
 <li><a href="#90">9.0</a><ul>
 <li><a href="#93">9.3</a></li>
+<li><a href="#932">9.3.2</a></li>
 <li><a href="#930-1">9.3.0-1</a></li>
 <li><a href="#925">9.2.5</a></li>
 <li><a href="#924">9.2.4</a></li>
