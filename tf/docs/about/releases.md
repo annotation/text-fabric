@@ -48,6 +48,17 @@ text-fabric appName:hot
 
 #### 9.3
 
+#### 9.3.2
+
+2022-03-21
+
+Bug in Text-Fabric browser: corpora that show a pretty display for section items instead
+of a list of subsection items (setting *browseContentPretty* in `tf.advanced.settings`)
+did not respond to the display options, because in this particular case the options 
+were not passed to the `tf.advanced.display.pretty()` function. That has been
+remedied. The only corpus that makes use of this setting (that I know of) is the
+[Nino-cunei/uruk](https://github.com/Nino-cunei/uruk) corpus.
+
 #### 9.3.0-1
 
 2022-02-10

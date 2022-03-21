@@ -197,6 +197,15 @@ def composeP(
 
     Typically invoked when a user of the TF-browser is browsing passages.
     The query is used to highlight its results in the passages that the user is browsing.
+
+    Parameters
+    ----------
+    items: int or list of int
+        A node or list of nodes.
+        Some corpora require a passage to be shown as a pretty display of the section node
+        in question, and then items is a single node.
+        Normally, the items is the list of section nodes one level lower than the
+        section node in question. See *browseContentPretty* in `tf.advanced.settings`.
     """
 
     display = app.display
@@ -214,7 +223,7 @@ def composeP(
         return ""
 
     if type(items) is int:
-        return pretty(app, items)
+        return pretty(app, items, **options)
 
     if getx is not None:
         tup = None
