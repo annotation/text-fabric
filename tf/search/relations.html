@@ -27,17 +27,17 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/relations.py#L1-L1690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/relations.py#L1-L1692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search by relational patterns between nodes
 &#34;&#34;&#34;
 
 import collections
-from array import array
 import types
 import re
 from itertools import chain
+from array import array
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.helpers import makeIndex
@@ -215,6 +215,7 @@ def basicRelations(searchExe, api):
                 nmin = n - 1
                 if n &lt; maxSlotP:
                     nA = array(&#34;I&#34;, (n,))
+                    # nA = (n,)
                     yield n
                     for m in ClevUp[nmin]:
                         if Eoslots[m - maxSlotP] == nA:
@@ -224,6 +225,7 @@ def basicRelations(searchExe, api):
                 if len(nSlots) == 1:
                     slot1 = nSlots[0]
                     nA = array(&#34;I&#34;, (slot1,))
+                    # nA = tuple(slot1,)
                     yield n
                     yield slot1
                     for m in ClevUp[nmin]:
@@ -1736,7 +1738,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/relations.py#L1574-L1638" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/relations.py#L1576-L1640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_F_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1813,7 +1815,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/relations.py#L1531-L1571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/relations.py#L1533-L1573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_K_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1866,7 +1868,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/relations.py#L1641-L1690" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/relations.py#L1643-L1692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_V_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1928,7 +1930,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/relations.py#L50-L1528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/relations.py#L50-L1530" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basicRelations(searchExe, api):
     C = api.C
@@ -2067,6 +2069,7 @@ def add_V_Relations(searchExe, varRels):
                 nmin = n - 1
                 if n &lt; maxSlotP:
                     nA = array(&#34;I&#34;, (n,))
+                    # nA = (n,)
                     yield n
                     for m in ClevUp[nmin]:
                         if Eoslots[m - maxSlotP] == nA:
@@ -2076,6 +2079,7 @@ def add_V_Relations(searchExe, varRels):
                 if len(nSlots) == 1:
                     slot1 = nSlots[0]
                     nA = array(&#34;I&#34;, (slot1,))
+                    # nA = tuple(slot1,)
                     yield n
                     yield slot1
                     for m in ClevUp[nmin]:

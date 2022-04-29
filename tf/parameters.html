@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/parameters.py#L1-L268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/parameters.py#L1-L271" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -40,7 +40,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;9.3.2&#39;
+VERSION = &#39;9.4.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -51,7 +51,7 @@ NAME = &#34;Text-Fabric&#34;
 &#34;&#34;&#34;The name of the game: this program.
 &#34;&#34;&#34;
 
-PACK_VERSION = &#34;2&#34;
+PACK_VERSION = &#34;3&#34;
 &#34;&#34;&#34;Data serialization version.
 
 Plain text feature files will be compressed to zipped, pickled datastructures
@@ -291,6 +291,9 @@ TRY_LIMIT_FROM = 40
 TRY_LIMIT_TO = 40
 &#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
 
+SEARCH_FAIL_FACTOR = 4
+&#34;&#34;&#34;Limits fetching of search results to this times maxNode (corpus dependent)&#34;&#34;&#34;
+
 LS = &#34;layeredsearch&#34;
 &#34;&#34;&#34;Directory where layered search code is stored.
 
@@ -486,6 +489,10 @@ files, where <code>{PVN}</code> is the package version number.</p>
 <dd>
 <div class="desc"><p>Link to the Search docs of Text-Fabric.</p></div>
 </dd>
+<dt id="tf.parameters.SEARCH_FAIL_FACTOR"><code class="name">var <span class="ident">SEARCH_FAIL_FACTOR</span></code></dt>
+<dd>
+<div class="desc"><p>Limits fetching of search results to this times maxNode (corpus dependent)</p></div>
+</dd>
 <dt id="tf.parameters.SERVER_DISPLAY"><code class="name">var <span class="ident">SERVER_DISPLAY</span></code></dt>
 <dd>
 <div class="desc"><p>Bunch of TF-generic css files.</p></div>
@@ -665,6 +672,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.RELATIVE" href="#tf.parameters.RELATIVE">RELATIVE</a></code></li>
 <li><code><a title="tf.parameters.REPO" href="#tf.parameters.REPO">REPO</a></code></li>
 <li><code><a title="tf.parameters.SEARCHREF" href="#tf.parameters.SEARCHREF">SEARCHREF</a></code></li>
+<li><code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code></li>
 <li><code><a title="tf.parameters.SERVER_DISPLAY" href="#tf.parameters.SERVER_DISPLAY">SERVER_DISPLAY</a></code></li>
 <li><code><a title="tf.parameters.SERVER_DISPLAY_BASE" href="#tf.parameters.SERVER_DISPLAY_BASE">SERVER_DISPLAY_BASE</a></code></li>
 <li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>

@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L1-L754" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L1-L751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Precompute data.
@@ -49,9 +49,9 @@ the order and nature of the steps is configured in
 The functions in this module implement those tasks.
 &#34;&#34;&#34;
 
-from array import array
 import collections
 import functools
+from array import array
 from .helpers import itemize
 
 
@@ -172,13 +172,8 @@ def order(info, error, otype, oslots, levels):
 
     Returns
     -------
-    array
+    tuple
         All nodes, slot and nonslot, in canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
 
     See Also
     --------
@@ -227,7 +222,8 @@ def order(info, error, otype, oslots, levels):
     canonKey = functools.cmp_to_key(before)
     info(&#34;sorting nodes&#34;)
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
-    return array(&#34;I&#34;, nodes)
+    # return array(&#34;I&#34;, nodes)
+    return tuple(nodes)
 
 
 def rank(info, error, otype, order):
@@ -244,24 +240,20 @@ def rank(info, error, otype, order):
         Method to write error messages to the console.
     otype: iterable
         The data of the *otype* feature.
-    order: array
+    order: tuple
         The data of the *order* feature.
 
     Returns
     -------
-    array
+    tuple
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
     return array(&#34;I&#34;, (nodesRank[n] for n in range(1, maxNode + 1)))
+    # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))
 
 
 def levUp(info, error, otype, oslots, rank):
@@ -282,20 +274,20 @@ def levUp(info, error, otype, oslots, rank):
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The n-th member is an tuple of the embedder nodes of n.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
     !!! hint &#34;Memory efficiency&#34;
-        Many nodes have the same array of embedders.
-        Those embedder arrays will be reused for those nodes.
+        Many nodes have the same tuple of embedders.
+        Those embedder tuples will be reused for those nodes.
 
     Warnings
     --------
@@ -345,7 +337,8 @@ def levUp(info, error, otype, oslots, rank):
     embeddersx = []
     for t in embedders:
         if t not in seen:
-            seen[t] = array(&#34;I&#34;, t)
+            # seen[t] = array(&#34;I&#34;, t)
+            seen[t] = tuple(t)
         embeddersx.append(seen[t])
     return tuple(embeddersx)
 
@@ -368,14 +361,14 @@ def levDown(info, error, otype, levUp, rank):
         The data of the *otype* feature.
     levUp: iterable
         The data of the *levUp* precompute step.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -401,6 +394,7 @@ def levDown(info, error, otype, levUp, rank):
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
             array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)
 
@@ -480,17 +474,17 @@ def boundary(info, error, otype, oslots, rank):
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        *   first: tuple of array
-            The *n*-th member is the array of nodes that start at slot *n*,
+        *   first: tuple of tuple
+            The *n*-th member is the tuple of nodes that start at slot *n*,
             ordered in *reversed* canonical order (`tf.core.nodes`);
-        *   last: tuple of array
-            The *n*-th member is the array of nodes that end at slot *n*,
+        *   last: tuple of tuple
+            The *n*-th member is the tuple of nodes that end at slot *n*,
             ordered in canonical order;
 
     Notes
@@ -503,20 +497,23 @@ def boundary(info, error, otype, oslots, rank):
     oslots = oslots[0]
     firstSlotsD = {}
     lastSlotsD = {}
+
     for (node, slots) in enumerate(oslots):
         realNode = node + 1 + maxSlot
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
-    firstSlots = []
-    lastSlots = []
-    for n in range(1, maxSlot + 1):
-        firstSlots.append(
-            array(&#34;I&#34;, sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
-        )
-        lastSlots.append(
-            array(&#34;I&#34;, sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
-        )
-    return (tuple(firstSlots), tuple(lastSlots))
+
+    firstSlots = tuple(
+        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array(&#34;I&#34;, sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    lastSlots = tuple(
+        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array(&#34;I&#34;, sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    return (firstSlots, lastSlots)
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
@@ -546,9 +543,9 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
-    levels: array
+    levels: tuple
         The data of the *levels* precompute step.
     sFeats: iterable
         Each sFeat is the data of a section feature.
@@ -678,9 +675,9 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
     sFeats: iterable
         Each sFeat the data of a section feature.
@@ -820,7 +817,7 @@ and
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>oslots</em> feature.</dd>
-<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -828,11 +825,11 @@ and
 <dt><code>tuple</code></dt>
 <dd>
 <ul>
-<li>first: tuple of array
-The <em>n</em>-th member is the array of nodes that start at slot <em>n</em>,
+<li>first: tuple of tuple
+The <em>n</em>-th member is the tuple of nodes that start at slot <em>n</em>,
 ordered in <em>reversed</em> canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>);</li>
-<li>last: tuple of array
-The <em>n</em>-th member is the array of nodes that end at slot <em>n</em>,
+<li>last: tuple of tuple
+The <em>n</em>-th member is the tuple of nodes that end at slot <em>n</em>,
 ordered in canonical order;</li>
 </ul>
 </dd>
@@ -846,7 +843,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L424-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L418-L478" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -869,17 +866,17 @@ reversed canonical order?</p>
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        *   first: tuple of array
-            The *n*-th member is the array of nodes that start at slot *n*,
+        *   first: tuple of tuple
+            The *n*-th member is the tuple of nodes that start at slot *n*,
             ordered in *reversed* canonical order (`tf.core.nodes`);
-        *   last: tuple of array
-            The *n*-th member is the array of nodes that end at slot *n*,
+        *   last: tuple of tuple
+            The *n*-th member is the tuple of nodes that end at slot *n*,
             ordered in canonical order;
 
     Notes
@@ -892,20 +889,23 @@ reversed canonical order?</p>
     oslots = oslots[0]
     firstSlotsD = {}
     lastSlotsD = {}
+
     for (node, slots) in enumerate(oslots):
         realNode = node + 1 + maxSlot
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
-    firstSlots = []
-    lastSlots = []
-    for n in range(1, maxSlot + 1):
-        firstSlots.append(
-            array(&#34;I&#34;, sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
-        )
-        lastSlots.append(
-            array(&#34;I&#34;, sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
-        )
-    return (tuple(firstSlots), tuple(lastSlots))</code></pre>
+
+    firstSlots = tuple(
+        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array(&#34;I&#34;, sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    lastSlots = tuple(
+        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array(&#34;I&#34;, sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    return (firstSlots, lastSlots)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.characters"><code class="name flex">
@@ -940,7 +940,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L370-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L364-L415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -1014,14 +1014,14 @@ the level-down data.</p>
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>levUp</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
-<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The <em>n</em>-th member is an array of the embedded nodes of <em>n + maxSlot</em>.
-Those arrays are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
+<dd>The <em>n</em>-th member is an tuple of the embedded nodes of <em>n + maxSlot</em>.
+Those tuples are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
@@ -1039,7 +1039,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L315-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L308-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1059,14 +1059,14 @@ this raw data might be a deal.</p>
         The data of the *otype* feature.
     levUp: iterable
         The data of the *levUp* precompute step.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint &#34;Memory efficiency&#34;
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -1092,6 +1092,7 @@ this raw data might be a deal.</p>
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
             array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)</code></pre>
 </details>
@@ -1114,20 +1115,20 @@ the level-up data.</p>
 <dd>The data of the <em>otype</em> feature.</dd>
 <dt><strong><code>oslots</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>oslots</em> feature.</dd>
-<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
-<dd>The n-th member is an array of the embedder nodes of n.
-Those arrays are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
+<dd>The n-th member is an tuple of the embedder nodes of n.
+Those tuples are sorted in canonical order (<code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code>).</dd>
 </dl>
 <h2 id="notes">Notes</h2>
 <div class="admonition hint">
 <p class="admonition-title">Memory efficiency</p>
-<p>Many nodes have the same array of embedders.
-Those embedder arrays will be reused for those nodes.</p>
+<p>Many nodes have the same tuple of embedders.
+Those embedder tuples will be reused for those nodes.</p>
 </div>
 <h2 id="warnings">Warnings</h2>
 <p>It is not advisable to this data directly by <code>C.levUp.data</code>,
@@ -1137,7 +1138,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L229-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L221-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1157,20 +1158,20 @@ this raw data might be a deal.</p></div>
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The n-th member is an tuple of the embedder nodes of n.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
     !!! hint &#34;Memory efficiency&#34;
-        Many nodes have the same array of embedders.
-        Those embedder arrays will be reused for those nodes.
+        Many nodes have the same tuple of embedders.
+        Those embedder tuples will be reused for those nodes.
 
     Warnings
     --------
@@ -1220,7 +1221,8 @@ this raw data might be a deal.</p></div>
     embeddersx = []
     for t in embedders:
         if t not in seen:
-            seen[t] = array(&#34;I&#34;, t)
+            # seen[t] = array(&#34;I&#34;, t)
+            seen[t] = tuple(t)
         embeddersx.append(seen[t])
     return tuple(embeddersx)</code></pre>
 </details>
@@ -1282,7 +1284,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1402,12 +1404,9 @@ account.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>array</code></dt>
+<dt><code>tuple</code></dt>
 <dd>All nodes, slot and nonslot, in canonical order.</dd>
 </dl>
-<h2 id="notes">Notes</h2>
-<p>We store the result in an array because it saves a lot of memory, and access
-is still fast.</p>
 <h2 id="see-also">See Also</h2>
 <dl>
 <dt><code><a title="tf.core.nodes" href="nodes.html">tf.core.nodes</a></code></dt>
@@ -1416,7 +1415,7 @@ is still fast.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L114-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L114-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1441,13 +1440,8 @@ is still fast.</p>
 
     Returns
     -------
-    array
+    tuple
         All nodes, slot and nonslot, in canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
 
     See Also
     --------
@@ -1496,7 +1490,8 @@ is still fast.</p>
     canonKey = functools.cmp_to_key(before)
     info(&#34;sorting nodes&#34;)
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
-    return array(&#34;I&#34;, nodes)</code></pre>
+    # return array(&#34;I&#34;, nodes)
+    return tuple(nodes)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.rank"><code class="name flex">
@@ -1514,21 +1509,18 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <dd>Method to write error messages to the console.</dd>
 <dt><strong><code>otype</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otype</em> feature.</dd>
-<dt><strong><code>order</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>order</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>order</em> feature.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>array</code></dt>
+<dt><code>tuple</code></dt>
 <dd>The ranks of all nodes, slot and nonslot, with respect to the canonical order.</dd>
-</dl>
-<h2 id="notes">Notes</h2>
-<p>We store the result in an array because it saves a lot of memory, and access
-is still fast.</p></div>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L195-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L191-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1544,24 +1536,20 @@ is still fast.</p></div>
         Method to write error messages to the console.
     otype: iterable
         The data of the *otype* feature.
-    order: array
+    order: tuple
         The data of the *order* feature.
 
     Returns
     -------
-    array
+    tuple
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-    return array(&#34;I&#34;, (nodesRank[n] for n in range(1, maxNode + 1)))</code></pre>
+    return array(&#34;I&#34;, (nodesRank[n] for n in range(1, maxNode + 1)))
+    # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.sections"><code class="name flex">
@@ -1590,9 +1578,9 @@ contain the section headings.</p>
 <dd>The data of the <em>oslots</em> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otext</em> feature.</dd>
-<dt><strong><code>levUp</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levUp</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
-<dt><strong><code>levels</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levels</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>levels</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>Each sFeat is the data of a section feature.</dd>
@@ -1619,7 +1607,7 @@ spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L484-L612" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L481-L609" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1648,9 +1636,9 @@ spells out the names of the sections.</p></div>
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
-    levels: array
+    levels: tuple
         The data of the *levels* precompute step.
     sFeats: iterable
         Each sFeat is the data of a section feature.
@@ -1779,9 +1767,9 @@ contain the section headings.</p>
 <dd>The data of the <em>oslots</em> feature.</dd>
 <dt><strong><code>otext</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>The data of the <em>otext</em> feature.</dd>
-<dt><strong><code>rank</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>rank</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>rank</em> precompute step.</dd>
-<dt><strong><code>levUp</code></strong> :&ensp;<code>array</code></dt>
+<dt><strong><code>levUp</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The data of the <em>levUp</em> precompute step.</dd>
 <dt><strong><code>sFeats</code></strong> :&ensp;<code>iterable</code></dt>
 <dd>Each sFeat the data of a section feature.</dd>
@@ -1811,7 +1799,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/prepare.py#L615-L754" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/prepare.py#L612-L751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
@@ -1841,9 +1829,9 @@ section key.</p></div>
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
     sFeats: iterable
         Each sFeat the data of a section feature.

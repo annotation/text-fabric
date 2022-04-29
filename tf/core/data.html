@@ -26,15 +26,15 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L1-L698" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L1-L699" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
+from array import array
 import gc
 import pickle
 from pickletools import optimize
 import gzip
 import collections
-from array import array
 import time
 from datetime import datetime
 from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL, OTYPE, OSLOTS, OTEXT
@@ -413,6 +413,7 @@ class Data(object):
                 oslots = []
                 for n in nodeList:
                     oslots.append(array(&#34;I&#34;, sorted(data[n])))
+                    # oslots.append(tuple(sorted(data[n])))
                 self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
                 seen = {}
@@ -746,7 +747,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L33-L698" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L33-L699" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -1101,6 +1102,7 @@ class Data(object):
                 oslots = []
                 for n in nodeList:
                     oslots.append(array(&#34;I&#34;, sorted(data[n])))
+                    # oslots.append(tuple(sorted(data[n])))
                 self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
                 seen = {}
@@ -1425,7 +1427,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L644-L646" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L645-L647" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1443,7 +1445,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=None, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -1550,7 +1552,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
     tmObj = self.tmObj
@@ -1574,7 +1576,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

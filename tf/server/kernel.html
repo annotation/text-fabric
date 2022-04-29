@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/server/kernel.py#L1-L684" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L1-L686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -543,7 +543,7 @@ def makeTfKernel(app, appName, port):
             total = 0
 
             results = ()
-            messages = &#34;&#34;
+            messages = (&#34;&#34;, &#34;&#34;)
             if query:
                 (results, messages, features) = (
                     runSearchCondensed(app, query, cache, condenseType)
@@ -551,7 +551,7 @@ def makeTfKernel(app, appName, port):
                     else runSearch(app, query, cache)
                 )
 
-                if messages:
+                if messages[0]:
                     results = ()
                 total += len(results)
 
@@ -583,7 +583,7 @@ def makeTfKernel(app, appName, port):
                 getx=getx,
                 **options,
             )
-            return (table, messages, featureStr, start, total)
+            return (table, &#34; &#34;.join(messages), featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
             &#34;&#34;&#34;Gets query results etc. in plain csv format.
@@ -622,19 +622,21 @@ def makeTfKernel(app, appName, port):
                     pass
 
             queryResults = ()
-            queryMessages = &#34;&#34;
+            queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(app, query, cache)
+                (queryResults, queryMessages, features) = runSearch(
+                    app, query, cache
+                )
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
-                    if not queryMessages and condensed and condenseType
-                    else (None, None, None)
+                    if not queryMessages[0] and condensed and condenseType
+                    else (None, (&#34;&#34;, &#34;&#34;), None)
                 )
 
-                if queryMessages:
+                if queryMessages[0]:
                     queryResults = ()
-                if queryMessagesC:
+                if queryMessagesC[0]:
                     queryResultsC = ()
 
             csvs = (
@@ -660,7 +662,7 @@ def makeTfKernel(app, appName, port):
                 fmt=fmt,
             )
             return (
-                queryMessages,
+                &#34; &#34;.join(queryMessages),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),
@@ -784,7 +786,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/server/kernel.py#L617-L665" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L619-L667" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -845,7 +847,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/server/kernel.py#L598-L611" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L600-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -871,7 +873,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/server/kernel.py#L102-L592" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L102-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -1232,7 +1234,7 @@ if __name__ == &#34;__main__&#34;:
             total = 0
 
             results = ()
-            messages = &#34;&#34;
+            messages = (&#34;&#34;, &#34;&#34;)
             if query:
                 (results, messages, features) = (
                     runSearchCondensed(app, query, cache, condenseType)
@@ -1240,7 +1242,7 @@ if __name__ == &#34;__main__&#34;:
                     else runSearch(app, query, cache)
                 )
 
-                if messages:
+                if messages[0]:
                     results = ()
                 total += len(results)
 
@@ -1272,7 +1274,7 @@ if __name__ == &#34;__main__&#34;:
                 getx=getx,
                 **options,
             )
-            return (table, messages, featureStr, start, total)
+            return (table, &#34; &#34;.join(messages), featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
             &#34;&#34;&#34;Gets query results etc. in plain csv format.
@@ -1311,19 +1313,21 @@ if __name__ == &#34;__main__&#34;:
                     pass
 
             queryResults = ()
-            queryMessages = &#34;&#34;
+            queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(app, query, cache)
+                (queryResults, queryMessages, features) = runSearch(
+                    app, query, cache
+                )
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
-                    if not queryMessages and condensed and condenseType
-                    else (None, None, None)
+                    if not queryMessages[0] and condensed and condenseType
+                    else (None, (&#34;&#34;, &#34;&#34;), None)
                 )
 
-                if queryMessages:
+                if queryMessages[0]:
                     queryResults = ()
-                if queryMessagesC:
+                if queryMessagesC[0]:
                     queryResultsC = ()
 
             csvs = (
@@ -1349,7 +1353,7 @@ if __name__ == &#34;__main__&#34;:
                 fmt=fmt,
             )
             return (
-                queryMessages,
+                &#34; &#34;.join(queryMessages),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),

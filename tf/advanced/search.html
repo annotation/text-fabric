@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/search.py#L1-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/search.py#L1-L209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -35,7 +35,7 @@ Calls from the advanced API to the Search API.
 
 import types
 
-from ..core.helpers import console
+from ..core.helpers import console, wrapMessages
 from .condense import condense
 
 
@@ -43,7 +43,7 @@ def searchApi(app):
     app.search = types.MethodType(search, app)
 
 
-def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -111,6 +111,16 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
         If it is a `False` value, no sorting will be applied.
 
+    limit: integer, optional `None`
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
     !!! hint &#34;search template reference&#34;
         See the search template reference (`tf.about.searchusage`)
 
@@ -130,7 +140,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     wasSilent = isSilent()
 
-    results = S.search(query, sets=sets, shallow=shallow)
+    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)
@@ -201,8 +211,9 @@ def runSearch(app, query, cache):
             for (i, q) in enumerate(qnodes)
         )
     queryResults = tuple(sorted(queryResults))
-    cache[cacheKey] = (queryResults, messages, features)
-    return (queryResults, messages, features)
+    runMessages = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (messages, runMessages), features)
+    return (queryResults, (messages, runMessages), features)
 
 
 def runSearchCondensed(app, query, cache, condenseType):
@@ -252,7 +263,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/search.py#L141-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/search.py#L151-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -286,8 +297,9 @@ and returned.</p>
             for (i, q) in enumerate(qnodes)
         )
     queryResults = tuple(sorted(queryResults))
-    cache[cacheKey] = (queryResults, messages, features)
-    return (queryResults, messages, features)</code></pre>
+    runMessages = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (messages, runMessages), features)
+    return (queryResults, (messages, runMessages), features)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.search.runSearchCondensed"><code class="name flex">
@@ -308,7 +320,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/search.py#L177-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/search.py#L188-L209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -335,7 +347,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 </details>
 </dd>
 <dt id="tf.advanced.search.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>app, query, silent=False, sets=None, shallow=False, sort=True)</span>
+<span>def <span class="ident">search</span></span>(<span>app, query, silent=False, sets=None, shallow=False, sort=True, limit=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Search with some high-level features.</p>
@@ -392,6 +404,16 @@ canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.cor
 returning values, then this key will be used to sort the results.</p>
 <p>If it is a <code>False</code> value, no sorting will be applied.</p>
 </dd>
+<dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>
+<p>If <code>limit</code> is a positive number, it will fetch only that many results.
+If it is negative, 0, None, or absent, it will fetch arbitrary many results.</p>
+<p>!!! caution "there is an upper <em>fail limit</em> for safety reasons.
+The limit is a factor times the max node in your corpus.
+See <code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="../parameters.html#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code>.
+If this <em>fail limit</em> is exceeded in cases where no positive <code>limit</code>
+has been passed, you get a warning message.</p>
+</dd>
 </dl>
 <div class="admonition hint">
 <p class="admonition-title">search template reference</p>
@@ -406,9 +428,9 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/search.py#L15-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/search.py#L15-L148" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+<pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -476,6 +498,16 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
         If it is a `False` value, no sorting will be applied.
 
+    limit: integer, optional `None`
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
     !!! hint &#34;search template reference&#34;
         See the search template reference (`tf.about.searchusage`)
 
@@ -495,7 +527,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
     wasSilent = isSilent()
 
-    results = S.search(query, sets=sets, shallow=shallow)
+    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)
@@ -542,7 +574,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/search.py#L11-L12" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/search.py#L11-L12" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L1-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L1-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search execution management
@@ -39,10 +39,10 @@ from .semantics import semantics
 from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
+from ..parameters import SEARCH_FAIL_FACTOR
 
 
 PROGRESS = 100
-LIMIT = 1000
 
 
 class SearchExe(object):
@@ -81,7 +81,9 @@ class SearchExe(object):
         self.silent = silent
         setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        self._msgCache = (
+            _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        )
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -142,20 +144,38 @@ class SearchExe(object):
             info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
+        api = self.api
+        TF = api.TF
+        F = api.F
+        error = TF.error
+        _msgCache = self._msgCache
+
+        if limit and limit &lt; 0:
+            limit = 0
+
         if not self.good:
             queryResults = set() if self.shallow else []
         elif self.shallow:
             queryResults = self.results
         else:
-            if limit is None:
-                queryResults = self.results()
-            else:
-                queryResults = []
-                for r in self.results():
-                    queryResults.append(r)
-                    if len(queryResults) == limit:
-                        break
-                queryResults = tuple(queryResults)
+            failLimit = limit if limit else SEARCH_FAIL_FACTOR * F.otype.maxNode
+
+            def limitedResults():
+                for (i, result) in enumerate(self.results()):
+                    if i &lt; failLimit:
+                        yield result
+                    else:
+                        if not limit:
+                            error(
+                                f&#34;cut off at {failLimit} results. There are more ...&#34;,
+                                cache=_msgCache,
+                            )
+                        return
+
+            queryResults = (
+                limitedResults() if limit is None else tuple(limitedResults())
+            )
+
         return queryResults
 
     def count(self, progress=None, limit=None):
@@ -165,6 +185,9 @@ class SearchExe(object):
         _msgCache = self._msgCache
         indent = TF.indent
         indent(level=0, reset=True)
+
+        if limit and limit &lt; 0:
+            limit = 0
 
         if not self.good:
             error(
@@ -176,30 +199,37 @@ class SearchExe(object):
 
         if progress is None:
             progress = PROGRESS
-        if limit is None:
-            limit = LIMIT
+
+        if limit:
+            failLimit = limit
+            msg = f&#34; up to {failLimit}&#34;
+        else:
+            failLimit = SEARCH_FAIL_FACTOR * self.api.F.otype.maxNode
+            msg = &#34;&#34;
 
         info(
-            &#34;Counting results per {} up to {} ...&#34;.format(
-                progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
-            ),
+            f&#34;Counting results per {progress}{msg} ...&#34;,
             cache=_msgCache,
         )
         indent(level=1, reset=True)
 
-        i = 0
         j = 0
-        for r in self.results(remap=False):
-            i += 1
+        good = True
+        for (i, r) in enumerate(self.results(remap=False)):
+            if i &gt;= failLimit:
+                if not limit:
+                    good = False
+                break
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=_msgCache)
-            if limit &gt; 0 and i &gt;= limit:
-                break
+                info(i + 1, cache=_msgCache)
 
         indent(level=0)
-        info(f&#34;Done: {i} results&#34;)
+        if good:
+            info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
+        else:
+            error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)
 
     # SHOWING WITH THE SEARCH GRAPH ###
 
@@ -251,7 +281,7 @@ class SearchExe(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L17-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L17-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class SearchExe(object):
     perfParams = {}
@@ -289,7 +319,9 @@ class SearchExe(object):
         self.silent = silent
         setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        self._msgCache = (
+            _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        )
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -350,20 +382,38 @@ class SearchExe(object):
             info(&#34;See S.showPlan() to interpret the results&#34;, tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
+        api = self.api
+        TF = api.TF
+        F = api.F
+        error = TF.error
+        _msgCache = self._msgCache
+
+        if limit and limit &lt; 0:
+            limit = 0
+
         if not self.good:
             queryResults = set() if self.shallow else []
         elif self.shallow:
             queryResults = self.results
         else:
-            if limit is None:
-                queryResults = self.results()
-            else:
-                queryResults = []
-                for r in self.results():
-                    queryResults.append(r)
-                    if len(queryResults) == limit:
-                        break
-                queryResults = tuple(queryResults)
+            failLimit = limit if limit else SEARCH_FAIL_FACTOR * F.otype.maxNode
+
+            def limitedResults():
+                for (i, result) in enumerate(self.results()):
+                    if i &lt; failLimit:
+                        yield result
+                    else:
+                        if not limit:
+                            error(
+                                f&#34;cut off at {failLimit} results. There are more ...&#34;,
+                                cache=_msgCache,
+                            )
+                        return
+
+            queryResults = (
+                limitedResults() if limit is None else tuple(limitedResults())
+            )
+
         return queryResults
 
     def count(self, progress=None, limit=None):
@@ -373,6 +423,9 @@ class SearchExe(object):
         _msgCache = self._msgCache
         indent = TF.indent
         indent(level=0, reset=True)
+
+        if limit and limit &lt; 0:
+            limit = 0
 
         if not self.good:
             error(
@@ -384,30 +437,37 @@ class SearchExe(object):
 
         if progress is None:
             progress = PROGRESS
-        if limit is None:
-            limit = LIMIT
+
+        if limit:
+            failLimit = limit
+            msg = f&#34; up to {failLimit}&#34;
+        else:
+            failLimit = SEARCH_FAIL_FACTOR * self.api.F.otype.maxNode
+            msg = &#34;&#34;
 
         info(
-            &#34;Counting results per {} up to {} ...&#34;.format(
-                progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
-            ),
+            f&#34;Counting results per {progress}{msg} ...&#34;,
             cache=_msgCache,
         )
         indent(level=1, reset=True)
 
-        i = 0
         j = 0
-        for r in self.results(remap=False):
-            i += 1
+        good = True
+        for (i, r) in enumerate(self.results(remap=False)):
+            if i &gt;= failLimit:
+                if not limit:
+                    good = False
+                break
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=_msgCache)
-            if limit &gt; 0 and i &gt;= limit:
-                break
+                info(i + 1, cache=_msgCache)
 
         indent(level=0)
-        info(f&#34;Done: {i} results&#34;)
+        if good:
+            info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
+        else:
+            error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)
 
     # SHOWING WITH THE SEARCH GRAPH ###
 
@@ -457,7 +517,7 @@ class SearchExe(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L20-L22" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L20-L22" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def setPerfParams(cls, params):
@@ -475,7 +535,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L130-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L150-L201" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     TF = self.api.TF
@@ -484,6 +544,9 @@ def setPerfParams(cls, params):
     _msgCache = self._msgCache
     indent = TF.indent
     indent(level=0, reset=True)
+
+    if limit and limit &lt; 0:
+        limit = 0
 
     if not self.good:
         error(
@@ -495,30 +558,37 @@ def setPerfParams(cls, params):
 
     if progress is None:
         progress = PROGRESS
-    if limit is None:
-        limit = LIMIT
+
+    if limit:
+        failLimit = limit
+        msg = f&#34; up to {failLimit}&#34;
+    else:
+        failLimit = SEARCH_FAIL_FACTOR * self.api.F.otype.maxNode
+        msg = &#34;&#34;
 
     info(
-        &#34;Counting results per {} up to {} ...&#34;.format(
-            progress, limit if limit &gt; 0 else &#34; the end of the results&#34;,
-        ),
+        f&#34;Counting results per {progress}{msg} ...&#34;,
         cache=_msgCache,
     )
     indent(level=1, reset=True)
 
-    i = 0
     j = 0
-    for r in self.results(remap=False):
-        i += 1
+    good = True
+    for (i, r) in enumerate(self.results(remap=False)):
+        if i &gt;= failLimit:
+            if not limit:
+                good = False
+            break
         j += 1
         if j == progress:
             j = 0
-            info(i, cache=_msgCache)
-        if limit &gt; 0 and i &gt;= limit:
-            break
+            info(i + 1, cache=_msgCache)
 
     indent(level=0)
-    info(f&#34;Done: {i} results&#34;)</code></pre>
+    if good:
+        info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
+    else:
+        error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)</code></pre>
 </details>
 </dd>
 <dt id="tf.search.searchexe.SearchExe.fetch"><code class="name flex">
@@ -529,23 +599,41 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L113-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L115-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None):
+    api = self.api
+    TF = api.TF
+    F = api.F
+    error = TF.error
+    _msgCache = self._msgCache
+
+    if limit and limit &lt; 0:
+        limit = 0
+
     if not self.good:
         queryResults = set() if self.shallow else []
     elif self.shallow:
         queryResults = self.results
     else:
-        if limit is None:
-            queryResults = self.results()
-        else:
-            queryResults = []
-            for r in self.results():
-                queryResults.append(r)
-                if len(queryResults) == limit:
-                    break
-            queryResults = tuple(queryResults)
+        failLimit = limit if limit else SEARCH_FAIL_FACTOR * F.otype.maxNode
+
+        def limitedResults():
+            for (i, result) in enumerate(self.results()):
+                if i &lt; failLimit:
+                    yield result
+                else:
+                    if not limit:
+                        error(
+                            f&#34;cut off at {failLimit} results. There are more ...&#34;,
+                            cache=_msgCache,
+                        )
+                    return
+
+        queryResults = (
+            limitedResults() if limit is None else tuple(limitedResults())
+        )
+
     return queryResults</code></pre>
 </details>
 </dd>
@@ -557,7 +645,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L60-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L62-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(self, limit=None):
     api = self.api
@@ -579,7 +667,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L178-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L208-L216" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showOuterTemplate(self, _msgCache):
     error = self.api.TF.error
@@ -600,7 +688,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L175-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L205-L206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     displayPlan(self, details=details)</code></pre>
@@ -614,7 +702,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/searchexe.py#L71-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/searchexe.py#L73-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(self, strategy=None):
     api = self.api

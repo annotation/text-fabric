@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/text.py#L1-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/text.py#L1-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from textwrap import dedent
@@ -86,7 +86,7 @@ def specialCharacters(app, fmt=None, _browse=False):
     html
         A piece of HTML.
     &#34;&#34;&#34;
-    if fmt is None:
+    if fmt is None or fmt == &#34;&#34;:
         fmt = DEFAULT_FORMAT
 
     formats = app.plainFormats
@@ -166,7 +166,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/text.py#L38-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/text.py#L38-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specialCharacters(app, fmt=None, _browse=False):
     &#34;&#34;&#34;Generate a widget for hard to type characters.
@@ -189,7 +189,7 @@ If not passed, the default format will be chosen.</dd>
     html
         A piece of HTML.
     &#34;&#34;&#34;
-    if fmt is None:
+    if fmt is None or fmt == &#34;&#34;:
         fmt = DEFAULT_FORMAT
 
     formats = app.plainFormats
@@ -245,7 +245,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/advanced/text.py#L10-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/advanced/text.py#L10-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api

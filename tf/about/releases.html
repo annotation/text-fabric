@@ -53,8 +53,30 @@ To get the newest unstable version:</p>
 </div>
 <hr>
 <h2 id="9">9</h2>
-<h3 id="90">9.0</h3>
-<h4 id="93">9.3</h4>
+<h4 id="940">9.4.0</h4>
+<p>2022-04-29</p>
+<ul>
+<li>
+<p>Preprocessing took a bit too much time.
+The culprit was the computation of boundaries of nodes.
+It could be sped up by changing the data representation somewhat (going from <code>array</code> to <code>tuple</code>)
+in some cases.
+Since the new data representation is incompatible with the previous one, we bumped the internal
+version for that (<code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>).
+That means that Text-Fabric will recompute your precomputed corpus data if needed.</p>
+</li>
+<li>
+<p>If you inadvertently type a query in the text-fabric browser that takes for ever to
+execute, it is difficult to get the tf-browser in a usable state again.
+We have chosen a remedy: we limit the search results to 4 * the maximum node in your corpus.
+This holds for all query execution, also when executed outside the text-fabric browser.</p>
+<p>When outside the text-fabric browser, you can pass the <code>limit</code> parameter to <code>A.search</code> or <code>S.search</code>
+to enforce a different and bigger limit.
+Setting it to <code>None</code> or 0 restores the default of 4 * maxNode.
+You cannot pass custom limits in the text-fabric browser.</p>
+</li>
+</ul>
+<h3 id="94">9.4</h3>
 <h4 id="932">9.3.2</h4>
 <p>2022-03-21</p>
 <p>Bug in Text-Fabric browser: corpora that show a pretty display for section items instead
@@ -70,6 +92,7 @@ on the text format chosen.
 It is right below the query window.
 From there you can click to copy characters and then paste them in the
 query window.</p>
+<h4 id="93">9.3</h4>
 <h4 id="925">9.2.5</h4>
 <p>2022-02-04</p>
 <p>When precomputing section data, better error messages are generated
@@ -317,12 +340,13 @@ out of portions without the need of having the whole work in RAM.</p>
 <li>"tf.compose.nodemaps" has moved to <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code></li>
 <li>"tf.compose.Versions" has moved to <code><a title="tf.dataset.nodemaps.Versions" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions">Versions</a></code></li>
 </ul>
+<h3 id="90">9.0</h3>
 <h2 id="older-releases">Older releases</h2>
 <p>See <code><a title="tf.about.releasesold" href="releasesold.html">tf.about.releasesold</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -395,10 +419,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
-<li><a href="#90">9.0</a><ul>
-<li><a href="#93">9.3</a></li>
+<li><a href="#940">9.4.0</a></li>
+<li><a href="#94">9.4</a><ul>
 <li><a href="#932">9.3.2</a></li>
 <li><a href="#930-1">9.3.0-1</a></li>
+<li><a href="#93">9.3</a></li>
 <li><a href="#925">9.2.5</a></li>
 <li><a href="#924">9.2.4</a></li>
 <li><a href="#923">9.2.3</a></li>
@@ -423,6 +448,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#900">9.0.0</a></li>
 </ul>
 </li>
+<li><a href="#90">9.0</a></li>
 </ul>
 </li>
 <li><a href="#older-releases">Older releases</a></li>

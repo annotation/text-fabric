@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L1-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L1-L530" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search (top-level)
@@ -224,7 +224,15 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
         Returns
         -------
         generator | tuple
@@ -261,6 +269,7 @@ class Search(object):
         queryResults = exe.search(limit=limit)
         if type(_msgCache) is list:
             messages = wrapMessages(_msgCache)
+            self._msgCache = _msgCache
             return (queryResults, messages) if here else (queryResults, messages, exe)
         return queryResults
 
@@ -341,7 +350,16 @@ class Search(object):
         ----------
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
+
         Returns
         -------
         generator | tuple
@@ -401,10 +419,15 @@ class Search(object):
             Every once for every `progress` results a progress message is shown
             when fetching results.
 
-        limit: integer, optional, default `1000`
-            Fetch results up to this `limit`.
-            Setting `limit` to 0 or a negative value means no limit: all results will be
-            counted.
+        limit: integer, optional `None`
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
 
         !!! note &#34;why needed&#34;
             You typically need this in cases where result fetching turns out to
@@ -556,7 +579,7 @@ class Search(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L10-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L10-L530" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34;
@@ -744,7 +767,15 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
         Returns
         -------
         generator | tuple
@@ -781,6 +812,7 @@ class Search(object):
         queryResults = exe.search(limit=limit)
         if type(_msgCache) is list:
             messages = wrapMessages(_msgCache)
+            self._msgCache = _msgCache
             return (queryResults, messages) if here else (queryResults, messages, exe)
         return queryResults
 
@@ -861,7 +893,16 @@ class Search(object):
         ----------
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
+
         Returns
         -------
         generator | tuple
@@ -921,10 +962,15 @@ class Search(object):
             Every once for every `progress` results a progress message is shown
             when fetching results.
 
-        limit: integer, optional, default `1000`
-            Fetch results up to this `limit`.
-            Setting `limit` to 0 or a negative value means no limit: all results will be
-            counted.
+        limit: integer, optional `None`
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution &#34;there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
 
         !!! note &#34;why needed&#34;
             You typically need this in cases where result fetching turns out to
@@ -1071,10 +1117,16 @@ class Search(object):
 <dt><strong><code>progress</code></strong> :&ensp;<code>integer</code>, optional, default <code>100</code></dt>
 <dd>Every once for every <code>progress</code> results a progress message is shown
 when fetching results.</dd>
-<dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional, default <code>1000</code></dt>
-<dd>Fetch results up to this <code>limit</code>.
-Setting <code>limit</code> to 0 or a negative value means no limit: all results will be
-counted.</dd>
+<dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>
+<p>If <code>limit</code> is a positive number, it will fetch only that many results.
+If it is negative, 0, None, or absent, it will fetch arbitrary many results.</p>
+<p>!!! caution "there is an upper <em>fail limit</em> for safety reasons.
+The limit is a factor times the max node in your corpus.
+See <code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="../parameters.html#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code>.
+If this <em>fail limit</em> is exceeded in cases where no positive <code>limit</code>
+has been passed, you get a warning message.</p>
+</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">why needed</p>
@@ -1095,7 +1147,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L361-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L379-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1109,10 +1161,15 @@ on the screen in a series of timed messages.</dd>
         Every once for every `progress` results a progress message is shown
         when fetching results.
 
-    limit: integer, optional, default `1000`
-        Fetch results up to this `limit`.
-        Setting `limit` to 0 or a negative value means no limit: all results will be
-        counted.
+    limit: integer, optional `None`
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
 
     !!! note &#34;why needed&#34;
         You typically need this in cases where result fetching turns out to
@@ -1147,7 +1204,15 @@ on the screen in a series of timed messages.</dd>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
-<dd>If <code>limit</code> is a number, it will fetch only that many results.</dd>
+<dd>
+<p>If <code>limit</code> is a positive number, it will fetch only that many results.
+If it is negative, 0, None, or absent, it will fetch arbitrary many results.</p>
+<p>!!! caution "there is an upper <em>fail limit</em> for safety reasons.
+The limit is a factor times the max node in your corpus.
+See <code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="../parameters.html#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code>.
+If this <em>fail limit</em> is exceeded in cases where no positive <code>limit</code>
+has been passed, you get a warning message.</p>
+</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1184,7 +1249,7 @@ returned as a tuple.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L303-L359" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L312-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1196,7 +1261,16 @@ returned as a tuple.</p>
     ----------
 
     limit: integer, optional `None`
-        If `limit` is a number, it will fetch only that many results.
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
+
     Returns
     -------
     generator | tuple
@@ -1287,7 +1361,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L442-L507" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L465-L530" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1371,7 +1445,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L426-L440" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L449-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1411,7 +1485,15 @@ only the first <em>n</em> members of each tuple is retained.</p>
 <dt><strong><code>sets</code></strong> :&ensp;<code>dict</code></dt>
 <dd>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.</dd>
 <dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
-<dd>If <code>limit</code> is a number, it will fetch only that many results.</dd>
+<dd>
+<p>If <code>limit</code> is a positive number, it will fetch only that many results.
+If it is negative, 0, None, or absent, it will fetch arbitrary many results.</p>
+<p>!!! caution "there is an upper <em>fail limit</em> for safety reasons.
+The limit is a factor times the max node in your corpus.
+See <code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="../parameters.html#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code>.
+If this <em>fail limit</em> is exceeded in cases where no positive <code>limit</code>
+has been passed, you get a warning message.</p>
+</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1434,7 +1516,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L164-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L164-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1468,7 +1550,15 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
         If not `None`, it should be a dictionary of sets, keyed by a names.
 
     limit: integer, optional `None`
-        If `limit` is a number, it will fetch only that many results.
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
     Returns
     -------
     generator | tuple
@@ -1505,6 +1595,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
     queryResults = exe.search(limit=limit)
     if type(_msgCache) is list:
         messages = wrapMessages(_msgCache)
+        self._msgCache = _msgCache
         return (queryResults, messages) if here else (queryResults, messages, exe)
     return queryResults</code></pre>
 </details>
@@ -1531,7 +1622,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L400-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L423-L447" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1608,7 +1699,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L236-L301" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L245-L310" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
@@ -1782,7 +1873,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4578b6dbb5ce8881cd86e590625bd886364cc2b9/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
