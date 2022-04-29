@@ -11,9 +11,9 @@ the order and nature of the steps is configured in
 The functions in this module implement those tasks.
 """
 
-from array import array
 import collections
 import functools
+from array import array
 from .helpers import itemize
 
 
@@ -134,13 +134,8 @@ def order(info, error, otype, oslots, levels):
 
     Returns
     -------
-    array
+    tuple
         All nodes, slot and nonslot, in canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
 
     See Also
     --------
@@ -189,7 +184,8 @@ def order(info, error, otype, oslots, levels):
     canonKey = functools.cmp_to_key(before)
     info("sorting nodes")
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
-    return array("I", nodes)
+    # return array("I", nodes)
+    return tuple(nodes)
 
 
 def rank(info, error, otype, order):
@@ -206,24 +202,20 @@ def rank(info, error, otype, order):
         Method to write error messages to the console.
     otype: iterable
         The data of the *otype* feature.
-    order: array
+    order: tuple
         The data of the *order* feature.
 
     Returns
     -------
-    array
+    tuple
         The ranks of all nodes, slot and nonslot, with respect to the canonical order.
-
-    Notes
-    -----
-    We store the result in an array because it saves a lot of memory, and access
-    is still fast.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
     info("ranking nodes")
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
     return array("I", (nodesRank[n] for n in range(1, maxNode + 1)))
+    # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))
 
 
 def levUp(info, error, otype, oslots, rank):
@@ -244,20 +236,20 @@ def levUp(info, error, otype, oslots, rank):
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The n-th member is an array of the embedder nodes of n.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The n-th member is an tuple of the embedder nodes of n.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     Notes
     -----
     !!! hint "Memory efficiency"
-        Many nodes have the same array of embedders.
-        Those embedder arrays will be reused for those nodes.
+        Many nodes have the same tuple of embedders.
+        Those embedder tuples will be reused for those nodes.
 
     Warnings
     --------
@@ -307,7 +299,8 @@ def levUp(info, error, otype, oslots, rank):
     embeddersx = []
     for t in embedders:
         if t not in seen:
-            seen[t] = array("I", t)
+            # seen[t] = array("I", t)
+            seen[t] = tuple(t)
         embeddersx.append(seen[t])
     return tuple(embeddersx)
 
@@ -330,14 +323,14 @@ def levDown(info, error, otype, levUp, rank):
         The data of the *otype* feature.
     levUp: iterable
         The data of the *levUp* precompute step.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        The *n*-th member is an array of the embedded nodes of *n + maxSlot*.
-        Those arrays are sorted in canonical order (`tf.core.nodes`).
+        The *n*-th member is an tuple of the embedded nodes of *n + maxSlot*.
+        Those tuples are sorted in canonical order (`tf.core.nodes`).
 
     !!! hint "Memory efficiency"
         Slot nodes do not have embedded nodes, so they do not have to occupy
@@ -363,6 +356,7 @@ def levDown(info, error, otype, levUp, rank):
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
             array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)
 
@@ -442,17 +436,17 @@ def boundary(info, error, otype, oslots, rank):
         The data of the *otype* feature.
     oslots: iterable
         The data of the *oslots* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
 
     Returns
     -------
     tuple
-        *   first: tuple of array
-            The *n*-th member is the array of nodes that start at slot *n*,
+        *   first: tuple of tuple
+            The *n*-th member is the tuple of nodes that start at slot *n*,
             ordered in *reversed* canonical order (`tf.core.nodes`);
-        *   last: tuple of array
-            The *n*-th member is the array of nodes that end at slot *n*,
+        *   last: tuple of tuple
+            The *n*-th member is the tuple of nodes that end at slot *n*,
             ordered in canonical order;
 
     Notes
@@ -465,20 +459,23 @@ def boundary(info, error, otype, oslots, rank):
     oslots = oslots[0]
     firstSlotsD = {}
     lastSlotsD = {}
+
     for (node, slots) in enumerate(oslots):
         realNode = node + 1 + maxSlot
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
-    firstSlots = []
-    lastSlots = []
-    for n in range(1, maxSlot + 1):
-        firstSlots.append(
-            array("I", sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
-        )
-        lastSlots.append(
-            array("I", sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
-        )
-    return (tuple(firstSlots), tuple(lastSlots))
+
+    firstSlots = tuple(
+        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array("I", sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    lastSlots = tuple(
+        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array("I", sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        for n in range(1, maxSlot + 1)
+    )
+    return (firstSlots, lastSlots)
 
 
 def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
@@ -508,9 +505,9 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
-    levels: array
+    levels: tuple
         The data of the *levels* precompute step.
     sFeats: iterable
         Each sFeat is the data of a section feature.
@@ -640,9 +637,9 @@ def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
         The data of the *oslots* feature.
     otext: iterable
         The data of the *otext* feature.
-    rank: array
+    rank: tuple
         The data of the *rank* precompute step.
-    levUp: array
+    levUp: tuple
         The data of the *levUp* precompute step.
     sFeats: iterable
         Each sFeat the data of a section feature.

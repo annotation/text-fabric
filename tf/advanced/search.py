@@ -4,7 +4,7 @@ Calls from the advanced API to the Search API.
 
 import types
 
-from ..core.helpers import console
+from ..core.helpers import console, wrapMessages
 from .condense import condense
 
 
@@ -12,7 +12,7 @@ def searchApi(app):
     app.search = types.MethodType(search, app)
 
 
-def search(app, query, silent=False, sets=None, shallow=False, sort=True):
+def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
     """Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -80,6 +80,16 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
         If it is a `False` value, no sorting will be applied.
 
+    limit: integer, optional `None`
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution "there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
     !!! hint "search template reference"
         See the search template reference (`tf.about.searchusage`)
 
@@ -99,7 +109,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True):
 
     wasSilent = isSilent()
 
-    results = S.search(query, sets=sets, shallow=shallow)
+    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)
@@ -170,8 +180,9 @@ def runSearch(app, query, cache):
             for (i, q) in enumerate(qnodes)
         )
     queryResults = tuple(sorted(queryResults))
-    cache[cacheKey] = (queryResults, messages, features)
-    return (queryResults, messages, features)
+    runMessages = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (messages, runMessages), features)
+    return (queryResults, (messages, runMessages), features)
 
 
 def runSearchCondensed(app, query, cache, condenseType):

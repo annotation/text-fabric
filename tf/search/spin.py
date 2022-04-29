@@ -135,7 +135,7 @@ def _doQuantifier(searchExe, yarn, atom, quantifier):
         if showQuantifiers:
             indent(level=level + 2, reset=True)
             info(f"{quKind}\n{queryA}", tm=False, cache=_msgCache)
-        aResultTuples = exe.search(limit=-1)
+        aResultTuples = exe.search(limit=0)
         if showQuantifiers:
             indent(level=level + 2)
             info(f"{len(aResultTuples)} matching nodes", cache=_msgCache)

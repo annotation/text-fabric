@@ -327,7 +327,7 @@ def _validation(searchExe):
 
     # check the relational operator token in edges
     # and replace them by an index
-    # in the relations array of known relations
+    # in the relations list of known relations
     qedges = []
     edgesGood = True
 

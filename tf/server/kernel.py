@@ -458,7 +458,7 @@ def makeTfKernel(app, appName, port):
             total = 0
 
             results = ()
-            messages = ""
+            messages = ("", "")
             if query:
                 (results, messages, features) = (
                     runSearchCondensed(app, query, cache, condenseType)
@@ -466,7 +466,7 @@ def makeTfKernel(app, appName, port):
                     else runSearch(app, query, cache)
                 )
 
-                if messages:
+                if messages[0]:
                     results = ()
                 total += len(results)
 
@@ -498,7 +498,7 @@ def makeTfKernel(app, appName, port):
                 getx=getx,
                 **options,
             )
-            return (table, messages, featureStr, start, total)
+            return (table, " ".join(messages), featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
             """Gets query results etc. in plain csv format.
@@ -537,19 +537,21 @@ def makeTfKernel(app, appName, port):
                     pass
 
             queryResults = ()
-            queryMessages = ""
+            queryMessages = ("", "")
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(app, query, cache)
+                (queryResults, queryMessages, features) = runSearch(
+                    app, query, cache
+                )
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
-                    if not queryMessages and condensed and condenseType
-                    else (None, None, None)
+                    if not queryMessages[0] and condensed and condenseType
+                    else (None, ("", ""), None)
                 )
 
-                if queryMessages:
+                if queryMessages[0]:
                     queryResults = ()
-                if queryMessagesC:
+                if queryMessagesC[0]:
                     queryResultsC = ()
 
             csvs = (
@@ -575,7 +577,7 @@ def makeTfKernel(app, appName, port):
                 fmt=fmt,
             )
             return (
-                queryMessages,
+                " ".join(queryMessages),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),

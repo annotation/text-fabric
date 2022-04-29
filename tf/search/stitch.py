@@ -619,7 +619,7 @@ def _stitchResults(searchExe):
     # But we do not have to pass on the stitch as an immutable data structure.
     # We can just keep it as one single mutable datastructure, provided we
     # do something between the two recursive calls above.
-    # Suppose stitch is an array, and in the outer build n elements are filled
+    # Suppose stitch is an list, and in the outer build n elements are filled
     # (the rest contains -1)
     #
     # Then we say

@@ -193,7 +193,15 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution "there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
         Returns
         -------
         generator | tuple
@@ -230,6 +238,7 @@ class Search(object):
         queryResults = exe.search(limit=limit)
         if type(_msgCache) is list:
             messages = wrapMessages(_msgCache)
+            self._msgCache = _msgCache
             return (queryResults, messages) if here else (queryResults, messages, exe)
         return queryResults
 
@@ -310,7 +319,16 @@ class Search(object):
         ----------
 
         limit: integer, optional `None`
-            If `limit` is a number, it will fetch only that many results.
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution "there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
+
+
         Returns
         -------
         generator | tuple
@@ -370,10 +388,15 @@ class Search(object):
             Every once for every `progress` results a progress message is shown
             when fetching results.
 
-        limit: integer, optional, default `1000`
-            Fetch results up to this `limit`.
-            Setting `limit` to 0 or a negative value means no limit: all results will be
-            counted.
+        limit: integer, optional `None`
+            If `limit` is a positive number, it will fetch only that many results.
+            If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+            !!! caution "there is an upper *fail limit* for safety reasons.
+                The limit is a factor times the max node in your corpus.
+                See `tf.parameters.SEARCH_FAIL_FACTOR`.
+                If this *fail limit* is exceeded in cases where no positive `limit`
+                has been passed, you get a warning message.
 
         !!! note "why needed"
             You typically need this in cases where result fetching turns out to

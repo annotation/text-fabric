@@ -8,7 +8,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '9.3.2'
+VERSION = '9.4.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -19,7 +19,7 @@ NAME = "Text-Fabric"
 """The name of the game: this program.
 """
 
-PACK_VERSION = "2"
+PACK_VERSION = "3"
 """Data serialization version.
 
 Plain text feature files will be compressed to zipped, pickled datastructures
@@ -258,6 +258,9 @@ TRY_LIMIT_FROM = 40
 
 TRY_LIMIT_TO = 40
 """Performance parameter in the `tf.search.search` module."""
+
+SEARCH_FAIL_FACTOR = 4
+"""Limits fetching of search results to this times maxNode (corpus dependent)"""
 
 LS = "layeredsearch"
 """Directory where layered search code is stored.

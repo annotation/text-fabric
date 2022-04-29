@@ -44,9 +44,29 @@ text-fabric appName:hot
 
 ## 9
 
-### 9.0
+#### 9.4.0
 
-#### 9.3
+2022-04-29
+
+*   Preprocessing took a bit too much time.
+    The culprit was the computation of boundaries of nodes.
+    It could be sped up by changing the data representation somewhat (going from `array` to `tuple`)
+    in some cases.
+    Since the new data representation is incompatible with the previous one, we bumped the internal
+    version for that (`tf.parameters.PACK_VERSION`).
+    That means that Text-Fabric will recompute your precomputed corpus data if needed.
+
+*   If you inadvertently type a query in the text-fabric browser that takes for ever to 
+    execute, it is difficult to get the tf-browser in a usable state again.
+    We have chosen a remedy: we limit the search results to 4 * the maximum node in your corpus.
+    This holds for all query execution, also when executed outside the text-fabric browser.
+
+    When outside the text-fabric browser, you can pass the `limit` parameter to `A.search` or `S.search`
+    to enforce a different and bigger limit.
+    Setting it to `None` or 0 restores the default of 4 * maxNode.
+    You cannot pass custom limits in the text-fabric browser.
+
+### 9.4
 
 #### 9.3.2
 
@@ -68,6 +88,8 @@ on the text format chosen.
 It is right below the query window.
 From there you can click to copy characters and then paste them in the
 query window.
+
+#### 9.3
 
 #### 9.2.5
 
@@ -385,6 +407,8 @@ out of portions without the need of having the whole work in RAM.
 *   "tf.compose.combine" has been replaced by `tf.volumes.collect`
 *   "tf.compose.nodemaps" has moved to `tf.dataset.nodemaps`
 *   "tf.compose.Versions" has moved to `tf.dataset.nodemaps.Versions`
+
+### 9.0
 
 ## Older releases
 

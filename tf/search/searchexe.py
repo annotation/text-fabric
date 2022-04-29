@@ -8,10 +8,10 @@ from .semantics import semantics
 from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
+from ..parameters import SEARCH_FAIL_FACTOR
 
 
 PROGRESS = 100
-LIMIT = 1000
 
 
 class SearchExe(object):
@@ -50,7 +50,9 @@ class SearchExe(object):
         self.silent = silent
         setSilent(silent)
         self.showQuantifiers = showQuantifiers
-        self._msgCache = _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        self._msgCache = (
+            _msgCache if type(_msgCache) is list else -1 if _msgCache else 0
+        )
         self.good = True
         self.setInfo = setInfo
         basicRelations(self, api)
@@ -111,20 +113,38 @@ class SearchExe(object):
             info("See S.showPlan() to interpret the results", tm=False, cache=_msgCache)
 
     def fetch(self, limit=None):
+        api = self.api
+        TF = api.TF
+        F = api.F
+        error = TF.error
+        _msgCache = self._msgCache
+
+        if limit and limit < 0:
+            limit = 0
+
         if not self.good:
             queryResults = set() if self.shallow else []
         elif self.shallow:
             queryResults = self.results
         else:
-            if limit is None:
-                queryResults = self.results()
-            else:
-                queryResults = []
-                for r in self.results():
-                    queryResults.append(r)
-                    if len(queryResults) == limit:
-                        break
-                queryResults = tuple(queryResults)
+            failLimit = limit if limit else SEARCH_FAIL_FACTOR * F.otype.maxNode
+
+            def limitedResults():
+                for (i, result) in enumerate(self.results()):
+                    if i < failLimit:
+                        yield result
+                    else:
+                        if not limit:
+                            error(
+                                f"cut off at {failLimit} results. There are more ...",
+                                cache=_msgCache,
+                            )
+                        return
+
+            queryResults = (
+                limitedResults() if limit is None else tuple(limitedResults())
+            )
+
         return queryResults
 
     def count(self, progress=None, limit=None):
@@ -134,6 +154,9 @@ class SearchExe(object):
         _msgCache = self._msgCache
         indent = TF.indent
         indent(level=0, reset=True)
+
+        if limit and limit < 0:
+            limit = 0
 
         if not self.good:
             error(
@@ -145,30 +168,37 @@ class SearchExe(object):
 
         if progress is None:
             progress = PROGRESS
-        if limit is None:
-            limit = LIMIT
+
+        if limit:
+            failLimit = limit
+            msg = f" up to {failLimit}"
+        else:
+            failLimit = SEARCH_FAIL_FACTOR * self.api.F.otype.maxNode
+            msg = ""
 
         info(
-            "Counting results per {} up to {} ...".format(
-                progress, limit if limit > 0 else " the end of the results",
-            ),
+            f"Counting results per {progress}{msg} ...",
             cache=_msgCache,
         )
         indent(level=1, reset=True)
 
-        i = 0
         j = 0
-        for r in self.results(remap=False):
-            i += 1
+        good = True
+        for (i, r) in enumerate(self.results(remap=False)):
+            if i >= failLimit:
+                if not limit:
+                    good = False
+                break
             j += 1
             if j == progress:
                 j = 0
-                info(i, cache=_msgCache)
-            if limit > 0 and i >= limit:
-                break
+                info(i + 1, cache=_msgCache)
 
         indent(level=0)
-        info(f"Done: {i} results")
+        if good:
+            info(f"Done: {i + 1} results", cache=_msgCache)
+        else:
+            error(f"cut off at {failLimit} results. There are more ...", cache=_msgCache)
 
     # SHOWING WITH THE SEARCH GRAPH ###
 

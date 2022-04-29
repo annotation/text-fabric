@@ -3,10 +3,10 @@
 """
 
 import collections
-from array import array
 import types
 import re
 from itertools import chain
+from array import array
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.helpers import makeIndex
@@ -184,6 +184,7 @@ def basicRelations(searchExe, api):
                 nmin = n - 1
                 if n < maxSlotP:
                     nA = array("I", (n,))
+                    # nA = (n,)
                     yield n
                     for m in ClevUp[nmin]:
                         if Eoslots[m - maxSlotP] == nA:
@@ -193,6 +194,7 @@ def basicRelations(searchExe, api):
                 if len(nSlots) == 1:
                     slot1 = nSlots[0]
                     nA = array("I", (slot1,))
+                    # nA = tuple(slot1,)
                     yield n
                     yield slot1
                     for m in ClevUp[nmin]:

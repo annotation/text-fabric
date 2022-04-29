@@ -1,10 +1,10 @@
 import os
+from array import array
 import gc
 import pickle
 from pickletools import optimize
 import gzip
 import collections
-from array import array
 import time
 from datetime import datetime
 from ..parameters import PACK_VERSION, PICKLE_PROTOCOL, GZIP_LEVEL, OTYPE, OSLOTS, OTEXT
@@ -383,6 +383,7 @@ class Data(object):
                 oslots = []
                 for n in nodeList:
                     oslots.append(array("I", sorted(data[n])))
+                    # oslots.append(tuple(sorted(data[n])))
                 self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
                 seen = {}

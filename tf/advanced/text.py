@@ -56,7 +56,7 @@ def specialCharacters(app, fmt=None, _browse=False):
     html
         A piece of HTML.
     """
-    if fmt is None:
+    if fmt is None or fmt == "":
         fmt = DEFAULT_FORMAT
 
     formats = app.plainFormats

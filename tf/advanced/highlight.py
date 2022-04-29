@@ -137,7 +137,7 @@ def getPassageHighlights(app, node, query, cache):
         return None
 
     (queryResults, messages, features) = runSearch(app, query, cache)
-    if messages:
+    if messages[0]:
         return None
 
     api = app.api
