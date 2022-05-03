@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L1-L686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e933354a3e7dfd8a5126869b6538a40619237975/tf/server/kernel.py#L1-L686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -662,7 +662,7 @@ def makeTfKernel(app, appName, port):
                 fmt=fmt,
             )
             return (
-                &#34; &#34;.join(queryMessages),
+                &#34; &#34;.join(queryMessages[0]),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),
@@ -786,7 +786,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L619-L667" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e933354a3e7dfd8a5126869b6538a40619237975/tf/server/kernel.py#L619-L667" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -847,7 +847,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L600-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e933354a3e7dfd8a5126869b6538a40619237975/tf/server/kernel.py#L600-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(host, port, timeout):
     class TfConnection(object):
@@ -873,7 +873,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5eee50139f89ee3b2329aeaacd2955bfd2182a57/tf/server/kernel.py#L102-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e933354a3e7dfd8a5126869b6538a40619237975/tf/server/kernel.py#L102-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -1353,7 +1353,7 @@ if __name__ == &#34;__main__&#34;:
                 fmt=fmt,
             )
             return (
-                &#34; &#34;.join(queryMessages),
+                &#34; &#34;.join(queryMessages[0]),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),
