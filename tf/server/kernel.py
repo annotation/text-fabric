@@ -577,7 +577,7 @@ def makeTfKernel(app, appName, port):
                 fmt=fmt,
             )
             return (
-                " ".join(queryMessages),
+                " ".join(queryMessages[0]),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
                 pickle.dumps(queryResultsX),

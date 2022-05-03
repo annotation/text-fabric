@@ -44,6 +44,12 @@ text-fabric appName:hot
 
 ## 9
 
+#### 9.4.1
+
+2022-05-03
+
+Fixed a bug introduced by the previous change which caused a failure in the export from the TF-browser.
+
 #### 9.4.0
 
 2022-04-29

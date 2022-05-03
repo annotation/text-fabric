@@ -179,7 +179,7 @@ def order(info, error, otype, oslots, levels):
             return 1
         am = min(sa - sb)
         bm = min(sb - sa)
-        return -1 if am < bm else 1 if bm < am else None
+        return -1 if am < bm else 1 if bm < am else 0
 
     canonKey = functools.cmp_to_key(before)
     info("sorting nodes")
