@@ -44,6 +44,13 @@ text-fabric appName:hot
 
 ## 9
 
+#### 9.4.2
+
+2022-05-04
+
+The `weblink` function can now also be driven by feature values. See `tf.advanced.settings`
+and look in section `webFeature`.
+
 #### 9.4.1
 
 2022-05-03

@@ -400,6 +400,19 @@ Default:
 
 ---
 
+### `webFeature`
+
+If passed, contains the name of the feature that stores the part of the weblink for
+that node that comes after `webBase`.
+This overrides `webUrl` in that when `webFeature` is present, and a node has a value
+for it, than that value will be used in composing the web link, rather than filling
+the template `webLink` with values from the headings.
+
+Default:
+:   string `null`
+
+---
+
 ### `webHint`
 
 If passed, will be used as hint text when the user hovers over a web link
@@ -473,13 +486,21 @@ Missing values translate to 0 or the empty string.
 If present, `webLink(node)` will use this as a template to generate a url
 to an online edition of the node.
 
-The following place holders will be honoured:
+This may happen in two ways:
 
-*   `{webBase}`: the webBase above
-*   `<1>` : value for section heading 1
-*   `<2>` : value for section heading 2
-*   `<3>` : value for section heading 3
-*   `{version}`: version of the TF resource
+*   From a feature whose name is given in `webFeature` we take the value for node `n`.
+    If that value exists, it will be appended to the value of `webBase` and that
+    will be the link.
+*   If `webFeature` is not given, or if it is given,
+    but the feature has no value for `n`, the web link will be computed from the
+    section headings.
+    The following place holders will be honoured:
+
+    *   `{webBase}`: the webBase above
+    *   `<1>` : value for section heading 1
+    *   `<2>` : value for section heading 2
+    *   `<3>` : value for section heading 3
+    *   `{version}`: version of the TF resource
 
 Default:
 :   string `null`
@@ -992,6 +1013,7 @@ PROVENANCE_DEFAULTS = (
     ("webLang", None),
     ("webLexId", None),
     ("webOffset", None),
+    ("webFeature", None),
     ("webUrl", None),
     ("webUrlZeros", None),
     ("webUrlLex", None),

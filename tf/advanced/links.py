@@ -202,7 +202,7 @@ def webLink(
     !!! hint "Customizable"
         You can customize the behaviour of `webLink()` to the needs of your corpus
         by providing appropriate values in its `config.yaml`, especially for
-        `webBase`, `webLang`, `webOffset`, `webUrl`, `webUrlLex`, and `webHint`.
+        `webBase`, `webLang`, `webOffset`, `webFeature`, `webUrl`, `webUrlLex`, and `webHint`.
 
     Parameters
     ----------
@@ -233,11 +233,13 @@ def webLink(
     T = api.T
     F = api.F
     Fs = api.Fs
+    error = api.TF.error
 
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
     webOffset = aContext.webOffset
+    webFeature = aContext.webFeature
     webUrl = aContext.webUrl
     webUrlZeros = aContext.webUrlZeros or {}
     webUrlLex = aContext.webUrlLex
@@ -266,28 +268,35 @@ def webLink(
         else:
             href = None
     else:
-        if webUrl:
-            href = webUrl
-            headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
-            for (i, heading) in enumerate(headingTuple):
-                defaultOffset = 0 if type(heading) is int else ""
-                offset = (
-                    defaultOffset
-                    if webOffset is None
-                    else webOffset.get(i + 1, {}).get(
-                        headingTuple[i - 1], defaultOffset
+        href = None
+        if webFeature:
+            val = Fs(webFeature).v(n)
+            error(f"{val=}")
+            if val is not None:
+                href = f"{webBase}{val}"
+        if href is None:
+            if webUrl:
+                href = webUrl
+                headingTuple = T.sectionFromNode(n, lang=webLang, fillup=True)
+                for (i, heading) in enumerate(headingTuple):
+                    defaultOffset = 0 if type(heading) is int else ""
+                    offset = (
+                        defaultOffset
+                        if webOffset is None
+                        else webOffset.get(i + 1, {}).get(
+                            headingTuple[i - 1], defaultOffset
+                        )
+                        if i > 0
+                        else defaultOffset
                     )
-                    if i > 0
-                    else defaultOffset
-                )
-                value = "" if heading is None else str(heading + offset)
-                leadingZeros = webUrlZeros.get(i + 1, 0)
-                if 0 < len(value) < leadingZeros:
-                    value = "0" * (leadingZeros - len(value)) + value
+                    value = "" if heading is None else str(heading + offset)
+                    leadingZeros = webUrlZeros.get(i + 1, 0)
+                    if 0 < len(value) < leadingZeros:
+                        value = "0" * (leadingZeros - len(value)) + value
 
-                href = href.replace(f"<{i + 1}>", value)
-        else:
-            href = None
+                    href = href.replace(f"<{i + 1}>", value)
+            else:
+                href = None
 
     if nType in lexTypes:
         if text is None:
