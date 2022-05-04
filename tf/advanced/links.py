@@ -230,10 +230,10 @@ def webLink(
     """
 
     api = app.api
+    TF = api.TF
     T = api.T
     F = api.F
     Fs = api.Fs
-    error = api.TF.error
 
     aContext = app.context
     webBase = aContext.webBase
@@ -270,10 +270,10 @@ def webLink(
     else:
         href = None
         if webFeature:
-            val = Fs(webFeature).v(n)
-            error(f"{val=}")
-            if val is not None:
-                href = f"{webBase}{val}"
+            if TF.isLoaded(webFeature, pretty=False)[webFeature]:
+                val = Fs(webFeature).v(n)
+                if val is not None:
+                    href = f"{webBase}{val}"
         if href is None:
             if webUrl:
                 href = webUrl
