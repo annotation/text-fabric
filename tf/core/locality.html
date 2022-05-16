@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L1-L300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L1-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Local navigation between nodes.
@@ -142,6 +142,9 @@ class Locality(object):
         One node embeds an other if all slots of the latter are contained in the slots
         of the former.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose embedders will be delivered.
         otype: string or set of strings
@@ -184,6 +187,9 @@ class Locality(object):
         Downward nodes of a node are embedded nodes in that node.
         One node is embedded in an other if all slots of the former are contained
         in the slots of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose embeddees will be delivered.
@@ -244,6 +250,9 @@ class Locality(object):
         One node is previous to an other if the last slot of the former just preceeds
         the first slots of the latter.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose previous nodes will be delivered.
         otype: string or set of strings
@@ -288,6 +297,9 @@ class Locality(object):
 
         One node is next to an other if the first slot of the former just follows
         the last slot of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose next nodes will be delivered.
@@ -387,7 +399,7 @@ same words, then that is a case where:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L9-L300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L9-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Locality(object):
     &#34;&#34;&#34;Methods by which you can navigate from a node to its neighborhood.
@@ -494,6 +506,9 @@ same words, then that is a case where:</p>
         One node embeds an other if all slots of the latter are contained in the slots
         of the former.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose embedders will be delivered.
         otype: string or set of strings
@@ -536,6 +551,9 @@ same words, then that is a case where:</p>
         Downward nodes of a node are embedded nodes in that node.
         One node is embedded in an other if all slots of the former are contained
         in the slots of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose embeddees will be delivered.
@@ -596,6 +614,9 @@ same words, then that is a case where:</p>
         One node is previous to an other if the last slot of the former just preceeds
         the first slots of the latter.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose previous nodes will be delivered.
         otype: string or set of strings
@@ -640,6 +661,9 @@ same words, then that is a case where:</p>
 
         One node is next to an other if the first slot of the former just follows
         the last slot of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose next nodes will be delivered.
@@ -692,10 +716,13 @@ same words, then that is a case where:</p>
 <p>Downward nodes of a node are embedded nodes in that node.
 One node is embedded in an other if all slots of the former are contained
 in the slots of the latter.</p>
-<p>node: integer
-The node whose embeddees will be delivered.
-otype: string or set of strings
-See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node whose embeddees will be delivered.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>string</code> or <code>set</code> of <code>strings</code></dt>
+<dd>See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
@@ -710,7 +737,7 @@ may count as embeddee nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L150-L208" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L153-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def d(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *downward* nodes.
@@ -718,6 +745,9 @@ may count as embeddee nodes.</p>
     Downward nodes of a node are embedded nodes in that node.
     One node is embedded in an other if all slots of the former are contained
     in the slots of the latter.
+
+    Parameters
+    ----------
 
     node: integer
         The node whose embeddees will be delivered.
@@ -801,7 +831,7 @@ may count as intersector nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L51-L105" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def i(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *intersecting* nodes
@@ -867,10 +897,13 @@ may count as intersector nodes.</p>
 <div class="desc"><p>Produces an ordered tuple of <em>next</em> nodes.</p>
 <p>One node is next to an other if the first slot of the former just follows
 the last slot of the latter.</p>
-<p>node: integer
-The node whose next nodes will be delivered.
-otype: string or set of strings
-See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node whose next nodes will be delivered.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>string</code> or <code>set</code> of <code>strings</code></dt>
+<dd>See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
@@ -880,13 +913,16 @@ left and big embeddees before right and small embeddees.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L255-L300" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L264-L312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def n(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *next* nodes.
 
     One node is next to an other if the first slot of the former just follows
     the last slot of the latter.
+
+    Parameters
+    ----------
 
     node: integer
         The node whose next nodes will be delivered.
@@ -937,10 +973,13 @@ left and big embeddees before right and small embeddees.</dd>
 <div class="desc"><p>Produces an ordered tuple of <em>previous</em> nodes.</p>
 <p>One node is previous to an other if the last slot of the former just preceeds
 the first slots of the latter.</p>
-<p>node: integer
-The node whose previous nodes will be delivered.
-otype: string or set of strings
-See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node whose previous nodes will be delivered.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>string</code> or <code>set</code> of <code>strings</code></dt>
+<dd>See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
@@ -950,13 +989,16 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L210-L253" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L216-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def p(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *previous* nodes.
 
     One node is previous to an other if the last slot of the former just preceeds
     the first slots of the latter.
+
+    Parameters
+    ----------
 
     node: integer
         The node whose previous nodes will be delivered.
@@ -1006,10 +1048,13 @@ but <em>reversed</em>: right and small embedders before left and big embedders.<
 <p>Upward nodes of a node are embedders of that node.
 One node embeds an other if all slots of the latter are contained in the slots
 of the former.</p>
-<p>node: integer
-The node whose embedders will be delivered.
-otype: string or set of strings
-See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node whose embedders will be delivered.</dd>
+<dt><strong><code>otype</code></strong> :&ensp;<code>string</code> or <code>set</code> of <code>strings</code></dt>
+<dd>See <code><a title="tf.core.locality.Locality" href="#tf.core.locality.Locality">Locality</a></code>.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code> of <code>int</code></dt>
@@ -1025,7 +1070,7 @@ may count as embedder nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/a9e0c3abb83fdc4807f2d1d3918dbb789534634e/tf/core/locality.py#L107-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/locality.py#L107-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def u(self, n, otype=None):
     &#34;&#34;&#34;Produces an ordered tuple of *upward* nodes.
@@ -1033,6 +1078,9 @@ may count as embedder nodes.</p>
     Upward nodes of a node are embedders of that node.
     One node embeds an other if all slots of the latter are contained in the slots
     of the former.
+
+    Parameters
+    ----------
 
     node: integer
         The node whose embedders will be delivered.
