@@ -44,6 +44,12 @@ text-fabric appName:hot
 
 ## 9
 
+#### 9.4.4
+
+2022-05-16
+
+Several minor improvements in various parts of the app.
+
 #### 9.4.2-3
 
 2022-05-04

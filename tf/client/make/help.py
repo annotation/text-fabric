@@ -31,7 +31,7 @@ ship           : performs all build steps:
                  i, config, corpus, client, debug off, publish;
                  if {client} is given, ships this client,
                  otherwise ships all clients for the dataset
-make folder    : performs build steps, but does not increase the version.
+make [folder]  : performs build steps, but does not increase the version.
                  Does not publish, but delivers the app in folder.
                  If folder does not exist, it will be created.
                  If it exists, it will NOT be emptied first.

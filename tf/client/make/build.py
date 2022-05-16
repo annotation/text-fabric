@@ -64,6 +64,7 @@ from importlib import util
 # from tf.fabric import Fabric
 from tf.app import use
 from tf.fabric import Fabric
+from tf.server.command import getPort
 from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath, expanduser
 from tf.parameters import (
     REPO,
@@ -73,12 +74,13 @@ from tf.parameters import (
     URL_NB,
     GH_BASE,
     URL_TFDOC,
-    APP_CONFIG,
+    APP_CONFIG
 )
 
 from .gh import deploy
 from .help import HELP
 
+TEMP = "_temp"
 ZIP_OPTIONS = {"compresslevel": 6, **ZIP_OPTIONS}
 GH = expanduser(GH_BASE)
 
@@ -281,6 +283,7 @@ class Make:
             tutUrl=f"{URL_NB}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
             appDir=f"{GH}/«org»/«searchRepo»",
+            localDir=f"«appDir»/{TEMP}",
             configDir=f"«appDir»/{LS}" if appFolder is None else f"{appFolder}/{LS}",
             lsConfig=f"«configDir»/{APP_CONFIG}",
             clientConfigFile=f"«configDir»/«client»/{APP_CONFIG}",
@@ -298,6 +301,7 @@ class Make:
             index="«htmlInDir»/index.html",
             siteDir="«appDir»/«rel»" if folder is None else folder,
             appClientDir="«siteDir»/«client»",
+            textClientDir="«localDir»/«client»",
             pngOutDir="«appClientDir»/png",
             cssOutDir="«appClientDir»/css",
             htmlOutDir="«siteDir»",
@@ -630,16 +634,21 @@ class Make:
                 continue
 
             visible[level] = {layer: ti[layer].get("visible", False) for layer in ti}
-            layers[level] = {
-                layer: dict(
-                    valueMap=invertMap(ti[layer].get("legend", None)),
+            layers[level] = {}
+
+            for layer in ti:
+                explain = ti[layer].get("explain", None)
+                valueMap = invertMap(ti[layer].get("legend", None))
+                valueMapAcro = type(valueMap) is dict
+                layers[level][layer] = dict(
+                    explain=explain,
+                    valueMap=valueMap,
+                    valueMapAcro=valueMapAcro,
                     tip=ti[layer].get("tip", False),
                     pos=ti[layer]["pos"] or layer,
                     pattern=ti[layer].get("example", ""),
                     description=ti[layer].get("description", ""),
                 )
-                for layer in ti
-            }
 
         for (k, v) in (
             ("ntypesinit", ntypesinit),
@@ -741,6 +750,7 @@ class Make:
         A = self.A
         layerSettings = C.layerSettings
         memSavingMethod = C.memSavingMethod
+        debug = self.debugState == "on"
 
         up = self.up
         recorders = self.recorders
@@ -797,8 +807,15 @@ class Make:
         if not os.path.exists(destData):
             os.makedirs(destData, exist_ok=True)
 
+        if debug:
+            textLoc = C.textClientDir
+            if not os.path.exists(textLoc):
+                os.makedirs(textLoc, exist_ok=True)
+
         def writeDataFile(name, address, thisData, asString=False):
-            path = f"{destData}/{name.lower()}.js"
+            parent = textLoc if debug and asString else destData
+            file = name.lower() + (".txt" if debug and asString else ".js")
+            path = f"{parent}/{file}"
             heading = f"corpusData[{address}] = "
             with open(path, "w") as fh:
                 fh.write(heading)
@@ -814,7 +831,10 @@ class Make:
                         indent=None,
                         separators=(",", ":"),
                     )
-                A.info(f"Data {name} stored in {path}")
+                if asString:
+                    A.info(f"Data {name} also written to {path}")
+                else:
+                    A.info(f"Data {name} stored in {path}")
 
         init = ["var corpusData = {}\n"]
 
@@ -829,6 +849,15 @@ class Make:
                             f'"{partName}"]["{nType}"]["{layer}"',
                             lrData,
                         )
+                if debug and partName == "texts":
+                    for (nType, tpData) in partData.items():
+                        for (layer, lrData) in tpData.items():
+                            writeDataFile(
+                                f"{partName}-{nType}-{layer}",
+                                f'"{partName}"]["{nType}"]["{layer}"',
+                                lrData,
+                                asString=True,
+                            )
             else:
                 writeDataFile(partName, f'"{partName}"', partData)
         with open(C.jsInit, "w") as fh:
@@ -990,6 +1019,8 @@ class Make:
 
         However, if the debugState is on, we skip all steps that are unneccesary
         to see the updated client working.
+        But we do save an extra copy of the texts to the local dir in such a way
+        that they can be easily inspected.
         """
 
         # copy over the static files
@@ -1106,13 +1137,20 @@ class Make:
     def serve(self):
         C = self.C
         os.chdir(C.siteDir)
+        port = getPort(portBase=8000)
+        if port is None:
+            print("Cannot find a free port between 8000 and 8100")
+            return
 
-        console(f"HTTP serving files in {C.siteDir}")
+        console(f"HTTP serving files in {C.siteDir} on port {port}")
         server = Popen(
-            ["python3", "-m", "http.server"], stdout=PIPE, bufsize=1, encoding="utf-8"
+            ["python3", "-m", "http.server", str(port)],
+            stdout=PIPE,
+            bufsize=1,
+            encoding="utf-8",
         )
         sleep(1)
-        webbrowser.open("http://localhost:8000/index.html", new=2, autoraise=True)
+        webbrowser.open(f"http://localhost:{port}/index.html", new=2, autoraise=True)
         stopped = server.poll()
         if not stopped:
             try:
@@ -1230,9 +1268,7 @@ class Make:
 def makeSearchClients(dataset, folder, appFolder, dataDir=None):
     DEBUG_STATE = "off"
 
-    Mk = Make(
-        dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE
-    )
+    Mk = Make(dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE)
     clients = Mk.getAllClients()
     # version = Mk.C.data["version"]
 

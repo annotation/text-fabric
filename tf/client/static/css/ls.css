@@ -236,6 +236,13 @@ button.focus.on {
 button.lyr {
   border: 0.1rem solid var(--black);
 }
+/* the legend of a layer */
+.legend {
+  font-size: small;
+}
+.legend code {
+  font-size: medium;
+}
 /* the xray of a layer */
 tr.xray {
   display: none;

@@ -111,6 +111,9 @@ class Locality(object):
         One node embeds an other if all slots of the latter are contained in the slots
         of the former.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose embedders will be delivered.
         otype: string or set of strings
@@ -153,6 +156,9 @@ class Locality(object):
         Downward nodes of a node are embedded nodes in that node.
         One node is embedded in an other if all slots of the former are contained
         in the slots of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose embeddees will be delivered.
@@ -213,6 +219,9 @@ class Locality(object):
         One node is previous to an other if the last slot of the former just preceeds
         the first slots of the latter.
 
+        Parameters
+        ----------
+
         node: integer
             The node whose previous nodes will be delivered.
         otype: string or set of strings
@@ -257,6 +266,9 @@ class Locality(object):
 
         One node is next to an other if the first slot of the former just follows
         the last slot of the latter.
+
+        Parameters
+        ----------
 
         node: integer
             The node whose next nodes will be delivered.

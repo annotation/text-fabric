@@ -553,11 +553,15 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
                 ] += 1
                 continue
             n0 = n0s[0]
-            n1s = sFeats[1][n1]
+            n1head = sFeats[1].get(n1, None)
+            if n1head is None:
+                nestingProblems[
+                    f"{sTypes[1]}-node {n1} has no section heading"
+                ] += 1
             if n0 not in sec1:
                 sec1[n0] = {}
-            if n1s not in sec1[n0]:
-                sec1[n0][n1s] = n1
+            if n1head not in sec1[n0]:
+                sec1[n0][n1head] = n1
                 c1 += 1
         info(f"{c1} {sTypes[1]}s indexed")
 
