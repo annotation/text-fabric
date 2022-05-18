@@ -26,11 +26,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L1-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L1-L567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
 import re
+from shutil import rmtree
 
 from ..parameters import OMAP
 
@@ -73,6 +74,69 @@ def expandDir(obj, dirName):
 def dirEmpty(target):
     target = normpath(target)
     return not os.path.exists(target) or not os.listdir(target)
+
+
+def clearTree(path):
+    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
+
+    Reason: we want to inspect output in an editor.
+    But if we remove the directories, the editor looses its current directory
+    all the time.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+    &#34;&#34;&#34;
+
+    subdirs = []
+    path = expanduser(path)
+
+    with os.scandir(path) as dh:
+        for (i, entry) in enumerate(dh):
+            name = entry.name
+            if name.startswith(&#34;.&#34;):
+                continue
+            if entry.is_file():
+                os.remove(f&#34;{path}/{name}&#34;)
+            elif entry.is_dir():
+                subdirs.append(name)
+
+    for subdir in subdirs:
+        clearTree(f&#34;{path}/{subdir}&#34;)
+
+
+def initTree(path, fresh=False, gentle=False):
+    &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+
+        If the directory does not exist, it will be created.
+
+    fresh: boolean, optional False
+        If True, existing contents will be removed, more or less gently.
+
+    gentle: boolean, optional False
+        When existing content is removed, only files are recursively removed, not
+        subdirectories.
+    &#34;&#34;&#34;
+
+    path = expanduser(path)
+    exists = os.path.exists(path)
+    if fresh:
+        if exists:
+            if gentle:
+                clearTree(path)
+            else:
+                rmtree(path)
+
+    if not exists:
+        os.makedirs(path, exist_ok=True)
 
 
 LETTER = set(&#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;)
@@ -548,7 +612,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L13-L14" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def abspath(path):
     return normpath(os.path.abspath(path))</code></pre>
@@ -562,7 +626,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L153-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L217-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel(name):
     if not name:
@@ -579,7 +643,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L160-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L224-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check32():
     warn = &#34;&#34;
@@ -600,13 +664,61 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L182-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L246-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanName(name):
     clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
     if clean == &#34;&#34; or not clean[0] in LETTER:
         clean = &#34;x&#34; + clean
     return clean</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.clearTree"><code class="name flex">
+<span>def <span class="ident">clearTree</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove all files from a directory, recursively, but leave subdirs.</p>
+<p>Reason: we want to inspect output in an editor.
+But if we remove the directories, the editor looses its current directory
+all the time.</p>
+<h2 id="parameters">Parameters</h2>
+<p>path:
+The directory in question. A leading <code>~</code> will be expanded to the user's
+home directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L49-L77" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def clearTree(path):
+    &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
+
+    Reason: we want to inspect output in an editor.
+    But if we remove the directories, the editor looses its current directory
+    all the time.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+    &#34;&#34;&#34;
+
+    subdirs = []
+    path = expanduser(path)
+
+    with os.scandir(path) as dh:
+        for (i, entry) in enumerate(dh):
+            name = entry.name
+            if name.startswith(&#34;.&#34;):
+                continue
+            if entry.is_file():
+                os.remove(f&#34;{path}/{name}&#34;)
+            elif entry.is_dir():
+                subdirs.append(name)
+
+    for subdir in subdirs:
+        clearTree(f&#34;{path}/{subdir}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.helpers.collectFormats"><code class="name flex">
@@ -617,7 +729,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L325-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L389-L413" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFormats(config):
     featureSet = set()
@@ -654,7 +766,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L171-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L235-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*msg, error=False, newline=True):
     msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
@@ -675,7 +787,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L43-L45" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L44-L46" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     target = normpath(target)
@@ -690,7 +802,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L33-L40" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L34-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -710,7 +822,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L16-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L17-L18" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expanduser(path):
     return normpath(os.path.expanduser(path))</code></pre>
@@ -724,7 +836,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L360-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L424-L431" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fitemize(value):
     if not value:
@@ -744,7 +856,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L195-L206" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L259-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flattenToSet(features):
     theseFeatures = set()
@@ -781,7 +893,7 @@ and the keys <code>desc</code> and <code>eg</code> deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L472-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L536-L567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def formatMeta(featureMeta):
     &#34;&#34;&#34;Reorder meta data.
@@ -830,7 +942,7 @@ that are not loaded by default.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L447-L469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L511-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllRealFeatures(api):
     &#34;&#34;&#34;Get all config features and all loaded node and edge features.
@@ -867,7 +979,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L92-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L156-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlEsc(val):
     &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
@@ -888,6 +1000,61 @@ in cases where you need them literally.</p></div>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.initTree"><code class="name flex">
+<span>def <span class="ident">initTree</span></span>(<span>path, fresh=False, gentle=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make sure a directory exists, optionally clean it.</p>
+<h2 id="parameters">Parameters</h2>
+<p>path:
+The directory in question. A leading <code>~</code> will be expanded to the user's
+home directory.</p>
+<pre><code>If the directory does not exist, it will be created.
+</code></pre>
+<dl>
+<dt><strong><code>fresh</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, existing contents will be removed, more or less gently.</dd>
+<dt><strong><code>gentle</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>When existing content is removed, only files are recursively removed, not
+subdirectories.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L80-L109" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def initTree(path, fresh=False, gentle=False):
+    &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user&#39;s
+        home directory.
+
+        If the directory does not exist, it will be created.
+
+    fresh: boolean, optional False
+        If True, existing contents will be removed, more or less gently.
+
+    gentle: boolean, optional False
+        When existing content is removed, only files are recursively removed, not
+        subdirectories.
+    &#34;&#34;&#34;
+
+    path = expanduser(path)
+    exists = os.path.exists(path)
+    if fresh:
+        if exists:
+            if gentle:
+                clearTree(path)
+            else:
+                rmtree(path)
+
+    if not exists:
+        os.makedirs(path, exist_ok=True)</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.isClean"><code class="name flex">
 <span>def <span class="ident">isClean</span></span>(<span>name)</span>
 </code></dt>
@@ -896,7 +1063,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L189-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L253-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClean(name):
     if name is None or len(name) == 0 or name[0] not in LETTER:
@@ -912,7 +1079,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L66-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L130-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isInt(val):
     try:
@@ -930,7 +1097,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L352-L357" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L416-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def itemize(string, sep=None):
     if not string:
@@ -948,7 +1115,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L394-L404" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L458-L468" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeExamples(nodeList):
     lN = len(nodeList)
@@ -971,7 +1138,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L293-L297" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L357-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(data):
     inv = {}
@@ -988,7 +1155,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L300-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L364-L369" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverse(data):
     inverse = {}
@@ -1006,7 +1173,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L308-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L372-L377" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverseVal(data):
     inverse = {}
@@ -1026,7 +1193,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L74-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L138-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mathEsc(val):
     &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
@@ -1046,7 +1213,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L84-L89" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L148-L153" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdEsc(val):
     return (
@@ -1066,7 +1233,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L111-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L175-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val):
     &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
@@ -1096,7 +1263,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L437-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L501-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDict(source, overrides):
     &#34;&#34;&#34;Merge overrides into a source dictionary recursively.&#34;&#34;&#34;
@@ -1116,7 +1283,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L429-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L493-L498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDictOfSets(d1, d2):
     for (n, ms) in d2.items():
@@ -1134,7 +1301,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L316-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L380-L386" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nbytes(by):
     units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
@@ -1153,7 +1320,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L8-L9" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L9-L10" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>
@@ -1167,7 +1334,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L370-L373" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L434-L437" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
@@ -1183,7 +1350,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L246-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L310-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
     curstart = None
@@ -1210,7 +1377,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L225-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L289-L307" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromSet(nodeSet):
     # ranges = []
@@ -1241,7 +1408,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L27-L30" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L28-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = expanduser(&#34;~&#34;)
@@ -1257,7 +1424,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L209-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L273-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromSpec(spec):
     covered = set()
@@ -1283,7 +1450,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L422-L426" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L486-L490" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromStr(x):
     if x is None:
@@ -1300,7 +1467,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L407-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L471-L483" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromValue(x, asInt=False):
     if x is None:
@@ -1325,7 +1492,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L263-L266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L327-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
     return &#34;,&#34;.join(
@@ -1341,7 +1508,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L269-L270" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L333-L334" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRangesLogical(ranges):  # ranges must be normalized
     return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]</code></pre>
@@ -1355,7 +1522,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L131-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L195-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitModRef(moduleRef):
     parts = moduleRef.split(&#34;:&#34;, 1)
@@ -1387,7 +1554,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L279-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L343-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromValue(val):
     valTp = type(val)
@@ -1411,7 +1578,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L23-L24" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L24-L25" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     return normpath(path).replace(HOME_DIR, &#34;~&#34;)</code></pre>
@@ -1425,7 +1592,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L273-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L337-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valueFromTf(tf):
     return &#34;\\&#34;.join(
@@ -1441,7 +1608,7 @@ Module ref &#34;{moduleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/core/helpers.py#L376-L391" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/core/helpers.py#L440-L455" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     if type(messages) is str:
@@ -1534,6 +1701,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.camel" href="#tf.core.helpers.camel">camel</a></code></li>
 <li><code><a title="tf.core.helpers.check32" href="#tf.core.helpers.check32">check32</a></code></li>
 <li><code><a title="tf.core.helpers.cleanName" href="#tf.core.helpers.cleanName">cleanName</a></code></li>
+<li><code><a title="tf.core.helpers.clearTree" href="#tf.core.helpers.clearTree">clearTree</a></code></li>
 <li><code><a title="tf.core.helpers.collectFormats" href="#tf.core.helpers.collectFormats">collectFormats</a></code></li>
 <li><code><a title="tf.core.helpers.console" href="#tf.core.helpers.console">console</a></code></li>
 <li><code><a title="tf.core.helpers.dirEmpty" href="#tf.core.helpers.dirEmpty">dirEmpty</a></code></li>
@@ -1544,6 +1712,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.formatMeta" href="#tf.core.helpers.formatMeta">formatMeta</a></code></li>
 <li><code><a title="tf.core.helpers.getAllRealFeatures" href="#tf.core.helpers.getAllRealFeatures">getAllRealFeatures</a></code></li>
 <li><code><a title="tf.core.helpers.htmlEsc" href="#tf.core.helpers.htmlEsc">htmlEsc</a></code></li>
+<li><code><a title="tf.core.helpers.initTree" href="#tf.core.helpers.initTree">initTree</a></code></li>
 <li><code><a title="tf.core.helpers.isClean" href="#tf.core.helpers.isClean">isClean</a></code></li>
 <li><code><a title="tf.core.helpers.isInt" href="#tf.core.helpers.isInt">isInt</a></code></li>
 <li><code><a title="tf.core.helpers.itemize" href="#tf.core.helpers.itemize">itemize</a></code></li>

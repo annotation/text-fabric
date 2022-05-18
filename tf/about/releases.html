@@ -53,6 +53,18 @@ To get the newest unstable version:</p>
 </div>
 <hr>
 <h2 id="9">9</h2>
+<h3 id="95">9.5</h3>
+<h4 id="950">9.5.0</h4>
+<p>2022-05-18</p>
+<p>New behaviour in walking nodes: <code><a title="tf.core.nodes.Nodes.walk" href="../core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code>: with <code>events=True</code>
+it generates open/close events for nodes, so that you can do something
+when the node starts and something else when the node ends.</p>
+<p>New utility functions <code><a title="tf.core.helpers.clearTree" href="../core/helpers.html#tf.core.helpers.clearTree">clearTree()</a></code> and <code><a title="tf.core.helpers.initTree" href="../core/helpers.html#tf.core.helpers.initTree">initTree()</a></code>.</p>
+<p>Various friction reducing changes:</p>
+<ul>
+<li>functions with file or directory arguments always perform an expansion
+of a leading <code>~</code> to the user's home directory.</li>
+</ul>
 <h4 id="944">9.4.4</h4>
 <p>2022-05-16</p>
 <p>Several minor improvements in various parts of the app.</p>
@@ -357,7 +369,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -430,10 +442,14 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
+<li><a href="#95">9.5</a><ul>
+<li><a href="#950">9.5.0</a></li>
 <li><a href="#944">9.4.4</a></li>
 <li><a href="#942-3">9.4.2-3</a></li>
 <li><a href="#941">9.4.1</a></li>
 <li><a href="#940">9.4.0</a></li>
+</ul>
+</li>
 <li><a href="#94">9.4</a><ul>
 <li><a href="#932">9.3.2</a></li>
 <li><a href="#930-1">9.3.0-1</a></li>

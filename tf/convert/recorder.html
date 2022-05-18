@@ -58,7 +58,7 @@ A = use(corpus)
 api = A.api
 </code></pre>
 <p>or by</p>
-<pre><code>from tf,fabric import Fabric
+<pre><code>from tf.fabric import Fabric
 TF = Fabric(locations, modules)
 api = TF.load(features)
 </code></pre>
@@ -180,7 +180,7 @@ recorder.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L1-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L1-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -230,7 +230,7 @@ api = A.api
 or by
 
 ```
-from tf,fabric import Fabric
+from tf.fabric import Fabric
 TF = Fabric(locations, modules)
 api = TF.load(features)
 ```
@@ -298,7 +298,7 @@ from ..core.helpers import (
     specFromRangesLogical,
     specFromRanges,
     rangesFromSet,
-    normpath,
+    expanduser,
 )
 
 ZWJ = &#34;\u200d&#34;  # zero width joiner
@@ -476,7 +476,7 @@ where `api` is the result of
         return nodesByPosByType
 
     def iPositions(self, byType=False, logical=True, asEntries=False):
-        &#34;&#34;&#34;Get the node positions as mapping from nodes.
+        &#34;&#34;&#34;Get the character positions as mapping from nodes.
 
         Parameters
         ----------
@@ -486,10 +486,10 @@ where `api` is the result of
             passed a TF api when it was initialized.
         logical: boolean, optional `True`
             If True, specs are represented as tuples of ranges
-            and a range is represented as a tuples of a begin and end point,
-            or as a tuple of a single point.
+            and a range is represented as a tuple of a begin and end point,
+            or as a single point.
             Points are integers.
-            If False, ranges are represented by strings: , separated ranges,
+            If False, ranges are represented by strings: `,` separated ranges,
             a ranges is b-e or p.
         asEntries: boolean, optional `False`
             If True, do not return the dict, but rather its entries.
@@ -502,7 +502,8 @@ where `api` is the result of
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
-            If not `byType` then a single mapping is returned.
+            If not `byType` then a single mapping is returned, where each node
+            is mapped to the intervals where that node is active.
         &#34;&#34;&#34;
 
         method = specFromRangesLogical if logical else specFromRanges
@@ -510,8 +511,8 @@ where `api` is the result of
         for (i, nodeSet) in enumerate(self.nodesByPos):
             for node in nodeSet:
                 posByNode.setdefault(node, set()).add(i)
-        for (n, nodeSet) in posByNode.items():
-            posByNode[n] = method(rangesFromSet(nodeSet))
+        for (n, posSet) in posByNode.items():
+            posByNode[n] = method(rangesFromSet(posSet))
 
         if asEntries:
             posByNode = tuple(posByNode.items())
@@ -539,7 +540,7 @@ where `api` is the result of
         if asEntries:
             for (n, spec) in posByNode:
                 nType = Fotypev(n)
-                posByNodeType.setdefault(nType, []).append(n, spec)
+                posByNodeType.setdefault(nType, []).append((n, spec))
         else:
             for (n, spec) in posByNode.items():
                 nType = Fotypev(n)
@@ -555,7 +556,7 @@ where `api` is the result of
 
         Strong assumptions:
 
-        1.  every textual position is covered by exactly one node**
+        1.  every textual position is covered by **exactly one node**
         2.  the nodes are consecutive:
             every next node is equal to the previous node plus 1
         3.  the positions of the nodes are monotonous in the nodes, i.e.
@@ -680,10 +681,12 @@ where `api` is the result of
             )
         return posList
 
-    def write(self, textPath, posPath=None, byType=False, optimize=True):
+    def write(
+        self, textPath, inverted=False, posPath=None, byType=False, optimize=True
+    ):
         &#34;&#34;&#34;Write the recorder information to disk.
 
-        The recorded text is written as a lain text file,
+        The recorded text is written as a plain text file,
         and the remembered node positions are written as a tsv file.
 
         You can also let the node positions be written out by node type.
@@ -696,9 +699,14 @@ where `api` is the result of
         ----------
         textPath: string
             The file path to which the accumulated text is written.
+        inverted: boolean, optional False
+            If False, the positions are taken as mappings from character
+            positions to nodes. If True, they are a mapping from nodes to
+            character positions.
         posPath: string, optional `None`
             The file path to which the mapped positions are written.
-            If absent, it equals `textPath` with `.pos` appended.
+            If absent, it equals `textPath` with `.pos` appended, or
+            `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
         byType: boolean, optional `False`
@@ -708,26 +716,52 @@ where `api` is the result of
             The file names are extended with the node type.
             This extension occurs just before the last `.` of the inferred `posPath`.
         optimize: boolean, optional `True`
-            Optimize file size. Only relevant if `byType` is True.
+            Optimize file size. Only relevant if `byType` is True
+            and `inverted` is False.
+            The format of each line is:
+
+            *rep* `*` *nodes`
+
+            where *rep* is a number that indicates repetition and *nodes*
+            is a tab-separated list of node numbers.
+
+            The meaning is that the following *rep* character positions
+            are associated with these *nodes*.
         &#34;&#34;&#34;
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+        textPath = expanduser(textPath)
+        posExt = &#34;.ipos&#34; if inverted else &#34;.pos&#34;
+        posPath = expanduser(posPath or f&#34;{textPath}{posExt}&#34;)
 
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
 
         if not byType:
             with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(
-                    &#34;\n&#34;.join(
-                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+                if inverted:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            f&#34;{node}\t{intervals}&#34;
+                            for (node, intervals) in self.iPositions(
+                                byType=False, logical=False, asEntries=True
+                            )
+                        )
                     )
-                )
+                else:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            &#34;\t&#34;.join(str(i) for i in nodes)
+                            for nodes in self.nodesByPos
+                        )
+                    )
             return
 
-        nodesByPosByType = self.positions(byType=True)
-        if nodesByPosByType is None:
+        mapByType = (
+            self.iPositions(byType=True, logical=False, asEntries=True)
+            if inverted
+            else self.positions(byType=True)
+        )
+        if mapByType is None:
             print(&#34;No position files written&#34;)
             return
 
@@ -741,35 +775,42 @@ where `api` is the result of
 
         indent(level=True, reset=True)
 
-        for (nodeType, nodesByPos) in nodesByPosByType.items():
+        for (nodeType, mapping) in mapByType.items():
             fileName = f&#34;{base}-{nodeType}{ext}&#34;
             info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
             with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                if not optimize:
+                if inverted:
                     fh.write(
                         &#34;\n&#34;.join(
-                            &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                            f&#34;{node}\t{intervals}&#34; for (node, intervals) in mapping
                         )
                     )
                 else:
-                    repetition = 1
-                    previous = None
+                    if not optimize:
+                        fh.write(
+                            &#34;\n&#34;.join(
+                                &#34;\t&#34;.join(str(i) for i in nodes) for nodes in mapping
+                            )
+                        )
+                    else:
+                        repetition = 1
+                        previous = None
 
-                    for nodes in nodesByPos:
-                        if nodes == previous:
-                            repetition += 1
-                            continue
-                        else:
-                            if previous is not None:
-                                prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
-                                value = &#34;\t&#34;.join(str(i) for i in previous)
-                                fh.write(f&#34;{prefix}{value}\n&#34;)
-                            repetition = 1
-                            previous = nodes
-                    if previous is not None:
-                        prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
-                        value = &#34;\t&#34;.join(str(i) for i in previous)
-                        fh.write(f&#34;{prefix}{value}\n&#34;)
+                        for nodes in mapping:
+                            if nodes == previous:
+                                repetition += 1
+                                continue
+                            else:
+                                if previous is not None:
+                                    prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                                    value = &#34;\t&#34;.join(str(i) for i in previous)
+                                    fh.write(f&#34;{prefix}{value}\n&#34;)
+                                repetition = 1
+                                previous = nodes
+                        if previous is not None:
+                            prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                            value = &#34;\t&#34;.join(str(i) for i in previous)
+                            fh.write(f&#34;{prefix}{value}\n&#34;)
 
         indent(level=False)
 
@@ -787,8 +828,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+        textPath = expanduser(textPath)
+        posPath = expanduser(posPath or f&#34;{textPath}.pos&#34;)
         self.context = {}
 
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -830,7 +871,7 @@ where `api` is the result of
             be used as headers.
         &#34;&#34;&#34;
 
-        featurePath = normpath(featurePath)
+        featurePath = expanduser(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}
@@ -889,7 +930,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L123-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L123-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder:
     def __init__(self, api=None):
@@ -1063,7 +1104,7 @@ where `api` is the result of
         return nodesByPosByType
 
     def iPositions(self, byType=False, logical=True, asEntries=False):
-        &#34;&#34;&#34;Get the node positions as mapping from nodes.
+        &#34;&#34;&#34;Get the character positions as mapping from nodes.
 
         Parameters
         ----------
@@ -1073,10 +1114,10 @@ where `api` is the result of
             passed a TF api when it was initialized.
         logical: boolean, optional `True`
             If True, specs are represented as tuples of ranges
-            and a range is represented as a tuples of a begin and end point,
-            or as a tuple of a single point.
+            and a range is represented as a tuple of a begin and end point,
+            or as a single point.
             Points are integers.
-            If False, ranges are represented by strings: , separated ranges,
+            If False, ranges are represented by strings: `,` separated ranges,
             a ranges is b-e or p.
         asEntries: boolean, optional `False`
             If True, do not return the dict, but rather its entries.
@@ -1089,7 +1130,8 @@ where `api` is the result of
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
-            If not `byType` then a single mapping is returned.
+            If not `byType` then a single mapping is returned, where each node
+            is mapped to the intervals where that node is active.
         &#34;&#34;&#34;
 
         method = specFromRangesLogical if logical else specFromRanges
@@ -1097,8 +1139,8 @@ where `api` is the result of
         for (i, nodeSet) in enumerate(self.nodesByPos):
             for node in nodeSet:
                 posByNode.setdefault(node, set()).add(i)
-        for (n, nodeSet) in posByNode.items():
-            posByNode[n] = method(rangesFromSet(nodeSet))
+        for (n, posSet) in posByNode.items():
+            posByNode[n] = method(rangesFromSet(posSet))
 
         if asEntries:
             posByNode = tuple(posByNode.items())
@@ -1126,7 +1168,7 @@ where `api` is the result of
         if asEntries:
             for (n, spec) in posByNode:
                 nType = Fotypev(n)
-                posByNodeType.setdefault(nType, []).append(n, spec)
+                posByNodeType.setdefault(nType, []).append((n, spec))
         else:
             for (n, spec) in posByNode.items():
                 nType = Fotypev(n)
@@ -1142,7 +1184,7 @@ where `api` is the result of
 
         Strong assumptions:
 
-        1.  every textual position is covered by exactly one node**
+        1.  every textual position is covered by **exactly one node**
         2.  the nodes are consecutive:
             every next node is equal to the previous node plus 1
         3.  the positions of the nodes are monotonous in the nodes, i.e.
@@ -1267,10 +1309,12 @@ where `api` is the result of
             )
         return posList
 
-    def write(self, textPath, posPath=None, byType=False, optimize=True):
+    def write(
+        self, textPath, inverted=False, posPath=None, byType=False, optimize=True
+    ):
         &#34;&#34;&#34;Write the recorder information to disk.
 
-        The recorded text is written as a lain text file,
+        The recorded text is written as a plain text file,
         and the remembered node positions are written as a tsv file.
 
         You can also let the node positions be written out by node type.
@@ -1283,9 +1327,14 @@ where `api` is the result of
         ----------
         textPath: string
             The file path to which the accumulated text is written.
+        inverted: boolean, optional False
+            If False, the positions are taken as mappings from character
+            positions to nodes. If True, they are a mapping from nodes to
+            character positions.
         posPath: string, optional `None`
             The file path to which the mapped positions are written.
-            If absent, it equals `textPath` with `.pos` appended.
+            If absent, it equals `textPath` with `.pos` appended, or
+            `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
         byType: boolean, optional `False`
@@ -1295,26 +1344,52 @@ where `api` is the result of
             The file names are extended with the node type.
             This extension occurs just before the last `.` of the inferred `posPath`.
         optimize: boolean, optional `True`
-            Optimize file size. Only relevant if `byType` is True.
+            Optimize file size. Only relevant if `byType` is True
+            and `inverted` is False.
+            The format of each line is:
+
+            *rep* `*` *nodes`
+
+            where *rep* is a number that indicates repetition and *nodes*
+            is a tab-separated list of node numbers.
+
+            The meaning is that the following *rep* character positions
+            are associated with these *nodes*.
         &#34;&#34;&#34;
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+        textPath = expanduser(textPath)
+        posExt = &#34;.ipos&#34; if inverted else &#34;.pos&#34;
+        posPath = expanduser(posPath or f&#34;{textPath}{posExt}&#34;)
 
         with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(self.text())
 
         if not byType:
             with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(
-                    &#34;\n&#34;.join(
-                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+                if inverted:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            f&#34;{node}\t{intervals}&#34;
+                            for (node, intervals) in self.iPositions(
+                                byType=False, logical=False, asEntries=True
+                            )
+                        )
                     )
-                )
+                else:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            &#34;\t&#34;.join(str(i) for i in nodes)
+                            for nodes in self.nodesByPos
+                        )
+                    )
             return
 
-        nodesByPosByType = self.positions(byType=True)
-        if nodesByPosByType is None:
+        mapByType = (
+            self.iPositions(byType=True, logical=False, asEntries=True)
+            if inverted
+            else self.positions(byType=True)
+        )
+        if mapByType is None:
             print(&#34;No position files written&#34;)
             return
 
@@ -1328,35 +1403,42 @@ where `api` is the result of
 
         indent(level=True, reset=True)
 
-        for (nodeType, nodesByPos) in nodesByPosByType.items():
+        for (nodeType, mapping) in mapByType.items():
             fileName = f&#34;{base}-{nodeType}{ext}&#34;
             info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
             with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                if not optimize:
+                if inverted:
                     fh.write(
                         &#34;\n&#34;.join(
-                            &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                            f&#34;{node}\t{intervals}&#34; for (node, intervals) in mapping
                         )
                     )
                 else:
-                    repetition = 1
-                    previous = None
+                    if not optimize:
+                        fh.write(
+                            &#34;\n&#34;.join(
+                                &#34;\t&#34;.join(str(i) for i in nodes) for nodes in mapping
+                            )
+                        )
+                    else:
+                        repetition = 1
+                        previous = None
 
-                    for nodes in nodesByPos:
-                        if nodes == previous:
-                            repetition += 1
-                            continue
-                        else:
-                            if previous is not None:
-                                prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
-                                value = &#34;\t&#34;.join(str(i) for i in previous)
-                                fh.write(f&#34;{prefix}{value}\n&#34;)
-                            repetition = 1
-                            previous = nodes
-                    if previous is not None:
-                        prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
-                        value = &#34;\t&#34;.join(str(i) for i in previous)
-                        fh.write(f&#34;{prefix}{value}\n&#34;)
+                        for nodes in mapping:
+                            if nodes == previous:
+                                repetition += 1
+                                continue
+                            else:
+                                if previous is not None:
+                                    prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                                    value = &#34;\t&#34;.join(str(i) for i in previous)
+                                    fh.write(f&#34;{prefix}{value}\n&#34;)
+                                repetition = 1
+                                previous = nodes
+                        if previous is not None:
+                            prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                            value = &#34;\t&#34;.join(str(i) for i in previous)
+                            fh.write(f&#34;{prefix}{value}\n&#34;)
 
         indent(level=False)
 
@@ -1374,8 +1456,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+        textPath = expanduser(textPath)
+        posPath = expanduser(posPath or f&#34;{textPath}.pos&#34;)
         self.context = {}
 
         with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -1417,7 +1499,7 @@ where `api` is the result of
             be used as headers.
         &#34;&#34;&#34;
 
-        featurePath = normpath(featurePath)
+        featurePath = expanduser(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}
@@ -1492,7 +1574,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L181-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L181-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     &#34;&#34;&#34;Add text to the accumulator.
@@ -1530,7 +1612,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L169-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L169-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     &#34;&#34;&#34;End a node.
@@ -1549,7 +1631,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <span>def <span class="ident">iPositions</span></span>(<span>self, byType=False, logical=True, asEntries=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the node positions as mapping from nodes.</p>
+<div class="desc"><p>Get the character positions as mapping from nodes.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>byType</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -1558,10 +1640,10 @@ For this it is needed that the Recorder has been
 passed a TF api when it was initialized.</dd>
 <dt><strong><code>logical</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>If True, specs are represented as tuples of ranges
-and a range is represented as a tuples of a begin and end point,
-or as a tuple of a single point.
+and a range is represented as a tuple of a begin and end point,
+or as a single point.
 Points are integers.
-If False, ranges are represented by strings: , separated ranges,
+If False, ranges are represented by strings: <code>,</code> separated ranges,
 a ranges is b-e or p.</dd>
 <dt><strong><code>asEntries</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, do not return the dict, but rather its entries.</dd>
@@ -1574,16 +1656,17 @@ a ranges is b-e or p.</dd>
 with values the mapping for nodes of that type.
 Entry <code>n</code> in this mapping contains the intervals of all
 character positions in the text where node <code>n</code> is active.</p>
-<p>If not <code>byType</code> then a single mapping is returned.</p>
+<p>If not <code>byType</code> then a single mapping is returned, where each node
+is mapped to the intervals where that node is active.</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L294-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L294-L365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def iPositions(self, byType=False, logical=True, asEntries=False):
-        &#34;&#34;&#34;Get the node positions as mapping from nodes.
+        &#34;&#34;&#34;Get the character positions as mapping from nodes.
 
         Parameters
         ----------
@@ -1593,10 +1676,10 @@ character positions in the text where node <code>n</code> is active.</p>
             passed a TF api when it was initialized.
         logical: boolean, optional `True`
             If True, specs are represented as tuples of ranges
-            and a range is represented as a tuples of a begin and end point,
-            or as a tuple of a single point.
+            and a range is represented as a tuple of a begin and end point,
+            or as a single point.
             Points are integers.
-            If False, ranges are represented by strings: , separated ranges,
+            If False, ranges are represented by strings: `,` separated ranges,
             a ranges is b-e or p.
         asEntries: boolean, optional `False`
             If True, do not return the dict, but rather its entries.
@@ -1609,7 +1692,8 @@ character positions in the text where node <code>n</code> is active.</p>
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
-            If not `byType` then a single mapping is returned.
+            If not `byType` then a single mapping is returned, where each node
+            is mapped to the intervals where that node is active.
         &#34;&#34;&#34;
 
         method = specFromRangesLogical if logical else specFromRanges
@@ -1617,8 +1701,8 @@ character positions in the text where node <code>n</code> is active.</p>
         for (i, nodeSet) in enumerate(self.nodesByPos):
             for node in nodeSet:
                 posByNode.setdefault(node, set()).add(i)
-        for (n, nodeSet) in posByNode.items():
-            posByNode[n] = method(rangesFromSet(nodeSet))
+        for (n, posSet) in posByNode.items():
+            posByNode[n] = method(rangesFromSet(posSet))
 
         if asEntries:
             posByNode = tuple(posByNode.items())
@@ -1646,7 +1730,7 @@ where `api` is the result of
         if asEntries:
             for (n, spec) in posByNode:
                 nType = Fotypev(n)
-                posByNodeType.setdefault(nType, []).append(n, spec)
+                posByNodeType.setdefault(nType, []).append((n, spec))
         else:
             for (n, spec) in posByNode.items():
                 nType = Fotypev(n)
@@ -1685,7 +1769,7 @@ be used as headers.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L618-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L659-L720" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     &#34;&#34;&#34;Read a tab-separated file of annotation data and convert it to features.
@@ -1718,7 +1802,7 @@ be used as headers.</dd>
         be used as headers.
     &#34;&#34;&#34;
 
-    featurePath = normpath(featurePath)
+    featurePath = expanduser(featurePath)
     nodesByPos = self.nodesByPos
 
     features = {}
@@ -1787,7 +1871,7 @@ that were active at character position <code>i</code> in the text.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L212-L292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L212-L292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def positions(self, byType=False, simple=False):
         &#34;&#34;&#34;Get the node positions as mapping from character positions.
@@ -1881,7 +1965,7 @@ where `api` is the result of
 Under certain assumptions we can economize on this data usage.</p>
 <p>Strong assumptions:</p>
 <ol>
-<li>every textual position is covered by exactly one node**</li>
+<li>every textual position is covered by <strong>exactly one node</strong></li>
 <li>the nodes are consecutive:
 every next node is equal to the previous node plus 1</li>
 <li>the positions of the nodes are monotonous in the nodes, i.e.
@@ -1935,7 +2019,7 @@ If not, we return a string with diagnostic information.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L366-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L367-L498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rPositions(self, acceptMaterialOutsideNodes=False):
     &#34;&#34;&#34;Get the first textual position for each node
@@ -1945,7 +2029,7 @@ If not, we return a string with diagnostic information.</p>
 
     Strong assumptions:
 
-    1.  every textual position is covered by exactly one node**
+    1.  every textual position is covered by **exactly one node**
     2.  the nodes are consecutive:
         every next node is equal to the previous node plus 1
     3.  the positions of the nodes are monotonous in the nodes, i.e.
@@ -2089,7 +2173,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L592-L616" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L633-L657" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     &#34;&#34;&#34;Read recorder information from disk.
@@ -2105,8 +2189,8 @@ on each line a tab-separated list of active nodes.</dd>
         on each line a tab-separated list of active nodes.
     &#34;&#34;&#34;
 
-    textPath = normpath(textPath)
-    posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+    textPath = expanduser(textPath)
+    posPath = expanduser(posPath or f&#34;{textPath}.pos&#34;)
     self.context = {}
 
     with open(textPath, encoding=&#34;utf8&#34;) as fh:
@@ -2132,7 +2216,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L157-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L157-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     &#34;&#34;&#34;Start a node.
@@ -2160,7 +2244,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L202-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L202-L210" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     &#34;&#34;&#34;Get the accumulated text.
@@ -2174,11 +2258,11 @@ on each line a tab-separated list of active nodes.</dd>
 </details>
 </dd>
 <dt id="tf.convert.recorder.Recorder.write"><code class="name flex">
-<span>def <span class="ident">write</span></span>(<span>self, textPath, posPath=None, byType=False, optimize=True)</span>
+<span>def <span class="ident">write</span></span>(<span>self, textPath, inverted=False, posPath=None, byType=False, optimize=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Write the recorder information to disk.</p>
-<p>The recorded text is written as a lain text file,
+<p>The recorded text is written as a plain text file,
 and the remembered node positions are written as a tsv file.</p>
 <p>You can also let the node positions be written out by node type.
 In that case you can also optimize the file size.</p>
@@ -2188,9 +2272,14 @@ by the number of repetitions and a <code>*</code>.</p>
 <dl>
 <dt><strong><code>textPath</code></strong> :&ensp;<code>string</code></dt>
 <dd>The file path to which the accumulated text is written.</dd>
+<dt><strong><code>inverted</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If False, the positions are taken as mappings from character
+positions to nodes. If True, they are a mapping from nodes to
+character positions.</dd>
 <dt><strong><code>posPath</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>The file path to which the mapped positions are written.
-If absent, it equals <code>textPath</code> with <code>.pos</code> appended.
+If absent, it equals <code>textPath</code> with <code>.pos</code> appended, or
+<code>.ipos</code> if <code>inverted</code> is True.
 The file format is: one line for each character position,
 on each line a tab-separated list of active nodes.</dd>
 <dt><strong><code>byType</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
@@ -2200,17 +2289,28 @@ passed a TF api when it was initialized.
 The file names are extended with the node type.
 This extension occurs just before the last <code>.</code> of the inferred <code>posPath</code>.</dd>
 <dt><strong><code>optimize</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>Optimize file size. Only relevant if <code>byType</code> is True.</dd>
+<dd>
+<p>Optimize file size. Only relevant if <code>byType</code> is True
+and <code>inverted</code> is False.
+The format of each line is:</p>
+<p><em>rep</em> <code>*</code> *nodes`</p>
+<p>where <em>rep</em> is a number that indicates repetition and <em>nodes</em>
+is a tab-separated list of node numbers.</p>
+<p>The meaning is that the following <em>rep</em> character positions
+are associated with these <em>nodes</em>.</p>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c0a49f092ceda3e7bab91fd0f1aa84e2dc029cf4/tf/convert/recorder.py#L499-L590" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/convert/recorder.py#L500-L631" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def write(self, textPath, posPath=None, byType=False, optimize=True):
+<pre><code class="python">def write(
+    self, textPath, inverted=False, posPath=None, byType=False, optimize=True
+):
     &#34;&#34;&#34;Write the recorder information to disk.
 
-    The recorded text is written as a lain text file,
+    The recorded text is written as a plain text file,
     and the remembered node positions are written as a tsv file.
 
     You can also let the node positions be written out by node type.
@@ -2223,9 +2323,14 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
     ----------
     textPath: string
         The file path to which the accumulated text is written.
+    inverted: boolean, optional False
+        If False, the positions are taken as mappings from character
+        positions to nodes. If True, they are a mapping from nodes to
+        character positions.
     posPath: string, optional `None`
         The file path to which the mapped positions are written.
-        If absent, it equals `textPath` with `.pos` appended.
+        If absent, it equals `textPath` with `.pos` appended, or
+        `.ipos` if `inverted` is True.
         The file format is: one line for each character position,
         on each line a tab-separated list of active nodes.
     byType: boolean, optional `False`
@@ -2235,26 +2340,52 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
         The file names are extended with the node type.
         This extension occurs just before the last `.` of the inferred `posPath`.
     optimize: boolean, optional `True`
-        Optimize file size. Only relevant if `byType` is True.
+        Optimize file size. Only relevant if `byType` is True
+        and `inverted` is False.
+        The format of each line is:
+
+        *rep* `*` *nodes`
+
+        where *rep* is a number that indicates repetition and *nodes*
+        is a tab-separated list of node numbers.
+
+        The meaning is that the following *rep* character positions
+        are associated with these *nodes*.
     &#34;&#34;&#34;
 
-    textPath = normpath(textPath)
-    posPath = normpath(posPath or f&#34;{textPath}.pos&#34;)
+    textPath = expanduser(textPath)
+    posExt = &#34;.ipos&#34; if inverted else &#34;.pos&#34;
+    posPath = expanduser(posPath or f&#34;{textPath}{posExt}&#34;)
 
     with open(textPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
         fh.write(self.text())
 
     if not byType:
         with open(posPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(
-                &#34;\n&#34;.join(
-                    &#34;\t&#34;.join(str(i) for i in nodes) for nodes in self.nodesByPos
+            if inverted:
+                fh.write(
+                    &#34;\n&#34;.join(
+                        f&#34;{node}\t{intervals}&#34;
+                        for (node, intervals) in self.iPositions(
+                            byType=False, logical=False, asEntries=True
+                        )
+                    )
                 )
-            )
+            else:
+                fh.write(
+                    &#34;\n&#34;.join(
+                        &#34;\t&#34;.join(str(i) for i in nodes)
+                        for nodes in self.nodesByPos
+                    )
+                )
         return
 
-    nodesByPosByType = self.positions(byType=True)
-    if nodesByPosByType is None:
+    mapByType = (
+        self.iPositions(byType=True, logical=False, asEntries=True)
+        if inverted
+        else self.positions(byType=True)
+    )
+    if mapByType is None:
         print(&#34;No position files written&#34;)
         return
 
@@ -2268,35 +2399,42 @@ This extension occurs just before the last <code>.</code> of the inferred <code>
 
     indent(level=True, reset=True)
 
-    for (nodeType, nodesByPos) in nodesByPosByType.items():
+    for (nodeType, mapping) in mapByType.items():
         fileName = f&#34;{base}-{nodeType}{ext}&#34;
         info(f&#34;{nodeType:&lt;20} =&gt; {fileName}&#34;)
         with open(fileName, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            if not optimize:
+            if inverted:
                 fh.write(
                     &#34;\n&#34;.join(
-                        &#34;\t&#34;.join(str(i) for i in nodes) for nodes in nodesByPos
+                        f&#34;{node}\t{intervals}&#34; for (node, intervals) in mapping
                     )
                 )
             else:
-                repetition = 1
-                previous = None
+                if not optimize:
+                    fh.write(
+                        &#34;\n&#34;.join(
+                            &#34;\t&#34;.join(str(i) for i in nodes) for nodes in mapping
+                        )
+                    )
+                else:
+                    repetition = 1
+                    previous = None
 
-                for nodes in nodesByPos:
-                    if nodes == previous:
-                        repetition += 1
-                        continue
-                    else:
-                        if previous is not None:
-                            prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
-                            value = &#34;\t&#34;.join(str(i) for i in previous)
-                            fh.write(f&#34;{prefix}{value}\n&#34;)
-                        repetition = 1
-                        previous = nodes
-                if previous is not None:
-                    prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
-                    value = &#34;\t&#34;.join(str(i) for i in previous)
-                    fh.write(f&#34;{prefix}{value}\n&#34;)
+                    for nodes in mapping:
+                        if nodes == previous:
+                            repetition += 1
+                            continue
+                        else:
+                            if previous is not None:
+                                prefix = f&#34;{repetition}*&#34; if repetition &gt; 1 else &#34;&#34;
+                                value = &#34;\t&#34;.join(str(i) for i in previous)
+                                fh.write(f&#34;{prefix}{value}\n&#34;)
+                            repetition = 1
+                            previous = nodes
+                    if previous is not None:
+                        prefix = f&#34;{repetition + 1}*&#34; if repetition else &#34;&#34;
+                        value = &#34;\t&#34;.join(str(i) for i in previous)
+                        fh.write(f&#34;{prefix}{value}\n&#34;)
 
     indent(level=False)</code></pre>
 </details>
