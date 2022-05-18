@@ -220,16 +220,41 @@ class Nodes:
         Crank = api.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
-    def walk(self):
+    def walk(self, events=False):
         """Generates all nodes in the *canonical order*.
         (`tf.core.nodes`)
 
         By `walk()` you traverse all nodes of your corpus
         in a very natural order. See `tf.core.nodes`.
 
+        The order is much like walking a tree in pre-order: first parents,
+        then children from left to right.
+
+        The thing is: in general the nodes do not form a tree, but a more
+        liberal structure: a graph.
+
+        But even then we can order the nodes in such a way that nodes that embed
+        slots from other nodes come before those other nodes, provided those other
+        nodes start later.
+
+        When we generate those nodes and consume them, we now when each node starts,
+        but we loose track of where exactly they end.
+
+        To remedy that, you can call this function with `events=True`.
+        In that case, a stream of events is generated, where each event has the
+        form `(node, False)` or `(node, True)`, where `False` means: beginning of
+        node and `True` means: end of node.
+
+        In case of slot nodes, only one event per slot is generated: `(node, None)`.
+
         !!! hint "More ways of walking"
             Under `tf.core.nodefeature.NodeFeatures` there is another convenient way
             to walk through subsets of nodes.
+
+        Parameters
+        ----------
+        events: boolean, optional `False`
+            If True, wraps the generated nodes in event tuples as described above.
 
         Returns
         -------
@@ -239,5 +264,22 @@ class Nodes:
 
         api = self.api
 
-        for n in api.C.order.data:
-            yield n
+        if events:
+            C = api.C
+            endSlots = C.boundary.data[1]
+
+            otype = api.F.otype
+            Fotypev = otype.v
+            slotType = otype.slotType
+
+            for n in C.order.data:
+                if Fotypev(n) == slotType:
+                    yield (n, None)
+                    for m in reversed(endSlots[n - 1]):
+                        yield(m, True)
+                else:
+                    yield(n, False)
+
+        else:
+            for n in api.C.order.data:
+                yield n

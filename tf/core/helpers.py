@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+from shutil import rmtree
 
 from ..parameters import OMAP
 
@@ -43,6 +44,69 @@ def expandDir(obj, dirName):
 def dirEmpty(target):
     target = normpath(target)
     return not os.path.exists(target) or not os.listdir(target)
+
+
+def clearTree(path):
+    """Remove all files from a directory, recursively, but leave subdirs.
+
+    Reason: we want to inspect output in an editor.
+    But if we remove the directories, the editor looses its current directory
+    all the time.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user's
+        home directory.
+    """
+
+    subdirs = []
+    path = expanduser(path)
+
+    with os.scandir(path) as dh:
+        for (i, entry) in enumerate(dh):
+            name = entry.name
+            if name.startswith("."):
+                continue
+            if entry.is_file():
+                os.remove(f"{path}/{name}")
+            elif entry.is_dir():
+                subdirs.append(name)
+
+    for subdir in subdirs:
+        clearTree(f"{path}/{subdir}")
+
+
+def initTree(path, fresh=False, gentle=False):
+    """Make sure a directory exists, optionally clean it.
+
+    Parameters
+    ----------
+    path:
+        The directory in question. A leading `~` will be expanded to the user's
+        home directory.
+
+        If the directory does not exist, it will be created.
+
+    fresh: boolean, optional False
+        If True, existing contents will be removed, more or less gently.
+
+    gentle: boolean, optional False
+        When existing content is removed, only files are recursively removed, not
+        subdirectories.
+    """
+
+    path = expanduser(path)
+    exists = os.path.exists(path)
+    if fresh:
+        if exists:
+            if gentle:
+                clearTree(path)
+            else:
+                rmtree(path)
+
+    if not exists:
+        os.makedirs(path, exist_ok=True)
 
 
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")

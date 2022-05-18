@@ -834,7 +834,7 @@ Default
 Formatting key for plain and pretty displays.
 
 The label or template may need a special style to format it with.
-You pass specify:
+You can specify:
 
 `normal`
 :   normal non-corpus text

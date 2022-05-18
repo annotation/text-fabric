@@ -1,10 +1,9 @@
 import os
 import sys
-from shutil import rmtree
 from zipfile import ZipFile
 
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
-from ..core.helpers import console, splitModRef, normpath, expanduser
+from ..core.helpers import console, splitModRef, normpath, expanduser, initTree
 
 GH = expanduser(GH_BASE)
 DW = expanduser(DOWNLOADS)
@@ -51,10 +50,7 @@ def zipData(
     destDir = f"{destBase}/{repo}"
     dataFiles = {}
 
-    if not keep:
-        if os.path.exists(destDir):
-            rmtree(destDir)
-    os.makedirs(destDir, exist_ok=True)
+    initTree(destDir, fresh=not keep)
     relativeDest = relative.replace("/", "-")
 
     if tf:

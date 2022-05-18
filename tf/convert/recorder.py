@@ -46,7 +46,7 @@ api = A.api
 or by
 
 ```
-from tf,fabric import Fabric
+from tf.fabric import Fabric
 TF = Fabric(locations, modules)
 api = TF.load(features)
 ```
@@ -114,7 +114,7 @@ from ..core.helpers import (
     specFromRangesLogical,
     specFromRanges,
     rangesFromSet,
-    normpath,
+    expanduser,
 )
 
 ZWJ = "\u200d"  # zero width joiner
@@ -292,7 +292,7 @@ where `api` is the result of
         return nodesByPosByType
 
     def iPositions(self, byType=False, logical=True, asEntries=False):
-        """Get the node positions as mapping from nodes.
+        """Get the character positions as mapping from nodes.
 
         Parameters
         ----------
@@ -302,10 +302,10 @@ where `api` is the result of
             passed a TF api when it was initialized.
         logical: boolean, optional `True`
             If True, specs are represented as tuples of ranges
-            and a range is represented as a tuples of a begin and end point,
-            or as a tuple of a single point.
+            and a range is represented as a tuple of a begin and end point,
+            or as a single point.
             Points are integers.
-            If False, ranges are represented by strings: , separated ranges,
+            If False, ranges are represented by strings: `,` separated ranges,
             a ranges is b-e or p.
         asEntries: boolean, optional `False`
             If True, do not return the dict, but rather its entries.
@@ -318,7 +318,8 @@ where `api` is the result of
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
-            If not `byType` then a single mapping is returned.
+            If not `byType` then a single mapping is returned, where each node
+            is mapped to the intervals where that node is active.
         """
 
         method = specFromRangesLogical if logical else specFromRanges
@@ -326,8 +327,8 @@ where `api` is the result of
         for (i, nodeSet) in enumerate(self.nodesByPos):
             for node in nodeSet:
                 posByNode.setdefault(node, set()).add(i)
-        for (n, nodeSet) in posByNode.items():
-            posByNode[n] = method(rangesFromSet(nodeSet))
+        for (n, posSet) in posByNode.items():
+            posByNode[n] = method(rangesFromSet(posSet))
 
         if asEntries:
             posByNode = tuple(posByNode.items())
@@ -355,7 +356,7 @@ where `api` is the result of
         if asEntries:
             for (n, spec) in posByNode:
                 nType = Fotypev(n)
-                posByNodeType.setdefault(nType, []).append(n, spec)
+                posByNodeType.setdefault(nType, []).append((n, spec))
         else:
             for (n, spec) in posByNode.items():
                 nType = Fotypev(n)
@@ -371,7 +372,7 @@ where `api` is the result of
 
         Strong assumptions:
 
-        1.  every textual position is covered by exactly one node**
+        1.  every textual position is covered by **exactly one node**
         2.  the nodes are consecutive:
             every next node is equal to the previous node plus 1
         3.  the positions of the nodes are monotonous in the nodes, i.e.
@@ -496,10 +497,12 @@ where `api` is the result of
             )
         return posList
 
-    def write(self, textPath, posPath=None, byType=False, optimize=True):
+    def write(
+        self, textPath, inverted=False, posPath=None, byType=False, optimize=True
+    ):
         """Write the recorder information to disk.
 
-        The recorded text is written as a lain text file,
+        The recorded text is written as a plain text file,
         and the remembered node positions are written as a tsv file.
 
         You can also let the node positions be written out by node type.
@@ -512,9 +515,14 @@ where `api` is the result of
         ----------
         textPath: string
             The file path to which the accumulated text is written.
+        inverted: boolean, optional False
+            If False, the positions are taken as mappings from character
+            positions to nodes. If True, they are a mapping from nodes to
+            character positions.
         posPath: string, optional `None`
             The file path to which the mapped positions are written.
-            If absent, it equals `textPath` with `.pos` appended.
+            If absent, it equals `textPath` with `.pos` appended, or
+            `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
         byType: boolean, optional `False`
@@ -524,26 +532,52 @@ where `api` is the result of
             The file names are extended with the node type.
             This extension occurs just before the last `.` of the inferred `posPath`.
         optimize: boolean, optional `True`
-            Optimize file size. Only relevant if `byType` is True.
+            Optimize file size. Only relevant if `byType` is True
+            and `inverted` is False.
+            The format of each line is:
+
+            *rep* `*` *nodes`
+
+            where *rep* is a number that indicates repetition and *nodes*
+            is a tab-separated list of node numbers.
+
+            The meaning is that the following *rep* character positions
+            are associated with these *nodes*.
         """
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f"{textPath}.pos")
+        textPath = expanduser(textPath)
+        posExt = ".ipos" if inverted else ".pos"
+        posPath = expanduser(posPath or f"{textPath}{posExt}")
 
         with open(textPath, "w", encoding="utf8") as fh:
             fh.write(self.text())
 
         if not byType:
             with open(posPath, "w", encoding="utf8") as fh:
-                fh.write(
-                    "\n".join(
-                        "\t".join(str(i) for i in nodes) for nodes in self.nodesByPos
+                if inverted:
+                    fh.write(
+                        "\n".join(
+                            f"{node}\t{intervals}"
+                            for (node, intervals) in self.iPositions(
+                                byType=False, logical=False, asEntries=True
+                            )
+                        )
                     )
-                )
+                else:
+                    fh.write(
+                        "\n".join(
+                            "\t".join(str(i) for i in nodes)
+                            for nodes in self.nodesByPos
+                        )
+                    )
             return
 
-        nodesByPosByType = self.positions(byType=True)
-        if nodesByPosByType is None:
+        mapByType = (
+            self.iPositions(byType=True, logical=False, asEntries=True)
+            if inverted
+            else self.positions(byType=True)
+        )
+        if mapByType is None:
             print("No position files written")
             return
 
@@ -557,35 +591,42 @@ where `api` is the result of
 
         indent(level=True, reset=True)
 
-        for (nodeType, nodesByPos) in nodesByPosByType.items():
+        for (nodeType, mapping) in mapByType.items():
             fileName = f"{base}-{nodeType}{ext}"
             info(f"{nodeType:<20} => {fileName}")
             with open(fileName, "w", encoding="utf8") as fh:
-                if not optimize:
+                if inverted:
                     fh.write(
                         "\n".join(
-                            "\t".join(str(i) for i in nodes) for nodes in nodesByPos
+                            f"{node}\t{intervals}" for (node, intervals) in mapping
                         )
                     )
                 else:
-                    repetition = 1
-                    previous = None
+                    if not optimize:
+                        fh.write(
+                            "\n".join(
+                                "\t".join(str(i) for i in nodes) for nodes in mapping
+                            )
+                        )
+                    else:
+                        repetition = 1
+                        previous = None
 
-                    for nodes in nodesByPos:
-                        if nodes == previous:
-                            repetition += 1
-                            continue
-                        else:
-                            if previous is not None:
-                                prefix = f"{repetition}*" if repetition > 1 else ""
-                                value = "\t".join(str(i) for i in previous)
-                                fh.write(f"{prefix}{value}\n")
-                            repetition = 1
-                            previous = nodes
-                    if previous is not None:
-                        prefix = f"{repetition + 1}*" if repetition else ""
-                        value = "\t".join(str(i) for i in previous)
-                        fh.write(f"{prefix}{value}\n")
+                        for nodes in mapping:
+                            if nodes == previous:
+                                repetition += 1
+                                continue
+                            else:
+                                if previous is not None:
+                                    prefix = f"{repetition}*" if repetition > 1 else ""
+                                    value = "\t".join(str(i) for i in previous)
+                                    fh.write(f"{prefix}{value}\n")
+                                repetition = 1
+                                previous = nodes
+                        if previous is not None:
+                            prefix = f"{repetition + 1}*" if repetition else ""
+                            value = "\t".join(str(i) for i in previous)
+                            fh.write(f"{prefix}{value}\n")
 
         indent(level=False)
 
@@ -603,8 +644,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         """
 
-        textPath = normpath(textPath)
-        posPath = normpath(posPath or f"{textPath}.pos")
+        textPath = expanduser(textPath)
+        posPath = expanduser(posPath or f"{textPath}.pos")
         self.context = {}
 
         with open(textPath, encoding="utf8") as fh:
@@ -646,7 +687,7 @@ where `api` is the result of
             be used as headers.
         """
 
-        featurePath = normpath(featurePath)
+        featurePath = expanduser(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}

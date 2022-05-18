@@ -376,7 +376,7 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     if toDir is None:
         toDir = expanduser(DOWNLOADS)
     else:
-        toDir = normpath(toDir)
+        toDir = expanduser(toDir)
     if not os.path.exists(toDir):
         os.makedirs(toDir, exist_ok=True)
     toPath = f"{toDir}/{toFile}"

@@ -35,7 +35,7 @@ There is a separate manual for the simplified interface:
 
 <mark>3a. legend</mark>
 :   Some layers have a triangle in front of their names.
-    These are layers that consists of a limited amount of keywords.
+    These are layers that consist of a limited amount of keywords.
     If they are acronymns, you can see their legend here.
     Otherwise, you see a frequency list of there values here.
 
@@ -144,7 +144,7 @@ There is a separate manual for the simplified interface:
         `b` | **b**ack | a batch (half a screenful)
         `f` | **f**orward | a batch (half a screen)
         `s` | **s**tart | all the way
-        `e` | **e**end | all the way
+        `e` | **e**nd | all the way
     
 <mark>15. position</mark>
 :   The current position in the results table is marked.
@@ -439,7 +439,7 @@ The remaining Javascript files are the modules of the program.
 
 Modern browsers can take in modular Javascript, except when you have the HTML file
 locally on your computer and you open it with a double click.
-Your browser has then `file://` in its URL bar, and in that cases modular Javascript does
+Your browser has then `file://` in its URL bar, and in that case modular Javascript does
 not work.
 
 To overcome that, we have also bundled the program in a single file, and that is included by
@@ -448,9 +448,9 @@ To overcome that, we have also bundled the program in a single file, and that is
 From within the app, you can download a zip file with *app*`-local.html` in it,
 so that you can have the full search experience completely off-line.
 
-Also when you have opened this page over the internet, your browser has downloaded the
-complete app, and all interaction between you and the search app happens at your browser,
-without further internet connection (except when you navigate to links to the internet).
+Also when you have opened this page over the internet, once your browser has downloaded the
+complete app, all interaction between you and the search app happens at your browser,
+without further internet connection (except when you navigate to external links).
 
 As a consequence
 
@@ -470,7 +470,7 @@ The construction of this app relies very much of the organization of the corpus
 as a Text-Fabric dataset.
 
 The process of creating a layered search functionality
-is currently being baked into Text-Fabric.
+is baked into Text-Fabric.
 
 The designer needs to specify the layers in a `.yaml` file
 and write a small piece of code to generate the data for the layers
@@ -502,7 +502,7 @@ we adopted the approach to assemble data
 and power a simple Javascript program with it.
 
 The first implementation of these idea was funded by
-[Prof. Geoffrey Khan](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan)
+[Prof. Geoffrey Khan](https://www.ames.cam.ac.uk/people/professor-geoffrey-khan),
 reviewed by Cody Kingham and the people of
 [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab/nena_corpus)
 and eventually written by

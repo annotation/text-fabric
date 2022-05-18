@@ -129,7 +129,7 @@ from ..core.helpers import (
     setFromSpec,
     nbytes,
     console,
-    normpath,
+    expanduser,
 )
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -145,7 +145,7 @@ class MQL(object):
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
         error = tmObj.error
 
-        mqlDir = normpath(mqlDir)
+        mqlDir = expanduser(mqlDir)
         self.mqlDir = mqlDir
         cleanDb = cleanName(mqlName)
         if cleanDb != mqlName:
@@ -548,7 +548,7 @@ def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     mqlFile, slotType, otype, meta: various
         See `tf.core.fabric.Fabric.importMQL
     """
-    mqlFile = normpath(mqlFile)
+    mqlFile = expanduser(mqlFile)
     error = tmObj.error
 
     if slotType is None:

@@ -379,7 +379,7 @@ from ..parameters import (
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
 )
-from ..core.helpers import console, htmlEsc, expanduser
+from ..core.helpers import console, htmlEsc, expanduser, initTree
 from .helpers import dh
 from .zipdata import zipData
 
@@ -1025,10 +1025,7 @@ class Checkout(object):
         destZip = self.dirPathLocal
         try:
             z = ZipFile(zf)
-            if not self.keep:
-                if os.path.exists(destZip):
-                    rmtree(destZip)
-            os.makedirs(destZip, exist_ok=True)
+            initTree(destZip, fresh=not self.keep)
             os.chdir(destZip)
             if self.withPaths:
                 z.extractall()
@@ -1057,10 +1054,7 @@ class Checkout(object):
 
         destDir = f"{self.dirPathLocal}"
         destSave = f"{self.dirPathSaveLocal}"
-        if not self.keep:
-            if os.path.exists(destDir):
-                rmtree(destDir)
-        os.makedirs(destDir, exist_ok=True)
+        initTree(destDir, fresh=not self.keep)
 
         excludeRe = re.compile(exclude) if exclude else None
 

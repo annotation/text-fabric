@@ -44,6 +44,23 @@ text-fabric appName:hot
 
 ## 9
 
+### 9.5
+
+#### 9.5.0
+
+2022-05-18
+
+New behaviour in walking nodes: `tf.core.nodes.Nodes.walk`: with `events=True`
+it generates open/close events for nodes, so that you can do something
+when the node starts and something else when the node ends.
+
+New utility functions `tf.core.helpers.clearTree` and `tf.core.helpers.initTree`.
+
+Various friction reducing changes:
+
+*   functions with file or directory arguments always perform an expansion
+    of a leading `~` to the user's home directory.
+
 #### 9.4.4
 
 2022-05-16
