@@ -46,6 +46,38 @@ text-fabric appName:hot
 
 ### 9.5
 
+#### 9.5.1
+
+2022-05-31
+
+Bug discovered thanks to an observation of Oliver Glanz:
+
+In search templates, a quantifier has to follow an atom line, like so
+
+```
+word gn=f
+/without/
+.. nu=pl
+/-/
+```
+
+This looks for a word with female gender, without it being a word in the plural.
+
+An alternative syntax with the same semantics is
+
+```
+word
+  gn=f
+/without/
+.. nu=pl
+/-/
+```
+
+However, the parser in Text-Fabric got distracted by the intervening `gn=f` and
+did not connect the quantifier with the preceding `word`, which gave erroneous results.
+
+That has been fixed, and now the second form leads to the same results as the first one.
+
 #### 9.5.0
 
 2022-05-18

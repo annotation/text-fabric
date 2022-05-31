@@ -223,8 +223,9 @@ def _tokenize(searchExe):
             ES = lineQuKind not in QINIT
             ET = len(tokens) == 0
             lastAtom = lastAtomToken()
-            EA = len(tokens) and not lastAtomToken
-            EI = len(tokens) and lastAtom["indent"] != lineIndent
+            EA = len(tokens) and not lastAtom
+            # EA = len(tokens) and not lastAtomToken
+            EI = len(tokens) and lastAtom and lastAtom["indent"] != lineIndent
             # EA = (len(tokens) and tokens[-1]['kind'] != 'atom' and 'otype' not in tokens[-1])
             # EI = (len(tokens) and tokens[-1]['indent'] != lineIndent)
 
@@ -269,7 +270,10 @@ def _tokenize(searchExe):
                         )
                     )
                     good = False
-                prevAtom = tokens[-1]
+                if not good:
+                    continue
+                # prevAtom = tokens[-1]
+                prevAtom = lastAtomToken()
                 curQu.append((i, lineQuKind, lineIndent))
                 curQuTemplates = [[]]
                 quantifiers = prevAtom.setdefault("quantifiers", [])

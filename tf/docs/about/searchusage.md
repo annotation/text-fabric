@@ -329,7 +329,7 @@ whole spectrum of relational constraints on nodes.
 
 #### *quantifier* sub-templates:
 
-Atom lines that contain an otype or set may be followed by
+Atom lines that contain an otype or set may be followed by *quantifiers*.
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:
 
@@ -337,6 +337,27 @@ special keywords:
 *   `/where/` and `/have/`
 *   `/with/` and `/or/`
 *   `/-/`
+
+N.B. Quantifiers are also allowed after the *feature lines* that may follow such atoms.
+In that case, the quantifier is also associated with the atom.
+So the following two are equivalent
+
+```
+word gn=f
+/without/
+.. nu=pl
+/-/
+```
+
+and
+
+```
+word
+  gn=f
+/without/
+.. nu=pl
+/-/
+```
 
 See [*quantifiers*](#quantifiers) below for all the syntax and semantics.
 
@@ -578,9 +599,25 @@ templateN
 /-/
 ```
 
-Meaning:
+or
 
-node *r* is a result of this template if and only if *r* is a result of `atom` and
+```
+atom
+  extra feature line 1
+  extra feature line 2
+  extra feature line n
+/without/
+templateN
+/-/
+```
+
+In the following, when we say `atom`, we mean the atom line itself
+plus all feature lines that follow it.
+
+The Meaning is:
+
+node *r* is a result of this template if and only if
+*r* is a result of `atom` (with all its the extra feature lines) and
 there is no tuple *RN* such that (*r*, *RN*) is a result of
 
 ```
