@@ -264,7 +264,7 @@ full variety of feature constraints on nodes and edges.</p>
 below for the
 whole spectrum of relational constraints on nodes.</p>
 <h4 id="quantifier-sub-templates"><em>quantifier</em> sub-templates:</h4>
-<p>Atom lines that contain an otype or set may be followed by
+<p>Atom lines that contain an otype or set may be followed by <em>quantifiers</em>.
 Quantifiers consist of search templates themselves, demarcated by some
 special keywords:</p>
 <ul>
@@ -273,6 +273,21 @@ special keywords:</p>
 <li><code>/with/</code> and <code>/or/</code></li>
 <li><code>/-/</code></li>
 </ul>
+<p>N.B. Quantifiers are also allowed after the <em>feature lines</em> that may follow such atoms.
+In that case, the quantifier is also associated with the atom.
+So the following two are equivalent</p>
+<pre><code>word gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
+<p>and</p>
+<pre><code>word
+  gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
 <p>See <a href="#quantifiers"><em>quantifiers</em></a> below for all the syntax and semantics.</p>
 <h3 id="feature-specifications">Feature specifications</h3>
 <p>The <strong>features</strong> above is a specification of what features with
@@ -532,8 +547,20 @@ as in:</p>
 templateN
 /-/
 </code></pre>
-<p>Meaning:</p>
-<p>node <em>r</em> is a result of this template if and only if <em>r</em> is a result of <code>atom</code> and
+<p>or</p>
+<pre><code>atom
+  extra feature line 1
+  extra feature line 2
+  extra feature line n
+/without/
+templateN
+/-/
+</code></pre>
+<p>In the following, when we say <code>atom</code>, we mean the atom line itself
+plus all feature lines that follow it.</p>
+<p>The Meaning is:</p>
+<p>node <em>r</em> is a result of this template if and only if
+<em>r</em> is a result of <code>atom</code> (with all its the extra feature lines) and
 there is no tuple <em>RN</em> such that (<em>r</em>, <em>RN</em>) is a result of</p>
 <pre><code>atom
 templateN
@@ -735,7 +762,7 @@ fclause
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/searchusage.md

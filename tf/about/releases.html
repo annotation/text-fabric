@@ -54,6 +54,26 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="95">9.5</h3>
+<h4 id="951">9.5.1</h4>
+<p>2022-05-31</p>
+<p>Bug discovered thanks to an observation of Oliver Glanz:</p>
+<p>In search templates, a quantifier has to follow an atom line, like so</p>
+<pre><code>word gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
+<p>This looks for a word with female gender, without it being a word in the plural.</p>
+<p>An alternative syntax with the same semantics is</p>
+<pre><code>word
+  gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
+<p>However, the parser in Text-Fabric got distracted by the intervening <code>gn=f</code> and
+did not connect the quantifier with the preceding <code>word</code>, which gave erroneous results.</p>
+<p>That has been fixed, and now the second form leads to the same results as the first one.</p>
 <h4 id="950">9.5.0</h4>
 <p>2022-05-18</p>
 <p>New behaviour in walking nodes: <code><a title="tf.core.nodes.Nodes.walk" href="../core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code>: with <code>events=True</code>
@@ -369,7 +389,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -443,6 +463,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#95">9.5</a><ul>
+<li><a href="#951">9.5.1</a></li>
 <li><a href="#950">9.5.0</a></li>
 <li><a href="#944">9.4.4</a></li>
 <li><a href="#942-3">9.4.2-3</a></li>

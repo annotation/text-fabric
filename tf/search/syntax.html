@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L1-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L1-L678" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Syntax of search templates
@@ -254,8 +254,9 @@ def _tokenize(searchExe):
             ES = lineQuKind not in QINIT
             ET = len(tokens) == 0
             lastAtom = lastAtomToken()
-            EA = len(tokens) and not lastAtomToken
-            EI = len(tokens) and lastAtom[&#34;indent&#34;] != lineIndent
+            EA = len(tokens) and not lastAtom
+            # EA = len(tokens) and not lastAtomToken
+            EI = len(tokens) and lastAtom and lastAtom[&#34;indent&#34;] != lineIndent
             # EA = (len(tokens) and tokens[-1][&#39;kind&#39;] != &#39;atom&#39; and &#39;otype&#39; not in tokens[-1])
             # EI = (len(tokens) and tokens[-1][&#39;indent&#39;] != lineIndent)
 
@@ -300,7 +301,10 @@ def _tokenize(searchExe):
                         )
                     )
                     good = False
-                prevAtom = tokens[-1]
+                if not good:
+                    continue
+                # prevAtom = tokens[-1]
+                prevAtom = lastAtomToken()
                 curQu.append((i, lineQuKind, lineIndent))
                 curQuTemplates = [[]]
                 quantifiers = prevAtom.setdefault(&#34;quantifiers&#34;, [])
@@ -720,7 +724,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L602-L607" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L606-L611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanParent(atom, parentName):
     (kind, data) = parseLine(atom)
@@ -738,7 +742,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L610-L653" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L614-L657" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def deContext(quantifier, parentName):
     (quKind, quTemplates, ln) = quantifier
@@ -794,7 +798,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L507-L569" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L511-L573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
     if asEdge:
@@ -869,7 +873,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L461-L504" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L465-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseLine(line):
     for x in [True]:
@@ -925,7 +929,7 @@ def _unesc(x, inRe=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/83a34aa0a9abbf91fceeb676f716f36973061adf/tf/search/syntax.py#L76-L92" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/search/syntax.py#L76-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def syntax(searchExe):
     error = searchExe.api.TF.error
