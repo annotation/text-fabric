@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/text.py#L1-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/text.py#L1-L129" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from textwrap import dedent
@@ -34,7 +34,7 @@ from unicodedata import normalize
 
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import htmlEsc
-from .helpers import dh
+from .helpers import dh, dm
 
 
 def textApi(app):
@@ -63,6 +63,31 @@ def textApi(app):
 
     aContext.allowedValues[&#34;textFormat&#34;] = T.formats
     app.specialCharacters = types.MethodType(specialCharacters, app)
+    app.showFormats = types.MethodType(showFormats, app)
+
+
+def showFormats(app):
+    api = app.api
+    T = api.T
+    tFormats = T._tformats
+    xFormats = T._xformats
+
+    md = dedent(&#34;&#34;&#34;\
+    format | level | template
+    --- | --- | ---
+    &#34;&#34;&#34;)
+
+    for (fmt, level) in T.formats.items():
+        tpl = (
+            f&#34;`{tFormats[fmt]}`&#34;
+            if fmt in tFormats
+            else f&#34;*function* `{xFormats[fmt].__name__}`&#34;
+            if fmt in xFormats
+            else &#34;*unknown*&#34;
+        )
+        md += f&#34;&#34;&#34;`{fmt}` | **{level}** | {tpl}\n&#34;&#34;&#34;
+
+    dm(md)
 
 
 def specialCharacters(app, fmt=None, _browse=False):
@@ -141,6 +166,40 @@ def specialCharacters(app, fmt=None, _browse=False):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.text.showFormats"><code class="name flex">
+<span>def <span class="ident">showFormats</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/text.py#L39-L60" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showFormats(app):
+    api = app.api
+    T = api.T
+    tFormats = T._tformats
+    xFormats = T._xformats
+
+    md = dedent(&#34;&#34;&#34;\
+    format | level | template
+    --- | --- | ---
+    &#34;&#34;&#34;)
+
+    for (fmt, level) in T.formats.items():
+        tpl = (
+            f&#34;`{tFormats[fmt]}`&#34;
+            if fmt in tFormats
+            else f&#34;*function* `{xFormats[fmt].__name__}`&#34;
+            if fmt in xFormats
+            else &#34;*unknown*&#34;
+        )
+        md += f&#34;&#34;&#34;`{fmt}` | **{level}** | {tpl}\n&#34;&#34;&#34;
+
+    dm(md)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.text.specialCharacters"><code class="name flex">
 <span>def <span class="ident">specialCharacters</span></span>(<span>app, fmt=None)</span>
 </code></dt>
@@ -166,7 +225,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/text.py#L38-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/text.py#L63-L129" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specialCharacters(app, fmt=None, _browse=False):
     &#34;&#34;&#34;Generate a widget for hard to type characters.
@@ -245,7 +304,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/text.py#L10-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/text.py#L10-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
@@ -272,7 +331,8 @@ If not passed, the default format will be chosen.</dd>
         xFormats[fmt] = func
 
     aContext.allowedValues[&#34;textFormat&#34;] = T.formats
-    app.specialCharacters = types.MethodType(specialCharacters, app)</code></pre>
+    app.specialCharacters = types.MethodType(specialCharacters, app)
+    app.showFormats = types.MethodType(showFormats, app)</code></pre>
 </details>
 </dd>
 </dl>
@@ -344,6 +404,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.advanced.text.showFormats" href="#tf.advanced.text.showFormats">showFormats</a></code></li>
 <li><code><a title="tf.advanced.text.specialCharacters" href="#tf.advanced.text.specialCharacters">specialCharacters</a></code></li>
 <li><code><a title="tf.advanced.text.textApi" href="#tf.advanced.text.textApi">textApi</a></code></li>
 </ul>

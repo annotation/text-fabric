@@ -29,8 +29,7 @@
 <p>When we change the API, we make sure that the tutorials show off
 all possibilities.</p>
 </div>
-<p>See the app-specific tutorials in
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master">annotation</a>.</p>
+<p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <p>When TF apps have been updated, they will be autoloaded to the newest version
 provided you call the app as follows:</p>
 <p>(in a program)</p>
@@ -54,6 +53,16 @@ To get the newest unstable version:</p>
 <hr>
 <h2 id="9">9</h2>
 <h3 id="95">9.5</h3>
+<h4 id="952">9.5.2</h4>
+<p>2022-06-14</p>
+<ul>
+<li>Small fix in <code><a title="tf.core.helpers.initTree" href="../core/helpers.html#tf.core.helpers.initTree">initTree()</a></code>.</li>
+<li>New function <code><a title="tf.advanced.text.showFormats" href="../advanced/text.html#tf.advanced.text.showFormats">showFormats()</a></code>; call as <code>A.showFormats()</code>
+that gives a nicely formatted list of all text-formats and the templates
+by which they are defined.</li>
+<li>Small fix in text formats: when you specify a text-format with default values,
+the empty string is now also allowed as default value.</li>
+</ul>
 <h4 id="951">9.5.1</h4>
 <p>2022-05-31</p>
 <p>Bug discovered thanks to an observation of Oliver Glanz:</p>
@@ -389,7 +398,7 @@ out of portions without the need of having the whole work in RAM.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -463,6 +472,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#9">9</a><ul>
 <li><a href="#95">9.5</a><ul>
+<li><a href="#952">9.5.2</a></li>
 <li><a href="#951">9.5.1</a></li>
 <li><a href="#950">9.5.0</a></li>
 <li><a href="#944">9.4.4</a></li>

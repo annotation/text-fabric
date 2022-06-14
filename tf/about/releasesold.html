@@ -128,7 +128,7 @@ Whereas the code to map slots between versions is highly dependent on the datase
 the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code>).
 It is used in the
-<a href="https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb">missieven</a>
+<a href="https://nbviewer.jupyter.org/github/clariah/wp6-missieven/blob/master/programs/map.ipynb">missieven</a>
 corpus.</p>
 <h4 id="847">8.4.7</h4>
 <p>2021-01-20</p>
@@ -152,7 +152,7 @@ there is a new setting <code>webOffset</code> in the configuration of a TF app t
 an offset between a logical page number and a physical page number.
 See the webOffset setting of <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>.
 It is needed by the new
-<a href="https://github.com/annotation/app-missieven/blob/master/code/config.yaml">missieven corpus</a>.</p>
+<a href="https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml">missieven corpus</a>.</p>
 <h4 id="843">8.4.3</h4>
 <p>2020-09-25</p>
 <p>Minor fix in the display:</p>
@@ -526,7 +526,7 @@ shows you a complete examnple.</p>
 <h4 id="785">7.8.5</h4>
 <p>2019-06-21</p>
 <p>Added fonts for the upcoming
-<a href="https://github.com/annotation/app-nena">NENA</a> corpus with TF app by Cody Kingham.</p>
+<a href="https://github.com/CambridgeSemiticsLab/nena_tf">NENA</a> corpus with TF aapp by Cody Kingham.</p>
 <p>Updated docs for app writers.</p>
 <h4 id="784">7.8.4</h4>
 <p>2019-06-14</p>
@@ -597,7 +597,7 @@ a new "tf.compose" package with operators to manipulate TF data sets:
 <code>modify()</code> and <code>combine()</code>.</p>
 <p>As of version 9: <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> and <code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code>.</p>
 <p>See
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb">compose chapter</a>
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/compose.ipynb">compose chapter</a>
 in the Banks tutorial, where you can see it in action
 on (2 copies of) the nice little 100-word example corpus.</p>
 <p>Minor goodies:</p>
@@ -635,11 +635,11 @@ Especially the ones with <code>==</code> (same slots), <code>&amp;&amp;</code> (
 <p>The performance of the machinery has been tuned with new parameters, and all BHSA
 queries in the tutorials have been tested.</p>
 <p>There was a pair of queries in
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchGaps.ipynb">searchGaps</a>
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchGaps.ipynb">searchGaps</a>
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.</p>
 <p>See
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchRough.ipynb">searchRough</a>
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a>
 at the end where the performance parameters are tweaked.</p>
 <h4 id="776-8">7.7.6-8</h4>
 <p>2019-05-20</p>
@@ -746,7 +746,7 @@ or from <code>m</code> to <code>n</code>, or both.</p>
 <p>See the <code><a title="tf.about.searchusage" href="searchusage.html">tf.about.searchusage</a></code>.</p>
 <p>This corresponds to edge features.</p>
 <p>See also the
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/app.ipynb">Banks example</a>.</p>
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/app.ipynb">Banks example</a>.</p>
 <h4 id="762">7.6.2</h4>
 <p>2019-04-12</p>
 <p>Small but important fix in the display logic of the <code>pretty()</code> function.
@@ -785,7 +785,8 @@ from the latest online commit</li>
 <li><code>2387abc78f9de&hellip;</code>: a concrete commit hash found on GitHub (under Commits)</li>
 <li><code>v1.3</code>: a release tag found on GitHub (under Releases)</li>
 </ul>
-<p>Or consult the <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb">repo</a> notebook.</p>
+<p>Or consult the
+<a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">repo</a> notebook.</p>
 <h5 id="api-deletion-backwards-incompatible">API deletion (backwards incompatible):</h5>
 <p>The parameters <code>check=...</code> and <code>lgc=...</code> of <code>use()</code> and <code>-lgc</code> and <code>-c</code> when
 calling the TF browser have been removed.</p>
@@ -1034,7 +1035,7 @@ to the <code>app</code>-<em>xxxx</em> repositories.</li>
 Now you can also export to Excel from a notebook,
 using <code>A.export(results)</code>.</p>
 <p>Jump to the tutorial:
-<a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb">exportExcel</a></p>
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel</a></p>
 <p>For more info: see <a href="https://github.com/annotation/text-fabric/issues/38">#38</a> </p>
 <h4 id="722">7.2.2</h4>
 <p>2018-12-12</p>
@@ -1090,7 +1091,7 @@ which give the passage string of any kind of node, if possible.</li>
 <li>The function <code>A.plain()</code> now responds to the <code>highlights</code> parameter:
 you can highlight material inside plain displays.
 and
-<strong><a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/display.ipynb">display tutorial</a></strong></li>
+<strong><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb">display tutorial</a></strong></li>
 <li>New function <code>T.sectionTuple(n)</code> which gives the tuple of section nodes in which <code>n</code>
 is embedded</li>
 <li><strong>Modified function <code>T.sectionFromNode(n, fillup=False)</code></strong>
@@ -1179,7 +1180,7 @@ also the foreign features;</li>
 <li>a lot of repeated code inside apps has been factored out</li>
 <li>it is easier to turn corpora into new text-fabric apps.</li>
 </ul>
-<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb">share</a></p>
+<p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a></p>
 <p>See the <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>
 for concrete and detailed hints how to make most of this version.</p>
 <h2 id="6">6</h2>
@@ -2180,7 +2181,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

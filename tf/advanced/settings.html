@@ -28,8 +28,8 @@
 These settings will be read, checked, and transformed into configuration data
 that is read by the app, see <code><a title="tf.advanced.settings.showContext" href="#tf.advanced.settings.showContext">showContext()</a></code></p>
 <p>See for examples:
-* <a href="https://github.com/annotation/app-bhsa/blob/master/code/config.yaml">bhsa</a>.
-* <a href="https://github.com/annotation/app-uruk/blob/master/code/config.yaml">uruk</a>.</p>
+* <a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml">bhsa</a>.
+* <a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">uruk</a>.</p>
 <h1 id="config-specs">Config specs</h1>
 <p>Here is a specification of all settings you can configure for an app.</p>
 <p>Each section below corresponds to a main key in the <code>config.yaml</code> of an app.</p>
@@ -391,7 +391,7 @@ of the online resource (see <code>webUrl</code>).</p>
 <p>Suppose we need to offset sections of level 2 depending on the section of level 1
 they are in.
 For example, in the
-<a href="https://github.com/annotation/app-missieven/blob/master/code/config.yaml">missieven corpus</a>
+<a href="https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml">missieven corpus</a>
 we have section levels 1=volume, 2=page, 3=line.
 In each volume, the logical page 1 must be translated into a higher
 number, depending on the number of preface pages in that volume.</p>
@@ -562,7 +562,7 @@ If there are no such node types, we pick the slot type, but this is pathological
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Use this if you want to exclude particular nodes of some type, e.g. in
-<a href="https://github.com/annotation/app-dss/blob/master/code/config.yaml">dss</a>.
+<a href="https://github.com/etcbc/dss/blob/master/app/config.yaml">dss</a>.
 where we want to prevent line terminator signs.</p>
 </div>
 <p>The value is a dictionary of feature name - value pairs.</p>
@@ -613,7 +613,7 @@ type.</p>
 <p>The app needs to define a function</p>
 <pre><code>getGraphics(isPretty, node, nodeType, isOuter) =&gt; HTML code for sourcing the graphics
 </code></pre>
-<p>See <a href="https://github.com/annotation/app-uruk/blob/master/code/app.py">uruk</a>.</p>
+<p>See <a href="https://github.com/Nino-cunei/uruk/blob/master/app/app.py">uruk</a>.</p>
 <dl>
 <dt>Default</dt>
 <dd>boolean <code>null</code></dd>
@@ -707,7 +707,7 @@ to their stacking.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>For some types in
-<a href="https://github.com/annotation/app-uruk/blob/master/code/config.yaml">uruk</a>
+<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">uruk</a>
 it is needed to deviate from the default.</p>
 </div>
 <hr>
@@ -757,7 +757,7 @@ In your app code you have to implement:</p>
 <p>The default is:
 <code>true</code> for the lowest section type, if there are section types in <code>otext.tf</code>.</p>
 <p>But more types can be declared as verselike, e.g. <code>halfverse</code> in the
-<a href="https://github.com/annotation/app-bhsa/blob/master/code/config.yaml">bhsa</a>.</p>
+<a href="https://github.com/etcbc/bhsa/blob/master/app/config.yaml">bhsa</a>.</p>
 <hr>
 <h3 id="wrap"><code>wrap</code></h3>
 <p>Pretty: whether the child displays may be wrapped.</p>
@@ -775,7 +775,7 @@ such columns may not be wrapped (into several columns)</li>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>For some types in
-<a href="https://github.com/annotation/app-uruk/blob/master/code/config.yaml">uruk</a>
+<a href="https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml">uruk</a>
 it is needed to deviate from the default.</p>
 </div>
 <hr>
@@ -789,7 +789,7 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1-L1846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1-L1846" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # App settings
@@ -799,8 +799,8 @@ These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
-* [bhsa](https://github.com/annotation/app-bhsa/blob/master/code/config.yaml).
-* [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml).
+* [bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+* [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
 
 # Config specs
 
@@ -1251,7 +1251,7 @@ of the online resource (see `webUrl`).
 Suppose we need to offset sections of level 2 depending on the section of level 1
 they are in.
 For example, in the
-[missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml)
+[missieven corpus](https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml)
 we have section levels 1=volume, 2=page, 3=line.
 In each volume, the logical page 1 must be translated into a higher
 number, depending on the number of preface pages in that volume.
@@ -1446,7 +1446,7 @@ All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
     Use this if you want to exclude particular nodes of some type, e.g. in
-    [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
+    [dss](https://github.com/etcbc/dss/blob/master/app/config.yaml).
     where we want to prevent line terminator signs.
 
 The value is a dictionary of feature name - value pairs.
@@ -1510,7 +1510,7 @@ The app needs to define a function
 getGraphics(isPretty, node, nodeType, isOuter) =&gt; HTML code for sourcing the graphics
 ```
 
-See [uruk](https://github.com/annotation/app-uruk/blob/master/code/app.py).
+See [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
 
 Default
 :   boolean `null`
@@ -1617,7 +1617,7 @@ Default
 
 !!! hint
     For some types in
-    [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml)
+    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -1687,7 +1687,7 @@ The default is:
 `true` for the lowest section type, if there are section types in `otext.tf`.
 
 But more types can be declared as verselike, e.g. `halfverse` in the
-[bhsa](https://github.com/annotation/app-bhsa/blob/master/code/config.yaml).
+[bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
 
 ---
 
@@ -1704,7 +1704,7 @@ Default:
 
 !!! hint
     For some types in
-    [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml)
+    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -2654,7 +2654,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1815-L1846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1815-L1846" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
@@ -2698,7 +2698,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1424-L1474" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1424-L1474" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDataDefaults(app, cfg, dKey, withApi):
     checker = Check(app, withApi)
@@ -2761,7 +2761,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1805-L1812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1805-L1812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get(&#34;level&#34;, defaultLevel)
@@ -2781,7 +2781,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1477-L1776" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1477-L1776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTypeDefaults(app, cfg, dKey, withApi):
     if not withApi:
@@ -3093,7 +3093,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1296-L1374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1296-L1374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecs(app, cfg, reset=False):
     if not reset:
@@ -3184,7 +3184,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1377-L1421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1377-L1421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecsApi(app, cfg):
     api = app.api
@@ -3257,7 +3257,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1779-L1802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1779-L1802" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
     &#34;&#34;&#34;Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
@@ -3299,7 +3299,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1080-L1096" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1080-L1096" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppCurrent:
     def __init__(self, specs):
@@ -3329,7 +3329,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1091-L1092" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1091-L1092" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -3343,7 +3343,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1094-L1096" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1094-L1096" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)
@@ -3358,7 +3358,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1085-L1089" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1085-L1089" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, specs):
     allKeys = self.allKeys
@@ -3378,7 +3378,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1099-L1288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1099-L1288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Check:
     def __init__(self, app, withApi):
@@ -3581,7 +3581,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1253-L1268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1253-L1268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
     self.cfg = cfg
@@ -3609,7 +3609,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1270-L1277" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1270-L1277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkItem(self, cfg, dKey):
     self.cfg = cfg
@@ -3629,7 +3629,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1105-L1251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1105-L1251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSetting(self, k, v, extra=None):
     app = self.app
@@ -3788,7 +3788,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/advanced/settings.py#L1279-L1288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1279-L1288" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def report(self):
     errors = self.errors

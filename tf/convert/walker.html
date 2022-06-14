@@ -136,7 +136,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L1-L1544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L1-L1568" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -587,6 +587,11 @@ class CV(object):
                 )
             self.sectionFeatures = sectionInfo[&#34;sectionFeatures&#34;]
             self.sectionTypes = sectionInfo[&#34;sectionTypes&#34;]
+            self.featFromSectionType = {
+                typ: feat
+                for (typ, feat) in zip(self.sectionTypes, self.sectionFeatures)
+            }
+            self.sectionSet = set(self.sectionTypes)
 
             structureInfo = {}
             for f in (&#34;structureTypes&#34;, &#34;structureFeatures&#34;):
@@ -611,7 +616,7 @@ class CV(object):
                 self.structureTypes = []
             self.structureFeatures = structureInfo[&#34;structureFeatures&#34;]
             self.structureTypes = structureInfo[&#34;structureTypes&#34;]
-            self.featFromType = {
+            self.featFromStructureType = {
                 typ: feat
                 for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
             }
@@ -862,7 +867,9 @@ class CV(object):
 
             for s in slots:
                 if not 1 &lt;= s &lt;= maxSlot:
-                    errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+                    errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                        f&#34;{s}&#34;
+                    )
                 else:
                     oslots = self.oslots
                     oslots[node].add(s)
@@ -1318,7 +1325,8 @@ class CV(object):
             for (nType, seq) in curEmbedders:
                 embedCount[nType] += 1
             for (nType, amount) in sorted(
-                embedCount.items(), key=lambda x: (-x[1], x[0]),
+                embedCount.items(),
+                key=lambda x: (-x[1], x[0]),
             ):
                 errors[&#34;Unterminated nodes&#34;].append(f&#34;{nType}: {amount} x&#34;)
 
@@ -1416,7 +1424,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(&#34;checking features ... &#34;)
+        info(&#34;checking (section) features ... &#34;)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1434,17 +1442,20 @@ class CV(object):
                 and feat not in edgeFeatures
             ):
                 errors[&#34;intFeatures&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as integer valued, but this feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as integer valued, &#39;
+                    &#34;but this feature does not occur&#34;
                 )
         for nType in self.sectionTypes:
             if nType not in nodes:
                 errors[&#34;sections&#34;].append(
-                    f&#39;node type &#34;{nType}&#34; is declared as a section type, but this node type does not occur&#39;
+                    f&#39;node type &#34;{nType}&#34; is declared as a section type, &#39;
+                    &#34;but this node type does not occur&#34;
                 )
         for feat in self.sectionFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;sections&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as a section feature, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as a section feature, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
         for nType in self.structureTypes:
             if nType not in nodes:
@@ -1455,26 +1466,39 @@ class CV(object):
         for feat in self.structureFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;structure&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as a structure feature, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as a structure feature, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
                 nodeFeatures[feat] = {}
 
+        sectionSet = self.sectionSet
         structureSet = self.structureSet
-        featFromType = self.featFromType
+        featFromSectionType = self.featFromSectionType
+        featFromStructureType = self.featFromStructureType
+
         for nType in nodes:
-            if nType not in structureSet:
-                continue
-            feat = featFromType[nType]
-            for seq in nodes[nType]:
-                if (nType, seq) not in nodeFeatures[feat]:
-                    errors[&#34;structure features&#34;].append(
-                        f&#39;&#34;structure element &#34;{nType}&#34; {seq} has no value for &#34;{feat}&#34;&#39;
-                    )
+            if nType in structureSet:
+                feat = featFromStructureType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;structure features&#34;].append(
+                            f&#39;&#34;structure element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+            if nType in sectionSet:
+                feat = featFromSectionType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;section features&#34;].append(
+                            f&#39;&#34;section element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
 
         for feat in self.textFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;text formats&#34;].append(
-                    f&#39;&#34;{feat}&#34; is used in a text format, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is used in a text format, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
 
         for feat in WARP:
@@ -1702,7 +1726,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L147-L1544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L147-L1568" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -2007,6 +2031,11 @@ class CV(object):
                 )
             self.sectionFeatures = sectionInfo[&#34;sectionFeatures&#34;]
             self.sectionTypes = sectionInfo[&#34;sectionTypes&#34;]
+            self.featFromSectionType = {
+                typ: feat
+                for (typ, feat) in zip(self.sectionTypes, self.sectionFeatures)
+            }
+            self.sectionSet = set(self.sectionTypes)
 
             structureInfo = {}
             for f in (&#34;structureTypes&#34;, &#34;structureFeatures&#34;):
@@ -2031,7 +2060,7 @@ class CV(object):
                 self.structureTypes = []
             self.structureFeatures = structureInfo[&#34;structureFeatures&#34;]
             self.structureTypes = structureInfo[&#34;structureTypes&#34;]
-            self.featFromType = {
+            self.featFromStructureType = {
                 typ: feat
                 for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
             }
@@ -2282,7 +2311,9 @@ class CV(object):
 
             for s in slots:
                 if not 1 &lt;= s &lt;= maxSlot:
-                    errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+                    errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                        f&#34;{s}&#34;
+                    )
                 else:
                     oslots = self.oslots
                     oslots[node].add(s)
@@ -2738,7 +2769,8 @@ class CV(object):
             for (nType, seq) in curEmbedders:
                 embedCount[nType] += 1
             for (nType, amount) in sorted(
-                embedCount.items(), key=lambda x: (-x[1], x[0]),
+                embedCount.items(),
+                key=lambda x: (-x[1], x[0]),
             ):
                 errors[&#34;Unterminated nodes&#34;].append(f&#34;{nType}: {amount} x&#34;)
 
@@ -2836,7 +2868,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info(&#34;checking features ... &#34;)
+        info(&#34;checking (section) features ... &#34;)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -2854,17 +2886,20 @@ class CV(object):
                 and feat not in edgeFeatures
             ):
                 errors[&#34;intFeatures&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as integer valued, but this feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as integer valued, &#39;
+                    &#34;but this feature does not occur&#34;
                 )
         for nType in self.sectionTypes:
             if nType not in nodes:
                 errors[&#34;sections&#34;].append(
-                    f&#39;node type &#34;{nType}&#34; is declared as a section type, but this node type does not occur&#39;
+                    f&#39;node type &#34;{nType}&#34; is declared as a section type, &#39;
+                    &#34;but this node type does not occur&#34;
                 )
         for feat in self.sectionFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;sections&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as a section feature, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as a section feature, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
         for nType in self.structureTypes:
             if nType not in nodes:
@@ -2875,26 +2910,39 @@ class CV(object):
         for feat in self.structureFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;structure&#34;].append(
-                    f&#39;&#34;{feat}&#34; is declared as a structure feature, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is declared as a structure feature, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
                 nodeFeatures[feat] = {}
 
+        sectionSet = self.sectionSet
         structureSet = self.structureSet
-        featFromType = self.featFromType
+        featFromSectionType = self.featFromSectionType
+        featFromStructureType = self.featFromStructureType
+
         for nType in nodes:
-            if nType not in structureSet:
-                continue
-            feat = featFromType[nType]
-            for seq in nodes[nType]:
-                if (nType, seq) not in nodeFeatures[feat]:
-                    errors[&#34;structure features&#34;].append(
-                        f&#39;&#34;structure element &#34;{nType}&#34; {seq} has no value for &#34;{feat}&#34;&#39;
-                    )
+            if nType in structureSet:
+                feat = featFromStructureType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;structure features&#34;].append(
+                            f&#39;&#34;structure element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
+            if nType in sectionSet:
+                feat = featFromSectionType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors[&#34;section features&#34;].append(
+                            f&#39;&#34;section element &#34;{nType}&#34; {seq} &#39;
+                            f&#39;has no value for &#34;{feat}&#34;&#39;
+                        )
 
         for feat in self.textFeatures:
             if feat not in nodeFeatures:
                 errors[&#34;text formats&#34;].append(
-                    f&#39;&#34;{feat}&#34; is used in a text format, but this node feature does not occur&#39;
+                    f&#39;&#34;{feat}&#34; is used in a text format, &#39;
+                    &#34;but this node feature does not occur&#34;
                 )
 
         for feat in WARP:
@@ -3158,7 +3206,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L973-L997" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L980-L1004" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3210,7 +3258,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L999-L1020" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L1006-L1027" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3256,7 +3304,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L1022-L1036" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L1029-L1043" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3307,7 +3355,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L823-L855" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L830-L862" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3370,7 +3418,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L793-L821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L800-L828" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3432,7 +3480,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L1038-L1077" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L1045-L1084" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3502,7 +3550,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L945-L971" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L952-L978" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3560,7 +3608,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L892-L943" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L899-L950" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3661,7 +3709,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L658-L734" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L663-L741" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -3730,7 +3778,9 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 
         for s in slots:
             if not 1 &lt;= s &lt;= maxSlot:
-                errors[f&#39;slot out of range in `cv.node(({nType}, {seq}))`&#39;].append(f&#34;{s}&#34;)
+                errors[f&#34;slot out of range in `cv.node(({nType}, {seq}))`&#34;].append(
+                    f&#34;{s}&#34;
+                )
             else:
                 oslots = self.oslots
                 oslots[node].add(s)
@@ -3773,7 +3823,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L857-L890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L864-L897" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -3835,7 +3885,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L759-L791" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L766-L798" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -3899,7 +3949,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L610-L656" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L615-L661" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -3975,7 +4025,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L582-L608" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L587-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4028,7 +4078,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L736-L757" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L743-L764" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4141,7 +4191,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/0bf322bd8bb32a4be4b85cc121c6b92214bce126/tf/convert/walker.py#L223-L382" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/convert/walker.py#L223-L382" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
