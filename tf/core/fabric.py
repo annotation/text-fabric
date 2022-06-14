@@ -389,7 +389,7 @@ Api reference : {APIREF}
                     cformats = self.cformats
                     tFormats = {}
                     tFeats = set()
-                    for (fmt, (tpl, featData)) in cformats.items():
+                    for (fmt, (otpl, tpl, featData)) in cformats.items():
                         feats = set(chain.from_iterable(x[0] for x in featData))
                         tFormats[fmt] = tuple(sorted(feats))
                         tFeats |= feats

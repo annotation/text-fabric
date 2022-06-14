@@ -155,7 +155,7 @@ Whereas the code to map slots between versions is highly dependent on the datase
 the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in `tf.dataset.nodemaps`).
 It is used in the 
-[missieven](https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb)
+[missieven](https://nbviewer.jupyter.org/github/clariah/wp6-missieven/blob/master/programs/map.ipynb)
 corpus.
 
 #### 8.4.7
@@ -193,7 +193,7 @@ there is a new setting `webOffset` in the configuration of a TF app that let you
 an offset between a logical page number and a physical page number.
 See the webOffset setting of `tf.advanced.settings`.
 It is needed by the new
-[missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml).
+[missieven corpus](https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml).
 
 #### 8.4.3
 
@@ -689,7 +689,7 @@ Unmentionable fixes.
 2019-06-21
 
 Added fonts for the upcoming
-[NENA](https://github.com/annotation/app-nena) corpus with TF app by Cody Kingham.
+[NENA](https://github.com/CambridgeSemiticsLab/nena_tf) corpus with TF aapp by Cody Kingham.
 
 Updated docs for app writers.
 
@@ -798,7 +798,7 @@ a new "tf.compose" package with operators to manipulate TF data sets:
 As of version 9: `tf.dataset.modify` and `tf.volumes.collect`.
 
 See
-[compose chapter](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb)
+[compose chapter](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/compose.ipynb)
 in the Banks tutorial, where you can see it in action
 on (2 copies of) the nice little 100-word example corpus.
 
@@ -848,12 +848,12 @@ The performance of the machinery has been tuned with new parameters, and all BHS
 queries in the tutorials have been tested.
 
 There was a pair of queries in
-[searchGaps](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchGaps.ipynb)
+[searchGaps](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchGaps.ipynb)
 that
 either took 9 seconds or 40, randomly. Now it is consistently 9 seconds.
 
 See
-[searchRough](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchRough.ipynb)
+[searchRough](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb)
 at the end where the performance parameters are tweaked.
 
 #### 7.7.6-8
@@ -1018,7 +1018,7 @@ See the `tf.about.searchusage`.
 This corresponds to edge features.
 
 See also the
-[Banks example](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/app.ipynb).
+[Banks example](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/app.ipynb).
 
 #### 7.6.2
 
@@ -1072,7 +1072,8 @@ The values of the checkout parameters tell you to use data that is:
 * `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
 * `v1.3`: a release tag found on GitHub (under Releases)
 
-Or consult the [repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb) notebook.
+Or consult the
+[repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb) notebook.
 
 ##### API deletion (backwards incompatible):
 
@@ -1460,7 +1461,7 @@ Now you can also export to Excel from a notebook,
 using `A.export(results)`.
 
 Jump to the tutorial:
-[exportExcel](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb)
+[exportExcel](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
 
 For more info: see [#38](https://github.com/annotation/text-fabric/issues/38) 
 
@@ -1517,7 +1518,7 @@ For more info: see [#38](https://github.com/annotation/text-fabric/issues/38)
     * The function `A.plain()` now responds to the `highlights` parameter:
       you can highlight material inside plain displays.
       and
-      **[display tutorial](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/display.ipynb)**
+      **[display tutorial](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/display.ipynb)**
     * New function `T.sectionTuple(n)` which gives the tuple of section nodes in which `n`
       is embedded
     * **Modified function `T.sectionFromNode(n, fillup=False)`**
@@ -1613,7 +1614,7 @@ Under the hood:
 * a lot of repeated code inside apps has been factored out
 * it is easier to turn corpora into new text-fabric apps.
 
-Quick start: the new [share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
+Quick start: the new [share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
 
 See the `tf.about.datasharing`
 for concrete and detailed hints how to make most of this version.

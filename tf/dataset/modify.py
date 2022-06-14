@@ -464,7 +464,7 @@ def modify(
             ensureTypes |= set(itemize(combi.get(kind, ""), sep=","))
         for kind in (SE_FT, ST_FT):
             ensureFeatures |= set(itemize(combi.get(kind, ""), sep=","))
-        ensureFeatures |= set(collectFormats(combi)[1])
+        ensureFeatures |= set(collectFormats(combi)[-1])
         return (ensureTypes, ensureFeatures)
 
     def allInt(values):

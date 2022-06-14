@@ -18,7 +18,7 @@ text-fabric-zip
 to make a distribution of your own features.
 
 For an example of all the steps of data sharing, see the
-[share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
+[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.
 
 ## Using new data
@@ -403,7 +403,8 @@ text-fabric banks:clone --checkout=latest --mod=annotation/banks/sim/tf:hot
 Note that you can pass different specifiers for the distinct portions of data and code
 that you want to use.
 
-To see it in action, consult the [repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb) notebook.
+To see it in action, consult the
+[repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb) notebook.
 
 ### More about using data modules
 
@@ -446,6 +447,6 @@ Now that we get the hang of it, we would like to use multiple modules
 added to a main data source.
 
 This we do for the
-[BHSA](https://annotation.github.io/text-fabric/tf/about/corpora.html) in the
-[share](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/share.ipynb)
+[BHSA](https://github.com/etcbc/bhsa) in the
+[share](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb)
 tutorial.

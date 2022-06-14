@@ -6,7 +6,7 @@ The main class that works the core API is `tf.fabric.Fabric`.
 It is responsible for feature data loading and saving.
 
 !!! note "Tutorial"
-    The tutorials for specific [annotated corpora](https://github.com/annotation)
+    The tutorials for specific annotated corpora (see `tf.about.corpora`)
     put the Text-Fabric API on show for vastly different corpora.
 
 !!! note "Generic API versus apps"

@@ -268,7 +268,7 @@ Text-Fabric offers volume and collection support for works that have a section s
 (`tf.core.text`).
 
 There is a
-[tutorial, based on the BHSA corpus,](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/volumes.ipynb)
+[tutorial, based on the BHSA corpus,](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/volumes.ipynb)
 which guides you through all steps and peculiarities.
 
 Sections of level 1 (top-level) play a crucial role:

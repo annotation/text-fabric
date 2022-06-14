@@ -182,8 +182,21 @@ is defined for that word, you can make a format
 {special/normal}
 ```
 
-This tries the feature `special` first, and if that is empty, it takes
+This tries the feature `special` first, and if that is undefined, it takes
 `normal`.
+
+!!! caution "undefined versus empty"
+    The criterion to skip the value of feature `special` and use the value
+    of feature `normal` is that `special` either has no value, or its value is
+    `None` (Text-Fabric essentially makes no difference between the two).
+    But if the value of `special` happens to be the empty string, it will be used!
+
+!!! hint "longer chains"
+    You can chain multiple features with `/`, as many as you want:
+
+    ```
+    {veryspecial/special/often/normal}
+    ```
 
 You can also add a fixed default. If you want to display a `.` if
 neither `special` nor `normal` exist, you can say
@@ -191,6 +204,15 @@ neither `special` nor `normal` exist, you can say
 ```
 {special/normal:.}
 ```
+
+You can also specify the empty string as the default:
+
+```
+{special/normal:}
+```
+
+However, you do not need to do that, because the default is the empty string
+by default!
 
 TF datasets may also define formats of the form
 
@@ -384,7 +406,9 @@ class Text(object):
             self.hdTop,
             self.hdUp,
             self.hdDown,
-        ) = (structure.data if structure else (None, None, None, None, None, None))
+        ) = (
+            structure.data if structure else (None, None, None, None, None, None)
+        )
         self.headings = (
             ()
             if structure is None
@@ -1123,9 +1147,7 @@ EXPLANATION: T.text() called with parameters:
                 repf = rescue
                 good = False
                 if explain:
-                    fmtRep += (
-                        "\n\t\t\twhich is not defined: formatting as node types and numbers"
-                    )
+                    fmtRep += "\n\t\t\twhich is not defined: formatting as node types and numbers"
 
             if explain:
                 error(f"\t\tFORMATTING: {fmtRep}", tm=False)
@@ -1159,17 +1181,20 @@ EXPLANATION: T.text() called with parameters:
         cformats = TF.cformats
 
         self.formats = {}
+        self._tformats = {}
         self._xformats = {}
         self._xdTypes = {}
-        for (fmt, (rtpl, feats)) in sorted(cformats.items()):
+        for (fmt, (otpl, rtpl, feats)) in sorted(cformats.items()):
             defaultType = self.splitDefaultFormat(fmt)
             if defaultType:
                 self.defaultFormats[defaultType] = fmt
             (descendType, rtpl) = self.splitFormat(rtpl)
+            (dummy, otpl) = self.splitFormat(otpl)
             tpl = rtpl.replace("\\n", "\n").replace("\\t", "\t")
             self._xdTypes[fmt] = descendType
             self._xformats[fmt] = self._compileFormat(tpl, feats)
             self.formats[fmt] = descendType
+            self._tformats[fmt] = otpl
 
     def splitFormat(self, tpl):
         api = self.api

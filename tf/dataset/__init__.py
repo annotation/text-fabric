@@ -11,7 +11,7 @@ There are the following basic operations:
   (make node mappings between versions of TF data)
 
 See also the
-[dataset chapter](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/compose.ipynb)
+[dataset chapter](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/compose.ipynb)
 in the Banks tutorial.
 """
 

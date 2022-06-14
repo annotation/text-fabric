@@ -4,8 +4,7 @@
     When we change the API, we make sure that the tutorials show off
     all possibilities.
 
-See the app-specific tutorials in
-[annotation](https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master).
+See the app-specific tutorials via `tf.about.corpora`.
 
 When TF apps have been updated, they will be autoloaded to the newest version
 provided you call the app as follows:
@@ -45,6 +44,17 @@ text-fabric appName:hot
 ## 9
 
 ### 9.5
+
+#### 9.5.2
+
+2022-06-14
+
+* Small fix in `tf.core.helpers.initTree`.
+* New function `tf.advanced.text.showFormats`; call as `A.showFormats()`
+  that gives a nicely formatted list of all text-formats and the templates
+  by which they are defined.
+* Small fix in text formats: when you specify a text-format with default values,
+  the empty string is now also allowed as default value.
 
 #### 9.5.1
 

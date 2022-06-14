@@ -105,7 +105,7 @@ def initTree(path, fresh=False, gentle=False):
             else:
                 rmtree(path)
 
-    if not exists:
+    if not exists or fresh:
         os.makedirs(path, exist_ok=True)
 
 
@@ -121,7 +121,7 @@ MSG64 = """Running on 64-bit Python"""
 
 SEP_RE = re.compile(r"[\n\t ,]+")
 STRIP_RE = re.compile(r"(?:^[\n\t ,]+)|(?:[\n\t ,]+$)", re.S)
-VAR_RE = re.compile(r"\{([^}]+?)(:[^}]+)?\}")
+VAR_RE = re.compile(r"\{([^}]+?)(:[^}]*)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
 QUAD = "  "
@@ -404,7 +404,7 @@ def collectFormats(config):
             return "{}"
 
         rtpl = VAR_RE.sub(varReplace, tpl)
-        return (rtpl, tuple(features))
+        return (tpl, rtpl, tuple(features))
 
     formats = {}
     for (fmt, tpl) in sorted(config.items()):

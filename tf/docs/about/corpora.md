@@ -22,8 +22,6 @@ text-fabric org/repo
 Here is a list of corpora that can be loaded this way.
 Since everybody can put a Text-Fabric corpus on GitHub, the list may not be complete!
 
-## [annotation](https://github.com/annotation)
-
 [annotation/banks](https://github.com/annotation/banks)
 :   *modern english*
     Iain M. Banks, 1984 - 1987,

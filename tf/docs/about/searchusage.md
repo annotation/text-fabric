@@ -216,7 +216,7 @@ verse
 ```
 
 To get a more specific introduction to search, consult the search tutorials for
-app supported [annotated corpora](https://github.com/annotation).
+annotated corpora, see `tf.about.corpora`.
 
 Finally an example with quantifiers. We want all clauses where Pred-phrases
 consist of verbs only:
@@ -375,9 +375,9 @@ and the *valueSpec*.
 The *valueSpec* may have the following forms and
 meanings:
 
-form | evaluates to `True` the feature *name* ...
----- | -------
-| has any value except `None`
+form | the feature *name* ...
+---- | ---
+` ` (empty) | has any value except `None`
 `#` | has value `None`
 `*` | has arbitrary value
 `=`*values* | has one of the values specified

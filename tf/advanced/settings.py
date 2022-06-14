@@ -6,8 +6,8 @@ These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
 See for examples:
-* [bhsa](https://github.com/annotation/app-bhsa/blob/master/code/config.yaml).
-* [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml).
+* [bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
+* [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml).
 
 # Config specs
 
@@ -458,7 +458,7 @@ of the online resource (see `webUrl`).
 Suppose we need to offset sections of level 2 depending on the section of level 1
 they are in.
 For example, in the
-[missieven corpus](https://github.com/annotation/app-missieven/blob/master/code/config.yaml)
+[missieven corpus](https://github.com/clariah/wp6-missieven/blob/master/app/config.yaml)
 we have section levels 1=volume, 2=page, 3=line.
 In each volume, the logical page 1 must be translated into a higher
 number, depending on the number of preface pages in that volume.
@@ -653,7 +653,7 @@ All nodes that satisfy at least one of these conditions will be left out.
 
 !!! hint
     Use this if you want to exclude particular nodes of some type, e.g. in
-    [dss](https://github.com/annotation/app-dss/blob/master/code/config.yaml).
+    [dss](https://github.com/etcbc/dss/blob/master/app/config.yaml).
     where we want to prevent line terminator signs.
 
 The value is a dictionary of feature name - value pairs.
@@ -717,7 +717,7 @@ The app needs to define a function
 getGraphics(isPretty, node, nodeType, isOuter) => HTML code for sourcing the graphics
 ```
 
-See [uruk](https://github.com/annotation/app-uruk/blob/master/code/app.py).
+See [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/app.py).
 
 Default
 :   boolean `null`
@@ -824,7 +824,7 @@ Default
 
 !!! hint
     For some types in
-    [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml)
+    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---
@@ -894,7 +894,7 @@ The default is:
 `true` for the lowest section type, if there are section types in `otext.tf`.
 
 But more types can be declared as verselike, e.g. `halfverse` in the
-[bhsa](https://github.com/annotation/app-bhsa/blob/master/code/config.yaml).
+[bhsa](https://github.com/etcbc/bhsa/blob/master/app/config.yaml).
 
 ---
 
@@ -911,7 +911,7 @@ Default:
 
 !!! hint
     For some types in
-    [uruk](https://github.com/annotation/app-uruk/blob/master/code/config.yaml)
+    [uruk](https://github.com/Nino-cunei/uruk/blob/master/app/config.yaml)
     it is needed to deviate from the default.
 
 ---

@@ -447,6 +447,11 @@ class CV(object):
                 )
             self.sectionFeatures = sectionInfo["sectionFeatures"]
             self.sectionTypes = sectionInfo["sectionTypes"]
+            self.featFromSectionType = {
+                typ: feat
+                for (typ, feat) in zip(self.sectionTypes, self.sectionFeatures)
+            }
+            self.sectionSet = set(self.sectionTypes)
 
             structureInfo = {}
             for f in ("structureTypes", "structureFeatures"):
@@ -471,7 +476,7 @@ class CV(object):
                 self.structureTypes = []
             self.structureFeatures = structureInfo["structureFeatures"]
             self.structureTypes = structureInfo["structureTypes"]
-            self.featFromType = {
+            self.featFromStructureType = {
                 typ: feat
                 for (typ, feat) in zip(self.structureTypes, self.structureFeatures)
             }
@@ -722,7 +727,9 @@ class CV(object):
 
             for s in slots:
                 if not 1 <= s <= maxSlot:
-                    errors[f'slot out of range in `cv.node(({nType}, {seq}))`'].append(f"{s}")
+                    errors[f"slot out of range in `cv.node(({nType}, {seq}))`"].append(
+                        f"{s}"
+                    )
                 else:
                     oslots = self.oslots
                     oslots[node].add(s)
@@ -1178,7 +1185,8 @@ class CV(object):
             for (nType, seq) in curEmbedders:
                 embedCount[nType] += 1
             for (nType, amount) in sorted(
-                embedCount.items(), key=lambda x: (-x[1], x[0]),
+                embedCount.items(),
+                key=lambda x: (-x[1], x[0]),
             ):
                 errors["Unterminated nodes"].append(f"{nType}: {amount} x")
 
@@ -1276,7 +1284,7 @@ class CV(object):
         if not self.good and not self.force:
             return
 
-        info("checking features ... ")
+        info("checking (section) features ... ")
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1294,17 +1302,20 @@ class CV(object):
                 and feat not in edgeFeatures
             ):
                 errors["intFeatures"].append(
-                    f'"{feat}" is declared as integer valued, but this feature does not occur'
+                    f'"{feat}" is declared as integer valued, '
+                    "but this feature does not occur"
                 )
         for nType in self.sectionTypes:
             if nType not in nodes:
                 errors["sections"].append(
-                    f'node type "{nType}" is declared as a section type, but this node type does not occur'
+                    f'node type "{nType}" is declared as a section type, '
+                    "but this node type does not occur"
                 )
         for feat in self.sectionFeatures:
             if feat not in nodeFeatures:
                 errors["sections"].append(
-                    f'"{feat}" is declared as a section feature, but this node feature does not occur'
+                    f'"{feat}" is declared as a section feature, '
+                    "but this node feature does not occur"
                 )
         for nType in self.structureTypes:
             if nType not in nodes:
@@ -1315,26 +1326,39 @@ class CV(object):
         for feat in self.structureFeatures:
             if feat not in nodeFeatures:
                 errors["structure"].append(
-                    f'"{feat}" is declared as a structure feature, but this node feature does not occur'
+                    f'"{feat}" is declared as a structure feature, '
+                    "but this node feature does not occur"
                 )
                 nodeFeatures[feat] = {}
 
+        sectionSet = self.sectionSet
         structureSet = self.structureSet
-        featFromType = self.featFromType
+        featFromSectionType = self.featFromSectionType
+        featFromStructureType = self.featFromStructureType
+
         for nType in nodes:
-            if nType not in structureSet:
-                continue
-            feat = featFromType[nType]
-            for seq in nodes[nType]:
-                if (nType, seq) not in nodeFeatures[feat]:
-                    errors["structure features"].append(
-                        f'"structure element "{nType}" {seq} has no value for "{feat}"'
-                    )
+            if nType in structureSet:
+                feat = featFromStructureType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors["structure features"].append(
+                            f'"structure element "{nType}" {seq} '
+                            f'has no value for "{feat}"'
+                        )
+            if nType in sectionSet:
+                feat = featFromSectionType[nType]
+                for seq in nodes[nType]:
+                    if (nType, seq) not in nodeFeatures[feat]:
+                        errors["section features"].append(
+                            f'"section element "{nType}" {seq} '
+                            f'has no value for "{feat}"'
+                        )
 
         for feat in self.textFeatures:
             if feat not in nodeFeatures:
                 errors["text formats"].append(
-                    f'"{feat}" is used in a text format, but this node feature does not occur'
+                    f'"{feat}" is used in a text format, '
+                    "but this node feature does not occur"
                 )
 
         for feat in WARP:

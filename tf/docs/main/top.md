@@ -91,13 +91,13 @@ In particular thanks to
 
 Tutorials:
 
-* [BHSA](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/start.ipynb)
-* [DSS](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/dss/start.ipynb)
-* [OldBabylonian](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/start.ipynb)
-* [OldAssyrian](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldassyrian/start.ipynb)
-* [Uruk](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/uruk/start.ipynb)
-* [Q'uran](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/quran/start.ipynb)
-* and more: [all tutorials](https://nbviewer.jupyter.org/github/annotation/tutorials/tree/master/)
+* [BHSA](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/start.ipynb)
+* [DSS](https://nbviewer.jupyter.org/github/etcbc/dss/blob/master/tutorial/start.ipynb)
+* [OldBabylonian](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/start.ipynb)
+* [OldAssyrian](https://nbviewer.jupyter.org/github/Nino-cunei/oldassyrian/blob/master/tutorial/start.ipynb)
+* [Uruk](https://nbviewer.jupyter.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb)
+* [Q'uran](https://nbviewer.jupyter.org/github/q-ran/quran/blob/master/tutorial/start.ipynb)
+* and more via `tf.about.corpora`.
 
 ---
 
@@ -121,7 +121,7 @@ Presentations:
 
 [Data Analysis in Ancient Corpora](https://www.slideshare.net/dirkroorda/ancient-corpora-analysis) (Cambridge 2019, with Cody Kingham)
 
-[Text-Fabric as IKEA logistics](https://nbviewer.jupyter.org/github/ETCBC/lingo/blob/master/presentations/Copenhagen2018.ipynb) (Copenhagen 2017)
+[Text-Fabric as IKEA logistics](https://nbviewer.jupyter.org/github/etcbc/lingo/blob/master/presentations/Copenhagen2018.ipynb) (Copenhagen 2017)
 
 Here is a motivational [presentation](http://www.slideshare.net/dirkroorda/text-fabric), given just before [SBL 2016](https://global-learning.org/mod/forum/discuss.php?d=22)
 in the Lutheran Church of San Antonio.

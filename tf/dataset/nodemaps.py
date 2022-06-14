@@ -121,7 +121,7 @@ An involved example of creating node mappings between versions (not using this c
 [versionMappings.ipynb](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
 
 A simpler example, using this code is
-[map.ipynb](https://nbviewer.jupyter.org/github/Dans-labs/clariah-gm/blob/master/programs/map.ipynb).
+[map.ipynb](https://nbviewer.jupyter.org/github/clariah/wp6-missieven/blob/master/programs/map.ipynb).
 
 ## Usage
 

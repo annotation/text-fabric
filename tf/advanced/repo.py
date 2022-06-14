@@ -65,7 +65,7 @@ You can override the hard-coded `~/github` and `~/text-fabric-data` directories
 by passing *source* and *dest* respectively.
 
 See the
-[repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb)
+[repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
 notebook for an exhaustive demo of all the checkout options.
 
 ## other parameters
@@ -227,37 +227,23 @@ wanting to wait an hour, you could directly clone the repos from GitHub:
 Open your terminal, and go to (or create) directory `~/github` (in your
 home directory).
 
-Inside that directory, go to or create directory `annotation`.
+Inside that directory, go to or create directory `org`
 Go to that directory.
 
 Then do
 
 ``` sh
-git clone https://github.com/annotation/app-corpus
+git clone https://github.com/org/repo
 ```
 
-(replacing `corpus` with the name of your corpus).
+(replacing `org` and `repo` with the values that apply to your corpus).
 
-This will fetch the Text-Fabric *app* for that corpus.
+This will fetch the Text-Fabric *data*, *app*, and *tutorials* for that corpus.
 
-Now the corpus data itself:
-
-Find out where on GitHub it is (organization/corpus), e.g.
-`Nino-cunei/oldbabylonian` or `etcbc/bhsa`.
-
-Under your local `~/github`, find or create directory `organization`.
-Then go to that directory and say:
-
-``` sh
-git clone https://github.com/organization/corpus
-```
-
-(replacing `organization` with the name of the organization where the corpus resides
-and `corpus` with the name of your corpus).
 Now you have all data you need on your system.
 
 If you want to see by example how to use this data, have a look at
-[repo](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/banks/repo.ipynb),
+[repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb),
 especially when it discusses `clone`.
 
 In order to run Text-Fabric without further access to GitHub, say

@@ -268,7 +268,7 @@ The list of possible settings is spelled out in
     come to the rescue.
 
     A good example is in
-    [clariah/wp6-missieven](https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/annotate.ipynb)
+    [clariah/wp6-missieven](https://nbviewer.org/github/clariah/wp6-missieven/blob/master/tutorial/annotate.ipynb)
     which resided in annotation/clariah-gm before, and in Dans-labs/clariah-gm even earlier.
 
     When we want to migrate manual annotations made against the 0.4 version to the 0.7

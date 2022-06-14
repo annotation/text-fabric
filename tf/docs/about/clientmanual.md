@@ -477,7 +477,7 @@ and write a small piece of code to generate the data for the layers
 from the corresponding Text-Fabric dataset.
 
 See e.g.
-[app-nena/layeredsearch](https://github.com/annotation/app-nena/tree/master/layeredsearch).
+[app-nena/layeredsearch](https://github.com/CambridgeSemiticsLab/nena_tf/tree/master/app).
 
 All the rest (building, shipping, and deploying the app) is then automatic,
 See `tf.client.make.build`.

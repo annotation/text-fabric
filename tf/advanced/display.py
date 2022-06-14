@@ -272,9 +272,9 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     !!! hint "Examples"
         See for detailed examples the
-        [exportExcel (bhsa)](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/exportExcel.ipynb)
+        [exportExcel (etcbc/bhsa)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
         and
-        [exportExcel (oldbabylonian)](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/oldbabylonian/exportExcel.ipynb)
+        [exportExcel (Nino-cunei/oldbabylonian)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
         notebooks.
 
     Parameters

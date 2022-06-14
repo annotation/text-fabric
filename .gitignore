@@ -57,3 +57,4 @@ dist
 # Config files which get locally modified
 #########################################
 .jekyll-metadata
+.obsidian*

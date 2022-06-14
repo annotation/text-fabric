@@ -4,7 +4,7 @@ from unicodedata import normalize
 
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import htmlEsc
-from .helpers import dh
+from .helpers import dh, dm
 
 
 def textApi(app):
@@ -33,6 +33,31 @@ def textApi(app):
 
     aContext.allowedValues["textFormat"] = T.formats
     app.specialCharacters = types.MethodType(specialCharacters, app)
+    app.showFormats = types.MethodType(showFormats, app)
+
+
+def showFormats(app):
+    api = app.api
+    T = api.T
+    tFormats = T._tformats
+    xFormats = T._xformats
+
+    md = dedent("""\
+    format | level | template
+    --- | --- | ---
+    """)
+
+    for (fmt, level) in T.formats.items():
+        tpl = (
+            f"`{tFormats[fmt]}`"
+            if fmt in tFormats
+            else f"*function* `{xFormats[fmt].__name__}`"
+            if fmt in xFormats
+            else "*unknown*"
+        )
+        md += f"""`{fmt}` | **{level}** | {tpl}\n"""
+
+    dm(md)
 
 
 def specialCharacters(app, fmt=None, _browse=False):

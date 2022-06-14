@@ -55,6 +55,12 @@ A.specialCharacters()
 :   `tf.advanced.text.specialCharacters`
 
 ```
+A.showFormats()
+```
+:   show all text formats and their definitions
+:   `tf.advanced.text.showFormats`
+
+```
 A.dm(markdownString)
 ```
 :   display markdown string in notebook
@@ -630,7 +636,7 @@ T.down(node)
 
 ## `S.` Search (low level)
 
-[searchRough](https://nbviewer.jupyter.org/github/annotation/tutorials/blob/master/bhsa/searchRough.ipynb)
+[searchRough](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb)
 
 ### Preparation
 
@@ -1033,11 +1039,10 @@ mmm = loadModule("mmm", *args)
 :   `tf.advanced.find.loadModule`
 
 ```
-~/mypath/app-myname/code/config.yaml
+~/mypath/myname/app/config.yaml
 ```
 :   settings for a TF-App
 :   `tf.advanced.settings`
-    e.g. [app-default](https://github.com/annotation/app-default/blob/master/code/config.yaml)
 
 # Layered search
 
