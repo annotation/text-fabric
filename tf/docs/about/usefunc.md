@@ -22,6 +22,11 @@ or
 A = use("org/repo:specapp", checkout="specdata")
 ```
 
+
+```
+A = use("org/repo:specapp", checkout="specdata", host="gitlab.huc.knaw.nl")
+```
+
 See `tf.about.corpora` for a list of known corpora that can be loaded this way.
 
 ### Full usage
@@ -29,6 +34,7 @@ See `tf.about.corpora` for a list of known corpora that can be loaded this way.
 ```
 A = use(
     "org/repo:specapp",
+    host=None,     # e.g. "gitlab.huc.knaw.nl"
     checkout=None, # e.g. "latest"
     version=None,  # e.g. "1.2.3"
     mod=None,      # e.g. "org1/repo1/path1:specmod1,org2/repo2/path2:specmod2"
@@ -119,6 +125,15 @@ For a demo, see
 [banks/repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
 
 ## Specifying app and/or data
+
+By default, the online repository for apps and data is GitHub (https://github.com).
+
+But you can also use GitLab instances. You do that by specifying the server location
+in the parameter `host`, e.g.
+
+```
+    host="gitlab.knaw.huc.nl"
+```
 
 The specification of the app is in the first argument:
 *app-path*`:`*app-checkout-specifier*

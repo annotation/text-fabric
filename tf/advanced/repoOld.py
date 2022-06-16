@@ -1,23 +1,91 @@
 """
-# Auto downloading from GitHub and GitLab
+# Auto downloading from GitHub
+
+```python
+from tf.advanced.repo import checkoutRepo
+
+checkoutRepo(
+  org='annotation'
+  repo='tutorials',
+  folder='text-fabric/examples/banks/tf',
+  version='',
+  checkout='',
+  source=None,
+  dest=None,
+  withPaths=True,
+  keep=True,
+  silent=False,
+  label='data',
+)
+```
 
 ## Description
 
-Text-Fabric maintains local copies of subfolders of GitHub/GitLab repositories,
-where it stores the feature data of corpora that the user is working with.
+Maintain a local copy of a subfolder *folder* in GitHub repository *repo* of *org*.
+The copy may be taken from any point in the commit history of the online repo.
 
-There is some bookkeeping to account for which release and commit those
-feature files come from.
+If you call this function, it will check whether the requested data is already
+on your computer in the expected location.
+If not, it may check whether the data is online and if so, download it to the
+expected location.
 
-Users can request data from any repo according to any release and/or commit.
+## Result
+
+The result of a call to checkoutRepo() is a tuple:
+
+```python
+    (commitOffline, releaseOffline, kindLocal, localBase, localDir)
+```
+
+Here is the meaning:
+
+*   *commitOffline* is the commit hash of the data you have offline afterwards
+*   *releaseOffline* is the release tag of the data you have offline afterwards
+*   *kindLocal* indicates whether an online check has been performed:
+    it is `None` if there has been an online check. Otherwise it is
+    `clone` if the data is in your `~/github` directory else it is `local`.
+*   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
+    or whatever you have passed as *source* and *dest*, see below.
+*   *localDir* releative path from *localBase* to your data.
+    If your data has versions, *localDir* points to directory that has the versions,
+    not to a specific version.
+
+
+Your local copy can be found under your `~/github` or `~/text-fabric-data`
+directory using a relative path *org/repo/folder* if there is a *version*, else
+*org/repo/folder/version*.
+
+## checkout, source and dest
+
+The *checkout* parameter determines from which point in the history the copy
+will be taken and where it will be placed.
+That will be either your `~/github` or your `~/text-fabric-data` directories.
+
+You can override the hard-coded `~/github` and `~/text-fabric-data` directories
+by passing *source* and *dest* respectively.
+
+See the
+[repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
+notebook for an exhaustive demo of all the checkout options.
+
+## other parameters
+
+*withPaths=False* will loose the directory structure of files that are being
+downloaded.
+
+*keep=False* will destroy the destination directory before a download takes place.
+
+*silent=True* will suppress non-error messages.
+
+*label='something' will change the word "data" in log messages to what you choose.
+We use `label='TF-app'` when we use this function to checkout the code
+of a TF-app.
 
 ## Rate limiting
 
-The `checkRepo()` function uses the GitHub and GitLab APIs.
-GitHub has a rate limiting policy for its API.
+The `checkRepo()` function uses the GitHub API.
+GitHub has a rate limiting policy for its API of max 60 calls per hour.
 See below to deal with this if it becomes a problem.
-
-On GitLab we ignore the rate limiting.
 
 # GitHub
 
@@ -54,18 +122,6 @@ How to put your personal access token into an environment variable?
     first, and pass it to the GitHub API. GitHub then knows who you are and
     will give you more privileges.
 
-# GitLab
-
-In order to reach an on-premise GitLab and have access to the repository in
-question, you may need to have a VPN connection with the GitLab host.
-
-Additionally, you may need to make your identity known.
-If you have an account on the Gitlab instance, go to your settings and request
-a personal token with *api* privileges.
-
-On your own system, make an environment variable named `GLPERS` whose
-content is exactly the value of this token.
-
 ### On Mac and Linux
 
 Find the file that contains your terminal settings. In many cases that is
@@ -98,21 +154,11 @@ Whatever is your case, pick the file indicated above and edit it.
     *   type `Ctrl X` to exit; nano will ask you to save changes, type `Y`,
         it will then verify the file name, type `Enter` and you're done
 
-
-**GitHub**
 Put the following lines in this file:
 
 ``` sh
 GHPERS="xxx"
 export GHPERS
-```
-
-**GitLab**
-Put the following lines in this file:
-
-``` sh
-GLPERS="xxx"
-export GLPERS
 ```
 
 where the `xxx` are replaced by your actual token.
@@ -135,25 +181,16 @@ Click on the `Environment Variables button` at the bottom.
 
 Click on `New ...` under `User environment variables`.
 
-**GitHub**: Then fill in `GHPERS` under *name* and the token string under *value*.
-
-**GitLab**: Then fill in `GLPERS` under *name* and the token string under *value*.
+Then fill in `GHPERS` under *name* and the token string under *value*.
 
 Then quit the command prompt and start a new one.
 
 ### Result
 
-**GitHub**
-
 With this done, you will automatically get the good rate limit,
 whenever you fire up Text-Fabric in the future.
 
-**GitLab**
-
-You are now known to the Gitlab host, and you have the same access to its
-repository as when you log in via the web interface.
-
-## Minimize accessing GitHub
+## Minimize accessing Github
 
 Another way te avoid being bitten by the rate limit is to reduce the number
 of your access actions to GitHub.
@@ -299,15 +336,14 @@ A = use('org/repo:latest', checkData='latest', hoist=globals())
 And after that, you can omit `latest` or `hot` again, until you need new data again.
 
 !!! hint "App versus data"
-    The checkout specifiers such as `latest`, `hot`, `clone` apply
-    to either the corpus data or the TF App.
+    The checkout specifiers such as `latest`, `hot`, `clone` apply to either the corpus data
+    or the TF App.
 
-    If the specifier follows the app name, separated with a colon,
-    it directs how the app code is being obtained.
+    If the specifier follows the app name, separated with a colon, it directs how the app code
+    is being obtained.
 
     If it is the value of the `checkout` parameter, it directs how the corpus data
     is being obtained.
-See further under `checkoutRepo`.
 """
 
 import os
@@ -319,10 +355,9 @@ import base64
 from zipfile import ZipFile
 
 from github import Github, GithubException, UnknownObjectException
-from gitlab import Gitlab
-from gitlab.exceptions import GitlabGetError
 
 from ..parameters import (
+    URL_GH,
     URL_TFDOC,
     GH_BASE,
     EXPRESS_BASE,
@@ -334,12 +369,8 @@ from ..core.helpers import console, htmlEsc, expanduser, initTree
 from .helpers import dh
 from .zipdata import zipData
 
-VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
-
 
 class Repo:
-    """Auxiliary class for `releaseData`"""
-
     def __init__(
         self,
         org,
@@ -347,7 +378,6 @@ class Repo:
         folder,
         version,
         increase,
-        host=None,
         source=GH_BASE,
         dest=DOWNLOADS,
     ):
@@ -360,26 +390,14 @@ class Repo:
         self.dest = expanduser(dest)
 
         self.repoOnline = None
-
-        self.host = host
-        onGithub = host is None
-        self.onGithub = onGithub
-
-        self.conn = None
-
-        if onGithub:
-            self.hostRep = "GitHub"
-        else:
-            self.hostRep = host
-            self.hostUrl = f"https://{host}"
+        self.ghConn = None
 
     def newRelease(self):
         if not self.makeZip():
             return False
 
-        conn = self.connect()
-
-        if not conn:
+        self.connect()
+        if not self.ghConn:
             return False
 
         if not self.fetchInfo():
@@ -414,48 +432,39 @@ class Repo:
         return True
 
     def connect(self):
-        log = self.log
         warning = self.warning
-        hostRep = self.hostRep
-        conn = self.conn
 
-        if not conn:
+        if not self.ghConn:
             ghPerson = os.environ.get("GHPERS", None)
             if ghPerson:
-                conn = Github(ghPerson)
+                self.ghConn = Github(ghPerson)
             else:
                 ghClient = os.environ.get("GHCLIENT", None)
                 ghSecret = os.environ.get("GHSECRET", None)
                 if ghClient and ghSecret:
-                    conn = Github(client_id=ghClient, client_secret=ghSecret)
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
                 else:
-                    conn = Github()
+                    self.ghConn = Github()
         try:
-            rate = conn.get_rate_limit().core
-            log(
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
                 f"rate limit is {rate.limit} requests per hour,"
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                warning(
-                    f"To increase the rate,"
-                    f"see {URL_TFDOC}/advanced/repo.html#github"
-                )
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html#github")
 
-            log(
-                f"\tconnecting to online {hostRep} repo {self.org}/{self.repo} ... ",
+            self.log(
+                f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
                 newline=False,
             )
-            self.repoOnline = conn.get_repo(f"{self.org}/{self.repo}")
-            log("connected")
+            self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
+            self.log("connected")
         except GithubException as why:
             warning("failed")
-            warning(f"{hostRep} says: {why}")
+            warning(f"GitHub says: {why}")
         except IOError:
             warning("no internet")
-
-        self.conn = conn
-        return conn
 
     def fetchInfo(self):
         g = self.repoOnline
@@ -501,13 +510,12 @@ class Repo:
         return True
 
     def makeRelease(self):
+        commit = self.commitOn
+        newTag = self.newTag
+
         g = self.repoOnline
         if not g:
             return False
-
-        error = self.error
-        commit = self.commitOn
-        newTag = self.newTag
 
         tag_message = "data update"
         release_name = "data update"
@@ -523,7 +531,7 @@ class Repo:
                 "commit",
             )
         except Exception as e:
-            error("\tcannot create release", newline=True)
+            self.error("\tcannot create release", newline=True)
             console(str(e), error=True)
             return False
 
@@ -541,19 +549,16 @@ class Repo:
         dataFile = f"{folder}-{version}.zip"
         dataDir = f"{dest}/{org}-release/{repo}"
         dataPath = f"{dataDir}/{dataFile}"
-        error = self.error
 
         if not os.path.exists(dataPath):
             console(f"No release data found: {dataPath}", error=True)
             return False
 
         try:
-            newReleaseObj.upload_asset(
-                dataPath, label="", content_type="application/zip", name=dataFile
-            )
+            newReleaseObj.upload_asset(dataPath, label='', content_type="application/zip", name=dataFile)
             console(f"{dataFile} attached to release {newTag}")
         except Exception as e:
-            error("\tcannot attach zipfile to release", newline=True)
+            self.error("\tcannot attach zipfile to release", newline=True)
             console(str(e), error=True)
             return False
 
@@ -570,15 +575,14 @@ class Repo:
         if not g:
             return None
 
-        error = self.error
         r = None
 
         try:
             r = g.get_latest_release()
         except UnknownObjectException:
-            error("\tno releases", newline=True)
+            self.error("\tno releases", newline=True)
         except Exception:
-            error("\tcannot find releases", newline=True)
+            self.error("\tcannot find releases", newline=True)
         return r
 
     def getCommit(self):
@@ -617,44 +621,17 @@ class Repo:
 
 
 def releaseData(org, repo, folder, version, increase, source=GH_BASE, dest=DOWNLOADS):
-    """Makes a new data release for a repository.
-
-    !!!caution "GitHub only"
-        Only GitHub repositories are supported.
-        GitLab support will be implemented if there is a need for it.
-
-    Parameters
-    ----------
-    org: string
-        The organization name of the repo
-    repo: string
-        The name of the repo
-    folder: string
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
-        contains the version directories.
-        In most cases it is `tf` or it ends in `/tf`.
-    version: string
-        The version of the data that should be attached as a zip file to the release
+    """
     increase:
-        The way in which the release version should be increased:
-
-            1 = bump major version;
-            2 = bump intermediate version;
-            3 = bump minor version
-
-    source: string, optional `GH_BASE`
-        Path to where the local GitHub clones are stored
-    dest: string, optional `DOWNLOADS`
-        Path to where the zipped data should be stored
+    1 = bump major version;
+    2 = bump intermediate version;
+    3 = bump minor version
     """
     R = Repo(org, repo, folder, version, increase, source=source, dest=dest)
     return R.newRelease()
 
 
-class Checkout:
-    """Auxiliary class for `checkoutRepo`"""
-
+class Checkout(object):
     @staticmethod
     def fromString(string):
         commit = None
@@ -682,14 +659,10 @@ class Checkout:
         return (commit, release, local)
 
     @staticmethod
-    def toString(commit, release, local, host=None, source=GH_BASE, dest=EXPRESS_BASE):
+    def toString(commit, release, local, source=GH_BASE, dest=EXPRESS_BASE):
         extra = ""
         if local:
-            baseRep = (
-                (source if host is None else f"~/{host}")
-                if local == "clone"
-                else (dest if host is None else f"{dest}/{host}")
-            )
+            baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
         if local == "clone":
             result = "repo clone"
@@ -727,22 +700,9 @@ class Checkout:
         withPaths,
         silent,
         _browse,
-        host=None,
         version=None,
         label="data",
     ):
-        self.host = host
-        onGithub = host is None
-        self.onGithub = onGithub
-
-        self.conn = None
-
-        if onGithub:
-            self.hostRep = "GitHub"
-        else:
-            self.hostRep = host
-            self.hostUrl = f"https://{host}"
-
         self._browse = _browse
         self.label = label
         self.org = org
@@ -758,6 +718,8 @@ class Checkout:
         versionRep = f"/{version}" if version else ""
         self.versionRep = versionRep
         relativeRep = f"/{relative}" if relative else ""
+        relativeGh = f"/tree/master/{relative}" if relative else ""
+        self.baseGh = f"{URL_GH}/{org}/{repo}{relativeGh}{versionRep}"
         self.dataDir = f"{relative}{versionRep}"
 
         self.baseLocal = expanduser(self.dest)
@@ -776,6 +738,7 @@ class Checkout:
 
         self.keep = keep
         self.withPaths = withPaths
+        self.ghConn = None
 
         self.commitOff = None
         self.releaseOff = None
@@ -799,109 +762,6 @@ class Checkout:
         if not offline:
             self.connect()
             self.fetchInfo()
-
-    def login(self):
-        onGithub = self.onGithub
-        conn = self.conn
-        self.canDownloadSubfolders = False
-
-        if onGithub:
-            person = os.environ.get("GHPERS", None)
-            if person:
-                conn = Github(person)
-            else:
-                client = os.environ.get("GHCLIENT", None)
-                secret = os.environ.get("GHSECRET", None)
-                if client and secret:
-                    conn = Github(client_id=client, client_secret=secret)
-                else:
-                    conn = Github()
-        else:
-            hostUrl = self.hostUrl
-
-            person = os.environ.get("GLPERS", None)
-            if person:
-                conn = Gitlab(hostUrl, private_token=person)
-            else:
-                conn = Gitlab(hostUrl)
-
-            hostVersion = conn.version()
-            versionThreshold = (14, 4, 0)
-
-            if hostVersion:
-                hostVersion = [
-                    int(VERSION_DIGIT_RE.sub(r"\1", vc))
-                    for vc in hostVersion[0].split(".")
-                ]
-                if len(hostVersion) < 3:
-                    hostVersion.extend([0] * (3 - len(hostVersion)))
-
-                canDownloadSubfolders = True
-                for (t, v) in zip(versionThreshold, hostVersion):
-                    if t != v:
-                        canDownloadSubfolders = t < v
-                        break
-
-                self.canDownloadSubfolders = canDownloadSubfolders
-        self.conn = conn
-        return conn
-
-    def connect(self):
-        conn = self.conn
-        onGithub = self.onGithub
-        hostRep = self.hostRep
-        log = self.log
-        warning = self.warning
-        org = self.org
-        repo = self.repo
-
-        if not conn:
-            conn = self.login()
-
-        if onGithub:
-            try:
-                rate = conn.get_rate_limit().core
-                log(
-                    f"rate limit is {rate.limit} requests per hour,"
-                    f" with {rate.remaining} left for this hour"
-                )
-                if rate.limit < 100:
-                    warning(
-                        f"To increase the rate,"
-                        f"see {URL_TFDOC}/advanced/repo.html#github"
-                    )
-
-            except GithubException as why:
-                warning("Could not get rate limit details")
-                warning(f"{hostRep} says: {why}")
-
-        log(
-            f"\tconnecting to online {hostRep} repo {org}/{repo} ... ",
-            newline=False,
-        )
-        repoOnline = None
-
-        try:
-            if onGithub:
-                try:
-                    repoOnline = conn.get_repo(f"{org}/{repo}")
-                    log("connected")
-                except GithubException as why:
-                    warning("failed")
-                    warning(f"{hostRep} says: {why}")
-            else:
-                try:
-                    repoOnline = conn.projects.get(f"{org}/{repo}")
-                    log("connected")
-                except GitlabGetError as why:
-                    warning("failed")
-                    warning(f"{hostRep} says: {why}")
-        except IOError as why:
-            warning("no internet")
-            warning("failed")
-            warning(f"{hostRep} says: {why}")
-
-        self.repoOnline = repoOnline
 
     def log(self, msg, newline=True):
         silent = self.silent
@@ -929,14 +789,12 @@ class Checkout:
 
     def makeSureLocal(self, attempt=False):
         _browse = self._browse
-        host = self.host
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
 
         error = self.error
         warning = self.warning
-        log = self.log
 
         cOff = self.commitOff
         rOff = self.releaseOff
@@ -1012,12 +870,10 @@ class Checkout:
                     else False
                 )
             if not self.localBase:
-                method = warning if attempt else error
+                method = self.warning if attempt else self.error
                 method(f"The requested {label} is not available offline")
-                # base = self.baseClone if clone else self.baseLocal
-                dirVersion = self.dirPathClone if clone else self.dirPathLocal
-                # method(f"\t{base}/{self.dataPath} not found")
-                method(f"\t{dirVersion} not found")
+                base = self.baseClone if clone else self.baseLocal
+                method(f"\t{base}/{self.dataPath} not found")
         else:
             if isLocal:
                 self.localBase = self.baseLocal
@@ -1062,7 +918,6 @@ class Checkout:
                 self.commitOff,
                 self.releaseOff,
                 self.local,
-                host=host,
                 dest=self.dest,
                 source=self.source,
             )
@@ -1071,10 +926,10 @@ class Checkout:
             offEsc = htmlEsc(offString)
             locEsc = htmlEsc(f"{self.localBase}/{self.localDir}{self.versionRep}")
             if _browse:
-                log(
+                self.log(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
                 )
-                log(f"\t{offString} ({state})")
+                self.log(f"\t{offString} ({state})")
             else:
                 dh(
                     f'<b title="{stateEsc}">{labelEsc}:</b>'
@@ -1097,42 +952,31 @@ class Checkout:
 
     def downloadRelease(self, release, showErrors=True):
         cChk = self.commitChk
-
         r = self.getReleaseObj(release, showErrors=showErrors)
         if not r:
             return False
-
-        onGithub = self.onGithub
-        version = self.version
-        g = self.repoOnline
-
         (commit, release) = self.getReleaseFromObj(r)
 
+        assets = None
+        try:
+            assets = r.get_assets()
+        except Exception:
+            pass
+        assetUrl = None
+        versionRep3 = f"-{self.version}" if self.version else ""
+        relativeFlat = self.relative.replace("/", "-")
+        dataFile = f"{relativeFlat}{versionRep3}.zip"
+        if assets and assets.totalCount > 0:
+            for asset in assets:
+                if asset.name == dataFile:
+                    assetUrl = asset.browser_download_url
+                    break
         fetched = False
-
-        if onGithub:
-            assets = None
-            try:
-                assets = r.get_assets()
-            except Exception:
-                pass
-            assetUrl = None
-            versionRep3 = f"-{version}" if version else ""
-            relativeFlat = self.relative.replace("/", "-")
-            dataFile = f"{relativeFlat}{versionRep3}.zip"
-            if assets and assets.totalCount > 0:
-                for asset in assets:
-                    if asset.name == dataFile:
-                        assetUrl = asset.browser_download_url
-                        break
-            if assetUrl:
-                fetched = self.downloadZip(assetUrl, showErrors=False)
-            if not fetched:
-                thisShowErrors = not cChk == ""
-                fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
-        else:
-            fetched = self.downloadZip(g, shiftUp=True, commit=commit, showErrors=True)
-
+        if assetUrl:
+            fetched = self.downloadZip(assetUrl, showErrors=False)
+        if not fetched:
+            thisShowErrors = not cChk == ""
+            fetched = self.downloadCommit(commit, showErrors=thisShowErrors)
         if fetched:
             self.commitOff = commit
             self.releaseOff = release
@@ -1142,139 +986,57 @@ class Checkout:
         c = self.getCommitObj(commit)
         if not c:
             return False
-
         commit = self.getCommitFromObj(c)
-
         fetched = self.downloadDir(commit, exclude=r"\.tfx", showErrors=showErrors)
         if fetched:
             self.commitOff = commit
             self.releaseOff = None
         return fetched
 
-    def downloadZip(self, where, shiftUp=False, commit=None, showErrors=True):
-        # commit parameter only supported for GitLab
-        log = self.log
+    def downloadZip(self, dataUrl, showErrors=True):
         label = self.label
-        repo = self.repo
-        dataDir = self.dataDir
-        canDownloadSubfolders = self.canDownloadSubfolders
-        dirPathLocal = self.dirPathLocal
-        withPaths = self.withPaths
-
-        dataUrl = None
-        g = None
-
-        if type(where) is str:
-            dataUrl = where
-            notice = where
-            again = True
-        else:
-            g = where
-            notice = self.hostRep
-            again = False
-
-        log(f"\tdownloading from {notice} ... ")
-
+        self.log(f"\tdownloading {dataUrl} ... ")
         try:
-            if dataUrl is not None:
-                r = requests.get(dataUrl, allow_redirects=True)
-                zf = r.content
-            elif g is not None:
-                if canDownloadSubfolders:
-                    zf = g.repository_archive(format="zip", sha=commit, path=dataDir)
-                else:
-                    zf = g.repository_archive(format="zip", sha=commit)
-            zf = io.BytesIO(zf)
+            r = requests.get(dataUrl, allow_redirects=True)
+            self.log("\tunzipping ... ")
+            zf = io.BytesIO(r.content)
         except Exception as e:
-            msg = f"\t{str(e)}\n\tcould not download from {notice}"
-            self.possibleError(msg, showErrors, again=again)
+            msg = f"\t{str(e)}\n\tcould not download {dataUrl}"
+            self.possibleError(msg, showErrors, again=True)
             return False
 
-        log(f"\tsaving {label}")
+        self.log(f"\tsaving {label}")
 
         cwd = os.getcwd()
-        destZip = (
-            os.path.dirname(dirPathLocal) if shiftUp and withPaths else dirPathLocal
-        )
-        good = True
-
-        if g:
-            gitlabSlugRe = re.compile(f"^{repo}(?:-master)?-[^/]*/")
+        destZip = self.dirPathLocal
         try:
             z = ZipFile(zf)
             initTree(destZip, fresh=not self.keep)
             os.chdir(destZip)
-
-            if withPaths:
-                if g:
-                    nItems = 0
-                    for zInfo in z.infolist():
-                        zInfo.filename = gitlabSlugRe.sub("", zInfo.filename) or "/"
-                        if zInfo.filename[-1] == "/":
-                            continue
-                        if zInfo.filename.startswith("__MACOS"):
-                            continue
-                        if not canDownloadSubfolders:
-                            if not zInfo.filename.startswith(dataDir):
-                                continue
-                        z.extract(zInfo)
-                        nItems += 1
-                    if nItems == 0:
-                        self.possibleError(
-                            f"No directory {dataDir} in #{commit}",
-                            showErrors,
-                            again=False,
-                        )
-                        good = False
-                else:
-                    z.extractall()
-                    if os.path.exists("__MACOSX"):
-                        rmtree("__MACOSX")
+            if self.withPaths:
+                z.extractall()
+                if os.path.exists("__MACOSX"):
+                    rmtree("__MACOSX")
             else:
-                nItems = 0
                 for zInfo in z.infolist():
-                    if g:
-                        zInfo.filename = gitlabSlugRe.sub("", zInfo.filename) or "/"
                     if zInfo.filename[-1] == "/":
                         continue
                     if zInfo.filename.startswith("__MACOS"):
                         continue
-                    if (
-                        g
-                        and not canDownloadSubfolders
-                        and not zInfo.filename.startswith(dataDir)
-                    ):
-                        continue
                     zInfo.filename = os.path.basename(zInfo.filename)
                     z.extract(zInfo)
-                    nItems += 1
-                if nItems == 0:
-                    msg = f"#{commit}" if g else notice
-                    self.possibleError(
-                        f"No directory {dataDir} in {msg}",
-                        showErrors,
-                        again=False,
-                    )
-                    msg = "\tFailed"
-                    self.possibleError(msg, showErrors=showErrors)
-                    good = False
         except Exception:
             msg = f"\tcould not save {label} to {destZip}"
-            self.possibleError(msg, showErrors=showErrors, again=True)
+            self.possibleError(msg, showErrors, again=True)
             os.chdir(cwd)
             return False
         os.chdir(cwd)
-        return good
+        return True
 
     def downloadDir(self, commit, exclude=None, showErrors=False):
         g = self.repoOnline
         if not g:
             return None
-
-        onGithub = self.onGithub
-        host = self.host
-
-        log = self.log
 
         destDir = f"{self.dirPathLocal}"
         destSave = f"{self.dirPathSaveLocal}"
@@ -1284,57 +1046,48 @@ class Checkout:
 
         good = True
 
-        if onGithub:
+        def _downloadDir(subPath, level=0):
+            nonlocal good
+            if not good:
+                return
+            lead = "\t" * level
+            try:
+                contents = g.get_contents(subPath, ref=commit)
+            except UnknownObjectException:
+                msg = f"{lead}No directory {subPath} in {self.toString(commit, None, False)}"
+                self.possibleError(msg, showErrors, again=True, indent=lead)
+                good = False
+                return
+            for content in contents:
+                thisPath = content.path
+                self.log(f"\t{lead}{thisPath}...", newline=False)
+                if exclude and excludeRe.search(thisPath):
+                    self.log("excluded")
+                    continue
+                if content.type == "dir":
+                    self.log("directory")
+                    os.makedirs(f"{destSave}/{thisPath}", exist_ok=True)
+                    _downloadDir(thisPath, level + 1)
+                else:
+                    try:
+                        fileContent = g.get_git_blob(content.sha)
+                        fileData = base64.b64decode(fileContent.content)
+                        fileDest = f"{destSave}/{thisPath}"
+                        with open(fileDest, "wb") as fd:
+                            fd.write(fileData)
+                        self.log("downloaded")
+                    except (GithubException, IOError):
+                        msg = "error"
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
+                        good = False
 
-            def _downloadDir(subPath, level=0):
-                nonlocal good
-                if not good:
-                    return
-                lead = "\t" * level
-                try:
-                    contents = g.get_contents(subPath, ref=commit)
-                except UnknownObjectException:
-                    msg = (
-                        f"{lead}No directory {subPath} in "
-                        f"{self.toString(commit, None, False, host=host)}"
-                    )
-                    self.possibleError(msg, showErrors, again=True, indent=lead)
-                    good = False
-                    return
-                for content in contents:
-                    thisPath = content.path
-                    log(f"\t{lead}{thisPath}...", newline=False)
-                    if exclude and excludeRe.search(thisPath):
-                        log("excluded")
-                        continue
-                    if content.type == "dir":
-                        log("directory")
-                        os.makedirs(f"{destSave}/{thisPath}", exist_ok=True)
-                        _downloadDir(thisPath, level + 1)
-                    else:
-                        try:
-                            fileContent = g.get_git_blob(content.sha)
-                            fileData = base64.b64decode(fileContent.content)
-                            fileDest = f"{destSave}/{thisPath}"
-                            with open(fileDest, "wb") as fd:
-                                fd.write(fileData)
-                            log("downloaded")
-                        except (GithubException, IOError):
-                            msg = "error"
-                            self.possibleError(msg, showErrors, again=True, indent=lead)
-                            good = False
-
-            _downloadDir(self.dataDir, 0)
-
-        else:
-            good = self.downloadZip(g, shiftUp=True, commit=commit, showErrors=True)
+        _downloadDir(self.dataDir, 0)
 
         if good:
-            log("\tOK")
+            self.log("\tOK")
         else:
-            if onGithub:
-                msg = "\tFailed"
-                self.possibleError(msg, showErrors=showErrors if onGithub else True)
+            msg = "\tFailed"
+            self.possibleError(msg, showErrors)
 
         return good
 
@@ -1355,114 +1108,56 @@ class Checkout:
         if not g:
             return None
 
-        onGithub = self.onGithub
-
         r = None
         msg = f' tagged "{release}"' if release else "s"
 
-        if onGithub:
-            try:
-                r = g.get_release(release) if release else g.get_latest_release()
-            except UnknownObjectException:
-                self.possibleError(
-                    f"\tcannot find release{msg}", showErrors, newline=True
-                )
-            except Exception:
-                self.possibleError(
-                    f"\tcannot find release{msg}",
-                    showErrors,
-                    newline=True,
-                )
-        else:
-            try:
-                if release:
-                    r = g.releases.get(release)
-                else:
-                    releases = g.releases.list(all=True)
-                    r = (
-                        sorted(releases, key=lambda r: r.released_at)[-1]
-                        if releases
-                        else None
-                    )
-            except Exception:
-                r = None
-            if r is None:
-                self.possibleError(
-                    f"\tcannot find release{msg}", showErrors, newline=True
-                )
+        try:
+            r = g.get_release(release) if release else g.get_latest_release()
+        except UnknownObjectException:
+            self.possibleError(f"\tno release{msg}", showErrors, newline=True)
+        except Exception:
+            self.possibleError(f"\tcannot find release{msg}", showErrors, newline=True)
         return r
 
     def getCommitObj(self, commit):
+        error = self.error
+
         g = self.repoOnline
         if not g:
             return None
 
-        error = self.error
-        onGithub = self.onGithub
-
         c = None
         msg = f' with hash "{commit}"' if commit else "s"
 
-        if onGithub:
-            try:
-                cs = g.get_commits(sha=commit) if commit else g.get_commits()
-                if cs.totalCount:
-                    c = cs[0]
-                else:
-                    error(f"\tcannot find commit{msg}")
-            except Exception:
-                error(f"\tcannot find commit{msg}")
-        else:
-            try:
-                cs = g.commits.list(all=True)
-                if not len(cs):
-                    error(f"\tno commit{msg}")
-                else:
-                    cs = sorted(cs, key=lambda x: x.created_at)
-                    if commit:
-                        for com in cs:
-                            if com.id == commit:
-                                c = com
-                                break
-                    else:
-                        if len(cs):
-                            c = cs[-1]
-                    if c is None:
-                        error(f"\tcannot find commit{msg}")
-            except Exception:
-                error(f"\tcannot find commit{msg}")
+        try:
+            cs = g.get_commits(sha=commit) if commit else g.get_commits()
+            if cs.totalCount:
+                c = cs[0]
+            else:
+                error(f"\tno commit{msg}")
+        except Exception:
+            error(f"\tcannot find commit{msg}")
         return c
 
     def getReleaseFromObj(self, r):
         g = self.repoOnline
         if not g:
             return None
-
-        onGithub = self.onGithub
-
         release = r.tag_name
-
-        if onGithub:
-            ref = g.get_git_ref(f"tags/{release}")
-            commit = ref.object.sha
-        else:
-            commit = r.commit["id"]
+        ref = g.get_git_ref(f"tags/{release}")
+        commit = ref.object.sha
         return (commit, release)
 
     def getCommitFromObj(self, c):
         g = self.repoOnline
         if not g:
             return None
-
-        onGithub = self.onGithub
-
-        return c.sha if onGithub else c.id
+        return c.sha
 
     def fetchInfo(self):
         g = self.repoOnline
         if not g:
             return
-
         self.commitOn = None
         self.releaseOn = None
         self.releaseCommitOn = None
@@ -1508,132 +1203,56 @@ class Checkout:
             if self.commitOff:
                 f.write(f"{self.commitOff}\n")
 
+    def connect(self):
+        warning = self.warning
+
+        if not self.ghConn:
+            ghPerson = os.environ.get("GHPERS", None)
+            if ghPerson:
+                self.ghConn = Github(ghPerson)
+            else:
+                ghClient = os.environ.get("GHCLIENT", None)
+                ghSecret = os.environ.get("GHSECRET", None)
+                if ghClient and ghSecret:
+                    self.ghConn = Github(client_id=ghClient, client_secret=ghSecret)
+                else:
+                    self.ghConn = Github()
+        try:
+            rate = self.ghConn.get_rate_limit().core
+            self.log(
+                f"rate limit is {rate.limit} requests per hour,"
+                f" with {rate.remaining} left for this hour"
+            )
+            if rate.limit < 100:
+                warning(f"To increase the rate," f"see {URL_TFDOC}/advanced/repo.html#github")
+
+            self.log(
+                f"\tconnecting to online GitHub repo {self.org}/{self.repo} ... ",
+                newline=False,
+            )
+            self.repoOnline = self.ghConn.get_repo(f"{self.org}/{self.repo}")
+            self.log("connected")
+        except GithubException as why:
+            warning("failed")
+            warning(f"GitHub says: {why}")
+        except IOError:
+            warning("no internet")
+
 
 def checkoutRepo(
     _browse=False,
-    host=None,
     org="annotation",
-    repo="banks",
-    folder="tf",
+    repo="tutorials",
+    folder="text-fabric/examples/banks/tf",
     version="",
     checkout="",
-    source=None,
-    dest=None,
+    source=GH_BASE,
+    dest=EXPRESS_BASE,
     withPaths=True,
     keep=True,
     silent=False,
     label="data",
 ):
-    """Checks out text-fabric data from an (online) repository.
-
-    The copy may be taken from any point in the commit history of the online repo.
-
-    If you call this function, it will check whether the requested data is already
-    on your computer in the expected location.
-    If not, it may check whether the data is online and if so, download it to the
-    expected location.
-
-    Parameters
-    ----------
-    host: string, optional None
-        If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl`.
-        If `None` we work with github.com`.
-
-    org: string, optional "annotation"
-        The *org* on GitHub or the group on GitLab
-
-    repo: string, optional "banks"
-        The *repo* on GitHub or the project on GitLab
-
-    folder: string, optional `tf`
-        The subfolder in the repo that contains the text-fabric files.
-        If the tf files are versioned, it is the directory that
-        contains the version directories.
-        In most cases it is `tf` or it ends in `/tf`.
-
-    version: string, optional, the empty string
-        The version of the tf feature data
-
-    checkout: string, optional the mepty string
-        From which version/release/local copy we should extract the data.
-
-        *   `""`: whatever you have locally in `~/text-fabric-data`.
-            If there is no data there, data will be downloaded.
-        *   `local`: whatever you have locally in `~/text-fabric-data`.
-            If there is no data there, you get an error message.
-        *   `clone`: whatever you have locally in `~/github` or
-            GitLab home (`~/`*host*)
-            If there is no data there, you get an error message.
-        *   `latest`: make sure the latest release has been fetched from online
-        *   `hot`: make sure the latest commit has been fetched from online
-        *   `vx.y.z`: make sure this specific release has been fetched from online
-        *   `1234567890abcdef`: make sure this specific commit
-            has been fetched from online
-
-        See the
-        [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb)
-        notebook for an exhaustive demo of all the checkout options.
-
-    source: string, optional empty string
-        The base of your local repository clones.
-        If given, it overrides the semi-baked in `~/github` value.
-
-    dest: string, optional empty string
-        The base of your local cache of downloaded tf feature files.
-        If given, it overrides the semi-baked in `~/text-fabric-data` value.
-
-    withPaths: boolean, optional `True`
-        The data will be saved without the directory structure
-        of files that are being downloaded.
-
-    keep: boolean, optional `True`
-        If False, the destination directory will be cleared
-        before a download takes place.
-
-    silent: boolean, optional True`
-        Will suppress non-error messages.
-
-    label: string, optional `data`
-        If passed, it will will change the word "data" in log messages
-        to what you choose.
-        We use `label='TF-app'` when we use this function to checkout the code
-        of a TF-app.
-
-    Returns
-    -------
-        (commitOffline, releaseOffline, kindLocal, localBase, localDir)
-
-    *   *commitOffline* is the commit hash of the data you have offline afterwards
-    *   *releaseOffline* is the release tag of the data you have offline afterwards
-    *   *kindLocal* indicates whether an online check has been performed:
-        it is `None` if there has been an online check. Otherwise it is
-        `clone` if the data is in your `~/github` directory else it is `local`.
-    *   *localBase* where the data is under: `~/github` or `~/text-fabric-data`,
-        or whatever you have passed as *source* and *dest*.
-    *   *localDir* releative path from *localBase* to your data.
-        If your data has versions, *localDir* points to directory that has the versions,
-        not to a specific version.
-
-    Your local copy can be found under your `~/text-fabric-data`, and from
-    there under *org/repo* if it is from a GitHub clone, or under
-    *host/org/repo* if it is a GitLab clone.
-
-    If you work with a clone, then your local copy is either in
-    `~/github` or in `~/`*host* (whatever the value of the *host* parameter is.
-    From there it is under *org/repo*.
-
-    The actual feature files are in *folder/version* if there is a *version*,
-    else *folder*.
-
-    """
-
-    if source is None:
-        source = GH_BASE if host is None else os.path.expanduser(f"~/{host}")
-
-    if dest is None:
-        dest = EXPRESS_BASE if host is None else f"{EXPRESS_BASE}/{host}"
-
     def resolve(chkout, attempt=False):
         rData = Checkout(
             org,
@@ -1646,7 +1265,6 @@ def checkoutRepo(
             withPaths,
             silent,
             _browse,
-            host=host,
             version=version,
             label=label,
         )

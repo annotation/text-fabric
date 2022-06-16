@@ -25,6 +25,8 @@ setup(
         "ipython",
         "requests",
         "pygithub>=1.47",
+        "pygithub>=1.47",
+        "python-gitlab>=3.5.0",
         "pyyaml>=5.3",
     ],
     python_requires=">=3.6.3",

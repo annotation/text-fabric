@@ -47,6 +47,7 @@ class App:
         release,
         local,
         _browse,
+        host=None,
         hoist=False,
         version=None,
         checkout="",
@@ -70,6 +71,7 @@ class App:
         appName, appPath, checkout, version: string
         mod: string or iterable, optional `[]`
         legacy: boolean, optional False
+        host: string, optional None
         hoist: dict, optional `False`
         locations, modules: string, optional `None`
         collection: string, optional None
@@ -123,7 +125,7 @@ class App:
                     self.sets = sets
                     console(f'Sets from {setFile}: {", ".join(sets)}')
             specs = getModulesData(
-                self, mod, locations, modules, version, checkout, silent
+                self, host, mod, locations, modules, version, checkout, silent
             )
             if specs:
                 (locations, modules) = specs
@@ -301,6 +303,7 @@ def findApp(
     dataLoc,
     _browse,
     *args,
+    host=None,
     silent=False,
     version=None,
     legacy=False,
@@ -342,6 +345,11 @@ def findApp(
     args: mixed
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
         class.
+
+    host: string, optional None
+        If present, it points to a GitLab instance such as the on-premise
+        `gitlab.huc.knaw.nl`.
+        If `None` we work with github.com`.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
@@ -398,6 +406,7 @@ def findApp(
             (dataRepo, folder) = parts
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 _browse=_browse,
+                host=host,
                 org=dataOrg,
                 repo=dataRepo,
                 folder=folder,
@@ -412,6 +421,7 @@ def findApp(
         else:
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 _browse=_browse,
+                host=host,
                 org=ORG,
                 repo=f"app-{appName}",
                 folder=APP_CODE,
@@ -445,6 +455,7 @@ def findApp(
                     )
                     (commit, release, local, appBase, appDir) = checkoutRepo(
                         _browse=_browse,
+                        host=host,
                         org=dataOrg,
                         repo=dataRepo,
                         folder=APP_APP,
@@ -519,6 +530,7 @@ def findApp(
             local,
             _browse,
             *args,
+            host=host,
             version=version,
             silent=silent,
             **kwargs,

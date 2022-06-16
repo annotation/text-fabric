@@ -34,7 +34,7 @@ The TF kernel can be connected by an other Python program as follows:
 
 ```python
 from tf.server.kernel import makeTfConnection
-TF = makeTfConnection(host, port)
+TF = makeTfConnection(lhost, port)
 api = TF.connect()
 ```
 
@@ -597,12 +597,12 @@ def makeTfKernel(app, appName, port):
 # KERNEL CONNECTION
 
 
-def makeTfConnection(host, port, timeout):
+def makeTfConnection(lhost, port, timeout):
     class TfConnection(object):
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    host, port, config=dict(sync_request_timeout=timeout)
+                    lhost, port, config=dict(sync_request_timeout=timeout)
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -622,6 +622,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
+    host = dataSource.get("host", None)
     appName = dataSource["appName"]
     checkout = dataSource["checkout"]
     checkoutApp = dataSource["checkoutApp"]
@@ -644,6 +645,7 @@ def main(cargs=sys.argv):
         checkoutApp,
         dataLoc,
         True,
+        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,

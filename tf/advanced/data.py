@@ -7,13 +7,19 @@ from .links import provenanceLink
 
 
 class AppData(object):
-    def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
+    def __init__(
+        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+    ):
         """Collects TF data according to specifications.
 
         The specifications are passed as arguments when the object is initialized.
 
         Parameters
         ----------
+        host: string, optional None
+            If present, it points to a GitLab instance such as the on-premise
+            `gitlab.huc.knaw.nl`.
+            If `None` we work with github.com`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -36,6 +42,7 @@ class AppData(object):
             data fetching.
 
         """
+        self.host = host
         self.app = app
         self.moduleRefs = (
             []
@@ -224,6 +231,7 @@ class AppData(object):
             Additional informational attributes of the module, e.g. a DOI
         """
 
+        host = self.host
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -246,6 +254,7 @@ class AppData(object):
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
                 _browse=_browse,
+                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,

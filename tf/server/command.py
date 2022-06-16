@@ -17,11 +17,11 @@ appPat = "^([a-zA-Z0-9_-]+)$"
 appRe = re.compile(appPat)
 
 
-def portIsInUse(host, port):
+def portIsInUse(lhost, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
-        s.bind((host, port))
+        s.bind((lhost, port))
         result = True
     except OverflowError:
         result = None
@@ -69,6 +69,7 @@ def repSlug(slug):
 
 def argApp(cargs):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
+    host = argCollect("host", cargs)
     checkout = argCollect("checkout", cargs)
     locations = argCollect("locations", cargs)
     modules = argCollect("modules", cargs)
@@ -80,6 +81,7 @@ def argApp(cargs):
         *_enSlug(
             dict(
                 appName=appName,
+                host=host,
                 checkoutApp=checkoutApp,
                 dataLoc=dataLoc,
                 checkout=checkout,
