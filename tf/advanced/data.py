@@ -296,7 +296,7 @@ class AppData(object):
                 (
                     "live",
                     provenanceLink(
-                        org, repo, version, commit, local, release, relative
+                        host, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 ("doi", info["doi"]),

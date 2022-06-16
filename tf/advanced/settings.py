@@ -226,10 +226,11 @@ Default:
 
 ### `docRoot`
 
-Where the docs are: on Github (default), or on nbviewer (`{urlNb}`) or somewhere else.
+Where the docs are: on Github or GitLab (default),
+or on nbviewer (`{urlNb}`) or somewhere else.
 
 Default:
-:   string `{urlGh}`
+:   string `{urlGh}` or `https://`*host*
 
 ---
 
@@ -930,7 +931,7 @@ Default:
 import re
 import types
 
-from ..parameters import URL_GH, URL_NB, URL_TFDOC
+from ..parameters import URL_B, URL_NB, URL_TFDOC
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
 from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
@@ -1021,17 +1022,20 @@ PROVENANCE_DEFAULTS = (
     ("webHint", None),
 )
 
-DOC_DEFAULTS = (
-    ("docRoot", "{urlGh}"),
-    ("docExt", ".md"),
-    ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
-    ("docPage", "home"),
-    ("docUrl", "{docBase}/{docPage}{docExt}"),
-    ("featureBase", "{docBase}/features/<feature>{docExt}"),
-    ("featurePage", "home"),
-    ("charUrl", "{tfDoc}/writing/{language}.html"),
-    ("charText", "How TF features represent text"),
-)
+
+def DOC_DEFAULTS(host):
+    return (
+        ("docRoot", "{urlGh}" if host is None else f"https://{host}"),
+        ("docExt", ".md"),
+        ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
+        ("docPage", "home"),
+        ("docUrl", "{docBase}/{docPage}{docExt}"),
+        ("featureBase", "{docBase}/features/<feature>{docExt}"),
+        ("featurePage", "home"),
+        ("charUrl", "{tfDoc}/writing/{language}.html"),
+        ("charText", "How TF features represent text"),
+    )
+
 
 DATA_DISPLAY_DEFAULTS = (
     ("excludedFeatures", set(), False),
@@ -1294,9 +1298,10 @@ def _fillInDefined(template, data):
 
 
 def setAppSpecs(app, cfg, reset=False):
+    host = app.host
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
-    specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    specs = dict(urlGh=URL_B(host), urlNb=URL_NB, tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
     if "apiVersion" not in specs:
@@ -1316,7 +1321,7 @@ def setAppSpecs(app, cfg, reset=False):
 
     for (dKey, defaults) in (
         ("provenanceSpec", PROVENANCE_DEFAULTS),
-        ("docs", DOC_DEFAULTS),
+        ("docs", DOC_DEFAULTS(host)),
     ):
         checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
         checker.report()

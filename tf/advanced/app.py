@@ -98,6 +98,7 @@ class App:
 
         for (key, value) in dict(
             isCompatible=cfg.get("isCompatible", None),
+            host=host,
             appName=appName,
             api=api,
             version=version,

@@ -445,13 +445,14 @@ class Options:
     def reset(self, *options):
         app = self.app
         error = app.error
+        # info = app.info
         defaults = self.defaults
 
         if options:
             current = self.current
             for option in options:
                 if option not in defaults:
-                    print(defaults)
+                    # info(defaults)
                     error(f'WARNING: unknown display option "{option}" will be ignored')
                     continue
                 current[option] = defaults[option]

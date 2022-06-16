@@ -136,6 +136,12 @@ on top of this url.
 URL_GH = "https://github.com"
 """Base url of GitHub."""
 
+
+def URL_B(host):
+    """Base url of GitHub or GitLab, depending on host."""
+    return URL_GH if host is None else f"https://{host}"
+
+
 URL_NB = "https://nbviewer.jupyter.org/github"
 """Base url of NB-viewer for GitHub data."""
 

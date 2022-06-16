@@ -7,7 +7,7 @@ import types
 from textwrap import dedent
 
 from ..parameters import (
-    URL_GH,
+    URL_B,
     URL_TFDOC,
     SEARCHREF,
     APIREF,
@@ -21,10 +21,6 @@ from ..server.wrap import wrapProvenance
 
 
 UNSUPPORTED = ""
-
-pathRe = re.compile(
-    r"^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$", flags=re.I
-)
 
 
 def linksApi(app, silent):
@@ -49,6 +45,7 @@ def linksApi(app, silent):
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     """
+    host = app.host
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
@@ -84,7 +81,9 @@ def linksApi(app, silent):
     dataLink = (
         outLink(dataName, docUrl, f"provenance of {corpus}")
         if isCompatible and repo is not None and docUrl
-        else "/".join((x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version))
+        else "/".join(
+            (x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version)
+        )
         if appName.startswith("app:")
         else "/".join((x or "") for x in (appPath, appName, version))
     )
@@ -110,7 +109,7 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f"{URL_GH}/{org}/{repo}/blob/master/{APP_APP}"
+    extraUrl = f"{URL_B(host)}/{org}/{repo}/blob/master/{APP_APP}"
     appLink = (
         outLink(f"{org}/{repo}/app {apiVersionRep}", extraUrl, f"{appName} TF-app")
         if isCompatible and repo is not None
@@ -399,6 +398,7 @@ def _featuresPerModule(app):
 
     api = app.api
     TF = app.TF
+    host = app.host
 
     aContext = app.context
     mOrg = aContext.org
@@ -422,6 +422,12 @@ def _featuresPerModule(app):
     mLocations = app.mLocations if hasattr(app, "mLocations") else []
     baseLoc = mLocations[0] if hasattr(app, "mLocations") else ()
 
+    hostPat = "" if host is None else f"|{re.escape(host)}"
+    pathRe = re.compile(
+        rf"^(.*/(?:github|text-fabric-data|{hostPat}))/([^/]+)/([^/]+)/(.*)$",
+        flags=re.I,
+    )
+
     for mLoc in mLocations:
         match = pathRe.fullmatch(mLoc)
         if not match:
@@ -442,7 +448,7 @@ def _featuresPerModule(app):
                 if mId in fixedModuleIndex
                 else (
                     f"{org}/{repo}/{relative}",
-                    f"{URL_GH}/{org}/{repo}/tree/master/{relative}",
+                    f"{URL_B(host)}/{org}/{repo}/tree/master/{relative}",
                 )
             )
             moduleIndex[mId] = (org, repo, relative, corpus, docUrl)
@@ -502,7 +508,7 @@ def _featuresPerModule(app):
             docUrl = (
                 ""
                 if type(mId) is str
-                else f"{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
+                else f"{URL_B(host)}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
             )
         html += dedent(
             f"""
@@ -584,13 +590,19 @@ def _featuresPerModule(app):
     return html
 
 
-def provenanceLink(org, repo, version, commit, release, local, relative):
+def provenanceLink(host, org, repo, version, commit, local, release, relative):
     """Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a GitHub repo.
 
     Parameters
     ----------
+    host: string, optional None
+        If present, it points to a GitLab instance such as the on-premise
+        `gitlab.huc.knaw.nl`.
+        If `None` we work with github.com`.
+    org: string
+        Organization on GitHub
     org: string
         Organization on GitHub
     repo: string
@@ -606,19 +618,32 @@ def provenanceLink(org, repo, version, commit, release, local, relative):
     text = (
         f"data on local machine {relative}"
         if org is None or repo is None
-        else f"{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})"
+        else (
+            f"{org}/{repo} v:{version}"
+            f"({Checkout.toString(commit, release, local, host=host)})"
+        )
     )
     relativeFlat = relative.replace("/", "-")
+    baseUrl = URL_B(host)
     url = (
         None
         if org is None or repo is None
-        else f"{URL_GH}/{org}/{repo}/tree/master/{relative}"
+        else f"{baseUrl}/{org}/{repo}/tree/master/{relative}"
         if local
         else (
-            f"{URL_GH}/{org}/{repo}/releases/download/{release}"
-            f"/{relativeFlat}-{version}.zip"
+            (
+                (
+                    f"{baseUrl}/{org}/{repo}/releases/download/{release}"
+                    f"/{relativeFlat}-{version}.zip"
+                )
+                if host is None
+                else (
+                    f"{baseUrl}/{org}/{repo}/-/archive/{release}"
+                    f"/{repo}-{version}.zip"
+                )
+            )
             if release
-            else f"{URL_GH}/{org}/{repo}/tree/{commit}/{relative}"
+            else f"{baseUrl}/{org}/{repo}/tree/{commit}/{relative}"
         )
     )
     return (text, url)
