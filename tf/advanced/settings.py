@@ -1301,7 +1301,7 @@ def setAppSpecs(app, cfg, reset=False):
     host = app.host
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
-    specs = dict(urlGh=URL_B(host), urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    specs = dict(urlGh=URL_B(host), urlNb=URL_NB(host), tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
     if "apiVersion" not in specs:

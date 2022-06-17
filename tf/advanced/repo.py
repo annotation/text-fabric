@@ -63,8 +63,12 @@ Additionally, you may need to make your identity known.
 If you have an account on the Gitlab instance, go to your settings and request
 a personal token with *api* privileges.
 
-On your own system, make an environment variable named `GLPERS` whose
+On your own system, make an environment variable named GL_*HOST*`_PERS` whose
 content is exactly the value of this token.
+And *HOST* should be the uppercase variant of the name of the GitLab host,
+where every character that is not a letter or digit or `_` is replaced by a `_`.
+
+For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`.
 
 ### On Mac and Linux
 
@@ -111,11 +115,16 @@ export GHPERS
 Put the following lines in this file:
 
 ``` sh
-GLPERS="xxx"
-export GLPERS
+GL_host_PERS="xxx"
+export GL_host_PERS
 ```
 
-where the `xxx` are replaced by your actual token.
+where
+
+*   `host` is replaced by the uppercase GitLab host
+    (e.g. `gitlab.huc.knaw.nl` becomes `GL_GITLAB_HUC_KNAW_NL_PERS`)
+    In this way you can store tokens for multiple GitLab hosts.
+*   `xxx` is replaced by your actual token.
 
 Then restart your terminal or say in an existing terminal
 
@@ -137,7 +146,7 @@ Click on `New ...` under `User environment variables`.
 
 **GitHub**: Then fill in `GHPERS` under *name* and the token string under *value*.
 
-**GitLab**: Then fill in `GLPERS` under *name* and the token string under *value*.
+**GitLab**: Then fill in `GL_host_PERS` under *name* and the token string under *value*.
 
 Then quit the command prompt and start a new one.
 
@@ -324,8 +333,8 @@ from gitlab.exceptions import GitlabGetError
 
 from ..parameters import (
     URL_TFDOC,
-    GH_BASE,
-    EXPRESS_BASE,
+    CLONE_BASE,
+    EX_BASE,
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
@@ -334,7 +343,13 @@ from ..core.helpers import console, htmlEsc, expanduser, initTree
 from .helpers import dh
 from .zipdata import zipData
 
+
 VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
+SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")
+
+
+def GLPERS(host):
+    return f"GL_{SHELL_VAR_RE.sub('_', host.upper())}_PERS"
 
 
 class Repo:
@@ -348,7 +363,7 @@ class Repo:
         version,
         increase,
         host=None,
-        source=GH_BASE,
+        source=CLONE_BASE(None),
         dest=DOWNLOADS,
     ):
         self.org = org
@@ -399,6 +414,7 @@ class Repo:
     def makeZip(self):
         source = self.source
         dest = self.dest
+        host = self.host
         org = self.org
         repo = self.repo
         folder = self.folder
@@ -410,7 +426,9 @@ class Repo:
             console(f"No data found in {dataIn}", error=True)
             return False
 
-        zipData(org, repo, version=version, relative=folder, source=source, dest=dest)
+        zipData(
+            host, org, repo, version=version, relative=folder, source=source, dest=dest
+        )
         return True
 
     def connect(self):
@@ -616,7 +634,9 @@ class Repo:
         console(msg, error=True, newline=newline)
 
 
-def releaseData(org, repo, folder, version, increase, source=GH_BASE, dest=DOWNLOADS):
+def releaseData(
+    org, repo, folder, version, increase, source=CLONE_BASE(None), dest=DOWNLOADS
+):
     """Makes a new data release for a repository.
 
     !!!caution "GitHub only"
@@ -643,7 +663,7 @@ def releaseData(org, repo, folder, version, increase, source=GH_BASE, dest=DOWNL
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional `GH_BASE`
+    source: string, optional `CLONE_BASE(host)`
         Path to where the local GitHub clones are stored
     dest: string, optional `DOWNLOADS`
         Path to where the zipped data should be stored
@@ -682,14 +702,15 @@ class Checkout:
         return (commit, release, local)
 
     @staticmethod
-    def toString(commit, release, local, host=None, source=GH_BASE, dest=EXPRESS_BASE):
+    def toString(commit, release, local, host=None, source=None, dest=None):
         extra = ""
         if local:
-            baseRep = (
-                (source if host is None else f"~/{host}")
-                if local == "clone"
-                else (dest if host is None else f"{dest}/{host}")
-            )
+            if source is None:
+                source = CLONE_BASE(host)
+            if dest is None:
+                dest = EX_BASE(host)
+
+            baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
         if local == "clone":
             result = "repo clone"
@@ -803,6 +824,8 @@ class Checkout:
     def login(self):
         onGithub = self.onGithub
         conn = self.conn
+        host = self.host
+
         self.canDownloadSubfolders = False
 
         if onGithub:
@@ -819,13 +842,22 @@ class Checkout:
         else:
             hostUrl = self.hostUrl
 
-            person = os.environ.get("GLPERS", None)
+            person = os.environ.get(GLPERS(host), None)
             if person:
                 conn = Gitlab(hostUrl, private_token=person)
             else:
                 conn = Gitlab(hostUrl)
 
             hostVersion = conn.version()
+            if (
+                not hostVersion
+                or hostVersion[0] == "unknown"
+                or hostVersion[-1] == "unknown"
+            ):
+                self.conn = None
+                self.error(f"Cannot log in to GitLab instance {host}\n")
+                return
+
             versionThreshold = (14, 4, 0)
 
             if hostVersion:
@@ -857,6 +889,8 @@ class Checkout:
 
         if not conn:
             conn = self.login()
+            if not self.conn:
+                return
 
         if onGithub:
             try:
@@ -1538,7 +1572,7 @@ def checkoutRepo(
     host: string, optional None
         If present, it points to a GitLab instance such as the on-premise
         `gitlab.huc.knaw.nl`.
-        If `None` we work with github.com`.
+        If `None` we work with `github.com`.
 
     org: string, optional "annotation"
         The *org* on GitHub or the group on GitLab
@@ -1629,10 +1663,10 @@ def checkoutRepo(
     """
 
     if source is None:
-        source = GH_BASE if host is None else os.path.expanduser(f"~/{host}")
+        source = CLONE_BASE(host)
 
     if dest is None:
-        dest = EXPRESS_BASE if host is None else f"{EXPRESS_BASE}/{host}"
+        dest = EX_BASE(host)
 
     def resolve(chkout, attempt=False):
         rData = Checkout(

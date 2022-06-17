@@ -2,10 +2,9 @@ import os
 import sys
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, CLONE_BASE, DOWNLOADS
 from ..core.helpers import console, splitModRef, normpath, expanduser, initTree
 
-GH = expanduser(GH_BASE)
 DW = expanduser(DOWNLOADS)
 
 HELP = """
@@ -40,8 +39,20 @@ EXCLUDE = {".DS_Store"}
 
 
 def zipData(
-    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+    host,
+    org,
+    repo,
+    relative=RELATIVE,
+    version=None,
+    tf=True,
+    keep=False,
+    source=None,
+    dest=None,
 ):
+    if source is None:
+        source = CLONE_BASE(host)
+    if dest is None:
+        dest = DW if host is None else f"{DW}/{host}"
     relative = normpath(relative)
     console(f"Create release data for {org}/{repo}/{relative}")
     sourceBase = normpath(f"{source}/{org}")
@@ -103,6 +114,7 @@ def zipData(
                         arcname=featureFile,
                     )
     else:
+
         def collectFiles(base, path, results):
             thisPath = f"{base}/{path}" if path else base
             # internalBase = f"{relative}/{path}" if path else relative
@@ -125,7 +137,9 @@ def zipData(
         collectFiles(sourceDir, "", results)
         if not relativeDest:
             relativeDest = "-"
-        console(f"zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files")
+        console(
+            f"zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files"
+        )
         console(f"zip file is {destDir}/{relativeDest}.zip")
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
@@ -141,6 +155,16 @@ def main(cargs=sys.argv):
     ):
         console(HELP)
         return
+
+    host = None
+
+    newArgs = []
+    for arg in cargs:
+        if arg.startswith("--host="):
+            host = arg[8:]
+        else:
+            newArgs.append(arg)
+    cargs = newArgs
 
     moduleRef = cargs[1]
 
@@ -161,7 +185,7 @@ def main(cargs=sys.argv):
     tfMsg = "This is a TF dataset" if tf else "These are additional files"
     sys.stdout.write(f"{tfMsg}\n")
 
-    zipData(org, repo, relative=relative, tf=tf)
+    zipData(host, org, repo, relative=relative, tf=tf)
 
 
 if __name__ == "__main__":

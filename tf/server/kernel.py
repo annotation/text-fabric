@@ -156,11 +156,18 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
+            host = app.host
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
-                (("name", appName), ("org", org), ("repo", repo), ("commit", commit)),
+                (
+                    ("host", host),
+                    ("name", appName),
+                    ("org", org),
+                    ("repo", repo),
+                    ("commit", commit),
+                ),
             )
             return (appProvenance, app.provenance)
 
@@ -540,9 +547,7 @@ def makeTfKernel(app, appName, port):
             queryMessages = ("", "")
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
+                (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if not queryMessages[0] and condensed and condenseType

@@ -17,13 +17,9 @@ import os
 import re
 from shutil import rmtree
 
-from .parameters import PACK_VERSION
+from .parameters import PACK_VERSION, CLONE_BASE, EX_BASE
 from .core.helpers import expanduser, unexpanduser as ux
 
-TFD = "text-fabric-data"
-GH = "github"
-
-ROOTS = [TFD, GH]
 
 binRe = re.compile(r"/\.tf$")
 binvRe = re.compile(r"/\.tf/([^/]+)$")
@@ -41,7 +37,7 @@ def err(msg):
     sys.stderr.flush()
 
 
-def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+def clean(tfd=True, host=None, dry=True, specific=None, current=False):
     """Clean up older compressed .tfx files.
 
     Parameters
@@ -56,10 +52,14 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     tfd: boolean,  optional `True`
         By default, your `~/text-fabric-data` is traversed and cleaned,
         but if you pass `tfd=False` it will be skipped.
-    gh: boolean, optional, `False`
-        By default, your `~/github` will be skipped,
-        but if you pass `gh=True` it will be
-        traversed and cleaned.
+    host: string, optional, `None`
+        If None, only material in `text-fabric-data` will be cleaned.
+        But you can also clean clones of GitHub/GitLab.
+
+        To clean GitHub clones, pass `github`.
+
+        To clean the clones from a specific GitLab host,
+        pass the host name of it.
     specific: string, optional, `None`
         You can pass a specific directory here. The standard directories
         `~/github` and `~/text-fabric-data` will not be used, only
@@ -76,12 +76,11 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     if specific is not None:
         bases = [expanduser(specific)]
     else:
-        bases = []
-        for root in ROOTS:
-            if root == TFD and not tfd or root == GH and not gh:
-                out(f"skipped {root}\n")
-                continue
-            bases.append(expanduser(f"~/{root}"))
+        if host is not None:
+            if host.lower() == "github":
+                bases = [EX_BASE(None), CLONE_BASE(None)]
+            else:
+                bases = [EX_BASE(host), CLONE_BASE(host)]
 
     for base in bases:
         for triple in os.walk(base):

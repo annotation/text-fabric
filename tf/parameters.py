@@ -4,11 +4,12 @@
 Fixed values for the whole program.
 """
 
+import os
 import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '9.5.2'
+VERSION = '10.0.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -126,36 +127,35 @@ RELATIVE = "tf"
 """Default relative path with a repo to the directory with tf files.
 """
 
-URL_GH_API = "https://api.github.com/repos"
-"""Url of the GitHub API for repos.
-
-We can access GitHub repos by means of commands
-on top of this url.
-"""
-
-URL_GH = "https://github.com"
-"""Base url of GitHub."""
-
 
 def URL_B(host):
     """Base url of GitHub or GitLab, depending on host."""
-    return URL_GH if host is None else f"https://{host}"
+    return "https://github.com" if host is None else f"https://{host}"
 
 
-URL_NB = "https://nbviewer.jupyter.org/github"
-"""Base url of NB-viewer for GitHub data."""
+def URL_NB(host):
+    """Base url of NB-viewer for GitHub data."""
+    return "https://nbviewer.jupyter.org/" + ("github" if host is None else host)
 
-DOWNLOADS = "~/Downloads"
+
+HOME_DIR = os.path.expanduser("~")
+
+DOWNLOADS = f"{HOME_DIR}/Downloads"
 """Local Downloads directory."""
 
-GH_BASE = "~/github"
-"""Local GitHub directory."""
 
-EXPRESS_BASE = "~/text-fabric-data"
-"""Local cache directory.
+def CLONE_BASE(host):
+    """Local directory for GitHub/GitLab clones."""
+    return f"{HOME_DIR}/{'github' if host is None else host}"
 
-This is the place where the TF apps and TF feature files are cached locally.
-"""
+
+def EX_BASE(host):
+    """Local cache directory.
+
+    This is the place where the TF apps and TF feature files are cached locally.
+    """
+    return f"{HOME_DIR}/text-fabric-data" + ("" if host is None else f"/{host}")
+
 
 EXPRESS_SYNC = "__checkout__.txt"
 """Name of cache indicator file.
@@ -175,7 +175,12 @@ PROTOCOL = "http://"
 HOST = "localhost"
 PORT_BASE = 10000
 
-GH_PAGES = "github.io"
+
+def PAGES_DOMAIN(host):
+    return "github.io" if host is None else f"{'.'.join(host.split('.'))[0:-1]}.io"
+
+
+GH_PAGES = PAGES_DOMAIN(None)
 
 URL_TFDOC = f"https://{ORG}.{GH_PAGES}/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""

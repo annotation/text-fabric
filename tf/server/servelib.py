@@ -133,7 +133,7 @@ Job: {form['jobName']}
 """
 
 
-def zipData(csvs, tupleResultsX, queryResultsX, about, form):
+def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     appName = form["appName"]
     jobName = form["jobName"]
 

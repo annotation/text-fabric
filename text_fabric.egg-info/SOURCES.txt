@@ -235,8 +235,6 @@ test/generic/tf/number.tf
 test/generic/tf/oslots.tf
 test/generic/tf/otype.tf
 test/generic/tf/sign.tf
-test/github/getsubdir.ipynb
-test/github/ratelimit.py
 test/joblib/joblib.ipynb
 test/julia/readTf-Julia.ipynb
 test/julia/readTf-Python.ipynb

@@ -259,6 +259,7 @@ The app "{appName}" will not work!
             call `reuse` and `tf.advanced.settings.showContext` in tandem.
         """
 
+        host = self.host
         aContext = self.context
         appPath = aContext.appPath
         appName = aContext.appName
@@ -274,6 +275,7 @@ The app "{appName}" will not work!
             commit,
             release,
             local,
+            host=host,
             org=aContext.org,
             repo=aContext.repo,
             version=version,
@@ -350,7 +352,7 @@ def findApp(
     host: string, optional None
         If present, it points to a GitLab instance such as the on-premise
         `gitlab.huc.knaw.nl`.
-        If `None` we work with github.com`.
+        If `None` we work with `github.com`.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
@@ -434,7 +436,7 @@ def findApp(
             )
             appBaseRep = f"{appBase}/" if appBase else ""
             appPath = f"{appBaseRep}{appDir}"
-            cfg = findAppConfig(appName, appPath, commit, release, local)
+            cfg = findAppConfig(appName, appPath, commit, release, local, host=host)
             provenanceSpec = kwargs.get("provenanceSpec", {})
             if provenanceSpec:
                 for k in ("org", "repo", "relative"):
@@ -497,6 +499,7 @@ def findApp(
         commit,
         release,
         local,
+        host=host,
         org=dataOrg,
         repo=dataRepo,
         version=version,

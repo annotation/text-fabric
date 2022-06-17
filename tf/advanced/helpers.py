@@ -2,7 +2,7 @@ import os
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EXPRESS_BASE, GH_BASE, TEMP_DIR
+from ..parameters import EX_BASE, CLONE_BASE, TEMP_DIR
 from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD
 from ..core.text import DEFAULT_FORMAT
 
@@ -68,32 +68,32 @@ def dh(html):
 # COLLECT CONFIG SETTINGS IN A DICT
 
 
-def getLocalDir(cfg, local, version):
+def getLocalDir(host, cfg, local, version):
     provenanceSpec = cfg.get("provenanceSpec", {})
     org = provenanceSpec.get("org", None)
     repo = provenanceSpec.get("repo", None)
     relative = provenanceSpec.get("relative", "tf")
     version = provenanceSpec.get("version", None) if version is None else version
-    base = hasData(local, org, repo, version, relative)
+    base = hasData(host, local, org, repo, version, relative)
 
     if not base:
-        base = EXPRESS_BASE
+        base = EX_BASE(host)
 
     return expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
 
 
-def hasData(local, org, repo, version, relative):
+def hasData(host, local, org, repo, version, relative):
     versionRep = f"/{version}" if version else ""
     if local == "clone":
-        ghBase = expanduser(GH_BASE)
-        ghTarget = f"{ghBase}/{org}/{repo}/{relative}{versionRep}"
+        cloneBase = CLONE_BASE(host)
+        ghTarget = f"{cloneBase}/{org}/{repo}/{relative}{versionRep}"
         if os.path.exists(ghTarget):
-            return ghBase
+            return cloneBase
 
-    expressBase = expanduser(EXPRESS_BASE)
-    expressTarget = f"{expressBase}/{org}/{repo}/{relative}{versionRep}"
+    exBase = EX_BASE(host)
+    expressTarget = f"{exBase}/{org}/{repo}/{relative}{versionRep}"
     if os.path.exists(expressTarget):
-        return expressBase
+        return exBase
     return False
 
 

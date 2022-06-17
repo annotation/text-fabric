@@ -66,7 +66,7 @@ def linksApi(app, silent):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = f"{URL_NB}/{org}/{repo}/blob/master/tutorial/start.ipynb"
+    tutUrl = f"{URL_NB(host)}/{org}/{repo}/blob/master/tutorial/start.ipynb"
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = repo.upper()
@@ -345,10 +345,11 @@ def showProvenance(app, jobName="program code", author="program author"):
     """
 
     aContext = app.context
+    host = app.host
     org = aContext.org
     repo = aContext.repo
     commit = aContext.commit
-    appProvenance = ((("org", org), ("repo", repo), ("commit", commit)),)
+    appProvenance = ((("host", host), ("org", org), ("repo", repo), ("commit", commit)),)
     provenance = (appProvenance, app.provenance)
     setNames = (
         tuple(sorted(app.sets.keys()))
@@ -600,7 +601,7 @@ def provenanceLink(host, org, repo, version, commit, local, release, relative):
     host: string, optional None
         If present, it points to a GitLab instance such as the on-premise
         `gitlab.huc.knaw.nl`.
-        If `None` we work with github.com`.
+        If `None` we work with `github.com`.
     org: string
         Organization on GitHub
     org: string

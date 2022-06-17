@@ -23,7 +23,7 @@ from .wrap import (
     wrapSelect,
     wrapProvenance,
 )
-from .servelib import getAbout, getFormData, zipData
+from .servelib import getAbout, getFormData, zipTables
 
 TIMEOUT = 180
 
@@ -287,7 +287,7 @@ def serveDownload(web):
     tupleResultsX = pickle.loads(tupleResultsX)
     queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(header, provenanceMd, form)
-    (fileName, zipBuffer) = zipData(csvs, tupleResultsX, queryResultsX, about, form)
+    (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
         "Expires": "0",

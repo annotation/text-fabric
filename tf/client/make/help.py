@@ -1,12 +1,14 @@
 HELP = """
-text-fabric-make {org}/{repo} serve {folder}
-text-fabric-make {org}/{repo} ship
-text-fabric-make {org}/{repo} {client} ship
-text-fabric-make {org}/{repo} make [config] output
-text-fabric-make {org}/{repo} {client} make [config] output
-text-fabric-make {org}/{repo} {client} {command} [parameters]
+text-fabric-make [--host={host} {org}/{repo} serve {folder}
+text-fabric-make [--host={host} {org}/{repo} ship
+text-fabric-make [--host={host} {org}/{repo} {client} ship
+text-fabric-make [--host={host} {org}/{repo} make [config] output
+text-fabric-make [--host={host} {org}/{repo} {client} make [config] output
+text-fabric-make [--host={host} {org}/{repo} {client} {command} [parameters]
 
-org/repo: a Text-Fabric dataset in a GitHub repo under org,
+host    : if None, the dataset resides on GitHub;
+          otherwise it points to a GitLab instance, e.g. gitlab.huc.knaw.nl
+org/repo: a Text-Fabric dataset in a GitHub/GitLab repo under org,
           such as "etcbc/bhsa" and "CambridgeSemiticsLab/nena_tf"
 client: the name of a layered-search client as defined in the config.yaml
         in «org»/«repo»-search

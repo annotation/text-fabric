@@ -19,7 +19,7 @@ class AppData(object):
         host: string, optional None
             If present, it points to a GitLab instance such as the on-premise
             `gitlab.huc.knaw.nl`.
-            If `None` we work with github.com`.
+            If `None` we work with `github.com`.
         app: obj
             The high-level API object
         moduleRefs: tuple

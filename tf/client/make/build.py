@@ -65,16 +65,17 @@ from importlib import util
 from tf.app import use
 from tf.fabric import Fabric
 from tf.server.command import getPort
-from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath, expanduser
+from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath
 from tf.parameters import (
     REPO,
     LS,
     ZIP_OPTIONS,
-    URL_GH,
+    URL_B,
     URL_NB,
-    GH_BASE,
+    CLONE_BASE,
     URL_TFDOC,
-    APP_CONFIG
+    APP_CONFIG,
+    PAGES_DOMAIN,
 )
 
 from .gh import deploy
@@ -82,7 +83,6 @@ from .help import HELP
 
 TEMP = "_temp"
 ZIP_OPTIONS = {"compresslevel": 6, **ZIP_OPTIONS}
-GH = expanduser(GH_BASE)
 
 CONFIG_FILE = normpath(f"{os.path.dirname(abspath(__file__))}/{APP_CONFIG}")
 STATIC_DIR = normpath(f"{os.path.dirname(os.path.dirname(abspath(__file__)))}/static")
@@ -108,6 +108,7 @@ def readArgs():
     class Args:
         pass
 
+    Args.host = None
     Args.dataset = None
     Args.repo = None
     Args.client = None
@@ -122,6 +123,14 @@ def readArgs():
     if not len(args):
         console("Missing org/repo")
         return None
+
+    newArgs = []
+    for arg in args:
+        if arg.startswith("--host="):
+            Args.host = arg[8:]
+        else:
+            newArgs.append(arg)
+    args = newArgs
 
     dataset = args[0]
     args = args[1:]
@@ -194,7 +203,14 @@ def readArgs():
 
 class Make:
     def __init__(
-        self, dataset, client, A=None, folder=None, appFolder=None, debugState=None
+        self,
+        dataset,
+        client,
+        host=None,
+        A=None,
+        folder=None,
+        appFolder=None,
+        debugState=None,
     ):
         if A is not None:
             self.A = A
@@ -203,6 +219,7 @@ class Make:
             pass
 
         self.C = C
+        self.host = host
         self.dataset = dataset
         self.client = client
         self.folder = normpath(folder)
@@ -245,6 +262,7 @@ class Make:
     def config(self):
         C = self.C
 
+        host = self.host
         dataset = self.dataset
         parts = dataset.split("/")
         if len(parts) != 2:
@@ -260,6 +278,8 @@ class Make:
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
+        backendUrl = URL_B(host)
+
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings["lsVersion"]
@@ -267,7 +287,10 @@ class Make:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
+        cloneBase = CLONE_BASE(host)
+
         c = dict(
+            host=host,
             org=org,
             repo=repo,
             client=client,
@@ -278,11 +301,11 @@ class Make:
             searchRepo="«repo»-search",
             rel="site",
             generatorUrl=f"{URL_TFDOC}/client/make/build.html",
-            sourceUrl=f"{URL_GH}/«org»/«searchRepo»/tree/master/layeredsearch",
-            issueUrl=f"{URL_GH}/«org»/«searchRepo»/issues",
-            tutUrl=f"{URL_NB}/«org»/«repo»/blob/master/tutorial/start.ipynb",
+            sourceUrl=f"{backendUrl}/«org»/«searchRepo»/tree/master/layeredsearch",
+            issueUrl=f"{backendUrl}/«org»/«searchRepo»/issues",
+            tutUrl=f"{URL_NB(host)}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
-            appDir=f"{GH}/«org»/«searchRepo»",
+            appDir=f"{cloneBase}/«org»/«searchRepo»",
             localDir=f"«appDir»/{TEMP}",
             configDir=f"«appDir»/{LS}" if appFolder is None else f"{appFolder}/{LS}",
             lsConfig=f"«configDir»/{APP_CONFIG}",
@@ -377,8 +400,8 @@ class Make:
             self.importMake(c=c)
 
             d = dict(
-                dataLocation=f"{GH}/«data.org»/«data.repo»/«data.rel»",
-                dataUrl=f"{URL_GH}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
+                dataLocation=f"{cloneBase}/«data.org»/«data.repo»/«data.rel»",
+                dataUrl=f"{backendUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
                 writingUrl=f"{URL_TFDOC}/writing/«writing».html",
                 urls=dict(
                     cheatsheet=(
@@ -396,8 +419,8 @@ class Make:
                     ),
                     maker=(
                         None,
-                        "https://dans.knaw.nl/en/front-page?set_language=en",
-                        "Website of DANS = Data Archiving and Networked Services",
+                        "https://huc.knaw.nl/di/text/",
+                        "Website of KNAW/Humanities Cluster/Team Text",
                     ),
                     corpus=(
                         None,
@@ -564,6 +587,7 @@ class Make:
             defs=dict(
                 lsVersion=C.lsVersion,
                 client=C.client,
+                host=C.host,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -664,10 +688,11 @@ class Make:
 
     def loadTf(self):
         C = self.C
+        host = C.host
         org = C.org
         repo = C.repo
         version = C.data["version"]
-        A = use(f"{org}/{repo}:clone", checkout="clone", version=version)
+        A = use(f"{org}/{repo}:clone", checkout="clone", host=host, version=version)
         self.A = A
 
     def makeConfig(self):
@@ -1109,13 +1134,21 @@ class Make:
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
+        host = self.host
         org = self.org
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        console(f"Publishing {org}/{repo}:{','.join(clients)} from {siteDir} ...")
+        domain = PAGES_DOMAIN(host)
+        console(
+            f"Publishing on {domain} "
+            f"{org}/{repo}:{','.join(clients)} from {siteDir} ..."
+        )
         os.chdir(appDir)
-        deploy(C.org, C.searchRepo)
+        if host is None:
+            deploy(C.org, C.searchRepo)
+        else:
+            console(f"Deploying Pages on GitLab ({host}) not yet supported", error=True)
 
     def ship(self, publish=True):
         self.adjustVersion()
@@ -1265,10 +1298,17 @@ class Make:
         return clients
 
 
-def makeSearchClients(dataset, folder, appFolder, dataDir=None):
+def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
     DEBUG_STATE = "off"
 
-    Mk = Make(dataset, None, folder=folder, appFolder=appFolder, debugState=DEBUG_STATE)
+    Mk = Make(
+        dataset,
+        None,
+        host=host,
+        folder=folder,
+        appFolder=appFolder,
+        debugState=DEBUG_STATE,
+    )
     clients = Mk.getAllClients()
     # version = Mk.C.data["version"]
 
@@ -1284,6 +1324,7 @@ def makeSearchClients(dataset, folder, appFolder, dataDir=None):
         ThisMk = Make(
             dataset,
             client,
+            host=host,
             A=A,
             folder=folder,
             appFolder=appFolder,
@@ -1298,6 +1339,7 @@ def main():
     if Args is None:
         return 0
 
+    host = Args.host
     dataset = Args.dataset
     client = Args.client
     command = Args.command
@@ -1315,6 +1357,7 @@ def main():
     Mk = Make(
         dataset,
         client,
+        host=host,
         folder=folder,
         appFolder=appFolder,
         debugState=debugState,
@@ -1326,6 +1369,7 @@ def main():
             ThisMk = Make(
                 dataset,
                 client,
+                host=host,
                 folder=folder,
                 appFolder=appFolder,
                 debugState=debugState,

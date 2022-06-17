@@ -167,6 +167,16 @@ Since everybody can put a Text-Fabric corpus on GitHub, the list may not be comp
     **Quranic Arabic Corpus**,
     Cornelis van Lit, Dirk Roorda
 
+## [KNAW/Huygens](https://gitlab.huc.knaw.nl/tt)
+
+[tt/paranoia](https://gitlab.huc.knaw.nl/tt/paranoia)
+:   *Dutch*
+    W.F. Hermans, Paranoia, 1953,
+    **Collected stories**,
+    Bram Oostveen, Dirk Roorda
+
+    **Not publicly accessible, the book is under copyright.**
+
 ## [University of Utrecht: Cornelis van Lit](https://github.com/among)
 
 [among/fusus](https://github.com/among/fusus)
