@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L1-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L1-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize, splitModRef, normpath, expandDir
 from .repo import checkoutRepo
@@ -48,7 +48,7 @@ class AppData(object):
         ----------
         host: string, optional None
             If present, it points to a GitLab instance such as the on-premise
-            `gitlab.huc.knaw.nl`.
+            `gitlab.huc.knaw.nl` or the public `gitlab.com`.
             If `None` we work with `github.com`.
         app: obj
             The high-level API object
@@ -373,7 +373,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L308-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L308-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -408,7 +408,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <dl>
 <dt><strong><code>host</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>If present, it points to a GitLab instance such as the on-premise
-<code>gitlab.huc.knaw.nl</code>.
+<code>gitlab.huc.knaw.nl</code> or the public <code>gitlab.com</code>.
 If <code>None</code> we work with <code>github.com</code>.</dd>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
@@ -434,7 +434,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L9-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L9-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
     def __init__(
@@ -448,7 +448,7 @@ data fetching.</p></div>
         ----------
         host: string, optional None
             If present, it points to a GitLab instance such as the on-premise
-            `gitlab.huc.knaw.nl`.
+            `gitlab.huc.knaw.nl` or the public `gitlab.com`.
             If `None` we work with `github.com`.
         app: obj
             The high-level API object
@@ -751,7 +751,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L60-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L60-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -811,7 +811,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L209-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L209-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
     &#34;&#34;&#34;Prepare to load a single module.
@@ -921,7 +921,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L153-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L153-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -991,7 +991,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L129-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L129-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1037,7 +1037,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L90-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L90-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.

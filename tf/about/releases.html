@@ -33,8 +33,14 @@ all possibilities.</p>
 <hr>
 <h2 id="10">10</h2>
 <h2 id="100">10.0</h2>
+<h2 id="1001">10.0.1</h2>
+<p>2022-06-17</p>
+<p>Small fix. Gitlab.com supports downloading of subfolders,
+and I am prepared to make use of that
+but the current python-gitlab module does not support that part of the API.
+So I work around it.</p>
 <h2 id="1000">10.0.0</h2>
-<p>2022-06-20</p>
+<p>2022-06-17</p>
 <p><strong>Additions</strong></p>
 <p><em>Backend support</em>: see <code><a title="tf.advanced.repo.checkoutRepo" href="../advanced/repo.html#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code> and <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code>.</p>
 <p>A backend is an online repository where TF apps/data can be stored.</p>
@@ -48,8 +54,14 @@ and the start of the Text-Fabric browser.</p>
 with the optional parameter <code>host</code>:</p>
 <pre><code class="language-python">A = use(&quot;annotation/banks&quot;, host=&quot;gitlab.huc.knaw.nl&quot;)
 </code></pre>
+<p>or</p>
+<pre><code class="language-python">A = use(&quot;annotation/banks&quot;, host=&quot;gitlab.com&quot;)
+</code></pre>
 <p>In the Text-Fabric browser that looks as follows:</p>
 <pre><code class="language-sh">text-fabric annotation/banks --host=gitlab.huc.knaw.nl
+</code></pre>
+<p>or</p>
+<pre><code class="language-sh">text-fabric annotation/banks --host=gitlab.com
 </code></pre>
 <p>When <code>host</code> is omitted or is <code>None</code>, the backend defaults to GitHub.</p>
 <p><strong>Limitations</strong></p>
@@ -68,7 +80,7 @@ to the shielded notebooks.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -142,6 +154,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#10">10</a></li>
 <li><a href="#100">10.0</a></li>
+<li><a href="#1001">10.0.1</a></li>
 <li><a href="#1000">10.0.0</a></li>
 <li><a href="#older-releases">Older releases</a></li>
 </ul>
