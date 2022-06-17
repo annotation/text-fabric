@@ -7,7 +7,8 @@ text-fabric-make [--host={host} {org}/{repo} {client} make [config] output
 text-fabric-make [--host={host} {org}/{repo} {client} {command} [parameters]
 
 host    : if None, the dataset resides on GitHub;
-          otherwise it points to a GitLab instance, e.g. gitlab.huc.knaw.nl
+          otherwise it points to a GitLab instance,
+          e.g. gitlab.huc.knaw.nl or gitlab.com
 org/repo: a Text-Fabric dataset in a GitHub/GitLab repo under org,
           such as "etcbc/bhsa" and "CambridgeSemiticsLab/nena_tf"
 client: the name of a layered-search client as defined in the config.yaml

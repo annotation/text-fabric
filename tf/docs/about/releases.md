@@ -12,9 +12,18 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10.0
 
+## 10.0.1
+
+2022-06-17
+
+Small fix. Gitlab.com supports downloading of subfolders,
+and I am prepared to make use of that
+but the current python-gitlab module does not support that part of the API.
+So I work around it.
+
 ## 10.0.0
 
-2022-06-20
+2022-06-17
 
 **Additions**
 
@@ -38,10 +47,21 @@ with the optional parameter `host`:
 A = use("annotation/banks", host="gitlab.huc.knaw.nl")
 ```
 
+or
+
+``` python
+A = use("annotation/banks", host="gitlab.com")
+```
+
 In the Text-Fabric browser that looks as follows:
 
 ``` sh
 text-fabric annotation/banks --host=gitlab.huc.knaw.nl
+```
+
+or
+``` sh
+text-fabric annotation/banks --host=gitlab.com
 ```
 
 When `host` is omitted or is `None`, the backend defaults to GitHub.

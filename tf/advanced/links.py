@@ -600,7 +600,7 @@ def provenanceLink(host, org, repo, version, commit, local, release, relative):
     ----------
     host: string, optional None
         If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl`.
+        `gitlab.huc.knaw.nl` or the public `gitlab.com`.
         If `None` we work with `github.com`.
     org: string
         Organization on GitHub

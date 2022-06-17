@@ -68,7 +68,8 @@ content is exactly the value of this token.
 And *HOST* should be the uppercase variant of the name of the GitLab host,
 where every character that is not a letter or digit or `_` is replaced by a `_`.
 
-For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`.
+For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`
+and for `gitlab.com` use `GL_GITLAB_COM_PERS`.
 
 ### On Mac and Linux
 
@@ -875,6 +876,10 @@ class Checkout:
                         break
 
                 self.canDownloadSubfolders = canDownloadSubfolders
+
+                # however, python-gitlab does not support this part of the api,
+                # so we switch this off
+                self.canDownloadSubfolders = False
         self.conn = conn
         return conn
 
@@ -1571,7 +1576,7 @@ def checkoutRepo(
     ----------
     host: string, optional None
         If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl`.
+        `gitlab.huc.knaw.nl` or the public `gitlab.com`.
         If `None` we work with `github.com`.
 
     org: string, optional "annotation"
