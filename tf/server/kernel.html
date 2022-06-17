@@ -47,7 +47,7 @@ of the text-fabric browser.</p>
 <h2 id="connect">Connect</h2>
 <p>The TF kernel can be connected by an other Python program as follows:</p>
 <pre><code class="language-python">from tf.server.kernel import makeTfConnection
-TF = makeTfConnection(host, port)
+TF = makeTfConnection(lhost, port)
 api = TF.connect()
 </code></pre>
 <p>After this, <code>api</code> can be used to obtain information from the TF kernel.</p>
@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/kernel.py#L1-L686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/kernel.py#L1-L693" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -119,7 +119,7 @@ The TF kernel can be connected by an other Python program as follows:
 
 ```python
 from tf.server.kernel import makeTfConnection
-TF = makeTfConnection(host, port)
+TF = makeTfConnection(lhost, port)
 api = TF.connect()
 ```
 
@@ -241,11 +241,18 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
+            host = app.host
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
-                ((&#34;name&#34;, appName), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),
+                (
+                    (&#34;host&#34;, host),
+                    (&#34;name&#34;, appName),
+                    (&#34;org&#34;, org),
+                    (&#34;repo&#34;, repo),
+                    (&#34;commit&#34;, commit),
+                ),
             )
             return (appProvenance, app.provenance)
 
@@ -625,9 +632,7 @@ def makeTfKernel(app, appName, port):
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
+                (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if not queryMessages[0] and condensed and condenseType
@@ -682,12 +687,12 @@ def makeTfKernel(app, appName, port):
 # KERNEL CONNECTION
 
 
-def makeTfConnection(host, port, timeout):
+def makeTfConnection(lhost, port, timeout):
     class TfConnection(object):
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    host, port, config=dict(sync_request_timeout=timeout)
+                    lhost, port, config=dict(sync_request_timeout=timeout)
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -707,6 +712,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
+    host = dataSource.get(&#34;host&#34;, None)
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -729,6 +735,7 @@ def main(cargs=sys.argv):
         checkoutApp,
         dataLoc,
         True,
+        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -786,7 +793,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/kernel.py#L619-L667" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/kernel.py#L624-L674" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -794,6 +801,7 @@ if __name__ == &#34;__main__&#34;:
         return
 
     (dataSource, portKernel) = args
+    host = dataSource.get(&#34;host&#34;, None)
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -816,6 +824,7 @@ if __name__ == &#34;__main__&#34;:
         checkoutApp,
         dataLoc,
         True,
+        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -840,21 +849,21 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.server.kernel.makeTfConnection"><code class="name flex">
-<span>def <span class="ident">makeTfConnection</span></span>(<span>host, port, timeout)</span>
+<span>def <span class="ident">makeTfConnection</span></span>(<span>lhost, port, timeout)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/kernel.py#L600-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/kernel.py#L605-L618" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def makeTfConnection(host, port, timeout):
+<pre><code class="python">def makeTfConnection(lhost, port, timeout):
     class TfConnection(object):
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    host, port, config=dict(sync_request_timeout=timeout)
+                    lhost, port, config=dict(sync_request_timeout=timeout)
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -873,7 +882,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/kernel.py#L102-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/kernel.py#L102-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -932,11 +941,18 @@ if __name__ == &#34;__main__&#34;:
 
             app = self.app
             aContext = app.context
+            host = app.host
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
-                ((&#34;name&#34;, appName), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),
+                (
+                    (&#34;host&#34;, host),
+                    (&#34;name&#34;, appName),
+                    (&#34;org&#34;, org),
+                    (&#34;repo&#34;, repo),
+                    (&#34;commit&#34;, commit),
+                ),
             )
             return (appProvenance, app.provenance)
 
@@ -1316,9 +1332,7 @@ if __name__ == &#34;__main__&#34;:
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
+                (queryResults, queryMessages, features) = runSearch(app, query, cache)
                 (queryResultsC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if not queryMessages[0] and condensed and condenseType

@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L1-L346" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L1-L349" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Wrap material into HTML
@@ -39,7 +39,7 @@ Lower level functions for wrapping TF data into actual HTML that can be served.
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, URL_GH
+from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, URL_B
 from ..advanced.options import INTERFACE_OPTIONS
 
 
@@ -253,23 +253,26 @@ def wrapProvenance(form, provenance, setNames):
 
     for d in appProvenance:
         d = dict(d)
+        host = d[&#34;host&#34;]
+        backendUrl = URL_B(host)
+        hostRep = &#34;GitHub&#34; if host is None else host
         org = d[&#34;org&#34;]
         repo = d[&#34;repo&#34;]
         commit = d[&#34;commit&#34;]
-        url = f&#34;{URL_GH}/{org}/{repo}/tree/{commit}&#34;
+        url = f&#34;{backendUrl}/{org}/{repo}/tree/{commit}&#34;
         liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
         liveMd = f&#34;[{commit}]({url})&#34;
         appHtml += f&#34;&#34;&#34;\
     &lt;div class=&#34;pline&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
-      &lt;div class=&#34;pval&#34;&gt;{org}/{repo}&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {hostRep}&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&#34;p2line&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
       &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
     &lt;/div&gt;\
 &#34;&#34;&#34;
-        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo}
+        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {hostRep}
 commit | {liveMd}&#34;&#34;&#34;
         sep = &#34;\n&#34;
 
@@ -401,7 +404,7 @@ to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L17-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L17-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pageLinks(nResults, position, spread=10):
     &#34;&#34;&#34;Provide navigation links for results sets, big or small.
@@ -483,7 +486,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L84-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L84-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
     &#34;&#34;&#34;Provide navigation links for passages,
@@ -529,7 +532,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L123-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L123-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapOptions(context, form):
     &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.
@@ -570,7 +573,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L205-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L205-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapProvenance(form, provenance, setNames):
     utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
@@ -591,23 +594,26 @@ is produced.</p>
 
     for d in appProvenance:
         d = dict(d)
+        host = d[&#34;host&#34;]
+        backendUrl = URL_B(host)
+        hostRep = &#34;GitHub&#34; if host is None else host
         org = d[&#34;org&#34;]
         repo = d[&#34;repo&#34;]
         commit = d[&#34;commit&#34;]
-        url = f&#34;{URL_GH}/{org}/{repo}/tree/{commit}&#34;
+        url = f&#34;{backendUrl}/{org}/{repo}/tree/{commit}&#34;
         liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
         liveMd = f&#34;[{commit}]({url})&#34;
         appHtml += f&#34;&#34;&#34;\
     &lt;div class=&#34;pline&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
-      &lt;div class=&#34;pval&#34;&gt;{org}/{repo}&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {hostRep}&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&#34;p2line&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
       &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
     &lt;/div&gt;\
 &#34;&#34;&#34;
-        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo}
+        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {hostRep}
 commit | {liveMd}&#34;&#34;&#34;
         sep = &#34;\n&#34;
 
@@ -743,7 +749,7 @@ at most one can be selected.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/server/wrap.py#L154-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/server/wrap.py#L154-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSelect(option, allowedValues, value, group, item, multiple):
     &#34;&#34;&#34;Provides a buttoned chooser for the node types.

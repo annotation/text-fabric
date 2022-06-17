@@ -26,16 +26,15 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/zipdata.py#L1-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/zipdata.py#L1-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, GH_BASE, DOWNLOADS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, CLONE_BASE, DOWNLOADS
 from ..core.helpers import console, splitModRef, normpath, expanduser, initTree
 
-GH = expanduser(GH_BASE)
 DW = expanduser(DOWNLOADS)
 
 HELP = &#34;&#34;&#34;
@@ -70,8 +69,20 @@ EXCLUDE = {&#34;.DS_Store&#34;}
 
 
 def zipData(
-    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+    host,
+    org,
+    repo,
+    relative=RELATIVE,
+    version=None,
+    tf=True,
+    keep=False,
+    source=None,
+    dest=None,
 ):
+    if source is None:
+        source = CLONE_BASE(host)
+    if dest is None:
+        dest = DW if host is None else f&#34;{DW}/{host}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
@@ -133,6 +144,7 @@ def zipData(
                         arcname=featureFile,
                     )
     else:
+
         def collectFiles(base, path, results):
             thisPath = f&#34;{base}/{path}&#34; if path else base
             # internalBase = f&#34;{relative}/{path}&#34; if path else relative
@@ -155,7 +167,9 @@ def zipData(
         collectFiles(sourceDir, &#34;&#34;, results)
         if not relativeDest:
             relativeDest = &#34;-&#34;
-        console(f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;)
+        console(
+            f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;
+        )
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):
@@ -171,6 +185,16 @@ def main(cargs=sys.argv):
     ):
         console(HELP)
         return
+
+    host = None
+
+    newArgs = []
+    for arg in cargs:
+        if arg.startswith(&#34;--host=&#34;):
+            host = arg[8:]
+        else:
+            newArgs.append(arg)
+    cargs = newArgs
 
     moduleRef = cargs[1]
 
@@ -191,7 +215,7 @@ def main(cargs=sys.argv):
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
 
-    zipData(org, repo, relative=relative, tf=tf)
+    zipData(host, org, repo, relative=relative, tf=tf)
 
 
 if __name__ == &#34;__main__&#34;:
@@ -213,7 +237,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/zipdata.py#L138-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/zipdata.py#L152-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -221,6 +245,16 @@ if __name__ == &#34;__main__&#34;:
     ):
         console(HELP)
         return
+
+    host = None
+
+    newArgs = []
+    for arg in cargs:
+        if arg.startswith(&#34;--host=&#34;):
+            host = arg[8:]
+        else:
+            newArgs.append(arg)
+    cargs = newArgs
 
     moduleRef = cargs[1]
 
@@ -241,22 +275,34 @@ if __name__ == &#34;__main__&#34;:
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
 
-    zipData(org, repo, relative=relative, tf=tf)</code></pre>
+    zipData(host, org, repo, relative=relative, tf=tf)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.zipdata.zipData"><code class="name flex">
-<span>def <span class="ident">zipData</span></span>(<span>org, repo, relative='tf', version=None, tf=True, keep=False, source='/Users/me/github', dest='/Users/me/Downloads')</span>
+<span>def <span class="ident">zipData</span></span>(<span>host, org, repo, relative='tf', version=None, tf=True, keep=False, source=None, dest=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/zipdata.py#L42-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/zipdata.py#L41-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
-    org, repo, relative=RELATIVE, version=None, tf=True, keep=False, source=GH, dest=DW
+    host,
+    org,
+    repo,
+    relative=RELATIVE,
+    version=None,
+    tf=True,
+    keep=False,
+    source=None,
+    dest=None,
 ):
+    if source is None:
+        source = CLONE_BASE(host)
+    if dest is None:
+        dest = DW if host is None else f&#34;{DW}/{host}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
@@ -318,6 +364,7 @@ if __name__ == &#34;__main__&#34;:
                         arcname=featureFile,
                     )
     else:
+
         def collectFiles(base, path, results):
             thisPath = f&#34;{base}/{path}&#34; if path else base
             # internalBase = f&#34;{relative}/{path}&#34; if path else relative
@@ -340,7 +387,9 @@ if __name__ == &#34;__main__&#34;:
         collectFiles(sourceDir, &#34;&#34;, results)
         if not relativeDest:
             relativeDest = &#34;-&#34;
-        console(f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;)
+        console(
+            f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;
+        )
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):

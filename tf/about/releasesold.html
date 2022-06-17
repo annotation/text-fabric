@@ -25,6 +25,349 @@
 <section id="section-intro">
 <p>Newer releases: <code><a title="tf.about.releases" href="releases.html">tf.about.releases</a></code></p>
 <h1 id="older-releases">Older releases</h1>
+<h2 id="9">9</h2>
+<h3 id="95">9.5</h3>
+<h4 id="952">9.5.2</h4>
+<p>2022-06-14</p>
+<ul>
+<li>Small fix in <code><a title="tf.core.helpers.initTree" href="../core/helpers.html#tf.core.helpers.initTree">initTree()</a></code>.</li>
+<li>New function <code><a title="tf.advanced.text.showFormats" href="../advanced/text.html#tf.advanced.text.showFormats">showFormats()</a></code>; call as <code>A.showFormats()</code>
+that gives a nicely formatted list of all text-formats and the templates
+by which they are defined.</li>
+<li>Small fix in text formats: when you specify a text-format with default values,
+the empty string is now also allowed as default value.</li>
+</ul>
+<h4 id="951">9.5.1</h4>
+<p>2022-05-31</p>
+<p>Bug discovered thanks to an observation of Oliver Glanz:</p>
+<p>In search templates, a quantifier has to follow an atom line, like so</p>
+<pre><code>word gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
+<p>This looks for a word with female gender, without it being a word in the plural.</p>
+<p>An alternative syntax with the same semantics is</p>
+<pre><code>word
+  gn=f
+/without/
+.. nu=pl
+/-/
+</code></pre>
+<p>However, the parser in Text-Fabric got distracted by the intervening <code>gn=f</code> and
+did not connect the quantifier with the preceding <code>word</code>, which gave erroneous results.</p>
+<p>That has been fixed, and now the second form leads to the same results as the first one.</p>
+<h4 id="950">9.5.0</h4>
+<p>2022-05-18</p>
+<p>New behaviour in walking nodes: <code><a title="tf.core.nodes.Nodes.walk" href="../core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code>: with <code>events=True</code>
+it generates open/close events for nodes, so that you can do something
+when the node starts and something else when the node ends.</p>
+<p>New utility functions <code><a title="tf.core.helpers.clearTree" href="../core/helpers.html#tf.core.helpers.clearTree">clearTree()</a></code> and <code><a title="tf.core.helpers.initTree" href="../core/helpers.html#tf.core.helpers.initTree">initTree()</a></code>.</p>
+<p>Various friction reducing changes:</p>
+<ul>
+<li>functions with file or directory arguments always perform an expansion
+of a leading <code>~</code> to the user's home directory.</li>
+</ul>
+<h4 id="944">9.4.4</h4>
+<p>2022-05-16</p>
+<p>Several minor improvements in various parts of the app.</p>
+<h4 id="942-3">9.4.2-3</h4>
+<p>2022-05-04</p>
+<p>The <code>weblink</code> function can now also be driven by feature values. See <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>
+and look in section <code>webFeature</code>.
+Additional small fixes.</p>
+<h4 id="941">9.4.1</h4>
+<p>2022-05-03</p>
+<p>Fixed a bug introduced by the previous change which caused a failure in the export from the TF-browser.</p>
+<h4 id="940">9.4.0</h4>
+<p>2022-04-29</p>
+<ul>
+<li>
+<p>Preprocessing took a bit too much time.
+The culprit was the computation of boundaries of nodes.
+It could be sped up by changing the data representation somewhat (going from <code>array</code> to <code>tuple</code>)
+in some cases.
+Since the new data representation is incompatible with the previous one, we bumped the internal
+version for that (<code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>).
+That means that Text-Fabric will recompute your precomputed corpus data if needed.</p>
+</li>
+<li>
+<p>If you inadvertently type a query in the text-fabric browser that takes for ever to
+execute, it is difficult to get the tf-browser in a usable state again.
+We have chosen a remedy: we limit the search results to 4 * the maximum node in your corpus.
+This holds for all query execution, also when executed outside the text-fabric browser.</p>
+<p>When outside the text-fabric browser, you can pass the <code>limit</code> parameter to <code>A.search</code> or <code>S.search</code>
+to enforce a different and bigger limit.
+Setting it to <code>None</code> or 0 restores the default of 4 * maxNode.
+You cannot pass custom limits in the text-fabric browser.</p>
+</li>
+</ul>
+<h3 id="94">9.4</h3>
+<h4 id="932">9.3.2</h4>
+<p>2022-03-21</p>
+<p>Bug in Text-Fabric browser: corpora that show a pretty display for section items instead
+of a list of subsection items (setting <em>browseContentPretty</em> in <code><a title="tf.advanced.settings" href="../advanced/settings.html">tf.advanced.settings</a></code>)
+did not respond to the display options, because in this particular case the options
+were not passed to the <code><a title="tf.advanced.display.pretty" href="../advanced/display.html#tf.advanced.display.pretty">pretty()</a></code> function. That has been
+remedied. The only corpus that makes use of this setting (that I know of) is the
+<a href="https://github.com/Nino-cunei/uruk">Nino-cunei/uruk</a> corpus.</p>
+<h4 id="930-1">9.3.0-1</h4>
+<p>2022-02-10</p>
+<p>The text-Fabric browser now displays hard-to-type characters, depending
+on the text format chosen.
+It is right below the query window.
+From there you can click to copy characters and then paste them in the
+query window.</p>
+<h4 id="93">9.3</h4>
+<h4 id="925">9.2.5</h4>
+<p>2022-02-04</p>
+<p>When precomputing section data, better error messages are generated
+when section nodes do not have values for the features that are supposed
+to contain their headings.</p>
+<p>Removed a debug statement that I left previously.</p>
+<h4 id="924">9.2.4</h4>
+<p>2022-02-02</p>
+<p>Bug fix. When writing TF data to file, the function <code>_writeDataTf</code> in <code><a title="tf.core.data.Data" href="../core/data.html#tf.core.data.Data">Data</a></code>
+had a bug that caused misalignment if the feature data had explicit <code>None</code> values.
+That has been fixed. Now it makes no difference anymore whether you save
+feature data where node <code>n</code> has value <code>None</code>, or where node <code>n</code> is absent.</p>
+<p>Thanks to Martijn Naaijer for spotting it.</p>
+<h4 id="923">9.2.3</h4>
+<p>2022-01-31</p>
+<p>Improvement in app loading: added an argument <code>legacy=True</code> to <code>use()</code>,
+so that older versions of older apps still can be loaded.</p>
+<h4 id="921-2">9.2.1-2</h4>
+<p>2022-01-24</p>
+<p>The text-fabric browser did not start-up well.
+That has been fixed.
+Loading an app from an arbitrary location on the local machine has been fixed.</p>
+<h4 id="92">9.2</h4>
+<p>2022-01-06</p>
+<p>A big reorganization, so that all things related to a corpus can be stored in the
+same neighbourhood.
+Before this release we had the situation that</p>
+<ul>
+<li>a corpus is resides in org/corpus</li>
+<li>its tutorials resides in annotation/tutorials/corpus</li>
+<li>its tf-app resides in annotation/app-corpus</li>
+<li>its layered search interface is provided by annotation/app-corpus</li>
+</ul>
+<p>In the new situation we have</p>
+<ul>
+<li>a corpus is resides in org/corpus</li>
+<li>its tutorials resides in org//corpus/tutorial</li>
+<li>its tf-app resides in org/corpus/app</li>
+<li>its layered search interface is provided by org/corpus-search</li>
+</ul>
+<p>So, in order to make a full fledged TF corpus there is no longer any dependency
+on the annotation organization.</p>
+<p>Additional fixes: quite a bit, among which</p>
+<ul>
+<li>When downloading zip files from releases, the Uruk images got
+the wrong paths. That has been fixed in zipData, used by
+the text-fabric-zip command.</li>
+</ul>
+<h4 id="9113">9.1.13</h4>
+<p>2022-01-02</p>
+<p>Test release. Since 9.1.7 the text-fabric distribution has become bloated because
+setuptools includes a lot more files by default.
+I now distribute a wheel only, and took care that it has no more than the usual files
+included.</p>
+<h4 id="9112">9.1.12</h4>
+<p>2021-12-24</p>
+<ul>
+<li>New data is computed and stored for a corpus: for each text format a frequency
+list of the characters in the corpus when rendered in that text format:
+<code><a title="tf.core.prepare.characters" href="../core/prepare.html#tf.core.prepare.characters">characters()</a></code></li>
+<li>A new function <code><a title="tf.advanced.text.specialCharacters" href="../advanced/text.html#tf.advanced.text.specialCharacters">specialCharacters()</a></code> which provides
+a widget from which you can easily copy the special characters in the corpus.
+Call it as <code>A.specialCharacters(fmt=textformat)</code>.</li>
+<li>In the <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> module there is an extra <em>cv</em> method:
+<code><a title="tf.convert.walker.CV.activeNodes" href="../convert/walker.html#tf.convert.walker.CV.activeNodes">CV.activeNodes()</a></code>.</li>
+<li>Fix a bug that prevented the text-fabric browser to start up in some cases.</li>
+</ul>
+<h4 id="9111">9.1.11</h4>
+<p>2021-12-16</p>
+<p>Loading of features somehow became painfully slow.
+There binary representations of feature data are pickled Python datastructure.
+I now optimize the pickled strings before writing them to disk.
+Then they load much faster afterwards.</p>
+<p>In order to feel the effects: perform a <code><a title="tf.core.fabric.FabricCore.clearCache" href="../core/fabric.html#tf.core.fabric.FabricCore.clearCache">FabricCore.clearCache()</a></code>,
+which will wipe out all previously generated binary feature data, so that the next time
+the binary features will be created afresh.</p>
+<p>Further improvements:</p>
+<ul>
+<li><code>omap@v-w</code> features will not be loaded by default by <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> calls.
+If needed, they can be loaded afterwards
+by <code>A.load("omap@v-w")</code> call</li>
+<li>When these mappings are needed by modules of TF, the module will have ensured
+they are loaded.</li>
+</ul>
+<h4 id="9110">9.1.10</h4>
+<p>2021-12-15</p>
+<p>Improved <code><a title="tf.dataset.nodemaps.Versions.migrateFeatures" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions.migrateFeatures">Versions.migrateFeatures()</a></code>.
+When migrating features from one data version to another along
+a node mapping between the two versions, the quality of the links
+between old nodes and new nodes is taken into account.
+We migrate feature values only through the best links available.</p>
+<h4 id="919">9.1.9</h4>
+<p>2021-12-13</p>
+<ul>
+<li>Made sure that path names of files and directories, when retrieved by means of
+os.path.expanduser or os.path.abspath use forward slashes rather than backward slashes.
+These two functions might introduces path with backslashes when on Windows.
+The rest of TF works with forward slashes exclusively.
+We want prevent paths with mixed forward slashes and backslashes.</li>
+<li>The <code>mod</code> parameter in A.use() accepts not only comma separated strings of
+data modules, but also iterables of such modules.</li>
+<li>If you want to override the checkout specifiers of standard modules (e.g.
+the <code>etcbc/parallels/tf</code> or <code>etcbc/phono/tf</code> modules of the <code>bhsa</code>,
+you can now override them by passing these modules in the <code>mod</code> parameter.</li>
+</ul>
+<h4 id="918">9.1.8</h4>
+<p>2021-12-10</p>
+<p>Fixed missing expander triangles in the feature overview after the incantation.
+This happened in the classical notebook, not in jupyter lab.
+The classical notebook styles the summary element in such a way as
+to rob it from the triangle.
+A simple overriding CSS instruction was enough.</p>
+<p>Thanks to Oliver Glanz for spotting it.</p>
+<h4 id="917">9.1.7</h4>
+<p>2021-12-09</p>
+<p>More information on the metadata of features on the interface.</p>
+<ul>
+<li>After <code>use("xxx")</code> you get an expandable list of features.
+Formerly, a feature was represented by its name, hyperlinked to the feature documentation.
+Now you see also the data type of the feature, its description, and you can expand
+further to see all metadata of a feature.</li>
+<li>TF.isLoaded and A.isLoaded (<code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>) can show/hide more information,
+such as the file path to a feature, its data type, its description, and all of its
+metadata.</li>
+<li>importMQL (<code><a title="tf.core.fabric.FabricCore.importMQL" href="../core/fabric.html#tf.core.fabric.FabricCore.importMQL">FabricCore.importMQL()</a></code>) accepts a parameter <code>meta</code> which
+one can use to specify metadata that is common to all features.
+Now you can use it to pass feature-specific metadata as well.</li>
+<li>Several datasources have been converted by means of importMQL:
+bhsa, extrabiblical and calap.
+Of these, I have updated the BHSA to have richer metadata in their features
+(only version 2021) including the standard modules phono, parallels, trees.
+And while I was at it, also did the non-standard modules valence and bridging.</li>
+</ul>
+<h4 id="916">9.1.6</h4>
+<p>2021-11-17</p>
+<p>Bug in search, spotted by Oliver Glanz, with thanks to him for reporting it.
+Queries with <code>.f&lt;g.</code> constructs in it (numeric feature comparison)
+delivered wrong results.
+The root cause waas clear: I declared the converse of <code>.f&lt;g.</code> to be <code>.g&gt;f.</code>.
+But this is not the converse, the two are identical.
+The converse is <code>.f&gt;g.</code>.
+See <a href="https://github.com/annotation/text-fabric/blob/947aa5071d545ed5c875fe24eeb7329d4a8e9893/tf/search/relations.py#L1450-L1457">code</a></p>
+<h4 id="915">9.1.5</h4>
+<p>2021-11-17</p>
+<p>Added an extra method <code>A.load()</code> by which you can load extra features
+after loading the main dataset.</p>
+<h4 id="914">9.1.4</h4>
+<p>2021-11-14</p>
+<ul>
+<li>Small fix in the <code><a title="tf.volumes.collect.collect" href="../volumes/collect.html#tf.volumes.collect.collect">collect()</a></code> function.</li>
+<li>Small fix in search when run from the TF browser.
+Features that are mentioned in feature comparison relations
+were not shown in the search results. Now they do.</li>
+</ul>
+<h4 id="9123">9.1.2,3</h4>
+<p>2021-11-03</p>
+<p>In TF-apps, in the config.yaml where you specify an online location based on
+section headings, you can configure the app to put leading zeroes before
+section headings.
+See <a href="https://annotation.github.io/text-fabric/tf/advanced/settings.html#weburlzeros">webUrlZeros</a>.
+Small fixes in the handling of these configuration settings.</p>
+<h4 id="911">9.1.1</h4>
+<p>2021-10-25</p>
+<p><strong>Layered search</strong></p>
+<p>The layered search app hints in which browsers multiple highlighting is supported.
+It now works in Safari 15.0 on the Mac.
+It also works in browsers on iOs and iPadOs.
+The hints have been updated.</p>
+<h4 id="91">9.1</h4>
+<p>2021-09-10</p>
+<p><strong>Additions to the API</strong></p>
+<p>The display functions are</p>
+<ul>
+<li><code><a title="tf.advanced.display.table" href="../advanced/display.html#tf.advanced.display.table">table()</a></code></li>
+<li><code><a title="tf.advanced.display.plainTuple" href="../advanced/display.html#tf.advanced.display.plainTuple">plainTuple()</a></code></li>
+<li><code><a title="tf.advanced.display.plain" href="../advanced/display.html#tf.advanced.display.plain">plain()</a></code></li>
+<li><code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.advanced.display.show">show()</a></code></li>
+<li><code><a title="tf.advanced.display.prettyTuple" href="../advanced/display.html#tf.advanced.display.prettyTuple">prettyTuple()</a></code></li>
+<li><code><a title="tf.advanced.display.pretty" href="../advanced/display.html#tf.advanced.display.pretty">pretty()</a></code></li>
+</ul>
+<p>Some of them are defined with the parameter <code>asString=False</code>.
+When omitted or False, the result will be displayed in the notebook.
+But when used by the TF-browser, the result will not be displayed, but returned
+as HTML. Text-Fabric knows when it is used by the TF browser or not.</p>
+<p>But there are cases when you want to tell Text-Fabric to not display the result,
+but to deliver it as HTML. For that the <code>_asString</code> parameter was used.
+However, it was not defined for all of these display functions.</p>
+<p>The improvement is, that it now works for <em>all</em> of the above display functions.</p>
+<p>When you pass <code>asString=True</code>, the result will not be displayed (in the notebook),
+but returned as HTML.</p>
+<h4 id="904">9.0.4</h4>
+<p>2021-08-26</p>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>Section headings in the BHSA were not always rendered in ltr mode. Fixed.</li>
+</ul>
+<h4 id="902-903">9.0.2, 9.0.3</h4>
+<p>2021-08-24</p>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>Bug reported by Gyusang Jin: when a string specification of features that must be loaded
+contains newlines, an error will occur.</li>
+<li>TF.loadLog() did not provide useful information anymore. Instead, there is now
+TF.isLoaded and A.isLoaded (<code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>). For compatibility,
+loadLog still can be called, but is identical to isLoaded.</li>
+</ul>
+<h4 id="901">9.0.1</h4>
+<p>2021-08-23</p>
+<p><strong>Fixes</strong></p>
+<ul>
+<li>Bug reported by Jaime Toledo (<a href="https://github.com/annotation/text-fabric/issues/73">https://github.com/annotation/text-fabric/issues/73</a>)</li>
+<li>Bug reported by Christian Jensen (<a href="https://github.com/annotation/text-fabric/issues/74">https://github.com/annotation/text-fabric/issues/74</a>)</li>
+</ul>
+<p>Thanks for reporting!</p>
+<h4 id="900">9.0.0</h4>
+<p>2021-07-29</p>
+<p><strong>Additions</strong></p>
+<p><em>Volume support</em>: see <code><a title="tf.about.volumes" href="volumes.html">tf.about.volumes</a></code>.
+This allows for partially loading a TF-dataset.
+It is the start of making Text-Fabric more agile.
+By being able to load portions of a work, and still not loose the connection
+with the whole work, it has potential for large corpora that do nit fit into RAM.</p>
+<p>However, as it stands now, in order to make portions of a work, the whole work will
+be loaded. When the portions are made, they can be loaded without loading the whole
+work.</p>
+<p>Later in the development of version 9 I hope to be able to synthesize whole works
+out of portions without the need of having the whole work in RAM.</p>
+<ul>
+<li><code><a title="tf.advanced.volumes.volumesApi" href="../advanced/volumes.html#tf.advanced.volumes.volumesApi">volumesApi()</a></code></li>
+<li><code><a title="tf.volumes.extract" href="../volumes/extract.html">tf.volumes.extract</a></code></li>
+<li><code><a title="tf.fabric.Fabric.extract" href="../fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code></li>
+<li><code><a title="tf.advanced.volumes.extract" href="../advanced/volumes.html#tf.advanced.volumes.extract">extract()</a></code></li>
+<li><code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code></li>
+<li><code><a title="tf.fabric.Fabric.collect" href="../fabric.html#tf.fabric.Fabric.collect">Fabric.collect()</a></code></li>
+<li><code><a title="tf.advanced.volumes.collect" href="../advanced/volumes.html#tf.advanced.volumes.collect">collect()</a></code></li>
+<li><code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> now takes optional <code>volume=</code> and <code>collection=</code> parameters</li>
+<li><code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> now takes optional <code>volume=</code> and <code>collection=</code> parameters</li>
+<li><code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> now takes optional <code>volume=</code> and <code>collection=</code> parameters</li>
+<li><code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>. A convenient way to get information about loaded features.</li>
+</ul>
+<p><strong>Changes</strong></p>
+<ul>
+<li>"tf.compose.modify" has moved to <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code></li>
+<li>"tf.compose.combine" has been replaced by <code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code></li>
+<li>"tf.compose.nodemaps" has moved to <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code></li>
+<li>"tf.compose.Versions" has moved to <code><a title="tf.dataset.nodemaps.Versions" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions">Versions</a></code></li>
+</ul>
+<h3 id="90">9.0</h3>
+<hr>
 <h2 id="8">8</h2>
 <h3 id="85">8.5</h3>
 <h4 id="8514">8.5.14</h4>
@@ -409,8 +752,7 @@ This can now also be an iterable of types (preferably a set of frozenset).</li>
 If so, it will issue warnings and it will gracefully fall back to the core API.
 Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.</li>
 </ul>
-<h2 id="older-releases_1">Older releases</h2>
-<p>See <code><a title="tf.about.releasesold" href="#tf.about.releasesold">tf.about.releasesold</a></code></p>
+<hr>
 <h2 id="7">7</h2>
 <h3 id="711">7.11</h3>
 <h4 id="7112">7.11.2</h4>
@@ -1183,6 +1525,7 @@ also the foreign features;</li>
 <p>Quick start: the new <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/share.ipynb">share</a></p>
 <p>See the <code><a title="tf.about.datasharing" href="datasharing.html">tf.about.datasharing</a></code>
 for concrete and detailed hints how to make most of this version.</p>
+<hr>
 <h2 id="6">6</h2>
 <h3 id="64">6.4</h3>
 <h4 id="645-6">6.4.5-6</h4>
@@ -1383,6 +1726,7 @@ the github version. Probably you have run the tutorials in place. Best thing to 
 <li>view them on <a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/tree/master/tutorial/">nbviewer</a>; or</li>
 <li>run them in a directory outside the BHSA repo (where you have copied it a minute ago).</li>
 </ul>
+<hr>
 <h2 id="5">5</h2>
 <h3 id="56">5.6</h3>
 <h4 id="564">5.6.4</h4>
@@ -1528,7 +1872,7 @@ on Windows.</p>
 The server/kernel/client apis are not completely spelled out.
 However, the help for the text-fabric browser is included in the interface itself.</p>
 </div>
-<h2 id="53">5.3</h2>
+<h3 id="53">5.3</h3>
 <h4 id="533">5.3.3</h4>
 <p>2018-06-23</p>
 <p>Small fix: command line args for text-fabric.</p>
@@ -1569,7 +1913,7 @@ formatted on top.</p>
 <p class="admonition-title">Small fixes</p>
 <p>No more blank pages due to double page breaks.</p>
 </div>
-<h2 id="52">5.2</h2>
+<h3 id="52">5.2</h3>
 <h4 id="521">5.2.1</h4>
 <p>2018-06-21</p>
 <ul>
@@ -1595,6 +1939,7 @@ But it is shown in the tutorials and you can observer it in the text-fabric brow
 <p>2018-06-18</p>
 <p>Built in web server and client for local query running.
 It is implemented for Bhsa and Uruk.</p>
+<hr>
 <h2 id="4">4</h2>
 <h3 id="44">4.4</h3>
 <h4 id="4423">4.4.2,3</h4>
@@ -1744,6 +2089,7 @@ You can constrain the node types from which the edges start (<code>nodeTypesFrom
 (<code>nodeTypesTo</code>).</li>
 <li>New documentation system based on <a href="https://mkdocs.readthedocs.io/en/stable/">MkDocs</a>.</li>
 </ul>
+<hr>
 <h2 id="3">3</h2>
 <h3 id="34">3.4</h3>
 <h4 id="3412">3.4.12</h4>
@@ -1979,6 +2325,7 @@ MQL and TF.</p>
 <p>We can start with source data in MQL, convert it to TF, combine it with other TF
 data sources, compute additional stuff and add it, and then finally export it as
 enriched MQL, so that the enriched data can be queried by MQL.</p>
+<hr>
 <h2 id="2">2</h2>
 <h3 id="23">2.3</h3>
 <h4 id="2315">2.3.15</h4>
@@ -2133,6 +2480,7 @@ welcome.</p>
 metaphor: spinning wool into yarn and then stitching the yarns together.</p>
 <p>That will be explained further in a document that I'll love to write during
 Xmas.</p>
+<hr>
 <h2 id="1">1</h2>
 <h3 id="12">1.2</h3>
 <h4 id="127">1.2.7</h4>
@@ -2181,7 +2529,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
@@ -2253,6 +2601,48 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#older-releases">Older releases</a><ul>
+<li><a href="#9">9</a><ul>
+<li><a href="#95">9.5</a><ul>
+<li><a href="#952">9.5.2</a></li>
+<li><a href="#951">9.5.1</a></li>
+<li><a href="#950">9.5.0</a></li>
+<li><a href="#944">9.4.4</a></li>
+<li><a href="#942-3">9.4.2-3</a></li>
+<li><a href="#941">9.4.1</a></li>
+<li><a href="#940">9.4.0</a></li>
+</ul>
+</li>
+<li><a href="#94">9.4</a><ul>
+<li><a href="#932">9.3.2</a></li>
+<li><a href="#930-1">9.3.0-1</a></li>
+<li><a href="#93">9.3</a></li>
+<li><a href="#925">9.2.5</a></li>
+<li><a href="#924">9.2.4</a></li>
+<li><a href="#923">9.2.3</a></li>
+<li><a href="#921-2">9.2.1-2</a></li>
+<li><a href="#92">9.2</a></li>
+<li><a href="#9113">9.1.13</a></li>
+<li><a href="#9112">9.1.12</a></li>
+<li><a href="#9111">9.1.11</a></li>
+<li><a href="#9110">9.1.10</a></li>
+<li><a href="#919">9.1.9</a></li>
+<li><a href="#918">9.1.8</a></li>
+<li><a href="#917">9.1.7</a></li>
+<li><a href="#916">9.1.6</a></li>
+<li><a href="#915">9.1.5</a></li>
+<li><a href="#914">9.1.4</a></li>
+<li><a href="#9123">9.1.2,3</a></li>
+<li><a href="#911">9.1.1</a></li>
+<li><a href="#91">9.1</a></li>
+<li><a href="#904">9.0.4</a></li>
+<li><a href="#902-903">9.0.2, 9.0.3</a></li>
+<li><a href="#901">9.0.1</a></li>
+<li><a href="#900">9.0.0</a></li>
+</ul>
+</li>
+<li><a href="#90">9.0</a></li>
+</ul>
+</li>
 <li><a href="#8">8</a><ul>
 <li><a href="#85">8.5</a><ul>
 <li><a href="#8514">8.5.14</a></li>
@@ -2317,7 +2707,6 @@ setTimeout(() => input.focus(), 100);
 </li>
 </ul>
 </li>
-<li><a href="#older-releases_1">Older releases</a></li>
 <li><a href="#7">7</a><ul>
 <li><a href="#711">7.11</a><ul>
 <li><a href="#7112">7.11.2</a></li>
@@ -2530,8 +2919,6 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#540">5.4.0</a></li>
 </ul>
 </li>
-</ul>
-</li>
 <li><a href="#53">5.3</a><ul>
 <li><a href="#533">5.3.3</a></li>
 <li><a href="#530-2">5.3.0-2</a></li>
@@ -2540,6 +2927,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#52">5.2</a><ul>
 <li><a href="#521">5.2.1</a></li>
 <li><a href="#51">5.1</a></li>
+</ul>
+</li>
 <li><a href="#50">5.0</a><ul>
 <li><a href="#501234">5.0.1,2,3,4</a></li>
 <li><a href="#500">5.0.0</a></li>

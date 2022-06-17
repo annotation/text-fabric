@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/find.py#L1-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/find.py#L1-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -49,6 +49,7 @@ def findAppConfig(
     commit,
     release,
     local,
+    host=None,
     org=None,
     repo=None,
     version=None,
@@ -115,7 +116,7 @@ def findAppConfig(
         cfg[&#34;css&#34;] = &#34;&#34;
 
     cfg[&#34;local&#34;] = local
-    cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
+    cfg[&#34;localDir&#34;] = getLocalDir(host, cfg, local, version)
 
     avA = cfg.get(&#34;apiVersion&#34;, None)
     if isCompatible is None and checkApiVersion:
@@ -253,7 +254,7 @@ Otherwise we return <code>None</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/find.py#L140-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/find.py#L141-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
     &#34;&#34;&#34;Find the class definition of an app.
@@ -291,7 +292,7 @@ Otherwise we return <code>None</code>.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.find.findAppConfig"><code class="name flex">
-<span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, org=None, repo=None, version=None, straight=False)</span>
+<span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, host=None, org=None, repo=None, version=None, straight=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find the config information of an app.</p>
@@ -308,7 +309,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/find.py#L16-L137" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/find.py#L16-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(
     appName,
@@ -316,6 +317,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
     commit,
     release,
     local,
+    host=None,
     org=None,
     repo=None,
     version=None,
@@ -382,7 +384,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
         cfg[&#34;css&#34;] = &#34;&#34;
 
     cfg[&#34;local&#34;] = local
-    cfg[&#34;localDir&#34;] = getLocalDir(cfg, local, version)
+    cfg[&#34;localDir&#34;] = getLocalDir(host, cfg, local, version)
 
     avA = cfg.get(&#34;apiVersion&#34;, None)
     if isCompatible is None and checkApiVersion:
@@ -450,7 +452,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/find.py#L175-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/find.py#L176-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
     &#34;&#34;&#34;Load a module dynamically, by name.

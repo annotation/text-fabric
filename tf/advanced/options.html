@@ -323,7 +323,7 @@ nodes will be linked with a web link
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L1-L583" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L1-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -772,13 +772,14 @@ class Options:
     def reset(self, *options):
         app = self.app
         error = app.error
+        # info = app.info
         defaults = self.defaults
 
         if options:
             current = self.current
             for option in options:
                 if option not in defaults:
-                    print(defaults)
+                    # info(defaults)
                     error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
                     continue
                 current[option] = defaults[option]
@@ -928,7 +929,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L427-L583" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L427-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -951,13 +952,14 @@ class Options:
     def reset(self, *options):
         app = self.app
         error = app.error
+        # info = app.info
         defaults = self.defaults
 
         if options:
             current = self.current
             for option in options:
                 if option not in defaults:
-                    print(defaults)
+                    # info(defaults)
                     error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
                     continue
                 current[option] = defaults[option]
@@ -1098,7 +1100,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L518-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L519-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1157,7 +1159,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L582-L583" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L583-L584" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1171,7 +1173,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L566-L580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L567-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1198,7 +1200,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L470-L516" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L471-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1257,18 +1259,19 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L445-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L445-L460" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
     error = app.error
+    # info = app.info
     defaults = self.defaults
 
     if options:
         current = self.current
         for option in options:
             if option not in defaults:
-                print(defaults)
+                # info(defaults)
                 error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
                 continue
             current[option] = defaults[option]
@@ -1284,7 +1287,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L461-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L462-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1307,7 +1310,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L413-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L413-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1332,7 +1335,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L419-L420" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L419-L420" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1346,7 +1349,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/options.py#L422-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/options.py#L422-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

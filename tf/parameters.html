@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/parameters.py#L1-L271" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L1-L282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -36,11 +36,12 @@
 Fixed values for the whole program.
 &#34;&#34;&#34;
 
+import os
 import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;9.5.2&#39;
+VERSION = &#39;10.0.0&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -158,30 +159,35 @@ RELATIVE = &#34;tf&#34;
 &#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
 &#34;&#34;&#34;
 
-URL_GH_API = &#34;https://api.github.com/repos&#34;
-&#34;&#34;&#34;Url of the GitHub API for repos.
 
-We can access GitHub repos by means of commands
-on top of this url.
-&#34;&#34;&#34;
+def URL_B(host):
+    &#34;&#34;&#34;Base url of GitHub or GitLab, depending on host.&#34;&#34;&#34;
+    return &#34;https://github.com&#34; if host is None else f&#34;https://{host}&#34;
 
-URL_GH = &#34;https://github.com&#34;
-&#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
 
-URL_NB = &#34;https://nbviewer.jupyter.org/github&#34;
-&#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
+def URL_NB(host):
+    &#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
+    return &#34;https://nbviewer.jupyter.org/&#34; + (&#34;github&#34; if host is None else host)
 
-DOWNLOADS = &#34;~/Downloads&#34;
+
+HOME_DIR = os.path.expanduser(&#34;~&#34;)
+
+DOWNLOADS = f&#34;{HOME_DIR}/Downloads&#34;
 &#34;&#34;&#34;Local Downloads directory.&#34;&#34;&#34;
 
-GH_BASE = &#34;~/github&#34;
-&#34;&#34;&#34;Local GitHub directory.&#34;&#34;&#34;
 
-EXPRESS_BASE = &#34;~/text-fabric-data&#34;
-&#34;&#34;&#34;Local cache directory.
+def CLONE_BASE(host):
+    &#34;&#34;&#34;Local directory for GitHub/GitLab clones.&#34;&#34;&#34;
+    return f&#34;{HOME_DIR}/{&#39;github&#39; if host is None else host}&#34;
 
-This is the place where the TF apps and TF feature files are cached locally.
-&#34;&#34;&#34;
+
+def EX_BASE(host):
+    &#34;&#34;&#34;Local cache directory.
+
+    This is the place where the TF apps and TF feature files are cached locally.
+    &#34;&#34;&#34;
+    return f&#34;{HOME_DIR}/text-fabric-data&#34; + (&#34;&#34; if host is None else f&#34;/{host}&#34;)
+
 
 EXPRESS_SYNC = &#34;__checkout__.txt&#34;
 &#34;&#34;&#34;Name of cache indicator file.
@@ -201,7 +207,12 @@ PROTOCOL = &#34;http://&#34;
 HOST = &#34;localhost&#34;
 PORT_BASE = 10000
 
-GH_PAGES = &#34;github.io&#34;
+
+def PAGES_DOMAIN(host):
+    return &#34;github.io&#34; if host is None else f&#34;{&#39;.&#39;.join(host.split(&#39;.&#39;))[0:-1]}.io&#34;
+
+
+GH_PAGES = PAGES_DOMAIN(None)
 
 URL_TFDOC = f&#34;https://{ORG}.{GH_PAGES}/{REPO}/tf&#34;
 &#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
@@ -360,11 +371,6 @@ downgrade Text-Fabric</dd>
 <dd>
 <div class="desc"><p>Local Downloads directory.</p></div>
 </dd>
-<dt id="tf.parameters.EXPRESS_BASE"><code class="name">var <span class="ident">EXPRESS_BASE</span></code></dt>
-<dd>
-<div class="desc"><p>Local cache directory.</p>
-<p>This is the place where the TF apps and TF feature files are cached locally.</p></div>
-</dd>
 <dt id="tf.parameters.EXPRESS_SYNC"><code class="name">var <span class="ident">EXPRESS_SYNC</span></code></dt>
 <dd>
 <div class="desc"><p>Name of cache indicator file.</p>
@@ -375,10 +381,6 @@ with this name.</p></div>
 <dt id="tf.parameters.EXPRESS_SYNC_LEGACY"><code class="name">var <span class="ident">EXPRESS_SYNC_LEGACY</span></code></dt>
 <dd>
 <div class="desc"><p>Legacy names of cache indicator files.</p></div>
-</dd>
-<dt id="tf.parameters.GH_BASE"><code class="name">var <span class="ident">GH_BASE</span></code></dt>
-<dd>
-<div class="desc"><p>Local GitHub directory.</p></div>
 </dd>
 <dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
 <dd>
@@ -521,20 +523,6 @@ Put a line</p>
 <dd>
 <div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
 </dd>
-<dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
-<dd>
-<div class="desc"><p>Base url of GitHub.</p></div>
-</dd>
-<dt id="tf.parameters.URL_GH_API"><code class="name">var <span class="ident">URL_GH_API</span></code></dt>
-<dd>
-<div class="desc"><p>Url of the GitHub API for repos.</p>
-<p>We can access GitHub repos by means of commands
-on top of this url.</p></div>
-</dd>
-<dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
-<dd>
-<div class="desc"><p>Base url of NB-viewer for GitHub data.</p></div>
-</dd>
 <dt id="tf.parameters.URL_TFDOC"><code class="name">var <span class="ident">URL_TFDOC</span></code></dt>
 <dd>
 <div class="desc"><p>Base url of the online Text-Fabric documentation.</p></div>
@@ -570,6 +558,87 @@ pickled and compressed to .tfx files.</p>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.parameters.CLONE_BASE"><code class="name flex">
+<span>def <span class="ident">CLONE_BASE</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Local directory for GitHub/GitLab clones.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L147-L149" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def CLONE_BASE(host):
+    &#34;&#34;&#34;Local directory for GitHub/GitLab clones.&#34;&#34;&#34;
+    return f&#34;{HOME_DIR}/{&#39;github&#39; if host is None else host}&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.parameters.EX_BASE"><code class="name flex">
+<span>def <span class="ident">EX_BASE</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Local cache directory.</p>
+<p>This is the place where the TF apps and TF feature files are cached locally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L152-L157" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def EX_BASE(host):
+    &#34;&#34;&#34;Local cache directory.
+
+    This is the place where the TF apps and TF feature files are cached locally.
+    &#34;&#34;&#34;
+    return f&#34;{HOME_DIR}/text-fabric-data&#34; + (&#34;&#34; if host is None else f&#34;/{host}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.parameters.PAGES_DOMAIN"><code class="name flex">
+<span>def <span class="ident">PAGES_DOMAIN</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L179-L180" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def PAGES_DOMAIN(host):
+    return &#34;github.io&#34; if host is None else f&#34;{&#39;.&#39;.join(host.split(&#39;.&#39;))[0:-1]}.io&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.parameters.URL_B"><code class="name flex">
+<span>def <span class="ident">URL_B</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base url of GitHub or GitLab, depending on host.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L131-L133" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def URL_B(host):
+    &#34;&#34;&#34;Base url of GitHub or GitLab, depending on host.&#34;&#34;&#34;
+    return &#34;https://github.com&#34; if host is None else f&#34;https://{host}&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.parameters.URL_NB"><code class="name flex">
+<span>def <span class="ident">URL_NB</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base url of NB-viewer for GitHub data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/parameters.py#L136-L138" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def URL_NB(host):
+    &#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
+    return &#34;https://nbviewer.jupyter.org/&#34; + (&#34;github&#34; if host is None else host)</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -649,10 +718,8 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.APP_DISPLAY" href="#tf.parameters.APP_DISPLAY">APP_DISPLAY</a></code></li>
 <li><code><a title="tf.parameters.DOI_TF" href="#tf.parameters.DOI_TF">DOI_TF</a></code></li>
 <li><code><a title="tf.parameters.DOWNLOADS" href="#tf.parameters.DOWNLOADS">DOWNLOADS</a></code></li>
-<li><code><a title="tf.parameters.EXPRESS_BASE" href="#tf.parameters.EXPRESS_BASE">EXPRESS_BASE</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC" href="#tf.parameters.EXPRESS_SYNC">EXPRESS_SYNC</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC_LEGACY" href="#tf.parameters.EXPRESS_SYNC_LEGACY">EXPRESS_SYNC_LEGACY</a></code></li>
-<li><code><a title="tf.parameters.GH_BASE" href="#tf.parameters.GH_BASE">GH_BASE</a></code></li>
 <li><code><a title="tf.parameters.GZIP_LEVEL" href="#tf.parameters.GZIP_LEVEL">GZIP_LEVEL</a></code></li>
 <li><code><a title="tf.parameters.LOCAL" href="#tf.parameters.LOCAL">LOCAL</a></code></li>
 <li><code><a title="tf.parameters.LOCATIONS" href="#tf.parameters.LOCATIONS">LOCATIONS</a></code></li>
@@ -678,14 +745,20 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>
-<li><code><a title="tf.parameters.URL_GH" href="#tf.parameters.URL_GH">URL_GH</a></code></li>
-<li><code><a title="tf.parameters.URL_GH_API" href="#tf.parameters.URL_GH_API">URL_GH_API</a></code></li>
-<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
 <li><code><a title="tf.parameters.URL_TFDOC" href="#tf.parameters.URL_TFDOC">URL_TFDOC</a></code></li>
 <li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
 <li><code><a title="tf.parameters.WARP" href="#tf.parameters.WARP">WARP</a></code></li>
 <li><code><a title="tf.parameters.YARN_RATIO" href="#tf.parameters.YARN_RATIO">YARN_RATIO</a></code></li>
 <li><code><a title="tf.parameters.ZIP_OPTIONS" href="#tf.parameters.ZIP_OPTIONS">ZIP_OPTIONS</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.parameters.CLONE_BASE" href="#tf.parameters.CLONE_BASE">CLONE_BASE</a></code></li>
+<li><code><a title="tf.parameters.EX_BASE" href="#tf.parameters.EX_BASE">EX_BASE</a></code></li>
+<li><code><a title="tf.parameters.PAGES_DOMAIN" href="#tf.parameters.PAGES_DOMAIN">PAGES_DOMAIN</a></code></li>
+<li><code><a title="tf.parameters.URL_B" href="#tf.parameters.URL_B">URL_B</a></code></li>
+<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
 </ul>
 </li>
 </ul>

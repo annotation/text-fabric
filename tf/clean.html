@@ -35,7 +35,7 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/clean.py#L1-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/clean.py#L1-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Clean
@@ -56,13 +56,9 @@ import os
 import re
 from shutil import rmtree
 
-from .parameters import PACK_VERSION
+from .parameters import PACK_VERSION, CLONE_BASE, EX_BASE
 from .core.helpers import expanduser, unexpanduser as ux
 
-TFD = &#34;text-fabric-data&#34;
-GH = &#34;github&#34;
-
-ROOTS = [TFD, GH]
 
 binRe = re.compile(r&#34;/\.tf$&#34;)
 binvRe = re.compile(r&#34;/\.tf/([^/]+)$&#34;)
@@ -80,7 +76,7 @@ def err(msg):
     sys.stderr.flush()
 
 
-def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+def clean(tfd=True, host=None, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
 
     Parameters
@@ -95,10 +91,14 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     tfd: boolean,  optional `True`
         By default, your `~/text-fabric-data` is traversed and cleaned,
         but if you pass `tfd=False` it will be skipped.
-    gh: boolean, optional, `False`
-        By default, your `~/github` will be skipped,
-        but if you pass `gh=True` it will be
-        traversed and cleaned.
+    host: string, optional, `None`
+        If None, only material in `text-fabric-data` will be cleaned.
+        But you can also clean clones of GitHub/GitLab.
+
+        To clean GitHub clones, pass `github`.
+
+        To clean the clones from a specific GitLab host,
+        pass the host name of it.
     specific: string, optional, `None`
         You can pass a specific directory here. The standard directories
         `~/github` and `~/text-fabric-data` will not be used, only
@@ -115,12 +115,11 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
     if specific is not None:
         bases = [expanduser(specific)]
     else:
-        bases = []
-        for root in ROOTS:
-            if root == TFD and not tfd or root == GH and not gh:
-                out(f&#34;skipped {root}\n&#34;)
-                continue
-            bases.append(expanduser(f&#34;~/{root}&#34;))
+        if host is not None:
+            if host.lower() == &#34;github&#34;:
+                bases = [EX_BASE(None), CLONE_BASE(None)]
+            else:
+                bases = [EX_BASE(host), CLONE_BASE(host)]
 
     for base in bases:
         for triple in os.walk(base):
@@ -163,7 +162,7 @@ def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.clean.clean"><code class="name flex">
-<span>def <span class="ident">clean</span></span>(<span>tfd=True, gh=False, dry=True, specific=None, current=False)</span>
+<span>def <span class="ident">clean</span></span>(<span>tfd=True, host=None, dry=True, specific=None, current=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Clean up older compressed .tfx files.</p>
@@ -177,10 +176,14 @@ than the one currently used by Text-Fabric.</p>
 optional <code>True</code></dt>
 <dd>By default, your <code>~/text-fabric-data</code> is traversed and cleaned,
 but if you pass <code>tfd=False</code> it will be skipped.</dd>
-<dt><strong><code>gh</code></strong> :&ensp;<code>boolean</code>, optional<code>, </code>False``</dt>
-<dd>By default, your <code>~/github</code> will be skipped,
-but if you pass <code>gh=True</code> it will be
-traversed and cleaned.</dd>
+<dt><strong><code>host</code></strong> :&ensp;<code>string</code>, optional<code>, </code>None``</dt>
+<dd>
+<p>If None, only material in <code>text-fabric-data</code> will be cleaned.
+But you can also clean clones of GitHub/GitLab.</p>
+<p>To clean GitHub clones, pass <code>github</code>.</p>
+<p>To clean the clones from a specific GitLab host,
+pass the host name of it.</p>
+</dd>
 <dt><strong><code>specific</code></strong> :&ensp;<code>string</code>, optional<code>, </code>None``</dt>
 <dd>You can pass a specific directory here. The standard directories
 <code>~/github</code> and <code>~/text-fabric-data</code> will not be used, only
@@ -196,9 +199,9 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/clean.py#L44-L116" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/clean.py#L40-L115" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def clean(tfd=True, gh=False, dry=True, specific=None, current=False):
+<pre><code class="python">def clean(tfd=True, host=None, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
 
     Parameters
@@ -213,10 +216,14 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
     tfd: boolean,  optional `True`
         By default, your `~/text-fabric-data` is traversed and cleaned,
         but if you pass `tfd=False` it will be skipped.
-    gh: boolean, optional, `False`
-        By default, your `~/github` will be skipped,
-        but if you pass `gh=True` it will be
-        traversed and cleaned.
+    host: string, optional, `None`
+        If None, only material in `text-fabric-data` will be cleaned.
+        But you can also clean clones of GitHub/GitLab.
+
+        To clean GitHub clones, pass `github`.
+
+        To clean the clones from a specific GitLab host,
+        pass the host name of it.
     specific: string, optional, `None`
         You can pass a specific directory here. The standard directories
         `~/github` and `~/text-fabric-data` will not be used, only
@@ -233,12 +240,11 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
     if specific is not None:
         bases = [expanduser(specific)]
     else:
-        bases = []
-        for root in ROOTS:
-            if root == TFD and not tfd or root == GH and not gh:
-                out(f&#34;skipped {root}\n&#34;)
-                continue
-            bases.append(expanduser(f&#34;~/{root}&#34;))
+        if host is not None:
+            if host.lower() == &#34;github&#34;:
+                bases = [EX_BASE(None), CLONE_BASE(None)]
+            else:
+                bases = [EX_BASE(host), CLONE_BASE(host)]
 
     for base in bases:
         for triple in os.walk(base):
@@ -281,7 +287,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/clean.py#L38-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/clean.py#L34-L37" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
@@ -297,7 +303,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/clean.py#L32-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/clean.py#L28-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;

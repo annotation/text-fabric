@@ -200,10 +200,11 @@ that corresponds with the writing setting.</p>
 </dl>
 <hr>
 <h3 id="docroot"><code>docRoot</code></h3>
-<p>Where the docs are: on Github (default), or on nbviewer (<code>{urlNb}</code>) or somewhere else.</p>
+<p>Where the docs are: on Github or GitLab (default),
+or on nbviewer (<code>{urlNb}</code>) or somewhere else.</p>
 <dl>
 <dt>Default:</dt>
-<dd>string <code>{urlGh}</code></dd>
+<dd>string <code>{urlGh}</code> or <code>https://</code><em>host</em></dd>
 </dl>
 <hr>
 <h3 id="featurebase"><code>featureBase</code></h3>
@@ -789,7 +790,7 @@ it is needed to deviate from the default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1-L1846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1-L1851" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # App settings
@@ -1019,10 +1020,11 @@ Default:
 
 ### `docRoot`
 
-Where the docs are: on Github (default), or on nbviewer (`{urlNb}`) or somewhere else.
+Where the docs are: on Github or GitLab (default),
+or on nbviewer (`{urlNb}`) or somewhere else.
 
 Default:
-:   string `{urlGh}`
+:   string `{urlGh}` or `https://`*host*
 
 ---
 
@@ -1723,7 +1725,7 @@ Default:
 import re
 import types
 
-from ..parameters import URL_GH, URL_NB, URL_TFDOC
+from ..parameters import URL_B, URL_NB, URL_TFDOC
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
 from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
@@ -1814,17 +1816,20 @@ PROVENANCE_DEFAULTS = (
     (&#34;webHint&#34;, None),
 )
 
-DOC_DEFAULTS = (
-    (&#34;docRoot&#34;, &#34;{urlGh}&#34;),
-    (&#34;docExt&#34;, &#34;.md&#34;),
-    (&#34;docBase&#34;, &#34;{docRoot}/{org}/{repo}/blob/master/docs&#34;),
-    (&#34;docPage&#34;, &#34;home&#34;),
-    (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
-    (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
-    (&#34;featurePage&#34;, &#34;home&#34;),
-    (&#34;charUrl&#34;, &#34;{tfDoc}/writing/{language}.html&#34;),
-    (&#34;charText&#34;, &#34;How TF features represent text&#34;),
-)
+
+def DOC_DEFAULTS(host):
+    return (
+        (&#34;docRoot&#34;, &#34;{urlGh}&#34; if host is None else f&#34;https://{host}&#34;),
+        (&#34;docExt&#34;, &#34;.md&#34;),
+        (&#34;docBase&#34;, &#34;{docRoot}/{org}/{repo}/blob/master/docs&#34;),
+        (&#34;docPage&#34;, &#34;home&#34;),
+        (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
+        (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
+        (&#34;featurePage&#34;, &#34;home&#34;),
+        (&#34;charUrl&#34;, &#34;{tfDoc}/writing/{language}.html&#34;),
+        (&#34;charText&#34;, &#34;How TF features represent text&#34;),
+    )
+
 
 DATA_DISPLAY_DEFAULTS = (
     (&#34;excludedFeatures&#34;, set(), False),
@@ -2087,9 +2092,10 @@ def _fillInDefined(template, data):
 
 
 def setAppSpecs(app, cfg, reset=False):
+    host = app.host
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
-    specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    specs = dict(urlGh=URL_B(host), urlNb=URL_NB(host), tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
     if &#34;apiVersion&#34; not in specs:
@@ -2109,7 +2115,7 @@ def setAppSpecs(app, cfg, reset=False):
 
     for (dKey, defaults) in (
         (&#34;provenanceSpec&#34;, PROVENANCE_DEFAULTS),
-        (&#34;docs&#34;, DOC_DEFAULTS),
+        (&#34;docs&#34;, DOC_DEFAULTS(host)),
     ):
         checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
         checker.report()
@@ -2646,6 +2652,30 @@ def compileFormatCls(app, specs, givenStyles):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.settings.DOC_DEFAULTS"><code class="name flex">
+<span>def <span class="ident">DOC_DEFAULTS</span></span>(<span>host)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1026-L1037" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def DOC_DEFAULTS(host):
+    return (
+        (&#34;docRoot&#34;, &#34;{urlGh}&#34; if host is None else f&#34;https://{host}&#34;),
+        (&#34;docExt&#34;, &#34;.md&#34;),
+        (&#34;docBase&#34;, &#34;{docRoot}/{org}/{repo}/blob/master/docs&#34;),
+        (&#34;docPage&#34;, &#34;home&#34;),
+        (&#34;docUrl&#34;, &#34;{docBase}/{docPage}{docExt}&#34;),
+        (&#34;featureBase&#34;, &#34;{docBase}/features/&lt;feature&gt;{docExt}&#34;),
+        (&#34;featurePage&#34;, &#34;home&#34;),
+        (&#34;charUrl&#34;, &#34;{tfDoc}/writing/{language}.html&#34;),
+        (&#34;charText&#34;, &#34;How TF features represent text&#34;),
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.settings.compileFormatCls"><code class="name flex">
 <span>def <span class="ident">compileFormatCls</span></span>(<span>app, specs, givenStyles)</span>
 </code></dt>
@@ -2654,7 +2684,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1815-L1846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1820-L1851" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compileFormatCls(app, specs, givenStyles):
     api = app.api
@@ -2698,7 +2728,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1424-L1474" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1429-L1479" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDataDefaults(app, cfg, dKey, withApi):
     checker = Check(app, withApi)
@@ -2761,7 +2791,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1805-L1812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1810-L1817" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLevel(defaultLevel, givenInfo, isVerse):
     level = givenInfo.get(&#34;level&#34;, defaultLevel)
@@ -2781,7 +2811,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1477-L1776" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1482-L1781" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTypeDefaults(app, cfg, dKey, withApi):
     if not withApi:
@@ -3093,12 +3123,13 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1296-L1374" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1300-L1379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecs(app, cfg, reset=False):
+    host = app.host
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
-    specs = dict(urlGh=URL_GH, urlNb=URL_NB, tfDoc=URL_TFDOC,)
+    specs = dict(urlGh=URL_B(host), urlNb=URL_NB(host), tfDoc=URL_TFDOC,)
     app.specs = specs
     specs.update(cfg)
     if &#34;apiVersion&#34; not in specs:
@@ -3118,7 +3149,7 @@ def compileFormatCls(app, specs, givenStyles):
 
     for (dKey, defaults) in (
         (&#34;provenanceSpec&#34;, PROVENANCE_DEFAULTS),
-        (&#34;docs&#34;, DOC_DEFAULTS),
+        (&#34;docs&#34;, DOC_DEFAULTS(host)),
     ):
         checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
         checker.report()
@@ -3184,7 +3215,7 @@ def compileFormatCls(app, specs, givenStyles):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1377-L1421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1382-L1426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setAppSpecsApi(app, cfg):
     api = app.api
@@ -3257,7 +3288,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1779-L1802" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1784-L1807" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showContext(app, *keys):
     &#34;&#34;&#34;Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
@@ -3299,7 +3330,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1080-L1096" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1084-L1100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppCurrent:
     def __init__(self, specs):
@@ -3329,7 +3360,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1091-L1092" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1095-L1096" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -3343,7 +3374,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1094-L1096" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1098-L1100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)
@@ -3358,7 +3389,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1085-L1089" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1089-L1093" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, specs):
     allKeys = self.allKeys
@@ -3378,7 +3409,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1099-L1288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1103-L1292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Check:
     def __init__(self, app, withApi):
@@ -3581,7 +3612,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1253-L1268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1257-L1272" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkGroup(self, cfg, defaults, dKey, postpone=set(), extra=None):
     self.cfg = cfg
@@ -3609,7 +3640,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1270-L1277" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1274-L1281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkItem(self, cfg, dKey):
     self.cfg = cfg
@@ -3629,7 +3660,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1105-L1251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1109-L1255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSetting(self, k, v, extra=None):
     app = self.app
@@ -3788,7 +3819,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/settings.py#L1279-L1288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/settings.py#L1283-L1292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def report(self):
     errors = self.errors
@@ -3947,6 +3978,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="tf.advanced.settings.DOC_DEFAULTS" href="#tf.advanced.settings.DOC_DEFAULTS">DOC_DEFAULTS</a></code></li>
 <li><code><a title="tf.advanced.settings.compileFormatCls" href="#tf.advanced.settings.compileFormatCls">compileFormatCls</a></code></li>
 <li><code><a title="tf.advanced.settings.getDataDefaults" href="#tf.advanced.settings.getDataDefaults">getDataDefaults</a></code></li>
 <li><code><a title="tf.advanced.settings.getLevel" href="#tf.advanced.settings.getLevel">getLevel</a></code></li>

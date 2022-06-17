@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L1-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L1-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.helpers import itemize, splitModRef, normpath, expandDir
 from .repo import checkoutRepo
@@ -37,13 +37,19 @@ from .links import provenanceLink
 
 
 class AppData(object):
-    def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
+    def __init__(
+        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+    ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
         The specifications are passed as arguments when the object is initialized.
 
         Parameters
         ----------
+        host: string, optional None
+            If present, it points to a GitLab instance such as the on-premise
+            `gitlab.huc.knaw.nl`.
+            If `None` we work with `github.com`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -66,6 +72,7 @@ class AppData(object):
             data fetching.
 
         &#34;&#34;&#34;
+        self.host = host
         self.app = app
         self.moduleRefs = (
             []
@@ -254,6 +261,7 @@ class AppData(object):
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
+        host = self.host
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -276,6 +284,7 @@ class AppData(object):
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
                 _browse=_browse,
+                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,
@@ -317,7 +326,7 @@ class AppData(object):
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        org, repo, version, commit, local, release, relative
+                        host, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -364,7 +373,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L299-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L308-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -390,13 +399,17 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <dl>
 <dt id="tf.advanced.data.AppData"><code class="flex name class">
 <span>class <span class="ident">AppData</span></span>
-<span>(</span><span>app, moduleRefs, locations, modules, version, checkout, silent)</span>
+<span>(</span><span>app, host, moduleRefs, locations, modules, version, checkout, silent)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Collects TF data according to specifications.</p>
 <p>The specifications are passed as arguments when the object is initialized.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If present, it points to a GitLab instance such as the on-premise
+<code>gitlab.huc.knaw.nl</code>.
+If <code>None</code> we work with <code>github.com</code>.</dd>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
 <dt><strong><code>moduleRefs</code></strong> :&ensp;<code>tuple</code></dt>
@@ -421,16 +434,22 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L9-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L9-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
-    def __init__(self, app, moduleRefs, locations, modules, version, checkout, silent):
+    def __init__(
+        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+    ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
         The specifications are passed as arguments when the object is initialized.
 
         Parameters
         ----------
+        host: string, optional None
+            If present, it points to a GitLab instance such as the on-premise
+            `gitlab.huc.knaw.nl`.
+            If `None` we work with `github.com`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -453,6 +472,7 @@ data fetching.</p></div>
             data fetching.
 
         &#34;&#34;&#34;
+        self.host = host
         self.app = app
         self.moduleRefs = (
             []
@@ -641,6 +661,7 @@ data fetching.</p></div>
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
+        host = self.host
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -663,6 +684,7 @@ data fetching.</p></div>
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
                 _browse=_browse,
+                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,
@@ -704,7 +726,7 @@ data fetching.</p></div>
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        org, repo, version, commit, local, release, relative
+                        host, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -729,7 +751,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L53-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L60-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -789,7 +811,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L202-L296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L209-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
     &#34;&#34;&#34;Prepare to load a single module.
@@ -816,6 +838,7 @@ location paths and the module paths.</p>
         Additional informational attributes of the module, e.g. a DOI
     &#34;&#34;&#34;
 
+    host = self.host
     version = self.version
     silent = self.silent
     mLocations = self.mLocations
@@ -838,6 +861,7 @@ location paths and the module paths.</p>
     else:
         (commit, release, local, localBase, localDir) = checkoutRepo(
             _browse=_browse,
+            host=host,
             org=org,
             repo=repo,
             folder=relative,
@@ -879,7 +903,7 @@ location paths and the module paths.</p>
             (
                 &#34;live&#34;,
                 provenanceLink(
-                    org, repo, version, commit, local, release, relative
+                    host, org, repo, version, commit, local, release, relative
                 ),
             ),
             (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -897,7 +921,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L146-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L153-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -967,7 +991,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L122-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L129-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1013,7 +1037,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/data.py#L83-L120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/data.py#L90-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.

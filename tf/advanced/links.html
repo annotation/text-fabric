@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L1-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L1-L650" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -38,7 +38,7 @@ import types
 from textwrap import dedent
 
 from ..parameters import (
-    URL_GH,
+    URL_B,
     URL_TFDOC,
     SEARCHREF,
     APIREF,
@@ -52,10 +52,6 @@ from ..server.wrap import wrapProvenance
 
 
 UNSUPPORTED = &#34;&#34;
-
-pathRe = re.compile(
-    r&#34;^(.*/(?:github|text-fabric-data))/([^/]+)/([^/]+)/(.*)$&#34;, flags=re.I
-)
 
 
 def linksApi(app, silent):
@@ -80,6 +76,7 @@ def linksApi(app, silent):
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     &#34;&#34;&#34;
+    host = app.host
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
@@ -100,7 +97,7 @@ def linksApi(app, silent):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = f&#34;{URL_NB}/{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
+    tutUrl = f&#34;{URL_NB(host)}/{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataName = repo.upper()
@@ -115,7 +112,9 @@ def linksApi(app, silent):
     dataLink = (
         outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
-        else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version))
+        else &#34;/&#34;.join(
+            (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
+        )
         if appName.startswith(&#34;app:&#34;)
         else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath, appName, version))
     )
@@ -141,7 +140,7 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f&#34;{URL_GH}/{org}/{repo}/blob/master/{APP_APP}&#34;
+    extraUrl = f&#34;{URL_B(host)}/{org}/{repo}/blob/master/{APP_APP}&#34;
     appLink = (
         outLink(f&#34;{org}/{repo}/app {apiVersionRep}&#34;, extraUrl, f&#34;{appName} TF-app&#34;)
         if isCompatible and repo is not None
@@ -377,10 +376,11 @@ def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program auth
     &#34;&#34;&#34;
 
     aContext = app.context
+    host = app.host
     org = aContext.org
     repo = aContext.repo
     commit = aContext.commit
-    appProvenance = (((&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),)
+    appProvenance = (((&#34;host&#34;, host), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),)
     provenance = (appProvenance, app.provenance)
     setNames = (
         tuple(sorted(app.sets.keys()))
@@ -430,6 +430,7 @@ def _featuresPerModule(app):
 
     api = app.api
     TF = app.TF
+    host = app.host
 
     aContext = app.context
     mOrg = aContext.org
@@ -453,6 +454,12 @@ def _featuresPerModule(app):
     mLocations = app.mLocations if hasattr(app, &#34;mLocations&#34;) else []
     baseLoc = mLocations[0] if hasattr(app, &#34;mLocations&#34;) else ()
 
+    hostPat = &#34;&#34; if host is None else f&#34;|{re.escape(host)}&#34;
+    pathRe = re.compile(
+        rf&#34;^(.*/(?:github|text-fabric-data|{hostPat}))/([^/]+)/([^/]+)/(.*)$&#34;,
+        flags=re.I,
+    )
+
     for mLoc in mLocations:
         match = pathRe.fullmatch(mLoc)
         if not match:
@@ -473,7 +480,7 @@ def _featuresPerModule(app):
                 if mId in fixedModuleIndex
                 else (
                     f&#34;{org}/{repo}/{relative}&#34;,
-                    f&#34;{URL_GH}/{org}/{repo}/tree/master/{relative}&#34;,
+                    f&#34;{URL_B(host)}/{org}/{repo}/tree/master/{relative}&#34;,
                 )
             )
             moduleIndex[mId] = (org, repo, relative, corpus, docUrl)
@@ -533,7 +540,7 @@ def _featuresPerModule(app):
             docUrl = (
                 &#34;&#34;
                 if type(mId) is str
-                else f&#34;{URL_GH}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}&#34;
+                else f&#34;{URL_B(host)}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}&#34;
             )
         html += dedent(
             f&#34;&#34;&#34;
@@ -615,13 +622,19 @@ def _featuresPerModule(app):
     return html
 
 
-def provenanceLink(org, repo, version, commit, release, local, relative):
+def provenanceLink(host, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a GitHub repo.
 
     Parameters
     ----------
+    host: string, optional None
+        If present, it points to a GitLab instance such as the on-premise
+        `gitlab.huc.knaw.nl`.
+        If `None` we work with `github.com`.
+    org: string
+        Organization on GitHub
     org: string
         Organization on GitHub
     repo: string
@@ -637,19 +650,32 @@ def provenanceLink(org, repo, version, commit, release, local, relative):
     text = (
         f&#34;data on local machine {relative}&#34;
         if org is None or repo is None
-        else f&#34;{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})&#34;
+        else (
+            f&#34;{org}/{repo} v:{version}&#34;
+            f&#34;({Checkout.toString(commit, release, local, host=host)})&#34;
+        )
     )
     relativeFlat = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    baseUrl = URL_B(host)
     url = (
         None
         if org is None or repo is None
-        else f&#34;{URL_GH}/{org}/{repo}/tree/master/{relative}&#34;
+        else f&#34;{baseUrl}/{org}/{repo}/tree/master/{relative}&#34;
         if local
         else (
-            f&#34;{URL_GH}/{org}/{repo}/releases/download/{release}&#34;
-            f&#34;/{relativeFlat}-{version}.zip&#34;
+            (
+                (
+                    f&#34;{baseUrl}/{org}/{repo}/releases/download/{release}&#34;
+                    f&#34;/{relativeFlat}-{version}.zip&#34;
+                )
+                if host is None
+                else (
+                    f&#34;{baseUrl}/{org}/{repo}/-/archive/{release}&#34;
+                    f&#34;/{repo}-{version}.zip&#34;
+                )
+            )
             if release
-            else f&#34;{URL_GH}/{org}/{repo}/tree/{commit}/{relative}&#34;
+            else f&#34;{baseUrl}/{org}/{repo}/tree/{commit}/{relative}&#34;
         )
     )
     return (text, url)</code></pre>
@@ -672,7 +698,7 @@ and it is packed with provenance and documentation links.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L152-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L151-L187" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -737,7 +763,7 @@ we force <code>silent=True</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L30-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L26-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent):
     &#34;&#34;&#34;Produce the link API.
@@ -761,6 +787,7 @@ we force <code>silent=True</code>.</p></div>
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     &#34;&#34;&#34;
+    host = app.host
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
@@ -781,7 +808,7 @@ we force <code>silent=True</code>.</p></div>
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = f&#34;{URL_NB}/{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
+    tutUrl = f&#34;{URL_NB(host)}/{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataName = repo.upper()
@@ -796,7 +823,9 @@ we force <code>silent=True</code>.</p></div>
     dataLink = (
         outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;)
         if isCompatible and repo is not None and docUrl
-        else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version))
+        else &#34;/&#34;.join(
+            (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
+        )
         if appName.startswith(&#34;app:&#34;)
         else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath, appName, version))
     )
@@ -822,7 +851,7 @@ we force <code>silent=True</code>.</p></div>
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f&#34;{URL_GH}/{org}/{repo}/blob/master/{APP_APP}&#34;
+    extraUrl = f&#34;{URL_B(host)}/{org}/{repo}/blob/master/{APP_APP}&#34;
     appLink = (
         outLink(f&#34;{org}/{repo}/app {apiVersionRep}&#34;, extraUrl, f&#34;{appName} TF-app&#34;)
         if isCompatible and repo is not None
@@ -885,7 +914,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L363-L390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L363-L390" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -918,13 +947,19 @@ link element. Used by the TF-browser.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.links.provenanceLink"><code class="name flex">
-<span>def <span class="ident">provenanceLink</span></span>(<span>org, repo, version, commit, release, local, relative)</span>
+<span>def <span class="ident">provenanceLink</span></span>(<span>host, org, repo, version, commit, local, release, relative)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate a provenance link for a data source.</p>
 <p>We assume the data source resides somewhere inside a GitHub repo.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>host</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If present, it points to a GitLab instance such as the on-premise
+<code>gitlab.huc.knaw.nl</code>.
+If <code>None</code> we work with <code>github.com</code>.</dd>
+<dt><strong><code>org</code></strong> :&ensp;<code>string</code></dt>
+<dd>Organization on GitHub</dd>
 <dt><strong><code>org</code></strong> :&ensp;<code>string</code></dt>
 <dd>Organization on GitHub</dd>
 <dt><strong><code>repo</code></strong> :&ensp;<code>string</code></dt>
@@ -939,15 +974,21 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L587-L624" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L594-L650" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def provenanceLink(org, repo, version, commit, release, local, relative):
+<pre><code class="python">def provenanceLink(host, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a GitHub repo.
 
     Parameters
     ----------
+    host: string, optional None
+        If present, it points to a GitLab instance such as the on-premise
+        `gitlab.huc.knaw.nl`.
+        If `None` we work with `github.com`.
+    org: string
+        Organization on GitHub
     org: string
         Organization on GitHub
     repo: string
@@ -963,19 +1004,32 @@ corresponding with a data version under a <code><a title="tf" href="../index.htm
     text = (
         f&#34;data on local machine {relative}&#34;
         if org is None or repo is None
-        else f&#34;{org}/{repo} v:{version} ({Checkout.toString(commit, release, local)})&#34;
+        else (
+            f&#34;{org}/{repo} v:{version}&#34;
+            f&#34;({Checkout.toString(commit, release, local, host=host)})&#34;
+        )
     )
     relativeFlat = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    baseUrl = URL_B(host)
     url = (
         None
         if org is None or repo is None
-        else f&#34;{URL_GH}/{org}/{repo}/tree/master/{relative}&#34;
+        else f&#34;{baseUrl}/{org}/{repo}/tree/master/{relative}&#34;
         if local
         else (
-            f&#34;{URL_GH}/{org}/{repo}/releases/download/{release}&#34;
-            f&#34;/{relativeFlat}-{version}.zip&#34;
+            (
+                (
+                    f&#34;{baseUrl}/{org}/{repo}/releases/download/{release}&#34;
+                    f&#34;/{relativeFlat}-{version}.zip&#34;
+                )
+                if host is None
+                else (
+                    f&#34;{baseUrl}/{org}/{repo}/-/archive/{release}&#34;
+                    f&#34;/{repo}-{version}.zip&#34;
+                )
+            )
             if release
-            else f&#34;{URL_GH}/{org}/{repo}/tree/{commit}/{relative}&#34;
+            else f&#34;{baseUrl}/{org}/{repo}/tree/{commit}/{relative}&#34;
         )
     )
     return (text, url)</code></pre>
@@ -1002,7 +1056,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L329-L360" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L328-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1024,10 +1078,11 @@ This item will be displayed together with the rest of the provenance.</dd>
     &#34;&#34;&#34;
 
     aContext = app.context
+    host = app.host
     org = aContext.org
     repo = aContext.repo
     commit = aContext.commit
-    appProvenance = (((&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),)
+    appProvenance = (((&#34;host&#34;, host), (&#34;org&#34;, org), (&#34;repo&#34;, repo), (&#34;commit&#34;, commit)),)
     provenance = (appProvenance, app.provenance)
     setNames = (
         tuple(sorted(app.sets.keys()))
@@ -1081,7 +1136,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/advanced/links.py#L191-L326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/advanced/links.py#L190-L325" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

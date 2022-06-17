@@ -39,10 +39,13 @@ provide.</p>
 <p>or</p>
 <pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;)
 </code></pre>
+<pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, host=&quot;gitlab.huc.knaw.nl&quot;)
+</code></pre>
 <p>See <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> for a list of known corpora that can be loaded this way.</p>
 <h3 id="full-usage">Full usage</h3>
 <pre><code>A = use(
     &quot;org/repo:specapp&quot;,
+    host=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
     checkout=None, # e.g. &quot;latest&quot;
     version=None,  # e.g. &quot;1.2.3&quot;
     mod=None,      # e.g. &quot;org1/repo1/path1:specmod1,org2/repo2/path2:specmod2&quot;
@@ -122,6 +125,11 @@ otherwise the latest release on GitHub, if present, otherwise the latest commit 
 <p>For a demo, see
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">banks/repo</a>.</p>
 <h2 id="specifying-app-andor-data">Specifying app and/or data</h2>
+<p>By default, the online repository for apps and data is GitHub (<a href="https://github.com">https://github.com</a>).</p>
+<p>But you can also use GitLab instances. You do that by specifying the server location
+in the parameter <code>host</code>, e.g.</p>
+<pre><code>    host=&quot;gitlab.knaw.huc.nl&quot;
+</code></pre>
 <p>The specification of the app is in the first argument:
 <em>app-path</em><code>:</code><em>app-checkout-specifier</em>
 The normal case is where <em>app-path</em> has the form <code>org/repo</code> pointing to
@@ -364,7 +372,7 @@ If <code>deep</code>, all output will be suppressed, except errors.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6f99f5d59de865cf49ad4726058f87fe3d5b0c69/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f32fd25a8111b2f4cbaf8bdbc76470e29c4716b6/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md
