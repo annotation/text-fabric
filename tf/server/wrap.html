@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L1-L349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L1-L355" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Wrap material into HTML
@@ -39,7 +39,14 @@ Lower level functions for wrapping TF data into actual HTML that can be served.
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, URL_B
+from ..parameters import (
+    NAME,
+    VERSION,
+    DOI_URL_PREFIX,
+    DOI_DEFAULT,
+    DOI_TF,
+    backendRep,
+)
 from ..advanced.options import INTERFACE_OPTIONS
 
 
@@ -153,8 +160,7 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 def wrapOptions(context, form):
-    &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.&#34;&#34;&#34;
 
     interfaceDefaults = context.interfaceDefaults
     defaults = {k: v for (k, v) in interfaceDefaults.items() if v is not None}
@@ -170,10 +176,10 @@ def wrapOptions(context, form):
         value = &#34;checked&#34; if value else &#34;&#34;
         outer = &#34;span&#34; if move else &#34;div&#34;
         thisHtml = (
-            f&#39;&lt;{outer}&gt;&#39;
+            f&#34;&lt;{outer}&gt;&#34;
             f&#39;&lt;input class=&#34;r&#34; type=&#34;checkbox&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
             f&#39; &lt;span class=&#34;ilab&#34; title=&#34;{option}&#34;&gt;{desc}&lt;/span&gt;&#39;
-            f&#39;&lt;/{outer}&gt;&#39;
+            f&#34;&lt;/{outer}&gt;&#34;
         )
         helpHtml.append(f&#39;&lt;p&gt;&lt;b title=&#34;{option}&#34;&gt;{desc}&lt;/b&gt; {long}&lt;/p&gt;&#39;)
         if move:
@@ -223,7 +229,7 @@ def wrapSelect(option, allowedValues, value, group, item, multiple):
         bType = &#34;checkbox&#34; if multiple else &#34;radio&#34;
         button = (
             f&#39;&lt;input class=&#34;r {group}&#34; type=&#34;{bType}&#34; name=&#34;{option}&#34; value=&#34;{val}&#34;&#39;
-            f&#39; {checked}/&gt;&#39;
+            f&#34; {checked}/&gt;&#34;
         )
         html.append(
             f&#39;&lt;div class=&#34;{item[0]}&#34;&gt;{button} &lt;span class=&#34;{item[1]}&#34;&gt;{val}&lt;/span&gt;&lt;/div&gt;&#39;
@@ -253,26 +259,26 @@ def wrapProvenance(form, provenance, setNames):
 
     for d in appProvenance:
         d = dict(d)
-        host = d[&#34;host&#34;]
-        backendUrl = URL_B(host)
-        hostRep = &#34;GitHub&#34; if host is None else host
+        backend = d[&#34;backend&#34;]
+        bUrl = backendRep(backend, &#34;url&#34;)
+        bName = backendRep(backend, &#34;name&#34;)
         org = d[&#34;org&#34;]
         repo = d[&#34;repo&#34;]
         commit = d[&#34;commit&#34;]
-        url = f&#34;{backendUrl}/{org}/{repo}/tree/{commit}&#34;
+        url = f&#34;{bUrl}/{org}/{repo}/tree/{commit}&#34;
         liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
         liveMd = f&#34;[{commit}]({url})&#34;
         appHtml += f&#34;&#34;&#34;\
     &lt;div class=&#34;pline&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
-      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {hostRep}&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {bName}&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&#34;p2line&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
       &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
     &lt;/div&gt;\
 &#34;&#34;&#34;
-        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {hostRep}
+        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {bName}
 commit | {liveMd}&#34;&#34;&#34;
         sep = &#34;\n&#34;
 
@@ -404,7 +410,7 @@ to <code>position + spread*spread</code>, stepping by <code>spread</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L17-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L24-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pageLinks(nResults, position, spread=10):
     &#34;&#34;&#34;Provide navigation links for results sets, big or small.
@@ -486,7 +492,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L84-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L91-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
     &#34;&#34;&#34;Provide navigation links for passages,
@@ -532,11 +538,10 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L123-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L130-L157" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapOptions(context, form):
-    &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Wraps the boolean options, including the app-specific ones, into HTML.&#34;&#34;&#34;
 
     interfaceDefaults = context.interfaceDefaults
     defaults = {k: v for (k, v) in interfaceDefaults.items() if v is not None}
@@ -552,10 +557,10 @@ is produced.</p>
         value = &#34;checked&#34; if value else &#34;&#34;
         outer = &#34;span&#34; if move else &#34;div&#34;
         thisHtml = (
-            f&#39;&lt;{outer}&gt;&#39;
+            f&#34;&lt;{outer}&gt;&#34;
             f&#39;&lt;input class=&#34;r&#34; type=&#34;checkbox&#34; id=&#34;{acro}&#34; name=&#34;{option}&#34; {value}/&gt;&#39;
             f&#39; &lt;span class=&#34;ilab&#34; title=&#34;{option}&#34;&gt;{desc}&lt;/span&gt;&#39;
-            f&#39;&lt;/{outer}&gt;&#39;
+            f&#34;&lt;/{outer}&gt;&#34;
         )
         helpHtml.append(f&#39;&lt;p&gt;&lt;b title=&#34;{option}&#34;&gt;{desc}&lt;/b&gt; {long}&lt;/p&gt;&#39;)
         if move:
@@ -573,7 +578,7 @@ is produced.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L205-L341" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L211-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapProvenance(form, provenance, setNames):
     utc_offset_sec = time.altzone if time.localtime().tm_isdst else time.timezone
@@ -594,26 +599,26 @@ is produced.</p>
 
     for d in appProvenance:
         d = dict(d)
-        host = d[&#34;host&#34;]
-        backendUrl = URL_B(host)
-        hostRep = &#34;GitHub&#34; if host is None else host
+        backend = d[&#34;backend&#34;]
+        bUrl = backendRep(backend, &#34;url&#34;)
+        bName = backendRep(backend, &#34;name&#34;)
         org = d[&#34;org&#34;]
         repo = d[&#34;repo&#34;]
         commit = d[&#34;commit&#34;]
-        url = f&#34;{backendUrl}/{org}/{repo}/tree/{commit}&#34;
+        url = f&#34;{bUrl}/{org}/{repo}/tree/{commit}&#34;
         liveHtml = f&#39;&lt;a href=&#34;{url}&#34;&gt;{commit}&lt;/a&gt;&#39;
         liveMd = f&#34;[{commit}]({url})&#34;
         appHtml += f&#34;&#34;&#34;\
     &lt;div class=&#34;pline&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;TF App:&lt;/div&gt;
-      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {hostRep}&lt;/div&gt;
+      &lt;div class=&#34;pval&#34;&gt;{org}/{repo} on {bName}&lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&#34;p2line&#34;&gt;
       &lt;div class=&#34;pname&#34;&gt;commit&lt;/div&gt;
       &lt;div class=&#34;pval&#34;&gt;{liveHtml}&lt;/div&gt;
     &lt;/div&gt;\
 &#34;&#34;&#34;
-        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {hostRep}
+        appMd += f&#34;&#34;&#34;{sep}TF app | {org}/{repo} on {bName}
 commit | {liveMd}&#34;&#34;&#34;
         sep = &#34;\n&#34;
 
@@ -749,7 +754,7 @@ at most one can be selected.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/wrap.py#L154-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/wrap.py#L160-L205" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapSelect(option, allowedValues, value, group, item, multiple):
     &#34;&#34;&#34;Provides a buttoned chooser for the node types.
@@ -791,7 +796,7 @@ at most one can be selected.</dd>
         bType = &#34;checkbox&#34; if multiple else &#34;radio&#34;
         button = (
             f&#39;&lt;input class=&#34;r {group}&#34; type=&#34;{bType}&#34; name=&#34;{option}&#34; value=&#34;{val}&#34;&#39;
-            f&#39; {checked}/&gt;&#39;
+            f&#34; {checked}/&gt;&#34;
         )
         html.append(
             f&#39;&lt;div class=&#34;{item[0]}&#34;&gt;{button} &lt;span class=&#34;{item[1]}&#34;&gt;{val}&lt;/span&gt;&lt;/div&gt;&#39;

@@ -26,14 +26,15 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/zipdata.py#L1-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, CLONE_BASE, DOWNLOADS
-from ..core.helpers import console, splitModRef, normpath, expanduser, initTree
+from .helpers import splitModRef
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, backendRep, DOWNLOADS
+from ..core.helpers import console, normpath, expanduser, initTree
 
 DW = expanduser(DOWNLOADS)
 
@@ -69,7 +70,7 @@ EXCLUDE = {&#34;.DS_Store&#34;}
 
 
 def zipData(
-    host,
+    backend,
     org,
     repo,
     relative=RELATIVE,
@@ -80,9 +81,9 @@ def zipData(
     dest=None,
 ):
     if source is None:
-        source = CLONE_BASE(host)
+        source = backendRep(backend, &#34;clone&#34;)
     if dest is None:
-        dest = DW if host is None else f&#34;{DW}/{host}&#34;
+        dest = f&#34;{DW}/{backend}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
@@ -186,12 +187,12 @@ def main(cargs=sys.argv):
         console(HELP)
         return
 
-    host = None
+    backend = None
 
     newArgs = []
     for arg in cargs:
-        if arg.startswith(&#34;--host=&#34;):
-            host = arg[8:]
+        if arg.startswith(&#34;--backend=&#34;):
+            backend = arg[11:]
         else:
             newArgs.append(arg)
     cargs = newArgs
@@ -203,7 +204,7 @@ def main(cargs=sys.argv):
         console(HELP)
         return
 
-    (org, repo, relative, checkout) = parts
+    (org, repo, relative, checkout, theBackend) = parts
     relative = normpath(relative)
 
     tf = (
@@ -215,7 +216,7 @@ def main(cargs=sys.argv):
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
 
-    zipData(host, org, repo, relative=relative, tf=tf)
+    zipData(theBackend or backend, org, repo, relative=relative, tf=tf)
 
 
 if __name__ == &#34;__main__&#34;:
@@ -237,7 +238,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/zipdata.py#L152-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -246,12 +247,12 @@ if __name__ == &#34;__main__&#34;:
         console(HELP)
         return
 
-    host = None
+    backend = None
 
     newArgs = []
     for arg in cargs:
-        if arg.startswith(&#34;--host=&#34;):
-            host = arg[8:]
+        if arg.startswith(&#34;--backend=&#34;):
+            backend = arg[11:]
         else:
             newArgs.append(arg)
     cargs = newArgs
@@ -263,7 +264,7 @@ if __name__ == &#34;__main__&#34;:
         console(HELP)
         return
 
-    (org, repo, relative, checkout) = parts
+    (org, repo, relative, checkout, theBackend) = parts
     relative = normpath(relative)
 
     tf = (
@@ -275,21 +276,21 @@ if __name__ == &#34;__main__&#34;:
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
 
-    zipData(host, org, repo, relative=relative, tf=tf)</code></pre>
+    zipData(theBackend or backend, org, repo, relative=relative, tf=tf)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.zipdata.zipData"><code class="name flex">
-<span>def <span class="ident">zipData</span></span>(<span>host, org, repo, relative='tf', version=None, tf=True, keep=False, source=None, dest=None)</span>
+<span>def <span class="ident">zipData</span></span>(<span>backend, org, repo, relative='tf', version=None, tf=True, keep=False, source=None, dest=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/zipdata.py#L41-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
-    host,
+    backend,
     org,
     repo,
     relative=RELATIVE,
@@ -300,9 +301,9 @@ if __name__ == &#34;__main__&#34;:
     dest=None,
 ):
     if source is None:
-        source = CLONE_BASE(host)
+        source = backendRep(backend, &#34;clone&#34;)
     if dest is None:
-        dest = DW if host is None else f&#34;{DW}/{host}&#34;
+        dest = f&#34;{DW}/{backend}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)

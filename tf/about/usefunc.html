@@ -39,13 +39,13 @@ provide.</p>
 <p>or</p>
 <pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;)
 </code></pre>
-<pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, host=&quot;gitlab.huc.knaw.nl&quot;)
+<pre><code>A = use(&quot;org/repo:specapp&quot;, checkout=&quot;specdata&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
 </code></pre>
 <p>See <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> for a list of known corpora that can be loaded this way.</p>
 <h3 id="full-usage">Full usage</h3>
 <pre><code>A = use(
     &quot;org/repo:specapp&quot;,
-    host=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
+    backend=None,     # e.g. &quot;gitlab.huc.knaw.nl&quot;
     checkout=None, # e.g. &quot;latest&quot;
     version=None,  # e.g. &quot;1.2.3&quot;
     mod=None,      # e.g. &quot;org1/repo1/path1:specmod1,org2/repo2/path2:specmod2&quot;
@@ -69,7 +69,7 @@ provide.</p>
 <h2 id="security">Security</h2>
 <div class="admonition caution">
 <p class="admonition-title">Security warning</p>
-<p>Text-Fabric apps may be downloaded from GitHub and then
+<p>Text-Fabric apps may be downloaded from GitHub/GitLab and then
 imported as a module and then <em>executed</em>.</p>
 <p>Do you trust the downloaded code?
 Make sure you know the repository where the code comes from, and the people
@@ -77,7 +77,7 @@ who own the repository.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Security note</p>
-<p>Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+<p>Text-Fabric data maybe downloaded from arbitrary repositories on GitHub/GitLab,
 but the downloaded material will be read as <em>data</em> and not executed as code.</p>
 </div>
 <h2 id="details">Details</h2>
@@ -115,21 +115,28 @@ The <em>checkout specifier</em> part is a keyword:</p>
 <ul>
 <li><code>local</code> under your local directory <code>~/text-fabric-data</code></li>
 <li><code>clone</code> under your local directory <code>~/github</code></li>
-<li><code>latest</code> under the latest release, to be checked with online GitHub</li>
-<li><code>hot</code> under the latest commit, to be checked with online GitHub</li>
-<li><code>v1.2.3</code> under release <code>v1.2.3</code>, to be fetched from online GitHub</li>
-<li><code>123aef</code> under commit <code>123aef</code>, to be fetched from online GitHub</li>
+<li><code>latest</code> under the latest release, to be checked with online backend</li>
+<li><code>hot</code> under the latest commit, to be checked with online backend</li>
+<li><code>v1.2.3</code> under release <code>v1.2.3</code>, to be fetched from online backend</li>
+<li><code>123aef</code> under commit <code>123aef</code>, to be fetched from online backend</li>
 <li><em>absent</em> under your local directory <code>~/text-fabric-data</code> if present,
-otherwise the latest release on GitHub, if present, otherwise the latest commit on GitHub</li>
+otherwise the latest release on backend, if present, otherwise the latest commit on backend</li>
 </ul>
 <p>For a demo, see
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb">banks/repo</a>.</p>
 <h2 id="specifying-app-andor-data">Specifying app and/or data</h2>
 <p>By default, the online repository for apps and data is GitHub (<a href="https://github.com">https://github.com</a>).</p>
 <p>But you can also use GitLab instances. You do that by specifying the server location
-in the parameter <code>host</code>, e.g.</p>
-<pre><code>    host=&quot;gitlab.knaw.huc.nl&quot;
+in the parameter <code>backend</code>, e.g.</p>
+<pre><code>    backend=&quot;gitlab&quot;
 </code></pre>
+<pre><code>    backend=&quot;gitlab.knaw.huc.nl&quot;
+</code></pre>
+<p>Synonyms:</p>
+<ul>
+<li><code>None</code>, <code>""</code>, <code>github.com</code>, <code>github</code></li>
+<li><code>gitlab.com</code>, <code>gitlab</code></li>
+</ul>
 <p>The specification of the app is in the first argument:
 <em>app-path</em><code>:</code><em>app-checkout-specifier</em>
 The normal case is where <em>app-path</em> has the form <code>org/repo</code> pointing to
@@ -202,7 +209,7 @@ or an iterable of modules in one of the forms</p>
 <pre><code>{org}/{repo}/{path}:data-checkout-specifier
 </code></pre>
 <p>All features of all those modules will be loaded.
-If they are not yet present, they will be downloaded from GitHub first.
+If they are not yet present, they will be downloaded from a backend first.
 For example, there is an easter egg module on GitHub,
 and you can obtain it by</p>
 <pre><code>mod='etcbc/lingo/easter/tf'
@@ -223,7 +230,7 @@ explicitly.</p>
 <p>This is needed for example if you specify a specific release
 for the core data module. The associated standard modules probably
 do not have that exact same release, so you have to look up their
-releases in Github, and attach the release numbers found
+releases in GitHub/GitLab, and attach the release numbers found
 to the module specifiers.</p>
 </div>
 <div class="admonition caution">
@@ -372,7 +379,7 @@ If <code>deep</code>, all output will be suppressed, except errors.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md

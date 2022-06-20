@@ -34,7 +34,7 @@ settings for a corpus, and possibly some supporting application code and CSS sty
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/app.py#L1-L64" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/app.py#L1-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Make use of a corpus.
@@ -51,12 +51,13 @@ This power can be invoked by a very simple command: `use(&#34;org/repo&#34;)`.
 For a detailed description, see `tf.about.usefunc`.
 &#34;&#34;&#34;
 
+from .parameters import backendRep
 from .advanced.app import findApp
 
 # START AN APP
 
 
-def use(appName, *args, **kwargs):
+def use(appName, *args, backend=None, **kwargs):
     &#34;&#34;&#34;Make use of a corpus.
 
     For a detailed description, see `tf.about.usefunc`.
@@ -64,8 +65,11 @@ def use(appName, *args, **kwargs):
     Parameters
     ----------
     appName: string
-    checkout: string, optional `&#34;&#34;`
-    version: string, optional None
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
 
     args:
         Do not pass any other positional argument!
@@ -99,7 +103,8 @@ def use(appName, *args, **kwargs):
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, dataLoc, False, *args, **kwargs)</code></pre>
+    backend = backendRep(backend, &#39;norm&#39;)
+    return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </section>
 <section>
@@ -110,7 +115,7 @@ def use(appName, *args, **kwargs):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.app.use"><code class="name flex">
-<span>def <span class="ident">use</span></span>(<span>appName, *args, **kwargs)</span>
+<span>def <span class="ident">use</span></span>(<span>appName, *args, backend=None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Make use of a corpus.</p>
@@ -119,10 +124,10 @@ def use(appName, *args, **kwargs):
 <dl>
 <dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
 <dd>&nbsp;</dd>
-<dt><strong><code>checkout</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
-<dd>&nbsp;</dd>
-<dt><strong><code>version</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>&nbsp;</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If present, it is <code>github</code> or <code>gitlab</code>
+or a GitLab instance such as <code>gitlab.huc.knaw.nl</code>.
+If absent, <code>None</code> or empty, it is <code>github</code>.</dd>
 </dl>
 <p>args:
 Do not pass any other positional argument!</p>
@@ -140,9 +145,9 @@ a customization of it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/app.py#L21-L64" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/app.py#L22-L69" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def use(appName, *args, **kwargs):
+<pre><code class="python">def use(appName, *args, backend=None, **kwargs):
     &#34;&#34;&#34;Make use of a corpus.
 
     For a detailed description, see `tf.about.usefunc`.
@@ -150,8 +155,11 @@ a customization of it.</p>
     Parameters
     ----------
     appName: string
-    checkout: string, optional `&#34;&#34;`
-    version: string, optional None
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
 
     args:
         Do not pass any other positional argument!
@@ -185,7 +193,8 @@ a customization of it.</p>
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, dataLoc, False, *args, **kwargs)</code></pre>
+    backend = backendRep(backend, &#39;norm&#39;)
+    return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </dd>
 </dl>

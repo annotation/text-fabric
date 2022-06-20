@@ -29,7 +29,8 @@ You can use this on the command line to build new search interfaces for existing
 Text-Fabric apps.</p>
 <p>Such a search interface is a static HTML page, powered by a Javascript program
 that reads the corpus data from Javascript variables.</p>
-<p>You can build the interface and deploy the HTML page to GitHub Pages,
+<p>You can build the interface and deploy the HTML page to GitHub Pages
+(GitLab pages not yet supported),
 after which it is usable for everyone.</p>
 <h2 id="prerequisites">Prerequisites</h2>
 <ol>
@@ -75,7 +76,7 @@ also:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1-L1389" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1-L1391" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Usage
@@ -87,7 +88,8 @@ Text-Fabric apps.
 Such a search interface is a static HTML page, powered by a Javascript program
 that reads the corpus data from Javascript variables.
 
-You can build the interface and deploy the HTML page to GitHub Pages,
+You can build the interface and deploy the HTML page to GitHub Pages
+(GitLab pages not yet supported),
 after which it is usable for everyone.
 
 ## Prerequisites
@@ -149,12 +151,9 @@ from tf.parameters import (
     REPO,
     LS,
     ZIP_OPTIONS,
-    URL_B,
-    URL_NB,
-    CLONE_BASE,
+    backendRep,
     URL_TFDOC,
     APP_CONFIG,
-    PAGES_DOMAIN,
 )
 
 from .gh import deploy
@@ -187,7 +186,7 @@ def readArgs():
     class Args:
         pass
 
-    Args.host = None
+    Args.backend = None
     Args.dataset = None
     Args.repo = None
     Args.client = None
@@ -205,8 +204,8 @@ def readArgs():
 
     newArgs = []
     for arg in args:
-        if arg.startswith(&#34;--host=&#34;):
-            Args.host = arg[8:]
+        if arg.startswith(&#34;--backend=&#34;):
+            Args.backend = arg[11:]
         else:
             newArgs.append(arg)
     args = newArgs
@@ -285,7 +284,7 @@ class Make:
         self,
         dataset,
         client,
-        host=None,
+        backend=None,
         A=None,
         folder=None,
         appFolder=None,
@@ -298,7 +297,7 @@ class Make:
             pass
 
         self.C = C
-        self.host = host
+        self.backend = backend
         self.dataset = dataset
         self.client = client
         self.folder = normpath(folder)
@@ -341,7 +340,7 @@ class Make:
     def config(self):
         C = self.C
 
-        host = self.host
+        backend = self.backend
         dataset = self.dataset
         parts = dataset.split(&#34;/&#34;)
         if len(parts) != 2:
@@ -357,7 +356,7 @@ class Make:
         versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
         self.versionFile = versionFile
 
-        backendUrl = URL_B(host)
+        bUrl = backendRep(backend, &#34;rep&#34;)
 
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -366,10 +365,10 @@ class Make:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, &#34;clone&#34;)
 
         c = dict(
-            host=host,
+            backend=backend,
             org=org,
             repo=repo,
             client=client,
@@ -380,9 +379,9 @@ class Make:
             searchRepo=&#34;«repo»-search&#34;,
             rel=&#34;site&#34;,
             generatorUrl=f&#34;{URL_TFDOC}/client/make/build.html&#34;,
-            sourceUrl=f&#34;{backendUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
-            issueUrl=f&#34;{backendUrl}/«org»/«searchRepo»/issues&#34;,
-            tutUrl=f&#34;{URL_NB(host)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
+            sourceUrl=f&#34;{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
+            issueUrl=f&#34;{bUrl}/«org»/«searchRepo»/issues&#34;,
+            tutUrl=f&#34;{backendRep(backend, &#39;urlnb&#39;)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             appDir=f&#34;{cloneBase}/«org»/«searchRepo»&#34;,
             localDir=f&#34;«appDir»/{TEMP}&#34;,
@@ -480,7 +479,7 @@ class Make:
 
             d = dict(
                 dataLocation=f&#34;{cloneBase}/«data.org»/«data.repo»/«data.rel»&#34;,
-                dataUrl=f&#34;{backendUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
+                dataUrl=f&#34;{bUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
                 writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
                 urls=dict(
                     cheatsheet=(
@@ -666,7 +665,7 @@ class Make:
             defs=dict(
                 lsVersion=C.lsVersion,
                 client=C.client,
-                host=C.host,
+                backend=C.backend,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -767,11 +766,13 @@ class Make:
 
     def loadTf(self):
         C = self.C
-        host = C.host
+        backend = C.backend
         org = C.org
         repo = C.repo
         version = C.data[&#34;version&#34;]
-        A = use(f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, host=host, version=version)
+        A = use(
+            f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend, version=version
+        )
         self.A = A
 
     def makeConfig(self):
@@ -978,7 +979,7 @@ class Make:
         whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
         nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
 
-        def getModule(module):
+        def getJSModule(module):
             with open(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
                 text = fh.read()
             text = importRe.sub(&#34;&#34;, text)
@@ -1002,7 +1003,7 @@ class Make:
                 modules.append(entry.name)
         console(&#34;, &#34;.join(module[0:-3] for module in modules))
 
-        content = {module: getModule(module) for module in modules}
+        content = {module: getJSModule(module) for module in modules}
 
         header = &#34;&#34;&#34;\
 /*eslint-env jquery*/
@@ -1213,21 +1214,23 @@ class Make:
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
-        host = self.host
+        backend = self.backend
         org = self.org
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        domain = PAGES_DOMAIN(host)
+        domain = backendRep(backend, &#34;pages&#34;)
         console(
             f&#34;Publishing on {domain} &#34;
             f&#34;{org}/{repo}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;
         )
         os.chdir(appDir)
-        if host is None:
+        if backend is None:
             deploy(C.org, C.searchRepo)
         else:
-            console(f&#34;Deploying Pages on GitLab ({host}) not yet supported&#34;, error=True)
+            console(
+                f&#34;Deploying Pages on GitLab ({backend}) not yet supported&#34;, error=True
+            )
 
     def ship(self, publish=True):
         self.adjustVersion()
@@ -1377,13 +1380,13 @@ class Make:
         return clients
 
 
-def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
+def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
     DEBUG_STATE = &#34;off&#34;
 
     Mk = Make(
         dataset,
         None,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=DEBUG_STATE,
@@ -1403,7 +1406,7 @@ def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
         ThisMk = Make(
             dataset,
             client,
-            host=host,
+            backend=backend,
             A=A,
             folder=folder,
             appFolder=appFolder,
@@ -1418,7 +1421,7 @@ def main():
     if Args is None:
         return 0
 
-    host = Args.host
+    backend = Args.backend
     dataset = Args.dataset
     client = Args.client
     command = Args.command
@@ -1436,7 +1439,7 @@ def main():
     Mk = Make(
         dataset,
         client,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=debugState,
@@ -1448,7 +1451,7 @@ def main():
             ThisMk = Make(
                 dataset,
                 client,
-                host=host,
+                backend=backend,
                 folder=folder,
                 appFolder=appFolder,
                 debugState=debugState,
@@ -1483,7 +1486,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L91-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L89-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args, error=False):
     device = sys.stderr if error else sys.stdout
@@ -1499,7 +1502,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L97-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L95-L102" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def invertMap(legend):
     return (
@@ -1519,14 +1522,14 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1337-L1385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1339-L1387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     Args = readArgs()
     if Args is None:
         return 0
 
-    host = Args.host
+    backend = Args.backend
     dataset = Args.dataset
     client = Args.client
     command = Args.command
@@ -1544,7 +1547,7 @@ if __name__ == &#34;__main__&#34;:
     Mk = Make(
         dataset,
         client,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=debugState,
@@ -1556,7 +1559,7 @@ if __name__ == &#34;__main__&#34;:
             ThisMk = Make(
                 dataset,
                 client,
-                host=host,
+                backend=backend,
                 folder=folder,
                 appFolder=appFolder,
                 debugState=debugState,
@@ -1573,22 +1576,22 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.client.make.build.makeSearchClients"><code class="name flex">
-<span>def <span class="ident">makeSearchClients</span></span>(<span>dataset, folder, appFolder, host=None, dataDir=None)</span>
+<span>def <span class="ident">makeSearchClients</span></span>(<span>dataset, folder, appFolder, backend=None, dataDir=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1301-L1334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1303-L1336" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
+<pre><code class="python">def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
     DEBUG_STATE = &#34;off&#34;
 
     Mk = Make(
         dataset,
         None,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=DEBUG_STATE,
@@ -1608,7 +1611,7 @@ if __name__ == &#34;__main__&#34;:
         ThisMk = Make(
             dataset,
             client,
-            host=host,
+            backend=backend,
             A=A,
             folder=folder,
             appFolder=appFolder,
@@ -1626,13 +1629,13 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L107-L201" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L105-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readArgs():
     class Args:
         pass
 
-    Args.host = None
+    Args.backend = None
     Args.dataset = None
     Args.repo = None
     Args.client = None
@@ -1650,8 +1653,8 @@ if __name__ == &#34;__main__&#34;:
 
     newArgs = []
     for arg in args:
-        if arg.startswith(&#34;--host=&#34;):
-            Args.host = arg[8:]
+        if arg.startswith(&#34;--backend=&#34;):
+            Args.backend = arg[11:]
         else:
             newArgs.append(arg)
     args = newArgs
@@ -1732,21 +1735,21 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.client.make.build.Make"><code class="flex name class">
 <span>class <span class="ident">Make</span></span>
-<span>(</span><span>dataset, client, host=None, A=None, folder=None, appFolder=None, debugState=None)</span>
+<span>(</span><span>dataset, client, backend=None, A=None, folder=None, appFolder=None, debugState=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L204-L1298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L202-L1300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Make:
     def __init__(
         self,
         dataset,
         client,
-        host=None,
+        backend=None,
         A=None,
         folder=None,
         appFolder=None,
@@ -1759,7 +1762,7 @@ if __name__ == &#34;__main__&#34;:
             pass
 
         self.C = C
-        self.host = host
+        self.backend = backend
         self.dataset = dataset
         self.client = client
         self.folder = normpath(folder)
@@ -1802,7 +1805,7 @@ if __name__ == &#34;__main__&#34;:
     def config(self):
         C = self.C
 
-        host = self.host
+        backend = self.backend
         dataset = self.dataset
         parts = dataset.split(&#34;/&#34;)
         if len(parts) != 2:
@@ -1818,7 +1821,7 @@ if __name__ == &#34;__main__&#34;:
         versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
         self.versionFile = versionFile
 
-        backendUrl = URL_B(host)
+        bUrl = backendRep(backend, &#34;rep&#34;)
 
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -1827,10 +1830,10 @@ if __name__ == &#34;__main__&#34;:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, &#34;clone&#34;)
 
         c = dict(
-            host=host,
+            backend=backend,
             org=org,
             repo=repo,
             client=client,
@@ -1841,9 +1844,9 @@ if __name__ == &#34;__main__&#34;:
             searchRepo=&#34;«repo»-search&#34;,
             rel=&#34;site&#34;,
             generatorUrl=f&#34;{URL_TFDOC}/client/make/build.html&#34;,
-            sourceUrl=f&#34;{backendUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
-            issueUrl=f&#34;{backendUrl}/«org»/«searchRepo»/issues&#34;,
-            tutUrl=f&#34;{URL_NB(host)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
+            sourceUrl=f&#34;{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
+            issueUrl=f&#34;{bUrl}/«org»/«searchRepo»/issues&#34;,
+            tutUrl=f&#34;{backendRep(backend, &#39;urlnb&#39;)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
             staticDir=STATIC_DIR,
             appDir=f&#34;{cloneBase}/«org»/«searchRepo»&#34;,
             localDir=f&#34;«appDir»/{TEMP}&#34;,
@@ -1941,7 +1944,7 @@ if __name__ == &#34;__main__&#34;:
 
             d = dict(
                 dataLocation=f&#34;{cloneBase}/«data.org»/«data.repo»/«data.rel»&#34;,
-                dataUrl=f&#34;{backendUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
+                dataUrl=f&#34;{bUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
                 writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
                 urls=dict(
                     cheatsheet=(
@@ -2127,7 +2130,7 @@ if __name__ == &#34;__main__&#34;:
             defs=dict(
                 lsVersion=C.lsVersion,
                 client=C.client,
-                host=C.host,
+                backend=C.backend,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -2228,11 +2231,13 @@ if __name__ == &#34;__main__&#34;:
 
     def loadTf(self):
         C = self.C
-        host = C.host
+        backend = C.backend
         org = C.org
         repo = C.repo
         version = C.data[&#34;version&#34;]
-        A = use(f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, host=host, version=version)
+        A = use(
+            f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend, version=version
+        )
         self.A = A
 
     def makeConfig(self):
@@ -2439,7 +2444,7 @@ if __name__ == &#34;__main__&#34;:
         whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
         nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
 
-        def getModule(module):
+        def getJSModule(module):
             with open(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
                 text = fh.read()
             text = importRe.sub(&#34;&#34;, text)
@@ -2463,7 +2468,7 @@ if __name__ == &#34;__main__&#34;:
                 modules.append(entry.name)
         console(&#34;, &#34;.join(module[0:-3] for module in modules))
 
-        content = {module: getModule(module) for module in modules}
+        content = {module: getJSModule(module) for module in modules}
 
         header = &#34;&#34;&#34;\
 /*eslint-env jquery*/
@@ -2674,21 +2679,23 @@ if __name__ == &#34;__main__&#34;:
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
-        host = self.host
+        backend = self.backend
         org = self.org
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        domain = PAGES_DOMAIN(host)
+        domain = backendRep(backend, &#34;pages&#34;)
         console(
             f&#34;Publishing on {domain} &#34;
             f&#34;{org}/{repo}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;
         )
         os.chdir(appDir)
-        if host is None:
+        if backend is None:
             deploy(C.org, C.searchRepo)
         else:
-            console(f&#34;Deploying Pages on GitLab ({host}) not yet supported&#34;, error=True)
+            console(
+                f&#34;Deploying Pages on GitLab ({backend}) not yet supported&#34;, error=True
+            )
 
     def ship(self, publish=True):
         self.adjustVersion()
@@ -2847,7 +2854,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1265-L1284" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1267-L1286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustDebug(self):
     C = self.C
@@ -2879,7 +2886,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1215-L1226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1217-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def adjustVersion(self):
     C = self.C
@@ -2903,7 +2910,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L757-L771" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L757-L771" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compress(self, data):
     sets = {}
@@ -2930,12 +2937,12 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L262-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L260-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def config(self):
     C = self.C
 
-    host = self.host
+    backend = self.backend
     dataset = self.dataset
     parts = dataset.split(&#34;/&#34;)
     if len(parts) != 2:
@@ -2951,7 +2958,7 @@ if __name__ == &#34;__main__&#34;:
     versionFile = f&#34;{STATIC_DIR}/version.yaml&#34;
     self.versionFile = versionFile
 
-    backendUrl = URL_B(host)
+    bUrl = backendRep(backend, &#34;rep&#34;)
 
     with open(versionFile) as fh:
         settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -2960,10 +2967,10 @@ if __name__ == &#34;__main__&#34;:
     with open(CONFIG_FILE) as fh:
         mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-    cloneBase = CLONE_BASE(host)
+    cloneBase = backendRep(backend, &#34;clone&#34;)
 
     c = dict(
-        host=host,
+        backend=backend,
         org=org,
         repo=repo,
         client=client,
@@ -2974,9 +2981,9 @@ if __name__ == &#34;__main__&#34;:
         searchRepo=&#34;«repo»-search&#34;,
         rel=&#34;site&#34;,
         generatorUrl=f&#34;{URL_TFDOC}/client/make/build.html&#34;,
-        sourceUrl=f&#34;{backendUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
-        issueUrl=f&#34;{backendUrl}/«org»/«searchRepo»/issues&#34;,
-        tutUrl=f&#34;{URL_NB(host)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
+        sourceUrl=f&#34;{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch&#34;,
+        issueUrl=f&#34;{bUrl}/«org»/«searchRepo»/issues&#34;,
+        tutUrl=f&#34;{backendRep(backend, &#39;urlnb&#39;)}/«org»/«repo»/blob/master/tutorial/start.ipynb&#34;,
         staticDir=STATIC_DIR,
         appDir=f&#34;{cloneBase}/«org»/«searchRepo»&#34;,
         localDir=f&#34;«appDir»/{TEMP}&#34;,
@@ -3074,7 +3081,7 @@ if __name__ == &#34;__main__&#34;:
 
         d = dict(
             dataLocation=f&#34;{cloneBase}/«data.org»/«data.repo»/«data.rel»&#34;,
-            dataUrl=f&#34;{backendUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
+            dataUrl=f&#34;{bUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»&#34;,
             writingUrl=f&#34;{URL_TFDOC}/writing/«writing».html&#34;,
             urls=dict(
                 cheatsheet=(
@@ -3216,7 +3223,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L236-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L234-L258" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def doCommand(self, command):
     if command == &#34;serve&#34;:
@@ -3253,7 +3260,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L741-L755" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L741-L755" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpConfig(self):
     C = self.C
@@ -3280,7 +3287,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L773-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L773-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dumpCorpus(self):
     C = self.C
@@ -3411,7 +3418,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1286-L1298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1288-L1300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllClients(self):
     C = self.C
@@ -3436,7 +3443,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1234-L1254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1236-L1256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDebugs(self):
     C = self.C
@@ -3469,7 +3476,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L537-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L535-L562" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMake(self, c=None):
     client = self.client
@@ -3509,7 +3516,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1200-L1207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1202-L1209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def incVersion(self):
     C = self.C
@@ -3529,15 +3536,17 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L689-L696" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L687-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTf(self):
     C = self.C
-    host = C.host
+    backend = C.backend
     org = C.org
     repo = C.repo
     version = C.data[&#34;version&#34;]
-    A = use(f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, host=host, version=version)
+    A = use(
+        f&#34;{org}/{repo}:clone&#34;, checkout=&#34;clone&#34;, backend=backend, version=version
+    )
     self.A = A</code></pre>
 </details>
 </dd>
@@ -3549,7 +3558,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1163-L1168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1165-L1170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def make(self):
     self.makeConfig()
@@ -3583,7 +3592,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1022-L1094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1022-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClient(self):
     &#34;&#34;&#34;
@@ -3668,7 +3677,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L566-L687" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L564-L685" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeClientSettings(self):
     C = self.C
@@ -3694,7 +3703,7 @@ that they can be easily inspected.</p></div>
         defs=dict(
             lsVersion=C.lsVersion,
             client=C.client,
-            host=C.host,
+            backend=C.backend,
             org=C.org,
             repo=C.repo,
             urls=C.urls,
@@ -3802,7 +3811,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L893-L948" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L893-L948" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeCombined(self):
         C = self.C
@@ -3813,7 +3822,7 @@ that they can be easily inspected.</p></div>
         whiteRe = re.compile(r&#34;&#34;&#34;^\s+$&#34;&#34;&#34;, re.M)
         nlRe = re.compile(r&#34;&#34;&#34;\n\n+&#34;&#34;&#34;)
 
-        def getModule(module):
+        def getJSModule(module):
             with open(f&#34;{C.jsOutDir}/{module}&#34;) as fh:
                 text = fh.read()
             text = importRe.sub(&#34;&#34;, text)
@@ -3837,7 +3846,7 @@ that they can be easily inspected.</p></div>
                 modules.append(entry.name)
         console(&#34;, &#34;.join(module[0:-3] for module in modules))
 
-        content = {module: getModule(module) for module in modules}
+        content = {module: getJSModule(module) for module in modules}
 
         header = &#34;&#34;&#34;\
 /*eslint-env jquery*/
@@ -3870,7 +3879,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L698-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L698-L703" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeConfig(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3888,7 +3897,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L725-L739" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L725-L739" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCorpus(self):
     if not getattr(self, &#34;A&#34;, None):
@@ -3915,7 +3924,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L950-L1020" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L950-L1020" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def makeHtml(self):
         C = self.C
@@ -3998,7 +4007,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L705-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L705-L723" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeLinks(self):
     C = self.C
@@ -4029,27 +4038,29 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1133-L1151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1133-L1153" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def publish(self, allClients=True):
     C = self.C
     appDir = C.appDir
     siteDir = C.siteDir
-    host = self.host
+    backend = self.backend
     org = self.org
     repo = self.repo
     client = self.client
     clients = self.getAllClients() if allClients or client is None else [client]
-    domain = PAGES_DOMAIN(host)
+    domain = backendRep(backend, &#34;pages&#34;)
     console(
         f&#34;Publishing on {domain} &#34;
         f&#34;{org}/{repo}:{&#39;,&#39;.join(clients)} from {siteDir} ...&#34;
     )
     os.chdir(appDir)
-    if host is None:
+    if backend is None:
         deploy(C.org, C.searchRepo)
     else:
-        console(f&#34;Deploying Pages on GitLab ({host}) not yet supported&#34;, error=True)</code></pre>
+        console(
+            f&#34;Deploying Pages on GitLab ({backend}) not yet supported&#34;, error=True
+        )</code></pre>
 </details>
 </dd>
 <dt id="tf.client.make.build.Make.replaceDebug"><code class="name flex">
@@ -4060,7 +4071,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1228-L1232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1230-L1234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def replaceDebug(self, mask, value):
     def subVersion(match):
@@ -4077,7 +4088,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1170-L1198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1172-L1200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serve(self):
     C = self.C
@@ -4118,7 +4129,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1153-L1161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1155-L1163" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ship(self, publish=True):
     self.adjustVersion()
@@ -4139,7 +4150,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1256-L1263" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1258-L1265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDebug(self):
     debugInfo = self.getDebugs()
@@ -4159,7 +4170,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1209-L1213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1211-L1215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showVersion(self):
     C = self.C
@@ -4176,7 +4187,7 @@ that they can be easily inspected.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/client/make/build.py#L1096-L1131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/client/make/build.py#L1096-L1131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipApp(self):
     C = self.C

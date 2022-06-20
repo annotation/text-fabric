@@ -42,8 +42,11 @@ tutorial.</p>
 <pre><code>--mod=...
 </code></pre>
 <p>By means of these arguments you can load extra features, either from your own
-system, or from GitHub:</p>
+system, or from GitHub/GitLab:</p>
 <pre><code class="language-sh">text-fabric bhsa --mod=etcbc/valence/tf
+</code></pre>
+<p>or, if the module resides at a different backend than the main data:</p>
+<pre><code class="language-sh">text-fabric bhsa --mod=&lt;gitlab&gt;yourgroup/yourrepo/tf
 </code></pre>
 <p>See the incantation in <code><a title="tf.about.usefunc" href="usefunc.html">tf.about.usefunc</a></code>.</p>
 <h2 id="using-old-data-and-apps">Using old data and apps</h2>
@@ -74,13 +77,13 @@ in a subdirectory named after the version.</dd>
 <em>version</em> of the main corpus, preferably the most recent version.
 The new features must sit in a directory named after the version
 of the main corpus they correspond to.</dd>
-<dt>local github</dt>
+<dt>local GitHub or GitLab</dt>
 <dd>
 <p>The data you share must reside in a directory on your hard drive.
-The convention is, that you have a directory <code>github</code> under your
-home directory. And inside <code>github</code>, you have directories for
+The convention is, that you have a directory <code>github</code> and or <code>gitlab</code> under your
+home directory. And inside that you have directories for
 organizations or people first, and then repositories, exactly as
-the online GitHub is organized. </p>
+the online GitHub/GitLab is organized. </p>
 <p>Your own data should be in such a repo as well, e.g.</p>
 <p>`ch-jensen/participants/actor/tf</p>
 <p>or</p>
@@ -88,20 +91,28 @@ the online GitHub is organized. </p>
 <p>or</p>
 <p><code>annotation/banks/sim/tf</code></p>
 </dd>
-<dt>synchronized with GitHub</dt>
+<dt>synchronized with the backend</dt>
 <dd>
-<p>You must have your local repo contents synchronized with that on GitHub.</p>
+<p>You must have your local repo contents synchronized with that on the
+GitHub/GitLab backend.</p>
 <p>Now other people can use your data.
 Whenever you push updates, users may fetch the updated data, depending
 on how they call up your data, see below.</p>
 </dd>
-<dt>released on GitHub</dt>
+<dt>released on GitHub/GitLab</dt>
 <dd>
 <p>If your data is reasonably stable, consider making an official <em>release</em>
-on GitHub.
-Then you must attach your features as a zip file to that release.
+on GitHub/GitLab.</p>
+<div class="admonition hint">
+<p class="admonition-title">Zip the data</p>
+<p>Attach your features as a zip file to that release.
 Text-Fabric has a command to produce a zip file with exactly the
 right structure and name.</p>
+<p>This is especially useful for GitHub, where it speeds up the download
+process for your data users.
+On GitLab it does not make a difference, and you can safely omit this
+step.</p>
+</div>
 <p>Consider to connect your repo with
 <a href="https://zenodo.org">Zenodo</a>.
 Then every time to make a release, your repo will be archived for the long term,
@@ -143,15 +154,15 @@ in the provenance section.</dd>
 you take the trouble of publishing them as a zip file attached to a release/
 Here we describe the easiest workflow to work with your developing data with a view to share
 it much less often than you modify it.</p>
-<h3 id="produce-in-your-local-github-folder">Produce in your local GitHub folder</h3>
+<h3 id="produce-in-your-local-githubgitlab-folder">Produce in your local GitHub/GitLab folder</h3>
 <p>You probably have a program or notebook that synthesizes a bunch of new features.
 It is a good idea to have that program in a version control system, and publish
-it on GitHub, in a repository of your choice.</p>
+it on GitHub/GitLab, in a repository of your choice.</p>
 <p>Set up that program in such a way, that your features end up in the same repository,
 in a folder of your choosing, but directly under a folder that corresponds with
 the version of the main data source against which you are building your data.</p>
 <p>Currently, your features only live on your computer, in your local github folder.
-You may or may not commit your local changes to the online GitHub.
+You may or may not commit your local changes to the online GitHub/GitLab.
 But you do not want to create a new release and attach your zipped feature data to it yet.</p>
 <p>We use the existing
 <a href="https://nbviewer.jupyter.org/github/annotation/banks/blob/master/programs/convert.ipynb">annotation/banks/tf</a>
@@ -207,6 +218,8 @@ it will be downloaded.</p>
 <h3 id="make-a-release">Make a release</h3>
 <p>If you want to single out a certain commit as stable data and give it a version number,
 go to your repo on GitHub, click the releases link, and make a new release.</p>
+<p>If your repo is on GitLab, it may be a bit more difficult to make a release.
+Follow the instructions found on GitLab.</p>
 <p><img alt="releases" src="../images/add-releases.png"></p>
 <p>Then click <em>Draft a new release</em></p>
 <p><img alt="releases" src="../images/add-draft.png"></p>
@@ -235,7 +248,7 @@ zipping annotation/banks           0.1 with  10 features ==&gt; tf-0.1.zip
 zipping annotation/banks           0.2 with  10 features ==&gt; tf-0.2.zip
 </code></pre>
 <p>and as a result you have this in your Downloads folder</p>
-<pre><code>~/Downloads/annotation-release/banks:
+<pre><code>~/Downloads/github/annotation-release/banks:
   tf-0.1.zip
   tf-0.2.zip
 </code></pre>
@@ -245,7 +258,7 @@ zipping annotation/banks           0.2 with  10 features ==&gt; tf-0.2.zip
 It will look into your local github directory, pickup the features from there,
 zip them, and put the zip files in your Downloads folder. Then you can pick
 that zip file up and attach it manually to a new release of your repository
-on the online GitHub.</p>
+on the online GitHub/GitLab.</p>
 <h3 id="continue-developing-your-features">Continue developing your features</h3>
 <p>Probably you'll make changes to your features after having published them.
 Then you have the cutting edge version of your features in your local github
@@ -278,8 +291,8 @@ to previous releases and previous commits, using a <code>checkout</code> paramet
 <li><code>""</code>: (default): from your local copy, but if there is no local copy,
 from the latest online release, or if there are no releases,
 from the latest online commit</li>
-<li><code>2387abc78f9de&hellip;</code>: a concrete commit hash found on GitHub (under Commits)</li>
-<li><code>v1.3</code>: a release tag found on GitHub (under Releases)</li>
+<li><code>2387abc78f9de&hellip;</code>: a concrete commit hash found on GitHub/GitLab (under Commits)</li>
+<li><code>v1.3</code>: a release tag found on GitHub/GitLab (under Releases)</li>
 </ul>
 <p>You pass the checkout values as follows:</p>
 <ul>
@@ -341,7 +354,7 @@ tutorial.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/datasharing.md
@@ -422,7 +435,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#data-sharing-in-depth">Data sharing in depth</a><ul>
 <li><a href="#assumptions">Assumptions</a></li>
 <li><a href="#step-by-step">Step by step</a><ul>
-<li><a href="#produce-in-your-local-github-folder">Produce in your local GitHub folder</a></li>
+<li><a href="#produce-in-your-local-githubgitlab-folder">Produce in your local GitHub/GitLab folder</a></li>
 <li><a href="#test-the-features">Test the features</a></li>
 <li><a href="#commit-and-push-your-features">Commit and push your features</a></li>
 <li><a href="#make-a-release">Make a release</a></li>

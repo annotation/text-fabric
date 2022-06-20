@@ -26,14 +26,15 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L1-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L1-L614" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
+import re
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EX_BASE, CLONE_BASE, TEMP_DIR
-from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD
+from ..parameters import backendRep, TEMP_DIR
+from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD, console
 from ..core.text import DEFAULT_FORMAT
 
 
@@ -95,35 +96,84 @@ def dh(html):
     display(HTML(unexpanduser(html)))
 
 
+# MODULE REFERENCES
+
+BACKEND_RE = re.compile(r&#34;&lt;([^/&gt;]*)&gt;&#34;)
+
+
+thisBackend = []
+
+
+def backendRepl(match):
+    thisBackend.append(match.group(1))
+    return &#34;&#34;
+
+
+def splitModRef(moduleRef):
+    thisBackend.clear()
+    theBackend = None
+    bareModuleRef = BACKEND_RE.sub(backendRepl, moduleRef)
+    if len(thisBackend):
+        theBackend = thisBackend[0]
+        if len(thisBackend) &gt; 1:
+            console(
+                f&#34;Multiple &lt;backend&gt; in {moduleRef}: &#34;
+                f&#34;{&#39;, &#39;.join(thisBackend)}; using &lt;{theBackend}&gt; only &#34;,
+                error=True,
+            )
+
+    bRep = f&#34;&lt;{theBackend}&gt;&#34; if theBackend else &#34;&#34;
+
+    parts = bareModuleRef.split(&#34;:&#34;, 1)
+    if len(parts) == 1:
+        parts.append(&#34;&#34;)
+    (ref, specifier) = parts
+    parts = ref.split(&#34;/&#34;, 2)
+
+    if len(parts) &lt; 2:
+        console(
+            f&#34;&#34;&#34;
+Module ref &#34;{bRep}{bareModuleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
+&#34;&#34;&#34;,
+            error=True,
+        )
+        return None
+
+    if len(parts) == 2:
+        parts.append(&#34;&#34;)
+
+    return [*parts, specifier, theBackend]
+
+
 # COLLECT CONFIG SETTINGS IN A DICT
 
 
-def getLocalDir(host, cfg, local, version):
+def getLocalDir(backend, cfg, local, version):
     provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
     org = provenanceSpec.get(&#34;org&#34;, None)
     repo = provenanceSpec.get(&#34;repo&#34;, None)
     relative = provenanceSpec.get(&#34;relative&#34;, &#34;tf&#34;)
     version = provenanceSpec.get(&#34;version&#34;, None) if version is None else version
-    base = hasData(host, local, org, repo, version, relative)
+    base = hasData(backend, local, org, repo, version, relative)
 
     if not base:
-        base = EX_BASE(host)
+        base = backendRep(backend, &#34;cache&#34;)
 
     return expanduser(f&#34;{base}/{org}/{repo}/{TEMP_DIR}&#34;)
 
 
-def hasData(host, local, org, repo, version, relative):
+def hasData(backend, local, org, repo, version, relative):
     versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
     if local == &#34;clone&#34;:
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, &#34;clone&#34;)
         ghTarget = f&#34;{cloneBase}/{org}/{repo}/{relative}{versionRep}&#34;
         if os.path.exists(ghTarget):
             return cloneBase
 
-    exBase = EX_BASE(host)
-    expressTarget = f&#34;{exBase}/{org}/{repo}/{relative}{versionRep}&#34;
-    if os.path.exists(expressTarget):
-        return exBase
+    cacheBase = backendRep(backend, &#34;cache&#34;)
+    cacheTarget = f&#34;{cacheBase}/{org}/{repo}/{relative}{versionRep}&#34;
+    if os.path.exists(cacheTarget):
+        return cacheBase
     return False
 
 
@@ -601,6 +651,21 @@ def showDict(title, data, *keys):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.helpers.backendRepl"><code class="name flex">
+<span>def <span class="ident">backendRepl</span></span>(<span>match)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L77-L79" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def backendRepl(match):
+    thisBackend.append(match.group(1))
+    return &#34;&#34;</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.helpers.dh"><code class="name flex">
 <span>def <span class="ident">dh</span></span>(<span>html)</span>
 </code></dt>
@@ -619,7 +684,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L51-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L52-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dh(html):
     &#34;&#34;&#34;Display HTML in a Jupyter notebook.
@@ -656,7 +721,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L34-L48" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L35-L49" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dm(md):
     &#34;&#34;&#34;Display markdown in a Jupyter notebook.
@@ -683,7 +748,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L523-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L573-L583" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eData(x, level):
     if not x:
@@ -706,7 +771,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L509-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L559-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eDict(x, level):
     indent = QUAD * level
@@ -725,7 +790,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L495-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L545-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eEmpty(x):
     return EM if type(x) is str else str(x)</code></pre>
@@ -739,7 +804,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L499-L506" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L549-L556" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eList(x, level):
     tpv = type(x)
@@ -759,7 +824,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L518-L520" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L568-L570" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eRest(x, level):
     indent = QUAD * level
@@ -774,7 +839,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L484-L492" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L534-L542" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eScalar(x, level):
     if type(x) is str and &#34;\n&#34; in x:
@@ -788,25 +853,25 @@ def showDict(title, data, *keys):
 </details>
 </dd>
 <dt id="tf.advanced.helpers.getLocalDir"><code class="name flex">
-<span>def <span class="ident">getLocalDir</span></span>(<span>host, cfg, local, version)</span>
+<span>def <span class="ident">getLocalDir</span></span>(<span>backend, cfg, local, version)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L71-L82" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L121-L132" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getLocalDir(host, cfg, local, version):
+<pre><code class="python">def getLocalDir(backend, cfg, local, version):
     provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
     org = provenanceSpec.get(&#34;org&#34;, None)
     repo = provenanceSpec.get(&#34;repo&#34;, None)
     relative = provenanceSpec.get(&#34;relative&#34;, &#34;tf&#34;)
     version = provenanceSpec.get(&#34;version&#34;, None) if version is None else version
-    base = hasData(host, local, org, repo, version, relative)
+    base = hasData(backend, local, org, repo, version, relative)
 
     if not base:
-        base = EX_BASE(host)
+        base = backendRep(backend, &#34;cache&#34;)
 
     return expanduser(f&#34;{base}/{org}/{repo}/{TEMP_DIR}&#34;)</code></pre>
 </details>
@@ -835,7 +900,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L342-L423" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L392-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
     &#34;&#34;&#34;Transform a uniform iterable of nodes into a table with extra information.
@@ -931,7 +996,7 @@ be richer then when the tuples are not uniform.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L328-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L378-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRowsX(app, tuples, features, condenseType, fmt=None):
     &#34;&#34;&#34;Transform an iterable of nodes into a table with extra information.
@@ -955,7 +1020,7 @@ be richer then when the tuples are not uniform.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L221-L273" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L271-L323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getText(
     app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None
@@ -1031,7 +1096,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L426-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L476-L531" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTuplesX(app, results, condenseType, fmt=None):
     &#34;&#34;&#34;Transform a non-uniform iterable of nodes into a table with extra information.
@@ -1099,7 +1164,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L276-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L326-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValue(app, n, nType, feat, suppress):
     F = app.api.F
@@ -1119,27 +1184,27 @@ If not passed, a default is used.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.hasData"><code class="name flex">
-<span>def <span class="ident">hasData</span></span>(<span>host, local, org, repo, version, relative)</span>
+<span>def <span class="ident">hasData</span></span>(<span>backend, local, org, repo, version, relative)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L85-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L135-L147" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def hasData(host, local, org, repo, version, relative):
+<pre><code class="python">def hasData(backend, local, org, repo, version, relative):
     versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
     if local == &#34;clone&#34;:
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, &#34;clone&#34;)
         ghTarget = f&#34;{cloneBase}/{org}/{repo}/{relative}{versionRep}&#34;
         if os.path.exists(ghTarget):
             return cloneBase
 
-    exBase = EX_BASE(host)
-    expressTarget = f&#34;{exBase}/{org}/{repo}/{relative}{versionRep}&#34;
-    if os.path.exists(expressTarget):
-        return exBase
+    cacheBase = backendRep(backend, &#34;cache&#34;)
+    cacheTarget = f&#34;{cacheBase}/{org}/{repo}/{relative}{versionRep}&#34;
+    if os.path.exists(cacheTarget):
+        return cacheBase
     return False</code></pre>
 </details>
 </dd>
@@ -1151,7 +1216,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L217-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L267-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlSafe(text, isHtml):
     return text if isHtml else htmlEsc(text)</code></pre>
@@ -1169,7 +1234,7 @@ is the same for all tuples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L296-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L346-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isUniform(app, tuples):
     &#34;&#34;&#34;Whether the members of tuples are uniform.
@@ -1211,7 +1276,7 @@ is the same for all tuples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L130-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L180-L206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatures(features):
     if (
@@ -1261,7 +1326,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L536-L564" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L586-L614" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showDict(title, data, *keys):
     &#34;&#34;&#34;Shows selected keys of a dictionary in a pretty way.
@@ -1292,6 +1357,52 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
     dm(&#34;&#34;.join(md))</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.helpers.splitModRef"><code class="name flex">
+<span>def <span class="ident">splitModRef</span></span>(<span>moduleRef)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L82-L115" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def splitModRef(moduleRef):
+    thisBackend.clear()
+    theBackend = None
+    bareModuleRef = BACKEND_RE.sub(backendRepl, moduleRef)
+    if len(thisBackend):
+        theBackend = thisBackend[0]
+        if len(thisBackend) &gt; 1:
+            console(
+                f&#34;Multiple &lt;backend&gt; in {moduleRef}: &#34;
+                f&#34;{&#39;, &#39;.join(thisBackend)}; using &lt;{theBackend}&gt; only &#34;,
+                error=True,
+            )
+
+    bRep = f&#34;&lt;{theBackend}&gt;&#34; if theBackend else &#34;&#34;
+
+    parts = bareModuleRef.split(&#34;:&#34;, 1)
+    if len(parts) == 1:
+        parts.append(&#34;&#34;)
+    (ref, specifier) = parts
+    parts = ref.split(&#34;/&#34;, 2)
+
+    if len(parts) &lt; 2:
+        console(
+            f&#34;&#34;&#34;
+Module ref &#34;{bRep}{bareModuleRef}&#34; is not &#34;{{org}}/{{repo}}/{{path}}&#34;
+&#34;&#34;&#34;,
+            error=True,
+        )
+        return None
+
+    if len(parts) == 2:
+        parts.append(&#34;&#34;)
+
+    return [*parts, specifier, theBackend]</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.transitiveClosure"><code class="name flex">
@@ -1334,7 +1445,7 @@ The display algorithm uses this to unravel nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L159-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L209-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transitiveClosure(relation, reflexiveExceptions):
     &#34;&#34;&#34;Produce the reflexive transitive closure of a relation.
@@ -1402,7 +1513,7 @@ The display algorithm uses this to unravel nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/helpers.py#L100-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/helpers.py#L150-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tupleEnum(tuples, start, end, limit, item):
     if start is None:
@@ -1503,6 +1614,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="tf.advanced.helpers.backendRepl" href="#tf.advanced.helpers.backendRepl">backendRepl</a></code></li>
 <li><code><a title="tf.advanced.helpers.dh" href="#tf.advanced.helpers.dh">dh</a></code></li>
 <li><code><a title="tf.advanced.helpers.dm" href="#tf.advanced.helpers.dm">dm</a></code></li>
 <li><code><a title="tf.advanced.helpers.eData" href="#tf.advanced.helpers.eData">eData</a></code></li>
@@ -1522,6 +1634,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform</a></code></li>
 <li><code><a title="tf.advanced.helpers.parseFeatures" href="#tf.advanced.helpers.parseFeatures">parseFeatures</a></code></li>
 <li><code><a title="tf.advanced.helpers.showDict" href="#tf.advanced.helpers.showDict">showDict</a></code></li>
+<li><code><a title="tf.advanced.helpers.splitModRef" href="#tf.advanced.helpers.splitModRef">splitModRef</a></code></li>
 <li><code><a title="tf.advanced.helpers.transitiveClosure" href="#tf.advanced.helpers.transitiveClosure">transitiveClosure</a></code></li>
 <li><code><a title="tf.advanced.helpers.tupleEnum" href="#tf.advanced.helpers.tupleEnum">tupleEnum</a></code></li>
 </ul>

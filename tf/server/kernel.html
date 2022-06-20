@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/kernel.py#L1-L693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L1-L693" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -241,13 +241,13 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
-            host = app.host
+            backend = app.backend
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
                 (
-                    (&#34;host&#34;, host),
+                    (&#34;backend&#34;, backend),
                     (&#34;name&#34;, appName),
                     (&#34;org&#34;, org),
                     (&#34;repo&#34;, repo),
@@ -712,7 +712,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
-    host = dataSource.get(&#34;host&#34;, None)
+    backend = dataSource.get(&#34;backend&#34;, None)
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -734,8 +734,8 @@ def main(cargs=sys.argv):
         appName,
         checkoutApp,
         dataLoc,
+        backend,
         True,
-        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -793,7 +793,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/kernel.py#L624-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L624-L674" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -801,7 +801,7 @@ if __name__ == &#34;__main__&#34;:
         return
 
     (dataSource, portKernel) = args
-    host = dataSource.get(&#34;host&#34;, None)
+    backend = dataSource.get(&#34;backend&#34;, None)
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -823,8 +823,8 @@ if __name__ == &#34;__main__&#34;:
         appName,
         checkoutApp,
         dataLoc,
+        backend,
         True,
-        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -856,7 +856,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/kernel.py#L605-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L605-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
     class TfConnection(object):
@@ -882,7 +882,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/server/kernel.py#L102-L599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L102-L599" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:
@@ -941,13 +941,13 @@ if __name__ == &#34;__main__&#34;:
 
             app = self.app
             aContext = app.context
-            host = app.host
+            backend = app.backend
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
                 (
-                    (&#34;host&#34;, host),
+                    (&#34;backend&#34;, backend),
                     (&#34;name&#34;, appName),
                     (&#34;org&#34;, org),
                     (&#34;repo&#34;, repo),

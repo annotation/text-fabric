@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L1-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/parameters.py#L1-L361" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -41,7 +41,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;10.0.1&#39;
+VERSION = &#39;10.0.2&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -145,12 +145,12 @@ PICKLE_PROTOCOL = 4
 &#34;&#34;&#34;Pickle protocol level when pickling tf files.&#34;&#34;&#34;
 
 ORG = &#34;annotation&#34;
-&#34;&#34;&#34;GitHub organization name.
+&#34;&#34;&#34;GitHub organization or GitLab group.
 
 This is where the repo that contains Text-Fabric resides.
 &#34;&#34;&#34;
 REPO = &#34;text-fabric&#34;
-&#34;&#34;&#34;GitHub repo name.
+&#34;&#34;&#34;GitHub repo or GitLab project.
 
 This is the name of the repo that contains Text-Fabric.
 &#34;&#34;&#34;
@@ -159,41 +159,126 @@ RELATIVE = &#34;tf&#34;
 &#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
 &#34;&#34;&#34;
 
-
-def URL_B(host):
-    &#34;&#34;&#34;Base url of GitHub or GitLab, depending on host.&#34;&#34;&#34;
-    return &#34;https://github.com&#34; if host is None else f&#34;https://{host}&#34;
-
-
-def URL_NB(host):
-    &#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
-    return &#34;https://nbviewer.jupyter.org/&#34; + (&#34;github&#34; if host is None else host)
-
-
 HOME_DIR = os.path.expanduser(&#34;~&#34;)
+
+GH = &#34;github&#34;
+&#34;&#34;&#34;Name of GitHub backend.&#34;&#34;&#34;
+
+GL = &#34;gitlab&#34;
+&#34;&#34;&#34;Name of GitLab backend.&#34;&#34;&#34;
+
+URL_GH = &#34;https://github.com&#34;
+&#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
+
+URL_GL = &#34;https://gitlab.com&#34;
+&#34;&#34;&#34;Base url of GitLab.&#34;&#34;&#34;
+
+URL_NB = &#34;https://nbviewer.jupyter.org&#34;
+&#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
+
+
+def backendRep(be, kind, default=None):
+    &#34;&#34;&#34;Various backend dependent values.
+
+    First of all, the backend value is
+    normalized. Then related values are computed.
+
+    Parameters
+    ----------
+    be: string or None
+        the raw backend value.
+        It will be normailzed first, where missing, undefined, empty values are
+        converted to the string `github`, and other values will be lower-cased.
+        Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
+
+    kind: string
+        Indicates what kind of related value should be returned:
+
+        * `norm`: the normalized value as described above
+        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
+          the empty string is returned instead.
+        * `clone`: base directory where clones of repos in this backend are stored
+          `~/github`, etc.
+        * `cache`: base directory where data downloads from this backend are stored:
+          `~/text-fabric-data/github`, etc.
+        * `url`: url of the online backend
+        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
+        * `pages`: base url of the Pages service of the backend
+
+    default: boolean, optional `False`
+        Only relevant for `kind` = `rep`.
+        If `default` is passed and not None and `be` is equal to `default`,
+        then the empty string is returned.
+
+        Explanation: this is used to supply a backend  specifier to a module
+        but only if that module has a different backend than the main module.
+
+    Returns
+    -------
+        string
+    &#34;&#34;&#34;
+
+    be = (be or &#34;&#34;).lower()
+    be = (
+        GH
+        if be in {None, &#34;&#34;, GH, f&#34;{GH}.com&#34;}
+        else GL
+        if be in {GL, f&#34;{GL}.com&#34;}
+        else be
+    )
+
+    if kind == &#34;norm&#34;:
+        return be
+
+    if kind == &#34;name&#34;:
+        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GH else be
+
+    if kind == &#34;machine&#34;:
+        return &#34;github.com&#34; if be == GH else &#34;gitlab.com&#34; if be == GL else be
+
+    if kind == &#34;rep&#34;:
+        if default is not None:
+            default = backendRep(default, &#34;norm&#34;)
+            if be == default:
+                return &#34;&#34;
+        return f&#34;&lt;{be}&gt;&#34;
+
+    if kind == &#34;clone&#34;:
+        return f&#34;{HOME_DIR}/{be}&#34;
+
+    if kind == &#34;cache&#34;:
+        return f&#34;{HOME_DIR}/text-fabric-data/{be}&#34;
+
+    if kind == &#34;url&#34;:
+        return URL_GH if be == GH else URL_GL if be == GL else f&#34;https://{be}&#34;
+
+    if kind == &#34;urlnb&#34;:
+        return f&#34;{URL_NB}/{be}&#34;
+
+    if kind == &#34;pages&#34;:
+        return (
+            f&#34;{GH}.io&#34;
+            if be == GH
+            else f&#34;{GL}.io&#34;
+            if be == GL
+            else f&#34;{&#39;.&#39;.join(be.split(&#39;.&#39;))[0:-1]}.io&#34;
+        )
+    return None
+
 
 DOWNLOADS = f&#34;{HOME_DIR}/Downloads&#34;
 &#34;&#34;&#34;Local Downloads directory.&#34;&#34;&#34;
-
-
-def CLONE_BASE(host):
-    &#34;&#34;&#34;Local directory for GitHub/GitLab clones.&#34;&#34;&#34;
-    return f&#34;{HOME_DIR}/{&#39;github&#39; if host is None else host}&#34;
-
-
-def EX_BASE(host):
-    &#34;&#34;&#34;Local cache directory.
-
-    This is the place where the TF apps and TF feature files are cached locally.
-    &#34;&#34;&#34;
-    return f&#34;{HOME_DIR}/text-fabric-data&#34; + (&#34;&#34; if host is None else f&#34;/{host}&#34;)
 
 
 EXPRESS_SYNC = &#34;__checkout__.txt&#34;
 &#34;&#34;&#34;Name of cache indicator file.
 
 When a dataset is stored in the cache,
-information about the GitHub release/commit is stored in a file
+information about the release/commit is stored in a file
 with this name.
 &#34;&#34;&#34;
 
@@ -208,13 +293,7 @@ HOST = &#34;localhost&#34;
 PORT_BASE = 10000
 
 
-def PAGES_DOMAIN(host):
-    return &#34;github.io&#34; if host is None else f&#34;{&#39;.&#39;.join(host.split(&#39;.&#39;))[0:-1]}.io&#34;
-
-
-GH_PAGES = PAGES_DOMAIN(None)
-
-URL_TFDOC = f&#34;https://{ORG}.{GH_PAGES}/{REPO}/tf&#34;
+URL_TFDOC = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf&#34;
 &#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
 
 DOI_DEFAULT = &#34;no DOI&#34;
@@ -223,10 +302,10 @@ DOI_URL_PREFIX = &#34;https://doi.org&#34;
 DOI_TF = &#34;10.5281/zenodo.592193&#34;
 &#34;&#34;&#34;DOI of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
 
-APIREF = f&#34;https://{ORG}.{GH_PAGES}/{REPO}/tf/cheatsheet.html&#34;
+APIREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/cheatsheet.html&#34;
 &#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
 
-SEARCHREF = f&#34;https://{ORG}.{GH_PAGES}/{REPO}/tf/about/searchusage.html&#34;
+SEARCHREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/about/searchusage.html&#34;
 &#34;&#34;&#34;Link to the Search docs of Text-Fabric.&#34;&#34;&#34;
 
 APP_CONFIG = &#34;config.yaml&#34;
@@ -283,7 +362,7 @@ ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
 &#34;&#34;&#34;Options for zip when packing tf files.
 
 This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub.
+to be attached to releases on GitHub/GitLab.
 
 !!! caution &#34;Not for .tfx files&#34;
     This is not the zipping as done when .tf files are
@@ -375,12 +454,20 @@ downgrade Text-Fabric</dd>
 <dd>
 <div class="desc"><p>Name of cache indicator file.</p>
 <p>When a dataset is stored in the cache,
-information about the GitHub release/commit is stored in a file
+information about the release/commit is stored in a file
 with this name.</p></div>
 </dd>
 <dt id="tf.parameters.EXPRESS_SYNC_LEGACY"><code class="name">var <span class="ident">EXPRESS_SYNC_LEGACY</span></code></dt>
 <dd>
 <div class="desc"><p>Legacy names of cache indicator files.</p></div>
+</dd>
+<dt id="tf.parameters.GH"><code class="name">var <span class="ident">GH</span></code></dt>
+<dd>
+<div class="desc"><p>Name of GitHub backend.</p></div>
+</dd>
+<dt id="tf.parameters.GL"><code class="name">var <span class="ident">GL</span></code></dt>
+<dd>
+<div class="desc"><p>Name of GitLab backend.</p></div>
 </dd>
 <dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
 <dd>
@@ -430,7 +517,7 @@ of a volume.</p></div>
 </dd>
 <dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
 <dd>
-<div class="desc"><p>GitHub organization name.</p>
+<div class="desc"><p>GitHub organization or GitLab group.</p>
 <p>This is where the repo that contains Text-Fabric resides.</p></div>
 </dd>
 <dt id="tf.parameters.OSLOTS"><code class="name">var <span class="ident">OSLOTS</span></code></dt>
@@ -484,7 +571,7 @@ files, where <code>{PVN}</code> is the package version number.</p>
 </dd>
 <dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
 <dd>
-<div class="desc"><p>GitHub repo name.</p>
+<div class="desc"><p>GitHub repo or GitLab project.</p>
 <p>This is the name of the repo that contains Text-Fabric.</p></div>
 </dd>
 <dt id="tf.parameters.SEARCHREF"><code class="name">var <span class="ident">SEARCHREF</span></code></dt>
@@ -523,6 +610,18 @@ Put a line</p>
 <dd>
 <div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
 </dd>
+<dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitHub.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GL"><code class="name">var <span class="ident">URL_GL</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitLab.</p></div>
+</dd>
+<dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of NB-viewer.</p></div>
+</dd>
 <dt id="tf.parameters.URL_TFDOC"><code class="name">var <span class="ident">URL_TFDOC</span></code></dt>
 <dd>
 <div class="desc"><p>Base url of the online Text-Fabric documentation.</p></div>
@@ -548,7 +647,7 @@ TF data module.</p></div>
 <dd>
 <div class="desc"><p>Options for zip when packing tf files.</p>
 <p>This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub.</p>
+to be attached to releases on GitHub/GitLab.</p>
 <div class="admonition caution">
 <p class="admonition-title">Not for .tfx files</p>
 <p>This is not the zipping as done when .tf files are
@@ -560,82 +659,149 @@ pickled and compressed to .tfx files.</p>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.parameters.CLONE_BASE"><code class="name flex">
-<span>def <span class="ident">CLONE_BASE</span></span>(<span>host)</span>
+<dt id="tf.parameters.backendRep"><code class="name flex">
+<span>def <span class="ident">backendRep</span></span>(<span>be, kind, default=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Local directory for GitHub/GitLab clones.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L147-L149" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def CLONE_BASE(host):
-    &#34;&#34;&#34;Local directory for GitHub/GitLab clones.&#34;&#34;&#34;
-    return f&#34;{HOME_DIR}/{&#39;github&#39; if host is None else host}&#34;</code></pre>
-</details>
+<div class="desc"><p>Various backend dependent values.</p>
+<p>First of all, the backend value is
+normalized. Then related values are computed.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>be</code></strong> :&ensp;<code>string</code> or <code>None</code></dt>
+<dd>the raw backend value.
+It will be normailzed first, where missing, undefined, empty values are
+converted to the string <code>github</code>, and other values will be lower-cased.
+Also, <code>github.com</code> and <code>gitlab.com</code> will be shortened to <code>github</code> and <code>gitlab</code>.</dd>
+<dt><strong><code>kind</code></strong> :&ensp;<code>string</code></dt>
+<dd>
+<p>Indicates what kind of related value should be returned:</p>
+<ul>
+<li><code>norm</code>: the normalized value as described above</li>
+<li><code>name</code>: lowercase shortest name of the backend: <code>github</code> or <code>gitlab</code>
+or a server name like <code>gitlab.huc.knaw.nl</code></li>
+<li><code>machine</code>: lowercase machine name of the backend: <code>github.com</code> or <code>gitlab.com</code>
+or a server name like <code>gitlab.huc.knaw.nl</code></li>
+<li><code>spec</code>: enclosed in <code>&lt;</code> and <code>&gt;</code>. Depending on the parameter <code>default</code>
+the empty string is returned instead.</li>
+<li><code>clone</code>: base directory where clones of repos in this backend are stored
+<code>~/github</code>, etc.</li>
+<li><code>cache</code>: base directory where data downloads from this backend are stored:
+<code>~/text-fabric-data/github</code>, etc.</li>
+<li><code>url</code>: url of the online backend</li>
+<li><code>urlnb</code>: url of notebooks from the online backend, rendered on NB-Viewer</li>
+<li><code>pages</code>: base url of the Pages service of the backend</li>
+</ul>
 </dd>
-<dt id="tf.parameters.EX_BASE"><code class="name flex">
-<span>def <span class="ident">EX_BASE</span></span>(<span>host)</span>
-</code></dt>
+<dt><strong><code>default</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
-<div class="desc"><p>Local cache directory.</p>
-<p>This is the place where the TF apps and TF feature files are cached locally.</p></div>
+<p>Only relevant for <code>kind</code> = <code>rep</code>.
+If <code>default</code> is passed and not None and <code>be</code> is equal to <code>default</code>,
+then the empty string is returned.</p>
+<p>Explanation: this is used to supply a backend
+specifier to a module
+but only if that module has a different backend than the main module.</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<pre><code>string
+</code></pre></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L152-L157" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/parameters.py#L148-L238" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def EX_BASE(host):
-    &#34;&#34;&#34;Local cache directory.
+<pre><code class="python">def backendRep(be, kind, default=None):
+    &#34;&#34;&#34;Various backend dependent values.
 
-    This is the place where the TF apps and TF feature files are cached locally.
+    First of all, the backend value is
+    normalized. Then related values are computed.
+
+    Parameters
+    ----------
+    be: string or None
+        the raw backend value.
+        It will be normailzed first, where missing, undefined, empty values are
+        converted to the string `github`, and other values will be lower-cased.
+        Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
+
+    kind: string
+        Indicates what kind of related value should be returned:
+
+        * `norm`: the normalized value as described above
+        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `spec`: enclosed in `&lt;` and `&gt;`. Depending on the parameter `default`
+          the empty string is returned instead.
+        * `clone`: base directory where clones of repos in this backend are stored
+          `~/github`, etc.
+        * `cache`: base directory where data downloads from this backend are stored:
+          `~/text-fabric-data/github`, etc.
+        * `url`: url of the online backend
+        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
+        * `pages`: base url of the Pages service of the backend
+
+    default: boolean, optional `False`
+        Only relevant for `kind` = `rep`.
+        If `default` is passed and not None and `be` is equal to `default`,
+        then the empty string is returned.
+
+        Explanation: this is used to supply a backend  specifier to a module
+        but only if that module has a different backend than the main module.
+
+    Returns
+    -------
+        string
     &#34;&#34;&#34;
-    return f&#34;{HOME_DIR}/text-fabric-data&#34; + (&#34;&#34; if host is None else f&#34;/{host}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="tf.parameters.PAGES_DOMAIN"><code class="name flex">
-<span>def <span class="ident">PAGES_DOMAIN</span></span>(<span>host)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L179-L180" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def PAGES_DOMAIN(host):
-    return &#34;github.io&#34; if host is None else f&#34;{&#39;.&#39;.join(host.split(&#39;.&#39;))[0:-1]}.io&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.parameters.URL_B"><code class="name flex">
-<span>def <span class="ident">URL_B</span></span>(<span>host)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Base url of GitHub or GitLab, depending on host.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L131-L133" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def URL_B(host):
-    &#34;&#34;&#34;Base url of GitHub or GitLab, depending on host.&#34;&#34;&#34;
-    return &#34;https://github.com&#34; if host is None else f&#34;https://{host}&#34;</code></pre>
-</details>
-</dd>
-<dt id="tf.parameters.URL_NB"><code class="name flex">
-<span>def <span class="ident">URL_NB</span></span>(<span>host)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Base url of NB-viewer for GitHub data.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/parameters.py#L136-L138" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def URL_NB(host):
-    &#34;&#34;&#34;Base url of NB-viewer for GitHub data.&#34;&#34;&#34;
-    return &#34;https://nbviewer.jupyter.org/&#34; + (&#34;github&#34; if host is None else host)</code></pre>
+
+    be = (be or &#34;&#34;).lower()
+    be = (
+        GH
+        if be in {None, &#34;&#34;, GH, f&#34;{GH}.com&#34;}
+        else GL
+        if be in {GL, f&#34;{GL}.com&#34;}
+        else be
+    )
+
+    if kind == &#34;norm&#34;:
+        return be
+
+    if kind == &#34;name&#34;:
+        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GH else be
+
+    if kind == &#34;machine&#34;:
+        return &#34;github.com&#34; if be == GH else &#34;gitlab.com&#34; if be == GL else be
+
+    if kind == &#34;rep&#34;:
+        if default is not None:
+            default = backendRep(default, &#34;norm&#34;)
+            if be == default:
+                return &#34;&#34;
+        return f&#34;&lt;{be}&gt;&#34;
+
+    if kind == &#34;clone&#34;:
+        return f&#34;{HOME_DIR}/{be}&#34;
+
+    if kind == &#34;cache&#34;:
+        return f&#34;{HOME_DIR}/text-fabric-data/{be}&#34;
+
+    if kind == &#34;url&#34;:
+        return URL_GH if be == GH else URL_GL if be == GL else f&#34;https://{be}&#34;
+
+    if kind == &#34;urlnb&#34;:
+        return f&#34;{URL_NB}/{be}&#34;
+
+    if kind == &#34;pages&#34;:
+        return (
+            f&#34;{GH}.io&#34;
+            if be == GH
+            else f&#34;{GL}.io&#34;
+            if be == GL
+            else f&#34;{&#39;.&#39;.join(be.split(&#39;.&#39;))[0:-1]}.io&#34;
+        )
+    return None</code></pre>
 </details>
 </dd>
 </dl>
@@ -720,6 +886,8 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.DOWNLOADS" href="#tf.parameters.DOWNLOADS">DOWNLOADS</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC" href="#tf.parameters.EXPRESS_SYNC">EXPRESS_SYNC</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC_LEGACY" href="#tf.parameters.EXPRESS_SYNC_LEGACY">EXPRESS_SYNC_LEGACY</a></code></li>
+<li><code><a title="tf.parameters.GH" href="#tf.parameters.GH">GH</a></code></li>
+<li><code><a title="tf.parameters.GL" href="#tf.parameters.GL">GL</a></code></li>
 <li><code><a title="tf.parameters.GZIP_LEVEL" href="#tf.parameters.GZIP_LEVEL">GZIP_LEVEL</a></code></li>
 <li><code><a title="tf.parameters.LOCAL" href="#tf.parameters.LOCAL">LOCAL</a></code></li>
 <li><code><a title="tf.parameters.LOCATIONS" href="#tf.parameters.LOCATIONS">LOCATIONS</a></code></li>
@@ -745,6 +913,9 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.TEMP_DIR" href="#tf.parameters.TEMP_DIR">TEMP_DIR</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>
+<li><code><a title="tf.parameters.URL_GH" href="#tf.parameters.URL_GH">URL_GH</a></code></li>
+<li><code><a title="tf.parameters.URL_GL" href="#tf.parameters.URL_GL">URL_GL</a></code></li>
+<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
 <li><code><a title="tf.parameters.URL_TFDOC" href="#tf.parameters.URL_TFDOC">URL_TFDOC</a></code></li>
 <li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
 <li><code><a title="tf.parameters.WARP" href="#tf.parameters.WARP">WARP</a></code></li>
@@ -754,11 +925,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.parameters.CLONE_BASE" href="#tf.parameters.CLONE_BASE">CLONE_BASE</a></code></li>
-<li><code><a title="tf.parameters.EX_BASE" href="#tf.parameters.EX_BASE">EX_BASE</a></code></li>
-<li><code><a title="tf.parameters.PAGES_DOMAIN" href="#tf.parameters.PAGES_DOMAIN">PAGES_DOMAIN</a></code></li>
-<li><code><a title="tf.parameters.URL_B" href="#tf.parameters.URL_B">URL_B</a></code></li>
-<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
+<li><code><a title="tf.parameters.backendRep" href="#tf.parameters.backendRep">backendRep</a></code></li>
 </ul>
 </li>
 </ul>

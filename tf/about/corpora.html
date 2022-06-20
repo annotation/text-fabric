@@ -24,8 +24,8 @@
 </header>
 <section id="section-intro">
 <h1 id="corpora">Corpora</h1>
-<p>Text-Fabric corpora are usually stored on GitHub and Text-Fabric
-knows how to download a corpus from GitHub if you specify the <em>org/repo</em>.</p>
+<p>Text-Fabric corpora are usually stored on GitHub/GitLab and Text-Fabric
+knows how to download a corpus from GitHub/GitLab if you specify the <em>org/repo</em>.</p>
 <p>Most corpora are configured by metadata in a directory <em>app</em> in the repo.</p>
 <p>You can load a corpus into a Python datastructure by</p>
 <pre><code class="language-python">from tf.app import use
@@ -35,7 +35,7 @@ A = use(&quot;org/repo&quot;)
 <pre><code class="language-sh">text-fabric org/repo
 </code></pre>
 <p>Here is a list of corpora that can be loaded this way.
-Since everybody can put a Text-Fabric corpus on GitHub, the list may not be complete!</p>
+Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not be complete!</p>
 <dl>
 <dt><a href="https://github.com/annotation/banks">annotation/banks</a></dt>
 <dd><em>modern english</em>
@@ -200,7 +200,7 @@ Bilingual royal inscriptions, 2000 - 1600,
 </dl>
 <h2 id="get-corpora">Get corpora</h2>
 <h3 id="automatically">Automatically</h3>
-<p>Text-Fabric downloads corpus data and apps from GitHub on demand.</p>
+<p>Text-Fabric downloads corpus data and apps from GitHub/GitLab on demand.</p>
 <p>See <code><a title="tf.about.use" href="use.html">tf.about.use</a></code>.</p>
 <p>Data ends up in a logical place under your <code>~/text-fabric-data/</code>.</p>
 <p>The TF data is fairly compact.</p>
@@ -212,14 +212,14 @@ In that case, take care to have a good internet connection
 when you use a TF app for the first time.</p>
 </div>
 <h3 id="manually">Manually</h3>
-<p>TF data of corpora reside in a GitHub repo.
+<p>TF data of corpora reside in a backend repo.
 You can manually clone such a data repository and point Text-Fabric to that data.</p>
-<p>First, take care that your clone ends up in <code>github/</code><em>orgName</em>
+<p>First, take care that your clone ends up in <code>github/</code><em>orgName</em> or <code>gitlab/</code><em>orgName</em>
 (relative your home directory)
-where <em>orgName</em> is the organization or person on GitHub under which you have
+where <em>orgName</em> is the organization or person or group on GitHub/GitLab under which you have
 found the repo.</p>
 <p>Then, when you invoke the app, pass the specifier <code>:clone</code>.
-This instructs Text-Fabric to look in your local GitHub clone, rather
+This instructs Text-Fabric to look in your local GitHub/GitLab clone, rather
 than online or in your local <code>text-fabric-data</code>, where downloaded data is stored.</p>
 <pre><code>use('org/repo:clone', checkout="clone")
 
@@ -242,7 +242,7 @@ Read more about the data life cycle in <code><a title="tf.about.datasharing" hre
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/about/corpora.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/corpora.md

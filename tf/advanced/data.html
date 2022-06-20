@@ -26,9 +26,11 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L1-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L1-L338" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">from ..core.helpers import itemize, splitModRef, normpath, expandDir
+<pre><code class="python">from ..parameters import backendRep
+from ..core.helpers import itemize, normpath, expandDir
+from .helpers import splitModRef
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -38,7 +40,7 @@ from .links import provenanceLink
 
 class AppData(object):
     def __init__(
-        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -46,10 +48,8 @@ class AppData(object):
 
         Parameters
         ----------
-        host: string, optional None
-            If present, it points to a GitLab instance such as the on-premise
-            `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-            If `None` we work with `github.com`.
+        backend: string
+            `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -72,7 +72,7 @@ class AppData(object):
             data fetching.
 
         &#34;&#34;&#34;
-        self.host = host
+        self.backend = backend
         self.app = app
         self.moduleRefs = (
             []
@@ -99,6 +99,7 @@ class AppData(object):
         &#34;&#34;&#34;
 
         app = self.app
+        checkout = self.checkout
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
@@ -114,7 +115,7 @@ class AppData(object):
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
+        if not self.getModule(org, repo, relative, checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -137,13 +138,18 @@ class AppData(object):
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
         seen = self.seen
+        checkout = self.checkout
+        backend = self.backend
 
         for m in moduleSpecs or []:
             org = m[&#34;org&#34;]
             repo = m[&#34;repo&#34;]
             relative = m[&#34;relative&#34;]
-            checkout = m.get(&#34;checkout&#34;, self.checkout)
-            ref = f&#34;{org}/{repo}/{relative}&#34;
+            theCheckout = m.get(&#34;checkout&#34;, checkout)
+            theBackend = m.get(&#34;backend&#34;, backend)
+            bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+
+            ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
             if ref in seen:
                 continue
 
@@ -151,7 +157,8 @@ class AppData(object):
                 org,
                 repo,
                 relative,
-                checkout,
+                theCheckout,
+                backend=theBackend,
                 specs=m,
             ):
                 self.good = False
@@ -164,6 +171,7 @@ class AppData(object):
         later when we are loading the standard modules.
         &#34;&#34;&#34;
 
+        backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
             refPure = ref.rsplit(&#34;:&#34;, 1)[0]
@@ -176,8 +184,11 @@ class AppData(object):
                 continue
 
             parts[2] = normpath(parts[2])  # the relative bit
+            theBackend = (
+                None if parts[-1] is None or parts[-1] == backend else parts[-1]
+            )
 
-            if not self.getModule(*parts):
+            if not self.getModule(*parts[0:-1], backend=theBackend):
                 self.good = False
 
     def getModules(self):
@@ -236,7 +247,9 @@ class AppData(object):
         self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
-    def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+    def getModule(
+        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+    ):
         &#34;&#34;&#34;Prepare to load a single module.
 
         Eventually, all TF data will be downloaded from local directories, bases
@@ -248,20 +261,23 @@ class AppData(object):
         Parameters
         ----------
         org: string
-            GitHub organization of the module
+            GitHub organization or GitLab group of the module
         repo: string:
-            GitHub repository of the module
+            GitHub repository or GitLab project of the module
         relative: string
             Path within the repository of the module
         checkout: string
             A specifier to use a specific release or commit of a data repository.
+        backend: string
+            The backend if different from the backend of the main module
         isBase: boolean, optional `False`
             Whether this module is the main data of the corpus.
         specs: dict, optional `False`
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
-        host = self.host
+        backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
+        bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -273,7 +289,7 @@ class AppData(object):
 
         relative = normpath(relative)
 
-        moduleRef = f&#34;{org}/{repo}/{relative}&#34;
+        moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
             return True
 
@@ -283,8 +299,8 @@ class AppData(object):
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
+                backend,
                 _browse=_browse,
-                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,
@@ -326,7 +342,7 @@ class AppData(object):
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        host, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -373,7 +389,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L308-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L324-L338" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -399,17 +415,15 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <dl>
 <dt id="tf.advanced.data.AppData"><code class="flex name class">
 <span>class <span class="ident">AppData</span></span>
-<span>(</span><span>app, host, moduleRefs, locations, modules, version, checkout, silent)</span>
+<span>(</span><span>app, backend, moduleRefs, locations, modules, version, checkout, silent)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Collects TF data according to specifications.</p>
 <p>The specifications are passed as arguments when the object is initialized.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>host</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>If present, it points to a GitLab instance such as the on-premise
-<code>gitlab.huc.knaw.nl</code> or the public <code>gitlab.com</code>.
-If <code>None</code> we work with <code>github.com</code>.</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
+<dd><code>github</code> or <code>gitlab</code> or a GitLab instance such as <code>gitlab.huc.knaw.nl</code>.</dd>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
 <dt><strong><code>moduleRefs</code></strong> :&ensp;<code>tuple</code></dt>
@@ -434,11 +448,11 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L9-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L11-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
     def __init__(
-        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
     ):
         &#34;&#34;&#34;Collects TF data according to specifications.
 
@@ -446,10 +460,8 @@ data fetching.</p></div>
 
         Parameters
         ----------
-        host: string, optional None
-            If present, it points to a GitLab instance such as the on-premise
-            `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-            If `None` we work with `github.com`.
+        backend: string
+            `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -472,7 +484,7 @@ data fetching.</p></div>
             data fetching.
 
         &#34;&#34;&#34;
-        self.host = host
+        self.backend = backend
         self.app = app
         self.moduleRefs = (
             []
@@ -499,6 +511,7 @@ data fetching.</p></div>
         &#34;&#34;&#34;
 
         app = self.app
+        checkout = self.checkout
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
@@ -514,7 +527,7 @@ data fetching.</p></div>
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
+        if not self.getModule(org, repo, relative, checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -537,13 +550,18 @@ data fetching.</p></div>
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
         seen = self.seen
+        checkout = self.checkout
+        backend = self.backend
 
         for m in moduleSpecs or []:
             org = m[&#34;org&#34;]
             repo = m[&#34;repo&#34;]
             relative = m[&#34;relative&#34;]
-            checkout = m.get(&#34;checkout&#34;, self.checkout)
-            ref = f&#34;{org}/{repo}/{relative}&#34;
+            theCheckout = m.get(&#34;checkout&#34;, checkout)
+            theBackend = m.get(&#34;backend&#34;, backend)
+            bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+
+            ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
             if ref in seen:
                 continue
 
@@ -551,7 +569,8 @@ data fetching.</p></div>
                 org,
                 repo,
                 relative,
-                checkout,
+                theCheckout,
+                backend=theBackend,
                 specs=m,
             ):
                 self.good = False
@@ -564,6 +583,7 @@ data fetching.</p></div>
         later when we are loading the standard modules.
         &#34;&#34;&#34;
 
+        backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
             refPure = ref.rsplit(&#34;:&#34;, 1)[0]
@@ -576,8 +596,11 @@ data fetching.</p></div>
                 continue
 
             parts[2] = normpath(parts[2])  # the relative bit
+            theBackend = (
+                None if parts[-1] is None or parts[-1] == backend else parts[-1]
+            )
 
-            if not self.getModule(*parts):
+            if not self.getModule(*parts[0:-1], backend=theBackend):
                 self.good = False
 
     def getModules(self):
@@ -636,7 +659,9 @@ data fetching.</p></div>
         self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
-    def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+    def getModule(
+        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+    ):
         &#34;&#34;&#34;Prepare to load a single module.
 
         Eventually, all TF data will be downloaded from local directories, bases
@@ -648,20 +673,23 @@ data fetching.</p></div>
         Parameters
         ----------
         org: string
-            GitHub organization of the module
+            GitHub organization or GitLab group of the module
         repo: string:
-            GitHub repository of the module
+            GitHub repository or GitLab project of the module
         relative: string
             Path within the repository of the module
         checkout: string
             A specifier to use a specific release or commit of a data repository.
+        backend: string
+            The backend if different from the backend of the main module
         isBase: boolean, optional `False`
             Whether this module is the main data of the corpus.
         specs: dict, optional `False`
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
-        host = self.host
+        backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
+        bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -673,7 +701,7 @@ data fetching.</p></div>
 
         relative = normpath(relative)
 
-        moduleRef = f&#34;{org}/{repo}/{relative}&#34;
+        moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
         if moduleRef in self.seen:
             return True
 
@@ -683,8 +711,8 @@ data fetching.</p></div>
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
+                backend,
                 _browse=_browse,
-                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,
@@ -726,7 +754,7 @@ data fetching.</p></div>
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        host, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -751,7 +779,7 @@ data fetching.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L60-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L60-L89" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -765,6 +793,7 @@ data fetching.</p></div>
     &#34;&#34;&#34;
 
     app = self.app
+    checkout = self.checkout
     aContext = app.context
     org = aContext.org
     repo = aContext.repo
@@ -780,12 +809,12 @@ data fetching.</p></div>
         relative = f&#34;{appPathRep}{appName}&#34;
         self.checkout = &#34;local&#34;
 
-    if not self.getModule(org, repo, relative, self.checkout, isBase=True):
+    if not self.getModule(org, repo, relative, checkout, isBase=True):
         self.good = False</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.data.AppData.getModule"><code class="name flex">
-<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, isBase=False, specs=None)</span>
+<span>def <span class="ident">getModule</span></span>(<span>self, org, repo, relative, checkout, backend=None, isBase=False, specs=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prepare to load a single module.</p>
@@ -796,13 +825,15 @@ location paths and the module paths.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>org</code></strong> :&ensp;<code>string</code></dt>
-<dd>GitHub organization of the module</dd>
+<dd>GitHub organization or GitLab group of the module</dd>
 <dt><strong><code>repo</code></strong> :&ensp;<code>string:</code></dt>
-<dd>GitHub repository of the module</dd>
+<dd>GitHub repository or GitLab project of the module</dd>
 <dt><strong><code>relative</code></strong> :&ensp;<code>string</code></dt>
 <dd>Path within the repository of the module</dd>
 <dt><strong><code>checkout</code></strong> :&ensp;<code>string</code></dt>
 <dd>A specifier to use a specific release or commit of a data repository.</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>string</code></dt>
+<dd>The backend if different from the backend of the main module</dd>
 <dt><strong><code>isBase</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether this module is the main data of the corpus.</dd>
 <dt><strong><code>specs</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
@@ -811,9 +842,11 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L209-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L220-L321" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+<pre><code class="python">def getModule(
+    self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+):
     &#34;&#34;&#34;Prepare to load a single module.
 
     Eventually, all TF data will be downloaded from local directories, bases
@@ -825,20 +858,23 @@ location paths and the module paths.</p>
     Parameters
     ----------
     org: string
-        GitHub organization of the module
+        GitHub organization or GitLab group of the module
     repo: string:
-        GitHub repository of the module
+        GitHub repository or GitLab project of the module
     relative: string
         Path within the repository of the module
     checkout: string
         A specifier to use a specific release or commit of a data repository.
+    backend: string
+        The backend if different from the backend of the main module
     isBase: boolean, optional `False`
         Whether this module is the main data of the corpus.
     specs: dict, optional `False`
         Additional informational attributes of the module, e.g. a DOI
     &#34;&#34;&#34;
 
-    host = self.host
+    backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
+    bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
     version = self.version
     silent = self.silent
     mLocations = self.mLocations
@@ -850,7 +886,7 @@ location paths and the module paths.</p>
 
     relative = normpath(relative)
 
-    moduleRef = f&#34;{org}/{repo}/{relative}&#34;
+    moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
     if moduleRef in self.seen:
         return True
 
@@ -860,8 +896,8 @@ location paths and the module paths.</p>
         (commit, local, release) = (None, None, None)
     else:
         (commit, release, local, localBase, localDir) = checkoutRepo(
+            backend,
             _browse=_browse,
-            host=host,
             org=org,
             repo=repo,
             folder=relative,
@@ -903,7 +939,7 @@ location paths and the module paths.</p>
             (
                 &#34;live&#34;,
                 provenanceLink(
-                    host, org, repo, version, commit, local, release, relative
+                    backend, org, repo, version, commit, local, release, relative
                 ),
             ),
             (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -921,7 +957,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L153-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L164-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -991,7 +1027,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L129-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L136-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1001,6 +1037,7 @@ later when we are loading the standard modules.</p></div>
     later when we are loading the standard modules.
     &#34;&#34;&#34;
 
+    backend = self.backend
     refs = self.moduleRefs
     for ref in refs:
         refPure = ref.rsplit(&#34;:&#34;, 1)[0]
@@ -1013,8 +1050,11 @@ later when we are loading the standard modules.</p></div>
             continue
 
         parts[2] = normpath(parts[2])  # the relative bit
+        theBackend = (
+            None if parts[-1] is None or parts[-1] == backend else parts[-1]
+        )
 
-        if not self.getModule(*parts):
+        if not self.getModule(*parts[0:-1], backend=theBackend):
             self.good = False</code></pre>
 </details>
 </dd>
@@ -1037,7 +1077,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e107bd4db7e34c75aef5e5e32f7cc059e6b34654/tf/advanced/data.py#L90-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/advanced/data.py#L91-L134" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
@@ -1059,13 +1099,18 @@ checkout specifiers to the standard modules.</p>
     aContext = app.context
     moduleSpecs = aContext.moduleSpecs
     seen = self.seen
+    checkout = self.checkout
+    backend = self.backend
 
     for m in moduleSpecs or []:
         org = m[&#34;org&#34;]
         repo = m[&#34;repo&#34;]
         relative = m[&#34;relative&#34;]
-        checkout = m.get(&#34;checkout&#34;, self.checkout)
-        ref = f&#34;{org}/{repo}/{relative}&#34;
+        theCheckout = m.get(&#34;checkout&#34;, checkout)
+        theBackend = m.get(&#34;backend&#34;, backend)
+        bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+
+        ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
         if ref in seen:
             continue
 
@@ -1073,7 +1118,8 @@ checkout specifiers to the standard modules.</p>
             org,
             repo,
             relative,
-            checkout,
+            theCheckout,
+            backend=theBackend,
             specs=m,
         ):
             self.good = False</code></pre>
