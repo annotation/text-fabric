@@ -9,7 +9,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '10.0.1'
+VERSION = '10.0.2'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -113,12 +113,12 @@ PICKLE_PROTOCOL = 4
 """Pickle protocol level when pickling tf files."""
 
 ORG = "annotation"
-"""GitHub organization name.
+"""GitHub organization or GitLab group.
 
 This is where the repo that contains Text-Fabric resides.
 """
 REPO = "text-fabric"
-"""GitHub repo name.
+"""GitHub repo or GitLab project.
 
 This is the name of the repo that contains Text-Fabric.
 """
@@ -127,41 +127,126 @@ RELATIVE = "tf"
 """Default relative path with a repo to the directory with tf files.
 """
 
-
-def URL_B(host):
-    """Base url of GitHub or GitLab, depending on host."""
-    return "https://github.com" if host is None else f"https://{host}"
-
-
-def URL_NB(host):
-    """Base url of NB-viewer for GitHub data."""
-    return "https://nbviewer.jupyter.org/" + ("github" if host is None else host)
-
-
 HOME_DIR = os.path.expanduser("~")
+
+GH = "github"
+"""Name of GitHub backend."""
+
+GL = "gitlab"
+"""Name of GitLab backend."""
+
+URL_GH = "https://github.com"
+"""Base url of GitHub."""
+
+URL_GL = "https://gitlab.com"
+"""Base url of GitLab."""
+
+URL_NB = "https://nbviewer.jupyter.org"
+"""Base url of NB-viewer."""
+
+
+def backendRep(be, kind, default=None):
+    """Various backend dependent values.
+
+    First of all, the backend value is
+    normalized. Then related values are computed.
+
+    Parameters
+    ----------
+    be: string or None
+        the raw backend value.
+        It will be normailzed first, where missing, undefined, empty values are
+        converted to the string `github`, and other values will be lower-cased.
+        Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
+
+    kind: string
+        Indicates what kind of related value should be returned:
+
+        * `norm`: the normalized value as described above
+        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
+          or a server name like `gitlab.huc.knaw.nl`
+        * `spec`: enclosed in `<` and `>`. Depending on the parameter `default`
+          the empty string is returned instead.
+        * `clone`: base directory where clones of repos in this backend are stored
+          `~/github`, etc.
+        * `cache`: base directory where data downloads from this backend are stored:
+          `~/text-fabric-data/github`, etc.
+        * `url`: url of the online backend
+        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
+        * `pages`: base url of the Pages service of the backend
+
+    default: boolean, optional `False`
+        Only relevant for `kind` = `rep`.
+        If `default` is passed and not None and `be` is equal to `default`,
+        then the empty string is returned.
+
+        Explanation: this is used to supply a backend  specifier to a module
+        but only if that module has a different backend than the main module.
+
+    Returns
+    -------
+        string
+    """
+
+    be = (be or "").lower()
+    be = (
+        GH
+        if be in {None, "", GH, f"{GH}.com"}
+        else GL
+        if be in {GL, f"{GL}.com"}
+        else be
+    )
+
+    if kind == "norm":
+        return be
+
+    if kind == "name":
+        return "GitHub" if be == GH else "GitLab" if be == GH else be
+
+    if kind == "machine":
+        return "github.com" if be == GH else "gitlab.com" if be == GL else be
+
+    if kind == "rep":
+        if default is not None:
+            default = backendRep(default, "norm")
+            if be == default:
+                return ""
+        return f"<{be}>"
+
+    if kind == "clone":
+        return f"{HOME_DIR}/{be}"
+
+    if kind == "cache":
+        return f"{HOME_DIR}/text-fabric-data/{be}"
+
+    if kind == "url":
+        return URL_GH if be == GH else URL_GL if be == GL else f"https://{be}"
+
+    if kind == "urlnb":
+        return f"{URL_NB}/{be}"
+
+    if kind == "pages":
+        return (
+            f"{GH}.io"
+            if be == GH
+            else f"{GL}.io"
+            if be == GL
+            else f"{'.'.join(be.split('.'))[0:-1]}.io"
+        )
+    return None
+
 
 DOWNLOADS = f"{HOME_DIR}/Downloads"
 """Local Downloads directory."""
-
-
-def CLONE_BASE(host):
-    """Local directory for GitHub/GitLab clones."""
-    return f"{HOME_DIR}/{'github' if host is None else host}"
-
-
-def EX_BASE(host):
-    """Local cache directory.
-
-    This is the place where the TF apps and TF feature files are cached locally.
-    """
-    return f"{HOME_DIR}/text-fabric-data" + ("" if host is None else f"/{host}")
 
 
 EXPRESS_SYNC = "__checkout__.txt"
 """Name of cache indicator file.
 
 When a dataset is stored in the cache,
-information about the GitHub release/commit is stored in a file
+information about the release/commit is stored in a file
 with this name.
 """
 
@@ -176,13 +261,7 @@ HOST = "localhost"
 PORT_BASE = 10000
 
 
-def PAGES_DOMAIN(host):
-    return "github.io" if host is None else f"{'.'.join(host.split('.'))[0:-1]}.io"
-
-
-GH_PAGES = PAGES_DOMAIN(None)
-
-URL_TFDOC = f"https://{ORG}.{GH_PAGES}/{REPO}/tf"
+URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""
 
 DOI_DEFAULT = "no DOI"
@@ -191,10 +270,10 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.{GH_PAGES}/{REPO}/tf/cheatsheet.html"
+APIREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
 """Link to the Api docs of Text-Fabric."""
 
-SEARCHREF = f"https://{ORG}.{GH_PAGES}/{REPO}/tf/about/searchusage.html"
+SEARCHREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
 """Link to the Search docs of Text-Fabric."""
 
 APP_CONFIG = "config.yaml"
@@ -251,7 +330,7 @@ ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
 """Options for zip when packing tf files.
 
 This is for packaging collections of plain tf files into zip files
-to be attached to releases on GitHub.
+to be attached to releases on GitHub/GitLab.
 
 !!! caution "Not for .tfx files"
     This is not the zipping as done when .tf files are

@@ -2,8 +2,9 @@ import os
 import sys
 from zipfile import ZipFile
 
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, CLONE_BASE, DOWNLOADS
-from ..core.helpers import console, splitModRef, normpath, expanduser, initTree
+from .helpers import splitModRef
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, backendRep, DOWNLOADS
+from ..core.helpers import console, normpath, expanduser, initTree
 
 DW = expanduser(DOWNLOADS)
 
@@ -39,7 +40,7 @@ EXCLUDE = {".DS_Store"}
 
 
 def zipData(
-    host,
+    backend,
     org,
     repo,
     relative=RELATIVE,
@@ -50,9 +51,9 @@ def zipData(
     dest=None,
 ):
     if source is None:
-        source = CLONE_BASE(host)
+        source = backendRep(backend, "clone")
     if dest is None:
-        dest = DW if host is None else f"{DW}/{host}"
+        dest = f"{DW}/{backend}"
     relative = normpath(relative)
     console(f"Create release data for {org}/{repo}/{relative}")
     sourceBase = normpath(f"{source}/{org}")
@@ -156,12 +157,12 @@ def main(cargs=sys.argv):
         console(HELP)
         return
 
-    host = None
+    backend = None
 
     newArgs = []
     for arg in cargs:
-        if arg.startswith("--host="):
-            host = arg[8:]
+        if arg.startswith("--backend="):
+            backend = arg[11:]
         else:
             newArgs.append(arg)
     cargs = newArgs
@@ -173,7 +174,7 @@ def main(cargs=sys.argv):
         console(HELP)
         return
 
-    (org, repo, relative, checkout) = parts
+    (org, repo, relative, checkout, theBackend) = parts
     relative = normpath(relative)
 
     tf = (
@@ -185,7 +186,7 @@ def main(cargs=sys.argv):
     tfMsg = "This is a TF dataset" if tf else "These are additional files"
     sys.stdout.write(f"{tfMsg}\n")
 
-    zipData(host, org, repo, relative=relative, tf=tf)
+    zipData(theBackend or backend, org, repo, relative=relative, tf=tf)
 
 
 if __name__ == "__main__":

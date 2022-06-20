@@ -19,7 +19,7 @@ def findAppConfig(
     commit,
     release,
     local,
-    host=None,
+    backend,
     org=None,
     repo=None,
     version=None,
@@ -86,7 +86,7 @@ def findAppConfig(
         cfg["css"] = ""
 
     cfg["local"] = local
-    cfg["localDir"] = getLocalDir(host, cfg, local, version)
+    cfg["localDir"] = getLocalDir(backend, cfg, local, version)
 
     avA = cfg.get("apiVersion", None)
     if isCompatible is None and checkApiVersion:

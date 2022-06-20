@@ -46,8 +46,8 @@ class App:
         commit,
         release,
         local,
+        backend,
         _browse,
-        host=None,
         hoist=False,
         version=None,
         checkout="",
@@ -69,16 +69,17 @@ class App:
         Parameters
         ----------
         appName, appPath, checkout, version: string
+        commit, release, local: string
+        backend: string
+        checkout: string, optional `""`
         mod: string or iterable, optional `[]`
-        legacy: boolean, optional False
-        host: string, optional None
-        hoist: dict, optional `False`
+        version: string, optional `None`
         locations, modules: string, optional `None`
-        collection: string, optional None
-        volume: string, optional None
+        collection, volume: string, optional None
         api: object, optional, `None`
         setFile: string, optional, `None`
         silent: boolean, optional `False`
+        hoist: dict, optional `False`
         configOverrides: key value pairs
 
         _withGc: boolean, optional True
@@ -98,7 +99,7 @@ class App:
 
         for (key, value) in dict(
             isCompatible=cfg.get("isCompatible", None),
-            host=host,
+            backend=backend,
             appName=appName,
             api=api,
             version=version,
@@ -126,7 +127,7 @@ class App:
                     self.sets = sets
                     console(f'Sets from {setFile}: {", ".join(sets)}')
             specs = getModulesData(
-                self, host, mod, locations, modules, version, checkout, silent
+                self, backend, mod, locations, modules, version, checkout, silent
             )
             if specs:
                 (locations, modules) = specs
@@ -259,7 +260,7 @@ The app "{appName}" will not work!
             call `reuse` and `tf.advanced.settings.showContext` in tandem.
         """
 
-        host = self.host
+        backend = self.backend
         aContext = self.context
         appPath = aContext.appPath
         appName = aContext.appName
@@ -275,7 +276,7 @@ The app "{appName}" will not work!
             commit,
             release,
             local,
-            host=host,
+            backend,
             org=aContext.org,
             repo=aContext.repo,
             version=version,
@@ -304,9 +305,9 @@ def findApp(
     appName,
     checkoutApp,
     dataLoc,
+    backend,
     _browse,
     *args,
-    host=None,
     silent=False,
     version=None,
     legacy=False,
@@ -349,10 +350,8 @@ def findApp(
         Arguments that will be passed to the initializer of the `tf.advanced.app.App`
         class.
 
-    host: string, optional None
-        If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-        If `None` we work with `github.com`.
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
 
     kwargs: mixed
         Keyword arguments that will be passed to the initializer of the
@@ -408,8 +407,8 @@ def findApp(
                 parts.append(APP_APP)
             (dataRepo, folder) = parts
             (commit, release, local, appBase, appDir) = checkoutRepo(
+                backend,
                 _browse=_browse,
-                host=host,
                 org=dataOrg,
                 repo=dataRepo,
                 folder=folder,
@@ -423,8 +422,8 @@ def findApp(
             appPath = f"{appBaseRep}{appDir}"
         else:
             (commit, release, local, appBase, appDir) = checkoutRepo(
+                backend,
                 _browse=_browse,
-                host=host,
                 org=ORG,
                 repo=f"app-{appName}",
                 folder=APP_CODE,
@@ -436,7 +435,7 @@ def findApp(
             )
             appBaseRep = f"{appBase}/" if appBase else ""
             appPath = f"{appBaseRep}{appDir}"
-            cfg = findAppConfig(appName, appPath, commit, release, local, host=host)
+            cfg = findAppConfig(appName, appPath, commit, release, local, backend)
             provenanceSpec = kwargs.get("provenanceSpec", {})
             if provenanceSpec:
                 for k in ("org", "repo", "relative"):
@@ -457,8 +456,8 @@ def findApp(
                         error=True,
                     )
                     (commit, release, local, appBase, appDir) = checkoutRepo(
+                        backend,
                         _browse=_browse,
-                        host=host,
                         org=dataOrg,
                         repo=dataRepo,
                         folder=APP_APP,
@@ -499,7 +498,7 @@ def findApp(
         commit,
         release,
         local,
-        host=host,
+        backend,
         org=dataOrg,
         repo=dataRepo,
         version=version,
@@ -532,9 +531,9 @@ def findApp(
             commit,
             release,
             local,
+            backend,
             _browse,
             *args,
-            host=host,
             version=version,
             silent=silent,
             **kwargs,

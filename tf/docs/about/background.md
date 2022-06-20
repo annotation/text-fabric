@@ -12,14 +12,14 @@ exported, see `tf.advanced.display.export`.
 
 When programming in a notebook, TF generates many useful links after having been
 invoked. In this way the provenance of your data will be shared wherever you
-share the notebook (GitHub, NBviewer, Software Heritage Archive).
+share the notebook (GitHub/GitLab, NBviewer, Software Heritage Archive).
 
 ### Contribute data
 
 Researchers can produce new data (`tf.fabric.Fabric.save`)
 out of their findings and package their new data into modules and
-distribute it to GitHub, see `tf.about.datasharing`.
-Other people can use that data just by mentioning the GitHub location.
+distribute it to GitHub/GitLab, see `tf.about.datasharing`.
+Other people can use that data just by mentioning the GitHub/GitLab location.
 Text-Fabric will auto-load it for them.
 
 ## Factory

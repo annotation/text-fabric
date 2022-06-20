@@ -17,7 +17,7 @@ import os
 import re
 from shutil import rmtree
 
-from .parameters import PACK_VERSION, CLONE_BASE, EX_BASE
+from .parameters import PACK_VERSION, backendRep
 from .core.helpers import expanduser, unexpanduser as ux
 
 
@@ -37,7 +37,7 @@ def err(msg):
     sys.stderr.flush()
 
 
-def clean(tfd=True, host=None, dry=True, specific=None, current=False):
+def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
     """Clean up older compressed .tfx files.
 
     Parameters
@@ -52,14 +52,14 @@ def clean(tfd=True, host=None, dry=True, specific=None, current=False):
     tfd: boolean,  optional `True`
         By default, your `~/text-fabric-data` is traversed and cleaned,
         but if you pass `tfd=False` it will be skipped.
-    host: string, optional, `None`
+    backend: string, optional, `None`
         If None, only material in `text-fabric-data` will be cleaned.
         But you can also clean clones of GitHub/GitLab.
 
-        To clean GitHub clones, pass `github`.
+        To clean GitHub/GitLab clones, pass `github` / `gitlab`.
 
-        To clean the clones from a specific GitLab host,
-        pass the host name of it.
+        To clean the clones from a specific GitLab server,
+        pass its server name.
     specific: string, optional, `None`
         You can pass a specific directory here. The standard directories
         `~/github` and `~/text-fabric-data` will not be used, only
@@ -76,11 +76,9 @@ def clean(tfd=True, host=None, dry=True, specific=None, current=False):
     if specific is not None:
         bases = [expanduser(specific)]
     else:
-        if host is not None:
-            if host.lower() == "github":
-                bases = [EX_BASE(None), CLONE_BASE(None)]
-            else:
-                bases = [EX_BASE(host), CLONE_BASE(host)]
+        if backend is not None:
+            backend = backendRep(backend, "norm")
+            bases = [backendRep(backend, kind) for kind in ("cache", "clone")]
 
     for base in bases:
         for triple in os.walk(base):

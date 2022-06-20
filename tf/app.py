@@ -13,12 +13,13 @@ This power can be invoked by a very simple command: `use("org/repo")`.
 For a detailed description, see `tf.about.usefunc`.
 """
 
+from .parameters import backendRep
 from .advanced.app import findApp
 
 # START AN APP
 
 
-def use(appName, *args, **kwargs):
+def use(appName, *args, backend=None, **kwargs):
     """Make use of a corpus.
 
     For a detailed description, see `tf.about.usefunc`.
@@ -26,8 +27,11 @@ def use(appName, *args, **kwargs):
     Parameters
     ----------
     appName: string
-    checkout: string, optional `""`
-    version: string, optional None
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
 
     args:
         Do not pass any other positional argument!
@@ -61,4 +65,5 @@ def use(appName, *args, **kwargs):
             parts.append("")
         (appName, checkoutApp) = parts
 
-    return findApp(appName, checkoutApp, dataLoc, False, *args, **kwargs)
+    backend = backendRep(backend, 'norm')
+    return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)

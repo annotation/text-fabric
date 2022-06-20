@@ -1,4 +1,6 @@
-from ..core.helpers import itemize, splitModRef, normpath, expandDir
+from ..parameters import backendRep
+from ..core.helpers import itemize, normpath, expandDir
+from .helpers import splitModRef
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -8,7 +10,7 @@ from .links import provenanceLink
 
 class AppData(object):
     def __init__(
-        self, app, host, moduleRefs, locations, modules, version, checkout, silent
+        self, app, backend, moduleRefs, locations, modules, version, checkout, silent
     ):
         """Collects TF data according to specifications.
 
@@ -16,10 +18,8 @@ class AppData(object):
 
         Parameters
         ----------
-        host: string, optional None
-            If present, it points to a GitLab instance such as the on-premise
-            `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-            If `None` we work with `github.com`.
+        backend: string
+            `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
         app: obj
             The high-level API object
         moduleRefs: tuple
@@ -42,7 +42,7 @@ class AppData(object):
             data fetching.
 
         """
-        self.host = host
+        self.backend = backend
         self.app = app
         self.moduleRefs = (
             []
@@ -69,6 +69,7 @@ class AppData(object):
         """
 
         app = self.app
+        checkout = self.checkout
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
@@ -84,7 +85,7 @@ class AppData(object):
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"
 
-        if not self.getModule(org, repo, relative, self.checkout, isBase=True):
+        if not self.getModule(org, repo, relative, checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -107,13 +108,18 @@ class AppData(object):
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
         seen = self.seen
+        checkout = self.checkout
+        backend = self.backend
 
         for m in moduleSpecs or []:
             org = m["org"]
             repo = m["repo"]
             relative = m["relative"]
-            checkout = m.get("checkout", self.checkout)
-            ref = f"{org}/{repo}/{relative}"
+            theCheckout = m.get("checkout", checkout)
+            theBackend = m.get("backend", backend)
+            bRep = backendRep(theBackend, "spec", default=backend)
+
+            ref = f"{bRep}{org}/{repo}/{relative}"
             if ref in seen:
                 continue
 
@@ -121,7 +127,8 @@ class AppData(object):
                 org,
                 repo,
                 relative,
-                checkout,
+                theCheckout,
+                backend=theBackend,
                 specs=m,
             ):
                 self.good = False
@@ -134,6 +141,7 @@ class AppData(object):
         later when we are loading the standard modules.
         """
 
+        backend = self.backend
         refs = self.moduleRefs
         for ref in refs:
             refPure = ref.rsplit(":", 1)[0]
@@ -146,8 +154,11 @@ class AppData(object):
                 continue
 
             parts[2] = normpath(parts[2])  # the relative bit
+            theBackend = (
+                None if parts[-1] is None or parts[-1] == backend else parts[-1]
+            )
 
-            if not self.getModule(*parts):
+            if not self.getModule(*parts[0:-1], backend=theBackend):
                 self.good = False
 
     def getModules(self):
@@ -206,7 +217,9 @@ class AppData(object):
         self.locations = mLocations + givenLocations
         self.modules = mModules + givenModules
 
-    def getModule(self, org, repo, relative, checkout, isBase=False, specs=None):
+    def getModule(
+        self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
+    ):
         """Prepare to load a single module.
 
         Eventually, all TF data will be downloaded from local directories, bases
@@ -218,20 +231,23 @@ class AppData(object):
         Parameters
         ----------
         org: string
-            GitHub organization of the module
+            GitHub organization or GitLab group of the module
         repo: string:
-            GitHub repository of the module
+            GitHub repository or GitLab project of the module
         relative: string
             Path within the repository of the module
         checkout: string
             A specifier to use a specific release or commit of a data repository.
+        backend: string
+            The backend if different from the backend of the main module
         isBase: boolean, optional `False`
             Whether this module is the main data of the corpus.
         specs: dict, optional `False`
             Additional informational attributes of the module, e.g. a DOI
         """
 
-        host = self.host
+        backend = self.backend if backend is None else backendRep(backend, "norm")
+        bRep = backendRep(backend, "spec", default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -243,7 +259,7 @@ class AppData(object):
 
         relative = normpath(relative)
 
-        moduleRef = f"{org}/{repo}/{relative}"
+        moduleRef = f"{bRep}{org}/{repo}/{relative}"
         if moduleRef in self.seen:
             return True
 
@@ -253,8 +269,8 @@ class AppData(object):
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
+                backend,
                 _browse=_browse,
-                host=host,
                 org=org,
                 repo=repo,
                 folder=relative,
@@ -296,7 +312,7 @@ class AppData(object):
                 (
                     "live",
                     provenanceLink(
-                        host, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, commit, local, release, relative
                     ),
                 ),
                 ("doi", info["doi"]),

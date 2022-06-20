@@ -69,7 +69,7 @@ def repSlug(slug):
 
 def argApp(cargs):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
-    host = argCollect("host", cargs)
+    backend = argCollect("backend", cargs)
     checkout = argCollect("checkout", cargs)
     locations = argCollect("locations", cargs)
     modules = argCollect("modules", cargs)
@@ -81,7 +81,7 @@ def argApp(cargs):
         *_enSlug(
             dict(
                 appName=appName,
-                host=host,
+                backend=backend,
                 checkoutApp=checkoutApp,
                 dataLoc=dataLoc,
                 checkout=checkout,

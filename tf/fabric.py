@@ -57,7 +57,7 @@ class Fabric(FabricCore):
     and `modules` will be used.
     There the volumes reside under a directory `_local`.
     You may want to add `_local` to your `.gitignore`, so that volumes generated
-    in a GitHub directory will not be pushed.
+    in a backend directory will not be pushed.
 
     !!! caution "Volumes and collections"
         It is an error to load a volume as a collection and vice-versa

@@ -192,28 +192,6 @@ def mdhtmlEsc(val):
     )
 
 
-def splitModRef(moduleRef):
-    parts = moduleRef.split(":", 1)
-    if len(parts) == 1:
-        parts.append("")
-    (ref, specifier) = parts
-    parts = ref.split("/", 2)
-
-    if len(parts) < 2:
-        console(
-            f"""
-Module ref "{moduleRef}" is not "{{org}}/{{repo}}/{{path}}"
-""",
-            error=True,
-        )
-        return None
-
-    if len(parts) == 2:
-        parts.append("")
-
-    return [*parts, specifier]
-
-
 def camel(name):
     if not name:
         return name
@@ -224,8 +202,8 @@ def camel(name):
 def check32():
     warn = ""
     msg = ""
-    on32 = sys.maxsize < 2 ** 63 - 1
-    if on32 < 2 ** 63 - 1:
+    on32 = sys.maxsize < 2**63 - 1
+    if on32 < 2**63 - 1:
         warn = WARN32
     else:
         msg = MSG64

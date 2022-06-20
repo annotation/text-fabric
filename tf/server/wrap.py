@@ -7,7 +7,14 @@ Lower level functions for wrapping TF data into actual HTML that can be served.
 import time
 import datetime
 
-from ..parameters import NAME, VERSION, DOI_URL_PREFIX, DOI_DEFAULT, DOI_TF, URL_B
+from ..parameters import (
+    NAME,
+    VERSION,
+    DOI_URL_PREFIX,
+    DOI_DEFAULT,
+    DOI_TF,
+    backendRep,
+)
 from ..advanced.options import INTERFACE_OPTIONS
 
 
@@ -121,8 +128,7 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 def wrapOptions(context, form):
-    """Wraps the boolean options, including the app-specific ones, into HTML.
-    """
+    """Wraps the boolean options, including the app-specific ones, into HTML."""
 
     interfaceDefaults = context.interfaceDefaults
     defaults = {k: v for (k, v) in interfaceDefaults.items() if v is not None}
@@ -138,10 +144,10 @@ def wrapOptions(context, form):
         value = "checked" if value else ""
         outer = "span" if move else "div"
         thisHtml = (
-            f'<{outer}>'
+            f"<{outer}>"
             f'<input class="r" type="checkbox" id="{acro}" name="{option}" {value}/>'
             f' <span class="ilab" title="{option}">{desc}</span>'
-            f'</{outer}>'
+            f"</{outer}>"
         )
         helpHtml.append(f'<p><b title="{option}">{desc}</b> {long}</p>')
         if move:
@@ -191,7 +197,7 @@ def wrapSelect(option, allowedValues, value, group, item, multiple):
         bType = "checkbox" if multiple else "radio"
         button = (
             f'<input class="r {group}" type="{bType}" name="{option}" value="{val}"'
-            f' {checked}/>'
+            f" {checked}/>"
         )
         html.append(
             f'<div class="{item[0]}">{button} <span class="{item[1]}">{val}</span></div>'
@@ -221,26 +227,26 @@ def wrapProvenance(form, provenance, setNames):
 
     for d in appProvenance:
         d = dict(d)
-        host = d["host"]
-        backendUrl = URL_B(host)
-        hostRep = "GitHub" if host is None else host
+        backend = d["backend"]
+        bUrl = backendRep(backend, "url")
+        bName = backendRep(backend, "name")
         org = d["org"]
         repo = d["repo"]
         commit = d["commit"]
-        url = f"{backendUrl}/{org}/{repo}/tree/{commit}"
+        url = f"{bUrl}/{org}/{repo}/tree/{commit}"
         liveHtml = f'<a href="{url}">{commit}</a>'
         liveMd = f"[{commit}]({url})"
         appHtml += f"""\
     <div class="pline">
       <div class="pname">TF App:</div>
-      <div class="pval">{org}/{repo} on {hostRep}</div>
+      <div class="pval">{org}/{repo} on {bName}</div>
     </div>
     <div class="p2line">
       <div class="pname">commit</div>
       <div class="pval">{liveHtml}</div>
     </div>\
 """
-        appMd += f"""{sep}TF app | {org}/{repo} on {hostRep}
+        appMd += f"""{sep}TF app | {org}/{repo} on {bName}
 commit | {liveMd}"""
         sep = "\n"
 

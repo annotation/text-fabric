@@ -1,12 +1,16 @@
 """
-# Auto downloading from GitHub and GitLab
+# Auto downloading from a backend repository
 
 ## Description
 
-Text-Fabric maintains local copies of subfolders of GitHub/GitLab repositories,
+Text-Fabric maintains local copies of subfolders of backend repositories,
 where it stores the feature data of corpora that the user is working with.
 
-There is some bookkeeping to account for which release and commit those
+Currently GitHub and GitLab are supported as backends.
+In case of GitLab, not only [gitlab.com](https://gitlab.com) is supported,
+but also GitLab instances on other servers that support the GitLab API.
+
+There is some bookkeeping to account for which release and commit the
 feature files come from.
 
 Users can request data from any repo according to any release and/or commit.
@@ -40,7 +44,29 @@ you can increase the limit to 5000 calls per hour by making yourself known.
 
 You might want to read this:
 
-* [Read more about rate limiting on Github](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
+* [Read more about rate limiting on GitHub](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting)
+
+# GitLab
+
+In order to reach an on-premise GitLab and have access to the repository in
+question, you may need to have a VPN connection with the GitLab backend.
+
+Additionally, you may need to make your identity known.
+If you have an account on the GitLab instance, go to your settings and request
+a personal token with *api* privileges.
+
+On your own system, make an environment variable named GL_*BACKEND*`_PERS` whose
+content is exactly the value of this token.
+
+And *BACKEND* should be the uppercase variant of the name of the GitLab backend,
+where every character that is not a letter or digit or `_` is replaced by a `_`.
+
+For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`
+and for `gitlab.com` use `GL_GITLAB_COM_PERS`.
+
+See below how to put this in an environment variable.
+
+# Token in environment variables
 
 How to put your personal access token into an environment variable?
 
@@ -48,28 +74,12 @@ How to put your personal access token into an environment variable?
     It is a setting on your system that various programs/processes can read.
     On Windows it is part of the `Registry`.
 
-    In this particular case, you put a personal token that you obtain from GitHub
+    In this particular case, you put a personal token
+    that you obtain from GitHub/GitLab
     in such an environment variable.
-    When Text-Fabric accesses GitHub, it will look up this token
-    first, and pass it to the GitHub API. GitHub then knows who you are and
+    When Text-Fabric accesses the backend, it will look up this token
+    first, and pass it to the backend API. The backend then knows who you are and
     will give you more privileges.
-
-# GitLab
-
-In order to reach an on-premise GitLab and have access to the repository in
-question, you may need to have a VPN connection with the GitLab host.
-
-Additionally, you may need to make your identity known.
-If you have an account on the Gitlab instance, go to your settings and request
-a personal token with *api* privileges.
-
-On your own system, make an environment variable named GL_*HOST*`_PERS` whose
-content is exactly the value of this token.
-And *HOST* should be the uppercase variant of the name of the GitLab host,
-where every character that is not a letter or digit or `_` is replaced by a `_`.
-
-For example, for `gitlab.huc.knaw.nl` use `GL_GITLAB_HUC_KNAW_NL_PERS`
-and for `gitlab.com` use `GL_GITLAB_COM_PERS`.
 
 ### On Mac and Linux
 
@@ -116,16 +126,19 @@ export GHPERS
 Put the following lines in this file:
 
 ``` sh
-GL_host_PERS="xxx"
-export GL_host_PERS
+GL_BACKEND_PERS="xxx"
+export GL_BACKEND_PERS
 ```
 
 where
 
-*   `host` is replaced by the uppercase GitLab host
-    (e.g. `gitlab.huc.knaw.nl` becomes `GL_GITLAB_HUC_KNAW_NL_PERS`)
-    In this way you can store tokens for multiple GitLab hosts.
 *   `xxx` is replaced by your actual token.
+*   `BACKEND` is replaced by the uppercase GitLab backend
+    e.g.
+    *   `gitlab.com` becomes `GL_GITLAB_COM_PERS`
+    *   `gitlab.huc.knaw.nl` becomes `GL_GITLAB_HUC_KNAW_NL_PERS`
+
+    In this way you can store tokens for multiple GitLab backends.
 
 Then restart your terminal or say in an existing terminal
 
@@ -147,7 +160,8 @@ Click on `New ...` under `User environment variables`.
 
 **GitHub**: Then fill in `GHPERS` under *name* and the token string under *value*.
 
-**GitLab**: Then fill in `GL_host_PERS` under *name* and the token string under *value*.
+**GitLab**: Then fill in `GL_BACKEND_PERS`
+under *name* and the token string under *value*.
 
 Then quit the command prompt and start a new one.
 
@@ -160,7 +174,7 @@ whenever you fire up Text-Fabric in the future.
 
 **GitLab**
 
-You are now known to the Gitlab host, and you have the same access to its
+You are now known to the GitLab backend, and you have the same access to its
 repository as when you log in via the web interface.
 
 ## Minimize accessing GitHub
@@ -195,10 +209,10 @@ The data will be downloaded to your computer and stored in your
 ### Using a corpus for the first time, after hitting the rate limit
 
 If you want to load a new corpus after having passed the rate limit, and not
-wanting to wait an hour, you could directly clone the repos from GitHub:
+wanting to wait an hour, you could directly clone the repos from GitHub/GitLab:
 
-Open your terminal, and go to (or create) directory `~/github` (in your
-home directory).
+Open your terminal, and go to (or create) directory `~/github` or `~/gitlab`
+(in your home directory).
 
 Inside that directory, go to or create directory `org`
 Go to that directory.
@@ -207,6 +221,12 @@ Then do
 
 ``` sh
 git clone https://github.com/org/repo
+```
+
+or
+
+``` sh
+git clone https://gitlab.com/org/repo
 ```
 
 (replacing `org` and `repo` with the values that apply to your corpus).
@@ -219,7 +239,7 @@ If you want to see by example how to use this data, have a look at
 [repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb),
 especially when it discusses `clone`.
 
-In order to run Text-Fabric without further access to GitHub, say
+In order to run Text-Fabric without further access to the backend, say
 
 ``` sh
 text-fabric corpus:clone checkout=clone
@@ -232,15 +252,18 @@ A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
 This will instruct Text-Fabric to use the app and data from within your `~/github`
-directory tree.
+or `~/gitlab` directory tree.
 
 ### Using a corpus that you already have
 
 Depending on how you got the corpus, it is in your
-`~/github` or in your `~/text-fabric-data` directory tree.
+`~/github`, `~/gitlab` or in your `~/text-fabric-data` directory tree:
 
-If you cloned it from GitHub or created it yourself, it is in your `~/github` tree;
-if you used the autoload of Text-Fabric it is in your `~/text-fabric-data`.
+1.   if you cloned it from GitHub, it is in your `~/github` tree;
+2.   if you cloned it from GitLab, it is in your `~/gitlab` tree;
+3.   if you cloned it from an other instance of GitLab, say hosted at
+    `gitlab.huc.knaw.nl`, it is in your `~/gitlab.huc.knaw.nl` tree;
+4.   if you used the autoload of Text-Fabric it is in your `~/text-fabric-data`.
 
 In the first case, do this:
 
@@ -254,7 +277,36 @@ or, in a program,
 A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
-In the second case, do just this:
+In the second case, do this:
+
+``` sh
+text-fabric corpus:clone checkout=clone --backend=gitlab
+```
+
+or, in a program,
+
+``` python
+A = use('org/repo:clone', checkData='clone', backend="gitlab", hoist=globals())
+```
+
+In the third case, do this:
+
+``` sh
+text-fabric corpus:clone checkout=clone --backend=gitlab.huc.knaw.nl
+```
+
+or, in a program,
+
+``` python
+A = use(
+        'org/repo:clone',
+        checkData='clone',
+        backend="gitlab".huc.knaw.nl,
+        hoist=globals(),
+    )
+```
+
+In the fourth case, do just this:
 
 ``` sh
 text-fabric corpus
@@ -270,19 +322,31 @@ See also `tf.advanced.app.App`.
 
 ### Updating a corpus that you already have
 
-If you cloned it from GitHub (or created it yourself in your `~/github` tree):
+If you cloned it from GitHub/GitLab:
 
 In your terminal:
 
 ``` sh
 cd ~/github/organization/repo
-git pull origin master
+```
+
+or
+
+``` sh
+cd ~/gitlab/organization/repo
 ```
 
 (replacing `organization` with the name of the organization where the corpus resides
 and `corpus` with the name of your corpus).
 
-Now you have the newest corpus data on your system. and you can use it as follows:
+And then:
+
+git pull origin master
+```
+
+Now you have the newest corpus data on your system.
+and you can use it as follows
+(we show the example for `github`):
 
 ``` sh
 text-fabric corpus:clone checkout=clone
@@ -294,7 +358,8 @@ or, in a program,
 A = use('org/repo:clone', checkData='clone', hoist=globals())
 ```
 
-If you have autoloaded it from GitHub, you have to add the `latest` or `hot` specifier:
+If you have autoloaded it from the backend,
+you have to add the `latest` or `hot` specifier:
 
 ``` sh
 text-fabric corpus:latest checkout=latest
@@ -333,9 +398,9 @@ from gitlab import Gitlab
 from gitlab.exceptions import GitlabGetError
 
 from ..parameters import (
+    GH,
     URL_TFDOC,
-    CLONE_BASE,
-    EX_BASE,
+    backendRep,
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
@@ -349,8 +414,8 @@ VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
 SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")
 
 
-def GLPERS(host):
-    return f"GL_{SHELL_VAR_RE.sub('_', host.upper())}_PERS"
+def GLPERS(backend):
+    return f"GL_{SHELL_VAR_RE.sub('_', backend.upper())}_PERS"
 
 
 class Repo:
@@ -358,13 +423,13 @@ class Repo:
 
     def __init__(
         self,
+        backend,
         org,
         repo,
         folder,
         version,
         increase,
-        host=None,
-        source=CLONE_BASE(None),
+        source=backendRep(GH, "clone"),
         dest=DOWNLOADS,
     ):
         self.org = org
@@ -377,17 +442,11 @@ class Repo:
 
         self.repoOnline = None
 
-        self.host = host
-        onGithub = host is None
+        self.backend = backend
+        onGithub = backend is None
         self.onGithub = onGithub
 
         self.conn = None
-
-        if onGithub:
-            self.hostRep = "GitHub"
-        else:
-            self.hostRep = host
-            self.hostUrl = f"https://{host}"
 
     def newRelease(self):
         if not self.makeZip():
@@ -415,7 +474,7 @@ class Repo:
     def makeZip(self):
         source = self.source
         dest = self.dest
-        host = self.host
+        backend = self.backend
         org = self.org
         repo = self.repo
         folder = self.folder
@@ -428,14 +487,20 @@ class Repo:
             return False
 
         zipData(
-            host, org, repo, version=version, relative=folder, source=source, dest=dest
+            backend,
+            org,
+            repo,
+            version=version,
+            relative=folder,
+            source=source,
+            dest=dest,
         )
         return True
 
     def connect(self):
         log = self.log
         warning = self.warning
-        hostRep = self.hostRep
+        backend = self.backend
         conn = self.conn
 
         if not conn:
@@ -462,14 +527,14 @@ class Repo:
                 )
 
             log(
-                f"\tconnecting to online {hostRep} repo {self.org}/{self.repo} ... ",
+                f"\tconnecting to online {backend} repo {self.org}/{self.repo} ... ",
                 newline=False,
             )
             self.repoOnline = conn.get_repo(f"{self.org}/{self.repo}")
             log("connected")
         except GithubException as why:
             warning("failed")
-            warning(f"{hostRep} says: {why}")
+            warning(f"{backend} says: {why}")
         except IOError:
             warning("no internet")
 
@@ -636,7 +701,14 @@ class Repo:
 
 
 def releaseData(
-    org, repo, folder, version, increase, source=CLONE_BASE(None), dest=DOWNLOADS
+    backend,
+    org,
+    repo,
+    folder,
+    version,
+    increase,
+    source=None,
+    dest=DOWNLOADS,
 ):
     """Makes a new data release for a repository.
 
@@ -646,6 +718,8 @@ def releaseData(
 
     Parameters
     ----------
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
     org: string
         The organization name of the repo
     repo: string
@@ -664,12 +738,15 @@ def releaseData(
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional `CLONE_BASE(host)`
+    source: string, optional `None`
         Path to where the local GitHub clones are stored
     dest: string, optional `DOWNLOADS`
         Path to where the zipped data should be stored
     """
-    R = Repo(org, repo, folder, version, increase, source=source, dest=dest)
+    if source is None or not source:
+        source = (backendRep(GH, "clone"),)
+
+    R = Repo(GH, org, repo, folder, version, increase, source=source, dest=dest)
     return R.newRelease()
 
 
@@ -703,13 +780,13 @@ class Checkout:
         return (commit, release, local)
 
     @staticmethod
-    def toString(commit, release, local, host=None, source=None, dest=None):
+    def toString(commit, release, local, backend, source=None, dest=None):
         extra = ""
         if local:
             if source is None:
-                source = CLONE_BASE(host)
+                source = backendRep(backend, "clone")
             if dest is None:
-                dest = EX_BASE(host)
+                dest = backendRep(backend, "cache")
 
             baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
@@ -739,6 +816,7 @@ class Checkout:
 
     def __init__(
         self,
+        backend,
         org,
         repo,
         relative,
@@ -749,21 +827,14 @@ class Checkout:
         withPaths,
         silent,
         _browse,
-        host=None,
         version=None,
         label="data",
     ):
-        self.host = host
-        onGithub = host is None
+        self.backend = backend
+        onGithub = backend == GH
         self.onGithub = onGithub
 
         self.conn = None
-
-        if onGithub:
-            self.hostRep = "GitHub"
-        else:
-            self.hostRep = host
-            self.hostUrl = f"https://{host}"
 
         self._browse = _browse
         self.label = label
@@ -825,7 +896,7 @@ class Checkout:
     def login(self):
         onGithub = self.onGithub
         conn = self.conn
-        host = self.host
+        backend = self.backend
 
         self.canDownloadSubfolders = False
 
@@ -841,56 +912,56 @@ class Checkout:
                 else:
                     conn = Github()
         else:
-            hostUrl = self.hostUrl
+            bUrl = backendRep(backend, "url")
+            bMachine = backendRep(backend, "machine")
 
-            person = os.environ.get(GLPERS(host), None)
+            person = os.environ.get(GLPERS(bMachine), None)
             if person:
-                conn = Gitlab(hostUrl, private_token=person)
+                conn = Gitlab(bUrl, private_token=person)
             else:
-                conn = Gitlab(hostUrl)
+                conn = Gitlab(bUrl)
 
-            hostVersion = conn.version()
+            backendVersion = conn.version()
             if (
-                not hostVersion
-                or hostVersion[0] == "unknown"
-                or hostVersion[-1] == "unknown"
+                not backendVersion
+                or backendVersion[0] == "unknown"
+                or backendVersion[-1] == "unknown"
             ):
                 self.conn = None
-                self.error(f"Cannot log in to GitLab instance {host}\n")
+                self.error(f"Cannot connect to GitLab instance {backend}\n")
                 return
 
             versionThreshold = (14, 4, 0)
 
-            if hostVersion:
-                hostVersion = [
+            if backendVersion:
+                backendVersion = [
                     int(VERSION_DIGIT_RE.sub(r"\1", vc))
-                    for vc in hostVersion[0].split(".")
+                    for vc in backendVersion[0].split(".")
                 ]
-                if len(hostVersion) < 3:
-                    hostVersion.extend([0] * (3 - len(hostVersion)))
+                if len(backendVersion) < 3:
+                    backendVersion.extend([0] * (3 - len(backendVersion)))
 
                 canDownloadSubfolders = True
-                for (t, v) in zip(versionThreshold, hostVersion):
+                for (t, v) in zip(versionThreshold, backendVersion):
                     if t != v:
                         canDownloadSubfolders = t < v
                         break
 
                 self.canDownloadSubfolders = canDownloadSubfolders
 
-                # however, python-gitlab does not support this part of the api,
-                # so we switch this off
-                self.canDownloadSubfolders = False
         self.conn = conn
         return conn
 
     def connect(self):
         conn = self.conn
         onGithub = self.onGithub
-        hostRep = self.hostRep
+        backend = self.backend
         log = self.log
         warning = self.warning
         org = self.org
         repo = self.repo
+
+        bName = backendRep(backend, "name")
 
         if not conn:
             conn = self.login()
@@ -912,10 +983,10 @@ class Checkout:
 
             except GithubException as why:
                 warning("Could not get rate limit details")
-                warning(f"{hostRep} says: {why}")
+                warning(f"{bName} says: {why}")
 
         log(
-            f"\tconnecting to online {hostRep} repo {org}/{repo} ... ",
+            f"\tconnecting to online {bName} repo {org}/{repo} ... ",
             newline=False,
         )
         repoOnline = None
@@ -927,18 +998,18 @@ class Checkout:
                     log("connected")
                 except GithubException as why:
                     warning("failed")
-                    warning(f"{hostRep} says: {why}")
+                    warning(f"{bName} says: {why}")
             else:
                 try:
                     repoOnline = conn.projects.get(f"{org}/{repo}")
                     log("connected")
                 except GitlabGetError as why:
                     warning("failed")
-                    warning(f"{hostRep} says: {why}")
+                    warning(f"{bName} says: {why}")
         except IOError as why:
             warning("no internet")
             warning("failed")
-            warning(f"{hostRep} says: {why}")
+            warning(f"{bName} says: {why}")
 
         self.repoOnline = repoOnline
 
@@ -968,7 +1039,7 @@ class Checkout:
 
     def makeSureLocal(self, attempt=False):
         _browse = self._browse
-        host = self.host
+        backend = self.backend
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
@@ -1101,7 +1172,7 @@ class Checkout:
                 self.commitOff,
                 self.releaseOff,
                 self.local,
-                host=host,
+                backend,
                 dest=self.dest,
                 source=self.source,
             )
@@ -1192,6 +1263,8 @@ class Checkout:
 
     def downloadZip(self, where, shiftUp=False, commit=None, showErrors=True):
         # commit parameter only supported for GitLab
+        conn = self.conn
+        backend = self.backend
         log = self.log
         label = self.label
         repo = self.repo
@@ -1209,7 +1282,7 @@ class Checkout:
             again = True
         else:
             g = where
-            notice = self.hostRep
+            notice = backendRep(backend, "name")
             again = False
 
         log(f"\tdownloading from {notice} ... ")
@@ -1220,7 +1293,22 @@ class Checkout:
                 zf = r.content
             elif g is not None:
                 if canDownloadSubfolders:
-                    zf = g.repository_archive(format="zip", sha=commit, path=dataDir)
+                    # zf = g.repository_archive(format="zip", sha=commit, path=dataDir)
+                    response = conn.http_get(
+                        f"/projects/{g.id}/repository/archive.zip",
+                        query_data=dict(sha=commit, path=dataDir),
+                        raw=True,
+                    )
+                    zf = response.content
+                    if len(zf) == 0:
+                        self.possibleError(
+                            f"No directory {dataDir} in #{commit}",
+                            showErrors,
+                            again=False,
+                        )
+                        msg = "\tFailed"
+                        self.possibleError(msg, showErrors=showErrors)
+                        return False
                 else:
                     zf = g.repository_archive(format="zip", sha=commit)
             zf = io.BytesIO(zf)
@@ -1311,7 +1399,7 @@ class Checkout:
             return None
 
         onGithub = self.onGithub
-        host = self.host
+        backend = self.backend
 
         log = self.log
 
@@ -1335,7 +1423,7 @@ class Checkout:
                 except UnknownObjectException:
                     msg = (
                         f"{lead}No directory {subPath} in "
-                        f"{self.toString(commit, None, False, host=host)}"
+                        f"{self.toString(commit, None, False, backend)}"
                     )
                     self.possibleError(msg, showErrors, again=True, indent=lead)
                     good = False
@@ -1549,8 +1637,8 @@ class Checkout:
 
 
 def checkoutRepo(
+    backend,
     _browse=False,
-    host=None,
     org="annotation",
     repo="banks",
     folder="tf",
@@ -1574,10 +1662,8 @@ def checkoutRepo(
 
     Parameters
     ----------
-    host: string, optional None
-        If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-        If `None` we work with `github.com`.
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
 
     org: string, optional "annotation"
         The *org* on GitHub or the group on GitLab
@@ -1601,8 +1687,7 @@ def checkoutRepo(
             If there is no data there, data will be downloaded.
         *   `local`: whatever you have locally in `~/text-fabric-data`.
             If there is no data there, you get an error message.
-        *   `clone`: whatever you have locally in `~/github` or
-            GitLab home (`~/`*host*)
+        *   `clone`: whatever you have locally as a GitHub/GitLab clone
             If there is no data there, you get an error message.
         *   `latest`: make sure the latest release has been fetched from online
         *   `hot`: make sure the latest commit has been fetched from online
@@ -1654,13 +1739,18 @@ def checkoutRepo(
         If your data has versions, *localDir* points to directory that has the versions,
         not to a specific version.
 
-    Your local copy can be found under your `~/text-fabric-data`, and from
-    there under *org/repo* if it is from a GitHub clone, or under
-    *host/org/repo* if it is a GitLab clone.
+    Your local copy can be found:
 
-    If you work with a clone, then your local copy is either in
-    `~/github` or in `~/`*host* (whatever the value of the *host* parameter is.
-    From there it is under *org/repo*.
+    *   in the cache under your `~/text-fabric-data`, and from
+        there under *backend*/*org/repo* where *backend* is github or gitlab or
+        the server name of a gitlab instance.
+
+    or
+
+    *   in the place where you store your clones from GitHub/GitLab:
+        `~/github` or `~/gitlab` or `~/`*backend*
+        (whatever the value of the *backend* parameter is.
+        From there it is under *org/repo*.
 
     The actual feature files are in *folder/version* if there is a *version*,
     else *folder*.
@@ -1668,13 +1758,14 @@ def checkoutRepo(
     """
 
     if source is None:
-        source = CLONE_BASE(host)
+        source = backendRep(backend, "clone")
 
     if dest is None:
-        dest = EX_BASE(host)
+        dest = backendRep(backend, "cache")
 
     def resolve(chkout, attempt=False):
         rData = Checkout(
+            backend,
             org,
             repo,
             folder,
@@ -1685,7 +1776,6 @@ def checkoutRepo(
             withPaths,
             silent,
             _browse,
-            host=host,
             version=version,
             label=label,
         )

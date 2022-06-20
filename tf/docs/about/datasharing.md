@@ -28,10 +28,16 @@ The `text-fabric` command has several optional command line arguments:
     --mod=...
 
 By means of these arguments you can load extra features, either from your own
-system, or from GitHub:
+system, or from GitHub/GitLab:
 
 ```sh
 text-fabric bhsa --mod=etcbc/valence/tf
+```
+
+or, if the module resides at a different backend than the main data:
+
+```sh
+text-fabric bhsa --mod=<gitlab>yourgroup/yourrepo/tf
 ```
 
 See the incantation in `tf.about.usefunc`.
@@ -77,12 +83,12 @@ versioned tf data
     The new features must sit in a directory named after the version
     of the main corpus they correspond to.
 
-local github
+local GitHub or GitLab
 :   The data you share must reside in a directory on your hard drive.
-    The convention is, that you have a directory `github` under your
-    home directory. And inside `github`, you have directories for
+    The convention is, that you have a directory `github` and or `gitlab` under your
+    home directory. And inside that you have directories for
     organizations or people first, and then repositories, exactly as 
-    the online GitHub is organized. 
+    the online GitHub/GitLab is organized. 
 
     Your own data should be in such a repo as well, e.g.
 
@@ -96,19 +102,27 @@ local github
 
     `annotation/banks/sim/tf`
 
-synchronized with GitHub
-:   You must have your local repo contents synchronized with that on GitHub.
+synchronized with the backend
+:   You must have your local repo contents synchronized with that on the
+    GitHub/GitLab backend.
 
     Now other people can use your data.
     Whenever you push updates, users may fetch the updated data, depending
     on how they call up your data, see below.
 
-released on GitHub
+released on GitHub/GitLab
 :   If your data is reasonably stable, consider making an official *release*
-    on GitHub.
-    Then you must attach your features as a zip file to that release.
-    Text-Fabric has a command to produce a zip file with exactly the
-    right structure and name.
+    on GitHub/GitLab.
+
+    !!! hint "Zip the data"
+        Attach your features as a zip file to that release.
+        Text-Fabric has a command to produce a zip file with exactly the
+        right structure and name.
+
+        This is especially useful for GitHub, where it speeds up the download
+        process for your data users.
+        On GitLab it does not make a difference, and you can safely omit this
+        step.
 
     Consider to connect your repo with 
     [Zenodo](https://zenodo.org).
@@ -155,18 +169,18 @@ you take the trouble of publishing them as a zip file attached to a release/
 Here we describe the easiest workflow to work with your developing data with a view to share
 it much less often than you modify it.
 
-### Produce in your local GitHub folder
+### Produce in your local GitHub/GitLab folder
 
 You probably have a program or notebook that synthesizes a bunch of new features.
 It is a good idea to have that program in a version control system, and publish
-it on GitHub, in a repository of your choice.
+it on GitHub/GitLab, in a repository of your choice.
 
 Set up that program in such a way, that your features end up in the same repository,
 in a folder of your choosing, but directly under a folder that corresponds with
 the version of the main data source against which you are building your data.
 
 Currently, your features only live on your computer, in your local github folder.
-You may or may not commit your local changes to the online GitHub.
+You may or may not commit your local changes to the online GitHub/GitLab.
 But you do not want to create a new release and attach your zipped feature data to it yet.
 
 We use the existing
@@ -254,6 +268,9 @@ it will be downloaded.
 If you want to single out a certain commit as stable data and give it a version number,
 go to your repo on GitHub, click the releases link, and make a new release.
 
+If your repo is on GitLab, it may be a bit more difficult to make a release.
+Follow the instructions found on GitLab.
+
 ![releases](../images/add-releases.png)
 
 Then click *Draft a new release*
@@ -303,7 +320,7 @@ zipping annotation/banks           0.2 with  10 features ==> tf-0.2.zip
 and as a result you have this in your Downloads folder
 
 ```
-~/Downloads/annotation-release/banks:
+~/Downloads/github/annotation-release/banks:
   tf-0.1.zip
   tf-0.2.zip
 ```
@@ -316,7 +333,7 @@ Zip your data with the `text-fabric-zip` command as explained above.
 It will look into your local github directory, pickup the features from there,
 zip them, and put the zip files in your Downloads folder. Then you can pick
 that zip file up and attach it manually to a new release of your repository
-on the online GitHub.
+on the online GitHub/GitLab.
 
 ### Continue developing your features
 
@@ -362,8 +379,8 @@ The values of the checkout parameters tell you to use data that is:
 * `""`: (default): from your local copy, but if there is no local copy,
   from the latest online release, or if there are no releases,
   from the latest online commit
-* `2387abc78f9de...`: a concrete commit hash found on GitHub (under Commits)
-* `v1.3`: a release tag found on GitHub (under Releases)
+* `2387abc78f9de...`: a concrete commit hash found on GitHub/GitLab (under Commits)
+* `v1.3`: a release tag found on GitHub/GitLab (under Releases)
 
 You pass the checkout values as follows:
 

@@ -156,13 +156,13 @@ def makeTfKernel(app, appName, port):
 
             app = self.app
             aContext = app.context
-            host = app.host
+            backend = app.backend
             org = aContext.org
             repo = aContext.repo
             commit = aContext.commit
             appProvenance = (
                 (
-                    ("host", host),
+                    ("backend", backend),
                     ("name", appName),
                     ("org", org),
                     ("repo", repo),
@@ -627,7 +627,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
-    host = dataSource.get("host", None)
+    backend = dataSource.get("backend", None)
     appName = dataSource["appName"]
     checkout = dataSource["checkout"]
     checkoutApp = dataSource["checkoutApp"]
@@ -649,8 +649,8 @@ def main(cargs=sys.argv):
         appName,
         checkoutApp,
         dataLoc,
+        backend,
         True,
-        host=host,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,

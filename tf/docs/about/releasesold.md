@@ -1559,7 +1559,7 @@ more efficient for the users.
 ##### `checkoutRepo()`
 
 There is a new utility function `checkoutRepo()`, by which you can
-maintain a local copy of any subdirectory of any repo on Github.
+maintain a local copy of any subdirectory of any repo on GitHub.
 
 See `tf.advanced.repo`.
 
@@ -1645,7 +1645,7 @@ that have an incoming edge from `m` and the nodes that have an outgoing edge to 
 2019-03-10
 
 * The markdown display in online notebooks showed many spurious `</span>`.
-  This is a bug in the Markdown renderer used by Github and NBViewer.
+  This is a bug in the Markdown renderer used by GitHub and NBViewer.
   It happens if table cells have doubly nested `<span>` elements.
   It did not show up in local notebooks.
   In order to avoid it, TF does no longer work with the Markdown renderer.

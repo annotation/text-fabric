@@ -1,9 +1,10 @@
 import os
+import re
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import EX_BASE, CLONE_BASE, TEMP_DIR
-from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD
+from ..parameters import backendRep, TEMP_DIR
+from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD, console
 from ..core.text import DEFAULT_FORMAT
 
 
@@ -65,35 +66,84 @@ def dh(html):
     display(HTML(unexpanduser(html)))
 
 
+# MODULE REFERENCES
+
+BACKEND_RE = re.compile(r"<([^/>]*)>")
+
+
+thisBackend = []
+
+
+def backendRepl(match):
+    thisBackend.append(match.group(1))
+    return ""
+
+
+def splitModRef(moduleRef):
+    thisBackend.clear()
+    theBackend = None
+    bareModuleRef = BACKEND_RE.sub(backendRepl, moduleRef)
+    if len(thisBackend):
+        theBackend = thisBackend[0]
+        if len(thisBackend) > 1:
+            console(
+                f"Multiple <backend> in {moduleRef}: "
+                f"{', '.join(thisBackend)}; using <{theBackend}> only ",
+                error=True,
+            )
+
+    bRep = f"<{theBackend}>" if theBackend else ""
+
+    parts = bareModuleRef.split(":", 1)
+    if len(parts) == 1:
+        parts.append("")
+    (ref, specifier) = parts
+    parts = ref.split("/", 2)
+
+    if len(parts) < 2:
+        console(
+            f"""
+Module ref "{bRep}{bareModuleRef}" is not "{{org}}/{{repo}}/{{path}}"
+""",
+            error=True,
+        )
+        return None
+
+    if len(parts) == 2:
+        parts.append("")
+
+    return [*parts, specifier, theBackend]
+
+
 # COLLECT CONFIG SETTINGS IN A DICT
 
 
-def getLocalDir(host, cfg, local, version):
+def getLocalDir(backend, cfg, local, version):
     provenanceSpec = cfg.get("provenanceSpec", {})
     org = provenanceSpec.get("org", None)
     repo = provenanceSpec.get("repo", None)
     relative = provenanceSpec.get("relative", "tf")
     version = provenanceSpec.get("version", None) if version is None else version
-    base = hasData(host, local, org, repo, version, relative)
+    base = hasData(backend, local, org, repo, version, relative)
 
     if not base:
-        base = EX_BASE(host)
+        base = backendRep(backend, "cache")
 
     return expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
 
 
-def hasData(host, local, org, repo, version, relative):
+def hasData(backend, local, org, repo, version, relative):
     versionRep = f"/{version}" if version else ""
     if local == "clone":
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, "clone")
         ghTarget = f"{cloneBase}/{org}/{repo}/{relative}{versionRep}"
         if os.path.exists(ghTarget):
             return cloneBase
 
-    exBase = EX_BASE(host)
-    expressTarget = f"{exBase}/{org}/{repo}/{relative}{versionRep}"
-    if os.path.exists(expressTarget):
-        return exBase
+    cacheBase = backendRep(backend, "cache")
+    cacheTarget = f"{cacheBase}/{org}/{repo}/{relative}{versionRep}"
+    if os.path.exists(cacheTarget):
+        return cacheBase
     return False
 
 

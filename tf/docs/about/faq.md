@@ -159,7 +159,7 @@ If your machine has 4GB of RAM, it should be possible to run TF, with care.
 
 Text-Fabric uses the GitHub API to get its apps and data on the fly.
 
-### Github Rate Limit Exceeded!
+### GitHub Rate Limit Exceeded!
 
 Two solutions:
 

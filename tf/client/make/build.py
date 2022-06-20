@@ -8,7 +8,8 @@ Text-Fabric apps.
 Such a search interface is a static HTML page, powered by a Javascript program
 that reads the corpus data from Javascript variables.
 
-You can build the interface and deploy the HTML page to GitHub Pages,
+You can build the interface and deploy the HTML page to GitHub Pages
+(GitLab pages not yet supported),
 after which it is usable for everyone.
 
 ## Prerequisites
@@ -70,12 +71,9 @@ from tf.parameters import (
     REPO,
     LS,
     ZIP_OPTIONS,
-    URL_B,
-    URL_NB,
-    CLONE_BASE,
+    backendRep,
     URL_TFDOC,
     APP_CONFIG,
-    PAGES_DOMAIN,
 )
 
 from .gh import deploy
@@ -108,7 +106,7 @@ def readArgs():
     class Args:
         pass
 
-    Args.host = None
+    Args.backend = None
     Args.dataset = None
     Args.repo = None
     Args.client = None
@@ -126,8 +124,8 @@ def readArgs():
 
     newArgs = []
     for arg in args:
-        if arg.startswith("--host="):
-            Args.host = arg[8:]
+        if arg.startswith("--backend="):
+            Args.backend = arg[11:]
         else:
             newArgs.append(arg)
     args = newArgs
@@ -206,7 +204,7 @@ class Make:
         self,
         dataset,
         client,
-        host=None,
+        backend=None,
         A=None,
         folder=None,
         appFolder=None,
@@ -219,7 +217,7 @@ class Make:
             pass
 
         self.C = C
-        self.host = host
+        self.backend = backend
         self.dataset = dataset
         self.client = client
         self.folder = normpath(folder)
@@ -262,7 +260,7 @@ class Make:
     def config(self):
         C = self.C
 
-        host = self.host
+        backend = self.backend
         dataset = self.dataset
         parts = dataset.split("/")
         if len(parts) != 2:
@@ -278,7 +276,7 @@ class Make:
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
-        backendUrl = URL_B(host)
+        bUrl = backendRep(backend, "rep")
 
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -287,10 +285,10 @@ class Make:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-        cloneBase = CLONE_BASE(host)
+        cloneBase = backendRep(backend, "clone")
 
         c = dict(
-            host=host,
+            backend=backend,
             org=org,
             repo=repo,
             client=client,
@@ -301,9 +299,9 @@ class Make:
             searchRepo="«repo»-search",
             rel="site",
             generatorUrl=f"{URL_TFDOC}/client/make/build.html",
-            sourceUrl=f"{backendUrl}/«org»/«searchRepo»/tree/master/layeredsearch",
-            issueUrl=f"{backendUrl}/«org»/«searchRepo»/issues",
-            tutUrl=f"{URL_NB(host)}/«org»/«repo»/blob/master/tutorial/start.ipynb",
+            sourceUrl=f"{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch",
+            issueUrl=f"{bUrl}/«org»/«searchRepo»/issues",
+            tutUrl=f"{backendRep(backend, 'urlnb')}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
             appDir=f"{cloneBase}/«org»/«searchRepo»",
             localDir=f"«appDir»/{TEMP}",
@@ -401,7 +399,7 @@ class Make:
 
             d = dict(
                 dataLocation=f"{cloneBase}/«data.org»/«data.repo»/«data.rel»",
-                dataUrl=f"{backendUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
+                dataUrl=f"{bUrl}/«data.org»/«data.repo»/tree/master/«data.rel»/«data.version»",
                 writingUrl=f"{URL_TFDOC}/writing/«writing».html",
                 urls=dict(
                     cheatsheet=(
@@ -587,7 +585,7 @@ class Make:
             defs=dict(
                 lsVersion=C.lsVersion,
                 client=C.client,
-                host=C.host,
+                backend=C.backend,
                 org=C.org,
                 repo=C.repo,
                 urls=C.urls,
@@ -688,11 +686,13 @@ class Make:
 
     def loadTf(self):
         C = self.C
-        host = C.host
+        backend = C.backend
         org = C.org
         repo = C.repo
         version = C.data["version"]
-        A = use(f"{org}/{repo}:clone", checkout="clone", host=host, version=version)
+        A = use(
+            f"{org}/{repo}:clone", checkout="clone", backend=backend, version=version
+        )
         self.A = A
 
     def makeConfig(self):
@@ -899,7 +899,7 @@ class Make:
         whiteRe = re.compile(r"""^\s+$""", re.M)
         nlRe = re.compile(r"""\n\n+""")
 
-        def getModule(module):
+        def getJSModule(module):
             with open(f"{C.jsOutDir}/{module}") as fh:
                 text = fh.read()
             text = importRe.sub("", text)
@@ -923,7 +923,7 @@ class Make:
                 modules.append(entry.name)
         console(", ".join(module[0:-3] for module in modules))
 
-        content = {module: getModule(module) for module in modules}
+        content = {module: getJSModule(module) for module in modules}
 
         header = """\
 /*eslint-env jquery*/
@@ -1134,21 +1134,23 @@ class Make:
         C = self.C
         appDir = C.appDir
         siteDir = C.siteDir
-        host = self.host
+        backend = self.backend
         org = self.org
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        domain = PAGES_DOMAIN(host)
+        domain = backendRep(backend, "pages")
         console(
             f"Publishing on {domain} "
             f"{org}/{repo}:{','.join(clients)} from {siteDir} ..."
         )
         os.chdir(appDir)
-        if host is None:
+        if backend is None:
             deploy(C.org, C.searchRepo)
         else:
-            console(f"Deploying Pages on GitLab ({host}) not yet supported", error=True)
+            console(
+                f"Deploying Pages on GitLab ({backend}) not yet supported", error=True
+            )
 
     def ship(self, publish=True):
         self.adjustVersion()
@@ -1298,13 +1300,13 @@ class Make:
         return clients
 
 
-def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
+def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
     DEBUG_STATE = "off"
 
     Mk = Make(
         dataset,
         None,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=DEBUG_STATE,
@@ -1324,7 +1326,7 @@ def makeSearchClients(dataset, folder, appFolder, host=None, dataDir=None):
         ThisMk = Make(
             dataset,
             client,
-            host=host,
+            backend=backend,
             A=A,
             folder=folder,
             appFolder=appFolder,
@@ -1339,7 +1341,7 @@ def main():
     if Args is None:
         return 0
 
-    host = Args.host
+    backend = Args.backend
     dataset = Args.dataset
     client = Args.client
     command = Args.command
@@ -1357,7 +1359,7 @@ def main():
     Mk = Make(
         dataset,
         client,
-        host=host,
+        backend=backend,
         folder=folder,
         appFolder=appFolder,
         debugState=debugState,
@@ -1369,7 +1371,7 @@ def main():
             ThisMk = Make(
                 dataset,
                 client,
-                host=host,
+                backend=backend,
                 folder=folder,
                 appFolder=appFolder,
                 debugState=debugState,

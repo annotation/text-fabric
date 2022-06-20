@@ -226,11 +226,11 @@ Default:
 
 ### `docRoot`
 
-Where the docs are: on Github or GitLab (default),
+Where the docs are: on GitHub or GitLab (default),
 or on nbviewer (`{urlNb}`) or somewhere else.
 
 Default:
-:   string `{urlGh}` or `https://`*host*
+:   string `{urlGh}` or `https://`*backend*
 
 ---
 
@@ -321,6 +321,7 @@ as many as you want:
 ```
 moduleSpecs = (
   dict(
+      backend="gitlab",
       org="researcher1",
       repo="work1",
       relative="tf",
@@ -331,6 +332,7 @@ moduleSpecs = (
       doi="xx.yyyy/archive.zzzzzzz",
   ),
   dict(
+      backend="gitlab.huc.knaw.nl",
       org="researcher2",
       repo="work2",
       relative="tf",
@@ -354,7 +356,7 @@ Default:
 
 ### `org`
 
-The GitHub organisation name under which your TF data resides.
+The GitHub organisation or the GitLab group under which your TF data resides.
 
 Default:
 :   string `annotation`
@@ -373,7 +375,7 @@ Default:
 
 ### `repo`
 
-The GitHub repo name under which your TF data resides
+The GitHub repo or the GitLab project under which your TF data resides
 
 !!! hint
     *org/repo* = `annotation/default` acts as placeholder for app-less datasets.
@@ -546,7 +548,7 @@ Default:
 ### `zip`
 
 Only used by `text-fabric-zip` when collecting data into zip files
-as attachments to a GitHub release.
+as attachments to a GitHub/GitLab release.
 
 If left to `null`, will be configured to use the main repo and the modules.
 
@@ -931,7 +933,7 @@ Default:
 import re
 import types
 
-from ..parameters import URL_B, URL_NB, URL_TFDOC
+from ..parameters import backendRep, URL_TFDOC
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
 from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
@@ -940,14 +942,35 @@ from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
 
 WRITING_DEFAULTS = dict(
-    akk=dict(language="akkadian", direction="ltr",),
-    hbo=dict(language="hebrew", direction="rtl",),
-    syc=dict(language="syriac", direction="rtl",),
-    ara=dict(language="arabic", direction="rtl",),
-    grc=dict(language="greek", direction="ltr",),
-    cld=dict(language="aramaic", direction="ltr",),
+    akk=dict(
+        language="akkadian",
+        direction="ltr",
+    ),
+    hbo=dict(
+        language="hebrew",
+        direction="rtl",
+    ),
+    syc=dict(
+        language="syriac",
+        direction="rtl",
+    ),
+    ara=dict(
+        language="arabic",
+        direction="rtl",
+    ),
+    grc=dict(
+        language="greek",
+        direction="ltr",
+    ),
+    cld=dict(
+        language="aramaic",
+        direction="ltr",
+    ),
 )
-WRITING_DEFAULTS[""] = dict(language="", direction="ltr",)
+WRITING_DEFAULTS[""] = dict(
+    language="",
+    direction="ltr",
+)
 
 FONT_BASE = (
     "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
@@ -990,6 +1013,7 @@ RELATIVE_DEFAULT = "tf"
 
 MSPEC_KEYS = set(
     """
+    backend
     org
     repo
     relative
@@ -1023,9 +1047,9 @@ PROVENANCE_DEFAULTS = (
 )
 
 
-def DOC_DEFAULTS(host):
+def DOC_DEFAULTS(backend):
     return (
-        ("docRoot", "{urlGh}" if host is None else f"https://{host}"),
+        ("docRoot", f"{backendRep(backend, 'url')}"),
         ("docExt", ".md"),
         ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
         ("docPage", "home"),
@@ -1298,10 +1322,14 @@ def _fillInDefined(template, data):
 
 
 def setAppSpecs(app, cfg, reset=False):
-    host = app.host
+    backend = app.backend
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
-    specs = dict(urlGh=URL_B(host), urlNb=URL_NB(host), tfDoc=URL_TFDOC,)
+    specs = dict(
+        urlGh=backendRep(backend, "rep"),
+        urlNb=backendRep(backend, "urlnb"),
+        tfDoc=URL_TFDOC,
+    )
     app.specs = specs
     specs.update(cfg)
     if "apiVersion" not in specs:
@@ -1321,7 +1349,7 @@ def setAppSpecs(app, cfg, reset=False):
 
     for (dKey, defaults) in (
         ("provenanceSpec", PROVENANCE_DEFAULTS),
-        ("docs", DOC_DEFAULTS(host)),
+        ("docs", DOC_DEFAULTS(backend)),
     ):
         checker.checkGroup(cfg, {d[0] for d in defaults}, dKey)
         checker.report()
@@ -1351,7 +1379,7 @@ def setAppSpecs(app, cfg, reset=False):
                     else:
                         moduleSpec[k] = (
                             specs.get(k, None)
-                            if k in {"org", "repo"}
+                            if k in {"backend", "org", "repo"}
                             else RELATIVE_DEFAULT
                             if k == "relative"
                             else None
@@ -1366,7 +1394,7 @@ def setAppSpecs(app, cfg, reset=False):
         graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs["zip"] = (
             [repo]
-            + [(m["org"], m["repo"], m["relative"],) for m in moduleSpecs]
+            + [(m["backend"], m["org"], m["repo"], m["relative"]) for m in moduleSpecs]
             + graphicsModule
         )
 
@@ -1589,7 +1617,9 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 )
                 dest[nType] = (template, templateFeatures)
                 checker.checkSetting(
-                    k, template, extra=(template, templateFeatures),
+                    k,
+                    template,
+                    extra=(template, templateFeatures),
                 )
 
         if "style" in info:
@@ -1752,7 +1782,9 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         )
 
         levelCls[nType] = dict(
-            container=containerCls, label=labelCls, children=childrenCls,
+            container=containerCls,
+            label=labelCls,
+            children=childrenCls,
         )
 
     descendantType = transitiveClosure(childType, {slotType})

@@ -36,11 +36,11 @@ export class ConfigProvider {
      */
     this.memSavingMethod = memSavingMethod
 
-    /* the Github organization of the app
+    /* the GitHub organization or GitLab group of the app
      */
     this.org = org
 
-    /* the Github repo of the app
+    /* the GitHub repo or GitLab project of the app
      */
     this.repo = repo
 

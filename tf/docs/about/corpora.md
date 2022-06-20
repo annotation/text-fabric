@@ -1,7 +1,7 @@
 # Corpora
 
-Text-Fabric corpora are usually stored on GitHub and Text-Fabric
-knows how to download a corpus from GitHub if you specify the *org/repo*.
+Text-Fabric corpora are usually stored on GitHub/GitLab and Text-Fabric
+knows how to download a corpus from GitHub/GitLab if you specify the *org/repo*.
 
 Most corpora are configured by metadata in a directory *app* in the repo.
 
@@ -20,7 +20,7 @@ text-fabric org/repo
 ```
 
 Here is a list of corpora that can be loaded this way.
-Since everybody can put a Text-Fabric corpus on GitHub, the list may not be complete!
+Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not be complete!
 
 [annotation/banks](https://github.com/annotation/banks)
 :   *modern english*
@@ -197,7 +197,7 @@ oldroyal
 
 ### Automatically
 
-Text-Fabric downloads corpus data and apps from GitHub on demand.
+Text-Fabric downloads corpus data and apps from GitHub/GitLab on demand.
 
 See `tf.about.use`.
 
@@ -213,16 +213,16 @@ The TF data is fairly compact.
 
 ### Manually
 
-TF data of corpora reside in a GitHub repo.
+TF data of corpora reside in a backend repo.
 You can manually clone such a data repository and point Text-Fabric to that data.
 
-First, take care that your clone ends up in `github/`*orgName*
+First, take care that your clone ends up in `github/`*orgName* or `gitlab/`*orgName*
 (relative your home directory)
-where *orgName* is the organization or person on GitHub under which you have
+where *orgName* is the organization or person or group on GitHub/GitLab under which you have
 found the repo.
 
 Then, when you invoke the app, pass the specifier `:clone`.
-This instructs Text-Fabric to look in your local GitHub clone, rather
+This instructs Text-Fabric to look in your local GitHub/GitLab clone, rather
 than online or in your local `text-fabric-data`, where downloaded data is stored.
 
     use('org/repo:clone', checkout="clone")

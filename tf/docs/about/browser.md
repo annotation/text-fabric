@@ -12,7 +12,7 @@ Below, when you see `app`, you have to substitute it by the name
 of an existing TF app.
 
 The Text-Fabric browser fetches the apps and corpora (`tf.about.corpora`)
-it needs from GitHub automatically.
+it needs from GitHub/GitLab automatically.
 
 !!! hint "On Windows?"
     You can click the Start Menu, and type
@@ -137,7 +137,7 @@ nodesx.tsv
     decorated with location information and text content.
 
 Now, if you want to share your results for checking and replication,
-put all this in a research repository or in a GitHub repository,
+put all this in a research repository or in a GitHub/GitLab repository,
 which you can then archive to [ZENODO](https://zenodo.org) to obtain a DOI.
 
 ### Unicode in Excel CSVs

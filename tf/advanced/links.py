@@ -2,17 +2,19 @@
 Produce links to Text-Fabric data and links from nodes to web resources.
 """
 
+import os
 import re
 import types
 from textwrap import dedent
 
 from ..parameters import (
-    URL_B,
+    backendRep,
     URL_TFDOC,
     SEARCHREF,
     APIREF,
     APP_APP,
-    URL_NB,
+    GH,
+    GL,
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
 from .repo import Checkout
@@ -45,7 +47,7 @@ def linksApi(app, silent):
         Normally it is the same as for the app, but when we do an `A.reuse()`
         we force `silent=True`.
     """
-    host = app.host
+    backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
     app.webLink = types.MethodType(webLink, app)
@@ -66,7 +68,10 @@ def linksApi(app, silent):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = f"{URL_NB(host)}/{org}/{repo}/blob/master/tutorial/start.ipynb"
+    tutUrl = (
+        f"{backendRep(backend, 'urlnb')}/"
+        f"{org}/{repo}/blob/master/tutorial/start.ipynb"
+    )
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = repo.upper()
@@ -109,7 +114,7 @@ def linksApi(app, silent):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f"{URL_B(host)}/{org}/{repo}/blob/master/{APP_APP}"
+    extraUrl = f"{backendRep(backend, 'url')}/{org}/{repo}/blob/master/{APP_APP}"
     appLink = (
         outLink(f"{org}/{repo}/app {apiVersionRep}", extraUrl, f"{appName} TF-app")
         if isCompatible and repo is not None
@@ -345,11 +350,13 @@ def showProvenance(app, jobName="program code", author="program author"):
     """
 
     aContext = app.context
-    host = app.host
+    backend = app.backend
     org = aContext.org
     repo = aContext.repo
     commit = aContext.commit
-    appProvenance = ((("host", host), ("org", org), ("repo", repo), ("commit", commit)),)
+    appProvenance = (
+        (("backend", backend), ("org", org), ("repo", repo), ("commit", commit)),
+    )
     provenance = (appProvenance, app.provenance)
     setNames = (
         tuple(sorted(app.sets.keys()))
@@ -358,6 +365,68 @@ def showProvenance(app, jobName="program code", author="program author"):
     )
     form = dict(jobName=jobName, author=author)
     dh(wrapProvenance(form, provenance, setNames)[0])
+
+
+PATH_RE1 = re.compile(
+    rf"""
+        ^
+        (.*?)
+        /
+        (?:
+            (
+                (?:
+                    text-fabric-data
+                    /
+                )?
+            )
+            (
+                {GH}
+                |
+                {GL}
+                |
+                (?:
+                    (?:
+                        [a-zA-Z0-9_-]+\.
+                    )+
+                    [a-zA-Z0-9_-]+
+                )
+            )
+        )
+        /
+        (.*)
+        $
+    """,
+    re.X | re.I,
+)
+
+PATH_RE2 = re.compile(
+    r"""
+    ^
+    ([^/]+)
+    /
+    ([^/]+)
+    /
+    (.*)
+    $
+    """,
+    re.X | re.I,
+)
+
+
+def _parseFeaturePath(path, backend):
+    match1 = PATH_RE1.fullmatch(path)
+    if not match1:
+        return (False, backend, "??", "??", "??")
+
+    (lead, exDir, theBackend, rest) = match1.groups()
+    theBackend = theBackend.lower()
+
+    match2 = PATH_RE2.fullmatch(rest)
+    if not match2:
+        return (False, theBackend, "??", "??", "??")
+
+    (org, repo, relative) = match2.groups()
+    return (True, theBackend, org, repo, relative)
 
 
 def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):
@@ -399,7 +468,7 @@ def _featuresPerModule(app):
 
     api = app.api
     TF = app.TF
-    host = app.host
+    backend = app.backend
 
     aContext = app.context
     mOrg = aContext.org
@@ -414,7 +483,9 @@ def _featuresPerModule(app):
 
     fixedModuleIndex = {}
     for m in moduleSpecs or []:
-        fixedModuleIndex[(m["org"], m["repo"], m["relative"])] = (
+        fixedModuleIndex[
+            (m["backend"] or backend, m["org"], m["repo"], m["relative"])
+        ] = (
             m["corpus"],
             m["docUrl"],
         )
@@ -423,19 +494,12 @@ def _featuresPerModule(app):
     mLocations = app.mLocations if hasattr(app, "mLocations") else []
     baseLoc = mLocations[0] if hasattr(app, "mLocations") else ()
 
-    hostPat = "" if host is None else f"|{re.escape(host)}"
-    pathRe = re.compile(
-        rf"^(.*/(?:github|text-fabric-data|{hostPat}))/([^/]+)/([^/]+)/(.*)$",
-        flags=re.I,
-    )
-
     for mLoc in mLocations:
-        match = pathRe.fullmatch(mLoc)
-        if not match:
-            moduleIndex[mLoc] = ("??", "??", "??", mLoc, "")
+        (parseOK, theBackend, org, repo, relative) = _parseFeaturePath(mLoc, backend)
+        if not parseOK:
+            moduleIndex[mLoc] = (theBackend, org, repo, relative, mLoc, "")
         else:
-            (base, org, repo, relative) = match.groups()
-            mId = (org, repo, relative)
+            mId = (theBackend, org, repo, relative)
             (corpus, docUrl) = (
                 (relative, None)
                 if org is None or repo is None
@@ -448,11 +512,11 @@ def _featuresPerModule(app):
                 else fixedModuleIndex[mId]
                 if mId in fixedModuleIndex
                 else (
-                    f"{org}/{repo}/{relative}",
-                    f"{URL_B(host)}/{org}/{repo}/tree/master/{relative}",
+                    f"{backendRep(backend, 'rep')}{org}/{repo}/{relative}",
+                    f"{backendRep(backend, 'url')}/{org}/{repo}/tree/master/{relative}",
                 )
             )
-            moduleIndex[mId] = (org, repo, relative, corpus, docUrl)
+            moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
 
     featureCat = {}
 
@@ -460,25 +524,30 @@ def _featuresPerModule(app):
         added = False
         featureInfo = TF.features[feature]
         featurePath = featureInfo.path
-        match = pathRe.fullmatch(featurePath)
-        if match:
-            (base, fOrg, fRepo, relative) = match.groups()
+
+        (parsedOK, fBackend, fOrg, fRepo, relative) = _parseFeaturePath(
+            os.path.dirname(featurePath), backend
+        )
+
+        if parsedOK:
             fRelative = relative.rsplit("/", 1)[0]
-            mId = (fOrg, fRepo, fRelative)
+            mId = (fBackend, fOrg, fRepo, fRelative)
         else:
             mId = featurePath.rsplit("/", 1)[0]
+
         if type(mId) is str:
-            for (mIId, mInfo) in moduleIndex.items():
+            for mIId in moduleIndex:
                 if type(mIId) is str:
                     if featurePath.startswith(mIId):
                         featureCat.setdefault(mIId, []).append(feature)
                         added = True
         else:
-            for (mIId, mInfo) in moduleIndex.items():
+            for mIId in moduleIndex:
                 if type(mIId) is not str:
-                    (mOrg, mRepo, mRelative) = mIId
+                    (mBackend, mOrg, mRepo, mRelative) = mIId
                     if (
-                        fOrg == mOrg
+                        fBackend == mBackend
+                        and fOrg == mOrg
                         and fRepo == mRepo
                         and fRelative.startswith(mRelative)
                     ):
@@ -487,7 +556,7 @@ def _featuresPerModule(app):
         if not added:
             featureCat.setdefault(mId, []).append(feature)
 
-    baseId = (mOrg, mRepo, mRelative)
+    baseId = (backend, mOrg, mRepo, mRelative)
     baseMods = {
         mId for mId in featureCat.keys() if type(mId) is tuple and mId == baseId
     }
@@ -503,13 +572,16 @@ def _featuresPerModule(app):
             continue
         modInfo = moduleIndex.get(mId, None)
         if modInfo:
-            (org, repo, relative, corpus, docUrl) = modInfo
+            (mBackend, org, repo, relative, corpus, docUrl) = modInfo
         else:
             corpus = mId if type(mId) is str else "/".join(mId)
             docUrl = (
                 ""
                 if type(mId) is str
-                else f"{URL_B(host)}/{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
+                else (
+                    f"{backendRep(mBackend, 'url')}/"
+                    f"{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
+                )
             )
         html += dedent(
             f"""
@@ -591,29 +663,30 @@ def _featuresPerModule(app):
     return html
 
 
-def provenanceLink(host, org, repo, version, commit, local, release, relative):
+def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     """Generate a provenance link for a data source.
 
-    We assume the data source resides somewhere inside a GitHub repo.
+    We assume the data source resides somewhere inside a backend repository.
 
     Parameters
     ----------
-    host: string, optional None
-        If present, it points to a GitLab instance such as the on-premise
-        `gitlab.huc.knaw.nl` or the public `gitlab.com`.
-        If `None` we work with `github.com`.
+    backend: string
+        `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
     org: string
-        Organization on GitHub
-    org: string
-        Organization on GitHub
+        Organization on GitHub or group on GitLab
     repo: string
-        Repository on Github
+        Repository on GitHub or project on GitLab
     version: string
         Version of the data source.
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
     commit: string
-        The commit hash of the repository on GitHub.
+        The commit hash of the repository
+    local: boolean
+        Whether the data is on the local computer and not necessarily backed up
+        by a backend repository
+    release: string
+        The release tag of the repository
     """
 
     text = (
@@ -621,30 +694,29 @@ def provenanceLink(host, org, repo, version, commit, local, release, relative):
         if org is None or repo is None
         else (
             f"{org}/{repo} v:{version}"
-            f"({Checkout.toString(commit, release, local, host=host)})"
+            f"({Checkout.toString(commit, release, local, backend)})"
         )
     )
     relativeFlat = relative.replace("/", "-")
-    baseUrl = URL_B(host)
+    bUrl = backendRep(backend, "url")
     url = (
         None
         if org is None or repo is None
-        else f"{baseUrl}/{org}/{repo}/tree/master/{relative}"
+        else f"{bUrl}/{org}/{repo}/tree/master/{relative}"
         if local
         else (
             (
                 (
-                    f"{baseUrl}/{org}/{repo}/releases/download/{release}"
+                    f"{bUrl}/{org}/{repo}/releases/download/{release}"
                     f"/{relativeFlat}-{version}.zip"
                 )
-                if host is None
+                if backend == GH
                 else (
-                    f"{baseUrl}/{org}/{repo}/-/archive/{release}"
-                    f"/{repo}-{version}.zip"
+                    f"{bUrl}/{org}/{repo}/-/archive/{release}" f"/{repo}-{version}.zip"
                 )
             )
             if release
-            else f"{baseUrl}/{org}/{repo}/tree/{commit}/{relative}"
+            else f"{bUrl}/{org}/{repo}/tree/{commit}/{relative}"
         )
     )
     return (text, url)

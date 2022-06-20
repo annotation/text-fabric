@@ -24,7 +24,7 @@ A = use("org/repo:specapp", checkout="specdata")
 
 
 ```
-A = use("org/repo:specapp", checkout="specdata", host="gitlab.huc.knaw.nl")
+A = use("org/repo:specapp", checkout="specdata", backend="gitlab.huc.knaw.nl")
 ```
 
 See `tf.about.corpora` for a list of known corpora that can be loaded this way.
@@ -34,7 +34,7 @@ See `tf.about.corpora` for a list of known corpora that can be loaded this way.
 ```
 A = use(
     "org/repo:specapp",
-    host=None,     # e.g. "gitlab.huc.knaw.nl"
+    backend=None,     # e.g. "gitlab.huc.knaw.nl"
     checkout=None, # e.g. "latest"
     version=None,  # e.g. "1.2.3"
     mod=None,      # e.g. "org1/repo1/path1:specmod1,org2/repo2/path2:specmod2"
@@ -65,7 +65,7 @@ A = use("corpus", legacy=True)
 ## Security
 
 !!! caution "Security warning"
-    Text-Fabric apps may be downloaded from GitHub and then
+    Text-Fabric apps may be downloaded from GitHub/GitLab and then
     imported as a module and then *executed*.
 
     Do you trust the downloaded code?
@@ -73,7 +73,7 @@ A = use("corpus", legacy=True)
     who own the repository.
 
 !!! note "Security note"
-    Text-Fabric data maybe downloaded from arbitrary repositories on GitHub,
+    Text-Fabric data maybe downloaded from arbitrary repositories on GitHub/GitLab,
     but the downloaded material will be read as *data* and not executed as code.
 
 ## Details
@@ -114,12 +114,12 @@ The *checkout specifier* part is a keyword:
 
 *   `local` under your local directory `~/text-fabric-data`
 *   `clone` under your local directory `~/github`
-*   `latest` under the latest release, to be checked with online GitHub
-*   `hot` under the latest commit, to be checked with online GitHub
-*   `v1.2.3` under release `v1.2.3`, to be fetched from online GitHub
-*   `123aef` under commit `123aef`, to be fetched from online GitHub
+*   `latest` under the latest release, to be checked with online backend
+*   `hot` under the latest commit, to be checked with online backend
+*   `v1.2.3` under release `v1.2.3`, to be fetched from online backend
+*   `123aef` under commit `123aef`, to be fetched from online backend
 *   *absent* under your local directory `~/text-fabric-data` if present,
-    otherwise the latest release on GitHub, if present, otherwise the latest commit on GitHub
+    otherwise the latest release on backend, if present, otherwise the latest commit on backend
 
 For a demo, see
 [banks/repo](https://nbviewer.jupyter.org/github/annotation/banks/blob/master/tutorial/repo.ipynb).
@@ -129,11 +129,20 @@ For a demo, see
 By default, the online repository for apps and data is GitHub (https://github.com).
 
 But you can also use GitLab instances. You do that by specifying the server location
-in the parameter `host`, e.g.
+in the parameter `backend`, e.g.
 
 ```
-    host="gitlab.knaw.huc.nl"
+    backend="gitlab"
 ```
+
+```
+    backend="gitlab.knaw.huc.nl"
+```
+
+Synonyms:
+
+*   `None`, `""`, `github.com`, `github`
+*   `gitlab.com`, `gitlab`
 
 The specification of the app is in the first argument:
 *app-path*`:`*app-checkout-specifier*
@@ -216,7 +225,7 @@ or
 ```
 
 All features of all those modules will be loaded.
-If they are not yet present, they will be downloaded from GitHub first.
+If they are not yet present, they will be downloaded from a backend first.
 For example, there is an easter egg module on GitHub,
 and you can obtain it by
 
@@ -241,7 +250,7 @@ explicitly.
     This is needed for example if you specify a specific release
     for the core data module. The associated standard modules probably
     do not have that exact same release, so you have to look up their
-    releases in Github, and attach the release numbers found
+    releases in GitHub/GitLab, and attach the release numbers found
     to the module specifiers.
 
 !!! caution "Let TF manage your text-fabric-data directory"

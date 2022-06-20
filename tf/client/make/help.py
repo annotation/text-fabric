@@ -1,18 +1,17 @@
 HELP = """
-text-fabric-make [--host={host} {org}/{repo} serve {folder}
-text-fabric-make [--host={host} {org}/{repo} ship
-text-fabric-make [--host={host} {org}/{repo} {client} ship
-text-fabric-make [--host={host} {org}/{repo} make [config] output
-text-fabric-make [--host={host} {org}/{repo} {client} make [config] output
-text-fabric-make [--host={host} {org}/{repo} {client} {command} [parameters]
+text-fabric-make [--backend={backend} {org}/{repo} serve {folder}
+text-fabric-make [--backend={backend} {org}/{repo} ship
+text-fabric-make [--backend={backend} {org}/{repo} {client} ship
+text-fabric-make [--backend={backend} {org}/{repo} make [config] output
+text-fabric-make [--backend={backend} {org}/{repo} {client} make [config] output
+text-fabric-make [--backend={backend} {org}/{repo} {client} {command} [parameters]
 
-host    : if None, the dataset resides on GitHub;
-          otherwise it points to a GitLab instance,
-          e.g. gitlab.huc.knaw.nl or gitlab.com
+backend: `github` or `gitlab` or a GitLab instance such as `gitlab.huc.knaw.nl`.
+          If absent, `github` is assumed.
 org/repo: a Text-Fabric dataset in a GitHub/GitLab repo under org,
           such as "etcbc/bhsa" and "CambridgeSemiticsLab/nena_tf"
-client: the name of a layered-search client as defined in the config.yaml
-        in «org»/«repo»-search
+client:   the name of a layered-search client as defined in the config.yaml
+          in «org»/«repo»-search
 
 command:
 
@@ -28,7 +27,7 @@ corpus         : build corpus data file
 client         : build the layered-search client in the destination «org»/«repo»-search
 clientdebug    : same as above but put it in debug mode
 debug on|off   : set debug flag of the client on or off
-publish        : publish the layered search client on the Github Pages of
+publish        : publish the layered search client on the GitHub Pages of
                  «org»/«repo»-«search»
 ship           : performs all build steps:
                  i, config, corpus, client, debug off, publish;
