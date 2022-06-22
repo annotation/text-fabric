@@ -82,6 +82,7 @@ from functools import reduce
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
+from ..parameters import GH
 from ..core.helpers import console
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -627,7 +628,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
-    backend = dataSource.get("backend", None)
+    backend = dataSource.get("backend", GH) or GH
     appName = dataSource["appName"]
     checkout = dataSource["checkout"]
     checkoutApp = dataSource["checkoutApp"]
@@ -643,7 +644,8 @@ def main(cargs=sys.argv):
 
     versionRep = "" if version is None else f" version {version}"
     console(
-        f"Setting up TF kernel for {appName} {moduleRefs or ''} {setFile or ''}{versionRep}"
+        f"Setting up TF kernel for {appName} {moduleRefs or ''} "
+        f"{setFile or ''}{versionRep}"
     )
     app = findApp(
         appName,

@@ -12,6 +12,16 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10.0
 
+## 10.0.3
+
+2022-06-22
+
+Bug fix in the Text-Fabric browser.
+Spotted by Jorik Groen.
+
+The Text-Fabric browser was not able to download data correctly, because
+it communicated the name of the backend incorrectly to the TF-kernel.
+
 ## 10.0.2
 
 2022-06-20

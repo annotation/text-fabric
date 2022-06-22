@@ -265,6 +265,8 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
     if item:
         item = f": {item}"
     myself = os.getpid()
+
+    nP = 0
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
             checkKinds = ("kernel", "web", "text-fabric")
@@ -278,6 +280,7 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                     if pid == myself:
                         continue
                     processRep = f"{kind:<12} % {pid:>5}{portRep:>7}"
+                    nP += 1
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -289,8 +292,10 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f"{processRep} {rSlug}: already {item}", error=True,
+                                f"{processRep} {rSlug}: already {item}",
+                                error=True,
                             )
+    return nP
 
 
 def connectPort(tfProcesses, kind, pos, slug):
@@ -305,9 +310,7 @@ def main(cargs=sys.argv):
     ):
         console(HELP)
         return
-    if len(cargs) >= 2 and any(
-        arg == "-v" for arg in cargs[1:]
-    ):
+    if len(cargs) >= 2 and any(arg == "-v" for arg in cargs[1:]):
         return
 
     isWin = system().lower().startswith("win")
@@ -326,9 +329,12 @@ def main(cargs=sys.argv):
     tfProcesses = indexProcesses()
 
     if kill or show:
-        if appName is False:
-            return
-        showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        # if appName is False:
+        #    return
+        verb = "Killing" if kill else "Showing" if show else ""
+        console(f"{verb} processes:")
+        nP = showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        console(f"{nP} processes done.")
         return
 
     stopped = False
@@ -391,7 +397,9 @@ def main(cargs=sys.argv):
         if not stopped:
             console(f"Opening {appName} in browser")
             webbrowser.open(
-                f"{PROTOCOL}{HOST}:{portWeb}", new=2, autoraise=True,
+                f"{PROTOCOL}{HOST}:{portWeb}",
+                new=2,
+                autoraise=True,
             )
 
     stopped = (not portWeb or (processWeb and processWeb.poll())) or (
