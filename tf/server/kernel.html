@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L1-L693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/kernel.py#L1-L695" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -167,6 +167,7 @@ from functools import reduce
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
+from ..parameters import GH
 from ..core.helpers import console
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -712,7 +713,7 @@ def main(cargs=sys.argv):
         return
 
     (dataSource, portKernel) = args
-    backend = dataSource.get(&#34;backend&#34;, None)
+    backend = dataSource.get(&#34;backend&#34;, GH) or GH
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -728,7 +729,8 @@ def main(cargs=sys.argv):
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
     console(
-        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} &#34;
+        f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
     )
     app = findApp(
         appName,
@@ -793,7 +795,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L624-L674" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/kernel.py#L625-L676" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -801,7 +803,7 @@ if __name__ == &#34;__main__&#34;:
         return
 
     (dataSource, portKernel) = args
-    backend = dataSource.get(&#34;backend&#34;, None)
+    backend = dataSource.get(&#34;backend&#34;, GH) or GH
     appName = dataSource[&#34;appName&#34;]
     checkout = dataSource[&#34;checkout&#34;]
     checkoutApp = dataSource[&#34;checkoutApp&#34;]
@@ -817,7 +819,8 @@ if __name__ == &#34;__main__&#34;:
 
     versionRep = &#34;&#34; if version is None else f&#34; version {version}&#34;
     console(
-        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} {setFile or &#39;&#39;}{versionRep}&#34;
+        f&#34;Setting up TF kernel for {appName} {moduleRefs or &#39;&#39;} &#34;
+        f&#34;{setFile or &#39;&#39;}{versionRep}&#34;
     )
     app = findApp(
         appName,
@@ -856,7 +859,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L605-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/kernel.py#L606-L619" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
     class TfConnection(object):
@@ -882,7 +885,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/kernel.py#L102-L599" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/kernel.py#L103-L600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not app.api:

@@ -125,7 +125,7 @@ So we will look for the first available port after this.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L1-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L1-L425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start kernel and webserver
@@ -394,6 +394,8 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
     if item:
         item = f&#34;: {item}&#34;
     myself = os.getpid()
+
+    nP = 0
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
             checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;text-fabric&#34;)
@@ -407,6 +409,7 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                     if pid == myself:
                         continue
                     processRep = f&#34;{kind:&lt;12} % {pid:&gt;5}{portRep:&gt;7}&#34;
+                    nP += 1
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -418,8 +421,10 @@ def showProcesses(tfProcesses, slug, term=False, kill=False):
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f&#34;{processRep} {rSlug}: already {item}&#34;, error=True,
+                                f&#34;{processRep} {rSlug}: already {item}&#34;,
+                                error=True,
                             )
+    return nP
 
 
 def connectPort(tfProcesses, kind, pos, slug):
@@ -434,9 +439,7 @@ def main(cargs=sys.argv):
     ):
         console(HELP)
         return
-    if len(cargs) &gt;= 2 and any(
-        arg == &#34;-v&#34; for arg in cargs[1:]
-    ):
+    if len(cargs) &gt;= 2 and any(arg == &#34;-v&#34; for arg in cargs[1:]):
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
@@ -455,9 +458,12 @@ def main(cargs=sys.argv):
     tfProcesses = indexProcesses()
 
     if kill or show:
-        if appName is False:
-            return
-        showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        # if appName is False:
+        #    return
+        verb = &#34;Killing&#34; if kill else &#34;Showing&#34; if show else &#34;&#34;
+        console(f&#34;{verb} processes:&#34;)
+        nP = showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        console(f&#34;{nP} processes done.&#34;)
         return
 
     stopped = False
@@ -520,7 +526,9 @@ def main(cargs=sys.argv):
         if not stopped:
             console(f&#34;Opening {appName} in browser&#34;)
             webbrowser.open(
-                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;, new=2, autoraise=True,
+                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                new=2,
+                autoraise=True,
             )
 
     stopped = (not portWeb or (processWeb and processWeb.poll())) or (
@@ -561,7 +569,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L296-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L301-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -576,7 +584,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L211-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L211-L248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -626,7 +634,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L251-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L251-L260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
@@ -648,7 +656,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L301-L413" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L306-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -657,9 +665,7 @@ if __name__ == &#34;__main__&#34;:
     ):
         console(HELP)
         return
-    if len(cargs) &gt;= 2 and any(
-        arg == &#34;-v&#34; for arg in cargs[1:]
-    ):
+    if len(cargs) &gt;= 2 and any(arg == &#34;-v&#34; for arg in cargs[1:]):
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
@@ -678,9 +684,12 @@ if __name__ == &#34;__main__&#34;:
     tfProcesses = indexProcesses()
 
     if kill or show:
-        if appName is False:
-            return
-        showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        # if appName is False:
+        #    return
+        verb = &#34;Killing&#34; if kill else &#34;Showing&#34; if show else &#34;&#34;
+        console(f&#34;{verb} processes:&#34;)
+        nP = showProcesses(tfProcesses, None if appName is None else slug, term=kill)
+        console(f&#34;{nP} processes done.&#34;)
         return
 
     stopped = False
@@ -743,7 +752,9 @@ if __name__ == &#34;__main__&#34;:
         if not stopped:
             console(f&#34;Opening {appName} in browser&#34;)
             webbrowser.open(
-                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;, new=2, autoraise=True,
+                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                new=2,
+                autoraise=True,
             )
 
     stopped = (not portWeb or (processWeb and processWeb.poll())) or (
@@ -773,13 +784,15 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5705ae1b73004b9f7d0553d97af67df3a5440f01/tf/server/start.py#L263-L293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/server/start.py#L263-L298" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;
     if item:
         item = f&#34;: {item}&#34;
     myself = os.getpid()
+
+    nP = 0
     for (pSlug, kinds) in tfProcesses.items():
         if slug is None or (slug == pSlug):
             checkKinds = (&#34;kernel&#34;, &#34;web&#34;, &#34;text-fabric&#34;)
@@ -793,6 +806,7 @@ if __name__ == &#34;__main__&#34;:
                     if pid == myself:
                         continue
                     processRep = f&#34;{kind:&lt;12} % {pid:&gt;5}{portRep:&gt;7}&#34;
+                    nP += 1
                     try:
                         proc = psutil.Process(pid=pid)
                         if term:
@@ -804,8 +818,10 @@ if __name__ == &#34;__main__&#34;:
                     except psutil.NoSuchProcess:
                         if term:
                             console(
-                                f&#34;{processRep} {rSlug}: already {item}&#34;, error=True,
-                            )</code></pre>
+                                f&#34;{processRep} {rSlug}: already {item}&#34;,
+                                error=True,
+                            )
+    return nP</code></pre>
 </details>
 </dd>
 </dl>
