@@ -117,11 +117,12 @@ that steer the graph building:
 *   `tf.convert.walker.CV.node`
 *   `tf.convert.walker.CV.terminate`
 *   `tf.convert.walker.CV.resume`
+*   `tf.convert.walker.CV.link`
+*   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.feature`
 *   `tf.convert.walker.CV.edge`
 *   `tf.convert.walker.CV.meta`
 *   `tf.convert.walker.CV.occurs`
-*   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.active`
 *   `tf.convert.walker.CV.activeNodes`
 *   `tf.convert.walker.CV.activeTypes`
@@ -797,6 +798,68 @@ class CV(object):
             self._checkSecLevel(node, before=None)
             curEmbedders.add(node)
 
+    def link(self, node, slots):
+        """Link the given, existing slots to a node.
+
+            cv.link(n)
+
+        Sometimes the automatic linking of slots to nodes is not sufficient.
+
+        This happens when you feel the need to construct a node retro-actively,
+        when the slots that need to be linked to it have already been created.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        slots: iterable of integer
+
+        Returns
+        -------
+        boolean
+        """
+
+        oslots = self.oslots
+
+        good = True
+
+        for seq in slots:
+            oslots[node].add(seq)
+
+        return good
+
+    def linked(self, node):
+        """Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        tuple of integer
+
+        The slots are returned as a tuple of integers.
+        """
+
+        oslots = self.oslots
+        return tuple(oslots.get(node, []))
+
     def feature(self, node, **features):
         """Add **node features**.
 
@@ -949,34 +1012,6 @@ class CV(object):
 
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
-    def linked(self, node):
-        """Returns the slots `ss` to which a node is currently linked.
-
-            ss = cv.linked(n)
-
-
-        If you construct non-slot nodes without linking them to slots,
-        they will be removed when TF validates the collective result
-        of the action methods.
-
-        If you want to prevent that, you can insert an extra slot, but in order
-        to do so, you have to detect that a node is still unlinked.
-
-        This action is precisely meant for that.
-
-        Parameters
-        ----------
-        node: tuple
-            A node reference, obtained by one of the actions `slot` or `node`.
-
-        Returns
-        -------
-        boolean
-        """
-
-        oslots = self.oslots
-        return tuple(oslots.get(node, []))
-
     def active(self, node):
         """Returns whether a node is currently active.
 
@@ -1006,12 +1041,12 @@ class CV(object):
     def activeNodes(self, nTypes=None):
         """The currently active nodes, i.e. the embedders.
 
-            nodes = cv.activeTypes()
-            nodes = cv.activeTypes(nTypes=("sentence", "clause"))
+            nodes = cv.activeNodes()
+            nodes = cv.activeNodes(nTypes=("sentence", "clause"))
 
         Parameters
         ----------
-        nType: iterable optional `None`
+        nTypes: iterable optional `None`
             If None, all active nodes are returned.
             Else the iterable lists a few node types,
             and only active nodes in these types are returned.

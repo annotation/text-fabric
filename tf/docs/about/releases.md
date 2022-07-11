@@ -12,6 +12,13 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10.0
 
+## 10.0.4
+
+2022-07-04
+
+Addition to the `tf.convert.walker` api: `cv.link()` to manually link a node 
+to existing slots instead of relying on the automatic linking.
+
 ## 10.0.3
 
 2022-06-22
