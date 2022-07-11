@@ -115,11 +115,12 @@ that steer the graph building:</p>
 <li><code><a title="tf.convert.walker.CV.node" href="#tf.convert.walker.CV.node">CV.node()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.terminate" href="#tf.convert.walker.CV.terminate">CV.terminate()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.resume" href="#tf.convert.walker.CV.resume">CV.resume()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.link" href="#tf.convert.walker.CV.link">CV.link()</a></code></li>
+<li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">CV.linked()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">CV.feature()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">CV.edge()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.meta" href="#tf.convert.walker.CV.meta">CV.meta()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.occurs" href="#tf.convert.walker.CV.occurs">CV.occurs()</a></code></li>
-<li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">CV.linked()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.active" href="#tf.convert.walker.CV.active">CV.active()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.activeNodes" href="#tf.convert.walker.CV.activeNodes">CV.activeNodes()</a></code></li>
 <li><code><a title="tf.convert.walker.CV.activeTypes" href="#tf.convert.walker.CV.activeTypes">CV.activeTypes()</a></code></li>
@@ -136,7 +137,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L1-L1568" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L1-L1603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -257,11 +258,12 @@ that steer the graph building:
 *   `tf.convert.walker.CV.node`
 *   `tf.convert.walker.CV.terminate`
 *   `tf.convert.walker.CV.resume`
+*   `tf.convert.walker.CV.link`
+*   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.feature`
 *   `tf.convert.walker.CV.edge`
 *   `tf.convert.walker.CV.meta`
 *   `tf.convert.walker.CV.occurs`
-*   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.active`
 *   `tf.convert.walker.CV.activeNodes`
 *   `tf.convert.walker.CV.activeTypes`
@@ -937,6 +939,68 @@ class CV(object):
             self._checkSecLevel(node, before=None)
             curEmbedders.add(node)
 
+    def link(self, node, slots):
+        &#34;&#34;&#34;Link the given, existing slots to a node.
+
+            cv.link(n)
+
+        Sometimes the automatic linking of slots to nodes is not sufficient.
+
+        This happens when you feel the need to construct a node retro-actively,
+        when the slots that need to be linked to it have already been created.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        slots: iterable of integer
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+
+        good = True
+
+        for seq in slots:
+            oslots[node].add(seq)
+
+        return good
+
+    def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        tuple of integer
+
+        The slots are returned as a tuple of integers.
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+        return tuple(oslots.get(node, []))
+
     def feature(self, node, **features):
         &#34;&#34;&#34;Add **node features**.
 
@@ -1089,34 +1153,6 @@ class CV(object):
 
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
-    def linked(self, node):
-        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
-
-            ss = cv.linked(n)
-
-
-        If you construct non-slot nodes without linking them to slots,
-        they will be removed when TF validates the collective result
-        of the action methods.
-
-        If you want to prevent that, you can insert an extra slot, but in order
-        to do so, you have to detect that a node is still unlinked.
-
-        This action is precisely meant for that.
-
-        Parameters
-        ----------
-        node: tuple
-            A node reference, obtained by one of the actions `slot` or `node`.
-
-        Returns
-        -------
-        boolean
-        &#34;&#34;&#34;
-
-        oslots = self.oslots
-        return tuple(oslots.get(node, []))
-
     def active(self, node):
         &#34;&#34;&#34;Returns whether a node is currently active.
 
@@ -1146,12 +1182,12 @@ class CV(object):
     def activeNodes(self, nTypes=None):
         &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
 
-            nodes = cv.activeTypes()
-            nodes = cv.activeTypes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+            nodes = cv.activeNodes()
+            nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
 
         Parameters
         ----------
-        nType: iterable optional `None`
+        nTypes: iterable optional `None`
             If None, all active nodes are returned.
             Else the iterable lists a few node types,
             and only active nodes in these types are returned.
@@ -1726,7 +1762,7 @@ class CV(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L147-L1568" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L148-L1603" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -2381,6 +2417,68 @@ class CV(object):
             self._checkSecLevel(node, before=None)
             curEmbedders.add(node)
 
+    def link(self, node, slots):
+        &#34;&#34;&#34;Link the given, existing slots to a node.
+
+            cv.link(n)
+
+        Sometimes the automatic linking of slots to nodes is not sufficient.
+
+        This happens when you feel the need to construct a node retro-actively,
+        when the slots that need to be linked to it have already been created.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+        slots: iterable of integer
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+
+        good = True
+
+        for seq in slots:
+            oslots[node].add(seq)
+
+        return good
+
+    def linked(self, node):
+        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
+
+            ss = cv.linked(n)
+
+
+        If you construct non-slot nodes without linking them to slots,
+        they will be removed when TF validates the collective result
+        of the action methods.
+
+        If you want to prevent that, you can insert an extra slot, but in order
+        to do so, you have to detect that a node is still unlinked.
+
+        This action is precisely meant for that.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by one of the actions `slot` or `node`.
+
+        Returns
+        -------
+        tuple of integer
+
+        The slots are returned as a tuple of integers.
+        &#34;&#34;&#34;
+
+        oslots = self.oslots
+        return tuple(oslots.get(node, []))
+
     def feature(self, node, **features):
         &#34;&#34;&#34;Add **node features**.
 
@@ -2533,34 +2631,6 @@ class CV(object):
 
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
 
-    def linked(self, node):
-        &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
-
-            ss = cv.linked(n)
-
-
-        If you construct non-slot nodes without linking them to slots,
-        they will be removed when TF validates the collective result
-        of the action methods.
-
-        If you want to prevent that, you can insert an extra slot, but in order
-        to do so, you have to detect that a node is still unlinked.
-
-        This action is precisely meant for that.
-
-        Parameters
-        ----------
-        node: tuple
-            A node reference, obtained by one of the actions `slot` or `node`.
-
-        Returns
-        -------
-        boolean
-        &#34;&#34;&#34;
-
-        oslots = self.oslots
-        return tuple(oslots.get(node, []))
-
     def active(self, node):
         &#34;&#34;&#34;Returns whether a node is currently active.
 
@@ -2590,12 +2660,12 @@ class CV(object):
     def activeNodes(self, nTypes=None):
         &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
 
-            nodes = cv.activeTypes()
-            nodes = cv.activeTypes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+            nodes = cv.activeNodes()
+            nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
 
         Parameters
         ----------
-        nType: iterable optional `None`
+        nTypes: iterable optional `None`
             If None, all active nodes are returned.
             Else the iterable lists a few node types,
             and only active nodes in these types are returned.
@@ -3206,7 +3276,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L980-L1004" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L1015-L1039" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3240,12 +3310,12 @@ whether a node is active.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>The currently active nodes, i.e. the embedders.</p>
-<pre><code>nodes = cv.activeTypes()
-nodes = cv.activeTypes(nTypes=("sentence", "clause"))
+<pre><code>nodes = cv.activeNodes()
+nodes = cv.activeNodes(nTypes=("sentence", "clause"))
 </code></pre>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>nType</code></strong> :&ensp;<code>iterable optional </code>None``</dt>
+<dt><strong><code>nTypes</code></strong> :&ensp;<code>iterable optional </code>None``</dt>
 <dd>If None, all active nodes are returned.
 Else the iterable lists a few node types,
 and only active nodes in these types are returned.</dd>
@@ -3258,17 +3328,17 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L1006-L1027" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L1041-L1062" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
 
-        nodes = cv.activeTypes()
-        nodes = cv.activeTypes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
+        nodes = cv.activeNodes()
+        nodes = cv.activeNodes(nTypes=(&#34;sentence&#34;, &#34;clause&#34;))
 
     Parameters
     ----------
-    nType: iterable optional `None`
+    nTypes: iterable optional `None`
         If None, all active nodes are returned.
         Else the iterable lists a few node types,
         and only active nodes in these types are returned.
@@ -3304,7 +3374,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L1029-L1043" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L1064-L1078" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3355,7 +3425,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L830-L862" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L893-L925" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3418,7 +3488,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L800-L828" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L863-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3480,7 +3550,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L1045-L1084" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L1080-L1119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3524,6 +3594,67 @@ The nodes in question when retrieving the value of an edge feature.</dd>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.walker.CV.link"><code class="name flex">
+<span>def <span class="ident">link</span></span>(<span>self, node, slots)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Link the given, existing slots to a node.</p>
+<pre><code>cv.link(n)
+</code></pre>
+<p>Sometimes the automatic linking of slots to nodes is not sufficient.</p>
+<p>This happens when you feel the need to construct a node retro-actively,
+when the slots that need to be linked to it have already been created.</p>
+<p>This action is precisely meant for that.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by one of the actions <code>slot</code> or <code>node</code>.</dd>
+<dt><strong><code>slots</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L801-L831" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def link(self, node, slots):
+    &#34;&#34;&#34;Link the given, existing slots to a node.
+
+        cv.link(n)
+
+    Sometimes the automatic linking of slots to nodes is not sufficient.
+
+    This happens when you feel the need to construct a node retro-actively,
+    when the slots that need to be linked to it have already been created.
+
+    This action is precisely meant for that.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by one of the actions `slot` or `node`.
+    slots: iterable of integer
+
+    Returns
+    -------
+    boolean
+    &#34;&#34;&#34;
+
+    oslots = self.oslots
+
+    good = True
+
+    for seq in slots:
+        oslots[node].add(seq)
+
+    return good</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.walker.CV.linked"><code class="name flex">
 <span>def <span class="ident">linked</span></span>(<span>self, node)</span>
 </code></dt>
@@ -3544,13 +3675,14 @@ to do so, you have to detect that a node is still unlinked.</p>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>boolean</code></dt>
+<dt><code>tuple</code> of <code>integer</code></dt>
 <dd>&nbsp;</dd>
-</dl></div>
+</dl>
+<p>The slots are returned as a tuple of integers.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L952-L978" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L833-L861" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3574,7 +3706,9 @@ to do so, you have to detect that a node is still unlinked.</p>
 
     Returns
     -------
-    boolean
+    tuple of integer
+
+    The slots are returned as a tuple of integers.
     &#34;&#34;&#34;
 
     oslots = self.oslots
@@ -3608,7 +3742,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L899-L950" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L962-L1013" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3709,7 +3843,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L663-L741" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L664-L742" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -3823,7 +3957,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L864-L897" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L927-L960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -3885,7 +4019,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L766-L798" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L767-L799" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -3949,7 +4083,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L615-L661" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L616-L662" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -4025,7 +4159,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L587-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L588-L614" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4078,7 +4212,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L743-L764" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L744-L765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4191,7 +4325,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b2e4859df6ab3b673b5049baa27ff01fe3bf5dcd/tf/convert/walker.py#L223-L382" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/walker.py#L224-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4447,6 +4581,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">edge</a></code></li>
 <li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">feature</a></code></li>
 <li><code><a title="tf.convert.walker.CV.get" href="#tf.convert.walker.CV.get">get</a></code></li>
+<li><code><a title="tf.convert.walker.CV.link" href="#tf.convert.walker.CV.link">link</a></code></li>
 <li><code><a title="tf.convert.walker.CV.linked" href="#tf.convert.walker.CV.linked">linked</a></code></li>
 <li><code><a title="tf.convert.walker.CV.meta" href="#tf.convert.walker.CV.meta">meta</a></code></li>
 <li><code><a title="tf.convert.walker.CV.node" href="#tf.convert.walker.CV.node">node</a></code></li>
