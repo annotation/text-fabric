@@ -33,7 +33,7 @@ the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L1-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L1-L551" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Variants
@@ -49,62 +49,143 @@ An extensive description of the problems and solutions is in
 
 
 APP = &#34;app&#34;
-APPS = &#34;apps&#34;
-APP_STACK = &#34;appstack&#34;
-BASE = &#34;base&#34;
-LEM = &#34;lem&#34;
-N_APP = &#34;nApp&#34;
 N_SENT = &#34;nSent&#34;
 PARENT = &#34;parent&#34;
-RDG = &#34;rdg&#34;
 RDGS = &#34;rdgs&#34;
 SLOTS = &#34;slots&#34;
-TRANS_LAST = &#34;translast&#34;
-TRANS_NEXT = &#34;transnext&#34;
 VARIANTS = &#34;variants&#34;
 WIT = &#34;wit&#34;
+
+# Start new keys in cur
+
+APP_STACK = &#34;appstack&#34;
+APPS = &#34;apps&#34;
+N_APP = &#34;nApp&#34;
+TRANS_LAST = &#34;translast&#34;
+TRANS_NEXT = &#34;transnext&#34;
 WITNESSES = &#34;witnesses&#34;
 WITS = &#34;wits&#34;
 X_WITS = &#34;xwits&#34;
 
+# End new keys in cur
+
+# Start existing keys in cur
+
+RDG = &#34;rdg&#34;
+LEM = &#34;lem&#34;
+
+# End existing keys in cur
+
 
 class Variants:
-    def __init__(self, cv, cur, sentType, addWarning, addError):
+    def __init__(self, cv, cur, baseWitness, sentType, checkPunc, addWarning, addError):
+        &#34;&#34;&#34;Handlers to turn boundaries into nodes even across variants.
+
+        This class works inside converters of the type `tf.convert.walker`.
+        Import it as
+
+        ``` python
+        from tf.convert.variants import Variants
+        ```
+
+        It should typically be instantiated inside the `director()` function,
+        at a point where `cv` and `cur` are known.
+
+        Then issue `Variants.initApps`, either once or for each volume in the corpus.
+
+        After initialization you should call `Variants.collectWitnesses()` for
+        each TEI file in the corpus.
+
+        After collecting the witnesses you should prepare for the final walk through
+        the data by `Variants.resetApps()`. This should match the call(s) to
+        `Variants.initApps`.
+
+        Then, at the start of each app-, lem-, rdg- element, call
+        `Variants.startApp(tag)` with tag the corresponding tag name (
+        `app`, `lem`, or `rdg`).
+
+        Likewise, at the end, call `Variants.endApp(tag)`.
+
+        Whenever you create slots, isse a `Variants.startSent()` first,
+        and a `Variants.checkSent()` after.
+
+        Close every TEI file with a `Variants.endSent()`, to finish off all
+        pending sentences.
+
+        Parameters
+        ----------
+        cv: object
+            The `tf.convert.walker.CV` object. This is the machinery that constructs
+            nodes and assigns features.
+        cur: dict
+            Keys and values by which a conversion program maintains current information.
+            The conversion proceeds by executing a custom `director()` function,
+            and this director walks through the source material and fires `cv` actions.
+            During the walk, the director can remember incoming data as needed in a
+            dict, and it is this dict that should be passed. The `Variants` object
+            stores additional information here under specific keys.
+
+            Those keys are mentioned in constants in the source code and there are
+            a few keys dependent on the `sentType` parameter, namely
+
+                f&#34;n{sentType}&#34;
+                f&#34;stack{sentType}&#34;
+                f&#34;var{sentType}&#34;
+
+        baseWitness: string
+            The name of the base text. Take care that it is different from the names
+            of the witnesses.
+
+        sentType: string
+            The name of the node type of the nodes that will be constructed on the
+            basis of boundaries. It could be &#34;sentence&#34;, but it could also be any
+            other name, and it is not assumed that the nodes in question represent
+            sentences. It could be anything, provided we have access to its boundaries.
+
+        checkPunc: function(string, string, punc): boolean
+            Given a the texts of the last two slots and the punctuation after that,
+            it determines whether is contains a boundary.
+            This function should be written in the converter program.
+            Hence it is up to the conversion code to define what constitues a boundary,
+            and whether it are sentences or some things else that are being bounded.
+            This function is called and depending on the outcome sentence nodes are
+            terminated and/or created, or nothing is done.
+
+        addWarning, addError: function(string, dict)
+            Functions taking a message string and a dict with current information
+            (typically cur).
+            They will be called if a warning or error has to be issued.
+            When they is called, `cur` will be passed as dict.
+            This function should be defined in the conversion program. It may use values
+            in `cur` to generate an indication where the warning/error occurred.
+
+        &#34;&#34;&#34;
         self.cv = cv
         self.cur = cur
         self.sentType = sentType
+        self.baseWitness = baseWitness
+        self.checkPunc = checkPunc
         self.addWarning = addWarning
         self.addError = addError
         self.nSent = f&#34;n{sentType}&#34;
         self.stackSent = f&#34;stack{sentType}&#34;
         self.varSent = f&#34;variants{sentType}&#34;
+
         cur[WITNESSES] = set()
-
-    def initApps(self):
-        cur = self.cur
-
-        cur[APPS] = dict()
-        cur[APP_STACK] = []
-        cur[TRANS_NEXT] = []
-        cur[N_APP] = 0
 
     def collectWitnesses(self, node):
         &#34;&#34;&#34;Collect all witnesses.
 
-        first collect witnesses from all rdg elements
-        and store information for each lemma what witnesses occur in sibling rdgs
-        we number the lem elements globally as we encounter them,
-        and store info for that lem under that number,
-        so that we can refer to that info when we encounter the lem during
-        the second pass.
+        Call this for the root nodes of every TEI file of the corpus.
 
-        The info per lem is
-        - the set of all witnesses mentioned in the wit attribute of all its
-          sibling rdgs
-        The number of its parent lem or None if there is no parent lem
+        Collects the witnesses from all rdg-elements.
+        For each lem-element the set of witnesses of its rdg siblings is collected in
+        such a way that it can be retrieved later on.
 
-        We also check whether there are multiple direct rdg children of the same
-        app that share witnesses (which would be strange: conflicting information)
+        We also store a pointer to the parent app-element of each nested app-element.
+
+        We also check that multiple direct-rdg children of the same
+        app have disjoint witnesses.
         &#34;&#34;&#34;
 
         cur = self.cur
@@ -144,32 +225,58 @@ class Variants:
         if tag == APP:
             appStack.pop()
 
-    def resetApps(self):
+    def initApps(self):
+        &#34;&#34;&#34;Initialize app- processing and witness collection.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        &#34;&#34;&#34;
         cur = self.cur
 
+        cur[APPS] = dict()
+        cur[APP_STACK] = []
+        cur[TRANS_NEXT] = []
         cur[N_APP] = 0
-        cur[WITS] = []
-        cur[X_WITS] = []
 
-    def initSent(self):
+    def resetApps(self):
+        &#34;&#34;&#34;Initialize app- and &#34;sentence&#34; processing.
+
+        Set up the data store for collecting information and &#34;sentence&#34; processing.
+        Do this after collecting the witnesses.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        But it should be kept in tandem with `Variants.initApps`.
+        &#34;&#34;&#34;
         cur = self.cur
+        baseWitness = self.baseWitness
         nSent = self.nSent
         stackSent = self.stackSent
         varSent = self.varSent
 
+        cur[N_APP] = 0
+        cur[WITS] = []
+        cur[X_WITS] = []
         cur[TRANS_LAST] = None
         cur[nSent] = 0
         cur[stackSent] = []
-        cur[varSent] = {BASE: None}
+        cur[varSent] = {baseWitness: None}
 
-    def startApp(self, node):
-        cv = self.cv
+    def startApp(self, tag, atts):
+        &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
+
+        Use this each time you enter one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being entered
+        atts: dict
+            The attributes of the XML element that is being entered
+        &#34;&#34;&#34;
+
         cur = self.cur
-        curVarSent = cur[self.varSent]
         curStackSent = cur[self.stackSent]
-
-        tag = node.tag
-        atts = node.attrib
 
         if tag == APP:
             nApp = cur[N_APP]
@@ -178,14 +285,8 @@ class Variants:
             parentApp = appInfo[PARENT]
             xwits = appInfo[X_WITS]
 
-            curSent = curVarSent.get(BASE, None)
+            slots = self._diverge()
             cur[TRANS_NEXT].append(&#34;&#34;)
-
-            if curSent is None:
-                slots = None
-            else:
-                slots = cv.linked(curSent)
-                cv.feature(curSent, wit=BASE)
 
             curStackSent.append(
                 dict(
@@ -199,13 +300,19 @@ class Variants:
 
                 # keep xwits immutable, don&#39;t say xwits |= blabla
                 # because that will change xwits in place
+
                 xwits = xwits | appInfo[X_WITS]
                 parentApp = appInfo[PARENT]
 
             cur[X_WITS].append(xwits)
 
         elif tag == LEM:
-            pass
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit in xWits:
+                    self._suspend(wit)
+                else:
+                    self._resume(wit)
 
         elif tag == RDG:
             wits = set()
@@ -215,20 +322,33 @@ class Variants:
 
             cur[WITS].append(wits)
 
-    def endApp(self, node):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-        curStackSent = cur[self.stackSent]
+            for wit in self._getWits():
+                if wit in wits:
+                    self._resume(wit)
+                else:
+                    self._suspend(wit)
 
-        tag = node.tag
+    def endApp(self, tag):
+        &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
+
+        Use this each time you leave one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being left
+        &#34;&#34;&#34;
+
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
 
         if tag == APP:
             cur[X_WITS].pop()
 
-            for variantSent in curVarSent.values():
-                if variantSent is not None:
-                    cv.resume(variantSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit not in xWits:
+                    self._resume(wit)
 
             curStackSent.pop()
             cur[TRANS_LAST] = cur[TRANS_NEXT].pop()
@@ -236,92 +356,42 @@ class Variants:
         elif tag == LEM:
             cur[TRANS_NEXT][-1] = cur[TRANS_LAST]
 
-            curBaseSent = curVarSent[BASE]
-            if curBaseSent is not None:
-                cv.terminate(curBaseSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+
+                if wit not in xWits:
+                    self._suspend(wit)
 
         elif tag == RDG:
             wits = cur[WITS][-1]
 
             for wit in wits:
-                curWitSent = curVarSent.get(wit, None)
-                if curWitSent is not None:
-                    cv.terminate(curWitSent)
+                self._suspend(wit)
 
             cur[WITS].pop()
 
-    def startSentLem(self):
+    def checkSent(self, trans, punc):
+        &#34;&#34;&#34;Checks whether there is a &#34;sentence&#34; boundary at this point.
+
+        Use this every time you have added a slot node.
+
+        Parameters
+        ----------
+        trans: string
+            The text of the newly added slot node.
+            If this is empty, the text of the slot before that will be consulted.
+            This value is taken from the context information.
+            This very function is responsible for putting the last text value into
+            the context.
+        punc: string
+            The non-alfanumeric text material after the text of the last slot.
+            Will be used to determine whether there is a &#34;sentence&#34; break here.
+            The actual check will be done by the function `checkPunc`,
+            which has been passed as parameter when the `Variants` object was
+            created.
+        &#34;&#34;&#34;
         cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        if curVarSent.get(BASE, None) is None:
-            cv = self.cv
-            sentType = self.sentType
-            nSent = self.nSent
-
-            curSent = cv.node(sentType)
-            cur[nSent] += 1
-            curVarSent[BASE] = curSent
-            cv.feature(curSent, wit=BASE, n=cur[nSent])
-
-    def endSentLem(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        toDelete = []
-
-        for (wit, sent) in curVarSent.items():
-            isBase = wit == BASE
-            isXwit = wit in cur[X_WITS][-1]
-            if isBase or not isXwit:
-                cv.terminate(sent)
-                if isBase:
-                    curVarSent[wit] = None
-                else:
-                    toDelete.append(wit)
-
-        for wit in toDelete:
-            del curVarSent[wit]
-
-    def startSentRdg(self):
-        cv = self.cv
-        sentType = self.sentType
-        cur = self.cur
-        curStackSent = cur[self.stackSent]
-        curVarSent = cur[self.varSent]
-        nSent = self.nSent
-
-        wits = cur[WITS][-1]
-        topStack = curStackSent[-1]
-        cur[TRANS_LAST] = topStack[TRANS_LAST]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is None:
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                curVarSent[wit] = curSent
-                cv.feature(curSent, wit=wit, n=cur[nSent])
-                slots = topStack[SLOTS]
-                if slots is not None:
-                    cv.link(curSent, topStack[SLOTS])
-
-    def endSentRdg(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        wits = cur[WITS][-1]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is not None:
-                cv.terminate(curSent)
-                curVarSent[wit] = None
-
-    def checkSent(self, trans, punc, checkPunc):
-        cur = self.cur
+        checkPunc = self.checkPunc
 
         lastTrans = trans or cur[TRANS_LAST] or &#34;&#34;
         if checkPunc(lastTrans, trans, punc):
@@ -330,59 +400,192 @@ class Variants:
             cur[TRANS_LAST] = trans
 
     def startSent(self):
-        cur = self.cur
+        &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-        inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-        inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+        When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
+        are created for each witness for the rdg.
+
+        Use this before creating a slot and/or at the start of certain elements
+        such as paragraphs.
+        &#34;&#34;&#34;
+
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+        inLem = LEM in cur and len(cur[LEM]) &gt; 0
 
         if inLem:
-            self.startSentLem()
+            self._startSentLem()
         elif inRdg:
-            self.startSentRdg()
+            self._startSentRdg()
         else:
-            curVarSent = cur[self.varSent]
-
-            if curVarSent[BASE] is None:
-                cv = self.cv
-                sentType = self.sentType
-                nSent = self.nSent
-
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                cv.feature(curSent, n=cur[nSent])
-                curVarSent[BASE] = curSent
+            self._start(baseWitness, witAtt=False)
 
     def endSent(self):
-        cv = self.cv
+        &#34;&#34;&#34;Ends a &#34;sentence&#34; if there is a current sentence.
+
+        Use this at the end of each XML file if you are sure that
+        there should not remain pending sentences. You can also call this
+        at the end of certain elements, such as paragraphs.
+
+        When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+        that agree with the base text here are also ended.
+        No new sentences for these witnesses are started, since we are in
+        the base text.
+        &#34;&#34;&#34;
+
+        cur = self.cur
+
+        inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+        inLem = LEM in cur and len(cur[LEM]) &gt; 0
+
+        if inLem:
+            self._endSentLem()
+        elif inRdg:
+            self._endSentRdg()
+        else:
+            for wit in self._getWits():
+                self._terminate(wit)
+
+    def _startSentLem(self):
+        baseWitness = self.baseWitness
+
+        self._start(baseWitness)
+
+    def _endSentLem(self):
+        xWits = self._getXwits()
+        for wit in self._getWits():
+            if wit not in xWits:
+                self._terminate(wit)
+
+    def _startSentRdg(self):
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
+
+        wits = cur[WITS][-1]
+        topStack = curStackSent[-1]
+        cur[TRANS_LAST] = topStack[TRANS_LAST]
+
+        for wit in wits:
+            self._prepend(wit)
+
+    def _endSentRdg(self):
+        cur = self.cur
+
+        wits = cur[WITS][-1]
+
+        for wit in wits:
+            self._terminate(wit)
+
+    def _get(self, wit):
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
+
+        if isBase:
+            return curVarSent[baseWitness]
+
+        return curVarSent.get(wit, None)
+
+    def _getWits(self):
         cur = self.cur
         curVarSent = cur[self.varSent]
 
-        inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-        inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+        return list(curVarSent)
 
-        if inLem:
-            self.endSentLem()
-        elif inRdg:
-            self.endSentRdg()
+    def _getXwits(self):
+        cur = self.cur
+
+        xWits = cur[X_WITS]
+
+        return xWits[-1] if xWits else set()
+
+    def _start(self, wit, witAtt=True):
+        s = self._get(wit)
+        if s is not None:
+            return s
+
+        cv = self.cv
+        cur = self.cur
+        sentType = self.sentType
+        curVarSent = cur[self.varSent]
+        nSent = self.nSent
+        baseWitness = self.baseWitness
+
+        isBase = wit == baseWitness
+
+        s = cv.node(sentType)
+
+        cur[nSent] += 1
+        cv.feature(s, n=cur[nSent])
+        if witAtt:
+            cv.feature(s, wit=wit)
+
+        if isBase:
+            curVarSent[baseWitness] = s
         else:
-            if curVarSent[BASE] is not None:
-                cv.terminate(curVarSent[BASE])
-                curVarSent[BASE] = None
+            curVarSent[wit] = s
 
-            toDelete = []
+        return s
 
-            for (wit, sent) in curVarSent.items():
-                isBase = wit == BASE
+    def _terminate(self, wit):
+        cv = self.cv
+        cur = self.cur
+        baseWitness = self.baseWitness
 
-                if sent is not None:
-                    cv.terminate(sent)
-                    if isBase:
-                        curVarSent[wit] = None
-                    else:
-                        toDelete.append(wit)
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
 
-            for wit in toDelete:
-                del curVarSent[wit]</code></pre>
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+            if isBase:
+                curVarSent[wit] = None
+            else:
+                del curVarSent[wit]
+
+    def _resume(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.resume(s)
+
+    def _suspend(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+    def _diverge(self):
+        cv = self.cv
+        baseWitness = self.baseWitness
+
+        s = self._get(baseWitness)
+
+        if s is None:
+            return None
+
+        cv.feature(s, wit=baseWitness)
+        return cv.linked(s)
+
+    def _prepend(self, wit):
+        if self._get(wit) is None:
+            cv = self.cv
+            cur = self.cur
+            curStackSent = cur[self.stackSent]
+            topStack = curStackSent[-1]
+            slots = topStack[SLOTS]
+
+            s = self._start(wit)
+
+            if s is not None and slots is not None:
+                cv.link(s, topStack[SLOTS])</code></pre>
 </details>
 </section>
 <section>
@@ -396,52 +599,188 @@ class Variants:
 <dl>
 <dt id="tf.convert.variants.Variants"><code class="flex name class">
 <span>class <span class="ident">Variants</span></span>
-<span>(</span><span>cv, cur, sentType, addWarning, addError)</span>
+<span>(</span><span>cv, cur, baseWitness, sentType, checkPunc, addWarning, addError)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Handlers to turn boundaries into nodes even across variants.</p>
+<p>This class works inside converters of the type <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code>.
+Import it as</p>
+<pre><code class="language-python">from tf.convert.variants import Variants
+</code></pre>
+<p>It should typically be instantiated inside the <code>director()</code> function,
+at a point where <code>cv</code> and <code>cur</code> are known.</p>
+<p>Then issue <code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">Variants.initApps()</a></code>, either once or for each volume in the corpus.</p>
+<p>After initialization you should call <code><a title="tf.convert.variants.Variants.collectWitnesses" href="#tf.convert.variants.Variants.collectWitnesses">Variants.collectWitnesses()</a></code> for
+each TEI file in the corpus.</p>
+<p>After collecting the witnesses you should prepare for the final walk through
+the data by <code><a title="tf.convert.variants.Variants.resetApps" href="#tf.convert.variants.Variants.resetApps">Variants.resetApps()</a></code>. This should match the call(s) to
+<code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">Variants.initApps()</a></code>.</p>
+<p>Then, at the start of each app-, lem-, rdg- element, call
+<code><a title="tf.convert.variants.Variants.startApp" href="#tf.convert.variants.Variants.startApp">Variants.startApp()</a>(tag)</code> with tag the corresponding tag name (
+<code>app</code>, <code>lem</code>, or <code>rdg</code>).</p>
+<p>Likewise, at the end, call <code><a title="tf.convert.variants.Variants.endApp" href="#tf.convert.variants.Variants.endApp">Variants.endApp()</a>(tag)</code>.</p>
+<p>Whenever you create slots, isse a <code><a title="tf.convert.variants.Variants.startSent" href="#tf.convert.variants.Variants.startSent">Variants.startSent()</a></code> first,
+and a <code><a title="tf.convert.variants.Variants.checkSent" href="#tf.convert.variants.Variants.checkSent">Variants.checkSent()</a></code> after.</p>
+<p>Close every TEI file with a <code><a title="tf.convert.variants.Variants.endSent" href="#tf.convert.variants.Variants.endSent">Variants.endSent()</a></code>, to finish off all
+pending sentences.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cv</code></strong> :&ensp;<code>object</code></dt>
+<dd>The <code><a title="tf.convert.walker.CV" href="walker.html#tf.convert.walker.CV">CV</a></code> object. This is the machinery that constructs
+nodes and assigns features.</dd>
+<dt><strong><code>cur</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Keys and values by which a conversion program maintains current information.
+The conversion proceeds by executing a custom <code>director()</code> function,
+and this director walks through the source material and fires <code>cv</code> actions.
+During the walk, the director can remember incoming data as needed in a
+dict, and it is this dict that should be passed. The <code><a title="tf.convert.variants.Variants" href="#tf.convert.variants.Variants">Variants</a></code> object
+stores additional information here under specific keys.</p>
+<p>Those keys are mentioned in constants in the source code and there are
+a few keys dependent on the <code>sentType</code> parameter, namely</p>
+<pre><code>f"n{sentType}"
+f"stack{sentType}"
+f"var{sentType}"
+</code></pre>
+</dd>
+<dt><strong><code>baseWitness</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the base text. Take care that it is different from the names
+of the witnesses.</dd>
+<dt><strong><code>sentType</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the node type of the nodes that will be constructed on the
+basis of boundaries. It could be "sentence", but it could also be any
+other name, and it is not assumed that the nodes in question represent
+sentences. It could be anything, provided we have access to its boundaries.</dd>
+<dt><strong><code>checkPunc</code></strong> :&ensp;<code>function(string, string, punc): boolean</code></dt>
+<dd>Given a the texts of the last two slots and the punctuation after that,
+it determines whether is contains a boundary.
+This function should be written in the converter program.
+Hence it is up to the conversion code to define what constitues a boundary,
+and whether it are sentences or some things else that are being bounded.
+This function is called and depending on the outcome sentence nodes are
+terminated and/or created, or nothing is done.</dd>
+<dt><strong><code>addWarning</code></strong>, <strong><code>addError</code></strong> :&ensp;<code>function(string, dict)</code></dt>
+<dd>Functions taking a message string and a dict with current information
+(typically cur).
+They will be called if a warning or error has to be issued.
+When they is called, <code>cur</code> will be passed as dict.
+This function should be defined in the conversion program. It may use values
+in <code>cur</code> to generate an indication where the warning/error occurred.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L34-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L43-L551" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Variants:
-    def __init__(self, cv, cur, sentType, addWarning, addError):
+    def __init__(self, cv, cur, baseWitness, sentType, checkPunc, addWarning, addError):
+        &#34;&#34;&#34;Handlers to turn boundaries into nodes even across variants.
+
+        This class works inside converters of the type `tf.convert.walker`.
+        Import it as
+
+        ``` python
+        from tf.convert.variants import Variants
+        ```
+
+        It should typically be instantiated inside the `director()` function,
+        at a point where `cv` and `cur` are known.
+
+        Then issue `Variants.initApps`, either once or for each volume in the corpus.
+
+        After initialization you should call `Variants.collectWitnesses()` for
+        each TEI file in the corpus.
+
+        After collecting the witnesses you should prepare for the final walk through
+        the data by `Variants.resetApps()`. This should match the call(s) to
+        `Variants.initApps`.
+
+        Then, at the start of each app-, lem-, rdg- element, call
+        `Variants.startApp(tag)` with tag the corresponding tag name (
+        `app`, `lem`, or `rdg`).
+
+        Likewise, at the end, call `Variants.endApp(tag)`.
+
+        Whenever you create slots, isse a `Variants.startSent()` first,
+        and a `Variants.checkSent()` after.
+
+        Close every TEI file with a `Variants.endSent()`, to finish off all
+        pending sentences.
+
+        Parameters
+        ----------
+        cv: object
+            The `tf.convert.walker.CV` object. This is the machinery that constructs
+            nodes and assigns features.
+        cur: dict
+            Keys and values by which a conversion program maintains current information.
+            The conversion proceeds by executing a custom `director()` function,
+            and this director walks through the source material and fires `cv` actions.
+            During the walk, the director can remember incoming data as needed in a
+            dict, and it is this dict that should be passed. The `Variants` object
+            stores additional information here under specific keys.
+
+            Those keys are mentioned in constants in the source code and there are
+            a few keys dependent on the `sentType` parameter, namely
+
+                f&#34;n{sentType}&#34;
+                f&#34;stack{sentType}&#34;
+                f&#34;var{sentType}&#34;
+
+        baseWitness: string
+            The name of the base text. Take care that it is different from the names
+            of the witnesses.
+
+        sentType: string
+            The name of the node type of the nodes that will be constructed on the
+            basis of boundaries. It could be &#34;sentence&#34;, but it could also be any
+            other name, and it is not assumed that the nodes in question represent
+            sentences. It could be anything, provided we have access to its boundaries.
+
+        checkPunc: function(string, string, punc): boolean
+            Given a the texts of the last two slots and the punctuation after that,
+            it determines whether is contains a boundary.
+            This function should be written in the converter program.
+            Hence it is up to the conversion code to define what constitues a boundary,
+            and whether it are sentences or some things else that are being bounded.
+            This function is called and depending on the outcome sentence nodes are
+            terminated and/or created, or nothing is done.
+
+        addWarning, addError: function(string, dict)
+            Functions taking a message string and a dict with current information
+            (typically cur).
+            They will be called if a warning or error has to be issued.
+            When they is called, `cur` will be passed as dict.
+            This function should be defined in the conversion program. It may use values
+            in `cur` to generate an indication where the warning/error occurred.
+
+        &#34;&#34;&#34;
         self.cv = cv
         self.cur = cur
         self.sentType = sentType
+        self.baseWitness = baseWitness
+        self.checkPunc = checkPunc
         self.addWarning = addWarning
         self.addError = addError
         self.nSent = f&#34;n{sentType}&#34;
         self.stackSent = f&#34;stack{sentType}&#34;
         self.varSent = f&#34;variants{sentType}&#34;
+
         cur[WITNESSES] = set()
-
-    def initApps(self):
-        cur = self.cur
-
-        cur[APPS] = dict()
-        cur[APP_STACK] = []
-        cur[TRANS_NEXT] = []
-        cur[N_APP] = 0
 
     def collectWitnesses(self, node):
         &#34;&#34;&#34;Collect all witnesses.
 
-        first collect witnesses from all rdg elements
-        and store information for each lemma what witnesses occur in sibling rdgs
-        we number the lem elements globally as we encounter them,
-        and store info for that lem under that number,
-        so that we can refer to that info when we encounter the lem during
-        the second pass.
+        Call this for the root nodes of every TEI file of the corpus.
 
-        The info per lem is
-        - the set of all witnesses mentioned in the wit attribute of all its
-          sibling rdgs
-        The number of its parent lem or None if there is no parent lem
+        Collects the witnesses from all rdg-elements.
+        For each lem-element the set of witnesses of its rdg siblings is collected in
+        such a way that it can be retrieved later on.
 
-        We also check whether there are multiple direct rdg children of the same
-        app that share witnesses (which would be strange: conflicting information)
+        We also store a pointer to the parent app-element of each nested app-element.
+
+        We also check that multiple direct-rdg children of the same
+        app have disjoint witnesses.
         &#34;&#34;&#34;
 
         cur = self.cur
@@ -481,32 +820,58 @@ class Variants:
         if tag == APP:
             appStack.pop()
 
-    def resetApps(self):
+    def initApps(self):
+        &#34;&#34;&#34;Initialize app- processing and witness collection.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        &#34;&#34;&#34;
         cur = self.cur
 
+        cur[APPS] = dict()
+        cur[APP_STACK] = []
+        cur[TRANS_NEXT] = []
         cur[N_APP] = 0
-        cur[WITS] = []
-        cur[X_WITS] = []
 
-    def initSent(self):
+    def resetApps(self):
+        &#34;&#34;&#34;Initialize app- and &#34;sentence&#34; processing.
+
+        Set up the data store for collecting information and &#34;sentence&#34; processing.
+        Do this after collecting the witnesses.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        But it should be kept in tandem with `Variants.initApps`.
+        &#34;&#34;&#34;
         cur = self.cur
+        baseWitness = self.baseWitness
         nSent = self.nSent
         stackSent = self.stackSent
         varSent = self.varSent
 
+        cur[N_APP] = 0
+        cur[WITS] = []
+        cur[X_WITS] = []
         cur[TRANS_LAST] = None
         cur[nSent] = 0
         cur[stackSent] = []
-        cur[varSent] = {BASE: None}
+        cur[varSent] = {baseWitness: None}
 
-    def startApp(self, node):
-        cv = self.cv
+    def startApp(self, tag, atts):
+        &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
+
+        Use this each time you enter one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being entered
+        atts: dict
+            The attributes of the XML element that is being entered
+        &#34;&#34;&#34;
+
         cur = self.cur
-        curVarSent = cur[self.varSent]
         curStackSent = cur[self.stackSent]
-
-        tag = node.tag
-        atts = node.attrib
 
         if tag == APP:
             nApp = cur[N_APP]
@@ -515,14 +880,8 @@ class Variants:
             parentApp = appInfo[PARENT]
             xwits = appInfo[X_WITS]
 
-            curSent = curVarSent.get(BASE, None)
+            slots = self._diverge()
             cur[TRANS_NEXT].append(&#34;&#34;)
-
-            if curSent is None:
-                slots = None
-            else:
-                slots = cv.linked(curSent)
-                cv.feature(curSent, wit=BASE)
 
             curStackSent.append(
                 dict(
@@ -536,13 +895,19 @@ class Variants:
 
                 # keep xwits immutable, don&#39;t say xwits |= blabla
                 # because that will change xwits in place
+
                 xwits = xwits | appInfo[X_WITS]
                 parentApp = appInfo[PARENT]
 
             cur[X_WITS].append(xwits)
 
         elif tag == LEM:
-            pass
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit in xWits:
+                    self._suspend(wit)
+                else:
+                    self._resume(wit)
 
         elif tag == RDG:
             wits = set()
@@ -552,20 +917,33 @@ class Variants:
 
             cur[WITS].append(wits)
 
-    def endApp(self, node):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-        curStackSent = cur[self.stackSent]
+            for wit in self._getWits():
+                if wit in wits:
+                    self._resume(wit)
+                else:
+                    self._suspend(wit)
 
-        tag = node.tag
+    def endApp(self, tag):
+        &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
+
+        Use this each time you leave one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being left
+        &#34;&#34;&#34;
+
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
 
         if tag == APP:
             cur[X_WITS].pop()
 
-            for variantSent in curVarSent.values():
-                if variantSent is not None:
-                    cv.resume(variantSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit not in xWits:
+                    self._resume(wit)
 
             curStackSent.pop()
             cur[TRANS_LAST] = cur[TRANS_NEXT].pop()
@@ -573,92 +951,42 @@ class Variants:
         elif tag == LEM:
             cur[TRANS_NEXT][-1] = cur[TRANS_LAST]
 
-            curBaseSent = curVarSent[BASE]
-            if curBaseSent is not None:
-                cv.terminate(curBaseSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+
+                if wit not in xWits:
+                    self._suspend(wit)
 
         elif tag == RDG:
             wits = cur[WITS][-1]
 
             for wit in wits:
-                curWitSent = curVarSent.get(wit, None)
-                if curWitSent is not None:
-                    cv.terminate(curWitSent)
+                self._suspend(wit)
 
             cur[WITS].pop()
 
-    def startSentLem(self):
+    def checkSent(self, trans, punc):
+        &#34;&#34;&#34;Checks whether there is a &#34;sentence&#34; boundary at this point.
+
+        Use this every time you have added a slot node.
+
+        Parameters
+        ----------
+        trans: string
+            The text of the newly added slot node.
+            If this is empty, the text of the slot before that will be consulted.
+            This value is taken from the context information.
+            This very function is responsible for putting the last text value into
+            the context.
+        punc: string
+            The non-alfanumeric text material after the text of the last slot.
+            Will be used to determine whether there is a &#34;sentence&#34; break here.
+            The actual check will be done by the function `checkPunc`,
+            which has been passed as parameter when the `Variants` object was
+            created.
+        &#34;&#34;&#34;
         cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        if curVarSent.get(BASE, None) is None:
-            cv = self.cv
-            sentType = self.sentType
-            nSent = self.nSent
-
-            curSent = cv.node(sentType)
-            cur[nSent] += 1
-            curVarSent[BASE] = curSent
-            cv.feature(curSent, wit=BASE, n=cur[nSent])
-
-    def endSentLem(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        toDelete = []
-
-        for (wit, sent) in curVarSent.items():
-            isBase = wit == BASE
-            isXwit = wit in cur[X_WITS][-1]
-            if isBase or not isXwit:
-                cv.terminate(sent)
-                if isBase:
-                    curVarSent[wit] = None
-                else:
-                    toDelete.append(wit)
-
-        for wit in toDelete:
-            del curVarSent[wit]
-
-    def startSentRdg(self):
-        cv = self.cv
-        sentType = self.sentType
-        cur = self.cur
-        curStackSent = cur[self.stackSent]
-        curVarSent = cur[self.varSent]
-        nSent = self.nSent
-
-        wits = cur[WITS][-1]
-        topStack = curStackSent[-1]
-        cur[TRANS_LAST] = topStack[TRANS_LAST]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is None:
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                curVarSent[wit] = curSent
-                cv.feature(curSent, wit=wit, n=cur[nSent])
-                slots = topStack[SLOTS]
-                if slots is not None:
-                    cv.link(curSent, topStack[SLOTS])
-
-    def endSentRdg(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        wits = cur[WITS][-1]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is not None:
-                cv.terminate(curSent)
-                curVarSent[wit] = None
-
-    def checkSent(self, trans, punc, checkPunc):
-        cur = self.cur
+        checkPunc = self.checkPunc
 
         lastTrans = trans or cur[TRANS_LAST] or &#34;&#34;
         if checkPunc(lastTrans, trans, punc):
@@ -667,74 +995,243 @@ class Variants:
             cur[TRANS_LAST] = trans
 
     def startSent(self):
-        cur = self.cur
+        &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-        inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-        inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+        When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
+        are created for each witness for the rdg.
+
+        Use this before creating a slot and/or at the start of certain elements
+        such as paragraphs.
+        &#34;&#34;&#34;
+
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+        inLem = LEM in cur and len(cur[LEM]) &gt; 0
 
         if inLem:
-            self.startSentLem()
+            self._startSentLem()
         elif inRdg:
-            self.startSentRdg()
+            self._startSentRdg()
         else:
-            curVarSent = cur[self.varSent]
-
-            if curVarSent[BASE] is None:
-                cv = self.cv
-                sentType = self.sentType
-                nSent = self.nSent
-
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                cv.feature(curSent, n=cur[nSent])
-                curVarSent[BASE] = curSent
+            self._start(baseWitness, witAtt=False)
 
     def endSent(self):
-        cv = self.cv
+        &#34;&#34;&#34;Ends a &#34;sentence&#34; if there is a current sentence.
+
+        Use this at the end of each XML file if you are sure that
+        there should not remain pending sentences. You can also call this
+        at the end of certain elements, such as paragraphs.
+
+        When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+        that agree with the base text here are also ended.
+        No new sentences for these witnesses are started, since we are in
+        the base text.
+        &#34;&#34;&#34;
+
+        cur = self.cur
+
+        inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+        inLem = LEM in cur and len(cur[LEM]) &gt; 0
+
+        if inLem:
+            self._endSentLem()
+        elif inRdg:
+            self._endSentRdg()
+        else:
+            for wit in self._getWits():
+                self._terminate(wit)
+
+    def _startSentLem(self):
+        baseWitness = self.baseWitness
+
+        self._start(baseWitness)
+
+    def _endSentLem(self):
+        xWits = self._getXwits()
+        for wit in self._getWits():
+            if wit not in xWits:
+                self._terminate(wit)
+
+    def _startSentRdg(self):
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
+
+        wits = cur[WITS][-1]
+        topStack = curStackSent[-1]
+        cur[TRANS_LAST] = topStack[TRANS_LAST]
+
+        for wit in wits:
+            self._prepend(wit)
+
+    def _endSentRdg(self):
+        cur = self.cur
+
+        wits = cur[WITS][-1]
+
+        for wit in wits:
+            self._terminate(wit)
+
+    def _get(self, wit):
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
+
+        if isBase:
+            return curVarSent[baseWitness]
+
+        return curVarSent.get(wit, None)
+
+    def _getWits(self):
         cur = self.cur
         curVarSent = cur[self.varSent]
 
-        inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-        inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+        return list(curVarSent)
 
-        if inLem:
-            self.endSentLem()
-        elif inRdg:
-            self.endSentRdg()
+    def _getXwits(self):
+        cur = self.cur
+
+        xWits = cur[X_WITS]
+
+        return xWits[-1] if xWits else set()
+
+    def _start(self, wit, witAtt=True):
+        s = self._get(wit)
+        if s is not None:
+            return s
+
+        cv = self.cv
+        cur = self.cur
+        sentType = self.sentType
+        curVarSent = cur[self.varSent]
+        nSent = self.nSent
+        baseWitness = self.baseWitness
+
+        isBase = wit == baseWitness
+
+        s = cv.node(sentType)
+
+        cur[nSent] += 1
+        cv.feature(s, n=cur[nSent])
+        if witAtt:
+            cv.feature(s, wit=wit)
+
+        if isBase:
+            curVarSent[baseWitness] = s
         else:
-            if curVarSent[BASE] is not None:
-                cv.terminate(curVarSent[BASE])
-                curVarSent[BASE] = None
+            curVarSent[wit] = s
 
-            toDelete = []
+        return s
 
-            for (wit, sent) in curVarSent.items():
-                isBase = wit == BASE
+    def _terminate(self, wit):
+        cv = self.cv
+        cur = self.cur
+        baseWitness = self.baseWitness
 
-                if sent is not None:
-                    cv.terminate(sent)
-                    if isBase:
-                        curVarSent[wit] = None
-                    else:
-                        toDelete.append(wit)
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
 
-            for wit in toDelete:
-                del curVarSent[wit]</code></pre>
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+            if isBase:
+                curVarSent[wit] = None
+            else:
+                del curVarSent[wit]
+
+    def _resume(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.resume(s)
+
+    def _suspend(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+    def _diverge(self):
+        cv = self.cv
+        baseWitness = self.baseWitness
+
+        s = self._get(baseWitness)
+
+        if s is None:
+            return None
+
+        cv.feature(s, wit=baseWitness)
+        return cv.linked(s)
+
+    def _prepend(self, wit):
+        if self._get(wit) is None:
+            cv = self.cv
+            cur = self.cur
+            curStackSent = cur[self.stackSent]
+            topStack = curStackSent[-1]
+            slots = topStack[SLOTS]
+
+            s = self._start(wit)
+
+            if s is not None and slots is not None:
+                cv.link(s, topStack[SLOTS])</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.convert.variants.Variants.checkSent"><code class="name flex">
-<span>def <span class="ident">checkSent</span></span>(<span>self, trans, punc, checkPunc)</span>
+<span>def <span class="ident">checkSent</span></span>(<span>self, trans, punc)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Checks whether there is a "sentence" boundary at this point.</p>
+<p>Use this every time you have added a slot node.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>trans</code></strong> :&ensp;<code>string</code></dt>
+<dd>The text of the newly added slot node.
+If this is empty, the text of the slot before that will be consulted.
+This value is taken from the context information.
+This very function is responsible for putting the last text value into
+the context.</dd>
+<dt><strong><code>punc</code></strong> :&ensp;<code>string</code></dt>
+<dd>The non-alfanumeric text material after the text of the last slot.
+Will be used to determine whether there is a "sentence" break here.
+The actual check will be done by the function <code>checkPunc</code>,
+which has been passed as parameter when the <code><a title="tf.convert.variants.Variants" href="#tf.convert.variants.Variants">Variants</a></code> object was
+created.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L286-L293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L336-L363" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def checkSent(self, trans, punc, checkPunc):
+<pre><code class="python">def checkSent(self, trans, punc):
+    &#34;&#34;&#34;Checks whether there is a &#34;sentence&#34; boundary at this point.
+
+    Use this every time you have added a slot node.
+
+    Parameters
+    ----------
+    trans: string
+        The text of the newly added slot node.
+        If this is empty, the text of the slot before that will be consulted.
+        This value is taken from the context information.
+        This very function is responsible for putting the last text value into
+        the context.
+    punc: string
+        The non-alfanumeric text material after the text of the last slot.
+        Will be used to determine whether there is a &#34;sentence&#34; break here.
+        The actual check will be done by the function `checkPunc`,
+        which has been passed as parameter when the `Variants` object was
+        created.
+    &#34;&#34;&#34;
     cur = self.cur
+    checkPunc = self.checkPunc
 
     lastTrans = trans or cur[TRANS_LAST] or &#34;&#34;
     if checkPunc(lastTrans, trans, punc):
@@ -748,40 +1245,31 @@ class Variants:
 </code></dt>
 <dd>
 <div class="desc"><p>Collect all witnesses.</p>
-<p>first collect witnesses from all rdg elements
-and store information for each lemma what witnesses occur in sibling rdgs
-we number the lem elements globally as we encounter them,
-and store info for that lem under that number,
-so that we can refer to that info when we encounter the lem during
-the second pass.</p>
-<p>The info per lem is
-- the set of all witnesses mentioned in the wit attribute of all its
-sibling rdgs
-The number of its parent lem or None if there is no parent lem</p>
-<p>We also check whether there are multiple direct rdg children of the same
-app that share witnesses (which would be strange: conflicting information)</p></div>
+<p>Call this for the root nodes of every TEI file of the corpus.</p>
+<p>Collects the witnesses from all rdg-elements.
+For each lem-element the set of witnesses of its rdg siblings is collected in
+such a way that it can be retrieved later on.</p>
+<p>We also store a pointer to the parent app-element of each nested app-element.</p>
+<p>We also check that multiple direct-rdg children of the same
+app have disjoint witnesses.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L54-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L139-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectWitnesses(self, node):
     &#34;&#34;&#34;Collect all witnesses.
 
-    first collect witnesses from all rdg elements
-    and store information for each lemma what witnesses occur in sibling rdgs
-    we number the lem elements globally as we encounter them,
-    and store info for that lem under that number,
-    so that we can refer to that info when we encounter the lem during
-    the second pass.
+    Call this for the root nodes of every TEI file of the corpus.
 
-    The info per lem is
-    - the set of all witnesses mentioned in the wit attribute of all its
-      sibling rdgs
-    The number of its parent lem or None if there is no parent lem
+    Collects the witnesses from all rdg-elements.
+    For each lem-element the set of witnesses of its rdg siblings is collected in
+    such a way that it can be retrieved later on.
 
-    We also check whether there are multiple direct rdg children of the same
-    app that share witnesses (which would be strange: conflicting information)
+    We also store a pointer to the parent app-element of each nested app-element.
+
+    We also check that multiple direct-rdg children of the same
+    app have disjoint witnesses.
     &#34;&#34;&#34;
 
     cur = self.cur
@@ -823,29 +1311,42 @@ app that share witnesses (which would be strange: conflicting information)</p></
 </details>
 </dd>
 <dt id="tf.convert.variants.Variants.endApp"><code class="name flex">
-<span>def <span class="ident">endApp</span></span>(<span>self, node)</span>
+<span>def <span class="ident">endApp</span></span>(<span>self, tag)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Actions at the end of app- lem- and rdg-elements.</p>
+<p>Use this each time you leave one of these XML elements.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tag</code></strong> :&ensp;<code>string</code></dt>
+<dd>The tag name of the XML element that is being left</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L181-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L294-L334" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def endApp(self, node):
-    cv = self.cv
-    cur = self.cur
-    curVarSent = cur[self.varSent]
-    curStackSent = cur[self.stackSent]
+<pre><code class="python">def endApp(self, tag):
+    &#34;&#34;&#34;Actions at the end of app- lem- and rdg-elements.
 
-    tag = node.tag
+    Use this each time you leave one of these XML elements.
+
+    Parameters
+    ----------
+    tag: string
+        The tag name of the XML element that is being left
+    &#34;&#34;&#34;
+
+    cur = self.cur
+    curStackSent = cur[self.stackSent]
 
     if tag == APP:
         cur[X_WITS].pop()
 
-        for variantSent in curVarSent.values():
-            if variantSent is not None:
-                cv.resume(variantSent)
+        xWits = self._getXwits()
+        for wit in self._getWits():
+            if wit not in xWits:
+                self._resume(wit)
 
         curStackSent.pop()
         cur[TRANS_LAST] = cur[TRANS_NEXT].pop()
@@ -853,17 +1354,17 @@ app that share witnesses (which would be strange: conflicting information)</p></
     elif tag == LEM:
         cur[TRANS_NEXT][-1] = cur[TRANS_LAST]
 
-        curBaseSent = curVarSent[BASE]
-        if curBaseSent is not None:
-            cv.terminate(curBaseSent)
+        xWits = self._getXwits()
+        for wit in self._getWits():
+
+            if wit not in xWits:
+                self._suspend(wit)
 
     elif tag == RDG:
         wits = cur[WITS][-1]
 
         for wit in wits:
-            curWitSent = curVarSent.get(wit, None)
-            if curWitSent is not None:
-                cv.terminate(curWitSent)
+            self._suspend(wit)
 
         cur[WITS].pop()</code></pre>
 </details>
@@ -872,111 +1373,64 @@ app that share witnesses (which would be strange: conflicting information)</p></
 <span>def <span class="ident">endSent</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Ends a "sentence" if there is a current sentence.</p>
+<p>Use this at the end of each XML file if you are sure that
+there should not remain pending sentences. You can also call this
+at the end of certain elements, such as paragraphs.</p>
+<p>When in a lem-element, all pending "sentences" of all witnesses
+that agree with the base text here are also ended.
+No new sentences for these witnesses are started, since we are in
+the base text.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L318-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L388-L412" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def endSent(self):
-    cv = self.cv
-    cur = self.cur
-    curVarSent = cur[self.varSent]
+    &#34;&#34;&#34;Ends a &#34;sentence&#34; if there is a current sentence.
 
-    inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-    inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+    Use this at the end of each XML file if you are sure that
+    there should not remain pending sentences. You can also call this
+    at the end of certain elements, such as paragraphs.
+
+    When in a lem-element, all pending &#34;sentences&#34; of all witnesses
+    that agree with the base text here are also ended.
+    No new sentences for these witnesses are started, since we are in
+    the base text.
+    &#34;&#34;&#34;
+
+    cur = self.cur
+
+    inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+    inLem = LEM in cur and len(cur[LEM]) &gt; 0
 
     if inLem:
-        self.endSentLem()
+        self._endSentLem()
     elif inRdg:
-        self.endSentRdg()
+        self._endSentRdg()
     else:
-        if curVarSent[BASE] is not None:
-            cv.terminate(curVarSent[BASE])
-            curVarSent[BASE] = None
-
-        toDelete = []
-
-        for (wit, sent) in curVarSent.items():
-            isBase = wit == BASE
-
-            if sent is not None:
-                cv.terminate(sent)
-                if isBase:
-                    curVarSent[wit] = None
-                else:
-                    toDelete.append(wit)
-
-        for wit in toDelete:
-            del curVarSent[wit]</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.variants.Variants.endSentLem"><code class="name flex">
-<span>def <span class="ident">endSentLem</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L230-L248" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def endSentLem(self):
-    cv = self.cv
-    cur = self.cur
-    curVarSent = cur[self.varSent]
-
-    toDelete = []
-
-    for (wit, sent) in curVarSent.items():
-        isBase = wit == BASE
-        isXwit = wit in cur[X_WITS][-1]
-        if isBase or not isXwit:
-            cv.terminate(sent)
-            if isBase:
-                curVarSent[wit] = None
-            else:
-                toDelete.append(wit)
-
-    for wit in toDelete:
-        del curVarSent[wit]</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.variants.Variants.endSentRdg"><code class="name flex">
-<span>def <span class="ident">endSentRdg</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L273-L284" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def endSentRdg(self):
-    cv = self.cv
-    cur = self.cur
-    curVarSent = cur[self.varSent]
-
-    wits = cur[WITS][-1]
-
-    for wit in wits:
-        curSent = curVarSent.get(wit, None)
-        if curSent is not None:
-            cv.terminate(curSent)
-            curVarSent[wit] = None</code></pre>
+        for wit in self._getWits():
+            self._terminate(wit)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.variants.Variants.initApps"><code class="name flex">
 <span>def <span class="ident">initApps</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Initialize app- processing and witness collection.</p>
+<p>You can issue this command once for the whole corpus,
+or each time before entering a volume.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L46-L52" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L191-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initApps(self):
+    &#34;&#34;&#34;Initialize app- processing and witness collection.
+
+    You can issue this command once for the whole corpus,
+    or each time before entering a volume.
+    &#34;&#34;&#34;
     cur = self.cur
 
     cur[APPS] = dict()
@@ -985,64 +1439,79 @@ app that share witnesses (which would be strange: conflicting information)</p></
     cur[N_APP] = 0</code></pre>
 </details>
 </dd>
-<dt id="tf.convert.variants.Variants.initSent"><code class="name flex">
-<span>def <span class="ident">initSent</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L117-L126" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def initSent(self):
-    cur = self.cur
-    nSent = self.nSent
-    stackSent = self.stackSent
-    varSent = self.varSent
-
-    cur[TRANS_LAST] = None
-    cur[nSent] = 0
-    cur[stackSent] = []
-    cur[varSent] = {BASE: None}</code></pre>
-</details>
-</dd>
 <dt id="tf.convert.variants.Variants.resetApps"><code class="name flex">
 <span>def <span class="ident">resetApps</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Initialize app- and "sentence" processing.</p>
+<p>Set up the data store for collecting information and "sentence" processing.
+Do this after collecting the witnesses.</p>
+<p>You can issue this command once for the whole corpus,
+or each time before entering a volume.
+But it should be kept in tandem with <code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">Variants.initApps()</a></code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L110-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L204-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resetApps(self):
+    &#34;&#34;&#34;Initialize app- and &#34;sentence&#34; processing.
+
+    Set up the data store for collecting information and &#34;sentence&#34; processing.
+    Do this after collecting the witnesses.
+
+    You can issue this command once for the whole corpus,
+    or each time before entering a volume.
+    But it should be kept in tandem with `Variants.initApps`.
+    &#34;&#34;&#34;
     cur = self.cur
+    baseWitness = self.baseWitness
+    nSent = self.nSent
+    stackSent = self.stackSent
+    varSent = self.varSent
 
     cur[N_APP] = 0
     cur[WITS] = []
-    cur[X_WITS] = []</code></pre>
+    cur[X_WITS] = []
+    cur[TRANS_LAST] = None
+    cur[nSent] = 0
+    cur[stackSent] = []
+    cur[varSent] = {baseWitness: None}</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.variants.Variants.startApp"><code class="name flex">
-<span>def <span class="ident">startApp</span></span>(<span>self, node)</span>
+<span>def <span class="ident">startApp</span></span>(<span>self, tag, atts)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Actions at the start of app- lem- and rdg-elements.</p>
+<p>Use this each time you enter one of these XML elements.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tag</code></strong> :&ensp;<code>string</code></dt>
+<dd>The tag name of the XML element that is being entered</dd>
+<dt><strong><code>atts</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The attributes of the XML element that is being entered</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L128-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L228-L292" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def startApp(self, node):
-    cv = self.cv
-    cur = self.cur
-    curVarSent = cur[self.varSent]
-    curStackSent = cur[self.stackSent]
+<pre><code class="python">def startApp(self, tag, atts):
+    &#34;&#34;&#34;Actions at the start of app- lem- and rdg-elements.
 
-    tag = node.tag
-    atts = node.attrib
+    Use this each time you enter one of these XML elements.
+
+    Parameters
+    ----------
+    tag: string
+        The tag name of the XML element that is being entered
+    atts: dict
+        The attributes of the XML element that is being entered
+    &#34;&#34;&#34;
+
+    cur = self.cur
+    curStackSent = cur[self.stackSent]
 
     if tag == APP:
         nApp = cur[N_APP]
@@ -1051,14 +1520,8 @@ app that share witnesses (which would be strange: conflicting information)</p></
         parentApp = appInfo[PARENT]
         xwits = appInfo[X_WITS]
 
-        curSent = curVarSent.get(BASE, None)
+        slots = self._diverge()
         cur[TRANS_NEXT].append(&#34;&#34;)
-
-        if curSent is None:
-            slots = None
-        else:
-            slots = cv.linked(curSent)
-            cv.feature(curSent, wit=BASE)
 
         curStackSent.append(
             dict(
@@ -1072,13 +1535,19 @@ app that share witnesses (which would be strange: conflicting information)</p></
 
             # keep xwits immutable, don&#39;t say xwits |= blabla
             # because that will change xwits in place
+
             xwits = xwits | appInfo[X_WITS]
             parentApp = appInfo[PARENT]
 
         cur[X_WITS].append(xwits)
 
     elif tag == LEM:
-        pass
+        xWits = self._getXwits()
+        for wit in self._getWits():
+            if wit in xWits:
+                self._suspend(wit)
+            else:
+                self._resume(wit)
 
     elif tag == RDG:
         wits = set()
@@ -1086,100 +1555,51 @@ app that share witnesses (which would be strange: conflicting information)</p></
             wits = {w.strip(&#34;.&#34;).lower() for w in atts[WIT].split()}
             atts[WIT] = &#34; &#34;.join(wits)
 
-        cur[WITS].append(wits)</code></pre>
+        cur[WITS].append(wits)
+
+        for wit in self._getWits():
+            if wit in wits:
+                self._resume(wit)
+            else:
+                self._suspend(wit)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.variants.Variants.startSent"><code class="name flex">
 <span>def <span class="ident">startSent</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Starts a "sentence" if there is no current sentence.</p>
+<p>When in an rdg-element, witness-dependend "sentence" nodes
+are created for each witness for the rdg.</p>
+<p>Use this before creating a slot and/or at the start of certain elements
+such as paragraphs.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L295-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/convert/variants.py#L365-L386" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def startSent(self):
-    cur = self.cur
+    &#34;&#34;&#34;Starts a &#34;sentence&#34; if there is no current sentence.
 
-    inRdg = &#34;rdg&#34; in cur and len(cur[&#34;rdg&#34;]) &gt; 0
-    inLem = &#34;lem&#34; in cur and len(cur[&#34;lem&#34;]) &gt; 0
+    When in an rdg-element, witness-dependend &#34;sentence&#34; nodes
+    are created for each witness for the rdg.
+
+    Use this before creating a slot and/or at the start of certain elements
+    such as paragraphs.
+    &#34;&#34;&#34;
+
+    cur = self.cur
+    baseWitness = self.baseWitness
+
+    inRdg = RDG in cur and len(cur[RDG]) &gt; 0
+    inLem = LEM in cur and len(cur[LEM]) &gt; 0
 
     if inLem:
-        self.startSentLem()
+        self._startSentLem()
     elif inRdg:
-        self.startSentRdg()
+        self._startSentRdg()
     else:
-        curVarSent = cur[self.varSent]
-
-        if curVarSent[BASE] is None:
-            cv = self.cv
-            sentType = self.sentType
-            nSent = self.nSent
-
-            curSent = cv.node(sentType)
-            cur[nSent] += 1
-            cv.feature(curSent, n=cur[nSent])
-            curVarSent[BASE] = curSent</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.variants.Variants.startSentLem"><code class="name flex">
-<span>def <span class="ident">startSentLem</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L216-L228" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def startSentLem(self):
-    cur = self.cur
-    curVarSent = cur[self.varSent]
-
-    if curVarSent.get(BASE, None) is None:
-        cv = self.cv
-        sentType = self.sentType
-        nSent = self.nSent
-
-        curSent = cv.node(sentType)
-        cur[nSent] += 1
-        curVarSent[BASE] = curSent
-        cv.feature(curSent, wit=BASE, n=cur[nSent])</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.variants.Variants.startSentRdg"><code class="name flex">
-<span>def <span class="ident">startSentRdg</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/convert/variants.py#L250-L271" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def startSentRdg(self):
-    cv = self.cv
-    sentType = self.sentType
-    cur = self.cur
-    curStackSent = cur[self.stackSent]
-    curVarSent = cur[self.varSent]
-    nSent = self.nSent
-
-    wits = cur[WITS][-1]
-    topStack = curStackSent[-1]
-    cur[TRANS_LAST] = topStack[TRANS_LAST]
-
-    for wit in wits:
-        curSent = curVarSent.get(wit, None)
-        if curSent is None:
-            curSent = cv.node(sentType)
-            cur[nSent] += 1
-            curVarSent[wit] = curSent
-            cv.feature(curSent, wit=wit, n=cur[nSent])
-            slots = topStack[SLOTS]
-            if slots is not None:
-                cv.link(curSent, topStack[SLOTS])</code></pre>
+        self._start(baseWitness, witAtt=False)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1260,15 +1680,10 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.variants.Variants.collectWitnesses" href="#tf.convert.variants.Variants.collectWitnesses">collectWitnesses</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.endApp" href="#tf.convert.variants.Variants.endApp">endApp</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.endSent" href="#tf.convert.variants.Variants.endSent">endSent</a></code></li>
-<li><code><a title="tf.convert.variants.Variants.endSentLem" href="#tf.convert.variants.Variants.endSentLem">endSentLem</a></code></li>
-<li><code><a title="tf.convert.variants.Variants.endSentRdg" href="#tf.convert.variants.Variants.endSentRdg">endSentRdg</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.initApps" href="#tf.convert.variants.Variants.initApps">initApps</a></code></li>
-<li><code><a title="tf.convert.variants.Variants.initSent" href="#tf.convert.variants.Variants.initSent">initSent</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.resetApps" href="#tf.convert.variants.Variants.resetApps">resetApps</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.startApp" href="#tf.convert.variants.Variants.startApp">startApp</a></code></li>
 <li><code><a title="tf.convert.variants.Variants.startSent" href="#tf.convert.variants.Variants.startSent">startSent</a></code></li>
-<li><code><a title="tf.convert.variants.Variants.startSentLem" href="#tf.convert.variants.Variants.startSentLem">startSentLem</a></code></li>
-<li><code><a title="tf.convert.variants.Variants.startSentRdg" href="#tf.convert.variants.Variants.startSentRdg">startSentRdg</a></code></li>
 </ul>
 </li>
 </ul>

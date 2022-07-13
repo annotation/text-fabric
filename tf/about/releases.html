@@ -33,6 +33,13 @@ all possibilities.</p>
 <hr>
 <h2 id="10">10</h2>
 <h2 id="100">10.0</h2>
+<h2 id="101">10.1</h2>
+<p>2022-07-13</p>
+<p>Addition of a module <code><a title="tf.convert.variants" href="../convert/variants.html">tf.convert.variants</a></code> that can be used in a <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.
+It can be used to process TEI app-lem-rdg elements (critical apparatus).
+What it does for you is to create sentence-like nodes from sentence-boundary information.
+It deals with the cases where variants have different sentence boundaries.</p>
+<p>Some minor fixes in defaults and documentation.</p>
 <h2 id="1004">10.0.4</h2>
 <p>2022-07-04</p>
 <p>Addition to the <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> api: <code>cv.link()</code> to manually link a node
@@ -104,7 +111,7 @@ to the shielded notebooks.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1ccd4a4dc451e94a789f138576576c5d7f13474/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -178,6 +185,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#10">10</a></li>
 <li><a href="#100">10.0</a></li>
+<li><a href="#101">10.1</a></li>
 <li><a href="#1004">10.0.4</a></li>
 <li><a href="#1003">10.0.3</a></li>
 <li><a href="#1002">10.0.2</a></li>
