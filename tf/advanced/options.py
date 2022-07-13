@@ -97,7 +97,7 @@ lineNumbers: boolean, optional `False`
 
         If the corpus has no line numbers, the default is `None`.
 
-plainGaps: boolean, optional `False`
+plainGaps: boolean, optional `True`
     **interface option**
     indicates whether gaps types should be displayed in plain displays.
     In pretty displays gaps are marked by dotted left-right borders of the nodes

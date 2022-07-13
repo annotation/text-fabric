@@ -287,6 +287,7 @@ def getText(
     suppress = set() if options is None else options.suppress
 
     (tpl, feats) = templates[nType]
+    x = "" if isPretty else " "
 
     tplFilled = (
         (
@@ -313,8 +314,11 @@ def getText(
         )
         if tpl is True
         else (
-            tpl.format(
-                **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+            (
+                tpl.format(
+                    **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+                )
+                + x
             )
             if standardFeatures
             else ""

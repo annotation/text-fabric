@@ -12,6 +12,17 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10.0
 
+## 10.1
+
+2022-07-13
+
+Addition of a module `tf.convert.variants` that can be used in a `tf.convert.walker` conversion.
+It can be used to process TEI app-lem-rdg elements (critical apparatus).
+What it does for you is to create sentence-like nodes from sentence-boundary information.
+It deals with the cases where variants have different sentence boundaries.
+
+Some minor fixes in defaults and documentation.
+
 ## 10.0.4
 
 2022-07-04

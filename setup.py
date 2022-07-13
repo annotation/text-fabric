@@ -42,7 +42,7 @@ setup(
             "text-fabric-make = tf.client.make.build:main",
         ]
     },
-    version='10.0.3',
+    version='10.1.0',
     description="""Processor and browser for Text Fabric Data""",
     author="Dirk Roorda",
     author_email="text.annotation@icloud.com",

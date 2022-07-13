@@ -12,62 +12,143 @@ An extensive description of the problems and solutions is in
 
 
 APP = "app"
-APPS = "apps"
-APP_STACK = "appstack"
-BASE = "base"
-LEM = "lem"
-N_APP = "nApp"
 N_SENT = "nSent"
 PARENT = "parent"
-RDG = "rdg"
 RDGS = "rdgs"
 SLOTS = "slots"
-TRANS_LAST = "translast"
-TRANS_NEXT = "transnext"
 VARIANTS = "variants"
 WIT = "wit"
+
+# Start new keys in cur
+
+APP_STACK = "appstack"
+APPS = "apps"
+N_APP = "nApp"
+TRANS_LAST = "translast"
+TRANS_NEXT = "transnext"
 WITNESSES = "witnesses"
 WITS = "wits"
 X_WITS = "xwits"
 
+# End new keys in cur
+
+# Start existing keys in cur
+
+RDG = "rdg"
+LEM = "lem"
+
+# End existing keys in cur
+
 
 class Variants:
-    def __init__(self, cv, cur, sentType, addWarning, addError):
+    def __init__(self, cv, cur, baseWitness, sentType, checkPunc, addWarning, addError):
+        """Handlers to turn boundaries into nodes even across variants.
+
+        This class works inside converters of the type `tf.convert.walker`.
+        Import it as
+
+        ``` python
+        from tf.convert.variants import Variants
+        ```
+
+        It should typically be instantiated inside the `director()` function,
+        at a point where `cv` and `cur` are known.
+
+        Then issue `Variants.initApps`, either once or for each volume in the corpus.
+
+        After initialization you should call `Variants.collectWitnesses()` for
+        each TEI file in the corpus.
+
+        After collecting the witnesses you should prepare for the final walk through
+        the data by `Variants.resetApps()`. This should match the call(s) to
+        `Variants.initApps`.
+
+        Then, at the start of each app-, lem-, rdg- element, call
+        `Variants.startApp(tag)` with tag the corresponding tag name (
+        `app`, `lem`, or `rdg`).
+
+        Likewise, at the end, call `Variants.endApp(tag)`.
+
+        Whenever you create slots, isse a `Variants.startSent()` first,
+        and a `Variants.checkSent()` after.
+
+        Close every TEI file with a `Variants.endSent()`, to finish off all
+        pending sentences.
+
+        Parameters
+        ----------
+        cv: object
+            The `tf.convert.walker.CV` object. This is the machinery that constructs
+            nodes and assigns features.
+        cur: dict
+            Keys and values by which a conversion program maintains current information.
+            The conversion proceeds by executing a custom `director()` function,
+            and this director walks through the source material and fires `cv` actions.
+            During the walk, the director can remember incoming data as needed in a
+            dict, and it is this dict that should be passed. The `Variants` object
+            stores additional information here under specific keys.
+
+            Those keys are mentioned in constants in the source code and there are
+            a few keys dependent on the `sentType` parameter, namely
+
+                f"n{sentType}"
+                f"stack{sentType}"
+                f"var{sentType}"
+
+        baseWitness: string
+            The name of the base text. Take care that it is different from the names
+            of the witnesses.
+
+        sentType: string
+            The name of the node type of the nodes that will be constructed on the
+            basis of boundaries. It could be "sentence", but it could also be any
+            other name, and it is not assumed that the nodes in question represent
+            sentences. It could be anything, provided we have access to its boundaries.
+
+        checkPunc: function(string, string, punc): boolean
+            Given a the texts of the last two slots and the punctuation after that,
+            it determines whether is contains a boundary.
+            This function should be written in the converter program.
+            Hence it is up to the conversion code to define what constitues a boundary,
+            and whether it are sentences or some things else that are being bounded.
+            This function is called and depending on the outcome sentence nodes are
+            terminated and/or created, or nothing is done.
+
+        addWarning, addError: function(string, dict)
+            Functions taking a message string and a dict with current information
+            (typically cur).
+            They will be called if a warning or error has to be issued.
+            When they is called, `cur` will be passed as dict.
+            This function should be defined in the conversion program. It may use values
+            in `cur` to generate an indication where the warning/error occurred.
+
+        """
         self.cv = cv
         self.cur = cur
         self.sentType = sentType
+        self.baseWitness = baseWitness
+        self.checkPunc = checkPunc
         self.addWarning = addWarning
         self.addError = addError
         self.nSent = f"n{sentType}"
         self.stackSent = f"stack{sentType}"
         self.varSent = f"variants{sentType}"
+
         cur[WITNESSES] = set()
-
-    def initApps(self):
-        cur = self.cur
-
-        cur[APPS] = dict()
-        cur[APP_STACK] = []
-        cur[TRANS_NEXT] = []
-        cur[N_APP] = 0
 
     def collectWitnesses(self, node):
         """Collect all witnesses.
 
-        first collect witnesses from all rdg elements
-        and store information for each lemma what witnesses occur in sibling rdgs
-        we number the lem elements globally as we encounter them,
-        and store info for that lem under that number,
-        so that we can refer to that info when we encounter the lem during
-        the second pass.
+        Call this for the root nodes of every TEI file of the corpus.
 
-        The info per lem is
-        - the set of all witnesses mentioned in the wit attribute of all its
-          sibling rdgs
-        The number of its parent lem or None if there is no parent lem
+        Collects the witnesses from all rdg-elements.
+        For each lem-element the set of witnesses of its rdg siblings is collected in
+        such a way that it can be retrieved later on.
 
-        We also check whether there are multiple direct rdg children of the same
-        app that share witnesses (which would be strange: conflicting information)
+        We also store a pointer to the parent app-element of each nested app-element.
+
+        We also check that multiple direct-rdg children of the same
+        app have disjoint witnesses.
         """
 
         cur = self.cur
@@ -107,32 +188,58 @@ class Variants:
         if tag == APP:
             appStack.pop()
 
-    def resetApps(self):
+    def initApps(self):
+        """Initialize app- processing and witness collection.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        """
         cur = self.cur
 
+        cur[APPS] = dict()
+        cur[APP_STACK] = []
+        cur[TRANS_NEXT] = []
         cur[N_APP] = 0
-        cur[WITS] = []
-        cur[X_WITS] = []
 
-    def initSent(self):
+    def resetApps(self):
+        """Initialize app- and "sentence" processing.
+
+        Set up the data store for collecting information and "sentence" processing.
+        Do this after collecting the witnesses.
+
+        You can issue this command once for the whole corpus,
+        or each time before entering a volume.
+        But it should be kept in tandem with `Variants.initApps`.
+        """
         cur = self.cur
+        baseWitness = self.baseWitness
         nSent = self.nSent
         stackSent = self.stackSent
         varSent = self.varSent
 
+        cur[N_APP] = 0
+        cur[WITS] = []
+        cur[X_WITS] = []
         cur[TRANS_LAST] = None
         cur[nSent] = 0
         cur[stackSent] = []
-        cur[varSent] = {BASE: None}
+        cur[varSent] = {baseWitness: None}
 
-    def startApp(self, node):
-        cv = self.cv
+    def startApp(self, tag, atts):
+        """Actions at the start of app- lem- and rdg-elements.
+
+        Use this each time you enter one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being entered
+        atts: dict
+            The attributes of the XML element that is being entered
+        """
+
         cur = self.cur
-        curVarSent = cur[self.varSent]
         curStackSent = cur[self.stackSent]
-
-        tag = node.tag
-        atts = node.attrib
 
         if tag == APP:
             nApp = cur[N_APP]
@@ -141,14 +248,8 @@ class Variants:
             parentApp = appInfo[PARENT]
             xwits = appInfo[X_WITS]
 
-            curSent = curVarSent.get(BASE, None)
+            slots = self._diverge()
             cur[TRANS_NEXT].append("")
-
-            if curSent is None:
-                slots = None
-            else:
-                slots = cv.linked(curSent)
-                cv.feature(curSent, wit=BASE)
 
             curStackSent.append(
                 dict(
@@ -162,13 +263,19 @@ class Variants:
 
                 # keep xwits immutable, don't say xwits |= blabla
                 # because that will change xwits in place
+
                 xwits = xwits | appInfo[X_WITS]
                 parentApp = appInfo[PARENT]
 
             cur[X_WITS].append(xwits)
 
         elif tag == LEM:
-            pass
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit in xWits:
+                    self._suspend(wit)
+                else:
+                    self._resume(wit)
 
         elif tag == RDG:
             wits = set()
@@ -178,20 +285,33 @@ class Variants:
 
             cur[WITS].append(wits)
 
-    def endApp(self, node):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-        curStackSent = cur[self.stackSent]
+            for wit in self._getWits():
+                if wit in wits:
+                    self._resume(wit)
+                else:
+                    self._suspend(wit)
 
-        tag = node.tag
+    def endApp(self, tag):
+        """Actions at the end of app- lem- and rdg-elements.
+
+        Use this each time you leave one of these XML elements.
+
+        Parameters
+        ----------
+        tag: string
+            The tag name of the XML element that is being left
+        """
+
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
 
         if tag == APP:
             cur[X_WITS].pop()
 
-            for variantSent in curVarSent.values():
-                if variantSent is not None:
-                    cv.resume(variantSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+                if wit not in xWits:
+                    self._resume(wit)
 
             curStackSent.pop()
             cur[TRANS_LAST] = cur[TRANS_NEXT].pop()
@@ -199,92 +319,42 @@ class Variants:
         elif tag == LEM:
             cur[TRANS_NEXT][-1] = cur[TRANS_LAST]
 
-            curBaseSent = curVarSent[BASE]
-            if curBaseSent is not None:
-                cv.terminate(curBaseSent)
+            xWits = self._getXwits()
+            for wit in self._getWits():
+
+                if wit not in xWits:
+                    self._suspend(wit)
 
         elif tag == RDG:
             wits = cur[WITS][-1]
 
             for wit in wits:
-                curWitSent = curVarSent.get(wit, None)
-                if curWitSent is not None:
-                    cv.terminate(curWitSent)
+                self._suspend(wit)
 
             cur[WITS].pop()
 
-    def startSentLem(self):
+    def checkSent(self, trans, punc):
+        """Checks whether there is a "sentence" boundary at this point.
+
+        Use this every time you have added a slot node.
+
+        Parameters
+        ----------
+        trans: string
+            The text of the newly added slot node.
+            If this is empty, the text of the slot before that will be consulted.
+            This value is taken from the context information.
+            This very function is responsible for putting the last text value into
+            the context.
+        punc: string
+            The non-alfanumeric text material after the text of the last slot.
+            Will be used to determine whether there is a "sentence" break here.
+            The actual check will be done by the function `checkPunc`,
+            which has been passed as parameter when the `Variants` object was
+            created.
+        """
         cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        if curVarSent.get(BASE, None) is None:
-            cv = self.cv
-            sentType = self.sentType
-            nSent = self.nSent
-
-            curSent = cv.node(sentType)
-            cur[nSent] += 1
-            curVarSent[BASE] = curSent
-            cv.feature(curSent, wit=BASE, n=cur[nSent])
-
-    def endSentLem(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        toDelete = []
-
-        for (wit, sent) in curVarSent.items():
-            isBase = wit == BASE
-            isXwit = wit in cur[X_WITS][-1]
-            if isBase or not isXwit:
-                cv.terminate(sent)
-                if isBase:
-                    curVarSent[wit] = None
-                else:
-                    toDelete.append(wit)
-
-        for wit in toDelete:
-            del curVarSent[wit]
-
-    def startSentRdg(self):
-        cv = self.cv
-        sentType = self.sentType
-        cur = self.cur
-        curStackSent = cur[self.stackSent]
-        curVarSent = cur[self.varSent]
-        nSent = self.nSent
-
-        wits = cur[WITS][-1]
-        topStack = curStackSent[-1]
-        cur[TRANS_LAST] = topStack[TRANS_LAST]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is None:
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                curVarSent[wit] = curSent
-                cv.feature(curSent, wit=wit, n=cur[nSent])
-                slots = topStack[SLOTS]
-                if slots is not None:
-                    cv.link(curSent, topStack[SLOTS])
-
-    def endSentRdg(self):
-        cv = self.cv
-        cur = self.cur
-        curVarSent = cur[self.varSent]
-
-        wits = cur[WITS][-1]
-
-        for wit in wits:
-            curSent = curVarSent.get(wit, None)
-            if curSent is not None:
-                cv.terminate(curSent)
-                curVarSent[wit] = None
-
-    def checkSent(self, trans, punc, checkPunc):
-        cur = self.cur
+        checkPunc = self.checkPunc
 
         lastTrans = trans or cur[TRANS_LAST] or ""
         if checkPunc(lastTrans, trans, punc):
@@ -293,56 +363,189 @@ class Variants:
             cur[TRANS_LAST] = trans
 
     def startSent(self):
-        cur = self.cur
+        """Starts a "sentence" if there is no current sentence.
 
-        inRdg = "rdg" in cur and len(cur["rdg"]) > 0
-        inLem = "lem" in cur and len(cur["lem"]) > 0
+        When in an rdg-element, witness-dependend "sentence" nodes
+        are created for each witness for the rdg.
+
+        Use this before creating a slot and/or at the start of certain elements
+        such as paragraphs.
+        """
+
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        inRdg = RDG in cur and len(cur[RDG]) > 0
+        inLem = LEM in cur and len(cur[LEM]) > 0
 
         if inLem:
-            self.startSentLem()
+            self._startSentLem()
         elif inRdg:
-            self.startSentRdg()
+            self._startSentRdg()
         else:
-            curVarSent = cur[self.varSent]
-
-            if curVarSent[BASE] is None:
-                cv = self.cv
-                sentType = self.sentType
-                nSent = self.nSent
-
-                curSent = cv.node(sentType)
-                cur[nSent] += 1
-                cv.feature(curSent, n=cur[nSent])
-                curVarSent[BASE] = curSent
+            self._start(baseWitness, witAtt=False)
 
     def endSent(self):
-        cv = self.cv
+        """Ends a "sentence" if there is a current sentence.
+
+        Use this at the end of each XML file if you are sure that
+        there should not remain pending sentences. You can also call this
+        at the end of certain elements, such as paragraphs.
+
+        When in a lem-element, all pending "sentences" of all witnesses
+        that agree with the base text here are also ended.
+        No new sentences for these witnesses are started, since we are in
+        the base text.
+        """
+
+        cur = self.cur
+
+        inRdg = RDG in cur and len(cur[RDG]) > 0
+        inLem = LEM in cur and len(cur[LEM]) > 0
+
+        if inLem:
+            self._endSentLem()
+        elif inRdg:
+            self._endSentRdg()
+        else:
+            for wit in self._getWits():
+                self._terminate(wit)
+
+    def _startSentLem(self):
+        baseWitness = self.baseWitness
+
+        self._start(baseWitness)
+
+    def _endSentLem(self):
+        xWits = self._getXwits()
+        for wit in self._getWits():
+            if wit not in xWits:
+                self._terminate(wit)
+
+    def _startSentRdg(self):
+        cur = self.cur
+        curStackSent = cur[self.stackSent]
+
+        wits = cur[WITS][-1]
+        topStack = curStackSent[-1]
+        cur[TRANS_LAST] = topStack[TRANS_LAST]
+
+        for wit in wits:
+            self._prepend(wit)
+
+    def _endSentRdg(self):
+        cur = self.cur
+
+        wits = cur[WITS][-1]
+
+        for wit in wits:
+            self._terminate(wit)
+
+    def _get(self, wit):
+        cur = self.cur
+        baseWitness = self.baseWitness
+
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
+
+        if isBase:
+            return curVarSent[baseWitness]
+
+        return curVarSent.get(wit, None)
+
+    def _getWits(self):
         cur = self.cur
         curVarSent = cur[self.varSent]
 
-        inRdg = "rdg" in cur and len(cur["rdg"]) > 0
-        inLem = "lem" in cur and len(cur["lem"]) > 0
+        return list(curVarSent)
 
-        if inLem:
-            self.endSentLem()
-        elif inRdg:
-            self.endSentRdg()
+    def _getXwits(self):
+        cur = self.cur
+
+        xWits = cur[X_WITS]
+
+        return xWits[-1] if xWits else set()
+
+    def _start(self, wit, witAtt=True):
+        s = self._get(wit)
+        if s is not None:
+            return s
+
+        cv = self.cv
+        cur = self.cur
+        sentType = self.sentType
+        curVarSent = cur[self.varSent]
+        nSent = self.nSent
+        baseWitness = self.baseWitness
+
+        isBase = wit == baseWitness
+
+        s = cv.node(sentType)
+
+        cur[nSent] += 1
+        cv.feature(s, n=cur[nSent])
+        if witAtt:
+            cv.feature(s, wit=wit)
+
+        if isBase:
+            curVarSent[baseWitness] = s
         else:
-            if curVarSent[BASE] is not None:
-                cv.terminate(curVarSent[BASE])
-                curVarSent[BASE] = None
+            curVarSent[wit] = s
 
-            toDelete = []
+        return s
 
-            for (wit, sent) in curVarSent.items():
-                isBase = wit == BASE
+    def _terminate(self, wit):
+        cv = self.cv
+        cur = self.cur
+        baseWitness = self.baseWitness
 
-                if sent is not None:
-                    cv.terminate(sent)
-                    if isBase:
-                        curVarSent[wit] = None
-                    else:
-                        toDelete.append(wit)
+        curVarSent = cur[self.varSent]
+        isBase = wit == baseWitness
 
-            for wit in toDelete:
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+            if isBase:
+                curVarSent[wit] = None
+            else:
                 del curVarSent[wit]
+
+    def _resume(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.resume(s)
+
+    def _suspend(self, wit):
+        cv = self.cv
+
+        s = self._get(wit)
+        if s is not None:
+            cv.terminate(s)
+
+    def _diverge(self):
+        cv = self.cv
+        baseWitness = self.baseWitness
+
+        s = self._get(baseWitness)
+
+        if s is None:
+            return None
+
+        cv.feature(s, wit=baseWitness)
+        return cv.linked(s)
+
+    def _prepend(self, wit):
+        if self._get(wit) is None:
+            cv = self.cv
+            cur = self.cur
+            curStackSent = cur[self.stackSent]
+            topStack = curStackSent[-1]
+            slots = topStack[SLOTS]
+
+            s = self._start(wit)
+
+            if s is not None and slots is not None:
+                cv.link(s, topStack[SLOTS])

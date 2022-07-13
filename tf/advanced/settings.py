@@ -644,7 +644,7 @@ If there are no sections, we pick a medium-sized node type.
 If there are no such node types, we pick the slot type, but this is pathological.
 
 Default:
-:   boolean `true`
+:   boolean `false`
 
 ---
 
@@ -1597,7 +1597,10 @@ def getTypeDefaults(app, cfg, dKey, withApi):
             baseTypes.add(nType)
 
         if "condense" in info:
-            condenseType = nType
+            condense = info["condense"]
+            checker.checkSetting("condense", condense)
+            if condense:
+                condenseType = nType
 
         trans = info.get("transform", None)
         if trans is not None:
