@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L1-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L1-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -249,9 +249,13 @@ def serveExport(web):
     queryMessages = queryData[&#34;messages&#34;]
     queryTable = queryData[&#34;table&#34;]
 
+    # maybe this is a hack. Needed to prevent appName from specified twice
+
+    form[&#34;appName&#34;] = appName
+
     return render_template(
         &#34;export.html&#34;,
-        appName=appName,
+        # appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(
@@ -423,7 +427,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L302-L372" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L306-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     aContext = web.context
@@ -506,7 +510,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L239-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L243-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     aContext = web.context
@@ -579,7 +583,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L180-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L180-L240" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     aContext = web.context
@@ -617,9 +621,13 @@ def serveAll(web, anything):
     queryMessages = queryData[&#34;messages&#34;]
     queryTable = queryData[&#34;table&#34;]
 
+    # maybe this is a hack. Needed to prevent appName from specified twice
+
+    form[&#34;appName&#34;] = appName
+
     return render_template(
         &#34;export.html&#34;,
-        appName=appName,
+        # appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(
@@ -648,7 +656,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L143-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     kernelApi = web.kernelApi
@@ -695,7 +703,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L70-L140" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     kernelApi = web.kernelApi
@@ -778,7 +786,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/server/serve.py#L31-L67" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     kernelApi = web.kernelApi

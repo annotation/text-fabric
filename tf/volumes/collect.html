@@ -49,7 +49,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/volumes/collect.py#L1-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/collect.py#L1-L894" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -600,6 +600,7 @@ def collect(
         info(&#34;Collect nodes from volumes ...&#34;)
         indent(level=1, reset=True)
         nodesByType = collections.defaultdict(list)
+        fromWork.clear()
 
         sW = 0
 
@@ -734,6 +735,7 @@ def collect(
         maxNodes = {}
         nodeFeatureDatas = {}
         edgeFeatureDatas = {}
+        fromWork.clear()
 
         for name in volumes:
             api = apis[name]
@@ -1181,7 +1183,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/volumes/collect.py#L61-L892" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/collect.py#L61-L894" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1672,6 +1674,7 @@ These will be excluded from collection.</p>
         info(&#34;Collect nodes from volumes ...&#34;)
         indent(level=1, reset=True)
         nodesByType = collections.defaultdict(list)
+        fromWork.clear()
 
         sW = 0
 
@@ -1806,6 +1809,7 @@ These will be excluded from collection.</p>
         maxNodes = {}
         nodeFeatureDatas = {}
         edgeFeatureDatas = {}
+        fromWork.clear()
 
         for name in volumes:
             api = apis[name]

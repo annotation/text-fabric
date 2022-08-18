@@ -47,7 +47,7 @@ collect volumes into a new work.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/fabric.py#L1-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/fabric.py#L1-L233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Fabric
@@ -82,7 +82,7 @@ from .parameters import LOCATIONS, LOCAL, OTYPE
 from .core.helpers import itemize, setDir, expandDir, normpath, unexpanduser as ux
 from .core.fabric import FabricCore
 from .core.timestamp import Timestamp
-from .volumes import extract, collect
+from .volumes import extract, collect, getVolumes
 
 
 class Fabric(FabricCore):
@@ -204,7 +204,16 @@ class Fabric(FabricCore):
                 return None
         return api
 
-    def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
+    def getVolumes(self):
+        &#34;&#34;&#34;Lists available volumes within the dataset.
+
+        See `tf.volumes.extract.getVolumes`.
+        &#34;&#34;&#34;
+
+        volumeBase = self.volumeBase
+        return getVolumes(volumeBase)
+
+    def extract(self, volumes=True, byTitle=True, silent=False, overwrite=None):
         &#34;&#34;&#34;Extract volumes from the currently loaded work.
 
         This function is only provided if the dataset is a work,
@@ -227,7 +236,7 @@ class Fabric(FabricCore):
         return extract(
             None,
             volumeBase,
-            volumes,
+            volumes=volumes,
             byTitle=byTitle,
             silent=silent,
             api=api,
@@ -319,7 +328,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/fabric.py#L37-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/fabric.py#L37-L233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(FabricCore):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -440,7 +449,16 @@ The collection takes precedence, and the volume is ignored in that case.</p>
                 return None
         return api
 
-    def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
+    def getVolumes(self):
+        &#34;&#34;&#34;Lists available volumes within the dataset.
+
+        See `tf.volumes.extract.getVolumes`.
+        &#34;&#34;&#34;
+
+        volumeBase = self.volumeBase
+        return getVolumes(volumeBase)
+
+    def extract(self, volumes=True, byTitle=True, silent=False, overwrite=None):
         &#34;&#34;&#34;Extract volumes from the currently loaded work.
 
         This function is only provided if the dataset is a work,
@@ -463,7 +481,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         return extract(
             None,
             volumeBase,
-            volumes,
+            volumes=volumes,
             byTitle=byTitle,
             silent=silent,
             api=api,
@@ -533,7 +551,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/fabric.py#L187-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/fabric.py#L196-L233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     self,
@@ -576,7 +594,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 </details>
 </dd>
 <dt id="tf.fabric.Fabric.extract"><code class="name flex">
-<span>def <span class="ident">extract</span></span>(<span>self, volumes, byTitle=True, silent=False, overwrite=None)</span>
+<span>def <span class="ident">extract</span></span>(<span>self, volumes=True, byTitle=True, silent=False, overwrite=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Extract volumes from the currently loaded work.</p>
@@ -589,9 +607,9 @@ will be supplied automatically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8392aa1c5e94bea9b52834a84834f477899e54c0/tf/fabric.py#L156-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/fabric.py#L165-L194" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
+<pre><code class="python">def extract(self, volumes=True, byTitle=True, silent=False, overwrite=None):
     &#34;&#34;&#34;Extract volumes from the currently loaded work.
 
     This function is only provided if the dataset is a work,
@@ -614,13 +632,34 @@ will be supplied automatically.</p></div>
     return extract(
         None,
         volumeBase,
-        volumes,
+        volumes=volumes,
         byTitle=byTitle,
         silent=silent,
         api=api,
         overwrite=overwrite,
         checkOnly=False,
     )</code></pre>
+</details>
+</dd>
+<dt id="tf.fabric.Fabric.getVolumes"><code class="name flex">
+<span>def <span class="ident">getVolumes</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Lists available volumes within the dataset.</p>
+<p>See <code><a title="tf.volumes.extract.getVolumes" href="volumes/extract.html#tf.volumes.extract.getVolumes">getVolumes()</a></code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/fabric.py#L156-L163" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getVolumes(self):
+    &#34;&#34;&#34;Lists available volumes within the dataset.
+
+    See `tf.volumes.extract.getVolumes`.
+    &#34;&#34;&#34;
+
+    volumeBase = self.volumeBase
+    return getVolumes(volumeBase)</code></pre>
 </details>
 </dd>
 </dl>
@@ -716,6 +755,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="tf.fabric.Fabric.collect" href="#tf.fabric.Fabric.collect">collect</a></code></li>
 <li><code><a title="tf.fabric.Fabric.extract" href="#tf.fabric.Fabric.extract">extract</a></code></li>
+<li><code><a title="tf.fabric.Fabric.getVolumes" href="#tf.fabric.Fabric.getVolumes">getVolumes</a></code></li>
 </ul>
 </li>
 </ul>
