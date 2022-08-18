@@ -31,7 +31,7 @@ from .parameters import LOCATIONS, LOCAL, OTYPE
 from .core.helpers import itemize, setDir, expandDir, normpath, unexpanduser as ux
 from .core.fabric import FabricCore
 from .core.timestamp import Timestamp
-from .volumes import extract, collect
+from .volumes import extract, collect, getVolumes
 
 
 class Fabric(FabricCore):
@@ -153,7 +153,16 @@ class Fabric(FabricCore):
                 return None
         return api
 
-    def extract(self, volumes, byTitle=True, silent=False, overwrite=None):
+    def getVolumes(self):
+        """Lists available volumes within the dataset.
+
+        See `tf.volumes.extract.getVolumes`.
+        """
+
+        volumeBase = self.volumeBase
+        return getVolumes(volumeBase)
+
+    def extract(self, volumes=True, byTitle=True, silent=False, overwrite=None):
         """Extract volumes from the currently loaded work.
 
         This function is only provided if the dataset is a work,
@@ -176,7 +185,7 @@ class Fabric(FabricCore):
         return extract(
             None,
             volumeBase,
-            volumes,
+            volumes=volumes,
             byTitle=byTitle,
             silent=silent,
             api=api,

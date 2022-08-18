@@ -30,10 +30,13 @@ def volumesApi(app):
         The high-level API object
     """
 
-    app.extract = types.MethodType(extract, app)
-    app.collect = types.MethodType(collect, app)
+    app.getVolumes = types.MethodType(getVolumes, app)
 
-    TF = app.api.TF
+    if hasattr(app, "api"):
+        app.extract = types.MethodType(extract, app)
+        app.collect = types.MethodType(collect, app)
+
+    TF = app.TF
 
     app.collectionInfo = None
     app.volumeInfo = None
@@ -43,6 +46,23 @@ def volumesApi(app):
     else:
         if TF.volume:
             app.volumeInfo = TF.volumeInfo
+
+
+def getVolumes(app, *args, **kwargs):
+    """Calls `tf.fabric.Fabric.getVolumes` from an app object.
+
+    !!! hint "No need to load feature data"
+        This function works even if no data has been loaded,
+        so you can use it after
+
+        ```
+        A = use(xxx, loadData=False)
+        ```
+    """
+
+    TF = app.TF
+
+    return TF.getVolumes(*args, **kwargs)
 
 
 def extract(app, *args, **kwargs):

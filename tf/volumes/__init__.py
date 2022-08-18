@@ -12,4 +12,4 @@ There are the following basic operations:
 
 
 from .collect import collect
-from .extract import extract
+from .extract import extract, getVolumes

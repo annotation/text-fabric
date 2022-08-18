@@ -213,9 +213,13 @@ def serveExport(web):
     queryMessages = queryData["messages"]
     queryTable = queryData["table"]
 
+    # maybe this is a hack. Needed to prevent appName from specified twice
+
+    form["appName"] = appName
+
     return render_template(
         "export.html",
-        appName=appName,
+        # appName=appName,
         css=css,
         descriptionMd=descriptionMd,
         sectionsTable=(

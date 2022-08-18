@@ -394,8 +394,9 @@ def characters(info, error, otext, tFormats, *tFeats):
 
     for (tFeat, data) in tFeats:
         freqList = collections.Counter()
-        for v in data.values():
-            freqList[v] += 1
+        if data is not None:
+            for v in data.values():
+                freqList[v] += 1
         charFreq = collections.defaultdict(lambda: 0)
         for (v, freq) in freqList.items():
             for c in str(v):

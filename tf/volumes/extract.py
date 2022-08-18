@@ -14,6 +14,7 @@ extract(
 
 """
 
+import os
 import collections
 from shutil import rmtree
 
@@ -35,10 +36,52 @@ setSilent = TM.setSilent
 isSilent = TM.isSilent
 
 
+def getVolumes(volumesLocation):
+    """Lists volumes of a work that exist in a given directory.
+
+    A directory is a volume if it contains the file `otype.tf` and that file
+    has a line starting with `@volume=`*xxx* where *xxx* is the name of the directory.
+
+    Parameters
+    ----------
+    volumesLocation: string
+        The directory to search for volumes.
+
+    Returns
+    -------
+    None or list
+        If `volumesLocation` does not exist or is not a directory, None
+        is returned. Otherwise a list of subdirectories that are modules.
+    """
+
+    if not os.path.isdir(volumesLocation):
+        return None
+
+    volumes = []
+
+    with os.scandir(volumesLocation) as dh:
+        for entry in dh:
+            vol = entry.name
+            if entry.is_dir() and not vol.startswith("."):
+                triggerFile = f"{volumesLocation}/{vol}/{OTYPE}.tf"
+                triggerLine = f"@volume={vol}\n"
+                if os.path.isfile(triggerFile):
+                    with open(triggerFile) as fh:
+                        triggered = False
+                        for line in fh:
+                            if line == triggerLine:
+                                triggered = True
+                                break
+                    if triggered:
+                        volumes.append(vol)
+
+    return volumes
+
+
 def extract(
     workLocation,
     volumesLocation,
-    volumes,
+    volumes=True,
     byTitle=True,
     silent=False,
     api=None,
@@ -57,7 +100,7 @@ def extract(
     Volumes will get a node feature `owork` which maps nodes in the volume to
     nodes in the work.
 
-    !!! note "use of feature owork
+    !!! note "use of feature owork"
         If volumes are combined to a work, nodes in distinct volumes may
         correspond to a single node in the work. In that case, they have the
         same value in the `owork` feature.
@@ -119,7 +162,7 @@ def extract(
         The directory under which the feature files of the volumes
         will be written.
 
-    volumes: boolean or dict or set
+    volumes: boolean or dict or set, optional True
         If True, extracts all top-level sections into separate volumes.
 
         If it is a dict, the keys are names for the volumes, and the values
@@ -228,6 +271,7 @@ def extract(
     `thora` with the first 5 books and `poetry` with two poetic books.
     """
 
+    givenVolumes = set()
     volumeData = {}
 
     def checkVolumeLocs():
@@ -263,14 +307,19 @@ def extract(
 
         good = True
         if volumes is not True:
+            givenVolumes.clear()
+
             if type(volumes) is dict:
                 for (name, heads) in volumes.items():
                     volumeData[name] = dict(heads=heads)
+                    givenVolumes.add(name)
             else:
                 for heads in volumes:
-                    volumeData["-".join(str(head) for head in heads)] = dict(
+                    headRep = "-".join(str(head) for head in heads)
+                    volumeData[headRep] = dict(
                         heads=heads
                     )
+                    givenVolumes.add(headRep)
 
             headIndex = {}
 
@@ -294,9 +343,11 @@ def extract(
         return good
 
     def checkVolumes2():
+        givenVolumes.clear()
         if volumes is True:
             for head in toplevels:
                 volumeData[head] = dict(heads=(head,))
+                givenVolumes.add(head)
             if not checkVolumeLocs():
                 return False
 
@@ -642,7 +693,7 @@ def extract(
         info("All done")
         return {
             name: dict(location=f"{volumesLocation}/{name}", new=name in volumeData)
-            for name in volumes
+            for name in givenVolumes
         }
 
     wasSilent = isSilent()

@@ -547,6 +547,7 @@ def collect(
         info("Collect nodes from volumes ...")
         indent(level=1, reset=True)
         nodesByType = collections.defaultdict(list)
+        fromWork.clear()
 
         sW = 0
 
@@ -681,6 +682,7 @@ def collect(
         maxNodes = {}
         nodeFeatureDatas = {}
         edgeFeatureDatas = {}
+        fromWork.clear()
 
         for name in volumes:
             api = apis[name]

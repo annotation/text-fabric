@@ -10,9 +10,33 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
-## 10.0
+## 10.2.0
 
-## 10.1
+2022-08-18
+
+The `tf.app.use` function has an extra optional parameter `loadData=True`
+by which you can prevent data loading.
+That is useful if you want to inspect properties of a dataset without
+the costly loading of much data.
+
+There is a new function to get existing volumes in a dataset:
+`tf.volumes.extract.getVolumes()`.
+It is also available as methods on the `tf.advanced.app.App` and `tf.fabric.Fabric` objects
+so you can also say `TF.getVolumes()` and `A.getVolumes()`.
+
+Improvements in the function `tf.volumes.extract.extract()`:
+
+*   its third argument (`volumes`) is replaced from a positional
+    argument into a keyword argument with default value `True`.
+*   Fixed a bug in reporting results 
+
+Improvement in the function `tf.volumes.collect.collect()`:
+
+*   Fixed a crash that occurred while executing this function under certain conditions
+
+## 10.2
+
+## 10.1.0
 
 2022-07-13
 
@@ -22,6 +46,8 @@ What it does for you is to create sentence-like nodes from sentence-boundary inf
 It deals with the cases where variants have different sentence boundaries.
 
 Some minor fixes in defaults and documentation.
+
+## 10.1
 
 ## 10.0.4
 
@@ -125,6 +151,8 @@ although everything up to building a Pages site is supported.
 When on a closed on-premise installation of GitLab, there is no way to
 see rendered notebooks on NBViewer, simply because NBViewer has no access
 to the shielded notebooks.
+
+## 10.0
 
 ---
 

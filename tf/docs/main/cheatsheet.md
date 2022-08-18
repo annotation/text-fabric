@@ -183,6 +183,13 @@ A.structureStrFromNode(...)
 See also `tf.about.volumes`.
 
 ```
+A.getVolumes()
+```
+:   list all volumes of this dataset
+:   `tf.fabric.Fabric.getVolumes`
+
+
+```
 A.extract(volumes, ...)
 ```
 :   export volumes based on a volume specification
@@ -836,6 +843,13 @@ TF.ignored
 See also `tf.about.volumes`.
 
 ```
+TF.getVolumes()
+```
+:   list all volumes of this dataset
+:   `tf.fabric.Fabric.getVolumes`
+
+
+```
 TF.extract(volumes, ...)
 ```
 :   export volumes based on a volume specification
@@ -891,12 +905,12 @@ TF datasets per volume or collection of a work.
 See also `tf.about.volumes`.
 
 ```
-from tf.volumes import collect
+from tf.volumes import getVolumes
 
-collect(volumes, work, ...)
+getVolumes(volumeDir)
 ```
-:   Collects several volumes into a new collection
-:   `tf.volumes.collect`
+:   List volumes in a directory.
+:   `tf.volumes.extract.getVolumes`
 
 ```
 from tf.volumes import extract
@@ -905,6 +919,14 @@ extract(work, volumes, ...)
 ```
 :   Extracts volumes from a work
 :   `tf.volumes.extract`
+
+```
+from tf.volumes import collect
+
+collect(volumes, work, ...)
+```
+:   Collects several volumes into a new collection
+:   `tf.volumes.collect`
 
 ---
 

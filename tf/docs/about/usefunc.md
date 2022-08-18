@@ -46,6 +46,7 @@ A = use(
     volume=None,
     collection=None,
     silent=False,
+    loadData=False,
     **configOverrides,
 )
 ```
@@ -431,3 +432,14 @@ If `True`, nearly all output of this call will be suppressed,
 including the links to the loaded data, features, and the API methods.
 Error messages will still come through.
 If `deep`, all output will be suppressed, except errors.
+
+## Prevent data loading
+
+Data loading is costly.
+If you need to get some information of a TF dataset that is not dependent on loaded
+data features, you can suppress the loading of data by
+
+```
+A = use("org/repo", loadData=False)`
+```
+

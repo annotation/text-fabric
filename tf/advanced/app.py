@@ -59,6 +59,7 @@ class App:
         api=None,
         setFile="",
         silent=False,
+        loadData=True,
         _withGc=True,
         **configOverrides,
     ):
@@ -140,25 +141,39 @@ class App:
                     silent=silent,
                     _withGc=_withGc,
                 )
-                api = TF.load("", silent=True)
-                if api:
-                    self.api = api
-                    excludedFeatures = aContext.excludedFeatures
-                    allFeatures = TF.explore(silent=True, show=True)
-                    loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-                    useFeatures = [
-                        f
-                        for f in loadableFeatures
-                        if f not in excludedFeatures and not f.startswith(OMAP)
-                    ]
-                    result = TF.load(useFeatures, add=True, silent=True)
-                    if result is False:
-                        self.api = None
+                self.TF = TF
+                if loadData:
+                    api = TF.load("", silent=True)
+                    if api:
+                        self.api = api
+                        excludedFeatures = aContext.excludedFeatures
+                        allFeatures = TF.explore(silent=True, show=True)
+                        loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
+                        useFeatures = [
+                            f
+                            for f in loadableFeatures
+                            if f not in excludedFeatures and not f.startswith(OMAP)
+                        ]
+                        result = TF.load(useFeatures, add=True, silent=True)
+                        if result is False:
+                            self.api = None
+                else:
+                    self.api = None
+                    console(
+                        """
+No data has been loaded.
+Most of the Text-Fabric API has not been loaded.
+"""
+                    )
             else:
                 self.api = None
 
         if self.api:
             self.TF = self.api.TF
+
+        volumesApi(self)
+
+        if self.api:
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
 
@@ -166,7 +181,6 @@ class App:
 
             if not featuresOnly:
                 self.getText = types.MethodType(getText, self)
-            volumesApi(self)
             linksApi(self, silent)
             if not featuresOnly:
                 searchApi(self)
@@ -192,7 +206,7 @@ class App:
             silentOff = self.silentOff
             silentOff()
         else:
-            if not _browse:
+            if not _browse and loadData:
                 console(
                     f"""
 There were problems with loading data.
