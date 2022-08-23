@@ -56,7 +56,7 @@ provide.</p>
     modules=None,
     volume=None,
     collection=None,
-    silent=False,
+    silent=&quot;auto&quot;,
     loadData=False,
     **configOverrides,
 )
@@ -372,11 +372,21 @@ If not, you have to say</p>
 </div>
 <h2 id="silence">Silence</h2>
 <p>Loading a corpus can be quite noisy in the output.
-You can reduce that by means of the <code>slient</code> paramenter.
-If <code>True</code>, nearly all output of this call will be suppressed,
+You can reduce that by means of the <code>silent</code> parameter.</p>
+<p>The default is <code>auto</code>, which suppresses most messages of the loading of individual
+features, except the potentially time-consuming ones.</p>
+<p>If you pass <code>terse</code>, also these time-consuming operations will not be displayed.</p>
+<p>If you pass <code>clean</code>, nearly all output of this call will be suppressed,
 including the links to the loaded data, features, and the API methods.
-Error messages will still come through.
-If <code>deep</code>, all output will be suppressed, except errors.</p>
+Error messages will still come through.</p>
+<p>If <code>deep</code>, all output will be suppressed, except errors.</p>
+<p>The value <code>verbose</code> is like <code>auto</code>, with the following extras:
+after a corpus has been loaded, a header is produced showing information
+about all features loaded, including their descriptions as given in the metadata
+of the features.
+With <code>verbose</code>, not only the descriptions, but <em>all</em> metadata fields
+of the features are included.</p>
+<p>Usually this will generate a big HTML string with a lot of redundant information.</p>
 <h2 id="prevent-data-loading">Prevent data loading</h2>
 <p>Data loading is costly.
 If you need to get some information of a TF dataset that is not dependent on loaded
@@ -386,7 +396,7 @@ data features, you can suppress the loading of data by</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md

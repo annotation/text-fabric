@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/extract.py#L1-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/volumes/extract.py#L1-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -59,7 +59,7 @@ from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
 from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
@@ -122,10 +122,11 @@ def extract(
     volumesLocation,
     volumes=True,
     byTitle=True,
-    silent=False,
+    silent=SILENT_D,
     api=None,
     overwrite=None,
     checkOnly=False,
+    show=False,
 ):
     &#34;&#34;&#34;Extracts volumes of a work.
 
@@ -228,8 +229,8 @@ def extract(
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     api: object, optional `None`
         If given, assume it is the TF api of a loaded work
@@ -251,6 +252,9 @@ def extract(
         If there is an error, returns False, otherwise returns the volumes in as
         far as they have to be extracted.
 
+    show: boolean, optional False
+        If True, does not return anything, but pretty prints the result
+        to the screen.
 
     Returns
     -------
@@ -309,6 +313,8 @@ def extract(
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
     &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
 
     givenVolumes = set()
     volumeData = {}
@@ -696,12 +702,12 @@ def extract(
             edgeFeatures = v[&#34;edgeFeatures&#34;]
             loc = f&#34;{volumesLocation}/{name}&#34;
             v[&#34;loc&#34;] = loc
-            TF = FabricCore(locations=loc, silent=True)
+            TF = FabricCore(locations=loc, silent=DEEP)
             if not TF.save(
                 metaData=metaData,
                 nodeFeatures=nodeFeatures,
                 edgeFeatures=edgeFeatures,
-                silent=False if DEBUG else silent or True,
+                silent=SILENT_D if DEBUG else DEEP,
             ):
                 good = False
         indent(level=0)
@@ -713,33 +719,52 @@ def extract(
     def process():
         indent(level=0, reset=True)
         if not checkVolumes():
-            return False
+            return None if show else False
         if checkOnly:
             if not volumeData:
-                return {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+                result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+                if show:
+                    for (name, v) in result.items():
+                        location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
+                        print(f&#34;{name:&lt;20}&#34;)
+                else:
+                    return result
         if not getTopLevels():
-            return False
+            return None if show else False
         if not checkVolumes2():
-            return False
+            return None if show else False
         if checkOnly:
-            return {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            if show:
+                for (name, v) in result.items():
+                    location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
+                    print(f&#34;{name:&lt;20}&#34;)
+            else:
+                return result
         if not distributeNodes():
-            return False
+            return None if show else False
         if not remapFeatures():
-            return False
+            return None if show else False
         if not writeTf():
-            return False
+            return None if show else False
         info(&#34;All done&#34;)
-        return {
+        result = {
             name: dict(location=f&#34;{volumesLocation}/{name}&#34;, new=name in volumeData)
             for name in givenVolumes
         }
+        if show:
+            for (name, v) in result.items():
+                new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
+                location = ux(f&#34;{v[&#39;location&#39;]}/{name}&#34;)
+                print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
+        else:
+            return result
 
     wasSilent = isSilent()
     setSilent(silent)
     result = process()
     setSilent(wasSilent)
-    return result</code></pre>
+    return None if show else result</code></pre>
 </details>
 </section>
 <section>
@@ -750,7 +775,7 @@ def extract(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.volumes.extract.extract"><code class="name flex">
-<span>def <span class="ident">extract</span></span>(<span>workLocation, volumesLocation, volumes=True, byTitle=True, silent=False, api=None, overwrite=None, checkOnly=False)</span>
+<span>def <span class="ident">extract</span></span>(<span>workLocation, volumesLocation, volumes=True, byTitle=True, silent='terse', api=None, overwrite=None, checkOnly=False, show=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Extracts volumes of a work.</p>
@@ -834,8 +859,8 @@ in common.</p>
 or by their titles.
 Default: by their titles.
 Note, that depending on the work, section titles may be strings or integers.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Suppress or enable informational messages.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 <dt><strong><code>api</code></strong> :&ensp;<code>object</code>, optional <code>None</code></dt>
 <dd>If given, assume it is the TF api of a loaded work
 from which the volumes are to be extracted.
@@ -853,6 +878,9 @@ If False, refuses to proceed if any of the volume directories already exist.</dd
 of the <code>volumes</code> and <code>overwrite</code> parameters.
 If there is an error, returns False, otherwise returns the volumes in as
 far as they have to be extracted.</dd>
+<dt><strong><code>show</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, does not return anything, but pretty prints the result
+to the screen.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -906,17 +934,18 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/extract.py#L81-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/volumes/extract.py#L81-L728" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
     volumesLocation,
     volumes=True,
     byTitle=True,
-    silent=False,
+    silent=SILENT_D,
     api=None,
     overwrite=None,
     checkOnly=False,
+    show=False,
 ):
     &#34;&#34;&#34;Extracts volumes of a work.
 
@@ -1019,8 +1048,8 @@ Top-level section 13 will not be extracted into a volume.</p>
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     api: object, optional `None`
         If given, assume it is the TF api of a loaded work
@@ -1042,6 +1071,9 @@ Top-level section 13 will not be extracted into a volume.</p>
         If there is an error, returns False, otherwise returns the volumes in as
         far as they have to be extracted.
 
+    show: boolean, optional False
+        If True, does not return anything, but pretty prints the result
+        to the screen.
 
     Returns
     -------
@@ -1100,6 +1132,8 @@ Top-level section 13 will not be extracted into a volume.</p>
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
     &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
 
     givenVolumes = set()
     volumeData = {}
@@ -1487,12 +1521,12 @@ Top-level section 13 will not be extracted into a volume.</p>
             edgeFeatures = v[&#34;edgeFeatures&#34;]
             loc = f&#34;{volumesLocation}/{name}&#34;
             v[&#34;loc&#34;] = loc
-            TF = FabricCore(locations=loc, silent=True)
+            TF = FabricCore(locations=loc, silent=DEEP)
             if not TF.save(
                 metaData=metaData,
                 nodeFeatures=nodeFeatures,
                 edgeFeatures=edgeFeatures,
-                silent=False if DEBUG else silent or True,
+                silent=SILENT_D if DEBUG else DEEP,
             ):
                 good = False
         indent(level=0)
@@ -1504,33 +1538,52 @@ Top-level section 13 will not be extracted into a volume.</p>
     def process():
         indent(level=0, reset=True)
         if not checkVolumes():
-            return False
+            return None if show else False
         if checkOnly:
             if not volumeData:
-                return {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+                result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+                if show:
+                    for (name, v) in result.items():
+                        location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
+                        print(f&#34;{name:&lt;20}&#34;)
+                else:
+                    return result
         if not getTopLevels():
-            return False
+            return None if show else False
         if not checkVolumes2():
-            return False
+            return None if show else False
         if checkOnly:
-            return {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            if show:
+                for (name, v) in result.items():
+                    location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
+                    print(f&#34;{name:&lt;20}&#34;)
+            else:
+                return result
         if not distributeNodes():
-            return False
+            return None if show else False
         if not remapFeatures():
-            return False
+            return None if show else False
         if not writeTf():
-            return False
+            return None if show else False
         info(&#34;All done&#34;)
-        return {
+        result = {
             name: dict(location=f&#34;{volumesLocation}/{name}&#34;, new=name in volumeData)
             for name in givenVolumes
         }
+        if show:
+            for (name, v) in result.items():
+                new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
+                location = ux(f&#34;{v[&#39;location&#39;]}/{name}&#34;)
+                print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
+        else:
+            return result
 
     wasSilent = isSilent()
     setSilent(silent)
     result = process()
     setSilent(wasSilent)
-    return result</code></pre>
+    return None if show else result</code></pre>
 </details>
 </dd>
 <dt id="tf.volumes.extract.getVolumes"><code class="name flex">
@@ -1554,7 +1607,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.

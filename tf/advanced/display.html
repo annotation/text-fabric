@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L1-L920" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L1-L922" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -122,6 +122,7 @@ from textwrap import dedent
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc, normpath, abspath, expanduser
+from ..core.timestamp import SILENT_D, silentConvert
 from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
@@ -133,7 +134,7 @@ LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 
-def displayApi(app, silent):
+def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
 
     The display API provides methods to generate styled representations
@@ -153,12 +154,13 @@ def displayApi(app, silent):
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally this parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
 
+    silent = silentConvert(silent)
     app.export = types.MethodType(export, app)
     app.table = types.MethodType(table, app)
     app.plainTuple = types.MethodType(plainTuple, app)
@@ -996,7 +998,7 @@ def _doPassage(dContext, i):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.display.displayApi"><code class="name flex">
-<span>def <span class="ident">displayApi</span></span>(<span>app, silent)</span>
+<span>def <span class="ident">displayApi</span></span>(<span>app, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Produce the display API.</p>
@@ -1013,17 +1015,17 @@ with iterables of tuples of nodes (e.g. query results).</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-</dl>
-<p>silent:
-The verbosity mode to perform this operation in.
-Normally it is the same as for the app, but when we do an <code>A.reuse()</code>
-we force <code>silent=True</code>.</p></div>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
+Normally this parameter is taken from the app,
+but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L68-L110" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def displayApi(app, silent):
+<pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
 
     The display API provides methods to generate styled representations
@@ -1043,12 +1045,13 @@ we force <code>silent=True</code>.</p></div>
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally this parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
 
+    silent = silentConvert(silent)
     app.export = types.MethodType(export, app)
     app.table = types.MethodType(table, app)
     app.plainTuple = types.MethodType(plainTuple, app)
@@ -1085,7 +1088,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L171-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L173-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1143,7 +1146,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L135-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L137-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1201,7 +1204,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L113-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L115-L134" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1326,7 +1329,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L270-L393" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L272-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1470,7 +1473,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L237-L267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L239-L269" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1526,7 +1529,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L191-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L193-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1606,7 +1609,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L667-L698" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L669-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1690,7 +1693,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L493-L664" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L495-L666" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1907,7 +1910,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L864-L900" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L866-L902" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1981,7 +1984,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L785-L861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L787-L863" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2094,7 +2097,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L704-L782" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L706-L784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2206,7 +2209,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/display.py#L399-L490" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L401-L492" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.

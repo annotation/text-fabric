@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/search.py#L1-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/search.py#L1-L212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -36,6 +36,7 @@ Calls from the advanced API to the Search API.
 import types
 
 from ..core.helpers import console, wrapMessages
+from ..core.timestamp import SILENT_D, silentConvert
 from .condense import condense
 
 
@@ -43,7 +44,7 @@ def searchApi(app):
     app.search = types.MethodType(search, app)
 
 
-def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
+def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -64,8 +65,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: boolean, optional `False`
-        if `True` it will suppress the reporting of the number of results.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     shallow: boolean, optional `False`
         If `True` or `1`, the result is a set of things that match the top-level element
@@ -130,7 +131,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
         Web apps can better use `tf.advanced.search.runSearch`.
     &#34;&#34;&#34;
 
-    info = app.info
+    warning = app.warning
     isSilent = app.isSilent
     setSilent = app.setSilent
     api = app.api
@@ -139,6 +140,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
     sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
+
+    silent = silentConvert(silent)
 
     results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
@@ -174,7 +177,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
     setSilent(silent)
-    info(f&#34;{nResults} result{plural}&#34;)
+    warning(f&#34;{nResults} result{plural}&#34;)
     setSilent(wasSilent)
     return results
 
@@ -263,7 +266,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/search.py#L151-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/search.py#L154-L188" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -320,7 +323,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/search.py#L188-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/search.py#L191-L212" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -347,7 +350,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 </details>
 </dd>
 <dt id="tf.advanced.search.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>app, query, silent=False, sets=None, shallow=False, sort=True, limit=None)</span>
+<span>def <span class="ident">search</span></span>(<span>app, query, silent='terse', sets=None, shallow=False, sort=True, limit=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Search with some high-level features.</p>
@@ -365,8 +368,8 @@ the features that have been used in the query.</p>
 <dt><strong><code>query</code></strong> :&ensp;<code>dict</code></dt>
 <dd>the search template (<code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>)
 that has to be searched for.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>if <code>True</code> it will suppress the reporting of the number of results.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 <dt><strong><code>shallow</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
@@ -428,9 +431,9 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/search.py#L15-L148" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/search.py#L16-L151" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
+<pre><code class="python">def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -451,8 +454,8 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: boolean, optional `False`
-        if `True` it will suppress the reporting of the number of results.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     shallow: boolean, optional `False`
         If `True` or `1`, the result is a set of things that match the top-level element
@@ -517,7 +520,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         Web apps can better use `tf.advanced.search.runSearch`.
     &#34;&#34;&#34;
 
-    info = app.info
+    warning = app.warning
     isSilent = app.isSilent
     setSilent = app.setSilent
     api = app.api
@@ -526,6 +529,8 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
     sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
+
+    silent = silentConvert(silent)
 
     results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
@@ -561,7 +566,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
     setSilent(silent)
-    info(f&#34;{nResults} result{plural}&#34;)
+    warning(f&#34;{nResults} result{plural}&#34;)
     setSilent(wasSilent)
     return results</code></pre>
 </details>
@@ -574,7 +579,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/search.py#L11-L12" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>

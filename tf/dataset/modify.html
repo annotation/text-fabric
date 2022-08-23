@@ -36,13 +36,13 @@ modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=&quot;auto&quot;,
 )
 </code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/modify.py#L1-L1094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/modify.py#L1-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Modify
@@ -61,7 +61,7 @@ modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=&#34;auto&#34;,
 )
 ```
 
@@ -72,7 +72,7 @@ import collections
 
 from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import itemize, fitemize, isInt, collectFormats, dirEmpty
 
 VALTP = &#34;valueType&#34;
@@ -128,7 +128,7 @@ def modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
 ):
     &#34;&#34;&#34;Modifies the supply of node types and features in a single data set.
 
@@ -436,8 +436,8 @@ def modify(
 
         If you want to remove a key from a feature, give it the value None.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 
     addFeatures = addFeatures or {}
@@ -533,7 +533,7 @@ def modify(
         indent(level=1, reset=True)
 
         TF = Fabric(locations=location, silent=silent)
-        origAllFeatures = TF.explore(silent=silent or True, show=True)
+        origAllFeatures = TF.explore(silent=DEEP, show=True)
         origNodeFeatures = set(origAllFeatures[NODES])
         origEdgeFeatures = set(origAllFeatures[EDGES])
         origFeatures = origNodeFeatures | origEdgeFeatures
@@ -1148,7 +1148,7 @@ def modify(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.dataset.modify.modify"><code class="name flex">
-<span>def <span class="ident">modify</span></span>(<span>location, targetLocation, mergeFeatures=None, deleteFeatures=None, addFeatures=None, mergeTypes=None, deleteTypes=None, addTypes=None, featureMeta=None, silent=False)</span>
+<span>def <span class="ident">modify</span></span>(<span>location, targetLocation, mergeFeatures=None, deleteFeatures=None, addFeatures=None, mergeTypes=None, deleteTypes=None, addTypes=None, featureMeta=None, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Modifies the supply of node types and features in a single data set.</p>
@@ -1424,13 +1424,13 @@ Just specify them as keys and values to the <code>otext</code> feature.</p>
 parameter will be merged into existing meta data.</p>
 <p>If you want to remove a key from a feature, give it the value None.</p>
 </dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Suppress or enable informational messages.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/modify.py#L75-L1094" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/modify.py#L75-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def modify(
     location,
@@ -1442,7 +1442,7 @@ parameter will be merged into existing meta data.</p>
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
 ):
     &#34;&#34;&#34;Modifies the supply of node types and features in a single data set.
 
@@ -1750,8 +1750,8 @@ parameter will be merged into existing meta data.</p>
 
         If you want to remove a key from a feature, give it the value None.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 
     addFeatures = addFeatures or {}
@@ -1847,7 +1847,7 @@ parameter will be merged into existing meta data.</p>
         indent(level=1, reset=True)
 
         TF = Fabric(locations=location, silent=silent)
-        origAllFeatures = TF.explore(silent=silent or True, show=True)
+        origAllFeatures = TF.explore(silent=DEEP, show=True)
         origNodeFeatures = set(origAllFeatures[NODES])
         origEdgeFeatures = set(origAllFeatures[EDGES])
         origFeatures = origNodeFeatures | origEdgeFeatures

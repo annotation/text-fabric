@@ -49,7 +49,7 @@ collect(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/collect.py#L1-L894" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/volumes/collect.py#L1-L894" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Collect
@@ -88,7 +88,7 @@ from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
@@ -118,7 +118,7 @@ def collect(
     volumeFeature=None,
     mergeTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
     overwrite=False,
 ):
     &#34;&#34;&#34;Creates a work out of a number of volumes.
@@ -279,8 +279,8 @@ def collect(
         and will override anything with the same key
         that is already in one of the volumes.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     Returns
     -------
@@ -322,7 +322,7 @@ def collect(
                     sectionFeatures=&#39;title,number,number&#39;,
                 ),
             ),
-            silent=False,
+            silent=SILENT_D,
         )
 
     This will give rise to something like this (assuming that `banks` and
@@ -910,12 +910,12 @@ def collect(
 
     def writeTf():
         info(&#34;write work as TF data set&#34;)
-        TF = FabricCore(locations=workLocation, silent=True)
+        TF = FabricCore(locations=workLocation, silent=DEEP)
         good = TF.save(
             metaData=metaData,
             nodeFeatures=nodeFeatures,
             edgeFeatures=edgeFeatures,
-            silent=False if DEBUG else silent or True,
+            silent=SILENT_D if DEBUG else DEEP,
         )
         indent(level=0)
         if not good:
@@ -955,7 +955,7 @@ def collect(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.volumes.collect.collect"><code class="name flex">
-<span>def <span class="ident">collect</span></span>(<span>volumes, workLocation, volumeType=None, volumeFeature=None, mergeTypes=None, featureMeta=None, silent=False, overwrite=False)</span>
+<span>def <span class="ident">collect</span></span>(<span>volumes, workLocation, volumeType=None, volumeFeature=None, mergeTypes=None, featureMeta=None, silent='terse', overwrite=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creates a work out of a number of volumes.</p>
@@ -1098,8 +1098,8 @@ They will be passed directly to the combined <code>otext.tf</code> feature
 and will override anything with the same key
 that is already in one of the volumes.</p>
 </dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Suppress or enable informational messages.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1140,7 +1140,7 @@ that is already in one of the volumes.</p>
             sectionFeatures='title,number,number',
         ),
     ),
-    silent=False,
+    silent=SILENT_D,
 )
 </code></pre>
 <p>This will give rise to something like this (assuming that <code>banks</code> and
@@ -1183,7 +1183,7 @@ These will be excluded from collection.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/volumes/collect.py#L61-L894" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/volumes/collect.py#L61-L894" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     volumes,
@@ -1192,7 +1192,7 @@ These will be excluded from collection.</p>
     volumeFeature=None,
     mergeTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
     overwrite=False,
 ):
     &#34;&#34;&#34;Creates a work out of a number of volumes.
@@ -1353,8 +1353,8 @@ These will be excluded from collection.</p>
         and will override anything with the same key
         that is already in one of the volumes.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     Returns
     -------
@@ -1396,7 +1396,7 @@ These will be excluded from collection.</p>
                     sectionFeatures=&#39;title,number,number&#39;,
                 ),
             ),
-            silent=False,
+            silent=SILENT_D,
         )
 
     This will give rise to something like this (assuming that `banks` and
@@ -1984,12 +1984,12 @@ These will be excluded from collection.</p>
 
     def writeTf():
         info(&#34;write work as TF data set&#34;)
-        TF = FabricCore(locations=workLocation, silent=True)
+        TF = FabricCore(locations=workLocation, silent=DEEP)
         good = TF.save(
             metaData=metaData,
             nodeFeatures=nodeFeatures,
             edgeFeatures=edgeFeatures,
-            silent=False if DEBUG else silent or True,
+            silent=SILENT_D if DEBUG else DEEP,
         )
         indent(level=0)
         if not good:

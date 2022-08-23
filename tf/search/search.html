@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L1-L530" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L1-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search (top-level)
@@ -36,25 +36,27 @@
 from ..core.helpers import console, wrapMessages
 from .searchexe import SearchExe
 from ..parameters import YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
+from ..core.timestamp import SILENT_D, AUTO, silentConvert
 
 
 class Search(object):
-    &#34;&#34;&#34;
+    &#34;&#34;&#34; &#34;&#34;&#34;
 
-    &#34;&#34;&#34;
-
-    def __init__(self, api, silent):
+    def __init__(self, api, silent=SILENT_D):
+        silent = silentConvert(silent)
         self.api = api
         self.silent = silent
         self.exe = None
         self.perfDefaults = dict(
-            yarnRatio=YARN_RATIO, tryLimitFrom=TRY_LIMIT_FROM, tryLimitTo=TRY_LIMIT_TO,
+            yarnRatio=YARN_RATIO,
+            tryLimitFrom=TRY_LIMIT_FROM,
+            tryLimitTo=TRY_LIMIT_TO,
         )
         self.perfParams = {}
         self.perfParams.update(self.perfDefaults)
         SearchExe.setPerfParams(self.perfParams)
 
-    def tweakPerformance(self, silent=False, **kwargs):
+    def tweakPerformance(self, silent=SILENT_D, **kwargs):
         &#34;&#34;&#34;Tweak parameters that influence the search process.
 
         !!! explanation &#34;Theory&#34;
@@ -163,6 +165,7 @@ class Search(object):
             See `tryLimitFrom`
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         api = self.api
         TF = api.TF
         error = TF.error
@@ -198,7 +201,7 @@ class Search(object):
         limit=None,
         sets=None,
         shallow=False,
-        silent=True,
+        silent=SILENT_D,
         here=True,
         _msgCache=False,
     ):
@@ -274,7 +277,13 @@ class Search(object):
         return queryResults
 
     def study(
-        self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
+        self,
+        searchTemplate,
+        strategy=None,
+        sets=None,
+        shallow=False,
+        here=True,
+        silent=SILENT_D,
     ):
         &#34;&#34;&#34;Studies a template to prepare for searching with it.
 
@@ -316,13 +325,16 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
             In the search template you can refer to those names to invoke those sets.
 
-        silent: boolean, optional `None`
-            If you want to suppress most of the output, say `silent=True`.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         See Also
         --------
         tf.about.searchusage: Search guide
         &#34;&#34;&#34;
+
+        if silent is False:
+            silent = AUTO
 
         exe = SearchExe(
             self.api,
@@ -332,7 +344,7 @@ class Search(object):
             offset=0,
             sets=sets,
             shallow=shallow,
-            silent=False,
+            silent=SILENT_D,
             showQuantifiers=True,
             setInfo={},
         )
@@ -555,7 +567,9 @@ class Search(object):
                 field = &#34;&#34;
             else:
                 field = &#34;{}[{}{}]&#34;.format(
-                    otype, T.text(words[0:5]), &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
+                    otype,
+                    T.text(words[0:5]),
+                    &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
                 )
             fields.append(field)
         return &#34; &#34;.join(fields)</code></pre>
@@ -572,32 +586,33 @@ class Search(object):
 <dl>
 <dt id="tf.search.search.Search"><code class="flex name class">
 <span>class <span class="ident">Search</span></span>
-<span>(</span><span>api, silent)</span>
+<span>(</span><span>api, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L10-L530" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L11-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
-    &#34;&#34;&#34;
+    &#34;&#34;&#34; &#34;&#34;&#34;
 
-    &#34;&#34;&#34;
-
-    def __init__(self, api, silent):
+    def __init__(self, api, silent=SILENT_D):
+        silent = silentConvert(silent)
         self.api = api
         self.silent = silent
         self.exe = None
         self.perfDefaults = dict(
-            yarnRatio=YARN_RATIO, tryLimitFrom=TRY_LIMIT_FROM, tryLimitTo=TRY_LIMIT_TO,
+            yarnRatio=YARN_RATIO,
+            tryLimitFrom=TRY_LIMIT_FROM,
+            tryLimitTo=TRY_LIMIT_TO,
         )
         self.perfParams = {}
         self.perfParams.update(self.perfDefaults)
         SearchExe.setPerfParams(self.perfParams)
 
-    def tweakPerformance(self, silent=False, **kwargs):
+    def tweakPerformance(self, silent=SILENT_D, **kwargs):
         &#34;&#34;&#34;Tweak parameters that influence the search process.
 
         !!! explanation &#34;Theory&#34;
@@ -706,6 +721,7 @@ class Search(object):
             See `tryLimitFrom`
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         api = self.api
         TF = api.TF
         error = TF.error
@@ -741,7 +757,7 @@ class Search(object):
         limit=None,
         sets=None,
         shallow=False,
-        silent=True,
+        silent=SILENT_D,
         here=True,
         _msgCache=False,
     ):
@@ -817,7 +833,13 @@ class Search(object):
         return queryResults
 
     def study(
-        self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
+        self,
+        searchTemplate,
+        strategy=None,
+        sets=None,
+        shallow=False,
+        here=True,
+        silent=SILENT_D,
     ):
         &#34;&#34;&#34;Studies a template to prepare for searching with it.
 
@@ -859,13 +881,16 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
             In the search template you can refer to those names to invoke those sets.
 
-        silent: boolean, optional `None`
-            If you want to suppress most of the output, say `silent=True`.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         See Also
         --------
         tf.about.searchusage: Search guide
         &#34;&#34;&#34;
+
+        if silent is False:
+            silent = AUTO
 
         exe = SearchExe(
             self.api,
@@ -875,7 +900,7 @@ class Search(object):
             offset=0,
             sets=sets,
             shallow=shallow,
-            silent=False,
+            silent=SILENT_D,
             showQuantifiers=True,
             setInfo={},
         )
@@ -1098,7 +1123,9 @@ class Search(object):
                 field = &#34;&#34;
             else:
                 field = &#34;{}[{}{}]&#34;.format(
-                    otype, T.text(words[0:5]), &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
+                    otype,
+                    T.text(words[0:5]),
+                    &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
                 )
             fields.append(field)
         return &#34; &#34;.join(fields)</code></pre>
@@ -1147,7 +1174,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L379-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L391-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1249,7 +1276,7 @@ returned as a tuple.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L312-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L324-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1361,7 +1388,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L465-L530" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L477-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1425,7 +1452,9 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
             field = &#34;&#34;
         else:
             field = &#34;{}[{}{}]&#34;.format(
-                otype, T.text(words[0:5]), &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
+                otype,
+                T.text(words[0:5]),
+                &#34;...&#34; if len(words) &gt; 5 else &#34;&#34;,
             )
         fields.append(field)
     return &#34; &#34;.join(fields)</code></pre>
@@ -1445,7 +1474,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L449-L463" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L461-L475" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1465,7 +1494,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 </details>
 </dd>
 <dt id="tf.search.search.Search.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>self, searchTemplate, limit=None, sets=None, shallow=False, silent=True, here=True)</span>
+<span>def <span class="ident">search</span></span>(<span>self, searchTemplate, limit=None, sets=None, shallow=False, silent='terse', here=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Searches for combinations of nodes that together match a search template.</p>
@@ -1516,7 +1545,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L164-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L167-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1524,7 +1553,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
     limit=None,
     sets=None,
     shallow=False,
-    silent=True,
+    silent=SILENT_D,
     here=True,
     _msgCache=False,
 ):
@@ -1622,7 +1651,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L423-L447" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L435-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1652,7 +1681,7 @@ will be retrieved.</dd>
 </details>
 </dd>
 <dt id="tf.search.search.Search.study"><code class="name flex">
-<span>def <span class="ident">study</span></span>(<span>self, searchTemplate, strategy=None, sets=None, shallow=False, here=True)</span>
+<span>def <span class="ident">study</span></span>(<span>self, searchTemplate, strategy=None, sets=None, shallow=False, here=True, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Studies a template to prepare for searching with it.</p>
@@ -1688,8 +1717,8 @@ only the first <em>n</em> members of each tuple is retained.</p>
 <dt><strong><code>sets</code></strong> :&ensp;<code>dict</code></dt>
 <dd>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
 In the search template you can refer to those names to invoke those sets.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
-<dd>If you want to suppress most of the output, say <code>silent=True</code>.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl>
 <h2 id="see-also">See Also</h2>
 <dl>
@@ -1699,10 +1728,16 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L245-L310" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L248-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
-    self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
+    self,
+    searchTemplate,
+    strategy=None,
+    sets=None,
+    shallow=False,
+    here=True,
+    silent=SILENT_D,
 ):
     &#34;&#34;&#34;Studies a template to prepare for searching with it.
 
@@ -1744,13 +1779,16 @@ In the search template you can refer to those names to invoke those sets.</dd>
         If not `None`, it should be a dictionary of sets, keyed by a names.
         In the search template you can refer to those names to invoke those sets.
 
-    silent: boolean, optional `None`
-        If you want to suppress most of the output, say `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     See Also
     --------
     tf.about.searchusage: Search guide
     &#34;&#34;&#34;
+
+    if silent is False:
+        silent = AUTO
 
     exe = SearchExe(
         self.api,
@@ -1760,7 +1798,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
         offset=0,
         sets=sets,
         shallow=shallow,
-        silent=False,
+        silent=SILENT_D,
         showQuantifiers=True,
         setInfo={},
     )
@@ -1770,7 +1808,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 </details>
 </dd>
 <dt id="tf.search.search.Search.tweakPerformance"><code class="name flex">
-<span>def <span class="ident">tweakPerformance</span></span>(<span>self, silent=False, **kwargs)</span>
+<span>def <span class="ident">tweakPerformance</span></span>(<span>self, silent='terse', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Tweak parameters that influence the search process.</p>
@@ -1873,9 +1911,9 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/search/search.py#L26-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/search/search.py#L28-L165" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tweakPerformance(self, silent=False, **kwargs):
+<pre><code class="python">def tweakPerformance(self, silent=SILENT_D, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.
 
     !!! explanation &#34;Theory&#34;
@@ -1984,6 +2022,7 @@ increase these values to 10000.</p>
         See `tryLimitFrom`
     &#34;&#34;&#34;
 
+    silent = silentConvert(silent)
     api = self.api
     TF = api.TF
     error = TF.error

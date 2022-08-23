@@ -69,7 +69,7 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent=False,
+    silent=&quot;auto&quot;,
 )
 
 if good:
@@ -137,7 +137,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L1-L1603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L1-L1608" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -191,7 +191,7 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent=False,
+    silent=&#34;auto&#34;,
 )
 
 if good:
@@ -284,6 +284,7 @@ import re
 
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.helpers import itemize, isInt
+from ..core.timestamp import SILENT_D, silentConvert
 
 
 class CV(object):
@@ -294,12 +295,19 @@ class CV(object):
     F = &#34;feature&#34;
     E = &#34;edge&#34;
 
-    def __init__(self, TF, silent=False):
+    def __init__(self, TF, silent=SILENT_D):
+        &#34;&#34;&#34;The object that contains the walker conversion machinery.
+
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
+        &#34;&#34;&#34;
+
         self.TF = TF
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
+        silent = silentConvert(silent)
         self.wasSilent = isSilent()
         setSilent(silent)
 
@@ -432,9 +440,6 @@ class CV(object):
             `False` continue after warnings but do show them;
 
             `None` suppress all warnings.
-
-        silent: boolean, optional `None`
-            By this you can suppress informational messages: `silent=True`.
 
         force: boolean, optional `False`
             This forces the process to continue after errors.
@@ -1755,14 +1760,16 @@ class CV(object):
 <dl>
 <dt id="tf.convert.walker.CV"><code class="flex name class">
 <span>class <span class="ident">CV</span></span>
-<span>(</span><span>TF, silent=False)</span>
+<span>(</span><span>TF, silent='terse')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The object that contains the walker conversion machinery.</p>
+<p>silent: string, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code>
+See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L148-L1603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L149-L1608" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV(object):
     S = &#34;slot&#34;
@@ -1772,12 +1779,19 @@ class CV(object):
     F = &#34;feature&#34;
     E = &#34;edge&#34;
 
-    def __init__(self, TF, silent=False):
+    def __init__(self, TF, silent=SILENT_D):
+        &#34;&#34;&#34;The object that contains the walker conversion machinery.
+
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
+        &#34;&#34;&#34;
+
         self.TF = TF
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
+        silent = silentConvert(silent)
         self.wasSilent = isSilent()
         setSilent(silent)
 
@@ -1910,9 +1924,6 @@ class CV(object):
             `False` continue after warnings but do show them;
 
             `None` suppress all warnings.
-
-        silent: boolean, optional `None`
-            By this you can suppress informational messages: `silent=True`.
 
         force: boolean, optional `False`
             This forces the process to continue after errors.
@@ -3276,7 +3287,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L1015-L1039" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L1020-L1044" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3328,7 +3339,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L1041-L1062" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L1046-L1067" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3374,7 +3385,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L1064-L1078" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L1069-L1083" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3425,7 +3436,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L893-L925" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L898-L930" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3488,7 +3499,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L863-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L868-L896" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3550,7 +3561,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L1080-L1119" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L1085-L1124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3620,7 +3631,7 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L801-L831" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L806-L836" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
     &#34;&#34;&#34;Link the given, existing slots to a node.
@@ -3682,7 +3693,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L833-L861" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L838-L866" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3742,7 +3753,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L962-L1013" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L967-L1018" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3843,7 +3854,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L664-L742" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L669-L747" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -3957,7 +3968,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L927-L960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L932-L965" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4019,7 +4030,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L767-L799" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L772-L804" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -4083,7 +4094,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L616-L662" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L621-L667" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -4159,7 +4170,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L588-L614" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L593-L619" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4212,7 +4223,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L744-L765" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L749-L770" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4295,8 +4306,6 @@ In fact, the rules are exactly the same as for
 <p><code>False</code> continue after warnings but do show them;</p>
 <p><code>None</code> suppress all warnings.</p>
 </dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
-<dd>By this you can suppress informational messages: <code>silent=True</code>.</dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>This forces the process to continue after errors.
 Your TF set might not be valid.
@@ -4325,7 +4334,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/walker.py#L224-L383" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/walker.py#L232-L388" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4397,9 +4406,6 @@ to TF.</p>
         `False` continue after warnings but do show them;
 
         `None` suppress all warnings.
-
-    silent: boolean, optional `None`
-        By this you can suppress informational messages: `silent=True`.
 
     force: boolean, optional `False`
         This forces the process to continue after errors.

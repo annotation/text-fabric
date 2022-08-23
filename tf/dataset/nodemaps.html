@@ -133,7 +133,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L1-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L1-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Nodemaps
@@ -274,6 +274,7 @@ import sys
 import collections
 import time
 from itertools import chain
+from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
 
 
 STAT_LABELS = collections.OrderedDict(
@@ -306,10 +307,15 @@ def _duration():
     )
 
 
-def caption(level, heading, good=None, newLine=True, continuation=False):
+def caption(
+    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
+):
+    silent = silentConvert(silent)
     prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
     duration = &#34;&#34; if continuation else &#34;{:&gt;11} &#34;.format(_duration())
     reportHeading = &#34;{}{}{}&#34;.format(duration, prefix, heading)
+
+    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
 
     if level == 0:  # non-heading message
         decoration = &#34;&#34; if continuation else &#34;| &#34;
@@ -360,14 +366,15 @@ def caption(level, heading, good=None, newLine=True, continuation=False):
             &#34;{:&lt;90}&#34;.format(reportHeading),
             &#34;.&#34; * 90,
         )
-    if newLine:
-        print(formattedString)
-    else:
-        sys.stdout.write(formattedString)
+    if emit:
+        if newLine:
+            print(formattedString)
+        else:
+            sys.stdout.write(formattedString)
 
 
 class Versions:
-    def __init__(self, api, va, vb, slotMap=None):
+    def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
         &#34;&#34;&#34;Map the nodes of a nodetype between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
@@ -401,7 +408,10 @@ class Versions:
             version label of the version whose nodes are the target of the mapping
         slotMap: dict, optional `None`
             The actual mapping between slots of the old version and the new version
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
+        self.silent = silentConvert(silent)
         self.api = api
         self.va = va
         self.vb = vb
@@ -627,6 +637,7 @@ class Versions:
         va = self.va
         vb = self.vb
         edge = self.edge
+        silent = self.silent
 
         fName = self.omapName()
         caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
@@ -646,6 +657,7 @@ class Versions:
             nodeFeatures={},
             edgeFeatures=edgeFeatures,
             metaData=metaData,
+            silent=silent,
         )
 
     def makeVersionMapping(self):
@@ -661,7 +673,7 @@ class Versions:
 
         self.writeMap()
 
-    def migrateFeatures(self, featureNames, location=None):
+    def migrateFeatures(self, featureNames, silent=None, location=None):
         &#34;&#34;&#34;Migrate features from one version to another based on a node map.
 
         If you have a dataset with several features, and if there is a node map between
@@ -698,12 +710,19 @@ class Versions:
         location: string, optional `None`
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
+        silent: string, optional None
+            See `tf.core.timestamp.Timestamp`
+            This will override the `silent` setting
+            that has been used when creating the `Versions` object.
         &#34;&#34;&#34;
 
+        silent = self.silent if silent is None else silentConvert(silent)
         omapName = self.omapName()
         TFa = self.TFa
         TFb = self.TFb
-        TFb.load(omapName, add=True, silent=True)
+        TFb.setSilent(silent)
+        TFb.warning(&#34;start migrating&#34;)
+        TFb.load(omapName, add=True, silent=silent)
         Fsa = self.Fsa
         Esa = self.Esa
         Esb = self.Esb
@@ -747,6 +766,7 @@ class Versions:
 
         for featureName in featureNames:
             isEdge = TFa.features[featureName].isEdge
+            TFb.info(f&#34;Mapping {featureName} ({&#39;edge&#39; if isEdge else &#39;node&#39;})&#34;)
             featureObj = (Esa if isEdge else Fsa)(featureName)
             featureInfo = dict(featureObj.items())
             metaData[featureName] = featureObj.meta
@@ -833,7 +853,9 @@ class Versions:
             metaData=metaData,
             location=location,
             module=vb,
-        )</code></pre>
+            silent=silent,
+        )
+        TFb.warning(&#34;Done&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -844,19 +866,24 @@ class Versions:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.dataset.nodemaps.caption"><code class="name flex">
-<span>def <span class="ident">caption</span></span>(<span>level, heading, good=None, newLine=True, continuation=False)</span>
+<span>def <span class="ident">caption</span></span>(<span>level, heading, silent='terse', good=None, newLine=True, continuation=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L172-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L173-L236" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def caption(level, heading, good=None, newLine=True, continuation=False):
+<pre><code class="python">def caption(
+    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
+):
+    silent = silentConvert(silent)
     prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
     duration = &#34;&#34; if continuation else &#34;{:&gt;11} &#34;.format(_duration())
     reportHeading = &#34;{}{}{}&#34;.format(duration, prefix, heading)
+
+    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
 
     if level == 0:  # non-heading message
         decoration = &#34;&#34; if continuation else &#34;| &#34;
@@ -907,10 +934,11 @@ class Versions:
             &#34;{:&lt;90}&#34;.format(reportHeading),
             &#34;.&#34; * 90,
         )
-    if newLine:
-        print(formattedString)
-    else:
-        sys.stdout.write(formattedString)</code></pre>
+    if emit:
+        if newLine:
+            print(formattedString)
+        else:
+            sys.stdout.write(formattedString)</code></pre>
 </details>
 </dd>
 </dl>
@@ -920,7 +948,7 @@ class Versions:
 <dl>
 <dt id="tf.dataset.nodemaps.Versions"><code class="flex name class">
 <span>class <span class="ident">Versions</span></span>
-<span>(</span><span>api, va, vb, slotMap=None)</span>
+<span>(</span><span>api, va, vb, silent='terse', slotMap=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Map the nodes of a nodetype between two versions of a TF dataset.</p>
@@ -948,14 +976,16 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <dd>version label of the version whose nodes are the target of the mapping</dd>
 <dt><strong><code>slotMap</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
 <dd>The actual mapping between slots of the old version and the new version</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L232-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L239-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
-    def __init__(self, api, va, vb, slotMap=None):
+    def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
         &#34;&#34;&#34;Map the nodes of a nodetype between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
@@ -989,7 +1019,10 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
             version label of the version whose nodes are the target of the mapping
         slotMap: dict, optional `None`
             The actual mapping between slots of the old version and the new version
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
+        self.silent = silentConvert(silent)
         self.api = api
         self.va = va
         self.vb = vb
@@ -1215,6 +1248,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         va = self.va
         vb = self.vb
         edge = self.edge
+        silent = self.silent
 
         fName = self.omapName()
         caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
@@ -1234,6 +1268,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
             nodeFeatures={},
             edgeFeatures=edgeFeatures,
             metaData=metaData,
+            silent=silent,
         )
 
     def makeVersionMapping(self):
@@ -1249,7 +1284,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 
         self.writeMap()
 
-    def migrateFeatures(self, featureNames, location=None):
+    def migrateFeatures(self, featureNames, silent=None, location=None):
         &#34;&#34;&#34;Migrate features from one version to another based on a node map.
 
         If you have a dataset with several features, and if there is a node map between
@@ -1286,12 +1321,19 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         location: string, optional `None`
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
+        silent: string, optional None
+            See `tf.core.timestamp.Timestamp`
+            This will override the `silent` setting
+            that has been used when creating the `Versions` object.
         &#34;&#34;&#34;
 
+        silent = self.silent if silent is None else silentConvert(silent)
         omapName = self.omapName()
         TFa = self.TFa
         TFb = self.TFb
-        TFb.load(omapName, add=True, silent=True)
+        TFb.setSilent(silent)
+        TFb.warning(&#34;start migrating&#34;)
+        TFb.load(omapName, add=True, silent=silent)
         Fsa = self.Fsa
         Esa = self.Esa
         Esb = self.Esb
@@ -1335,6 +1377,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 
         for featureName in featureNames:
             isEdge = TFa.features[featureName].isEdge
+            TFb.info(f&#34;Mapping {featureName} ({&#39;edge&#39; if isEdge else &#39;node&#39;})&#34;)
             featureObj = (Esa if isEdge else Fsa)(featureName)
             featureInfo = dict(featureObj.items())
             metaData[featureName] = featureObj.meta
@@ -1421,7 +1464,9 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
             metaData=metaData,
             location=location,
             module=vb,
-        )</code></pre>
+            silent=silent,
+        )
+        TFb.warning(&#34;Done&#34;)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -1433,7 +1478,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L379-L403" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L389-L413" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1500,7 +1545,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L405-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L415-L478" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1580,7 +1625,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L470-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L480-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1604,7 +1649,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L297-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L307-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     edge = self.edge
@@ -1697,7 +1742,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L514-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L526-L537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1714,7 +1759,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 </details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.migrateFeatures"><code class="name flex">
-<span>def <span class="ident">migrateFeatures</span></span>(<span>self, featureNames, location=None)</span>
+<span>def <span class="ident">migrateFeatures</span></span>(<span>self, featureNames, silent=None, location=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Migrate features from one version to another based on a node map.</p>
@@ -1745,13 +1790,17 @@ They may be node features or edge features or both.</dd>
 <dt><strong><code>location</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>If absent, the migrated features will be saved in the newer dataset.
 Otherwise it is a path where the new features should be saved.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
+This will override the <code>silent</code> setting
+that has been used when creating the <code><a title="tf.dataset.nodemaps.Versions" href="#tf.dataset.nodemaps.Versions">Versions</a></code> object.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L527-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L539-L721" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def migrateFeatures(self, featureNames, location=None):
+<pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
 
     If you have a dataset with several features, and if there is a node map between
@@ -1788,12 +1837,19 @@ Otherwise it is a path where the new features should be saved.</dd>
     location: string, optional `None`
         If absent, the migrated features will be saved in the newer dataset.
         Otherwise it is a path where the new features should be saved.
+    silent: string, optional None
+        See `tf.core.timestamp.Timestamp`
+        This will override the `silent` setting
+        that has been used when creating the `Versions` object.
     &#34;&#34;&#34;
 
+    silent = self.silent if silent is None else silentConvert(silent)
     omapName = self.omapName()
     TFa = self.TFa
     TFb = self.TFb
-    TFb.load(omapName, add=True, silent=True)
+    TFb.setSilent(silent)
+    TFb.warning(&#34;start migrating&#34;)
+    TFb.load(omapName, add=True, silent=silent)
     Fsa = self.Fsa
     Esa = self.Esa
     Esb = self.Esb
@@ -1837,6 +1893,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 
     for featureName in featureNames:
         isEdge = TFa.features[featureName].isEdge
+        TFb.info(f&#34;Mapping {featureName} ({&#39;edge&#39; if isEdge else &#39;node&#39;})&#34;)
         featureObj = (Esa if isEdge else Fsa)(featureName)
         featureInfo = dict(featureObj.items())
         metaData[featureName] = featureObj.meta
@@ -1923,7 +1980,9 @@ Otherwise it is a path where the new features should be saved.</dd>
         metaData=metaData,
         location=location,
         module=vb,
-    )</code></pre>
+        silent=silent,
+    )
+    TFb.warning(&#34;Done&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.omapName"><code class="name flex">
@@ -1934,7 +1993,7 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L483-L486" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L493-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -1950,13 +2009,14 @@ Otherwise it is a path where the new features should be saved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/dataset/nodemaps.py#L488-L512" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/dataset/nodemaps.py#L498-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
     va = self.va
     vb = self.vb
     edge = self.edge
+    silent = self.silent
 
     fName = self.omapName()
     caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
@@ -1976,6 +2036,7 @@ Otherwise it is a path where the new features should be saved.</dd>
         nodeFeatures={},
         edgeFeatures=edgeFeatures,
         metaData=metaData,
+        silent=silent,
     )</code></pre>
 </details>
 </dd>

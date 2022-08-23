@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L1-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L1-L698" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 from array import array
@@ -47,6 +47,7 @@ from .helpers import (
     check32,
     console,
 )
+from .timestamp import SILENT_D, silentConvert
 
 ERROR_CUTOFF = 20
 
@@ -93,7 +94,7 @@ class Data(object):
         self.dataError = False
         self.dataType = &#34;str&#34;
 
-    def load(self, metaOnly=False, silent=None, _withGc=True):
+    def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
         &#34;&#34;&#34;Load a feature.
 
         _withGc: boolean, optional True
@@ -101,16 +102,16 @@ class Data(object):
             loading features. Used to experiment with performance.
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        warning = tmObj.warning
+        info = tmObj.info
         error = tmObj.error
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -176,7 +177,7 @@ class Data(object):
                 actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
             ):
                 pass
-            warning(
+            info(
                 msgFormat.format(actionRep, self.fileName, sourceRep),
                 cache=1 if actionRep in &#34;CT&#34; else -1,
             )
@@ -184,8 +185,7 @@ class Data(object):
             self.dataError = True
             error(msgFormat.format(actionRep, self.fileName, sourceRep))
 
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         indent(level=False)
         return good
 
@@ -193,17 +193,16 @@ class Data(object):
         self.data = None
         self.dataLoaded = False
 
-    def save(self, overwrite=False, nodeRanges=False, silent=None):
+    def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         return result
 
     def _setDataType(self):
@@ -445,18 +444,18 @@ class Data(object):
         return not errors
 
     def _compute(self, metaOnly=False):
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
         if metaOnly:
             return True
 
         good = True
         for feature in self.dependencies:
             if isinstance(feature, Data):
-                if not feature.load():
+                if not feature.load(silent=isSilent()):
                     good = False
         if not good:
             return False
-
-        tmObj = self.tmObj
 
         def info(msg, tm=True):
             tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)
@@ -747,7 +746,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L33-L699" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L34-L698" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data(object):
     def __init__(
@@ -782,7 +781,7 @@ class Data(object):
         self.dataError = False
         self.dataType = &#34;str&#34;
 
-    def load(self, metaOnly=False, silent=None, _withGc=True):
+    def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
         &#34;&#34;&#34;Load a feature.
 
         _withGc: boolean, optional True
@@ -790,16 +789,16 @@ class Data(object):
             loading features. Used to experiment with performance.
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        warning = tmObj.warning
+        info = tmObj.info
         error = tmObj.error
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -865,7 +864,7 @@ class Data(object):
                 actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
             ):
                 pass
-            warning(
+            info(
                 msgFormat.format(actionRep, self.fileName, sourceRep),
                 cache=1 if actionRep in &#34;CT&#34; else -1,
             )
@@ -873,8 +872,7 @@ class Data(object):
             self.dataError = True
             error(msgFormat.format(actionRep, self.fileName, sourceRep))
 
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         indent(level=False)
         return good
 
@@ -882,17 +880,16 @@ class Data(object):
         self.data = None
         self.dataLoaded = False
 
-    def save(self, overwrite=False, nodeRanges=False, silent=None):
+    def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         return result
 
     def _setDataType(self):
@@ -1134,18 +1131,18 @@ class Data(object):
         return not errors
 
     def _compute(self, metaOnly=False):
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
         if metaOnly:
             return True
 
         good = True
         for feature in self.dependencies:
             if isinstance(feature, Data):
-                if not feature.load():
+                if not feature.load(silent=isSilent()):
                     good = False
         if not good:
             return False
-
-        tmObj = self.tmObj
 
         def info(msg, tm=True):
             tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)
@@ -1427,7 +1424,7 @@ class Data(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L645-L647" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L644-L646" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     if os.path.exists(self.binPath):
@@ -1435,7 +1432,7 @@ class Data(object):
 </details>
 </dd>
 <dt id="tf.core.data.Data.load"><code class="name flex">
-<span>def <span class="ident">load</span></span>(<span>self, metaOnly=False, silent=None)</span>
+<span>def <span class="ident">load</span></span>(<span>self, metaOnly=False, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load a feature.</p>
@@ -1445,9 +1442,9 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L66-L160" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L67-L160" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def load(self, metaOnly=False, silent=None, _withGc=True):
+<pre><code class="python">def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
     &#34;&#34;&#34;Load a feature.
 
     _withGc: boolean, optional True
@@ -1455,16 +1452,16 @@ loading features. Used to experiment with performance.</p></div>
         loading features. Used to experiment with performance.
     &#34;&#34;&#34;
 
+    silent = silentConvert(silent)
     tmObj = self.tmObj
     isSilent = tmObj.isSilent
     setSilent = tmObj.setSilent
     indent = tmObj.indent
-    warning = tmObj.warning
+    info = tmObj.info
     error = tmObj.error
 
-    if silent is not None:
-        wasSilent = isSilent()
-        setSilent(silent)
+    wasSilent = isSilent()
+    setSilent(silent)
     indent(level=True, reset=True)
     origTime = self._getModified()
     binTime = self._getModified(bin=True)
@@ -1530,7 +1527,7 @@ loading features. Used to experiment with performance.</p></div>
             actionRep == &#34;M&#34; or (actionRep == &#34;B&#34; and self.method)
         ):
             pass
-        warning(
+        info(
             msgFormat.format(actionRep, self.fileName, sourceRep),
             cache=1 if actionRep in &#34;CT&#34; else -1,
         )
@@ -1538,33 +1535,31 @@ loading features. Used to experiment with performance.</p></div>
         self.dataError = True
         error(msgFormat.format(actionRep, self.fileName, sourceRep))
 
-    if silent is not None:
-        setSilent(wasSilent)
+    setSilent(wasSilent)
     indent(level=False)
     return good</code></pre>
 </details>
 </dd>
 <dt id="tf.core.data.Data.save"><code class="name flex">
-<span>def <span class="ident">save</span></span>(<span>self, overwrite=False, nodeRanges=False, silent=None)</span>
+<span>def <span class="ident">save</span></span>(<span>self, overwrite=False, nodeRanges=False, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L166-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L166-L176" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=None):
+<pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
+    silent = silentConvert(silent)
     tmObj = self.tmObj
     isSilent = tmObj.isSilent
     setSilent = tmObj.setSilent
 
-    if silent is not None:
-        wasSilent = isSilent()
-        setSilent(silent)
+    wasSilent = isSilent()
+    setSilent(silent)
     result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
-    if silent is not None:
-        setSilent(wasSilent)
+    setSilent(wasSilent)
     return result</code></pre>
 </details>
 </dd>
@@ -1576,7 +1571,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/data.py#L162-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L1-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L1-L752" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -48,6 +48,7 @@ from ..parameters import (
     GL,
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
+from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
 from ..server.wrap import wrapProvenance
@@ -56,7 +57,7 @@ from ..server.wrap import wrapProvenance
 UNSUPPORTED = &#34;&#34;
 
 
-def linksApi(app, silent):
+def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
 
     The link API provides methods to maps nodes to urls of web resources.
@@ -73,11 +74,12 @@ def linksApi(app, silent):
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally the silent parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
+    silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
@@ -180,15 +182,24 @@ def linksApi(app, silent):
     app.tutLink = tutLink
 
     if not app._browse:
-        if not silent:
-            header(app)
+        if silent in {VERBOSE, AUTO, TERSE}:
+            header(app, allMeta=silent == VERBOSE)
 
 
-def header(app):
+def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
 
     This colofon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        If True, includes all metadata of all features. This leads to big
+        stretches of largely redundant information in html details elements.
+        It is not visually cumbersome, but notebooks may grow excessively
+        if you load many datasets many times. So, if False, it will suppress
+        all that metadata except the description keys.
     &#34;&#34;&#34;
 
     appLink = app.appLink
@@ -219,7 +230,7 @@ def header(app):
         dh(
             f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
             f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app)
+            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app, allMeta=allMeta)
         )
 
 
@@ -490,8 +501,14 @@ def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_bla
     )
 
 
-def _featuresPerModule(app):
-    &#34;&#34;&#34;Generate a formatted list of loaded TF features, per module.&#34;&#34;&#34;
+def _featuresPerModule(app, allMeta=False):
+    &#34;&#34;&#34;Generate a formatted list of loaded TF features, per module.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        Whether to display all metadata for all features or the descriptions only
+    &#34;&#34;&#34;
 
     isCompatible = app.isCompatible
     if isCompatible is not None and not isCompatible:
@@ -661,27 +678,40 @@ def _featuresPerModule(app):
                 f&#34;&#34;&#34;
                         &lt;/div&gt;
                         &lt;div class=&#34;fmono&#34;&gt;{typeRep}&lt;/div&gt;
+                &#34;&#34;&#34;
+            )
+            html += dedent(
+                f&#34;&#34;&#34;
                         &lt;details&gt;
                             &lt;summary&gt;{description}&lt;/summary&gt;
                             &lt;div class=&#34;fmeta&#34;&gt;
                 &#34;&#34;&#34;
+                if allMeta
+                else f&#34;&#34;&#34;
+                        &lt;span&gt; {description}&lt;/span&gt;
+                &#34;&#34;&#34;
             )
-            for (k, v) in sorted(meta.items()):
-                if k not in {&#34;valueType&#34;, &#34;description&#34;}:
-                    k = htmlEsc(k)
-                    v = htmlEsc(v)
-                    html += dedent(
-                        f&#34;&#34;&#34;
-                            &lt;div class=&#34;fmetarow&#34;&gt;
-                                &lt;div class=&#34;fmetakey&#34;&gt;{k}:&lt;/div&gt;
-                                &lt;div&gt;{v}&lt;/div&gt;
-                            &lt;/div&gt;
+            if allMeta:
+                for (k, v) in sorted(meta.items()):
+                    if k not in {&#34;valueType&#34;, &#34;description&#34;}:
+                        k = htmlEsc(k)
+                        v = htmlEsc(v)
+                        html += dedent(
+                            f&#34;&#34;&#34;
+                                &lt;div class=&#34;fmetarow&#34;&gt;
+                                    &lt;div class=&#34;fmetakey&#34;&gt;{k}:&lt;/div&gt;
+                                    &lt;div&gt;{v}&lt;/div&gt;
+                                &lt;/div&gt;
+                        &#34;&#34;&#34;
+                        )
+                html += dedent(
                     &#34;&#34;&#34;
-                    )
+                                &lt;/div&gt;
+                            &lt;/details&gt;
+                    &#34;&#34;&#34;
+                )
             html += dedent(
                 &#34;&#34;&#34;
-                            &lt;/div&gt;
-                        &lt;/details&gt;
                     &lt;/div&gt;
                 &#34;&#34;&#34;
             )
@@ -761,22 +791,40 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.links.header"><code class="name flex">
-<span>def <span class="ident">header</span></span>(<span>app)</span>
+<span>def <span class="ident">header</span></span>(<span>app, allMeta=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate a colofon of the TF-app.</p>
 <p>This colofon will be displayed after initializing the advanced API,
-and it is packed with provenance and documentation links.</p></div>
+and it is packed with provenance and documentation links.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>allMeta</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, includes all metadata of all features. This leads to big
+stretches of largely redundant information in html details elements.
+It is not visually cumbersome, but notebooks may grow excessively
+if you load many datasets many times. So, if False, it will suppress
+all that metadata except the description keys.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L156-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L158-L203" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def header(app):
+<pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
 
     This colofon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        If True, includes all metadata of all features. This leads to big
+        stretches of largely redundant information in html details elements.
+        It is not visually cumbersome, but notebooks may grow excessively
+        if you load many datasets many times. So, if False, it will suppress
+        all that metadata except the description keys.
     &#34;&#34;&#34;
 
     appLink = app.appLink
@@ -807,12 +855,12 @@ and it is packed with provenance and documentation links.</p></div>
         dh(
             f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
             f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app)
+            &#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;&#34; + _featuresPerModule(app, allMeta=allMeta)
         )</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.links.linksApi"><code class="name flex">
-<span>def <span class="ident">linksApi</span></span>(<span>app, silent)</span>
+<span>def <span class="ident">linksApi</span></span>(<span>app, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Produce the link API.</p>
@@ -827,17 +875,17 @@ sections of the work are part of it.</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-</dl>
-<p>silent:
-The verbosity mode to perform this operation in.
-Normally it is the same as for the app, but when we do an <code>A.reuse()</code>
-we force <code>silent=True</code>.</p></div>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
+Normally the silent parameter is taken from the app,
+but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L28-L153" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L29-L155" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def linksApi(app, silent):
+<pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
 
     The link API provides methods to maps nodes to urls of web resources.
@@ -854,11 +902,12 @@ we force <code>silent=True</code>.</p></div>
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally the silent parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
+    silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
@@ -961,8 +1010,8 @@ we force <code>silent=True</code>.</p></div>
     app.tutLink = tutLink
 
     if not app._browse:
-        if not silent:
-            header(app)</code></pre>
+        if silent in {VERBOSE, AUTO, TERSE}:
+            header(app, allMeta=silent == VERBOSE)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.links.outLink"><code class="name flex">
@@ -989,7 +1038,7 @@ link element. Used by the TF-browser.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L432-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L443-L470" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;):
     &#34;&#34;&#34;Produce a formatted link.
@@ -1050,7 +1099,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L666-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L696-L752" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -1132,7 +1181,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L333-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L344-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1214,7 +1263,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/links.py#L195-L330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/links.py#L206-L341" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

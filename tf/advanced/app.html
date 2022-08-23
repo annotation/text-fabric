@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L1-L565" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L1-L566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -37,6 +37,7 @@ from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
+from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
 from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
@@ -88,14 +89,14 @@ class App:
         collection=None,
         api=None,
         setFile=&#34;&#34;,
-        silent=False,
+        silent=SILENT_D,
         loadData=True,
         _withGc=True,
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
 
-        Most parameters are explained in `tf.app.use`.
+        The parameters are explained in `tf.app.use`.
 
         Parameters
         ----------
@@ -109,7 +110,8 @@ class App:
         collection, volume: string, optional None
         api: object, optional, `None`
         setFile: string, optional, `None`
-        silent: boolean, optional `False`
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         hoist: dict, optional `False`
         configOverrides: key value pairs
 
@@ -117,6 +119,8 @@ class App:
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         &#34;&#34;&#34;
+
+        silent = silentConvert(silent)
 
         self.context = None
         &#34;&#34;&#34;Result of interpreting all configuration options in `config.yaml`.
@@ -173,18 +177,18 @@ class App:
                 )
                 self.TF = TF
                 if loadData:
-                    api = TF.load(&#34;&#34;, silent=True)
+                    api = TF.load(&#34;&#34;, silent=silent)
                     if api:
                         self.api = api
                         excludedFeatures = aContext.excludedFeatures
-                        allFeatures = TF.explore(silent=True, show=True)
+                        allFeatures = TF.explore(silent=DEEP, show=True)
                         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                         useFeatures = [
                             f
                             for f in loadableFeatures
                             if f not in excludedFeatures and not f.startswith(OMAP)
                         ]
-                        result = TF.load(useFeatures, add=True, silent=True)
+                        result = TF.load(useFeatures, add=True, silent=silent)
                         if result is False:
                             self.api = None
                 else:
@@ -211,18 +215,18 @@ Most of the Text-Fabric API has not been loaded.
 
             if not featuresOnly:
                 self.getText = types.MethodType(getText, self)
-            linksApi(self, silent)
+            linksApi(self, silent=silent)
             if not featuresOnly:
                 searchApi(self)
                 sectionsApi(self)
                 setAppSpecsApi(self, cfg)
-                displayApi(self, silent)
+                displayApi(self, silent=silent)
                 textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
-                if not silent:
+                if silent in {VERBOSE, AUTO, TERSE}:
                     dh(
                         &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
                         + outLink(
@@ -246,7 +250,7 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
-    def load(self, features, silent=False):
+    def load(self, features, silent=SILENT_D):
         &#34;&#34;&#34;Loads extra features in addition to the main dataset.
 
         This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
@@ -258,13 +262,8 @@ The app &#34;{appName}&#34; will not work!
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        silent: boolean, optional `None`
-            If `False`, the features will be loaded rather silently,
-            most messages will be suppressed.
-            Time consuming operations will always be announced,
-            so that you know what Text-Fabric is doing.
-            If `True` is passed, all informational messages will be suppressed.
-            This is handy I you want to load data as part of other methods, on-the-fly.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         Returns
         -------
@@ -273,6 +272,8 @@ The app &#34;{appName}&#34; will not work!
         &#34;&#34;&#34;
 
         TF = self.TF
+
+        silent = silentConvert(silent)
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
@@ -335,11 +336,11 @@ The app &#34;{appName}&#34; will not work!
             api = TF.api
             self.api = api
             self.reinit()  # may be used by custom TF apps
-            linksApi(self, True)
+            linksApi(self, silent=DEEP)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
-            displayApi(self, True)
+            displayApi(self, silent=DEEP)
             textApi(self)
             if hoist:
                 api.makeAvailableIn(hoist)
@@ -352,7 +353,7 @@ def findApp(
     backend,
     _browse,
     *args,
-    silent=False,
+    silent=SILENT_D,
     version=None,
     legacy=False,
     **kwargs,
@@ -603,7 +604,7 @@ def findApp(
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.advanced.app.findApp"><code class="name flex">
-<span>def <span class="ident">findApp</span></span>(<span>appName, checkoutApp, dataLoc, backend, _browse, *args, silent=False, version=None, legacy=False, **kwargs)</span>
+<span>def <span class="ident">findApp</span></span>(<span>appName, checkoutApp, dataLoc, backend, _browse, *args, silent='terse', version=None, legacy=False, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find a TF app by name and initialize an object of its main class.</p>
@@ -653,7 +654,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L318-L565" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L319-L566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -662,7 +663,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
     backend,
     _browse,
     *args,
-    silent=False,
+    silent=SILENT_D,
     version=None,
     legacy=False,
     **kwargs,
@@ -912,11 +913,11 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <dl>
 <dt id="tf.advanced.app.App"><code class="flex name class">
 <span>class <span class="ident">App</span></span>
-<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent=False, loadData=True, **configOverrides)</span>
+<span>(</span><span>cfg, appName, appPath, commit, release, local, backend, _browse, hoist=False, version=None, checkout='', mod=[], locations=None, modules=None, volume=None, collection=None, api=None, setFile='', silent='terse', loadData=True, **configOverrides)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Set up the advanced TF API.</p>
-<p>Most parameters are explained in <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code>.</p>
+<p>The parameters are explained in <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>appName</code></strong>, <strong><code>appPath</code></strong>, <strong><code>checkout</code></strong>, <strong><code>version</code></strong> :&ensp;<code>string</code></dt>
@@ -939,8 +940,8 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <dd>&nbsp;</dd>
 <dt><strong><code>setFile</code></strong> :&ensp;<code>string</code>, optional<code>, </code>None``</dt>
 <dd>&nbsp;</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>&nbsp;</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 <dt><strong><code>hoist</code></strong> :&ensp;<code>dict</code>, optional <code>False</code></dt>
 <dd>&nbsp;</dd>
 <dt><strong><code>configOverrides</code></strong> :&ensp;<code>key value pairs</code></dt>
@@ -952,7 +953,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L40-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L41-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -975,14 +976,14 @@ loading features. Used to experiment with performance.</dd>
         collection=None,
         api=None,
         setFile=&#34;&#34;,
-        silent=False,
+        silent=SILENT_D,
         loadData=True,
         _withGc=True,
         **configOverrides,
     ):
         &#34;&#34;&#34;Set up the advanced TF API.
 
-        Most parameters are explained in `tf.app.use`.
+        The parameters are explained in `tf.app.use`.
 
         Parameters
         ----------
@@ -996,7 +997,8 @@ loading features. Used to experiment with performance.</dd>
         collection, volume: string, optional None
         api: object, optional, `None`
         setFile: string, optional, `None`
-        silent: boolean, optional `False`
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         hoist: dict, optional `False`
         configOverrides: key value pairs
 
@@ -1004,6 +1006,8 @@ loading features. Used to experiment with performance.</dd>
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         &#34;&#34;&#34;
+
+        silent = silentConvert(silent)
 
         self.context = None
         &#34;&#34;&#34;Result of interpreting all configuration options in `config.yaml`.
@@ -1060,18 +1064,18 @@ loading features. Used to experiment with performance.</dd>
                 )
                 self.TF = TF
                 if loadData:
-                    api = TF.load(&#34;&#34;, silent=True)
+                    api = TF.load(&#34;&#34;, silent=silent)
                     if api:
                         self.api = api
                         excludedFeatures = aContext.excludedFeatures
-                        allFeatures = TF.explore(silent=True, show=True)
+                        allFeatures = TF.explore(silent=DEEP, show=True)
                         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
                         useFeatures = [
                             f
                             for f in loadableFeatures
                             if f not in excludedFeatures and not f.startswith(OMAP)
                         ]
-                        result = TF.load(useFeatures, add=True, silent=True)
+                        result = TF.load(useFeatures, add=True, silent=silent)
                         if result is False:
                             self.api = None
                 else:
@@ -1098,18 +1102,18 @@ Most of the Text-Fabric API has not been loaded.
 
             if not featuresOnly:
                 self.getText = types.MethodType(getText, self)
-            linksApi(self, silent)
+            linksApi(self, silent=silent)
             if not featuresOnly:
                 searchApi(self)
                 sectionsApi(self)
                 setAppSpecsApi(self, cfg)
-                displayApi(self, silent)
+                displayApi(self, silent=silent)
                 textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
-                if not silent:
+                if silent in {VERBOSE, AUTO, TERSE}:
                     dh(
                         &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
                         + outLink(
@@ -1133,7 +1137,7 @@ The app &#34;{appName}&#34; will not work!
                     error=True,
                 )
 
-    def load(self, features, silent=False):
+    def load(self, features, silent=SILENT_D):
         &#34;&#34;&#34;Loads extra features in addition to the main dataset.
 
         This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
@@ -1145,13 +1149,8 @@ The app &#34;{appName}&#34; will not work!
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        silent: boolean, optional `None`
-            If `False`, the features will be loaded rather silently,
-            most messages will be suppressed.
-            Time consuming operations will always be announced,
-            so that you know what Text-Fabric is doing.
-            If `True` is passed, all informational messages will be suppressed.
-            This is handy I you want to load data as part of other methods, on-the-fly.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         Returns
         -------
@@ -1160,6 +1159,8 @@ The app &#34;{appName}&#34; will not work!
         &#34;&#34;&#34;
 
         TF = self.TF
+
+        silent = silentConvert(silent)
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
@@ -1222,11 +1223,11 @@ The app &#34;{appName}&#34; will not work!
             api = TF.api
             self.api = api
             self.reinit()  # may be used by custom TF apps
-            linksApi(self, True)
+            linksApi(self, silent=DEEP)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
-            displayApi(self, True)
+            displayApi(self, silent=DEEP)
             textApi(self)
             if hoist:
                 api.makeAvailableIn(hoist)</code></pre>
@@ -1243,7 +1244,7 @@ The app &#34;{appName}&#34; will not work!
 <h3>Methods</h3>
 <dl>
 <dt id="tf.advanced.app.App.load"><code class="name flex">
-<span>def <span class="ident">load</span></span>(<span>self, features, silent=False)</span>
+<span>def <span class="ident">load</span></span>(<span>self, features, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads extra features in addition to the main dataset.</p>
@@ -1255,13 +1256,8 @@ The app &#34;{appName}&#34; will not work!
 iterable of feature names.
 The feature names are just the names of <code>.<a title="tf" href="../index.html">tf</a></code> files
 without directory information and without extension.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
-<dd>If <code>False</code>, the features will be loaded rather silently,
-most messages will be suppressed.
-Time consuming operations will always be announced,
-so that you know what Text-Fabric is doing.
-If <code>True</code> is passed, all informational messages will be suppressed.
-This is handy I you want to load data as part of other methods, on-the-fly.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1271,9 +1267,9 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L219-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L223-L247" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def load(self, features, silent=False):
+<pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
 
     This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
@@ -1285,13 +1281,8 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
         iterable of feature names.
         The feature names are just the names of `.tf` files
         without directory information and without extension.
-    silent: boolean, optional `None`
-        If `False`, the features will be loaded rather silently,
-        most messages will be suppressed.
-        Time consuming operations will always be announced,
-        so that you know what Text-Fabric is doing.
-        If `True` is passed, all informational messages will be suppressed.
-        This is handy I you want to load data as part of other methods, on-the-fly.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     Returns
     -------
@@ -1300,6 +1291,8 @@ This is handy I you want to load data as part of other methods, on-the-fly.</dd>
     &#34;&#34;&#34;
 
     TF = self.TF
+
+    silent = silentConvert(silent)
     return TF.load(features, add=True, silent=silent)</code></pre>
 </details>
 </dd>
@@ -1312,7 +1305,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L248-L253" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L249-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1347,7 +1340,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/advanced/app.py#L255-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L256-L316" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
@@ -1402,11 +1395,11 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
         api = TF.api
         self.api = api
         self.reinit()  # may be used by custom TF apps
-        linksApi(self, True)
+        linksApi(self, silent=DEEP)
         searchApi(self)
         sectionsApi(self)
         setAppSpecsApi(self, cfg)
-        displayApi(self, True)
+        displayApi(self, silent=DEEP)
         textApi(self)
         if hoist:
             api.makeAvailableIn(hoist)</code></pre>

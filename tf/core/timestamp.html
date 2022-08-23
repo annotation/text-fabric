@@ -24,16 +24,18 @@
 </header>
 <section id="section-intro">
 <h1 id="timed-messages">Timed messages</h1>
-<p>Error and informational messages can be issued, with a time indication.</p>
+<p>Error and informational messages can be issued,
+with a time indication.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L1-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L1-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Timed messages
 
-Error and informational messages can be issued, with a time indication.
+Error and informational messages can be issued,
+with a time indication.
 &#34;&#34;&#34;
 
 import sys
@@ -42,8 +44,82 @@ import time
 from .helpers import unexpanduser as ux
 
 
+VERBOSE = &#34;verbose&#34;
+&#34;&#34;&#34;Increased verbosity.
+&#34;&#34;&#34;
+
+AUTO = &#34;auto&#34;
+&#34;&#34;&#34;Convenient level of silence.
+&#34;&#34;&#34;
+
+TERSE = &#34;terse&#34;
+&#34;&#34;&#34;More silence.
+&#34;&#34;&#34;
+
+DEEP = &#34;deep&#34;
+&#34;&#34;&#34;No output, except error messages.
+&#34;&#34;&#34;
+
+SILENT_D = TERSE
+&#34;&#34;&#34;Default value for the silent parameter.
+
+The value is `&#34;terse&#34;`
+&#34;&#34;&#34;
+
+
+def silentConvert(arg):
+    if arg is None:
+        return SILENT_D
+    if arg is False:
+        return VERBOSE
+    if arg is True:
+        return DEEP
+    if arg in {VERBOSE, AUTO, TERSE, DEEP}:
+        return arg
+    return not not arg
+
+
 class Timestamp(object):
-    def __init__(self, level=None):
+    def __init__(self, silent=SILENT_D, level=None):
+        &#34;&#34;&#34;Create a controller for timed messages.
+
+        You can specify the degree of verbosity and also
+        an indentation level.
+        The verbosity affects the display of the `info`,
+        `warning`, and `error` methods that are defined
+        in this class, but can also affects messages emitted
+        by other parts of the application, such as:
+
+        * the display of the number of results in searches
+        * the header that is displayed after the incantation
+          of text-fabric.
+
+        Parameters
+        ----------
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            The verbosity. Here are the values and their effects:
+
+            `&#34;verbose&#34;` or `False`:
+            Show all `info`, `warning`, `error` messages.
+            In incantation headers, show the full metadata
+            of all features.
+
+            `&#34;auto&#34;`:
+            Like `&#34;verbose&#34;`, but in incantation headers,
+            show the feature descriptions only,
+            not the full metadata.
+
+            `&#34;terse&#34;` or `None`: **(default)**
+            Like `&#34;auto&#34;`, but do not show `log` messages.
+
+            `&#34;deep&#34;` or `True`:
+            Like `&#34;terse&#34;` but do not show `log` and `warning`
+            messages.
+            Do not show fetched datasets between the incantation
+            and the header, and do not show the header either.
+            Do not show the number of results after searches.
+        &#34;&#34;&#34;
+        silent = silentConvert(silent)
         indent = self.indent
 
         self.oneLevelRep = &#34;   |   &#34;
@@ -52,7 +128,7 @@ class Timestamp(object):
         indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
-        self.silent = False  # regulates informational messages only
+        self.silent = silent  # regulates informational and warning messages only
 
     def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
         # cache is a list: append to cache, do not output anything
@@ -122,7 +198,7 @@ class Timestamp(object):
             Informational messages are not displayed in silent mode.
         &#34;&#34;&#34;
 
-        if force or not self.silent:
+        if force or self.silent in {VERBOSE, AUTO}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0, force=False):
@@ -148,7 +224,7 @@ class Timestamp(object):
             Warning messages are not displayed if silent mode is `deep`.
         &#34;&#34;&#34;
 
-        if force or self.silent != &#34;deep&#34;:
+        if force or self.silent in {VERBOSE, AUTO, TERSE}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
@@ -215,10 +291,8 @@ class Timestamp(object):
 
         Returns
         -------
-        boolean | string
-            `False` not suppressing informational messages.
-            `True` suppressing informational messages.
-            `&#39;deep&#39;` also suppressing warnings.
+        string
+            See `VERBOSE`, `AUTO`, `TERSE`, `DEEP`.
         &#34;&#34;&#34;
         return self.silent
 
@@ -227,14 +301,11 @@ class Timestamp(object):
 
         Parameters
         ----------
-        silent: boolean | string
-            If `False` do not suppress informational messages.
-            If `True` suppress informational messages.
-            If `&#39;deep&#39;` also suppress warnings.
-
-        Error messages are never suppressed.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         self.silent = silent
 
     def silentOn(self, deep=False):
@@ -246,12 +317,15 @@ class Timestamp(object):
             If `True` also suppress warnings.
         &#34;&#34;&#34;
 
-        self.silent = True if not deep else &#34;deep&#34;
+        wasSilent = self.silent
+        self.wasSilent = wasSilent if wasSilent in {VERBOSE, AUTO, TERSE} else AUTO
+        self.silent = DEEP if deep else TERSE
 
     def silentOff(self):
         &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
 
-        self.silent = False
+        wasSilent = getattr(self, &#34;wasSilent&#34;, AUTO)
+        self.silent = wasSilent
 
     def _elapsed(self):
         interval = time.time() - self.timestamp.setdefault(self.level, time.time())
@@ -271,25 +345,147 @@ class Timestamp(object):
 <section>
 </section>
 <section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
+<h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
-<dt id="tf.core.timestamp.Timestamp"><code class="flex name class">
-<span>class <span class="ident">Timestamp</span></span>
-<span>(</span><span>level=None)</span>
+<dt id="tf.core.timestamp.AUTO"><code class="name">var <span class="ident">AUTO</span></code></dt>
+<dd>
+<div class="desc"><p>Convenient level of silence.</p></div>
+</dd>
+<dt id="tf.core.timestamp.DEEP"><code class="name">var <span class="ident">DEEP</span></code></dt>
+<dd>
+<div class="desc"><p>No output, except error messages.</p></div>
+</dd>
+<dt id="tf.core.timestamp.SILENT_D"><code class="name">var <span class="ident">SILENT_D</span></code></dt>
+<dd>
+<div class="desc"><p>Default value for the silent parameter.</p>
+<p>The value is <code>"terse"</code></p></div>
+</dd>
+<dt id="tf.core.timestamp.TERSE"><code class="name">var <span class="ident">TERSE</span></code></dt>
+<dd>
+<div class="desc"><p>More silence.</p></div>
+</dd>
+<dt id="tf.core.timestamp.VERBOSE"><code class="name">var <span class="ident">VERBOSE</span></code></dt>
+<dd>
+<div class="desc"><p>Increased verbosity.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.core.timestamp.silentConvert"><code class="name flex">
+<span>def <span class="ident">silentConvert</span></span>(<span>arg)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L13-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def silentConvert(arg):
+    if arg is None:
+        return SILENT_D
+    if arg is False:
+        return VERBOSE
+    if arg is True:
+        return DEEP
+    if arg in {VERBOSE, AUTO, TERSE, DEEP}:
+        return arg
+    return not not arg</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.core.timestamp.Timestamp"><code class="flex name class">
+<span>class <span class="ident">Timestamp</span></span>
+<span>(</span><span>silent='terse', level=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a controller for timed messages.</p>
+<p>You can specify the degree of verbosity and also
+an indentation level.
+The verbosity affects the display of the <code>info</code>,
+<code>warning</code>, and <code>error</code> methods that are defined
+in this class, but can also affects messages emitted
+by other parts of the application, such as:</p>
+<ul>
+<li>the display of the number of results in searches</li>
+<li>the header that is displayed after the incantation
+of text-fabric.</li>
+</ul>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>
+<p>The verbosity. Here are the values and their effects:</p>
+<p><code>"verbose"</code> or <code>False</code>:
+Show all <code>info</code>, <code>warning</code>, <code>error</code> messages.
+In incantation headers, show the full metadata
+of all features.</p>
+<p><code>"auto"</code>:
+Like <code>"verbose"</code>, but in incantation headers,
+show the feature descriptions only,
+not the full metadata.</p>
+<p><code>"terse"</code> or <code>None</code>: <strong>(default)</strong>
+Like <code>"auto"</code>, but do not show <code>log</code> messages.</p>
+<p><code>"deep"</code> or <code>True</code>:
+Like <code>"terse"</code> but do not show <code>log</code> and <code>warning</code>
+messages.
+Do not show fetched datasets between the incantation
+and the header, and do not show the header either.
+Do not show the number of results after searches.</p>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L49-L309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp(object):
-    def __init__(self, level=None):
+    def __init__(self, silent=SILENT_D, level=None):
+        &#34;&#34;&#34;Create a controller for timed messages.
+
+        You can specify the degree of verbosity and also
+        an indentation level.
+        The verbosity affects the display of the `info`,
+        `warning`, and `error` methods that are defined
+        in this class, but can also affects messages emitted
+        by other parts of the application, such as:
+
+        * the display of the number of results in searches
+        * the header that is displayed after the incantation
+          of text-fabric.
+
+        Parameters
+        ----------
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            The verbosity. Here are the values and their effects:
+
+            `&#34;verbose&#34;` or `False`:
+            Show all `info`, `warning`, `error` messages.
+            In incantation headers, show the full metadata
+            of all features.
+
+            `&#34;auto&#34;`:
+            Like `&#34;verbose&#34;`, but in incantation headers,
+            show the feature descriptions only,
+            not the full metadata.
+
+            `&#34;terse&#34;` or `None`: **(default)**
+            Like `&#34;auto&#34;`, but do not show `log` messages.
+
+            `&#34;deep&#34;` or `True`:
+            Like `&#34;terse&#34;` but do not show `log` and `warning`
+            messages.
+            Do not show fetched datasets between the incantation
+            and the header, and do not show the header either.
+            Do not show the number of results after searches.
+        &#34;&#34;&#34;
+        silent = silentConvert(silent)
         indent = self.indent
 
         self.oneLevelRep = &#34;   |   &#34;
@@ -298,7 +494,7 @@ class Timestamp(object):
         indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
-        self.silent = False  # regulates informational messages only
+        self.silent = silent  # regulates informational and warning messages only
 
     def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
         # cache is a list: append to cache, do not output anything
@@ -368,7 +564,7 @@ class Timestamp(object):
             Informational messages are not displayed in silent mode.
         &#34;&#34;&#34;
 
-        if force or not self.silent:
+        if force or self.silent in {VERBOSE, AUTO}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0, force=False):
@@ -394,7 +590,7 @@ class Timestamp(object):
             Warning messages are not displayed if silent mode is `deep`.
         &#34;&#34;&#34;
 
-        if force or self.silent != &#34;deep&#34;:
+        if force or self.silent in {VERBOSE, AUTO, TERSE}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
@@ -461,10 +657,8 @@ class Timestamp(object):
 
         Returns
         -------
-        boolean | string
-            `False` not suppressing informational messages.
-            `True` suppressing informational messages.
-            `&#39;deep&#39;` also suppressing warnings.
+        string
+            See `VERBOSE`, `AUTO`, `TERSE`, `DEEP`.
         &#34;&#34;&#34;
         return self.silent
 
@@ -473,14 +667,11 @@ class Timestamp(object):
 
         Parameters
         ----------
-        silent: boolean | string
-            If `False` do not suppress informational messages.
-            If `True` suppress informational messages.
-            If `&#39;deep&#39;` also suppress warnings.
-
-        Error messages are never suppressed.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
+        silent = silentConvert(silent)
         self.silent = silent
 
     def silentOn(self, deep=False):
@@ -492,12 +683,15 @@ class Timestamp(object):
             If `True` also suppress warnings.
         &#34;&#34;&#34;
 
-        self.silent = True if not deep else &#34;deep&#34;
+        wasSilent = self.silent
+        self.wasSilent = wasSilent if wasSilent in {VERBOSE, AUTO, TERSE} else AUTO
+        self.silent = DEEP if deep else TERSE
 
     def silentOff(self):
         &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
 
-        self.silent = False
+        wasSilent = getattr(self, &#34;wasSilent&#34;, AUTO)
+        self.silent = wasSilent
 
     def _elapsed(self):
         interval = time.time() - self.timestamp.setdefault(self.level, time.time())
@@ -523,7 +717,7 @@ class Timestamp(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L54-L68" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cache(self, _asString=False):
     if _asString:
@@ -568,7 +762,7 @@ silent mode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L122-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L197-L218" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an warning message to the standard error.
@@ -614,7 +808,7 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L145-L179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L220-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
     &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
@@ -680,7 +874,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L70-L94" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an informational message to the standard output.
@@ -705,7 +899,7 @@ nothing happens.</p>
         Informational messages are not displayed in silent mode.
     &#34;&#34;&#34;
 
-    if force or not self.silent:
+    if force or self.silent in {VERBOSE, AUTO}:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
 </dd>
@@ -716,25 +910,21 @@ nothing happens.</p>
 <div class="desc"><p>The current verbosity.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>boolean | string</code></dt>
-<dd><code>False</code> not suppressing informational messages.
-<code>True</code> suppressing informational messages.
-<code>'deep'</code> also suppressing warnings.</dd>
+<dt><code>string</code></dt>
+<dd>See <code><a title="tf.core.timestamp.VERBOSE" href="#tf.core.timestamp.VERBOSE">VERBOSE</a></code>, <code><a title="tf.core.timestamp.AUTO" href="#tf.core.timestamp.AUTO">AUTO</a></code>, <code><a title="tf.core.timestamp.TERSE" href="#tf.core.timestamp.TERSE">TERSE</a></code>, <code><a title="tf.core.timestamp.DEEP" href="#tf.core.timestamp.DEEP">DEEP</a></code>.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L181-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L256-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isSilent(self):
     &#34;&#34;&#34;The current verbosity.
 
     Returns
     -------
-    boolean | string
-        `False` not suppressing informational messages.
-        `True` suppressing informational messages.
-        `&#39;deep&#39;` also suppressing warnings.
+    string
+        See `VERBOSE`, `AUTO`, `TERSE`, `DEEP`.
     &#34;&#34;&#34;
     return self.silent</code></pre>
 </details>
@@ -747,7 +937,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L25-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -784,7 +974,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L51-L52" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self):
     self.log = []</code></pre>
@@ -797,30 +987,24 @@ nothing happens.</p>
 <div class="desc"><p>Set the verbosity.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>silent</code></strong> :&ensp;<code>boolean | string</code></dt>
-<dd>If <code>False</code> do not suppress informational messages.
-If <code>True</code> suppress informational messages.
-If <code>'deep'</code> also suppress warnings.</dd>
-</dl>
-<p>Error messages are never suppressed.</p></div>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L193-L206" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L266-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
     &#34;&#34;&#34;Set the verbosity.
 
     Parameters
     ----------
-    silent: boolean | string
-        If `False` do not suppress informational messages.
-        If `True` suppress informational messages.
-        If `&#39;deep&#39;` also suppress warnings.
-
-    Error messages are never suppressed.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 
+    silent = silentConvert(silent)
     self.silent = silent</code></pre>
 </details>
 </dd>
@@ -832,12 +1016,13 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L219-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L291-L295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOff(self):
     &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
 
-    self.silent = False</code></pre>
+    wasSilent = getattr(self, &#34;wasSilent&#34;, AUTO)
+    self.silent = wasSilent</code></pre>
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.silentOn"><code class="name flex">
@@ -853,7 +1038,7 @@ If <code>'deep'</code> also suppress warnings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L208-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L278-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
     &#34;&#34;&#34;Suppress informational messages.
@@ -864,7 +1049,9 @@ If <code>'deep'</code> also suppress warnings.</dd>
         If `True` also suppress warnings.
     &#34;&#34;&#34;
 
-    self.silent = True if not deep else &#34;deep&#34;</code></pre>
+    wasSilent = self.silent
+    self.wasSilent = wasSilent if wasSilent in {VERBOSE, AUTO, TERSE} else AUTO
+    self.silent = DEEP if deep else TERSE</code></pre>
 </details>
 </dd>
 <dt id="tf.core.timestamp.Timestamp.warning"><code class="name flex">
@@ -894,7 +1081,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/core/timestamp.py#L96-L120" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an warning message to the standard output.
@@ -919,7 +1106,7 @@ nothing happens.</p>
         Warning messages are not displayed if silent mode is `deep`.
     &#34;&#34;&#34;
 
-    if force or self.silent != &#34;deep&#34;:
+    if force or self.silent in {VERBOSE, AUTO, TERSE}:
         self.raw_msg(msg, tm=tm, nl=nl, cache=cache)</code></pre>
 </details>
 </dd>
@@ -990,6 +1177,20 @@ setTimeout(() => input.focus(), 100);
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="tf.core" href="index.html">tf.core</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.core.timestamp.AUTO" href="#tf.core.timestamp.AUTO">AUTO</a></code></li>
+<li><code><a title="tf.core.timestamp.DEEP" href="#tf.core.timestamp.DEEP">DEEP</a></code></li>
+<li><code><a title="tf.core.timestamp.SILENT_D" href="#tf.core.timestamp.SILENT_D">SILENT_D</a></code></li>
+<li><code><a title="tf.core.timestamp.TERSE" href="#tf.core.timestamp.TERSE">TERSE</a></code></li>
+<li><code><a title="tf.core.timestamp.VERBOSE" href="#tf.core.timestamp.VERBOSE">VERBOSE</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.core.timestamp.silentConvert" href="#tf.core.timestamp.silentConvert">silentConvert</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

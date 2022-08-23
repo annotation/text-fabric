@@ -32,6 +32,16 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="10">10</h2>
+<h2 id="1021">10.2.1</h2>
+<p>2022-08-23</p>
+<p>Changes in the messages that TF emits.
+Several functions have an optional <code>silent</code> parameter
+by which you could control the verbosity of TF.</p>
+<p>That parameter now accepts different values, although the old
+values still work with nearly the same effect.</p>
+<p>The default value for silent results in slightly terser
+behaviour than the previous default setting.</p>
+<p>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>.</p>
 <h2 id="1020">10.2.0</h2>
 <p>2022-08-18</p>
 <p>The <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> function has an extra optional parameter <code>loadData=True</code>
@@ -133,7 +143,7 @@ to the shielded notebooks.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -206,6 +216,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#10">10</a></li>
+<li><a href="#1021">10.2.1</a></li>
 <li><a href="#1020">10.2.0</a></li>
 <li><a href="#102">10.2</a></li>
 <li><a href="#1010">10.1.0</a></li>

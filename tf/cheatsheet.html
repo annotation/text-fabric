@@ -50,7 +50,7 @@
 <dd>
 <p><code><a title="tf.advanced.settings.showContext" href="advanced/settings.html#tf.advanced.settings.showContext">showContext()</a></code></p>
 </dd>
-<dt><pre><code>A.header()
+<dt><pre><code>A.header(allMeta=False)
 </code></pre></dt>
 <dd>
 <p>show colofon</p>
@@ -348,7 +348,7 @@
 <dt><pre><code>A.silentOn(deep=False)
 </code></pre></dt>
 <dd>
-<p>make TF silent from now on.</p>
+<p>make TF (deeply) silent from now on.</p>
 </dd>
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.silentOn" href="core/timestamp.html#tf.core.timestamp.Timestamp.silentOn">Timestamp.silentOn()</a></code></p>
@@ -1021,7 +1021,7 @@ functions</p>
 <h1 id="tf-dataset"><code>TF.</code> Dataset</h1>
 <h2 id="loading">Loading</h2>
 <dl>
-<dt><pre><code>TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=False)
+<dt><pre><code>TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=&quot;auto&quot;)
 </code></pre></dt>
 <dd>
 <p>Initialize API on work or single volume or collection of a work
@@ -1048,7 +1048,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.explore" href="core/fabric.html#tf.core.fabric.FabricCore.explore">FabricCore.explore()</a></code></p>
 </dd>
-<dt><pre><code>TF.loadAll(silent=None)
+<dt><pre><code>TF.loadAll(silent=&quot;auto&quot;)
 </code></pre></dt>
 <dd>
 <p>Load all loadable features. </p>
@@ -1378,7 +1378,7 @@ Clients are defined in the <code>app-{dataset}</code> repo, under <code>layereds
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md

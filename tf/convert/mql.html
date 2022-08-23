@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L1-L874" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L1-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -258,6 +258,7 @@ from ..core.helpers import (
     console,
     expanduser,
 )
+from ..core.timestamp import SILENT_D, silentConvert
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
 # an enumeration type for it will be created
@@ -269,7 +270,9 @@ ONE_ENUM_TYPE = True
 
 
 class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj, silent=SILENT_D):
+        self.silent = silentConvert(silent)
+        tmObj.setSilent(silent)
         error = tmObj.error
 
         mqlDir = expanduser(mqlDir)
@@ -284,6 +287,7 @@ class MQL(object):
         self._check()
 
     def write(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -309,7 +313,7 @@ class MQL(object):
         info(f&#34;Loading {len(self.featureList)} features&#34;)
         for ft in self.featureList:
             fObj = self.features[ft]
-            fObj.load()
+            fObj.load(silent=silent)
 
         self.fm = fm
         self._writeStartDb()
@@ -321,6 +325,7 @@ class MQL(object):
         info(&#34;Done&#34;)
 
     def _check(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -334,7 +339,7 @@ class MQL(object):
         for (f, fo) in sorted(self.tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
-            fo.load(metaOnly=True)
+            fo.load(metaOnly=True, silent=silent)
             if fo.isConfig:
                 continue
             cleanF = cleanName(f)
@@ -358,7 +363,7 @@ class MQL(object):
                 good = False
             else:
                 fObj = self.tfFeatures[feat]
-                if not fObj.load():
+                if not fObj.load(silent=silent):
                     good = False
         indent(level=0)
         if not good:
@@ -1017,7 +1022,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L529-L534" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L534-L539" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
@@ -1035,7 +1040,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L563-L764" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L568-L769" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseMql(mqlFile, tmObj):
     info = tmObj.info
@@ -1249,7 +1254,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L767-L874" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L772-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
     info = tmObj.info
@@ -1376,7 +1381,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L541-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L546-L565" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
@@ -1408,7 +1413,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L537-L538" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L542-L543" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1421,17 +1426,19 @@ such as backslash xb6</p></div>
 <dl>
 <dt id="tf.convert.mql.MQL"><code class="flex name class">
 <span>class <span class="ident">MQL</span></span>
-<span>(</span><span>mqlDir, mqlName, tfFeatures, tmObj)</span>
+<span>(</span><span>mqlDir, mqlName, tfFeatures, tmObj, silent='terse')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L144-L521" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L145-L526" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj, silent=SILENT_D):
+        self.silent = silentConvert(silent)
+        tmObj.setSilent(silent)
         error = tmObj.error
 
         mqlDir = expanduser(mqlDir)
@@ -1446,6 +1453,7 @@ such as backslash xb6</p></div>
         self._check()
 
     def write(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -1471,7 +1479,7 @@ such as backslash xb6</p></div>
         info(f&#34;Loading {len(self.featureList)} features&#34;)
         for ft in self.featureList:
             fObj = self.features[ft]
-            fObj.load()
+            fObj.load(silent=silent)
 
         self.fm = fm
         self._writeStartDb()
@@ -1483,6 +1491,7 @@ such as backslash xb6</p></div>
         info(&#34;Done&#34;)
 
     def _check(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -1496,7 +1505,7 @@ such as backslash xb6</p></div>
         for (f, fo) in sorted(self.tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
-            fo.load(metaOnly=True)
+            fo.load(metaOnly=True, silent=silent)
             if fo.isConfig:
                 continue
             cleanF = cleanName(f)
@@ -1520,7 +1529,7 @@ such as backslash xb6</p></div>
                 good = False
             else:
                 fObj = self.tfFeatures[feat]
-                if not fObj.load():
+                if not fObj.load(silent=silent):
                     good = False
         indent(level=0)
         if not good:
@@ -1819,9 +1828,10 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/dbb232f91cddebd346e1e38a67954814869ade95/tf/convert/mql.py#L159-L194" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/convert/mql.py#L162-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
+    silent = self.silent
     tmObj = self.tmObj
     error = tmObj.error
     info = tmObj.info
@@ -1847,7 +1857,7 @@ GO
     info(f&#34;Loading {len(self.featureList)} features&#34;)
     for ft in self.featureList:
         fObj = self.features[ft]
-        fObj.load()
+        fObj.load(silent=silent)
 
     self.fm = fm
     self._writeStartDb()
