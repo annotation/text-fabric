@@ -5,6 +5,7 @@ Calls from the advanced API to the Search API.
 import types
 
 from ..core.helpers import console, wrapMessages
+from ..core.timestamp import SILENT_D, silentConvert
 from .condense import condense
 
 
@@ -12,7 +13,7 @@ def searchApi(app):
     app.search = types.MethodType(search, app)
 
 
-def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=None):
+def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
     """Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -33,8 +34,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: boolean, optional `False`
-        if `True` it will suppress the reporting of the number of results.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     shallow: boolean, optional `False`
         If `True` or `1`, the result is a set of things that match the top-level element
@@ -99,7 +100,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
         Web apps can better use `tf.advanced.search.runSearch`.
     """
 
-    info = app.info
+    warning = app.warning
     isSilent = app.isSilent
     setSilent = app.setSilent
     api = app.api
@@ -108,6 +109,8 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
     sortKeyTuple = N.sortKeyTuple
 
     wasSilent = isSilent()
+
+    silent = silentConvert(silent)
 
     results = S.search(query, sets=sets, shallow=shallow, limit=limit)
     if not shallow:
@@ -143,7 +146,7 @@ def search(app, query, silent=False, sets=None, shallow=False, sort=True, limit=
     nResults = len(results)
     plural = "" if nResults == 1 else "s"
     setSilent(silent)
-    info(f"{nResults} result{plural}")
+    warning(f"{nResults} result{plural}")
     setSilent(wasSilent)
     return results
 

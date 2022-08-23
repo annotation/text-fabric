@@ -5,25 +5,27 @@
 from ..core.helpers import console, wrapMessages
 from .searchexe import SearchExe
 from ..parameters import YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
+from ..core.timestamp import SILENT_D, AUTO, silentConvert
 
 
 class Search(object):
-    """
+    """ """
 
-    """
-
-    def __init__(self, api, silent):
+    def __init__(self, api, silent=SILENT_D):
+        silent = silentConvert(silent)
         self.api = api
         self.silent = silent
         self.exe = None
         self.perfDefaults = dict(
-            yarnRatio=YARN_RATIO, tryLimitFrom=TRY_LIMIT_FROM, tryLimitTo=TRY_LIMIT_TO,
+            yarnRatio=YARN_RATIO,
+            tryLimitFrom=TRY_LIMIT_FROM,
+            tryLimitTo=TRY_LIMIT_TO,
         )
         self.perfParams = {}
         self.perfParams.update(self.perfDefaults)
         SearchExe.setPerfParams(self.perfParams)
 
-    def tweakPerformance(self, silent=False, **kwargs):
+    def tweakPerformance(self, silent=SILENT_D, **kwargs):
         """Tweak parameters that influence the search process.
 
         !!! explanation "Theory"
@@ -132,6 +134,7 @@ class Search(object):
             See `tryLimitFrom`
         """
 
+        silent = silentConvert(silent)
         api = self.api
         TF = api.TF
         error = TF.error
@@ -167,7 +170,7 @@ class Search(object):
         limit=None,
         sets=None,
         shallow=False,
-        silent=True,
+        silent=SILENT_D,
         here=True,
         _msgCache=False,
     ):
@@ -243,7 +246,13 @@ class Search(object):
         return queryResults
 
     def study(
-        self, searchTemplate, strategy=None, sets=None, shallow=False, here=True,
+        self,
+        searchTemplate,
+        strategy=None,
+        sets=None,
+        shallow=False,
+        here=True,
+        silent=SILENT_D,
     ):
         """Studies a template to prepare for searching with it.
 
@@ -285,13 +294,16 @@ class Search(object):
             If not `None`, it should be a dictionary of sets, keyed by a names.
             In the search template you can refer to those names to invoke those sets.
 
-        silent: boolean, optional `None`
-            If you want to suppress most of the output, say `silent=True`.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         See Also
         --------
         tf.about.searchusage: Search guide
         """
+
+        if silent is False:
+            silent = AUTO
 
         exe = SearchExe(
             self.api,
@@ -301,7 +313,7 @@ class Search(object):
             offset=0,
             sets=sets,
             shallow=shallow,
-            silent=False,
+            silent=SILENT_D,
             showQuantifiers=True,
             setInfo={},
         )
@@ -524,7 +536,9 @@ class Search(object):
                 field = ""
             else:
                 field = "{}[{}{}]".format(
-                    otype, T.text(words[0:5]), "..." if len(words) > 5 else "",
+                    otype,
+                    T.text(words[0:5]),
+                    "..." if len(words) > 5 else "",
                 )
             fields.append(field)
         return " ".join(fields)

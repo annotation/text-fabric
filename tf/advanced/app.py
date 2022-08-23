@@ -7,6 +7,7 @@ from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
 from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
+from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
 from .helpers import getText, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
@@ -58,14 +59,14 @@ class App:
         collection=None,
         api=None,
         setFile="",
-        silent=False,
+        silent=SILENT_D,
         loadData=True,
         _withGc=True,
         **configOverrides,
     ):
         """Set up the advanced TF API.
 
-        Most parameters are explained in `tf.app.use`.
+        The parameters are explained in `tf.app.use`.
 
         Parameters
         ----------
@@ -79,7 +80,8 @@ class App:
         collection, volume: string, optional None
         api: object, optional, `None`
         setFile: string, optional, `None`
-        silent: boolean, optional `False`
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         hoist: dict, optional `False`
         configOverrides: key value pairs
 
@@ -87,6 +89,8 @@ class App:
             If False, it disables the Python garbage collector before
             loading features. Used to experiment with performance.
         """
+
+        silent = silentConvert(silent)
 
         self.context = None
         """Result of interpreting all configuration options in `config.yaml`.
@@ -143,18 +147,18 @@ class App:
                 )
                 self.TF = TF
                 if loadData:
-                    api = TF.load("", silent=True)
+                    api = TF.load("", silent=silent)
                     if api:
                         self.api = api
                         excludedFeatures = aContext.excludedFeatures
-                        allFeatures = TF.explore(silent=True, show=True)
+                        allFeatures = TF.explore(silent=DEEP, show=True)
                         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
                         useFeatures = [
                             f
                             for f in loadableFeatures
                             if f not in excludedFeatures and not f.startswith(OMAP)
                         ]
-                        result = TF.load(useFeatures, add=True, silent=True)
+                        result = TF.load(useFeatures, add=True, silent=silent)
                         if result is False:
                             self.api = None
                 else:
@@ -181,18 +185,18 @@ Most of the Text-Fabric API has not been loaded.
 
             if not featuresOnly:
                 self.getText = types.MethodType(getText, self)
-            linksApi(self, silent)
+            linksApi(self, silent=silent)
             if not featuresOnly:
                 searchApi(self)
                 sectionsApi(self)
                 setAppSpecsApi(self, cfg)
-                displayApi(self, silent)
+                displayApi(self, silent=silent)
                 textApi(self)
             setattr(self, "isLoaded", self.api.isLoaded)
             if hoist:
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
-                if not silent:
+                if silent in {VERBOSE, AUTO, TERSE}:
                     dh(
                         "<div><b>Text-Fabric API:</b> names "
                         + outLink(
@@ -216,7 +220,7 @@ The app "{appName}" will not work!
                     error=True,
                 )
 
-    def load(self, features, silent=False):
+    def load(self, features, silent=SILENT_D):
         """Loads extra features in addition to the main dataset.
 
         This is the same as `tf.fabric.Fabric.load` when called with `add=True`.
@@ -228,13 +232,8 @@ The app "{appName}" will not work!
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        silent: boolean, optional `None`
-            If `False`, the features will be loaded rather silently,
-            most messages will be suppressed.
-            Time consuming operations will always be announced,
-            so that you know what Text-Fabric is doing.
-            If `True` is passed, all informational messages will be suppressed.
-            This is handy I you want to load data as part of other methods, on-the-fly.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         Returns
         -------
@@ -243,6 +242,8 @@ The app "{appName}" will not work!
         """
 
         TF = self.TF
+
+        silent = silentConvert(silent)
         return TF.load(features, add=True, silent=silent)
 
     def reinit(self):
@@ -305,11 +306,11 @@ The app "{appName}" will not work!
             api = TF.api
             self.api = api
             self.reinit()  # may be used by custom TF apps
-            linksApi(self, True)
+            linksApi(self, silent=DEEP)
             searchApi(self)
             sectionsApi(self)
             setAppSpecsApi(self, cfg)
-            displayApi(self, True)
+            displayApi(self, silent=DEEP)
             textApi(self)
             if hoist:
                 api.makeAvailableIn(hoist)
@@ -322,7 +323,7 @@ def findApp(
     backend,
     _browse,
     *args,
-    silent=False,
+    silent=SILENT_D,
     version=None,
     legacy=False,
     **kwargs,

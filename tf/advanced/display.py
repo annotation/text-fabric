@@ -54,6 +54,7 @@ from textwrap import dedent
 
 from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
 from ..core.helpers import mdEsc, normpath, abspath, expanduser
+from ..core.timestamp import SILENT_D, silentConvert
 from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
@@ -65,7 +66,7 @@ LIMIT_SHOW = 100
 LIMIT_TABLE = 2000
 
 
-def displayApi(app, silent):
+def displayApi(app, silent=SILENT_D):
     """Produce the display API.
 
     The display API provides methods to generate styled representations
@@ -85,12 +86,13 @@ def displayApi(app, silent):
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally this parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent="deep"`.
     """
 
+    silent = silentConvert(silent)
     app.export = types.MethodType(export, app)
     app.table = types.MethodType(table, app)
     app.plainTuple = types.MethodType(plainTuple, app)

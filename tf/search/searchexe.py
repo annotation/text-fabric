@@ -9,6 +9,7 @@ from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
 from ..parameters import SEARCH_FAIL_FACTOR
+from ..core.timestamp import DEEP
 
 
 PROGRESS = 100
@@ -31,7 +32,7 @@ class SearchExe(object):
         level=0,
         sets=None,
         shallow=False,
-        silent=True,
+        silent=DEEP,
         showQuantifiers=False,
         _msgCache=False,
         setInfo={},

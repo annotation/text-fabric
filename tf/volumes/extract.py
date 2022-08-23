@@ -20,7 +20,7 @@ from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
 from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
@@ -83,10 +83,11 @@ def extract(
     volumesLocation,
     volumes=True,
     byTitle=True,
-    silent=False,
+    silent=SILENT_D,
     api=None,
     overwrite=None,
     checkOnly=False,
+    show=False,
 ):
     """Extracts volumes of a work.
 
@@ -189,8 +190,8 @@ def extract(
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     api: object, optional `None`
         If given, assume it is the TF api of a loaded work
@@ -212,6 +213,9 @@ def extract(
         If there is an error, returns False, otherwise returns the volumes in as
         far as they have to be extracted.
 
+    show: boolean, optional False
+        If True, does not return anything, but pretty prints the result
+        to the screen.
 
     Returns
     -------
@@ -270,6 +274,8 @@ def extract(
     This will extract two volumes of the bible:
     `thora` with the first 5 books and `poetry` with two poetic books.
     """
+
+    silent = silentConvert(silent)
 
     givenVolumes = set()
     volumeData = {}
@@ -657,12 +663,12 @@ def extract(
             edgeFeatures = v["edgeFeatures"]
             loc = f"{volumesLocation}/{name}"
             v["loc"] = loc
-            TF = FabricCore(locations=loc, silent=True)
+            TF = FabricCore(locations=loc, silent=DEEP)
             if not TF.save(
                 metaData=metaData,
                 nodeFeatures=nodeFeatures,
                 edgeFeatures=edgeFeatures,
-                silent=False if DEBUG else silent or True,
+                silent=SILENT_D if DEBUG else DEEP,
             ):
                 good = False
         indent(level=0)
@@ -674,30 +680,49 @@ def extract(
     def process():
         indent(level=0, reset=True)
         if not checkVolumes():
-            return False
+            return None if show else False
         if checkOnly:
             if not volumeData:
-                return {name: v["heads"] for (name, v) in volumeData.items()}
+                result = {name: v["heads"] for (name, v) in volumeData.items()}
+                if show:
+                    for (name, v) in result.items():
+                        location = ux(f"{v['name']}/{name}")
+                        print(f"{name:<20}")
+                else:
+                    return result
         if not getTopLevels():
-            return False
+            return None if show else False
         if not checkVolumes2():
-            return False
+            return None if show else False
         if checkOnly:
-            return {name: v["heads"] for (name, v) in volumeData.items()}
+            result = {name: v["heads"] for (name, v) in volumeData.items()}
+            if show:
+                for (name, v) in result.items():
+                    location = ux(f"{v['name']}/{name}")
+                    print(f"{name:<20}")
+            else:
+                return result
         if not distributeNodes():
-            return False
+            return None if show else False
         if not remapFeatures():
-            return False
+            return None if show else False
         if not writeTf():
-            return False
+            return None if show else False
         info("All done")
-        return {
+        result = {
             name: dict(location=f"{volumesLocation}/{name}", new=name in volumeData)
             for name in givenVolumes
         }
+        if show:
+            for (name, v) in result.items():
+                new = " (new)" if v["new"] else " " * 6
+                location = ux(f"{v['location']}/{name}")
+                print(f"{name:<20}{new} @ {location}")
+        else:
+            return result
 
     wasSilent = isSilent()
     setSilent(silent)
     result = process()
     setSilent(wasSilent)
-    return result
+    return None if show else result

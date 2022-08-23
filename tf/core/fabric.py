@@ -34,7 +34,7 @@ from .helpers import (
     normpath,
     expanduser,
 )
-from .timestamp import Timestamp
+from .timestamp import Timestamp, SILENT_D, silentConvert
 from .prepare import (
     levels,
     order,
@@ -169,10 +169,8 @@ class FabricCore(object):
         So if you leave it out, Text-Fabric will just search the paths specified
         in `locations`.
 
-    silent:
-        If `True` is passed, banners and normal progress messages are suppressed.
-        If `'deep'` is passed, all informational and warning messages are suppressed.
-        Errors still pass through.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     _withGc: boolean, optional True
         If False, it disables the Python garbage collector before
@@ -192,10 +190,11 @@ class FabricCore(object):
         An object from which you can call up all the of methods of the core API.
     """
 
-    def __init__(self, locations=None, modules=None, silent=False, _withGc=True):
+    def __init__(self, locations=None, modules=None, silent=SILENT_D, _withGc=True):
+        silent = silentConvert(silent)
         self._withGc = _withGc
         self.silent = silent
-        tmObj = Timestamp()
+        tmObj = Timestamp(silent=silent)
         self.tmObj = tmObj
         setSilent = tmObj.setSilent
         setSilent(silent)
@@ -273,7 +272,7 @@ Api reference : {APIREF}
 
         self._makeIndex()
 
-    def load(self, features, add=False, silent=None):
+    def load(self, features, add=False, silent=SILENT_D):
         """Loads features from disk into RAM memory.
 
         Parameters
@@ -289,13 +288,8 @@ Api reference : {APIREF}
             by the current API.
             Meant to be able to dynamically load features without reloading lots
             of features for nothing.
-        silent: boolean, optional `None`
-            If `False`, the features will be loaded rather silently,
-            most messages will be suppressed.
-            Time consuming operations will always be announced,
-            so that you know what Text-Fabric is doing.
-            If `True` is passed, all informational messages will be suppressed.
-            This is handy I you want to load data as part of other methods, on-the-fly.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         Returns
         -------
@@ -305,6 +299,7 @@ Api reference : {APIREF}
             if the feature could be loaded, else `False`.
         """
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -316,9 +311,8 @@ Api reference : {APIREF}
         reset = tmObj.reset
         featuresOnly = self.featuresOnly
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         indent(level=0, reset=True)
         self.sectionsOK = True
         self.structureOK = True
@@ -438,18 +432,16 @@ Api reference : {APIREF}
         else:
             result = False
 
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         return result
 
-    def explore(self, silent=None, show=True):
+    def explore(self, silent=SILENT_D, show=True):
         """Makes categorization of all features in the dataset.
 
         Parameters
         ----------
-        silent: boolean, optional `None`
-            If `False` a message containing the total numbers of features
-            is issued.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         show: boolean, optional `True`
             If `False`, the resulting dictionary is delivered in `TF.featureSets`;
             if `True`, the dictionary is returned as function result.
@@ -475,20 +467,20 @@ Api reference : {APIREF}
         `tf.core.api.Api.Fall` for nodes and `tf.core.api.Api.Eall` for edges.
         """
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         info = tmObj.info
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         nodes = set()
         edges = set()
         configs = set()
         computeds = set()
         for (fName, fObj) in self.features.items():
-            fObj.load(metaOnly=True)
+            fObj.load(silent=silent, metaOnly=True)
             dest = None
             if fObj.method:
                 dest = computeds
@@ -510,8 +502,7 @@ Api reference : {APIREF}
         self.featureSets = dict(
             nodes=nodes, edges=edges, configs=configs, computeds=computeds
         )
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         if show:
             return dict(
                 (kind, tuple(sorted(kindSet)))
@@ -520,17 +511,16 @@ Api reference : {APIREF}
                 )
             )
 
-    def loadAll(self, silent=None):
+    def loadAll(self, silent=SILENT_D):
         """Load all loadable features.
 
         Parameters
         ----------
-        silent: boolean, optional `None`
-            TF is silent if you specified `silent=True` in a preceding
-            `TF=Fabric()` call.
-            But if you did not, you can also pass `silent=True` to this call.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         """
 
+        silent = silentConvert(silent)
         api = self.load("", silent=silent)
         allFeatures = self.explore(silent=silent, show=True)
         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
@@ -569,7 +559,7 @@ Api reference : {APIREF}
         metaData={},
         location=None,
         module=None,
-        silent=None,
+        silent=SILENT_D,
     ):
         """Saves newly generated data to disk as TF features, nodes and/or edges.
 
@@ -645,12 +635,11 @@ Api reference : {APIREF}
             If you pass `location=path1` and `module=path2`,
             TF will save in `path1/path2`.
 
-        silent: boolean, optional `None`
-            TF is silent if you specified `silent=True` in a preceding
-            `TF=Fabric()` call.
-            But if you did not, you can also pass `silent=True` to this call.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         """
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -659,9 +648,8 @@ Api reference : {APIREF}
         error = tmObj.error
 
         good = True
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         indent(level=0, reset=True)
         self._getWriteLoc(location=location, module=module)
         configFeatures = dict(
@@ -772,7 +760,7 @@ Api reference : {APIREF}
                 edgeValues=edgeValues,
             )
             tag = "config" if isConfig else "edge" if isEdge else "node"
-            if fObj.save(nodeRanges=fName == OTYPE, overwrite=True):
+            if fObj.save(nodeRanges=fName == OTYPE, overwrite=True, silent=silent):
                 total[tag] += 1
             else:
                 failed[tag] += 1
@@ -788,8 +776,7 @@ Api reference : {APIREF}
                 error(f"Failed to export {nf} {tag} features")
             good = False
 
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         return good
 
     def exportMQL(self, mqlName, mqlDir):
@@ -1024,12 +1011,15 @@ Api reference : {APIREF}
         )
 
     def _precompute(self):
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
         good = True
+
         for (fName, dep2) in self.precomputeList:
             ok = getattr(self, f'{fName.strip("_")}OK', False)
             if dep2 == 2 and not ok:
                 continue
-            if not self.features[fName].load():
+            if not self.features[fName].load(silent=isSilent()):
                 good = False
                 break
         self.good = good

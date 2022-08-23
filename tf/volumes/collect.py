@@ -35,7 +35,7 @@ from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
 
 DEBUG = False
@@ -65,7 +65,7 @@ def collect(
     volumeFeature=None,
     mergeTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
     overwrite=False,
 ):
     """Creates a work out of a number of volumes.
@@ -226,8 +226,8 @@ def collect(
         and will override anything with the same key
         that is already in one of the volumes.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     Returns
     -------
@@ -269,7 +269,7 @@ def collect(
                     sectionFeatures='title,number,number',
                 ),
             ),
-            silent=False,
+            silent=SILENT_D,
         )
 
     This will give rise to something like this (assuming that `banks` and
@@ -857,12 +857,12 @@ def collect(
 
     def writeTf():
         info("write work as TF data set")
-        TF = FabricCore(locations=workLocation, silent=True)
+        TF = FabricCore(locations=workLocation, silent=DEEP)
         good = TF.save(
             metaData=metaData,
             nodeFeatures=nodeFeatures,
             edgeFeatures=edgeFeatures,
-            silent=False if DEBUG else silent or True,
+            silent=SILENT_D if DEBUG else DEEP,
         )
         indent(level=0)
         if not good:

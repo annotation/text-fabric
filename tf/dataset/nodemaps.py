@@ -137,6 +137,7 @@ import sys
 import collections
 import time
 from itertools import chain
+from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
 
 
 STAT_LABELS = collections.OrderedDict(
@@ -169,10 +170,15 @@ def _duration():
     )
 
 
-def caption(level, heading, good=None, newLine=True, continuation=False):
+def caption(
+    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
+):
+    silent = silentConvert(silent)
     prefix = "" if good is None else "SUCCES " if good else "FAILURE "
     duration = "" if continuation else "{:>11} ".format(_duration())
     reportHeading = "{}{}{}".format(duration, prefix, heading)
+
+    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
 
     if level == 0:  # non-heading message
         decoration = "" if continuation else "| "
@@ -223,14 +229,15 @@ def caption(level, heading, good=None, newLine=True, continuation=False):
             "{:<90}".format(reportHeading),
             "." * 90,
         )
-    if newLine:
-        print(formattedString)
-    else:
-        sys.stdout.write(formattedString)
+    if emit:
+        if newLine:
+            print(formattedString)
+        else:
+            sys.stdout.write(formattedString)
 
 
 class Versions:
-    def __init__(self, api, va, vb, slotMap=None):
+    def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
         """Map the nodes of a nodetype between two versions of a TF dataset.
 
         There are two scenarios in which you can use this object:
@@ -264,7 +271,10 @@ class Versions:
             version label of the version whose nodes are the target of the mapping
         slotMap: dict, optional `None`
             The actual mapping between slots of the old version and the new version
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         """
+        self.silent = silentConvert(silent)
         self.api = api
         self.va = va
         self.vb = vb
@@ -490,6 +500,7 @@ class Versions:
         va = self.va
         vb = self.vb
         edge = self.edge
+        silent = self.silent
 
         fName = self.omapName()
         caption(4, "Write edge as TF feature {}".format(fName))
@@ -509,6 +520,7 @@ class Versions:
             nodeFeatures={},
             edgeFeatures=edgeFeatures,
             metaData=metaData,
+            silent=silent,
         )
 
     def makeVersionMapping(self):
@@ -524,7 +536,7 @@ class Versions:
 
         self.writeMap()
 
-    def migrateFeatures(self, featureNames, location=None):
+    def migrateFeatures(self, featureNames, silent=None, location=None):
         """Migrate features from one version to another based on a node map.
 
         If you have a dataset with several features, and if there is a node map between
@@ -561,12 +573,19 @@ class Versions:
         location: string, optional `None`
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
+        silent: string, optional None
+            See `tf.core.timestamp.Timestamp`
+            This will override the `silent` setting
+            that has been used when creating the `Versions` object.
         """
 
+        silent = self.silent if silent is None else silentConvert(silent)
         omapName = self.omapName()
         TFa = self.TFa
         TFb = self.TFb
-        TFb.load(omapName, add=True, silent=True)
+        TFb.setSilent(silent)
+        TFb.warning("start migrating")
+        TFb.load(omapName, add=True, silent=silent)
         Fsa = self.Fsa
         Esa = self.Esa
         Esb = self.Esb
@@ -610,6 +629,7 @@ class Versions:
 
         for featureName in featureNames:
             isEdge = TFa.features[featureName].isEdge
+            TFb.info(f"Mapping {featureName} ({'edge' if isEdge else 'node'})")
             featureObj = (Esa if isEdge else Fsa)(featureName)
             featureInfo = dict(featureObj.items())
             metaData[featureName] = featureObj.meta
@@ -696,4 +716,6 @@ class Versions:
             metaData=metaData,
             location=location,
             module=vb,
+            silent=silent,
         )
+        TFb.warning("Done")

@@ -131,6 +131,7 @@ from ..core.helpers import (
     console,
     expanduser,
 )
+from ..core.timestamp import SILENT_D, silentConvert
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
 # an enumeration type for it will be created
@@ -142,7 +143,9 @@ ONE_ENUM_TYPE = True
 
 
 class MQL(object):
-    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj):
+    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj, silent=SILENT_D):
+        self.silent = silentConvert(silent)
+        tmObj.setSilent(silent)
         error = tmObj.error
 
         mqlDir = expanduser(mqlDir)
@@ -157,6 +160,7 @@ class MQL(object):
         self._check()
 
     def write(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -182,7 +186,7 @@ class MQL(object):
         info(f"Loading {len(self.featureList)} features")
         for ft in self.featureList:
             fObj = self.features[ft]
-            fObj.load()
+            fObj.load(silent=silent)
 
         self.fm = fm
         self._writeStartDb()
@@ -194,6 +198,7 @@ class MQL(object):
         info("Done")
 
     def _check(self):
+        silent = self.silent
         tmObj = self.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -207,7 +212,7 @@ class MQL(object):
         for (f, fo) in sorted(self.tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
-            fo.load(metaOnly=True)
+            fo.load(metaOnly=True, silent=silent)
             if fo.isConfig:
                 continue
             cleanF = cleanName(f)
@@ -231,7 +236,7 @@ class MQL(object):
                 good = False
             else:
                 fObj = self.tfFeatures[feat]
-                if not fObj.load():
+                if not fObj.load(silent=silent):
                     good = False
         indent(level=0)
         if not good:

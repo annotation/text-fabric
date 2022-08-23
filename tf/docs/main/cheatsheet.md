@@ -21,7 +21,7 @@ A.showContext(...)
 :   `tf.advanced.settings.showContext`
 
 ```
-A.header()
+A.header(allMeta=False)
 ```
 :   show colofon
 :   `tf.advanced.links.header`
@@ -252,7 +252,7 @@ A.isSilent()
 ```
 A.silentOn(deep=False)
 ```
-:   make TF silent from now on.
+:   make TF (deeply) silent from now on.
 :   `tf.core.timestamp.Timestamp.silentOn`
 
 ```
@@ -785,7 +785,7 @@ C.structure.data
 ## Loading
 
 ```
-TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=False)
+TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent="auto")
 ```
 :   Initialize API on work or single volume or collection of a work
     from explicit directories.
@@ -807,7 +807,7 @@ TF.explore(show=True)
 :   `tf.fabric.Fabric.explore`
 
 ```
-TF.loadAll(silent=None)
+TF.loadAll(silent="auto")
 ```
 :   Load all loadable features. 
 :   `tf.fabric.Fabric.loadAll`

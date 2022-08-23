@@ -45,7 +45,7 @@ A = use(
     modules=None,
     volume=None,
     collection=None,
-    silent=False,
+    silent="auto",
     loadData=False,
     **configOverrides,
 )
@@ -427,11 +427,27 @@ etc.
 ## Silence
 
 Loading a corpus can be quite noisy in the output.
-You can reduce that by means of the `slient` paramenter.
-If `True`, nearly all output of this call will be suppressed,
+You can reduce that by means of the `silent` parameter.
+
+The default is `auto`, which suppresses most messages of the loading of individual
+features, except the potentially time-consuming ones.
+
+If you pass `terse`, also these time-consuming operations will not be displayed.
+
+If you pass `clean`, nearly all output of this call will be suppressed,
 including the links to the loaded data, features, and the API methods.
 Error messages will still come through.
+
 If `deep`, all output will be suppressed, except errors.
+
+The value `verbose` is like `auto`, with the following extras:
+after a corpus has been loaded, a header is produced showing information
+about all features loaded, including their descriptions as given in the metadata
+of the features.
+With `verbose`, not only the descriptions, but *all* metadata fields
+of the features are included.
+
+Usually this will generate a big HTML string with a lot of redundant information.
 
 ## Prevent data loading
 

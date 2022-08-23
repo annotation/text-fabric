@@ -10,6 +10,22 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
+## 10.2.1
+
+2022-08-23
+
+Changes in the messages that TF emits.
+Several functions have an optional `silent` parameter
+by which you could control the verbosity of TF.
+
+That parameter now accepts different values, although the old
+values still work with nearly the same effect.
+
+The default value for silent results in slightly terser
+behaviour than the previous default setting.
+
+See `tf.core.timestamp.Timestamp`.
+
 ## 10.2.0
 
 2022-08-18

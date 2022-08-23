@@ -17,6 +17,7 @@ from .helpers import (
     check32,
     console,
 )
+from .timestamp import SILENT_D, silentConvert
 
 ERROR_CUTOFF = 20
 
@@ -63,7 +64,7 @@ class Data(object):
         self.dataError = False
         self.dataType = "str"
 
-    def load(self, metaOnly=False, silent=None, _withGc=True):
+    def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
         """Load a feature.
 
         _withGc: boolean, optional True
@@ -71,16 +72,16 @@ class Data(object):
             loading features. Used to experiment with performance.
         """
 
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        warning = tmObj.warning
+        info = tmObj.info
         error = tmObj.error
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         indent(level=True, reset=True)
         origTime = self._getModified()
         binTime = self._getModified(bin=True)
@@ -146,7 +147,7 @@ class Data(object):
                 actionRep == "M" or (actionRep == "B" and self.method)
             ):
                 pass
-            warning(
+            info(
                 msgFormat.format(actionRep, self.fileName, sourceRep),
                 cache=1 if actionRep in "CT" else -1,
             )
@@ -154,8 +155,7 @@ class Data(object):
             self.dataError = True
             error(msgFormat.format(actionRep, self.fileName, sourceRep))
 
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         indent(level=False)
         return good
 
@@ -163,17 +163,16 @@ class Data(object):
         self.data = None
         self.dataLoaded = False
 
-    def save(self, overwrite=False, nodeRanges=False, silent=None):
+    def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
+        silent = silentConvert(silent)
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
-        if silent is not None:
-            wasSilent = isSilent()
-            setSilent(silent)
+        wasSilent = isSilent()
+        setSilent(silent)
         result = self._writeTf(overwrite=overwrite, nodeRanges=nodeRanges)
-        if silent is not None:
-            setSilent(wasSilent)
+        setSilent(wasSilent)
         return result
 
     def _setDataType(self):
@@ -415,18 +414,18 @@ class Data(object):
         return not errors
 
     def _compute(self, metaOnly=False):
+        tmObj = self.tmObj
+        isSilent = tmObj.isSilent
         if metaOnly:
             return True
 
         good = True
         for feature in self.dependencies:
             if isinstance(feature, Data):
-                if not feature.load():
+                if not feature.load(silent=isSilent()):
                     good = False
         if not good:
             return False
-
-        tmObj = self.tmObj
 
         def info(msg, tm=True):
             tmObj.info(cmpFormat.format(msg), tm=tm, cache=-1)

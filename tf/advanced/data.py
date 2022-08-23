@@ -37,9 +37,8 @@ class AppData(object):
             level just below the search locations.
         checkout: string
             A specifier to use a specific release or commit of a data repository.
-        silent:
-            The desired verbosity when reporting on the progress and result of the
-            data fetching.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
 
         """
         self.backend = backend

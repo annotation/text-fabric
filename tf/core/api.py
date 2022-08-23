@@ -14,6 +14,7 @@ from .edgefeature import EdgeFeatures
 from .computed import Computeds
 from .text import Text
 from ..search.search import Search
+from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
 API_REFS = dict(
     AllComputeds=("Computed", "computedall", "computed-data"),
@@ -429,7 +430,7 @@ class Api(object):
             TF.load(
                 needToLoad,
                 add=True,
-                silent="deep",
+                silent=DEEP,
             )
             loadedFeatures |= needToLoad
         return loadedFeatures
@@ -457,6 +458,7 @@ def addText(api):
     api.Text = api.T
 
 
-def addSearch(api, silent):
+def addSearch(api, silent=SILENT_D):
+    silent = silentConvert(silent)
     api.S = Search(api, silent)
     api.Search = api.S

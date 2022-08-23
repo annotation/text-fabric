@@ -17,6 +17,7 @@ from ..parameters import (
     GL,
 )
 from ..core.helpers import htmlEsc, unexpanduser as ux
+from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
 from ..server.wrap import wrapProvenance
@@ -25,7 +26,7 @@ from ..server.wrap import wrapProvenance
 UNSUPPORTED = ""
 
 
-def linksApi(app, silent):
+def linksApi(app, silent=SILENT_D):
     """Produce the link API.
 
     The link API provides methods to maps nodes to urls of web resources.
@@ -42,11 +43,12 @@ def linksApi(app, silent):
     ----------
     app: obj
         The high-level API object
-    silent:
-        The verbosity mode to perform this operation in.
-        Normally it is the same as for the app, but when we do an `A.reuse()`
-        we force `silent=True`.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally the silent parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent="deep"`.
     """
+    silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
@@ -149,15 +151,24 @@ def linksApi(app, silent):
     app.tutLink = tutLink
 
     if not app._browse:
-        if not silent:
-            header(app)
+        if silent in {VERBOSE, AUTO, TERSE}:
+            header(app, allMeta=silent == VERBOSE)
 
 
-def header(app):
+def header(app, allMeta=False):
     """Generate a colofon of the TF-app.
 
     This colofon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        If True, includes all metadata of all features. This leads to big
+        stretches of largely redundant information in html details elements.
+        It is not visually cumbersome, but notebooks may grow excessively
+        if you load many datasets many times. So, if False, it will suppress
+        all that metadata except the description keys.
     """
 
     appLink = app.appLink
@@ -188,7 +199,7 @@ def header(app):
         dh(
             f"<b>Text-Fabric:</b> {tfLine}<br>"
             f"<b>Data:</b> {dataLine}<br>"
-            "<b>Features:</b><br>" + _featuresPerModule(app)
+            "<b>Features:</b><br>" + _featuresPerModule(app, allMeta=allMeta)
         )
 
 
@@ -459,8 +470,14 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
     )
 
 
-def _featuresPerModule(app):
-    """Generate a formatted list of loaded TF features, per module."""
+def _featuresPerModule(app, allMeta=False):
+    """Generate a formatted list of loaded TF features, per module.
+
+    Parameters
+    ----------
+    allMeta: boolean, optional False
+        Whether to display all metadata for all features or the descriptions only
+    """
 
     isCompatible = app.isCompatible
     if isCompatible is not None and not isCompatible:
@@ -630,27 +647,40 @@ def _featuresPerModule(app):
                 f"""
                         </div>
                         <div class="fmono">{typeRep}</div>
+                """
+            )
+            html += dedent(
+                f"""
                         <details>
                             <summary>{description}</summary>
                             <div class="fmeta">
                 """
+                if allMeta
+                else f"""
+                        <span> {description}</span>
+                """
             )
-            for (k, v) in sorted(meta.items()):
-                if k not in {"valueType", "description"}:
-                    k = htmlEsc(k)
-                    v = htmlEsc(v)
-                    html += dedent(
-                        f"""
-                            <div class="fmetarow">
-                                <div class="fmetakey">{k}:</div>
-                                <div>{v}</div>
-                            </div>
+            if allMeta:
+                for (k, v) in sorted(meta.items()):
+                    if k not in {"valueType", "description"}:
+                        k = htmlEsc(k)
+                        v = htmlEsc(v)
+                        html += dedent(
+                            f"""
+                                <div class="fmetarow">
+                                    <div class="fmetakey">{k}:</div>
+                                    <div>{v}</div>
+                                </div>
+                        """
+                        )
+                html += dedent(
                     """
-                    )
+                                </div>
+                            </details>
+                    """
+                )
             html += dedent(
                 """
-                            </div>
-                        </details>
                     </div>
                 """
             )

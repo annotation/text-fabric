@@ -50,7 +50,7 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent=False,
+    silent="auto",
 )
 
 if good:
@@ -143,6 +143,7 @@ import re
 
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.helpers import itemize, isInt
+from ..core.timestamp import SILENT_D, silentConvert
 
 
 class CV(object):
@@ -153,12 +154,19 @@ class CV(object):
     F = "feature"
     E = "edge"
 
-    def __init__(self, TF, silent=False):
+    def __init__(self, TF, silent=SILENT_D):
+        """The object that contains the walker conversion machinery.
+
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
+        """
+
         self.TF = TF
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
 
+        silent = silentConvert(silent)
         self.wasSilent = isSilent()
         setSilent(silent)
 
@@ -291,9 +299,6 @@ class CV(object):
             `False` continue after warnings but do show them;
 
             `None` suppress all warnings.
-
-        silent: boolean, optional `None`
-            By this you can suppress informational messages: `silent=True`.
 
         force: boolean, optional `False`
             This forces the process to continue after errors.

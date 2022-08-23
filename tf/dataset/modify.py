@@ -15,7 +15,7 @@ modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent="auto",
 )
 ```
 
@@ -26,7 +26,7 @@ import collections
 
 from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
-from ..core.timestamp import Timestamp
+from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import itemize, fitemize, isInt, collectFormats, dirEmpty
 
 VALTP = "valueType"
@@ -82,7 +82,7 @@ def modify(
     deleteTypes=None,
     addTypes=None,
     featureMeta=None,
-    silent=False,
+    silent=SILENT_D,
 ):
     """Modifies the supply of node types and features in a single data set.
 
@@ -390,8 +390,8 @@ def modify(
 
         If you want to remove a key from a feature, give it the value None.
 
-    silent: boolean, optional `False`
-        Suppress or enable informational messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
     """
 
     addFeatures = addFeatures or {}
@@ -487,7 +487,7 @@ def modify(
         indent(level=1, reset=True)
 
         TF = Fabric(locations=location, silent=silent)
-        origAllFeatures = TF.explore(silent=silent or True, show=True)
+        origAllFeatures = TF.explore(silent=DEEP, show=True)
         origNodeFeatures = set(origAllFeatures[NODES])
         origEdgeFeatures = set(origAllFeatures[EDGES])
         origFeatures = origNodeFeatures | origEdgeFeatures

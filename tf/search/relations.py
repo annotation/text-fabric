@@ -10,6 +10,7 @@ from array import array
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.helpers import makeIndex
+from ..core.timestamp import DEEP
 from .syntax import reTp
 
 # LOW-LEVEL NODE RELATIONS SEMANTICS ###
@@ -1461,7 +1462,7 @@ def basicRelations(searchExe, api):
 
     # BUILD AND INITIALIZE ALL RELATIONAL FUNCTIONS
 
-    api.TF.explore(silent="deep")
+    api.TF.explore(silent=DEEP)
     edgeMap = {}
     nodeMap = {}
 

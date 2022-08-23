@@ -30,7 +30,7 @@ import os
 from .parameters import LOCATIONS, LOCAL, OTYPE
 from .core.helpers import itemize, setDir, expandDir, normpath, unexpanduser as ux
 from .core.fabric import FabricCore
-from .core.timestamp import Timestamp
+from .core.timestamp import Timestamp, SILENT_D, silentConvert
 from .volumes import extract, collect, getVolumes
 
 
@@ -70,7 +70,7 @@ class Fabric(FabricCore):
         self,
         locations=None,
         modules=None,
-        silent=False,
+        silent=SILENT_D,
         volume=None,
         collection=None,
         **kwargs,
@@ -103,7 +103,7 @@ class Fabric(FabricCore):
         volumeBase = f"{location}{sep}{LOCAL}"
         collectionBase = f"{location}{sep}{LOCAL}"
 
-        TM = Timestamp()
+        TM = Timestamp(silent=silent)
 
         if collection:
             collectionLoc = f"{collectionBase}/{collection}"
@@ -111,7 +111,7 @@ class Fabric(FabricCore):
             locations = collectionLoc
             modules = [""]
             if not os.path.exists(locations):
-                TM = Timestamp()
+                TM = Timestamp(silent=silent)
                 TM.error(
                     f"Collection {collection} not found under {ux(collectionLoc)}"
                 )
@@ -162,7 +162,7 @@ class Fabric(FabricCore):
         volumeBase = self.volumeBase
         return getVolumes(volumeBase)
 
-    def extract(self, volumes=True, byTitle=True, silent=False, overwrite=None):
+    def extract(self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False):
         """Extract volumes from the currently loaded work.
 
         This function is only provided if the dataset is a work,
@@ -174,6 +174,7 @@ class Fabric(FabricCore):
         will be supplied automatically.
         """
 
+        silent = silentConvert(silent)
         volume = self.volume
         volumeBase = self.volumeBase
         api = self.api
@@ -191,6 +192,7 @@ class Fabric(FabricCore):
             api=api,
             overwrite=overwrite,
             checkOnly=False,
+            show=show,
         )
 
     def collect(
@@ -201,7 +203,7 @@ class Fabric(FabricCore):
         volumeFeature=None,
         mergeTypes=None,
         featureMeta=None,
-        silent=False,
+        silent=SILENT_D,
         overwrite=None,
     ):
         """Creates a work out of a number of volumes.

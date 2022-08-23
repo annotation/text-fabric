@@ -1,7 +1,8 @@
 """
 # Timed messages
 
-Error and informational messages can be issued, with a time indication.
+Error and informational messages can be issued,
+with a time indication.
 """
 
 import sys
@@ -10,8 +11,82 @@ import time
 from .helpers import unexpanduser as ux
 
 
+VERBOSE = "verbose"
+"""Increased verbosity.
+"""
+
+AUTO = "auto"
+"""Convenient level of silence.
+"""
+
+TERSE = "terse"
+"""More silence.
+"""
+
+DEEP = "deep"
+"""No output, except error messages.
+"""
+
+SILENT_D = TERSE
+"""Default value for the silent parameter.
+
+The value is `"terse"`
+"""
+
+
+def silentConvert(arg):
+    if arg is None:
+        return SILENT_D
+    if arg is False:
+        return VERBOSE
+    if arg is True:
+        return DEEP
+    if arg in {VERBOSE, AUTO, TERSE, DEEP}:
+        return arg
+    return not not arg
+
+
 class Timestamp(object):
-    def __init__(self, level=None):
+    def __init__(self, silent=SILENT_D, level=None):
+        """Create a controller for timed messages.
+
+        You can specify the degree of verbosity and also
+        an indentation level.
+        The verbosity affects the display of the `info`,
+        `warning`, and `error` methods that are defined
+        in this class, but can also affects messages emitted
+        by other parts of the application, such as:
+
+        * the display of the number of results in searches
+        * the header that is displayed after the incantation
+          of text-fabric.
+
+        Parameters
+        ----------
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            The verbosity. Here are the values and their effects:
+
+            `"verbose"` or `False`:
+            Show all `info`, `warning`, `error` messages.
+            In incantation headers, show the full metadata
+            of all features.
+
+            `"auto"`:
+            Like `"verbose"`, but in incantation headers,
+            show the feature descriptions only,
+            not the full metadata.
+
+            `"terse"` or `None`: **(default)**
+            Like `"auto"`, but do not show `log` messages.
+
+            `"deep"` or `True`:
+            Like `"terse"` but do not show `log` and `warning`
+            messages.
+            Do not show fetched datasets between the incantation
+            and the header, and do not show the header either.
+            Do not show the number of results after searches.
+        """
+        silent = silentConvert(silent)
         indent = self.indent
 
         self.oneLevelRep = "   |   "
@@ -20,7 +95,7 @@ class Timestamp(object):
         indent(level=level, reset=True)
         self.log = []
         self.verbose = -2  # regulates all messages
-        self.silent = False  # regulates informational messages only
+        self.silent = silent  # regulates informational and warning messages only
 
     def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
         # cache is a list: append to cache, do not output anything
@@ -90,7 +165,7 @@ class Timestamp(object):
             Informational messages are not displayed in silent mode.
         """
 
-        if force or not self.silent:
+        if force or self.silent in {VERBOSE, AUTO}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def warning(self, msg, tm=True, nl=True, cache=0, force=False):
@@ -116,7 +191,7 @@ class Timestamp(object):
             Warning messages are not displayed if silent mode is `deep`.
         """
 
-        if force or self.silent != "deep":
+        if force or self.silent in {VERBOSE, AUTO, TERSE}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
     def error(self, msg, tm=True, nl=True, cache=0):
@@ -183,10 +258,8 @@ class Timestamp(object):
 
         Returns
         -------
-        boolean | string
-            `False` not suppressing informational messages.
-            `True` suppressing informational messages.
-            `'deep'` also suppressing warnings.
+        string
+            See `VERBOSE`, `AUTO`, `TERSE`, `DEEP`.
         """
         return self.silent
 
@@ -195,14 +268,11 @@ class Timestamp(object):
 
         Parameters
         ----------
-        silent: boolean | string
-            If `False` do not suppress informational messages.
-            If `True` suppress informational messages.
-            If `'deep'` also suppress warnings.
-
-        Error messages are never suppressed.
+        silent: string, optional `tf.core.timestamp.SILENT_D`
+            See `tf.core.timestamp.Timestamp`
         """
 
+        silent = silentConvert(silent)
         self.silent = silent
 
     def silentOn(self, deep=False):
@@ -214,12 +284,15 @@ class Timestamp(object):
             If `True` also suppress warnings.
         """
 
-        self.silent = True if not deep else "deep"
+        wasSilent = self.silent
+        self.wasSilent = wasSilent if wasSilent in {VERBOSE, AUTO, TERSE} else AUTO
+        self.silent = DEEP if deep else TERSE
 
     def silentOff(self):
         """Enable informational messages."""
 
-        self.silent = False
+        wasSilent = getattr(self, "wasSilent", AUTO)
+        self.silent = wasSilent
 
     def _elapsed(self):
         interval = time.time() - self.timestamp.setdefault(self.level, time.time())

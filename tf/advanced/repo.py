@@ -406,6 +406,7 @@ from ..parameters import (
     DOWNLOADS,
 )
 from ..core.helpers import console, htmlEsc, expanduser, initTree
+from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .helpers import dh
 from .zipdata import zipData
 
@@ -498,8 +499,6 @@ class Repo:
         return True
 
     def connect(self):
-        log = self.log
-        warning = self.warning
         backend = self.backend
         conn = self.conn
 
@@ -516,27 +515,27 @@ class Repo:
                     conn = Github()
         try:
             rate = conn.get_rate_limit().core
-            log(
+            self.info(
                 f"rate limit is {rate.limit} requests per hour,"
                 f" with {rate.remaining} left for this hour"
             )
             if rate.limit < 100:
-                warning(
+                self.warning(
                     f"To increase the rate,"
                     f"see {URL_TFDOC}/advanced/repo.html#github"
                 )
 
-            log(
+            self.info(
                 f"\tconnecting to online {backend} repo {self.org}/{self.repo} ... ",
                 newline=False,
             )
             self.repoOnline = conn.get_repo(f"{self.org}/{self.repo}")
-            log("connected")
+            self.info("connected")
         except GithubException as why:
-            warning("failed")
-            warning(f"{backend} says: {why}")
+            self.warning("failed")
+            self.warning(f"{backend} says: {why}")
         except IOError:
-            warning("no internet")
+            self.warning("no internet")
 
         self.conn = conn
         return conn
@@ -589,7 +588,6 @@ class Repo:
         if not g:
             return False
 
-        error = self.error
         commit = self.commitOn
         newTag = self.newTag
 
@@ -607,7 +605,7 @@ class Repo:
                 "commit",
             )
         except Exception as e:
-            error("\tcannot create release", newline=True)
+            self.error("\tcannot create release", newline=True)
             console(str(e), error=True)
             return False
 
@@ -625,7 +623,6 @@ class Repo:
         dataFile = f"{folder}-{version}.zip"
         dataDir = f"{dest}/{org}-release/{repo}"
         dataPath = f"{dataDir}/{dataFile}"
-        error = self.error
 
         if not os.path.exists(dataPath):
             console(f"No release data found: {dataPath}", error=True)
@@ -637,7 +634,7 @@ class Repo:
             )
             console(f"{dataFile} attached to release {newTag}")
         except Exception as e:
-            error("\tcannot attach zipfile to release", newline=True)
+            self.error("\tcannot attach zipfile to release", newline=True)
             console(str(e), error=True)
             return False
 
@@ -654,15 +651,14 @@ class Repo:
         if not g:
             return None
 
-        error = self.error
         r = None
 
         try:
             r = g.get_latest_release()
         except UnknownObjectException:
-            error("\tno releases", newline=True)
+            self.error("\tno releases", newline=True)
         except Exception:
-            error("\tcannot find releases", newline=True)
+            self.error("\tcannot find releases", newline=True)
         return r
 
     def getCommit(self):
@@ -672,8 +668,6 @@ class Repo:
         return c.sha
 
     def getCommitObj(self):
-        error = self.error
-
         g = self.repoOnline
         if not g:
             return None
@@ -685,16 +679,20 @@ class Repo:
             if cs.totalCount:
                 c = cs[0]
             else:
-                error("\tno commits")
+                self.error("\tno commits")
         except Exception:
-            error("\tcannot find commits")
+            self.error("\tcannot find commits")
         return c
 
-    def log(self, msg, newline=True):
-        console(msg, newline=newline)
+    def info(self, msg, newline=True):
+        silent = self.silent
+        if silent in {VERBOSE, AUTO}:
+            console(msg, newline=newline)
 
     def warning(self, msg, newline=True):
-        console(msg, newline=newline)
+        silent = self.silent
+        if silent in {VERBOSE, AUTO, TERSE}:
+            console(msg, newline=newline)
 
     def error(self, msg, newline=True):
         console(msg, error=True, newline=newline)
@@ -876,7 +874,7 @@ class Checkout:
         self.releaseOn = None
         self.releaseCommitOn = None
 
-        self.silent = silent
+        self.silent = silentConvert(silent)
 
         self.repoOnline = None
         self.localBase = False
@@ -956,8 +954,6 @@ class Checkout:
         conn = self.conn
         onGithub = self.onGithub
         backend = self.backend
-        log = self.log
-        warning = self.warning
         org = self.org
         repo = self.repo
 
@@ -971,21 +967,21 @@ class Checkout:
         if onGithub:
             try:
                 rate = conn.get_rate_limit().core
-                log(
+                self.info(
                     f"rate limit is {rate.limit} requests per hour,"
                     f" with {rate.remaining} left for this hour"
                 )
                 if rate.limit < 100:
-                    warning(
+                    self.warning(
                         f"To increase the rate,"
                         f"see {URL_TFDOC}/advanced/repo.html#github"
                     )
 
             except GithubException as why:
-                warning("Could not get rate limit details")
-                warning(f"{bName} says: {why}")
+                self.warning("Could not get rate limit details")
+                self.warning(f"{bName} says: {why}")
 
-        log(
+        self.info(
             f"\tconnecting to online {bName} repo {org}/{repo} ... ",
             newline=False,
         )
@@ -995,47 +991,49 @@ class Checkout:
             if onGithub:
                 try:
                     repoOnline = conn.get_repo(f"{org}/{repo}")
-                    log("connected")
+                    self.info("connected")
                 except GithubException as why:
-                    warning("failed")
-                    warning(f"{bName} says: {why}")
+                    self.warning("failed")
+                    self.warning(f"{bName} says: {why}")
             else:
                 try:
                     repoOnline = conn.projects.get(f"{org}/{repo}")
-                    log("connected")
+                    self.info("connected")
                 except GitlabGetError as why:
-                    warning("failed")
-                    warning(f"{bName} says: {why}")
+                    self.warning("failed")
+                    self.warning(f"{bName} says: {why}")
         except IOError as why:
-            warning("no internet")
-            warning("failed")
-            warning(f"{bName} says: {why}")
+            self.warning("no internet")
+            self.warning("failed")
+            self.warning(f"{bName} says: {why}")
 
         self.repoOnline = repoOnline
 
-    def log(self, msg, newline=True):
+    def info(self, msg, newline=True):
         silent = self.silent
-        if not silent:
+        if silent in {VERBOSE, AUTO}:
             console(msg, newline=newline)
 
     def warning(self, msg, newline=True):
         silent = self.silent
-        if not silent == "deep":
+        if silent in {VERBOSE, AUTO, TERSE}:
             console(msg, newline=newline)
 
     def error(self, msg, newline=True):
         console(msg, error=True, newline=newline)
 
-    def possibleError(self, msg, showErrors, again=False, indent="\t", newline=False):
-        error = self.error
-        warning = self.warning
+    def display(self, msg):
+        silent = self.silent
+        if silent in {VERBOSE, AUTO, TERSE}:
+            dh(msg)
 
+    def possibleError(self, msg, showErrors, again=False, indent="\t", newline=False):
         if showErrors:
-            error(msg, newline=newline)
+            self.error(msg, newline=newline)
         else:
-            warning(msg, newline=newline)
+            self.warning(msg, newline=newline)
             if again:
-                warning(f"{indent}Will try something else")
+                self.warning(f"{indent}Will try something else")
 
     def makeSureLocal(self, attempt=False):
         _browse = self._browse
@@ -1043,10 +1041,6 @@ class Checkout:
         label = self.label
         offline = self.isOffline()
         clone = self.isClone()
-
-        error = self.error
-        warning = self.warning
-        log = self.log
 
         cOff = self.commitOff
         rOff = self.releaseOff
@@ -1122,7 +1116,7 @@ class Checkout:
                     else False
                 )
             if not self.localBase:
-                method = warning if attempt else error
+                method = self.warning if attempt else self.error
                 method(f"The requested {label} is not available offline")
                 # base = self.baseClone if clone else self.baseLocal
                 dirVersion = self.dirPathClone if clone else self.dirPathLocal
@@ -1135,15 +1129,15 @@ class Checkout:
                 if not canOnline:
                     if askLatest:
                         if mayLocal:
-                            warning(f"The offline {label} may not be the latest")
+                            self.warning(f"The offline {label} may not be the latest")
                             self.localBase = self.baseLocal
                         else:
-                            error(f"The requested {label} is not available offline")
+                            self.error(f"The requested {label} is not available offline")
                     else:
-                        warning(f"The requested {label} is not available offline")
-                        error("No online connection")
+                        self.warning(f"The requested {label} is not available offline")
+                        self.error("No online connection")
                 elif not isOnline:
-                    error(f"The requested {label} is not available online")
+                    self.error(f"The requested {label} is not available online")
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -1181,12 +1175,12 @@ class Checkout:
             offEsc = htmlEsc(offString)
             locEsc = htmlEsc(f"{self.localBase}/{self.localDir}{self.versionRep}")
             if _browse:
-                log(
+                self.info(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
                 )
-                log(f"\t{offString} ({state})")
+                self.info(f"\t{offString} ({state})")
             else:
-                dh(
+                self.display(
                     f'<b title="{stateEsc}">{labelEsc}:</b>'
                     f' <span title="{offEsc}">{locEsc}</span>'
                 )
@@ -1265,7 +1259,6 @@ class Checkout:
         # commit parameter only supported for GitLab
         conn = self.conn
         backend = self.backend
-        log = self.log
         label = self.label
         repo = self.repo
         dataDir = self.dataDir
@@ -1285,7 +1278,7 @@ class Checkout:
             notice = backendRep(backend, "name")
             again = False
 
-        log(f"\tdownloading from {notice} ... ")
+        self.info(f"\tdownloading from {notice} ... ")
 
         try:
             if dataUrl is not None:
@@ -1317,7 +1310,7 @@ class Checkout:
             self.possibleError(msg, showErrors, again=again)
             return False
 
-        log(f"\tsaving {label}")
+        self.info(f"\tsaving {label}")
 
         cwd = os.getcwd()
         destZip = (
@@ -1401,8 +1394,6 @@ class Checkout:
         onGithub = self.onGithub
         backend = self.backend
 
-        log = self.log
-
         destDir = f"{self.dirPathLocal}"
         destSave = f"{self.dirPathSaveLocal}"
         initTree(destDir, fresh=not self.keep)
@@ -1430,12 +1421,12 @@ class Checkout:
                     return
                 for content in contents:
                     thisPath = content.path
-                    log(f"\t{lead}{thisPath}...", newline=False)
+                    self.info(f"\t{lead}{thisPath}...", newline=False)
                     if exclude and excludeRe.search(thisPath):
-                        log("excluded")
+                        self.info("excluded")
                         continue
                     if content.type == "dir":
-                        log("directory")
+                        self.info("directory")
                         os.makedirs(f"{destSave}/{thisPath}", exist_ok=True)
                         _downloadDir(thisPath, level + 1)
                     else:
@@ -1445,7 +1436,7 @@ class Checkout:
                             fileDest = f"{destSave}/{thisPath}"
                             with open(fileDest, "wb") as fd:
                                 fd.write(fileData)
-                            log("downloaded")
+                            self.info("downloaded")
                         except (GithubException, IOError):
                             msg = "error"
                             self.possibleError(msg, showErrors, again=True, indent=lead)
@@ -1457,7 +1448,7 @@ class Checkout:
             good = self.downloadZip(g, shiftUp=True, commit=commit, showErrors=True)
 
         if good:
-            log("\tOK")
+            self.info("\tOK")
         else:
             if onGithub:
                 msg = "\tFailed"
@@ -1524,7 +1515,6 @@ class Checkout:
         if not g:
             return None
 
-        error = self.error
         onGithub = self.onGithub
 
         c = None
@@ -1536,14 +1526,14 @@ class Checkout:
                 if cs.totalCount:
                     c = cs[0]
                 else:
-                    error(f"\tcannot find commit{msg}")
+                    self.error(f"\tcannot find commit{msg}")
             except Exception:
-                error(f"\tcannot find commit{msg}")
+                self.error(f"\tcannot find commit{msg}")
         else:
             try:
                 cs = g.commits.list(all=True)
                 if not len(cs):
-                    error(f"\tno commit{msg}")
+                    self.error(f"\tno commit{msg}")
                 else:
                     cs = sorted(cs, key=lambda x: x.created_at)
                     if commit:
@@ -1555,9 +1545,9 @@ class Checkout:
                         if len(cs):
                             c = cs[-1]
                     if c is None:
-                        error(f"\tcannot find commit{msg}")
+                        self.error(f"\tcannot find commit{msg}")
             except Exception:
-                error(f"\tcannot find commit{msg}")
+                self.error(f"\tcannot find commit{msg}")
         return c
 
     def getReleaseFromObj(self, r):
@@ -1648,7 +1638,7 @@ def checkoutRepo(
     dest=None,
     withPaths=True,
     keep=True,
-    silent=False,
+    silent=SILENT_D,
     label="data",
 ):
     """Checks out text-fabric data from an (online) repository.
@@ -1715,11 +1705,11 @@ def checkoutRepo(
         If False, the destination directory will be cleared
         before a download takes place.
 
-    silent: boolean, optional True`
-        Will suppress non-error messages.
+    silent: string, optional `tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
 
     label: string, optional `data`
-        If passed, it will will change the word "data" in log messages
+        If passed, it will will change the word "data" in info messages
         to what you choose.
         We use `label='TF-app'` when we use this function to checkout the code
         of a TF-app.
@@ -1756,6 +1746,8 @@ def checkoutRepo(
     else *folder*.
 
     """
+
+    silent = silentConvert(silent)
 
     if source is None:
         source = backendRep(backend, "clone")
