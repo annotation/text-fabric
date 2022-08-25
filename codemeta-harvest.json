@@ -7,11 +7,11 @@
             "pageStart": 126,
             "pageEnd": 135,
             "isPartOf": {
-                "@type": "PublicationIssue",
+                "@type": "PublicationVolume",
                 "datePublished": "2019",
                 "name": "HIPHIL Novum",
-               "volume": 6,
-                "issue": 1
+                "volumeNumber": 6,
+                "issueNumber": 1
             },
             "url": "https://www.hiphil.org/index.php/hiphil/article/view/50"
         },
@@ -23,11 +23,11 @@
             "pageStart": 27,
             "pageEnd": 41,
             "isPartOf": {
-                "@type": "PublicationIssue",
+                "@type": "PublicationVolume",
                 "datePublished": "2018",
                 "name": "Research Data Journal for the Humanities and Social Sciences",
-                "volume": 3,
-                "issue": 1
+                "volumeNumber": 3,
+                "issueNumber": 1
             },
             "url": "https://brill.com/view/journals/rdj/3/1/article-p27_27.xml"
         },
@@ -54,10 +54,10 @@
             "pageStart": 105,
             "pageEnd": 120,
             "isPartOf": {
-                "@type": "PublicationIssue",
+                "@type": "PublicationVolume",
                 "datePublished": "2014",
                 "name": "Computational Linguistics in the Netherlands Journal",
-               "volume": 4,
+                "volumeNumber": 4,
             ,
             "url": "https://www.clinjournal.org/clinj/article/view/44"
         },
