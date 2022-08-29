@@ -1,4 +1,42 @@
 {
+    "softwareHelp": [
+            {
+                "@id": "https://annotation.github.io/text-fabric/tf/index.html",
+                "@type": "WebSite",
+                "name": "Home — Text-Fabric documentation",
+                "url": "https://annotation.github.io/text-fabric/tf/index.html"
+            },
+            {
+                "@id": "https://nbviewer.org/github/annotation/banks/blob/master/programs/convert.ipynb",
+                "@type": "WebSite",
+                "name": "Jupyter Notebook: convert the Banks example text inot Text-Fabric",
+                "url": "https://nbviewer.org/github/annotation/banks/blob/master/programs/convert.ipynb"
+            },
+            {
+                "@id": "https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/start.ipynb",
+                "@type": "WebSite",
+                "name": "Tutorial for working with the Hebrew Bible; family of Jupyter Notebooks",
+                "url": "https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/start.ipynb"
+            },
+            {
+                "@id": "https://nbviewer.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/start.ipynb",
+                "@type": "WebSite",
+                "name": "Tutorial for working with the Old Babylonian Letters; family of Jupyter Notebooks",
+                "url": "https://nbviewer.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/start.ipynb"
+            },
+            {
+                "@id": "https://nbviewer.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb",
+                "@type": "WebSite",
+                "name": "Tutorial for working with the cuneiform tablets from Uruk; family of Jupyter Notebooks",
+                "url": "https://nbviewer.org/github/Nino-cunei/uruk/blob/master/tutorial/start.ipynb"
+            },
+            {
+                "@id": "https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/start.ipynb",
+                "@type": "WebSite",
+                "name": "Tutorial for working with the General Missives (Dutch colonial history); family of Jupyter Notebooks",
+                "url": "https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/start.ipynb"
+            }
+    ],
     "referencePublication": [
         {
             "@type": "ScholarlyArticle",
