@@ -133,7 +133,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L1-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Nodemaps
@@ -272,7 +272,6 @@ V.makeVersionMapping()
 
 import sys
 import collections
-import time
 from itertools import chain
 from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
 
@@ -287,90 +286,6 @@ STAT_LABELS = collections.OrderedDict(
 )
 
 TIMESTAMP = None
-
-
-def _duration():
-    global TIMESTAMP
-    if TIMESTAMP is None:
-        TIMESTAMP = time.time()
-
-    interval = time.time() - TIMESTAMP
-    if interval &lt; 10:
-        return &#34;{: 2.2f}s&#34;.format(interval)
-    interval = int(round(interval))
-    if interval &lt; 60:
-        return &#34;{:&gt;2d}s&#34;.format(interval)
-    if interval &lt; 3600:
-        return &#34;{:&gt;2d}m {:&gt;02d}s&#34;.format(interval // 60, interval % 60)
-    return &#34;{:&gt;2d}h {:&gt;02d}m {:&gt;02d}s&#34;.format(
-        interval // 3600, (interval % 3600) // 60, interval % 60
-    )
-
-
-def caption(
-    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
-):
-    silent = silentConvert(silent)
-    prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
-    duration = &#34;&#34; if continuation else &#34;{:&gt;11} &#34;.format(_duration())
-    reportHeading = &#34;{}{}{}&#34;.format(duration, prefix, heading)
-
-    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
-
-    if level == 0:  # non-heading message
-        decoration = &#34;&#34; if continuation else &#34;| &#34;
-        formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
-    elif level == 1:  # pipeline level
-        formattedString = &#34;&#34;&#34;
-##{}##
-# {} #
-# {} #
-# {} #
-##{}##
-&#34;&#34;&#34;.format(
-            &#34;#&#34; * 90,
-            &#34; &#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34; &#34; * 90,
-            &#34;#&#34; * 90,
-        )
-    elif level == 2:  # repo level
-        formattedString = &#34;&#34;&#34;
-**{}**
-* {} *
-* {} *
-* {} *
-**{}**
-&#34;&#34;&#34;.format(
-            &#34;*&#34; * 90,
-            &#34; &#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34; &#34; * 90,
-            &#34;*&#34; * 90,
-        )
-    elif level == 3:  # task level
-        formattedString = &#34;&#34;&#34;
---{}--
-- {} -
---{}--
-&#34;&#34;&#34;.format(
-            &#34;-&#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34;-&#34; * 90,
-        )
-    elif level == 4:  # caption within task execution
-        formattedString = &#34;&#34;&#34;..{}..
-. {} .
-..{}..&#34;&#34;&#34;.format(
-            &#34;.&#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34;.&#34; * 90,
-        )
-    if emit:
-        if newLine:
-            print(formattedString)
-        else:
-            sys.stdout.write(formattedString)
 
 
 class Versions:
@@ -418,8 +333,10 @@ class Versions:
         self.edge = slotMap
         self.good = True
         for v in (va, vb):
-            if va not in api:
-                print(f&#34;No TF-API for version {va} in the `api` parameter.&#34;)
+            if v not in api:
+                sys.stderr.write(
+                    f&#34;No TF-API for version {va} in the `api` parameter.\n&#34;
+                )
                 self.good = False
 
         if not self.good:
@@ -438,6 +355,9 @@ class Versions:
         self.Fsb = api[vb].Fs
         self.TFa = api[va].TF
         self.TFb = api[vb].TF
+        self.info = self.TFb.info
+        self.warning = self.TFb.warning
+        self.error = self.TFb.error
 
         self.diagnosis = {}
 
@@ -445,7 +365,7 @@ class Versions:
         edge = self.edge
 
         if edge is None:
-            print(&#34;Cannot make node mapping if no slot mapping is given&#34;)
+            self.error(&#34;Cannot make node mapping if no slot mapping is given&#34;)
             return False
 
         va = self.va
@@ -460,12 +380,10 @@ class Versions:
         Eosb = Eb.oslots.s
         otypesa = Fa.otype.s
 
-        caption(2, &#34;Mapping {} nodes {} ==&gt; {}&#34;.format(nodeType, va, vb))
+        self.caption(2, f&#34;Mapping {nodeType} nodes {va} ==&gt; {vb}&#34;)
 
         diag = {}
-        caption(
-            0, &#34;Extending slot mapping {} ==&gt; {} for {} nodes&#34;.format(va, vb, nodeType)
-        )
+        self.caption(0, f&#34;Extending slot mapping {va} ==&gt; {va} for {nodeType} nodes&#34;)
         for n in otypesa(nodeType):
             slots = Eosa(n)
             mappedSlots = set(
@@ -521,14 +439,14 @@ class Versions:
                             diag[n] = &#34;e&#34;
 
         self.diagnosis[nodeType] = diag
-        caption(0, &#34;\tDone&#34;)
+        self.caption(0, &#34;\tDone&#34;)
 
     def exploreNodeMapping(self, nodeType):
         va = self.va
         vb = self.vb
         diagnosis = self.diagnosis
 
-        caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
+        self.caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
 
         diag = diagnosis[nodeType]
         total = len(diag)
@@ -540,14 +458,16 @@ class Versions:
         for (n, dia) in diag.items():
             reasons[dia] += 1
 
-        caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
+        self.caption(-1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
         for stat in STAT_LABELS:
             statLabel = STAT_LABELS[stat]
             amount = reasons[stat]
             if amount == 0:
                 continue
             perc = 100 * amount / total
-            caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount))
+            self.caption(
+                -1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount)
+            )
 
     def getDiagnosis(self, node=None, label=None):
         &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -625,7 +545,7 @@ class Versions:
         &#34;&#34;&#34;
 
         for (acro, desc) in STAT_LABELS.items():
-            print(f&#34;{acro} = {desc}&#34;)
+            self.info(f&#34;{acro} = {desc}&#34;, tm=False)
 
     def omapName(self):
         va = self.va
@@ -640,7 +560,7 @@ class Versions:
         silent = self.silent
 
         fName = self.omapName()
-        caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
+        self.caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
 
         edgeFeatures = {fName: edge}
         metaData = {
@@ -855,7 +775,72 @@ class Versions:
             module=vb,
             silent=silent,
         )
-        TFb.warning(&#34;Done&#34;)</code></pre>
+        TFb.warning(&#34;Done&#34;)
+
+    def caption(self, level, heading, good=None, newLine=True, continuation=False):
+        silent = self.silent
+        prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
+        reportHeading = &#34;{}{}&#34;.format(prefix, heading)
+
+        emit = (
+            silent == VERBOSE
+            or silent == AUTO
+            and level in {-1, 2, 3, 4}
+            or silent == TERSE
+            and level in {2, 3}
+        )
+
+        if level in {-1, 0}:  # non-heading message
+            decoration = &#34;&#34; if continuation else &#34;| &#34;
+            formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
+        elif level == 1:  # pipeline level
+            formattedString = &#34;&#34;&#34;
+##{}##
+# {} #
+# {} #
+# {} #
+##{}##
+    &#34;&#34;&#34;.format(
+                &#34;#&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;#&#34; * 90,
+            )
+        elif level == 2:  # repo level
+            formattedString = &#34;&#34;&#34;
+    **{}**
+    * {} *
+    * {} *
+    * {} *
+    **{}**
+    &#34;&#34;&#34;.format(
+                &#34;*&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;*&#34; * 90,
+            )
+        elif level == 3:  # task level
+            formattedString = &#34;&#34;&#34;
+    --{}--
+    - {} -
+    --{}--
+    &#34;&#34;&#34;.format(
+                &#34;-&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;-&#34; * 90,
+            )
+        elif level == 4:  # caption within task execution
+            formattedString = &#34;&#34;&#34;..{}..
+    . {} .
+    ..{}..&#34;&#34;&#34;.format(
+                &#34;.&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;.&#34; * 90,
+            )
+        if emit:
+            self.info(formattedString, nl=newLine, tm=not continuation, force=True)</code></pre>
 </details>
 </section>
 <section>
@@ -863,85 +848,6 @@ class Versions:
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="tf.dataset.nodemaps.caption"><code class="name flex">
-<span>def <span class="ident">caption</span></span>(<span>level, heading, silent='terse', good=None, newLine=True, continuation=False)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L173-L236" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def caption(
-    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
-):
-    silent = silentConvert(silent)
-    prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
-    duration = &#34;&#34; if continuation else &#34;{:&gt;11} &#34;.format(_duration())
-    reportHeading = &#34;{}{}{}&#34;.format(duration, prefix, heading)
-
-    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
-
-    if level == 0:  # non-heading message
-        decoration = &#34;&#34; if continuation else &#34;| &#34;
-        formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
-    elif level == 1:  # pipeline level
-        formattedString = &#34;&#34;&#34;
-##{}##
-# {} #
-# {} #
-# {} #
-##{}##
-&#34;&#34;&#34;.format(
-            &#34;#&#34; * 90,
-            &#34; &#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34; &#34; * 90,
-            &#34;#&#34; * 90,
-        )
-    elif level == 2:  # repo level
-        formattedString = &#34;&#34;&#34;
-**{}**
-* {} *
-* {} *
-* {} *
-**{}**
-&#34;&#34;&#34;.format(
-            &#34;*&#34; * 90,
-            &#34; &#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34; &#34; * 90,
-            &#34;*&#34; * 90,
-        )
-    elif level == 3:  # task level
-        formattedString = &#34;&#34;&#34;
---{}--
-- {} -
---{}--
-&#34;&#34;&#34;.format(
-            &#34;-&#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34;-&#34; * 90,
-        )
-    elif level == 4:  # caption within task execution
-        formattedString = &#34;&#34;&#34;..{}..
-. {} .
-..{}..&#34;&#34;&#34;.format(
-            &#34;.&#34; * 90,
-            &#34;{:&lt;90}&#34;.format(reportHeading),
-            &#34;.&#34; * 90,
-        )
-    if emit:
-        if newLine:
-            print(formattedString)
-        else:
-            sys.stdout.write(formattedString)</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -982,7 +888,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L239-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
@@ -1029,8 +935,10 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         self.edge = slotMap
         self.good = True
         for v in (va, vb):
-            if va not in api:
-                print(f&#34;No TF-API for version {va} in the `api` parameter.&#34;)
+            if v not in api:
+                sys.stderr.write(
+                    f&#34;No TF-API for version {va} in the `api` parameter.\n&#34;
+                )
                 self.good = False
 
         if not self.good:
@@ -1049,6 +957,9 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         self.Fsb = api[vb].Fs
         self.TFa = api[va].TF
         self.TFb = api[vb].TF
+        self.info = self.TFb.info
+        self.warning = self.TFb.warning
+        self.error = self.TFb.error
 
         self.diagnosis = {}
 
@@ -1056,7 +967,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         edge = self.edge
 
         if edge is None:
-            print(&#34;Cannot make node mapping if no slot mapping is given&#34;)
+            self.error(&#34;Cannot make node mapping if no slot mapping is given&#34;)
             return False
 
         va = self.va
@@ -1071,12 +982,10 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         Eosb = Eb.oslots.s
         otypesa = Fa.otype.s
 
-        caption(2, &#34;Mapping {} nodes {} ==&gt; {}&#34;.format(nodeType, va, vb))
+        self.caption(2, f&#34;Mapping {nodeType} nodes {va} ==&gt; {vb}&#34;)
 
         diag = {}
-        caption(
-            0, &#34;Extending slot mapping {} ==&gt; {} for {} nodes&#34;.format(va, vb, nodeType)
-        )
+        self.caption(0, f&#34;Extending slot mapping {va} ==&gt; {va} for {nodeType} nodes&#34;)
         for n in otypesa(nodeType):
             slots = Eosa(n)
             mappedSlots = set(
@@ -1132,14 +1041,14 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
                             diag[n] = &#34;e&#34;
 
         self.diagnosis[nodeType] = diag
-        caption(0, &#34;\tDone&#34;)
+        self.caption(0, &#34;\tDone&#34;)
 
     def exploreNodeMapping(self, nodeType):
         va = self.va
         vb = self.vb
         diagnosis = self.diagnosis
 
-        caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
+        self.caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
 
         diag = diagnosis[nodeType]
         total = len(diag)
@@ -1151,14 +1060,16 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         for (n, dia) in diag.items():
             reasons[dia] += 1
 
-        caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
+        self.caption(-1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
         for stat in STAT_LABELS:
             statLabel = STAT_LABELS[stat]
             amount = reasons[stat]
             if amount == 0:
                 continue
             perc = 100 * amount / total
-            caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount))
+            self.caption(
+                -1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount)
+            )
 
     def getDiagnosis(self, node=None, label=None):
         &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1236,7 +1147,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         &#34;&#34;&#34;
 
         for (acro, desc) in STAT_LABELS.items():
-            print(f&#34;{acro} = {desc}&#34;)
+            self.info(f&#34;{acro} = {desc}&#34;, tm=False)
 
     def omapName(self):
         va = self.va
@@ -1251,7 +1162,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         silent = self.silent
 
         fName = self.omapName()
-        caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
+        self.caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
 
         edgeFeatures = {fName: edge}
         metaData = {
@@ -1466,10 +1377,151 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
             module=vb,
             silent=silent,
         )
-        TFb.warning(&#34;Done&#34;)</code></pre>
+        TFb.warning(&#34;Done&#34;)
+
+    def caption(self, level, heading, good=None, newLine=True, continuation=False):
+        silent = self.silent
+        prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
+        reportHeading = &#34;{}{}&#34;.format(prefix, heading)
+
+        emit = (
+            silent == VERBOSE
+            or silent == AUTO
+            and level in {-1, 2, 3, 4}
+            or silent == TERSE
+            and level in {2, 3}
+        )
+
+        if level in {-1, 0}:  # non-heading message
+            decoration = &#34;&#34; if continuation else &#34;| &#34;
+            formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
+        elif level == 1:  # pipeline level
+            formattedString = &#34;&#34;&#34;
+##{}##
+# {} #
+# {} #
+# {} #
+##{}##
+    &#34;&#34;&#34;.format(
+                &#34;#&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;#&#34; * 90,
+            )
+        elif level == 2:  # repo level
+            formattedString = &#34;&#34;&#34;
+    **{}**
+    * {} *
+    * {} *
+    * {} *
+    **{}**
+    &#34;&#34;&#34;.format(
+                &#34;*&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;*&#34; * 90,
+            )
+        elif level == 3:  # task level
+            formattedString = &#34;&#34;&#34;
+    --{}--
+    - {} -
+    --{}--
+    &#34;&#34;&#34;.format(
+                &#34;-&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;-&#34; * 90,
+            )
+        elif level == 4:  # caption within task execution
+            formattedString = &#34;&#34;&#34;..{}..
+    . {} .
+    ..{}..&#34;&#34;&#34;.format(
+                &#34;.&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;.&#34; * 90,
+            )
+        if emit:
+            self.info(formattedString, nl=newLine, tm=not continuation, force=True)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.dataset.nodemaps.Versions.caption"><code class="name flex">
+<span>def <span class="ident">caption</span></span>(<span>self, level, heading, good=None, newLine=True, continuation=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">    def caption(self, level, heading, good=None, newLine=True, continuation=False):
+        silent = self.silent
+        prefix = &#34;&#34; if good is None else &#34;SUCCES &#34; if good else &#34;FAILURE &#34;
+        reportHeading = &#34;{}{}&#34;.format(prefix, heading)
+
+        emit = (
+            silent == VERBOSE
+            or silent == AUTO
+            and level in {-1, 2, 3, 4}
+            or silent == TERSE
+            and level in {2, 3}
+        )
+
+        if level in {-1, 0}:  # non-heading message
+            decoration = &#34;&#34; if continuation else &#34;| &#34;
+            formattedString = &#34;&#34;&#34;{}{}&#34;&#34;&#34;.format(decoration, reportHeading)
+        elif level == 1:  # pipeline level
+            formattedString = &#34;&#34;&#34;
+##{}##
+# {} #
+# {} #
+# {} #
+##{}##
+    &#34;&#34;&#34;.format(
+                &#34;#&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;#&#34; * 90,
+            )
+        elif level == 2:  # repo level
+            formattedString = &#34;&#34;&#34;
+    **{}**
+    * {} *
+    * {} *
+    * {} *
+    **{}**
+    &#34;&#34;&#34;.format(
+                &#34;*&#34; * 90,
+                &#34; &#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34; &#34; * 90,
+                &#34;*&#34; * 90,
+            )
+        elif level == 3:  # task level
+            formattedString = &#34;&#34;&#34;
+    --{}--
+    - {} -
+    --{}--
+    &#34;&#34;&#34;.format(
+                &#34;-&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;-&#34; * 90,
+            )
+        elif level == 4:  # caption within task execution
+            formattedString = &#34;&#34;&#34;..{}..
+    . {} .
+    ..{}..&#34;&#34;&#34;.format(
+                &#34;.&#34; * 90,
+                &#34;{:&lt;90}&#34;.format(reportHeading),
+                &#34;.&#34; * 90,
+            )
+        if emit:
+            self.info(formattedString, nl=newLine, tm=not continuation, force=True)</code></pre>
+</details>
+</dd>
 <dt id="tf.dataset.nodemaps.Versions.exploreNodeMapping"><code class="name flex">
 <span>def <span class="ident">exploreNodeMapping</span></span>(<span>self, nodeType)</span>
 </code></dt>
@@ -1478,14 +1530,14 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L389-L413" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
     vb = self.vb
     diagnosis = self.diagnosis
 
-    caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
+    self.caption(4, &#34;Statistics for {} ==&gt; {} ({})&#34;.format(va, vb, nodeType))
 
     diag = diagnosis[nodeType]
     total = len(diag)
@@ -1497,14 +1549,16 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
     for (n, dia) in diag.items():
         reasons[dia] += 1
 
-    caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
+    self.caption(-1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(&#34;TOTAL&#34;, 100, total))
     for stat in STAT_LABELS:
         statLabel = STAT_LABELS[stat]
         amount = reasons[stat]
         if amount == 0:
             continue
         perc = 100 * amount / total
-        caption(0, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount))</code></pre>
+        self.caption(
+            -1, &#34;\t{:&lt;30} : {:6.2f}% {:&gt;7}x&#34;.format(statLabel, perc, amount)
+        )</code></pre>
 </details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.getDiagnosis"><code class="name flex">
@@ -1545,7 +1599,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L415-L478" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1625,7 +1679,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L480-L491" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1638,7 +1692,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
     &#34;&#34;&#34;
 
     for (acro, desc) in STAT_LABELS.items():
-        print(f&#34;{acro} = {desc}&#34;)</code></pre>
+        self.info(f&#34;{acro} = {desc}&#34;, tm=False)</code></pre>
 </details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.makeNodeMapping"><code class="name flex">
@@ -1649,13 +1703,13 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L307-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     edge = self.edge
 
     if edge is None:
-        print(&#34;Cannot make node mapping if no slot mapping is given&#34;)
+        self.error(&#34;Cannot make node mapping if no slot mapping is given&#34;)
         return False
 
     va = self.va
@@ -1670,12 +1724,10 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
     Eosb = Eb.oslots.s
     otypesa = Fa.otype.s
 
-    caption(2, &#34;Mapping {} nodes {} ==&gt; {}&#34;.format(nodeType, va, vb))
+    self.caption(2, f&#34;Mapping {nodeType} nodes {va} ==&gt; {vb}&#34;)
 
     diag = {}
-    caption(
-        0, &#34;Extending slot mapping {} ==&gt; {} for {} nodes&#34;.format(va, vb, nodeType)
-    )
+    self.caption(0, f&#34;Extending slot mapping {va} ==&gt; {va} for {nodeType} nodes&#34;)
     for n in otypesa(nodeType):
         slots = Eosa(n)
         mappedSlots = set(
@@ -1731,7 +1783,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
                         diag[n] = &#34;e&#34;
 
     self.diagnosis[nodeType] = diag
-    caption(0, &#34;\tDone&#34;)</code></pre>
+    self.caption(0, &#34;\tDone&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.dataset.nodemaps.Versions.makeVersionMapping"><code class="name flex">
@@ -1742,7 +1794,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L526-L537" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1798,7 +1850,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L539-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1993,7 +2045,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L493-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -2009,7 +2061,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/dataset/nodemaps.py#L498-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb
@@ -2019,7 +2071,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
     silent = self.silent
 
     fName = self.omapName()
-    caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
+    self.caption(4, &#34;Write edge as TF feature {}&#34;.format(fName))
 
     edgeFeatures = {fName: edge}
     metaData = {
@@ -2116,16 +2168,12 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.dataset" href="index.html">tf.dataset</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="tf.dataset.nodemaps.caption" href="#tf.dataset.nodemaps.caption">caption</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="tf.dataset.nodemaps.Versions" href="#tf.dataset.nodemaps.Versions">Versions</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.dataset.nodemaps.Versions.caption" href="#tf.dataset.nodemaps.Versions.caption">caption</a></code></li>
 <li><code><a title="tf.dataset.nodemaps.Versions.exploreNodeMapping" href="#tf.dataset.nodemaps.Versions.exploreNodeMapping">exploreNodeMapping</a></code></li>
 <li><code><a title="tf.dataset.nodemaps.Versions.getDiagnosis" href="#tf.dataset.nodemaps.Versions.getDiagnosis">getDiagnosis</a></code></li>
 <li><code><a title="tf.dataset.nodemaps.Versions.legend" href="#tf.dataset.nodemaps.Versions.legend">legend</a></code></li>
