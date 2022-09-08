@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L1-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L1-L651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import re
@@ -49,6 +49,24 @@ SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
 
 
+def runsInNotebook():
+    &#34;&#34;&#34;Determines whether the program runs in an interactive shell.
+
+    From https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408
+    &#34;&#34;&#34;
+    try:
+        runcontext = get_ipython()
+        shell = runcontext.__class__.__name__
+        if shell == &#34;ZMQInteractiveShell&#34;:
+            return True  # Jupyter notebook or qtconsole
+        elif shell == &#34;TerminalInteractiveShell&#34;:
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
+
+
 def _getLtr(app, options):
     aContext = app.context
     direction = aContext.direction
@@ -62,38 +80,50 @@ def _getLtr(app, options):
     )
 
 
-def dm(md):
-    &#34;&#34;&#34;Display markdown in a Jupyter notebook.
+def dm(md, inNb=True):
+    &#34;&#34;&#34;Display markdown.
 
     Parameters
     ----------
     md: string
         Raw markdown string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted markdown is rendered in the output cell.
+        The formatted markdown is rendered in the output cell if `inNb`
+        else the raw markdown is printed to the output.
     &#34;&#34;&#34;
 
-    display(Markdown(unexpanduser(md)))
+    if inNb:
+        display(Markdown(unexpanduser(md)))
+    else:
+        console(md)
 
 
-def dh(html):
-    &#34;&#34;&#34;Display HTML in a Jupyter notebook.
+def dh(html, inNb=True):
+    &#34;&#34;&#34;Display HTML.
 
     Parameters
     ----------
     html: string
         Raw html string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted HTML is rendered in the output cell.
+        The formatted HTML is rendered in the output cell if `inNb`
+        else the raw HTML is printed to the output.
     &#34;&#34;&#34;
 
-    display(HTML(unexpanduser(html)))
+    if inNb:
+        display(HTML(unexpanduser(html)))
+    else:
+        console(html)
 
 
 # MODULE REFERENCES
@@ -177,7 +207,7 @@ def hasData(backend, local, org, repo, version, relative):
     return False
 
 
-def tupleEnum(tuples, start, end, limit, item):
+def tupleEnum(tuples, start, end, limit, item, inNb):
     if start is None:
         start = 1
     i = -1
@@ -203,7 +233,8 @@ def tupleEnum(tuples, start, end, limit, item):
         if rest:
             dh(
                 f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
-                f&#34; {limit} {item}s at a time&#34;
+                f&#34; {limit} {item}s at a time&#34;,
+                inNb=inNb,
             )
 
 
@@ -617,11 +648,13 @@ def eData(x, level):
     return eRest(x, level)
 
 
-def showDict(title, data, *keys):
+def showDict(title, data, inNb, *keys):
     &#34;&#34;&#34;Shows selected keys of a dictionary in a pretty way.
 
     Parameters
     ----------
+    inNb: boolean
+        Whether we run in a notebook.
     keys: iterable of string
         For each key passed to this function, the information for that key
         will be displayed. If no keys are passed, all keys will be displayed.
@@ -645,7 +678,7 @@ def showDict(title, data, *keys):
             f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
-    dm(&#34;&#34;.join(md))</code></pre>
+    dm(&#34;&#34;.join(md), inNb=inNb)</code></pre>
 </details>
 </section>
 <section>
@@ -663,7 +696,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L77-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L107-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def backendRepl(match):
     thisBackend.append(match.group(1))
@@ -671,77 +704,95 @@ def showDict(title, data, *keys):
 </details>
 </dd>
 <dt id="tf.advanced.helpers.dh"><code class="name flex">
-<span>def <span class="ident">dh</span></span>(<span>html)</span>
+<span>def <span class="ident">dh</span></span>(<span>html, inNb=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Display HTML in a Jupyter notebook.</p>
+<div class="desc"><p>Display HTML.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>html</code></strong> :&ensp;<code>string</code></dt>
 <dd>Raw html string.</dd>
+<dt><strong><code>inNb</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether the program runs in a notebook</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>None</code></dt>
-<dd>The formatted HTML is rendered in the output cell.</dd>
+<dd>The formatted HTML is rendered in the output cell if <code>inNb</code>
+else the raw HTML is printed to the output.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L52-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L76-L96" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def dh(html):
-    &#34;&#34;&#34;Display HTML in a Jupyter notebook.
+<pre><code class="python">def dh(html, inNb=True):
+    &#34;&#34;&#34;Display HTML.
 
     Parameters
     ----------
     html: string
         Raw html string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted HTML is rendered in the output cell.
+        The formatted HTML is rendered in the output cell if `inNb`
+        else the raw HTML is printed to the output.
     &#34;&#34;&#34;
 
-    display(HTML(unexpanduser(html)))</code></pre>
+    if inNb:
+        display(HTML(unexpanduser(html)))
+    else:
+        console(html)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.dm"><code class="name flex">
-<span>def <span class="ident">dm</span></span>(<span>md)</span>
+<span>def <span class="ident">dm</span></span>(<span>md, inNb=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Display markdown in a Jupyter notebook.</p>
+<div class="desc"><p>Display markdown.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>md</code></strong> :&ensp;<code>string</code></dt>
 <dd>Raw markdown string.</dd>
+<dt><strong><code>inNb</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether the program runs in a notebook</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>None</code></dt>
-<dd>The formatted markdown is rendered in the output cell.</dd>
+<dd>The formatted markdown is rendered in the output cell if <code>inNb</code>
+else the raw markdown is printed to the output.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L35-L49" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L53-L73" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def dm(md):
-    &#34;&#34;&#34;Display markdown in a Jupyter notebook.
+<pre><code class="python">def dm(md, inNb=True):
+    &#34;&#34;&#34;Display markdown.
 
     Parameters
     ----------
     md: string
         Raw markdown string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted markdown is rendered in the output cell.
+        The formatted markdown is rendered in the output cell if `inNb`
+        else the raw markdown is printed to the output.
     &#34;&#34;&#34;
 
-    display(Markdown(unexpanduser(md)))</code></pre>
+    if inNb:
+        display(Markdown(unexpanduser(md)))
+    else:
+        console(md)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.eData"><code class="name flex">
@@ -752,7 +803,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L577-L587" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L608-L618" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eData(x, level):
     if not x:
@@ -775,7 +826,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L563-L569" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L594-L600" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eDict(x, level):
     indent = QUAD * level
@@ -794,7 +845,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L549-L550" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L580-L581" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eEmpty(x):
     return EM if type(x) is str else str(x)</code></pre>
@@ -808,7 +859,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L553-L560" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L584-L591" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eList(x, level):
     tpv = type(x)
@@ -828,7 +879,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L572-L574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L603-L605" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eRest(x, level):
     indent = QUAD * level
@@ -843,7 +894,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L538-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L569-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def eScalar(x, level):
     if type(x) is str and &#34;\n&#34; in x:
@@ -864,7 +915,7 @@ def showDict(title, data, *keys):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L121-L132" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L151-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocalDir(backend, cfg, local, version):
     provenanceSpec = cfg.get(&#34;provenanceSpec&#34;, {})
@@ -904,7 +955,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L396-L477" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L427-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getResultsX(app, results, features, condenseType, fmt=None):
     &#34;&#34;&#34;Transform a uniform iterable of nodes into a table with extra information.
@@ -1000,7 +1051,7 @@ be richer then when the tuples are not uniform.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L382-L393" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L413-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRowsX(app, tuples, features, condenseType, fmt=None):
     &#34;&#34;&#34;Transform an iterable of nodes into a table with extra information.
@@ -1024,7 +1075,7 @@ be richer then when the tuples are not uniform.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L271-L327" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L302-L358" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getText(
     app, isPretty, n, nType, outer, first, last, level, passage, descend, options=None
@@ -1104,7 +1155,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L480-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L511-L566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTuplesX(app, results, condenseType, fmt=None):
     &#34;&#34;&#34;Transform a non-uniform iterable of nodes into a table with extra information.
@@ -1172,7 +1223,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L330-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L361-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValue(app, n, nType, feat, suppress):
     F = app.api.F
@@ -1199,7 +1250,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L135-L147" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L165-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def hasData(backend, local, org, repo, version, relative):
     versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
@@ -1224,7 +1275,7 @@ If not passed, a default is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L267-L268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L298-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlSafe(text, isHtml):
     return text if isHtml else htmlEsc(text)</code></pre>
@@ -1242,7 +1293,7 @@ is the same for all tuples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L350-L379" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L381-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isUniform(app, tuples):
     &#34;&#34;&#34;Whether the members of tuples are uniform.
@@ -1284,7 +1335,7 @@ is the same for all tuples.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L180-L206" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L211-L237" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def parseFeatures(features):
     if (
@@ -1315,13 +1366,44 @@ is the same for all tuples.</p></div>
     return (bare, indirect)</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.helpers.runsInNotebook"><code class="name flex">
+<span>def <span class="ident">runsInNotebook</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Determines whether the program runs in an interactive shell.</p>
+<p>From <a href="https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408">https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L22-L37" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def runsInNotebook():
+    &#34;&#34;&#34;Determines whether the program runs in an interactive shell.
+
+    From https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408
+    &#34;&#34;&#34;
+    try:
+        runcontext = get_ipython()
+        shell = runcontext.__class__.__name__
+        if shell == &#34;ZMQInteractiveShell&#34;:
+            return True  # Jupyter notebook or qtconsole
+        elif shell == &#34;TerminalInteractiveShell&#34;:
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.helpers.showDict"><code class="name flex">
-<span>def <span class="ident">showDict</span></span>(<span>title, data, *keys)</span>
+<span>def <span class="ident">showDict</span></span>(<span>title, data, inNb, *keys)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shows selected keys of a dictionary in a pretty way.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>inNb</code></strong> :&ensp;<code>boolean</code></dt>
+<dd>Whether we run in a notebook.</dd>
 <dt><strong><code>keys</code></strong> :&ensp;<code>iterable</code> of <code>string</code></dt>
 <dd>For each key passed to this function, the information for that key
 will be displayed. If no keys are passed, all keys will be displayed.</dd>
@@ -1334,13 +1416,15 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L590-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L621-L651" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def showDict(title, data, *keys):
+<pre><code class="python">def showDict(title, data, inNb, *keys):
     &#34;&#34;&#34;Shows selected keys of a dictionary in a pretty way.
 
     Parameters
     ----------
+    inNb: boolean
+        Whether we run in a notebook.
     keys: iterable of string
         For each key passed to this function, the information for that key
         will be displayed. If no keys are passed, all keys will be displayed.
@@ -1364,7 +1448,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
             f&#34;&lt;summary&gt;{i + 1}. {k}&lt;/summary&gt;\n\n{eData(v, 0)}\n&lt;/details&gt;\n&#34;
         )
     md.append(&#34;&lt;/details&gt;\n&#34;)
-    dm(&#34;&#34;.join(md))</code></pre>
+    dm(&#34;&#34;.join(md), inNb=inNb)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.splitModRef"><code class="name flex">
@@ -1375,7 +1459,7 @@ will be displayed. If no keys are passed, all keys will be displayed.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L82-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L112-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitModRef(moduleRef):
     thisBackend.clear()
@@ -1453,7 +1537,7 @@ The display algorithm uses this to unravel nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L209-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L240-L295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def transitiveClosure(relation, reflexiveExceptions):
     &#34;&#34;&#34;Produce the reflexive transitive closure of a relation.
@@ -1514,16 +1598,16 @@ The display algorithm uses this to unravel nodes.</p>
 </details>
 </dd>
 <dt id="tf.advanced.helpers.tupleEnum"><code class="name flex">
-<span>def <span class="ident">tupleEnum</span></span>(<span>tuples, start, end, limit, item)</span>
+<span>def <span class="ident">tupleEnum</span></span>(<span>tuples, start, end, limit, item, inNb)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/helpers.py#L150-L177" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/helpers.py#L180-L208" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tupleEnum(tuples, start, end, limit, item):
+<pre><code class="python">def tupleEnum(tuples, start, end, limit, item, inNb):
     if start is None:
         start = 1
     i = -1
@@ -1549,7 +1633,8 @@ The display algorithm uses this to unravel nodes.</p>
         if rest:
             dh(
                 f&#34;&lt;b&gt;{rest} more {item}s skipped&lt;/b&gt; because we show a maximum of&#34;
-                f&#34; {limit} {item}s at a time&#34;
+                f&#34; {limit} {item}s at a time&#34;,
+                inNb=inNb,
             )</code></pre>
 </details>
 </dd>
@@ -1641,6 +1726,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.advanced.helpers.htmlSafe" href="#tf.advanced.helpers.htmlSafe">htmlSafe</a></code></li>
 <li><code><a title="tf.advanced.helpers.isUniform" href="#tf.advanced.helpers.isUniform">isUniform</a></code></li>
 <li><code><a title="tf.advanced.helpers.parseFeatures" href="#tf.advanced.helpers.parseFeatures">parseFeatures</a></code></li>
+<li><code><a title="tf.advanced.helpers.runsInNotebook" href="#tf.advanced.helpers.runsInNotebook">runsInNotebook</a></code></li>
 <li><code><a title="tf.advanced.helpers.showDict" href="#tf.advanced.helpers.showDict">showDict</a></code></li>
 <li><code><a title="tf.advanced.helpers.splitModRef" href="#tf.advanced.helpers.splitModRef">splitModRef</a></code></li>
 <li><code><a title="tf.advanced.helpers.transitiveClosure" href="#tf.advanced.helpers.transitiveClosure">transitiveClosure</a></code></li>

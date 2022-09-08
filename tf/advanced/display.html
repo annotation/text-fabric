@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L1-L922" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L1-L933" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -196,10 +196,11 @@ def displayShow(app, *options):
     tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
+    inNb = app.inNb
     display = app.display
     display.setup()
     data = display.current
-    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, *options)
+    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, inNb, *options)
 
 
 def displaySetup(app, **options):
@@ -265,11 +266,14 @@ def loadCss(app):
     need to respond with the app-specific CSS: we return it as string.
     The flag `app._browse` is used to steer us into this case.
 
-    Otherwise, we collect the complete CSS code from Text-Fabric and the app,
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
     and we add a piece to override some of the notebook CSS for tables,
     which specify a table layout with right aligned cell contents by default.
 
     We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
 
     Returns
     -------
@@ -284,6 +288,9 @@ def loadCss(app):
 
     if _browse:
         return appCss
+
+    if not app.inNb:
+        return
 
     css = getCss(app)
     dh(css)
@@ -497,6 +504,7 @@ def table(app, tuples, _asString=False, **options):
         return &#34;&#34;
 
     _browse = app._browse
+    inNb = app.inNb
 
     api = app.api
     F = api.F
@@ -530,7 +538,7 @@ def table(app, tuples, _asString=False, **options):
 
     newOptions = display.consume(options, &#34;skipCols&#34;)
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
         if one:
             heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
             html.append(
@@ -557,7 +565,7 @@ def table(app, tuples, _asString=False, **options):
 
     if _browse or _asString:
         return html
-    dh(html)
+    dh(html, inNb=inNb)
 
 
 def plainTuple(
@@ -620,6 +628,7 @@ def plainTuple(
     otypeRank = N.otypeRank
     fOtypev = F.otype.v
     _browse = app._browse
+    inNb = app.inNb
 
     dContext = display.distill(options)
     condenseType = dContext.condenseType
@@ -731,7 +740,7 @@ def plainTuple(
     )
     html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
 
-    dh(html)
+    dh(html, inNb=inNb)
 
 
 def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
@@ -807,6 +816,7 @@ def show(app, tuples, _asString=False, **options):
         return &#34;&#34;
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     dContext = display.distill(options)
@@ -834,7 +844,7 @@ def show(app, tuples, _asString=False, **options):
 
     html = []
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item, inNb):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         thisResult = prettyTuple(
             app,
@@ -897,6 +907,7 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     if skipCols:
@@ -916,7 +927,7 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
     if not asString:
-        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;, inNb=inNb)
     if asString:
         html = []
     for t in sorted(containers, key=sortKey):
@@ -1023,7 +1034,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
@@ -1088,7 +1099,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L173-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1146,7 +1157,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L137-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1204,7 +1215,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L115-L134" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1222,10 +1233,11 @@ If no option is passes, all options will be shown.</dd>
     tf.advanced.settings: options allowed in `config.yaml`
     &#34;&#34;&#34;
 
+    inNb = app.inNb
     display = app.display
     display.setup()
     data = display.current
-    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, *options)</code></pre>
+    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, inNb, *options)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.export"><code class="name flex">
@@ -1329,7 +1341,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L272-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L279-L402" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1473,7 +1485,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L239-L269" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1516,10 +1528,12 @@ which specify a table layout with right aligned cell contents by default.</p>
 <p>If we are in the TF-browser, the generic CSS is already provided, we only
 need to respond with the app-specific CSS: we return it as string.
 The flag <code>app._browse</code> is used to steer us into this case.</p>
-<p>Otherwise, we collect the complete CSS code from Text-Fabric and the app,
+<p>Otherwise, if we are in a notebook,
+we collect the complete CSS code from Text-Fabric and the app,
 and we add a piece to override some of the notebook CSS for tables,
 which specify a table layout with right aligned cell contents by default.</p>
 <p>We then load the resulting CSS into the notebook.</p>
+<p>Otherwise, we do nothing.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>None | string</code></dt>
@@ -1529,7 +1543,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L193-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1538,11 +1552,14 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
     need to respond with the app-specific CSS: we return it as string.
     The flag `app._browse` is used to steer us into this case.
 
-    Otherwise, we collect the complete CSS code from Text-Fabric and the app,
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
     and we add a piece to override some of the notebook CSS for tables,
     which specify a table layout with right aligned cell contents by default.
 
     We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
 
     Returns
     -------
@@ -1557,6 +1574,9 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 
     if _browse:
         return appCss
+
+    if not app.inNb:
+        return
 
     css = getCss(app)
     dh(css)
@@ -1609,7 +1629,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L669-L700" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L678-L709" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1693,7 +1713,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L495-L666" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L503-L675" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
@@ -1755,6 +1775,7 @@ Depending on <em>asString</em> above.</p></div>
     otypeRank = N.otypeRank
     fOtypev = F.otype.v
     _browse = app._browse
+    inNb = app.inNb
 
     dContext = display.distill(options)
     condenseType = dContext.condenseType
@@ -1866,7 +1887,7 @@ Depending on <em>asString</em> above.</p></div>
     )
     html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
 
-    dh(html)</code></pre>
+    dh(html, inNb=inNb)</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.display.pretty"><code class="name flex">
@@ -1910,7 +1931,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L866-L902" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L877-L913" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1984,7 +2005,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L787-L863" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L797-L874" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2031,6 +2052,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     if skipCols:
@@ -2050,7 +2072,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
     if not asString:
-        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;)
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt; &lt;i&gt;{seq}&lt;/i&gt;&lt;/p&gt;&#34;, inNb=inNb)
     if asString:
         html = []
     for t in sorted(containers, key=sortKey):
@@ -2097,7 +2119,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L706-L784" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L715-L794" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2135,6 +2157,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
         return &#34;&#34;
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     dContext = display.distill(options)
@@ -2162,7 +2185,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     html = []
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item, inNb):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         thisResult = prettyTuple(
             app,
@@ -2209,7 +2232,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/display.py#L401-L492" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/display.py#L408-L500" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -2242,6 +2265,7 @@ HTML string.</dd>
         return &#34;&#34;
 
     _browse = app._browse
+    inNb = app.inNb
 
     api = app.api
     F = api.F
@@ -2275,7 +2299,7 @@ HTML string.</dd>
 
     newOptions = display.consume(options, &#34;skipCols&#34;)
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
         if one:
             heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
             html.append(
@@ -2302,7 +2326,7 @@ HTML string.</dd>
 
     if _browse or _asString:
         return html
-    dh(html)</code></pre>
+    dh(html, inNb=inNb)</code></pre>
 </details>
 </dd>
 </dl>

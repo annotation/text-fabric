@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/render.py#L1-L525" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/render.py#L1-L526" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -72,6 +72,7 @@ from ..core.helpers import htmlEsc, flattenToSet
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
 
+    inNb = app.inNb
     display = app.display
 
     if not display.check(&#34;pretty&#34; if isPretty else &#34;plain&#34;, options):
@@ -114,7 +115,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     if _browse or _asString:
         return result
-    dh(result)
+    dh(result, inNb=inNb)
 
 
 def _render(
@@ -584,11 +585,12 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/render.py#L28-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/render.py#L28-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
 
+    inNb = app.inNb
     display = app.display
 
     if not display.check(&#34;pretty&#34; if isPretty else &#34;plain&#34;, options):
@@ -631,7 +633,7 @@ def _getFeatures(info, n, nType):
 
     if _browse or _asString:
         return result
-    dh(result)</code></pre>
+    dh(result, inNb=inNb)</code></pre>
 </details>
 </dd>
 </dl>

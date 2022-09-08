@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L1-L566" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L1-L571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -39,7 +39,7 @@ from ..lib import readSets
 from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
-from .helpers import getText, dm, dh
+from .helpers import getText, runsInNotebook, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .volumes import volumesApi
 from .links import linksApi, outLink
@@ -129,6 +129,9 @@ class App:
         --------
         tf.advanced.settings.showContext
         &#34;&#34;&#34;
+
+        self.inNb = runsInNotebook()
+        inNb = self.inNb
 
         mergeDict(cfg, configOverrides)
 
@@ -227,15 +230,17 @@ Most of the Text-Fabric API has not been loaded.
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if silent in {VERBOSE, AUTO, TERSE}:
-                    dh(
-                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                        + outLink(
-                            &#34;N F E L T S C TF&#34;,
-                            APIREF,
-                            title=&#34;doc&#34;,
+                    if self.inNb:
+                        dh(
+                            &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                            + outLink(
+                                &#34;N F E L T S C TF&#34;,
+                                APIREF,
+                                title=&#34;doc&#34;,
+                                inNb=inNb,
+                            )
+                            + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
                         )
-                        + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
-                    )
 
             silentOff = self.silentOff
             silentOff()
@@ -654,7 +659,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L319-L566" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L324-L571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -953,7 +958,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L41-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L41-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1016,6 +1021,9 @@ loading features. Used to experiment with performance.</dd>
         --------
         tf.advanced.settings.showContext
         &#34;&#34;&#34;
+
+        self.inNb = runsInNotebook()
+        inNb = self.inNb
 
         mergeDict(cfg, configOverrides)
 
@@ -1114,15 +1122,17 @@ Most of the Text-Fabric API has not been loaded.
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if silent in {VERBOSE, AUTO, TERSE}:
-                    dh(
-                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                        + outLink(
-                            &#34;N F E L T S C TF&#34;,
-                            APIREF,
-                            title=&#34;doc&#34;,
+                    if self.inNb:
+                        dh(
+                            &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                            + outLink(
+                                &#34;N F E L T S C TF&#34;,
+                                APIREF,
+                                title=&#34;doc&#34;,
+                                inNb=inNb,
+                            )
+                            + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
                         )
-                        + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
-                    )
 
             silentOff = self.silentOff
             silentOff()
@@ -1267,7 +1277,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L223-L247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L228-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1305,7 +1315,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L249-L254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L254-L259" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1340,7 +1350,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b7c6e7e757970b5f41446299e688107c69ef04d1/tf/advanced/app.py#L256-L316" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/advanced/app.py#L261-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
