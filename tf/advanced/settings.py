@@ -1839,7 +1839,8 @@ def showContext(app, *keys):
     tf.advanced.settings: options allowed in `config.yaml`
     """
 
-    showDict(f"<b>{(app.appName)}</b> <i>app context</i>", app.specs, *keys)
+    inNb = app.inNb
+    showDict(f"<b>{(app.appName)}</b> <i>app context</i>", app.specs, inNb, *keys)
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):

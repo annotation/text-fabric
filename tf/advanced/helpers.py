@@ -19,6 +19,24 @@ SEQ_TYPES1 = {tuple, list}
 SEQ_TYPES2 = {tuple, list, set, frozenset}
 
 
+def runsInNotebook():
+    """Determines whether the program runs in an interactive shell.
+
+    From https://stackoverflow.com/questions/15411967/how-can-i-check-if-code-is-executed-in-the-ipython-notebook/24937408
+    """
+    try:
+        runcontext = get_ipython()
+        shell = runcontext.__class__.__name__
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
+
+
 def _getLtr(app, options):
     aContext = app.context
     direction = aContext.direction
@@ -32,38 +50,50 @@ def _getLtr(app, options):
     )
 
 
-def dm(md):
-    """Display markdown in a Jupyter notebook.
+def dm(md, inNb=True):
+    """Display markdown.
 
     Parameters
     ----------
     md: string
         Raw markdown string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted markdown is rendered in the output cell.
+        The formatted markdown is rendered in the output cell if `inNb`
+        else the raw markdown is printed to the output.
     """
 
-    display(Markdown(unexpanduser(md)))
+    if inNb:
+        display(Markdown(unexpanduser(md)))
+    else:
+        console(md)
 
 
-def dh(html):
-    """Display HTML in a Jupyter notebook.
+def dh(html, inNb=True):
+    """Display HTML.
 
     Parameters
     ----------
     html: string
         Raw html string.
+    inNb: boolean, optional True
+        Whether the program runs in a notebook
 
     Returns
     -------
     None
-        The formatted HTML is rendered in the output cell.
+        The formatted HTML is rendered in the output cell if `inNb`
+        else the raw HTML is printed to the output.
     """
 
-    display(HTML(unexpanduser(html)))
+    if inNb:
+        display(HTML(unexpanduser(html)))
+    else:
+        console(html)
 
 
 # MODULE REFERENCES
@@ -147,7 +177,7 @@ def hasData(backend, local, org, repo, version, relative):
     return False
 
 
-def tupleEnum(tuples, start, end, limit, item):
+def tupleEnum(tuples, start, end, limit, item, inNb):
     if start is None:
         start = 1
     i = -1
@@ -173,7 +203,8 @@ def tupleEnum(tuples, start, end, limit, item):
         if rest:
             dh(
                 f"<b>{rest} more {item}s skipped</b> because we show a maximum of"
-                f" {limit} {item}s at a time"
+                f" {limit} {item}s at a time",
+                inNb=inNb,
             )
 
 
@@ -587,11 +618,13 @@ def eData(x, level):
     return eRest(x, level)
 
 
-def showDict(title, data, *keys):
+def showDict(title, data, inNb, *keys):
     """Shows selected keys of a dictionary in a pretty way.
 
     Parameters
     ----------
+    inNb: boolean
+        Whether we run in a notebook.
     keys: iterable of string
         For each key passed to this function, the information for that key
         will be displayed. If no keys are passed, all keys will be displayed.
@@ -615,4 +648,4 @@ def showDict(title, data, *keys):
             f"<summary>{i + 1}. {k}</summary>\n\n{eData(v, 0)}\n</details>\n"
         )
     md.append("</details>\n")
-    dm("".join(md))
+    dm("".join(md), inNb=inNb)

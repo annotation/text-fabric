@@ -28,6 +28,7 @@ from ..core.helpers import htmlEsc, flattenToSet
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     """Renders a node, in plain or pretty mode."""
 
+    inNb = app.inNb
     display = app.display
 
     if not display.check("pretty" if isPretty else "plain", options):
@@ -70,7 +71,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
     if _browse or _asString:
         return result
-    dh(result)
+    dh(result, inNb=inNb)
 
 
 def _render(

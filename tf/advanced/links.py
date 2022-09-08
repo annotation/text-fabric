@@ -16,7 +16,7 @@ from ..parameters import (
     GH,
     GL,
 )
-from ..core.helpers import htmlEsc, unexpanduser as ux
+from ..core.helpers import console, htmlEsc, unexpanduser as ux
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
@@ -48,6 +48,7 @@ def linksApi(app, silent=SILENT_D):
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent="deep"`.
     """
+    inNb = app.inNb
     silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
@@ -86,7 +87,7 @@ def linksApi(app, silent=SILENT_D):
             dataName += f" volume {volumeInfo}"
 
     dataLink = (
-        outLink(dataName, docUrl, f"provenance of {corpus}")
+        outLink(dataName, docUrl, f"provenance of {corpus}", inNb=inNb)
         if isCompatible and repo is not None and docUrl
         else "/".join(
             (x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version)
@@ -96,7 +97,9 @@ def linksApi(app, silent=SILENT_D):
     )
     charLink = (
         (
-            outLink("Character table", charUrl.format(tfDoc=URL_TFDOC), charText)
+            outLink(
+                "Character table", charUrl.format(tfDoc=URL_TFDOC), charText, inNb=inNb
+            )
             if isCompatible
             else UNSUPPORTED
         )
@@ -109,6 +112,7 @@ def linksApi(app, silent=SILENT_D):
                 "Feature docs",
                 featureBase.replace("<feature>", featurePage).format(version=version),
                 f"{repo.upper()} feature documentation",
+                inNb=inNb,
             )
             if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
@@ -118,26 +122,30 @@ def linksApi(app, silent=SILENT_D):
     )
     extraUrl = f"{backendRep(backend, 'url')}/{org}/{repo}/blob/master/{APP_APP}"
     appLink = (
-        outLink(f"{org}/{repo}/app {apiVersionRep}", extraUrl, f"{appName} TF-app")
+        outLink(
+            f"{org}/{repo}/app {apiVersionRep}",
+            extraUrl,
+            f"{appName} TF-app",
+            inNb=inNb,
+        )
         if isCompatible and repo is not None
         else "no app configured"
     )
     tfLink = outLink(
-        f"Text-Fabric API {app.TF.version}",
-        APIREF,
-        "text-fabric-api",
+        f"Text-Fabric API {app.TF.version}", APIREF, "text-fabric-api", inNb=inNb
     )
     tfsLink = (
         outLink(
             "Search Reference",
             SEARCHREF,
             "Search Templates Introduction and Reference",
+            inNb=inNb,
         )
         if isCompatible
         else UNSUPPORTED
     )
     tutLink = (
-        outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook")
+        outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook", inNb=inNb)
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
@@ -171,6 +179,7 @@ def header(app, allMeta=False):
         all that metadata except the description keys.
     """
 
+    inNb = app.inNb
     appLink = app.appLink
     dataLink = app.dataLink
     charLink = app.charLink
@@ -194,13 +203,24 @@ def header(app, allMeta=False):
             '<img class="hdlogo" src="/server/static/icon.png"/>',
         )
     else:
-        tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
-        dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
-        dh(
-            f"<b>Text-Fabric:</b> {tfLine}<br>"
-            f"<b>Data:</b> {dataLine}<br>"
-            "<b>Features:</b><br>" + _featuresPerModule(app, allMeta=allMeta)
-        )
+        featureInfo = _featuresPerModule(app, allMeta=allMeta)
+        if inNb:
+            tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
+            dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
+            dh(
+                f"<b>Text-Fabric:</b> {tfLine}<br>"
+                f"<b>Data:</b> {dataLine}<br>"
+                f"<b>Features:</b><br>{featureInfo}"
+            )
+        else:
+            tfLine = "\n\t".join(x for x in (tfLink, appLink, tfsLink) if x)
+            dataLine = "\n\t".join(x for x in (dataLink, charLink, featureLink) if x)
+            console(
+                f"Text-Fabric:\n\t{tfLine}\n"
+                f"Data:\n\t{dataLine}\n"
+                f"Features:\n{featureInfo}\n",
+                newline=False,
+            )
 
 
 def webLink(
@@ -250,6 +270,7 @@ def webLink(
     F = api.F
     Fs = api.Fs
 
+    inNb = app.inNb
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
@@ -333,12 +354,13 @@ def webLink(
             href,
             clsName=clsName,
             passage=passageText,
+            inNb=inNb,
             **atts,
         )
     result = href if urlOnly else fullResult
     if _asString or urlOnly:
         return result
-    dh(result)
+    dh(result, inNb=inNb)
 
 
 def showProvenance(app, jobName="program code", author="program author"):
@@ -360,6 +382,7 @@ def showProvenance(app, jobName="program code", author="program author"):
         This item will be displayed together with the rest of the provenance.
     """
 
+    inNb = app.inNb
     aContext = app.context
     backend = app.backend
     org = aContext.org
@@ -375,7 +398,7 @@ def showProvenance(app, jobName="program code", author="program author"):
         else ()
     )
     form = dict(jobName=jobName, author=author)
-    dh(wrapProvenance(form, provenance, setNames)[0])
+    dh(wrapProvenance(form, provenance, setNames)[0], inNb=inNb)
 
 
 PATH_RE1 = re.compile(
@@ -440,7 +463,9 @@ def _parseFeaturePath(path, backend):
     return (True, theBackend, org, repo, relative)
 
 
-def outLink(text, href, title=None, passage=None, clsName=None, target="_blank"):
+def outLink(
+    text, href, title=None, passage=None, clsName=None, target="_blank", inNb=True
+):
     """Produce a formatted link.
 
     Parameters
@@ -458,6 +483,9 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
     passage: string, optional `None`
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
+    inNb: boolean, optional `True`
+        Whether we are in a notebook. If not, a plain text representation
+        of the link will be made.
     """
 
     titleAtt = "" if title is None else f' title="{title}"'
@@ -465,8 +493,12 @@ def outLink(text, href, title=None, passage=None, clsName=None, target="_blank")
     targetAtt = f' target="{target}"' if target else ""
     passageAtt = f' sec="{passage}"' if passage else ""
     return (
-        f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>'
-        f"{text}</a>"
+        (
+            f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>'
+            f"{text}</a>"
+        )
+        if inNb
+        else f"{text} => {href}"
     )
 
 
@@ -485,6 +517,7 @@ def _featuresPerModule(app, allMeta=False):
 
     api = app.api
     TF = app.TF
+    inNb = app.inNb
     backend = app.backend
 
     aContext = app.context
@@ -582,7 +615,8 @@ def _featuresPerModule(app, allMeta=False):
         key=lambda mId: (1, mId) if type(mId) is str else (0, mId),
     )
 
-    html = ""
+    output = ""
+
     for mId in moduleOrder:
         catFeats = featureCat[mId]
         if not catFeats:
@@ -600,11 +634,15 @@ def _featuresPerModule(app, allMeta=False):
                     f"{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
                 )
             )
-        html += dedent(
-            f"""
+        output += (
+            dedent(
+                f"""
             <details><summary><b>{corpus}</b></summary>
                 <div class="fcorpus">
         """
+            )
+            if inNb
+            else f"{corpus}\n"
         )
 
         seen = set()
@@ -628,69 +666,88 @@ def _featuresPerModule(app, allMeta=False):
             description = meta.get("description", "")
 
             edgeRep = "edge" if isEdge else ""
-            html += dedent(
-                f"""
-                    <div class="frow">
-                        <div class="fnamecat {edgeRep}">
-                """
-            )
-            html += (
-                outLink(
-                    featureRep,
-                    docUrl.replace("<feature>", featureRep),
-                    title=featurePath,
+            if inNb:
+                output += dedent(
+                    f"""
+                        <div class="frow">
+                            <div class="fnamecat {edgeRep}">
+                    """
                 )
-                if docUrl
-                else f'<span title="{featurePath}">{featureRep}</span>'
+            output += (
+                (
+                    outLink(
+                        featureRep,
+                        docUrl.replace("<feature>", featureRep),
+                        title=featurePath,
+                    )
+                    if docUrl
+                    else f'<span title="{featurePath}">{featureRep}</span>'
+                )
+                if inNb
+                else f"\t{featureRep:<20} "
             )
-            html += dedent(
-                f"""
-                        </div>
-                        <div class="fmono">{typeRep}</div>
-                """
-            )
-            html += dedent(
-                f"""
-                        <details>
-                            <summary>{description}</summary>
-                            <div class="fmeta">
-                """
-                if allMeta
-                else f"""
-                        <span> {description}</span>
-                """
-            )
+            if inNb:
+                output += dedent(
+                    f"""
+                            </div>
+                            <div class="fmono">{typeRep}</div>
+                    """
+                )
+            if inNb:
+                output += dedent(
+                    f"""
+                            <details>
+                                <summary>{description}</summary>
+                                <div class="fmeta">
+                    """
+                    if allMeta
+                    else f"""
+                            <span> {description}</span>
+                    """
+                )
+            else:
+                output += f"{description}\n"
             if allMeta:
                 for (k, v) in sorted(meta.items()):
                     if k not in {"valueType", "description"}:
-                        k = htmlEsc(k)
-                        v = htmlEsc(v)
-                        html += dedent(
-                            f"""
-                                <div class="fmetarow">
-                                    <div class="fmetakey">{k}:</div>
-                                    <div>{v}</div>
-                                </div>
+                        if inNb:
+                            k = htmlEsc(k)
+                            v = htmlEsc(v)
+                            output += dedent(
+                                f"""
+                                    <div class="fmetarow">
+                                        <div class="fmetakey">{k}:</div>
+                                        <div>{v}</div>
+                                    </div>
+                            """
+                            )
+                        else:
+                            output += f"\t\t{k}: {v}\n"
+                if inNb:
+                    output += dedent(
                         """
-                        )
-                html += dedent(
+                                    </div>
+                                </details>
+                        """
+                    )
+                else:
+                    output += "\n"
+            if inNb:
+                output += dedent(
                     """
-                                </div>
-                            </details>
+                        </div>
                     """
                 )
-            html += dedent(
+        if inNb:
+            output += dedent(
                 """
                     </div>
+                </details>
                 """
             )
-        html += dedent(
-            """
-                </div>
-            </details>
-            """
-        )
-    return html
+        else:
+            output += "\n"
+    return output
 
 
 def provenanceLink(backend, org, repo, version, commit, local, release, relative):

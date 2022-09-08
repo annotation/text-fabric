@@ -407,7 +407,7 @@ from ..parameters import (
 )
 from ..core.helpers import console, htmlEsc, expanduser, initTree
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
-from .helpers import dh
+from .helpers import dh, runsInNotebook
 from .zipdata import zipData
 
 
@@ -825,6 +825,7 @@ class Checkout:
         withPaths,
         silent,
         _browse,
+        inNb,
         version=None,
         label="data",
     ):
@@ -835,6 +836,7 @@ class Checkout:
         self.conn = None
 
         self._browse = _browse
+        self.inNb = inNb
         self.label = label
         self.org = org
         self.repo = repo
@@ -1022,10 +1024,14 @@ class Checkout:
     def error(self, msg, newline=True):
         console(msg, error=True, newline=newline)
 
-    def display(self, msg):
+    def display(self, msg, msgPlain):
+        inNb = self.inNb
         silent = self.silent
         if silent in {VERBOSE, AUTO, TERSE}:
-            dh(msg)
+            if inNb:
+                dh(msg)
+            else:
+                console(msgPlain)
 
     def possibleError(self, msg, showErrors, again=False, indent="\t", newline=False):
         if showErrors:
@@ -1132,7 +1138,9 @@ class Checkout:
                             self.warning(f"The offline {label} may not be the latest")
                             self.localBase = self.baseLocal
                         else:
-                            self.error(f"The requested {label} is not available offline")
+                            self.error(
+                                f"The requested {label} is not available offline"
+                            )
                     else:
                         self.warning(f"The requested {label} is not available offline")
                         self.error("No online connection")
@@ -1173,7 +1181,8 @@ class Checkout:
             labelEsc = htmlEsc(label)
             stateEsc = htmlEsc(state)
             offEsc = htmlEsc(offString)
-            locEsc = htmlEsc(f"{self.localBase}/{self.localDir}{self.versionRep}")
+            loc = f"{self.localBase}/{self.localDir}{self.versionRep}"
+            locEsc = htmlEsc(loc)
             if _browse:
                 self.info(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
@@ -1181,8 +1190,11 @@ class Checkout:
                 self.info(f"\t{offString} ({state})")
             else:
                 self.display(
-                    f'<b title="{stateEsc}">{labelEsc}:</b>'
-                    f' <span title="{offEsc}">{locEsc}</span>'
+                    (
+                        f'<b title="{stateEsc}">{labelEsc}:</b>'
+                        f' <span title="{offEsc}">{locEsc}</span>'
+                    ),
+                    f"{label}: {loc}",
                 )
 
     def download(self):
@@ -1747,6 +1759,7 @@ def checkoutRepo(
 
     """
 
+    inNb = runsInNotebook()
     silent = silentConvert(silent)
 
     if source is None:
@@ -1768,6 +1781,7 @@ def checkoutRepo(
             withPaths,
             silent,
             _browse,
+            inNb,
             version=version,
             label=label,
         )

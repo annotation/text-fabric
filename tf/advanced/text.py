@@ -4,7 +4,7 @@ from unicodedata import normalize
 
 from ..core.text import DEFAULT_FORMAT
 from ..core.helpers import htmlEsc
-from .helpers import dh, dm
+from .helpers import dh, dm, console
 
 
 def textApi(app):
@@ -37,15 +37,18 @@ def textApi(app):
 
 
 def showFormats(app):
+    inNb = app.inNb
     api = app.api
     T = api.T
     tFormats = T._tformats
     xFormats = T._xformats
 
-    md = dedent("""\
+    md = dedent(
+        """\
     format | level | template
     --- | --- | ---
-    """)
+    """
+    )
 
     for (fmt, level) in T.formats.items():
         tpl = (
@@ -57,7 +60,7 @@ def showFormats(app):
         )
         md += f"""`{fmt}` | **{level}** | {tpl}\n"""
 
-    dm(md)
+    dm(md, inNb=inNb)
 
 
 def specialCharacters(app, fmt=None, _browse=False):
@@ -81,6 +84,9 @@ def specialCharacters(app, fmt=None, _browse=False):
     html
         A piece of HTML.
     """
+
+    inNb = app.inNb
+
     if fmt is None or fmt == "":
         fmt = DEFAULT_FORMAT
 
@@ -108,22 +114,37 @@ def specialCharacters(app, fmt=None, _browse=False):
         key=lambda c: normalize("NFD", c.upper()),
     )
 
-    html = []
+    output = []
     extraCls = '" class="ccline"' if _browse else ""
-    html.append(dedent(
-        f"""\
+    output.append(
+        dedent(
+            f"""\
         <p><b>Special characters in <code>{fmt}</code></b></p>
         <p{extraCls}>
-        """))
+        """
+        )
+        if inNb
+        else f"Special characters in {fmt}"
+    )
+    charReps = []
     for c in specials:
         cc = ord(c)
-        html.append(
-            f"""<code class="ccoff {extraCls}" """
-            f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</code>"""
+        charReps.append(
+            (
+                f"""<code class="ccoff {extraCls}" """
+                f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</code>"""
+            ) if inNb
+            else f"{c}"
         )
-    html.append("""</p>""")
-    html = "\n".join(html)
+    output.append(("\n" if inNb else " ").join(charReps))
+    if inNb:
+        output.append("""</p>""")
+
+    output = "\n".join(output)
 
     if _browse:
-        return html
-    return dh(html)
+        return output
+    if inNb:
+        dh(output)
+    else:
+        console(output)

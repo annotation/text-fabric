@@ -128,10 +128,11 @@ def displayShow(app, *options):
     tf.advanced.settings: options allowed in `config.yaml`
     """
 
+    inNb = app.inNb
     display = app.display
     display.setup()
     data = display.current
-    showDict("<b>current display options</b>", data, *options)
+    showDict("<b>current display options</b>", data, inNb, *options)
 
 
 def displaySetup(app, **options):
@@ -197,11 +198,14 @@ def loadCss(app):
     need to respond with the app-specific CSS: we return it as string.
     The flag `app._browse` is used to steer us into this case.
 
-    Otherwise, we collect the complete CSS code from Text-Fabric and the app,
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
     and we add a piece to override some of the notebook CSS for tables,
     which specify a table layout with right aligned cell contents by default.
 
     We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
 
     Returns
     -------
@@ -216,6 +220,9 @@ def loadCss(app):
 
     if _browse:
         return appCss
+
+    if not app.inNb:
+        return
 
     css = getCss(app)
     dh(css)
@@ -429,6 +436,7 @@ def table(app, tuples, _asString=False, **options):
         return ""
 
     _browse = app._browse
+    inNb = app.inNb
 
     api = app.api
     F = api.F
@@ -462,7 +470,7 @@ def table(app, tuples, _asString=False, **options):
 
     newOptions = display.consume(options, "skipCols")
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
         if one:
             heads = '</th><th class="tf">'.join(fOtypev(n) for n in tup)
             html.append(
@@ -489,7 +497,7 @@ def table(app, tuples, _asString=False, **options):
 
     if _browse or _asString:
         return html
-    dh(html)
+    dh(html, inNb=inNb)
 
 
 def plainTuple(
@@ -552,6 +560,7 @@ def plainTuple(
     otypeRank = N.otypeRank
     fOtypev = F.otype.v
     _browse = app._browse
+    inNb = app.inNb
 
     dContext = display.distill(options)
     condenseType = dContext.condenseType
@@ -663,7 +672,7 @@ def plainTuple(
     )
     html = "<table>" + head + "".join(html) + "</table>"
 
-    dh(html)
+    dh(html, inNb=inNb)
 
 
 def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
@@ -739,6 +748,7 @@ def show(app, tuples, _asString=False, **options):
         return ""
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     dContext = display.distill(options)
@@ -766,7 +776,7 @@ def show(app, tuples, _asString=False, **options):
 
     html = []
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item):
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item, inNb):
         item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
         thisResult = prettyTuple(
             app,
@@ -829,6 +839,7 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     skipCols = dContext.skipCols
 
     _browse = app._browse
+    inNb = app.inNb
     asString = _browse or _asString
 
     if skipCols:
@@ -848,7 +859,7 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
 
     if not asString:
-        dh(f"<p><b>{item}</b> <i>{seq}</i></p>")
+        dh(f"<p><b>{item}</b> <i>{seq}</i></p>", inNb=inNb)
     if asString:
         html = []
     for t in sorted(containers, key=sortKey):

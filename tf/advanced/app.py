@@ -9,7 +9,7 @@ from ..lib import readSets
 from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
-from .helpers import getText, dm, dh
+from .helpers import getText, runsInNotebook, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .volumes import volumesApi
 from .links import linksApi, outLink
@@ -99,6 +99,9 @@ class App:
         --------
         tf.advanced.settings.showContext
         """
+
+        self.inNb = runsInNotebook()
+        inNb = self.inNb
 
         mergeDict(cfg, configOverrides)
 
@@ -197,15 +200,17 @@ Most of the Text-Fabric API has not been loaded.
                 # docs = self.api.makeAvailableIn(hoist)
                 self.api.makeAvailableIn(hoist)
                 if silent in {VERBOSE, AUTO, TERSE}:
-                    dh(
-                        "<div><b>Text-Fabric API:</b> names "
-                        + outLink(
-                            "N F E L T S C TF",
-                            APIREF,
-                            title="doc",
+                    if self.inNb:
+                        dh(
+                            "<div><b>Text-Fabric API:</b> names "
+                            + outLink(
+                                "N F E L T S C TF",
+                                APIREF,
+                                title="doc",
+                                inNb=inNb,
+                            )
+                            + " directly usable</div><hr>"
                         )
-                        + " directly usable</div><hr>"
-                    )
 
             silentOff = self.silentOff
             silentOff()
