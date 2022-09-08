@@ -10,7 +10,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
-## 10.2.2-3
+## 10.2.2-4
 
 2022-09-08
 
@@ -20,6 +20,8 @@ If not, the display methods of the Jupyter notebook are suppressed,
 and many outputs are done in plain text instead of HTML.
 
 Fixes in volume support.
+
+Small fixes in version mappings.
 
 ## 10.2.1
 

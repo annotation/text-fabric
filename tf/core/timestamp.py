@@ -41,7 +41,7 @@ def silentConvert(arg):
         return VERBOSE
     if arg is True:
         return DEEP
-    if arg in {VERBOSE, AUTO, TERSE, DEEP}:
+    if type(arg) is str and arg in {VERBOSE, AUTO, TERSE, DEEP}:
         return arg
     return not not arg
 

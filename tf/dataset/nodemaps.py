@@ -135,7 +135,6 @@ V.makeVersionMapping()
 
 import sys
 import collections
-import time
 from itertools import chain
 from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
 
@@ -150,90 +149,6 @@ STAT_LABELS = collections.OrderedDict(
 )
 
 TIMESTAMP = None
-
-
-def _duration():
-    global TIMESTAMP
-    if TIMESTAMP is None:
-        TIMESTAMP = time.time()
-
-    interval = time.time() - TIMESTAMP
-    if interval < 10:
-        return "{: 2.2f}s".format(interval)
-    interval = int(round(interval))
-    if interval < 60:
-        return "{:>2d}s".format(interval)
-    if interval < 3600:
-        return "{:>2d}m {:>02d}s".format(interval // 60, interval % 60)
-    return "{:>2d}h {:>02d}m {:>02d}s".format(
-        interval // 3600, (interval % 3600) // 60, interval % 60
-    )
-
-
-def caption(
-    level, heading, silent=SILENT_D, good=None, newLine=True, continuation=False
-):
-    silent = silentConvert(silent)
-    prefix = "" if good is None else "SUCCES " if good else "FAILURE "
-    duration = "" if continuation else "{:>11} ".format(_duration())
-    reportHeading = "{}{}{}".format(duration, prefix, heading)
-
-    emit = silent == VERBOSE or silent == AUTO and level in {2, 3, 4} or silent == TERSE and level in {2, 3}
-
-    if level == 0:  # non-heading message
-        decoration = "" if continuation else "| "
-        formattedString = """{}{}""".format(decoration, reportHeading)
-    elif level == 1:  # pipeline level
-        formattedString = """
-##{}##
-# {} #
-# {} #
-# {} #
-##{}##
-""".format(
-            "#" * 90,
-            " " * 90,
-            "{:<90}".format(reportHeading),
-            " " * 90,
-            "#" * 90,
-        )
-    elif level == 2:  # repo level
-        formattedString = """
-**{}**
-* {} *
-* {} *
-* {} *
-**{}**
-""".format(
-            "*" * 90,
-            " " * 90,
-            "{:<90}".format(reportHeading),
-            " " * 90,
-            "*" * 90,
-        )
-    elif level == 3:  # task level
-        formattedString = """
---{}--
-- {} -
---{}--
-""".format(
-            "-" * 90,
-            "{:<90}".format(reportHeading),
-            "-" * 90,
-        )
-    elif level == 4:  # caption within task execution
-        formattedString = """..{}..
-. {} .
-..{}..""".format(
-            "." * 90,
-            "{:<90}".format(reportHeading),
-            "." * 90,
-        )
-    if emit:
-        if newLine:
-            print(formattedString)
-        else:
-            sys.stdout.write(formattedString)
 
 
 class Versions:
@@ -281,8 +196,10 @@ class Versions:
         self.edge = slotMap
         self.good = True
         for v in (va, vb):
-            if va not in api:
-                print(f"No TF-API for version {va} in the `api` parameter.")
+            if v not in api:
+                sys.stderr.write(
+                    f"No TF-API for version {va} in the `api` parameter.\n"
+                )
                 self.good = False
 
         if not self.good:
@@ -301,6 +218,9 @@ class Versions:
         self.Fsb = api[vb].Fs
         self.TFa = api[va].TF
         self.TFb = api[vb].TF
+        self.info = self.TFb.info
+        self.warning = self.TFb.warning
+        self.error = self.TFb.error
 
         self.diagnosis = {}
 
@@ -308,7 +228,7 @@ class Versions:
         edge = self.edge
 
         if edge is None:
-            print("Cannot make node mapping if no slot mapping is given")
+            self.error("Cannot make node mapping if no slot mapping is given")
             return False
 
         va = self.va
@@ -323,12 +243,10 @@ class Versions:
         Eosb = Eb.oslots.s
         otypesa = Fa.otype.s
 
-        caption(2, "Mapping {} nodes {} ==> {}".format(nodeType, va, vb))
+        self.caption(2, f"Mapping {nodeType} nodes {va} ==> {vb}")
 
         diag = {}
-        caption(
-            0, "Extending slot mapping {} ==> {} for {} nodes".format(va, vb, nodeType)
-        )
+        self.caption(0, f"Extending slot mapping {va} ==> {va} for {nodeType} nodes")
         for n in otypesa(nodeType):
             slots = Eosa(n)
             mappedSlots = set(
@@ -384,14 +302,14 @@ class Versions:
                             diag[n] = "e"
 
         self.diagnosis[nodeType] = diag
-        caption(0, "\tDone")
+        self.caption(0, "\tDone")
 
     def exploreNodeMapping(self, nodeType):
         va = self.va
         vb = self.vb
         diagnosis = self.diagnosis
 
-        caption(4, "Statistics for {} ==> {} ({})".format(va, vb, nodeType))
+        self.caption(4, "Statistics for {} ==> {} ({})".format(va, vb, nodeType))
 
         diag = diagnosis[nodeType]
         total = len(diag)
@@ -403,14 +321,16 @@ class Versions:
         for (n, dia) in diag.items():
             reasons[dia] += 1
 
-        caption(0, "\t{:<30} : {:6.2f}% {:>7}x".format("TOTAL", 100, total))
+        self.caption(-1, "\t{:<30} : {:6.2f}% {:>7}x".format("TOTAL", 100, total))
         for stat in STAT_LABELS:
             statLabel = STAT_LABELS[stat]
             amount = reasons[stat]
             if amount == 0:
                 continue
             perc = 100 * amount / total
-            caption(0, "\t{:<30} : {:6.2f}% {:>7}x".format(statLabel, perc, amount))
+            self.caption(
+                -1, "\t{:<30} : {:6.2f}% {:>7}x".format(statLabel, perc, amount)
+            )
 
     def getDiagnosis(self, node=None, label=None):
         """Show the diagnosis of a mapping.
@@ -488,7 +408,7 @@ class Versions:
         """
 
         for (acro, desc) in STAT_LABELS.items():
-            print(f"{acro} = {desc}")
+            self.info(f"{acro} = {desc}", tm=False)
 
     def omapName(self):
         va = self.va
@@ -503,7 +423,7 @@ class Versions:
         silent = self.silent
 
         fName = self.omapName()
-        caption(4, "Write edge as TF feature {}".format(fName))
+        self.caption(4, "Write edge as TF feature {}".format(fName))
 
         edgeFeatures = {fName: edge}
         metaData = {
@@ -719,3 +639,68 @@ class Versions:
             silent=silent,
         )
         TFb.warning("Done")
+
+    def caption(self, level, heading, good=None, newLine=True, continuation=False):
+        silent = self.silent
+        prefix = "" if good is None else "SUCCES " if good else "FAILURE "
+        reportHeading = "{}{}".format(prefix, heading)
+
+        emit = (
+            silent == VERBOSE
+            or silent == AUTO
+            and level in {-1, 2, 3, 4}
+            or silent == TERSE
+            and level in {2, 3}
+        )
+
+        if level in {-1, 0}:  # non-heading message
+            decoration = "" if continuation else "| "
+            formattedString = """{}{}""".format(decoration, reportHeading)
+        elif level == 1:  # pipeline level
+            formattedString = """
+##{}##
+# {} #
+# {} #
+# {} #
+##{}##
+    """.format(
+                "#" * 90,
+                " " * 90,
+                "{:<90}".format(reportHeading),
+                " " * 90,
+                "#" * 90,
+            )
+        elif level == 2:  # repo level
+            formattedString = """
+    **{}**
+    * {} *
+    * {} *
+    * {} *
+    **{}**
+    """.format(
+                "*" * 90,
+                " " * 90,
+                "{:<90}".format(reportHeading),
+                " " * 90,
+                "*" * 90,
+            )
+        elif level == 3:  # task level
+            formattedString = """
+    --{}--
+    - {} -
+    --{}--
+    """.format(
+                "-" * 90,
+                "{:<90}".format(reportHeading),
+                "-" * 90,
+            )
+        elif level == 4:  # caption within task execution
+            formattedString = """..{}..
+    . {} .
+    ..{}..""".format(
+                "." * 90,
+                "{:<90}".format(reportHeading),
+                "." * 90,
+            )
+        if emit:
+            self.info(formattedString, nl=newLine, tm=not continuation, force=True)
