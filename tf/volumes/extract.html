@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/volumes/extract.py#L1-L728" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/volumes/extract.py#L1-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -114,7 +114,7 @@ def getVolumes(volumesLocation):
                     if triggered:
                         volumes.append(vol)
 
-    return volumes
+    return sorted(volumes)
 
 
 def extract(
@@ -323,8 +323,9 @@ def extract(
         good = True
 
         removable = set()
-        for name in volumeData:
+        for (name, v) in volumeData.items():
             loc = f&#34;{volumesLocation}/{name}&#34;
+            v[&#34;location&#34;] = loc
             if not dirEmpty(loc):
                 if overwrite is None:
                     info(
@@ -578,7 +579,7 @@ def extract(
             metaData = {}
             v[&#34;metaData&#34;] = metaData
             headStr = &#34;-&#34;.join(str(head) for head in v[&#34;heads&#34;])
-            volumeMeta = name if headStr == name else f&#34;{name}:{headStr}&#34;
+            volumeMeta = name if headStr == str(name) else f&#34;{name}:{headStr}&#34;
 
             for (feat, meta) in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
@@ -701,7 +702,7 @@ def extract(
             nodeFeatures = v[&#34;nodeFeatures&#34;]
             edgeFeatures = v[&#34;edgeFeatures&#34;]
             loc = f&#34;{volumesLocation}/{name}&#34;
-            v[&#34;loc&#34;] = loc
+            v[&#34;location&#34;] = loc
             TF = FabricCore(locations=loc, silent=DEEP)
             if not TF.save(
                 metaData=metaData,
@@ -721,26 +722,29 @@ def extract(
         if not checkVolumes():
             return None if show else False
         if checkOnly:
-            if not volumeData:
-                result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            if volumeData:
                 if show:
-                    for (name, v) in result.items():
-                        location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
-                        print(f&#34;{name:&lt;20}&#34;)
+                    for (name, v) in volumeData.items():
+                        location = ux(v[&#39;location&#39;])
+                        print(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
-                    return result
+                    return volumeData
+            else:
+                if show:
+                    print(&#34;No volumes&#34;)
+                else:
+                    return {}
         if not getTopLevels():
             return None if show else False
         if not checkVolumes2():
             return None if show else False
         if checkOnly:
-            result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
             if show:
-                for (name, v) in result.items():
-                    location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
-                    print(f&#34;{name:&lt;20}&#34;)
+                for (name, v) in volumeData.items():
+                    location = ux(v[&#39;location&#39;])
+                    print(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
-                return result
+                return volumeData
         if not distributeNodes():
             return None if show else False
         if not remapFeatures():
@@ -750,12 +754,12 @@ def extract(
         info(&#34;All done&#34;)
         result = {
             name: dict(location=f&#34;{volumesLocation}/{name}&#34;, new=name in volumeData)
-            for name in givenVolumes
+            for name in sorted(givenVolumes | set(volumeData))
         }
         if show:
             for (name, v) in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
-                location = ux(f&#34;{v[&#39;location&#39;]}/{name}&#34;)
+                location = ux(v[&#39;location&#39;])
                 print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
         else:
             return result
@@ -934,7 +938,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/volumes/extract.py#L81-L728" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/volumes/extract.py#L81-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1142,8 +1146,9 @@ Top-level section 13 will not be extracted into a volume.</p>
         good = True
 
         removable = set()
-        for name in volumeData:
+        for (name, v) in volumeData.items():
             loc = f&#34;{volumesLocation}/{name}&#34;
+            v[&#34;location&#34;] = loc
             if not dirEmpty(loc):
                 if overwrite is None:
                     info(
@@ -1397,7 +1402,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             metaData = {}
             v[&#34;metaData&#34;] = metaData
             headStr = &#34;-&#34;.join(str(head) for head in v[&#34;heads&#34;])
-            volumeMeta = name if headStr == name else f&#34;{name}:{headStr}&#34;
+            volumeMeta = name if headStr == str(name) else f&#34;{name}:{headStr}&#34;
 
             for (feat, meta) in metaDataTotal.items():
                 metaData[feat] = {k: m for (k, m) in meta.items()}
@@ -1520,7 +1525,7 @@ Top-level section 13 will not be extracted into a volume.</p>
             nodeFeatures = v[&#34;nodeFeatures&#34;]
             edgeFeatures = v[&#34;edgeFeatures&#34;]
             loc = f&#34;{volumesLocation}/{name}&#34;
-            v[&#34;loc&#34;] = loc
+            v[&#34;location&#34;] = loc
             TF = FabricCore(locations=loc, silent=DEEP)
             if not TF.save(
                 metaData=metaData,
@@ -1540,26 +1545,29 @@ Top-level section 13 will not be extracted into a volume.</p>
         if not checkVolumes():
             return None if show else False
         if checkOnly:
-            if not volumeData:
-                result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
+            if volumeData:
                 if show:
-                    for (name, v) in result.items():
-                        location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
-                        print(f&#34;{name:&lt;20}&#34;)
+                    for (name, v) in volumeData.items():
+                        location = ux(v[&#39;location&#39;])
+                        print(f&#34;{name:&lt;20} @ {location}&#34;)
                 else:
-                    return result
+                    return volumeData
+            else:
+                if show:
+                    print(&#34;No volumes&#34;)
+                else:
+                    return {}
         if not getTopLevels():
             return None if show else False
         if not checkVolumes2():
             return None if show else False
         if checkOnly:
-            result = {name: v[&#34;heads&#34;] for (name, v) in volumeData.items()}
             if show:
-                for (name, v) in result.items():
-                    location = ux(f&#34;{v[&#39;name&#39;]}/{name}&#34;)
-                    print(f&#34;{name:&lt;20}&#34;)
+                for (name, v) in volumeData.items():
+                    location = ux(v[&#39;location&#39;])
+                    print(f&#34;{name:&lt;20} @ {location}&#34;)
             else:
-                return result
+                return volumeData
         if not distributeNodes():
             return None if show else False
         if not remapFeatures():
@@ -1569,12 +1577,12 @@ Top-level section 13 will not be extracted into a volume.</p>
         info(&#34;All done&#34;)
         result = {
             name: dict(location=f&#34;{volumesLocation}/{name}&#34;, new=name in volumeData)
-            for name in givenVolumes
+            for name in sorted(givenVolumes | set(volumeData))
         }
         if show:
             for (name, v) in result.items():
                 new = &#34; (new)&#34; if v[&#34;new&#34;] else &#34; &#34; * 6
-                location = ux(f&#34;{v[&#39;location&#39;]}/{name}&#34;)
+                location = ux(v[&#39;location&#39;])
                 print(f&#34;{name:&lt;20}{new} @ {location}&#34;)
         else:
             return result
@@ -1607,7 +1615,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ea7f4c45accbad81e8b4829effb5024f0ce7ed2f/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c8fb775a633402287542bf0e4c8795b3fb7c7fca/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.
@@ -1648,7 +1656,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
                     if triggered:
                         volumes.append(vol)
 
-    return volumes</code></pre>
+    return sorted(volumes)</code></pre>
 </details>
 </dd>
 </dl>
