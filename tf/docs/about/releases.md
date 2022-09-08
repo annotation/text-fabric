@@ -10,7 +10,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
-## 10.2.2
+## 10.2.2-3
 
 2022-09-08
 
@@ -18,6 +18,8 @@ Changes in the output of Text-Fabric to the console.
 It is detected whether it runs in interactive mode (e.g. Jupyter notebook) or not.
 If not, the display methods of the Jupyter notebook are suppressed, 
 and many outputs are done in plain text instead of HTML.
+
+Fixes in volume support.
 
 ## 10.2.1
 

@@ -68,7 +68,7 @@ def collect(
     silent=SILENT_D,
     overwrite=False,
 ):
-    """Creates a work out of a number of volumes.
+    """Creates a collection out of a number of volumes.
 
     The volumes are individual TF data sets, the work is a new TF data set.
 
