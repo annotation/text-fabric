@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/tables.py#L1-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/tables.py#L1-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
 from .helpers import RESULT
@@ -81,7 +81,7 @@ def compose(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
@@ -114,7 +114,7 @@ def compose(
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 item=item,
                 position=position,
                 opened=i in opened,
@@ -162,7 +162,7 @@ def composeT(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 extraFeatures=(features, {}),
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
@@ -194,7 +194,7 @@ def composeT(
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 condensed=False,
                 extraFeatures=(features, {}),
                 opened=i in opened,
@@ -266,7 +266,7 @@ def composeP(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
                 extraFeatures=(features, {}),
@@ -325,7 +325,7 @@ def _plainTextSFinal(
         prettyTuple(
             app,
             (sNode,),
-            secStr,
+            sec=secStr,
             condensed=False,
             condenseType=finalSecType,
             **display.consume(options, &#34;condensed&#34;, &#34;condenseType&#34;),
@@ -378,7 +378,7 @@ it.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app, tuples, features, position, opened, getx=None, **options,
@@ -428,7 +428,7 @@ it.</p></div>
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 extraFeatures=(features, {}),
                 **display.consume(options, &#34;extraFeatures&#34;),
             )
@@ -461,7 +461,7 @@ it.</p></div>
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 item=item,
                 position=position,
                 opened=i in opened,
@@ -495,7 +495,7 @@ section node in question. See <em>browseContentPretty</em> in <code><a title="tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/tables.py#L182-L267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/tables.py#L182-L267" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -554,7 +554,7 @@ section node in question. See <em>browseContentPretty</em> in <code><a title="tf
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
                 extraFeatures=(features, {}),
@@ -596,7 +596,7 @@ in the TF-browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app, features, tuples, opened, getx=None, **options,
@@ -630,7 +630,7 @@ in the TF-browser.</p></div>
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 extraFeatures=(features, {}),
                 **display.consume(options, &#34;condensed&#34;, &#34;extraFeatures&#34;),
@@ -662,7 +662,7 @@ in the TF-browser.</p></div>
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 condensed=False,
                 extraFeatures=(features, {}),
                 opened=i in opened,
@@ -753,7 +753,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="DANS"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

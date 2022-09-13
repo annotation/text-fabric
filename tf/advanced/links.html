@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L1-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L1-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -80,6 +80,7 @@ def linksApi(app, silent=SILENT_D):
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
     inNb = app.inNb
+    _browse = app._browse
     silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
@@ -118,7 +119,7 @@ def linksApi(app, silent=SILENT_D):
             dataName += f&#34; volume {volumeInfo}&#34;
 
     dataLink = (
-        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, inNb=inNb)
+        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
         else &#34;/&#34;.join(
             (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
@@ -129,7 +130,10 @@ def linksApi(app, silent=SILENT_D):
     charLink = (
         (
             outLink(
-                &#34;Character table&#34;, charUrl.format(tfDoc=URL_TFDOC), charText, inNb=inNb
+                &#34;Character table&#34;,
+                charUrl.format(tfDoc=URL_TFDOC),
+                charText,
+                asHtml=inNb or _browse,
             )
             if isCompatible
             else UNSUPPORTED
@@ -143,7 +147,7 @@ def linksApi(app, silent=SILENT_D):
                 &#34;Feature docs&#34;,
                 featureBase.replace(&#34;&lt;feature&gt;&#34;, featurePage).format(version=version),
                 f&#34;{repo.upper()} feature documentation&#34;,
-                inNb=inNb,
+                asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
@@ -157,26 +161,34 @@ def linksApi(app, silent=SILENT_D):
             f&#34;{org}/{repo}/app {apiVersionRep}&#34;,
             extraUrl,
             f&#34;{appName} TF-app&#34;,
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
         else &#34;no app configured&#34;
     )
     tfLink = outLink(
-        f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;, inNb=inNb
+        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        APIREF,
+        &#34;text-fabric-api&#34;,
+        asHtml=inNb or _browse,
     )
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
             SEARCHREF,
             &#34;Search Templates Introduction and Reference&#34;,
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible
         else UNSUPPORTED
     )
     tutLink = (
-        outLink(&#34;App tutorial&#34;, tutUrl, &#34;App tutorial in Jupyter Notebook&#34;, inNb=inNb)
+        outLink(
+            &#34;App tutorial&#34;,
+            tutUrl,
+            &#34;App tutorial in Jupyter Notebook&#34;,
+            asHtml=inNb or _browse,
+        )
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
@@ -302,6 +314,7 @@ def webLink(
     Fs = api.Fs
 
     inNb = app.inNb
+    _browse = app._browse
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
@@ -385,7 +398,7 @@ def webLink(
             href,
             clsName=clsName,
             passage=passageText,
-            inNb=inNb,
+            asHtml=inNb or _browse,
             **atts,
         )
     result = href if urlOnly else fullResult
@@ -495,7 +508,7 @@ def _parseFeaturePath(path, backend):
 
 
 def outLink(
-    text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, inNb=True
+    text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
 ):
     &#34;&#34;&#34;Produce a formatted link.
 
@@ -514,8 +527,8 @@ def outLink(
     passage: string, optional `None`
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    inNb: boolean, optional `True`
-        Whether we are in a notebook. If not, a plain text representation
+    asHtml: boolean, optional `True`
+        Whether we are in a notebook or in the browser. If not, a plain text representation
         of the link will be made.
     &#34;&#34;&#34;
 
@@ -528,7 +541,7 @@ def outLink(
             f&#39;&lt;a{clsAtt}{targetAtt} href=&#34;{htmlEsc(href)}&#34;{titleAtt}{passageAtt}&gt;&#39;
             f&#34;{text}&lt;/a&gt;&#34;
         )
-        if inNb
+        if asHtml
         else f&#34;{text} =&gt; {href}&#34;
     )
 
@@ -710,6 +723,7 @@ def _featuresPerModule(app, allMeta=False):
                         featureRep,
                         docUrl.replace(&#34;&lt;feature&gt;&#34;, featureRep),
                         title=featurePath,
+                        asHtml=True,
                     )
                     if docUrl
                     else f&#39;&lt;span title=&#34;{featurePath}&#34;&gt;{featureRep}&lt;/span&gt;&#39;
@@ -866,7 +880,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L166-L223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L178-L235" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -952,7 +966,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L29-L163" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -977,6 +991,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
     &#34;&#34;&#34;
     inNb = app.inNb
+    _browse = app._browse
     silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
@@ -1015,7 +1030,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
             dataName += f&#34; volume {volumeInfo}&#34;
 
     dataLink = (
-        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, inNb=inNb)
+        outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
         else &#34;/&#34;.join(
             (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
@@ -1026,7 +1041,10 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     charLink = (
         (
             outLink(
-                &#34;Character table&#34;, charUrl.format(tfDoc=URL_TFDOC), charText, inNb=inNb
+                &#34;Character table&#34;,
+                charUrl.format(tfDoc=URL_TFDOC),
+                charText,
+                asHtml=inNb or _browse,
             )
             if isCompatible
             else UNSUPPORTED
@@ -1040,7 +1058,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
                 &#34;Feature docs&#34;,
                 featureBase.replace(&#34;&lt;feature&gt;&#34;, featurePage).format(version=version),
                 f&#34;{repo.upper()} feature documentation&#34;,
-                inNb=inNb,
+                asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
@@ -1054,26 +1072,34 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
             f&#34;{org}/{repo}/app {apiVersionRep}&#34;,
             extraUrl,
             f&#34;{appName} TF-app&#34;,
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
         else &#34;no app configured&#34;
     )
     tfLink = outLink(
-        f&#34;Text-Fabric API {app.TF.version}&#34;, APIREF, &#34;text-fabric-api&#34;, inNb=inNb
+        f&#34;Text-Fabric API {app.TF.version}&#34;,
+        APIREF,
+        &#34;text-fabric-api&#34;,
+        asHtml=inNb or _browse,
     )
     tfsLink = (
         outLink(
             &#34;Search Reference&#34;,
             SEARCHREF,
             &#34;Search Templates Introduction and Reference&#34;,
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible
         else UNSUPPORTED
     )
     tutLink = (
-        outLink(&#34;App tutorial&#34;, tutUrl, &#34;App tutorial in Jupyter Notebook&#34;, inNb=inNb)
+        outLink(
+            &#34;App tutorial&#34;,
+            tutUrl,
+            &#34;App tutorial in Jupyter Notebook&#34;,
+            asHtml=inNb or _browse,
+        )
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
@@ -1092,7 +1118,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 </details>
 </dd>
 <dt id="tf.advanced.links.outLink"><code class="name flex">
-<span>def <span class="ident">outLink</span></span>(<span>text, href, title=None, passage=None, clsName=None, target='_blank', inNb=True)</span>
+<span>def <span class="ident">outLink</span></span>(<span>text, href, title=None, passage=None, clsName=None, target='_blank', asHtml=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Produce a formatted link.</p>
@@ -1111,17 +1137,17 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <dt><strong><code>passage</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>A passage indicator, which will end up in the <code>sec</code> attribute of the
 link element. Used by the TF-browser.</dd>
-<dt><strong><code>inNb</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>Whether we are in a notebook. If not, a plain text representation
+<dt><strong><code>asHtml</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether we are in a notebook or in the browser. If not, a plain text representation
 of the link will be made.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L466-L502" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L479-L515" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
-    text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, inNb=True
+    text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
 ):
     &#34;&#34;&#34;Produce a formatted link.
 
@@ -1140,8 +1166,8 @@ of the link will be made.</dd>
     passage: string, optional `None`
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    inNb: boolean, optional `True`
-        Whether we are in a notebook. If not, a plain text representation
+    asHtml: boolean, optional `True`
+        Whether we are in a notebook or in the browser. If not, a plain text representation
         of the link will be made.
     &#34;&#34;&#34;
 
@@ -1154,7 +1180,7 @@ of the link will be made.</dd>
             f&#39;&lt;a{clsAtt}{targetAtt} href=&#34;{htmlEsc(href)}&#34;{titleAtt}{passageAtt}&gt;&#39;
             f&#34;{text}&lt;/a&gt;&#34;
         )
-        if inNb
+        if asHtml
         else f&#34;{text} =&gt; {href}&#34;
     )</code></pre>
 </details>
@@ -1188,7 +1214,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L753-L809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L767-L823" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -1270,7 +1296,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L366-L401" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L379-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1353,7 +1379,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/632036cd933fd0bf4525a19451341bbf1532d03b/tf/advanced/links.py#L226-L363" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/advanced/links.py#L238-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1403,6 +1429,7 @@ other attributes.</dd>
     Fs = api.Fs
 
     inNb = app.inNb
+    _browse = app._browse
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
@@ -1486,7 +1513,7 @@ other attributes.</dd>
             href,
             clsName=clsName,
             passage=passageText,
-            inNb=inNb,
+            asHtml=inNb or _browse,
             **atts,
         )
     result = href if urlOnly else fullResult
@@ -1577,7 +1604,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://www.dans.knaw.nl"><img alt="DANS" src="../../tf/images/DANS-logo.png" width="200" alt="DANS"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="DANS"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
