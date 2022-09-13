@@ -146,3 +146,8 @@ functions they need *now*, based on technology that appeals *now*.
 
 Hence, my implementation of Text-Fabric search has been done from the ground up,
 and uses a strategy that is very different from Ulrik's MQL search engine.
+
+I continued working on Text-Fabric while I was at DANS, till 2022.
+
+Now, at [KNAW/Humanities Cluster](https://huc.knaw.nl), I apply it
+to new contexts: it can work with GitLab as well.

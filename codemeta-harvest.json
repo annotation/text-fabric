@@ -221,7 +221,7 @@
         }
     ],
     "funding": [
-            {
+        {
             "@type": "Grant",
             "name": "CLARIAH-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
             "funder": {
@@ -233,7 +233,7 @@
         {
             "@type": "Projects at DANS 2014-2022",
             "name": "Development carried out as part of various projects at DANS",
-            "funder" {
+            "funder": {
                 "@type": "Organization",
                 "name": "Data Archiving and Networked Services",
                 "url": "https://www.dans.knaw.nl"
@@ -242,7 +242,7 @@
         {
             "@type": "Projects at KNAW/Humanities Cluster 2022",
             "name": "Development carried out as part of various projects at HuC",
-            "funder" {
+            "funder": {
                 "@type": "Organization",
                 "name": "KNAW/Humanities Cluster",
                 "url": "https://huc.knaw.nl"

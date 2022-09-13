@@ -423,6 +423,7 @@ tf/server/static/favicon.ico
 tf/server/static/fontawesome.css
 tf/server/static/fonts.css
 tf/server/static/highlight.css
+tf/server/static/huc.png
 tf/server/static/icon.png
 tf/server/static/index.css
 tf/server/static/jquery.js

@@ -484,7 +484,7 @@ def table(app, tuples, _asString=False, **options):
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 item=item,
                 position=None,
                 opened=False,
@@ -501,7 +501,14 @@ def table(app, tuples, _asString=False, **options):
 
 
 def plainTuple(
-    app, tup, seq, item=RESULT, position=None, opened=False, _asString=False, **options
+    app,
+    tup,
+    seq=None,
+    item=RESULT,
+    position=None,
+    opened=False,
+    _asString=False,
+    **options,
 ):
     """Display the plain text of a tuple of nodes.
 
@@ -513,10 +520,11 @@ def plainTuple(
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer
+    seq: integer, optional `None`
         an arbitrary number which will be displayed in the first cell.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
     position: integer, optional `None`
@@ -597,11 +605,11 @@ def plainTuple(
 
     if _browse:
         prettyRep = (
-            prettyTuple(app, tup, seq, withPassage=False, **newOptions)
+            prettyTuple(app, tup, seq=seq, withPassage=False, **newOptions)
             if opened
             else ""
         )
-        current = "focus" if seq == position else ""
+        current = "focus" if seq is not None and seq == position else ""
         attOpen = "open " if opened else ""
         tupSeq = ",".join(str(n) for n in tup)
         if withPassage is True:
@@ -626,12 +634,16 @@ def plainTuple(
             + "</span>"
             for (i, n) in enumerate(tup)
         )
+        seqNo = -1 if seq is None else seq
+        seqRep = (
+            "" if seq is None else f'<a href="#" class="sq" tup="{tupSeq}">{seq}</a>'
+        )
         html = (
-            f'<details class="pretty dtrow {current}" seq="{seq}" {attOpen}>'
+            f'<details class="pretty dtrow {current}" seq="{seqNo}" {attOpen}>'
             f"<summary>"
             f'<a href="#" class="pq fa fa-solar-panel fa-xs"'
             f' title="show in context" {passageAtt}></a>'
-            f'<a href="#" class="sq" tup="{tupSeq}">{seq}</a>'
+            f"{seqRep}"
             f" {passageRef} {plainRep}"
             f"</summary>"
             f'<div class="pretty">{prettyRep}</div>'
@@ -639,7 +651,7 @@ def plainTuple(
         )
         return html
 
-    html = [str(seq)]
+    html = [] if seq is None else [str(seq)]
     if withPassage is True:
         html.append(passageRef)
     for (i, n) in enumerate(tup):
@@ -781,7 +793,7 @@ def show(app, tuples, _asString=False, **options):
         thisResult = prettyTuple(
             app,
             tup,
-            i,
+            seq=i,
             item=item,
             skipCols=set(),
             _asString=asString,
@@ -794,7 +806,7 @@ def show(app, tuples, _asString=False, **options):
         return "".join(html)
 
 
-def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
+def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     """Displays the material that corresponds to a tuple of nodes in a graphical way.
 
     The member nodes of the tuple will be collected into containers, which
@@ -805,10 +817,11 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer
+    seq: integer, optional `None`
         an arbitrary number which will be displayed in the heading.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
     item: string, optional `result`
         A name for the tuple: it could be a result, or a chapter, or a line.
     _asString: boolean, optional `False`
@@ -857,9 +870,10 @@ def prettyTuple(app, tup, seq, _asString=False, item=RESULT, **options):
 
     containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
     highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+    seqRep = "" if seq is None else f" <i>{seq}</i>"
 
     if not asString:
-        dh(f"<p><b>{item}</b> <i>{seq}</i></p>", inNb=inNb)
+        dh(f"<p><b>{item}</b>{seqRep}", inNb=inNb)
     if asString:
         html = []
     for t in sorted(containers, key=sortKey):

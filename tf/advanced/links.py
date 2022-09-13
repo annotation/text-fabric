@@ -49,6 +49,7 @@ def linksApi(app, silent=SILENT_D):
         but when we do an `A.reuse()` we force `silent="deep"`.
     """
     inNb = app.inNb
+    _browse = app._browse
     silent = silentConvert(silent)
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
@@ -87,7 +88,7 @@ def linksApi(app, silent=SILENT_D):
             dataName += f" volume {volumeInfo}"
 
     dataLink = (
-        outLink(dataName, docUrl, f"provenance of {corpus}", inNb=inNb)
+        outLink(dataName, docUrl, f"provenance of {corpus}", asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
         else "/".join(
             (x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version)
@@ -98,7 +99,10 @@ def linksApi(app, silent=SILENT_D):
     charLink = (
         (
             outLink(
-                "Character table", charUrl.format(tfDoc=URL_TFDOC), charText, inNb=inNb
+                "Character table",
+                charUrl.format(tfDoc=URL_TFDOC),
+                charText,
+                asHtml=inNb or _browse,
             )
             if isCompatible
             else UNSUPPORTED
@@ -112,7 +116,7 @@ def linksApi(app, silent=SILENT_D):
                 "Feature docs",
                 featureBase.replace("<feature>", featurePage).format(version=version),
                 f"{repo.upper()} feature documentation",
-                inNb=inNb,
+                asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase
             else UNSUPPORTED
@@ -126,26 +130,34 @@ def linksApi(app, silent=SILENT_D):
             f"{org}/{repo}/app {apiVersionRep}",
             extraUrl,
             f"{appName} TF-app",
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
         else "no app configured"
     )
     tfLink = outLink(
-        f"Text-Fabric API {app.TF.version}", APIREF, "text-fabric-api", inNb=inNb
+        f"Text-Fabric API {app.TF.version}",
+        APIREF,
+        "text-fabric-api",
+        asHtml=inNb or _browse,
     )
     tfsLink = (
         outLink(
             "Search Reference",
             SEARCHREF,
             "Search Templates Introduction and Reference",
-            inNb=inNb,
+            asHtml=inNb or _browse,
         )
         if isCompatible
         else UNSUPPORTED
     )
     tutLink = (
-        outLink("App tutorial", tutUrl, "App tutorial in Jupyter Notebook", inNb=inNb)
+        outLink(
+            "App tutorial",
+            tutUrl,
+            "App tutorial in Jupyter Notebook",
+            asHtml=inNb or _browse,
+        )
         if isCompatible and repo is not None
         else UNSUPPORTED
     )
@@ -271,6 +283,7 @@ def webLink(
     Fs = api.Fs
 
     inNb = app.inNb
+    _browse = app._browse
     aContext = app.context
     webBase = aContext.webBase
     webLang = aContext.webLang
@@ -354,7 +367,7 @@ def webLink(
             href,
             clsName=clsName,
             passage=passageText,
-            inNb=inNb,
+            asHtml=inNb or _browse,
             **atts,
         )
     result = href if urlOnly else fullResult
@@ -464,7 +477,7 @@ def _parseFeaturePath(path, backend):
 
 
 def outLink(
-    text, href, title=None, passage=None, clsName=None, target="_blank", inNb=True
+    text, href, title=None, passage=None, clsName=None, target="_blank", asHtml=True
 ):
     """Produce a formatted link.
 
@@ -483,8 +496,8 @@ def outLink(
     passage: string, optional `None`
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    inNb: boolean, optional `True`
-        Whether we are in a notebook. If not, a plain text representation
+    asHtml: boolean, optional `True`
+        Whether we are in a notebook or in the browser. If not, a plain text representation
         of the link will be made.
     """
 
@@ -497,7 +510,7 @@ def outLink(
             f'<a{clsAtt}{targetAtt} href="{htmlEsc(href)}"{titleAtt}{passageAtt}>'
             f"{text}</a>"
         )
-        if inNb
+        if asHtml
         else f"{text} => {href}"
     )
 
@@ -679,6 +692,7 @@ def _featuresPerModule(app, allMeta=False):
                         featureRep,
                         docUrl.replace("<feature>", featureRep),
                         title=featurePath,
+                        asHtml=True,
                     )
                     if docUrl
                     else f'<span title="{featurePath}">{featureRep}</span>'

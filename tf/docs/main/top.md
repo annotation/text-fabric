@@ -85,7 +85,9 @@ In particular thanks to
 * Stephen Ku
 * Wido van Peursen
 
-<img src="images/DANS-logo.png" width="200">
+<img src="images/huc.png" width="200"> 2022-
+
+<img src="images/DANS-logo.png" width="200"> 2014-2022
 
 ## More resources
 

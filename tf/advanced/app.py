@@ -101,7 +101,6 @@ class App:
         """
 
         self.inNb = runsInNotebook()
-        inNb = self.inNb
 
         mergeDict(cfg, configOverrides)
 
@@ -207,7 +206,7 @@ Most of the Text-Fabric API has not been loaded.
                                 "N F E L T S C TF",
                                 APIREF,
                                 title="doc",
-                                inNb=inNb,
+                                asHtml=True,
                             )
                             + " directly usable</div><hr>"
                         )

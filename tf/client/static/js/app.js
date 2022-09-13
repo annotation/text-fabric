@@ -9,7 +9,7 @@
  * Author:
  *
  * Dirk Roorda (https://pure.knaw.nl/portal/en/persons/dirk-roorda)
- * Organisation: DANS (https://dans.knaw.nl/en)
+ * Organisation: KNAW/HuC (https://huc.knaw.nl)
  * License: MIT (https://mit-license.org)
  *
  * Acknowledgements:

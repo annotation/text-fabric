@@ -51,7 +51,7 @@ def compose(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 extraFeatures=(features, {}),
                 **display.consume(options, "extraFeatures"),
             )
@@ -84,7 +84,7 @@ def compose(
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 item=item,
                 position=position,
                 opened=i in opened,
@@ -132,7 +132,7 @@ def composeT(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 extraFeatures=(features, {}),
                 **display.consume(options, "condensed", "extraFeatures"),
@@ -164,7 +164,7 @@ def composeT(
             plainTuple(
                 app,
                 tup,
-                i,
+                seq=i,
                 condensed=False,
                 extraFeatures=(features, {}),
                 opened=i in opened,
@@ -236,7 +236,7 @@ def composeP(
             prettyTuple(
                 app,
                 tup,
-                getx,
+                seq=getx,
                 condensed=False,
                 condenseType=finalSecType,
                 extraFeatures=(features, {}),
@@ -295,7 +295,7 @@ def _plainTextSFinal(
         prettyTuple(
             app,
             (sNode,),
-            secStr,
+            sec=secStr,
             condensed=False,
             condenseType=finalSecType,
             **display.consume(options, "condensed", "condenseType"),

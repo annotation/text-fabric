@@ -103,7 +103,7 @@ A.table(results, ...)
 :   `tf.advanced.display.table`
 
 ```
-A.plainTuple(tup, ith, ...)
+A.plainTuple(tup, ...)
 ```
 :   plain rendering of tuple of node
 :   `tf.advanced.display.plainTuple`
@@ -121,7 +121,7 @@ A.show(results, ...)
 :   `tf.advanced.display.show`
 
 ```
-A.prettyTuple(tup, ith, ...)
+A.prettyTuple(tup, ...)
 ```
 :   pretty rendering of tuple of node
 :   `tf.advanced.display.prettyTuple`

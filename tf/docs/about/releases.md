@@ -10,6 +10,18 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
+## 10.2.5
+
+2022-09-13
+
+* fix of a bug in the TF-browser caused by the previous change: the headings of section-3 levels
+  came out wrong
+
+* the second parameter of `plainTuple()` and `prettyTuple()` is now optional.
+  It passes the sequence number of the tuple to display.
+  This is useful if the tuple is a member of a bigger list, but not if the tuple
+  stands on its own.
+
 ## 10.2.2-4
 
 2022-09-08
