@@ -76,7 +76,7 @@ post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/core/nodes.py#L1-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L1-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Node organization
@@ -271,13 +271,7 @@ class Nodes:
             elif r1 &gt; r2:
                 return 1
 
-            return (
-                -1
-                if n1 &lt; n2
-                else 1
-                if n1 &gt; n2
-                else 0
-            )
+            return -1 if n1 &lt; n2 else 1 if n1 &gt; n2 else 0
 
         return (
             functools.cmp_to_key(beforePosition),
@@ -287,8 +281,15 @@ class Nodes:
     def sortNodes(self, nodeSet):
         &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
 
+        Parameters
+        ----------
         nodeSet: iterable
             An iterable of nodes to be sorted.
+
+        Returns
+        -------
+        list
+            The sorted nodes as list
 
         See Also
         --------
@@ -300,7 +301,7 @@ class Nodes:
         Crank = api.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
-    def walk(self, events=False):
+    def walk(self, nodes=None, events=False):
         &#34;&#34;&#34;Generates all nodes in the *canonical order*.
         (`tf.core.nodes`)
 
@@ -333,6 +334,9 @@ class Nodes:
 
         Parameters
         ----------
+        nodes: iterable of int, optional `None`
+            If `None`, walks through all nodes of the corpus in canonical order.
+            Otherwise, walks through the given nodes in canonical order.
         events: boolean, optional `False`
             If True, wraps the generated nodes in event tuples as described above.
 
@@ -343,25 +347,27 @@ class Nodes:
         &#34;&#34;&#34;
 
         api = self.api
+        C = api.C
+
+        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
 
         if events:
-            C = api.C
             endSlots = C.boundary.data[1]
 
             otype = api.F.otype
             Fotypev = otype.v
             slotType = otype.slotType
 
-            for n in C.order.data:
+            for n in walkNodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield(m, True)
+                        yield (m, True)
                 else:
-                    yield(n, False)
+                    yield (n, False)
 
         else:
-            for n in api.C.order.data:
+            for n in walkNodes:
                 yield n</code></pre>
 </details>
 </section>
@@ -383,7 +389,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/core/nodes.py#L62-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L62-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -517,13 +523,7 @@ class Nodes:
             elif r1 &gt; r2:
                 return 1
 
-            return (
-                -1
-                if n1 &lt; n2
-                else 1
-                if n1 &gt; n2
-                else 0
-            )
+            return -1 if n1 &lt; n2 else 1 if n1 &gt; n2 else 0
 
         return (
             functools.cmp_to_key(beforePosition),
@@ -533,8 +533,15 @@ class Nodes:
     def sortNodes(self, nodeSet):
         &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
 
+        Parameters
+        ----------
         nodeSet: iterable
             An iterable of nodes to be sorted.
+
+        Returns
+        -------
+        list
+            The sorted nodes as list
 
         See Also
         --------
@@ -546,7 +553,7 @@ class Nodes:
         Crank = api.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
-    def walk(self, events=False):
+    def walk(self, nodes=None, events=False):
         &#34;&#34;&#34;Generates all nodes in the *canonical order*.
         (`tf.core.nodes`)
 
@@ -579,6 +586,9 @@ class Nodes:
 
         Parameters
         ----------
+        nodes: iterable of int, optional `None`
+            If `None`, walks through all nodes of the corpus in canonical order.
+            Otherwise, walks through the given nodes in canonical order.
         events: boolean, optional `False`
             If True, wraps the generated nodes in event tuples as described above.
 
@@ -589,25 +599,27 @@ class Nodes:
         &#34;&#34;&#34;
 
         api = self.api
+        C = api.C
+
+        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
 
         if events:
-            C = api.C
             endSlots = C.boundary.data[1]
 
             otype = api.F.otype
             Fotypev = otype.v
             slotType = otype.slotType
 
-            for n in C.order.data:
+            for n in walkNodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield(m, True)
+                        yield (m, True)
                 else:
-                    yield(n, False)
+                    yield (n, False)
 
         else:
-            for n in api.C.order.data:
+            for n in walkNodes:
                 yield n</code></pre>
 </details>
 <h3>Instance variables</h3>
@@ -683,7 +695,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/core/nodes.py#L135-L205" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSortKeyChunk(self):
     api = self.api
@@ -744,13 +756,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
         elif r1 &gt; r2:
             return 1
 
-        return (
-            -1
-            if n1 &lt; n2
-            else 1
-            if n1 &gt; n2
-            else 0
-        )
+        return -1 if n1 &lt; n2 else 1 if n1 &gt; n2 else 0
 
     return (
         functools.cmp_to_key(beforePosition),
@@ -763,8 +769,16 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Delivers a tuple of nodes sorted by the <em>canonical ordering</em>.</p>
-<p>nodeSet: iterable
-An iterable of nodes to be sorted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>nodeSet</code></strong> :&ensp;<code>iterable</code></dt>
+<dd>An iterable of nodes to be sorted.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>The sorted nodes as list</dd>
+</dl>
 <h2 id="see-also">See Also</h2>
 <dl>
 <dt><code><a title="tf.core.nodes" href="#tf.core.nodes">tf.core.nodes</a></code></dt>
@@ -773,13 +787,20 @@ An iterable of nodes to be sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/core/nodes.py#L207-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
     &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
 
+    Parameters
+    ----------
     nodeSet: iterable
         An iterable of nodes to be sorted.
+
+    Returns
+    -------
+    list
+        The sorted nodes as list
 
     See Also
     --------
@@ -793,7 +814,7 @@ An iterable of nodes to be sorted.</p>
 </details>
 </dd>
 <dt id="tf.core.nodes.Nodes.walk"><code class="name flex">
-<span>def <span class="ident">walk</span></span>(<span>self, events=False)</span>
+<span>def <span class="ident">walk</span></span>(<span>self, nodes=None, events=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generates all nodes in the <em>canonical order</em>.
@@ -821,6 +842,9 @@ to walk through subsets of nodes.</p>
 </div>
 <h2 id="parameters">Parameters</h2>
 <dl>
+<dt><strong><code>nodes</code></strong> :&ensp;<code>iterable</code> of <code>int</code>, optional <code>None</code></dt>
+<dd>If <code>None</code>, walks through all nodes of the corpus in canonical order.
+Otherwise, walks through the given nodes in canonical order.</dd>
 <dt><strong><code>events</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, wraps the generated nodes in event tuples as described above.</dd>
 </dl>
@@ -832,9 +856,9 @@ to walk through subsets of nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/91c371cf80ef9bcc90ff4fa0bdb37d6504b551a7/tf/core/nodes.py#L223-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L224-L291" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def walk(self, events=False):
+<pre><code class="python">def walk(self, nodes=None, events=False):
     &#34;&#34;&#34;Generates all nodes in the *canonical order*.
     (`tf.core.nodes`)
 
@@ -867,6 +891,9 @@ to walk through subsets of nodes.</p>
 
     Parameters
     ----------
+    nodes: iterable of int, optional `None`
+        If `None`, walks through all nodes of the corpus in canonical order.
+        Otherwise, walks through the given nodes in canonical order.
     events: boolean, optional `False`
         If True, wraps the generated nodes in event tuples as described above.
 
@@ -877,25 +904,27 @@ to walk through subsets of nodes.</p>
     &#34;&#34;&#34;
 
     api = self.api
+    C = api.C
+
+    walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
 
     if events:
-        C = api.C
         endSlots = C.boundary.data[1]
 
         otype = api.F.otype
         Fotypev = otype.v
         slotType = otype.slotType
 
-        for n in C.order.data:
+        for n in walkNodes:
             if Fotypev(n) == slotType:
                 yield (n, None)
                 for m in reversed(endSlots[n - 1]):
-                    yield(m, True)
+                    yield (m, True)
             else:
-                yield(n, False)
+                yield (n, False)
 
     else:
-        for n in api.C.order.data:
+        for n in walkNodes:
             yield n</code></pre>
 </details>
 </dd>
