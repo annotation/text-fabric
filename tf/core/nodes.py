@@ -191,13 +191,7 @@ class Nodes:
             elif r1 > r2:
                 return 1
 
-            return (
-                -1
-                if n1 < n2
-                else 1
-                if n1 > n2
-                else 0
-            )
+            return -1 if n1 < n2 else 1 if n1 > n2 else 0
 
         return (
             functools.cmp_to_key(beforePosition),
@@ -207,8 +201,15 @@ class Nodes:
     def sortNodes(self, nodeSet):
         """Delivers a tuple of nodes sorted by the *canonical ordering*.
 
+        Parameters
+        ----------
         nodeSet: iterable
             An iterable of nodes to be sorted.
+
+        Returns
+        -------
+        list
+            The sorted nodes as list
 
         See Also
         --------
@@ -220,7 +221,7 @@ class Nodes:
         Crank = api.C.rank.data
         return sorted(nodeSet, key=lambda n: Crank[n - 1])
 
-    def walk(self, events=False):
+    def walk(self, nodes=None, events=False):
         """Generates all nodes in the *canonical order*.
         (`tf.core.nodes`)
 
@@ -253,6 +254,9 @@ class Nodes:
 
         Parameters
         ----------
+        nodes: iterable of int, optional `None`
+            If `None`, walks through all nodes of the corpus in canonical order.
+            Otherwise, walks through the given nodes in canonical order.
         events: boolean, optional `False`
             If True, wraps the generated nodes in event tuples as described above.
 
@@ -263,23 +267,25 @@ class Nodes:
         """
 
         api = self.api
+        C = api.C
+
+        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
 
         if events:
-            C = api.C
             endSlots = C.boundary.data[1]
 
             otype = api.F.otype
             Fotypev = otype.v
             slotType = otype.slotType
 
-            for n in C.order.data:
+            for n in walkNodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield(m, True)
+                        yield (m, True)
                 else:
-                    yield(n, False)
+                    yield (n, False)
 
         else:
-            for n in api.C.order.data:
+            for n in walkNodes:
                 yield n

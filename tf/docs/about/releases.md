@@ -10,6 +10,14 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
+## 10.2.6
+
+2022-09-15
+
+The function `tf.core.nodes.Nodes.walk()` also accepts a parameter `nodes`,
+so that you can not only walk through the total nodes set, but also
+through arbitrary nodesets. Always in canonical order.
+
 ## 10.2.5
 
 2022-09-13
