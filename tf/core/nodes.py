@@ -269,7 +269,11 @@ class Nodes:
         api = self.api
         C = api.C
 
-        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
+        if nodes is None:
+            walkNodes = C.order.data
+        else:
+            walkNodes = self.sortNodes(nodes)
+            walkNodeSet = set(nodes)
 
         if events:
             endSlots = C.boundary.data[1]
@@ -282,7 +286,8 @@ class Nodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield (m, True)
+                        if nodes is None or m in walkNodeSet:
+                            yield (m, True)
                 else:
                     yield (n, False)
 

@@ -172,6 +172,27 @@ def htmlEsc(val):
     )
 
 
+def xmlEsc(val):
+    """Escape certain HTML characters by XML entities.
+
+    To prevent them to be interpreted as XML
+    in cases where you need them literally.
+    """
+
+    return (
+        ""
+        if val is None
+        else (
+            str(val)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("'", "&apos;")
+            .replace('"', "&quot;")
+        )
+    )
+
+
 def mdhtmlEsc(val):
     """Escape certain Markdown characters by HTML entities or span elements.
 
