@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: text-fabric
 Version: 10.2.6
-Summary: Processor and browser for Text Fabric Data
+Summary: Processor and browser for annotated text corpora
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
 Author-email: text.annotation@icloud.com
@@ -32,7 +32,4 @@ Classifier: Topic :: Text Processing :: Markup
 Requires-Python: >=3.6.3
 License-File: LICENSE
 
-Tools to read text corpora with (linguistic) annotations
-and process them efficiently.
-With a built in web-interface for querying a corpus.
-More info on https://annotation.github.io/text-fabric/tf
+file README.md

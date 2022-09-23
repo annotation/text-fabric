@@ -18,8 +18,8 @@ DIST = "dist"
 
 VERSION_CONFIG = dict(
     setup=dict(
-        file="setup.py",
-        re=re.compile(r"""version\s*=\s*['"]([^'"]*)['"]"""),
+        file="setup.cfg",
+        re=re.compile(r"""version\s*=\s*(\S+)"""),
         mask="version='{}'",
     ),
     parameters=dict(
@@ -63,7 +63,6 @@ pdocs : build docs
 sdocs : ship docs
 clean : clean local develop build
 l     : local develop build
-lp    : local production build
 i     : local non-develop build
 g     : push to github, code and docs
 v     : show current version
@@ -98,7 +97,6 @@ def readArgs():
         "sdocs",
         "clean",
         "l",
-        "lp",
         "i",
         "g",
         "ship",
@@ -192,7 +190,8 @@ def makeDist(pypi=True):
         rmtree(DIST)
     os.makedirs(DIST, exist_ok=True)
     # run(["python3", "setup.py", "sdist", "bdist_wheel"])
-    run(["python3", "setup.py", "bdist_wheel"])
+    # run(["python3", "setup.py", "bdist_wheel"])
+    run(["python3", "-m", "build"])
     if pypi:
         run(["twine", "upload", "-u", "dirkroorda", distPath])
         # run("./purge.sh", shell=True)
@@ -260,7 +259,7 @@ def tftest(suite, remaining):
 
 
 def clean():
-    run(["python3", "setup.py", "develop", "-u"])
+    # run(["python3", "setup.py", "develop", "-u"])
     if os.path.exists(SCRIPT):
         os.unlink(SCRIPT)
     run(["pip3", "uninstall", "-y", PACKAGE])
@@ -284,26 +283,27 @@ def main():
         clean()
     elif task == "l":
         clean()
-        run(["python3", "setup.py", "develop"])
-    elif task == "lp":
-        clean()
-        run(["python3", "setup.py", "sdist"])
-        distFiles = glob(f"dist/{PACKAGE}-*.tar.gz")
-        run(["pip3", "install", distFiles[0]])
+        # run(["python3", "setup.py", "develop"])
+        run("pip3 install -e .", shell=True)
+    # elif task == "lp":
+    #     clean()
+    #     run(["python3", "setup.py", "sdist"])
+    #     distFiles = glob(f"dist/{PACKAGE}-*.tar.gz")
+    #     run(["pip3", "install", distFiles[0]])
     elif task == "i":
         clean
         makeDist(pypi=False)
-        run(
-            [
-                "pip3",
-                "install",
-                "--upgrade",
-                "--no-index",
-                "--find-links",
-                f'file://{TF_BASE}/dist"',
-                PACKAGE,
-            ]
-        )
+        # run(
+        #     [
+        #         "pip3",
+        #         "install",
+        #         "--upgrade",
+        #         "--no-index",
+        #         "--find-links",
+        #         f'file://{TF_BASE}/dist"',
+        #         PACKAGE,
+        #     ]
+        #  )
     elif task == "g":
         shipDocs(ORG, REPO, PKG)
         commit(task, msg)

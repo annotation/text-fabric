@@ -4,10 +4,9 @@ MANIFEST
 MANIFEST.in
 README.md
 SECURITY.md
-build.py
 purge.sh
 pyproject.toml
-setup.py
+setup.cfg
 codestyle/contributing.md
 codestyle/eslintrc.txt
 codestyle/flake8.txt

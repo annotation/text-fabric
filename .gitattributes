@@ -1,0 +1,2 @@
+*.tf -linguist-detectable
+jquery.js -linguist-vendored
