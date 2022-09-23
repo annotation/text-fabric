@@ -76,7 +76,7 @@ post-order. It is very much like SAX parsing in the XML world.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L1-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/nodes.py#L1-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Node organization
@@ -349,7 +349,11 @@ class Nodes:
         api = self.api
         C = api.C
 
-        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
+        if nodes is None:
+            walkNodes = C.order.data
+        else:
+            walkNodes = self.sortNodes(nodes)
+            walkNodeSet = set(nodes)
 
         if events:
             endSlots = C.boundary.data[1]
@@ -362,7 +366,8 @@ class Nodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield (m, True)
+                        if nodes is None or m in walkNodeSet:
+                            yield (m, True)
                 else:
                     yield (n, False)
 
@@ -389,7 +394,7 @@ class Nodes:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L62-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/nodes.py#L62-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Nodes:
     def __init__(self, api):
@@ -601,7 +606,11 @@ class Nodes:
         api = self.api
         C = api.C
 
-        walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
+        if nodes is None:
+            walkNodes = C.order.data
+        else:
+            walkNodes = self.sortNodes(nodes)
+            walkNodeSet = set(nodes)
 
         if events:
             endSlots = C.boundary.data[1]
@@ -614,7 +623,8 @@ class Nodes:
                 if Fotypev(n) == slotType:
                     yield (n, None)
                     for m in reversed(endSlots[n - 1]):
-                        yield (m, True)
+                        if nodes is None or m in walkNodeSet:
+                            yield (m, True)
                 else:
                     yield (n, False)
 
@@ -695,7 +705,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/nodes.py#L135-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeSortKeyChunk(self):
     api = self.api
@@ -787,7 +797,7 @@ Handy to sort search results. We can sort them in canonical order like this:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/nodes.py#L201-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sortNodes(self, nodeSet):
     &#34;&#34;&#34;Delivers a tuple of nodes sorted by the *canonical ordering*.
@@ -856,7 +866,7 @@ Otherwise, walks through the given nodes in canonical order.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/nodes.py#L224-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/nodes.py#L224-L296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(self, nodes=None, events=False):
     &#34;&#34;&#34;Generates all nodes in the *canonical order*.
@@ -906,7 +916,11 @@ Otherwise, walks through the given nodes in canonical order.</dd>
     api = self.api
     C = api.C
 
-    walkNodes = C.order.data if nodes is None else self.sortNodes(nodes)
+    if nodes is None:
+        walkNodes = C.order.data
+    else:
+        walkNodes = self.sortNodes(nodes)
+        walkNodeSet = set(nodes)
 
     if events:
         endSlots = C.boundary.data[1]
@@ -919,7 +933,8 @@ Otherwise, walks through the given nodes in canonical order.</dd>
             if Fotypev(n) == slotType:
                 yield (n, None)
                 for m in reversed(endSlots[n - 1]):
-                    yield (m, True)
+                    if nodes is None or m in walkNodeSet:
+                        yield (m, True)
             else:
                 yield (n, False)
 

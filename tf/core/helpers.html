@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L1-L545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L1-L566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -198,6 +198,27 @@ def htmlEsc(val):
             .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
             .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
             .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
+        )
+    )
+
+
+def xmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by XML entities.
+
+    To prevent them to be interpreted as XML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+            .replace(&#34;&#39;&#34;, &#34;&amp;apos;&#34;)
+            .replace(&#39;&#34;&#39;, &#34;&amp;quot;&#34;)
         )
     )
 
@@ -590,7 +611,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L13-L14" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L13-L14" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def abspath(path):
     return normpath(os.path.abspath(path))</code></pre>
@@ -604,7 +625,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L195-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L216-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel(name):
     if not name:
@@ -621,7 +642,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L202-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L223-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check32():
     warn = &#34;&#34;
@@ -642,7 +663,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L224-L228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L245-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanName(name):
     clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
@@ -666,7 +687,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L49-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L49-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearTree(path):
     &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
@@ -707,7 +728,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L367-L391" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L388-L412" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFormats(config):
     featureSet = set()
@@ -744,7 +765,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L213-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L234-L242" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*msg, error=False, newline=True):
     msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
@@ -765,7 +786,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L44-L46" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L44-L46" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     target = normpath(target)
@@ -780,7 +801,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L34-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L34-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -800,7 +821,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L17-L18" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L17-L18" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expanduser(path):
     return normpath(os.path.expanduser(path))</code></pre>
@@ -814,7 +835,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L402-L409" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L423-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fitemize(value):
     if not value:
@@ -834,7 +855,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L237-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L258-L269" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flattenToSet(features):
     theseFeatures = set()
@@ -871,7 +892,7 @@ and the keys <code>desc</code> and <code>eg</code> deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L514-L545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L535-L566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def formatMeta(featureMeta):
     &#34;&#34;&#34;Reorder meta data.
@@ -920,7 +941,7 @@ that are not loaded by default.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L489-L511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L510-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllRealFeatures(api):
     &#34;&#34;&#34;Get all config features and all loaded node and edge features.
@@ -957,7 +978,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L156-L172" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L156-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlEsc(val):
     &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
@@ -999,7 +1020,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L80-L109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L80-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initTree(path, fresh=False, gentle=False):
     &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
@@ -1041,7 +1062,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L231-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L252-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClean(name):
     if name is None or len(name) == 0 or name[0] not in LETTER:
@@ -1057,7 +1078,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L130-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L130-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isInt(val):
     try:
@@ -1075,7 +1096,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L394-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L415-L420" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def itemize(string, sep=None):
     if not string:
@@ -1093,7 +1114,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L436-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L457-L467" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeExamples(nodeList):
     lN = len(nodeList)
@@ -1116,7 +1137,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L335-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L356-L360" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(data):
     inv = {}
@@ -1133,7 +1154,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L342-L347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L363-L368" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverse(data):
     inverse = {}
@@ -1151,7 +1172,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L350-L355" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L371-L376" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverseVal(data):
     inverse = {}
@@ -1171,7 +1192,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L138-L145" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L138-L145" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mathEsc(val):
     &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
@@ -1191,7 +1212,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L148-L153" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L148-L153" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdEsc(val):
     return (
@@ -1211,7 +1232,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L175-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L196-L213" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val):
     &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
@@ -1241,7 +1262,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L479-L486" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L500-L507" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDict(source, overrides):
     &#34;&#34;&#34;Merge overrides into a source dictionary recursively.&#34;&#34;&#34;
@@ -1261,7 +1282,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L471-L476" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L492-L497" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDictOfSets(d1, d2):
     for (n, ms) in d2.items():
@@ -1279,7 +1300,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L358-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L379-L385" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nbytes(by):
     units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
@@ -1298,7 +1319,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L9-L10" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L9-L10" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>
@@ -1312,7 +1333,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L412-L415" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L433-L436" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
@@ -1328,7 +1349,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L288-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L309-L323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
     curstart = None
@@ -1355,7 +1376,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L267-L285" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L288-L306" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromSet(nodeSet):
     # ranges = []
@@ -1386,7 +1407,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L28-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L28-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = expanduser(&#34;~&#34;)
@@ -1402,7 +1423,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L251-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L272-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromSpec(spec):
     covered = set()
@@ -1428,7 +1449,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L464-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L485-L489" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromStr(x):
     if x is None:
@@ -1445,7 +1466,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L449-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L470-L482" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromValue(x, asInt=False):
     if x is None:
@@ -1470,7 +1491,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L305-L308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L326-L329" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
     return &#34;,&#34;.join(
@@ -1486,7 +1507,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L311-L312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L332-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRangesLogical(ranges):  # ranges must be normalized
     return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]</code></pre>
@@ -1500,7 +1521,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L321-L332" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L342-L353" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromValue(val):
     valTp = type(val)
@@ -1524,7 +1545,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L24-L25" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L24-L25" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     return normpath(path).replace(HOME_DIR, &#34;~&#34;)</code></pre>
@@ -1538,7 +1559,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L315-L318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L336-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valueFromTf(tf):
     return &#34;\\&#34;.join(
@@ -1554,7 +1575,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9731b1e508321fe0b67fb360eb8c7d199b09ab74/tf/core/helpers.py#L418-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L439-L454" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     if type(messages) is str:
@@ -1572,6 +1593,39 @@ in cases where you need them literally.</p></div>
             msg = msg.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
         html.append(f&#39;&lt;span class=&#34;{clsName.lower()}&#34;&gt;{msg}&lt;/span&gt;&#39;)
     return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.core.helpers.xmlEsc"><code class="name flex">
+<span>def <span class="ident">xmlEsc</span></span>(<span>val)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escape certain HTML characters by XML entities.</p>
+<p>To prevent them to be interpreted as XML
+in cases where you need them literally.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/437c8353d3bdfe5ffea2993c5d9a4d9ec2319053/tf/core/helpers.py#L175-L193" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def xmlEsc(val):
+    &#34;&#34;&#34;Escape certain HTML characters by XML entities.
+
+    To prevent them to be interpreted as XML
+    in cases where you need them literally.
+    &#34;&#34;&#34;
+
+    return (
+        &#34;&#34;
+        if val is None
+        else (
+            str(val)
+            .replace(&#34;&amp;&#34;, &#34;&amp;amp;&#34;)
+            .replace(&#34;&lt;&#34;, &#34;&amp;lt;&#34;)
+            .replace(&#34;&gt;&#34;, &#34;&amp;gt;&#34;)
+            .replace(&#34;&#39;&#34;, &#34;&amp;apos;&#34;)
+            .replace(&#39;&#34;&#39;, &#34;&amp;quot;&#34;)
+        )
+    )</code></pre>
 </details>
 </dd>
 </dl>
@@ -1686,6 +1740,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.unexpanduser" href="#tf.core.helpers.unexpanduser">unexpanduser</a></code></li>
 <li><code><a title="tf.core.helpers.valueFromTf" href="#tf.core.helpers.valueFromTf">valueFromTf</a></code></li>
 <li><code><a title="tf.core.helpers.wrapMessages" href="#tf.core.helpers.wrapMessages">wrapMessages</a></code></li>
+<li><code><a title="tf.core.helpers.xmlEsc" href="#tf.core.helpers.xmlEsc">xmlEsc</a></code></li>
 </ul>
 </li>
 </ul>
