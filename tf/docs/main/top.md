@@ -82,10 +82,11 @@ In particular thanks to
 * Johan de Joode
 * Kyoungsik Kim
 * Martijn Naaijer
+* Oliver Glanz
 * Stephen Ku
-* Wido van Peursen
+* Willem van Peursen
 
-<img src="images/huc.png" width="200"> 2022-
+<img src="images/huc.png" width="200"> 2022-now
 
 <img src="images/DANS-logo.png" width="200"> 2014-2022
 
