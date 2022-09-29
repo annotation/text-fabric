@@ -68,7 +68,6 @@ and give encouragement when they are happy.
 
 In particular thanks to
 
-* Andrea Scharnhorst
 * Cale Johnson
 * Camil Staps
 * Christian Høygaard-Jensen
@@ -77,7 +76,6 @@ In particular thanks to
 * Ernst Boogert
 * Eliran Wong
 * Gyusang Jin
-* Henk Harmsen
 * James Cuénod
 * Johan de Joode
 * Kyoungsik Kim
@@ -89,6 +87,12 @@ In particular thanks to
 <img src="images/huc.png" width="200"> 2022-now
 
 <img src="images/DANS-logo.png" width="200"> 2014-2022
+
+Special thanks to Henk Harmsen for nudging me into a corner
+where I was exposed to the Hebrew Text Database, and for letting me play
+there for almost longer than could be defended.
+
+And to Andrea Scharnhorst for understanding and encouragement on this path.
 
 ## More resources
 
