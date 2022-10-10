@@ -558,7 +558,7 @@ def parseFeatureVals(searchExe, featStr, features, i, asEdge=False):
             valRe = _unesc(valRe, inRe=True)
             try:
                 featVals = re.compile(valRe)
-            except Exception() as err:
+            except Exception as err:
                 searchExe.badSyntax.append(
                     (i, f'Wrong regular expression "{valRe}": "{err}"')
                 )

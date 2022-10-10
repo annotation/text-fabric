@@ -10,6 +10,12 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 10
 
+## 10.2.7
+
+2022-10-12
+
+Small fixes.
+
 ## 10.2.6
 
 2022-09-23
