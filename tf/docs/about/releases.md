@@ -15,6 +15,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 2022-10-12
 
 Small fixes.
+Packaging is now done with setup.cfg instead of setup.py.
 
 ## 10.2.6
 

@@ -53,7 +53,7 @@ def zipData(
     if source is None:
         source = backendRep(backend, "clone")
     if dest is None:
-        dest = f"{DW}/{backend}"
+        dest = f"{DW}/{backendRep(backend, 'norm')}"
     relative = normpath(relative)
     console(f"Create release data for {org}/{repo}/{relative}")
     sourceBase = normpath(f"{source}/{org}")
