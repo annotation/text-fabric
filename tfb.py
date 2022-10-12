@@ -69,7 +69,8 @@ v     : show current version
 r1    : version becomes r1+1.0.0
 r2    : version becomes r1.r2+1.0
 r3    : version becomes r1.r2.r3+1
-ship  : build for shipping
+ship  : build and ship as a release to pypi
+shipt : build and ship as a release to test-pypi
 apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
 a     : open {PACKAGE} browser on specific dataset
@@ -77,7 +78,7 @@ a     : open {PACKAGE} browser on specific dataset
 t     : run test suite (relations, qperf)
 data  : build data files for github release
 
-For g and ship you need to pass a commit message.
+For g, ship, shipt you need to pass a commit message.
 For data you need to pass an app argument:
   {appStr}
 """
@@ -100,6 +101,7 @@ def readArgs():
         "i",
         "g",
         "ship",
+        "shipt",
         "data",
         "apps",
         "tut",
@@ -110,7 +112,7 @@ def readArgs():
     }:
         console(HELP)
         return (False, None, [])
-    if arg in {"g", "apps", "tut", "ship"}:
+    if arg in {"g", "apps", "tut", "ship", "shipt"}:
         if len(args) < 2:
             console("Provide a commit message")
             return (False, None, [])
@@ -181,7 +183,7 @@ def adjustVersion(task):
         console(f"Replacing version {currentVersion} by {newVersion}")
 
 
-def makeDist(pypi=True):
+def makeDist(pypi=True, test=False):
     distFile = "{}-{}".format(PACKAGE, currentVersion)
     distFileCompressed = f"{distFile}.tar.gz"
     distPath = f"{DIST}/{distFileCompressed}"
@@ -193,7 +195,10 @@ def makeDist(pypi=True):
     # run(["python3", "setup.py", "bdist_wheel"])
     run(["python3", "-m", "build"])
     if pypi:
-        run(["twine", "upload", "-u", "dirkroorda", distPath])
+        if test:
+            run(["twine", "upload", "-r", "testpypi", distPath])
+        else:
+            run(["twine", "upload", "-u", "dirkroorda", distPath])
         # run("./purge.sh", shell=True)
 
 
@@ -201,7 +206,7 @@ def commit(task, msg):
     run(["git", "add", "--all", "."])
     run(["git", "commit", "-m", msg])
     run(["git", "push", "origin", "master"])
-    if task in {"ship"}:
+    if task in {"ship", "shipt"}:
         tagVersion = f"v{currentVersion}"
         commitMessage = f"Release {currentVersion}: {msg}"
         run(["git", "tag", "-a", tagVersion, "-m", commitMessage])
@@ -315,7 +320,7 @@ def main():
         showVersion()
     elif task in {"r", "r1", "r2", "r3"}:
         adjustVersion(task)
-    elif task == "ship":
+    elif task in {"ship", "shipt"}:
         showVersion()
         if not currentVersion:
             console("No current version")
@@ -325,7 +330,7 @@ def main():
         if answer != "y":
             return
         shipDocs(ORG, REPO, PKG)
-        makeDist()
+        makeDist(test=task == "shipt")
         commit(task, msg)
 
 
