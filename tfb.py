@@ -16,6 +16,8 @@ SCRIPT = "/Library/Frameworks/Python.framework/Versions/Current/bin/{PACKAGE}"
 
 DIST = "dist"
 
+TESTPYPI_URL = "https://test.pypi.org/simple/"
+
 VERSION_CONFIG = dict(
     setup=dict(
         file="setup.cfg",
@@ -64,6 +66,7 @@ sdocs : ship docs
 clean : clean local develop build
 l     : local develop build
 i     : local non-develop build
+ti    : install from testpypi (uninstall first)
 g     : push to github, code and docs
 v     : show current version
 r1    : version becomes r1+1.0.0
@@ -71,6 +74,7 @@ r2    : version becomes r1.r2+1.0
 r3    : version becomes r1.r2.r3+1
 ship  : build and ship as a release to pypi
 shipt : build and ship as a release to test-pypi
+shipo : ship to pypi, skip build and commit and tag (after having done a shipt)
 apps  : commit and push all tf apps
 tut   : commit and push the tutorials repo
 a     : open {PACKAGE} browser on specific dataset
@@ -99,9 +103,11 @@ def readArgs():
         "clean",
         "l",
         "i",
+        "ti",
         "g",
         "ship",
         "shipt",
+        "shipo",
         "data",
         "apps",
         "tut",
@@ -198,7 +204,7 @@ def makeDist(pypi=True, test=False):
         if test:
             run(["twine", "upload", "-r", "testpypi", distPath])
         else:
-            run(["twine", "upload", "-u", "dirkroorda", distPath])
+            run(["twine", "upload", distPath])
         # run("./purge.sh", shell=True)
 
 
@@ -296,7 +302,7 @@ def main():
     #     distFiles = glob(f"dist/{PACKAGE}-*.tar.gz")
     #     run(["pip3", "install", distFiles[0]])
     elif task == "i":
-        clean
+        clean()
         makeDist(pypi=False)
         # run(
         #     [
@@ -309,6 +315,11 @@ def main():
         #         PACKAGE,
         #     ]
         #  )
+    elif task == "ti":
+        clean()
+        run(
+            f"pip3 install --index-url {TESTPYPI_URL} --no-deps text-fabric", shell=True
+        )
     elif task == "g":
         shipDocs(ORG, REPO, PKG)
         commit(task, msg)
@@ -320,7 +331,7 @@ def main():
         showVersion()
     elif task in {"r", "r1", "r2", "r3"}:
         adjustVersion(task)
-    elif task in {"ship", "shipt"}:
+    elif task in {"ship", "shipt", "shipo"}:
         showVersion()
         if not currentVersion:
             console("No current version")
@@ -329,9 +340,13 @@ def main():
         answer = input("right version ? [yn]")
         if answer != "y":
             return
-        shipDocs(ORG, REPO, PKG)
+        if task != "shipo":
+            shipDocs(ORG, REPO, PKG)
+
         makeDist(test=task == "shipt")
-        commit(task, msg)
+
+        if task != "shipo":
+            commit(task, msg)
 
 
 main()
