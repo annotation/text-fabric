@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8101a070d8355b53bc6d914b2f2a0ac84c100f85/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9f88ca75b06e019f9177dbb337ce7810a4c081b/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -83,7 +83,7 @@ def zipData(
     if source is None:
         source = backendRep(backend, &#34;clone&#34;)
     if dest is None:
-        dest = f&#34;{DW}/{backend}&#34;
+        dest = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
@@ -238,7 +238,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8101a070d8355b53bc6d914b2f2a0ac84c100f85/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9f88ca75b06e019f9177dbb337ce7810a4c081b/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -287,7 +287,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8101a070d8355b53bc6d914b2f2a0ac84c100f85/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9f88ca75b06e019f9177dbb337ce7810a4c081b/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -303,7 +303,7 @@ if __name__ == &#34;__main__&#34;:
     if source is None:
         source = backendRep(backend, &#34;clone&#34;)
     if dest is None:
-        dest = f&#34;{DW}/{backend}&#34;
+        dest = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
