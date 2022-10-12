@@ -181,7 +181,7 @@ class Api(object):
             Only relevant if `pretty=True`: controls what metadata of the feature
             should be printed.
 
-            If it is None, False, or the empty string ir empty list:
+            If it is None, False, or the empty string or empty list:
             no metadata will be printed.
 
             It it is the boolean value True: all metadata will be printed.

@@ -223,7 +223,7 @@
     "funding": [
         {
             "@type": "Grant",
-            "name": "CLARIAH-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
+            "name": "CLARIN-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
             "funder": {
                 "@type": "Organization",
                 "name": "NWO", 
