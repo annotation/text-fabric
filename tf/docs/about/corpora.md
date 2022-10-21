@@ -169,11 +169,17 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [KNAW/Huygens](https://gitlab.huc.knaw.nl/tt)
 
-[tt/paranoia](https://gitlab.huc.knaw.nl/tt/paranoia)
+[hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
 :   *Dutch*
-    W.F. Hermans, Paranoia, 1953,
-    **Collected stories**,
-    Bram Oostveen, Dirk Roorda
+    Complete Works of W.F. Hermans.
+    The conversion to Text-Fabric is work in progress.
+    So far these works have been done:
+
+    * Paranoia
+    * Sadistisch Universum
+    * Nooit meer slapen
+
+    Bram Oostveen, Peter Kegel, Dirk Roorda
 
     **Not publicly accessible, the book is under copyright.**
 
