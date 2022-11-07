@@ -1,0 +1,129 @@
+intro: >-
+  A corpus of ancient texts and (linguistic) annotations represents a large body
+  of knowledge. Text-Fabric makes that knowledge accessible to programmers and
+  non-programmers.
+properties:
+  development:
+    - link: https://dans.knaw.nl/en/
+      title: DANS
+    - link: https://di.huc.knaw.nl
+      title: KNAW Humanities Cluster - Digital Infrastructure
+  languages:
+    - English
+  link: https://annotation.github.io/text-fabric/tf/index.html
+  mediaTypes:
+    - 'text '
+  problemContact:
+    - link: https://pure.knaw.nl/portal/nl/persons/dirk-roorda
+      title: Dr. Dirk Roorda
+  programmingLanguages:
+    - link: https://www.python.org
+      title: Python 3.6
+  researchActivities:
+    - '1'
+    - '5.1'
+    - 2.4.1
+    - 1.1.4
+    - '6'
+    - 2.1.4
+    - 1.1.7
+  resourceTypes:
+    - Software
+  standards:
+    - link: https://pypi.org/project/text-fabric/
+      title: 'Text-Fabric '
+  status:
+    - Active
+relatedProjects:
+  - 'BHSA: Biblia Hebraica Stuttgartensia Amstelodamensis'
+relatedResources:
+  - This resource is not (yet) available
+slug: text-fabric
+tabs:
+  learn:
+    body: |
+      ## Learn
+  mentions:
+    body: |+
+      ## Publications
+
+  overview:
+    body: >
+      ## Overview
+
+      Text-Fabric is machinery for processing such corpora as annotated graphs.
+      It treats corpora and annotations as data, much like big tables, but
+      without loosing the rich structure of text, such as embedding and multiple
+      representations. It deals with text in a state where all markup is gone,
+      but where the complete logical structure still sits in the data.
+
+      Whether a corpus comes from plain texts, OCR output, databases, XML, TEI:
+      Text-Fabric has support to convert it to single column files, where each
+      file corresponds with a feature of the text.
+
+      The Python library `tf` can be used to collect a bunch of features and
+      display it as an annotated text. What ties the features together are
+      natural numbers, that serve to anchor the elementary positions in the text
+      as well as the relevant structures within the text.
+
+      When Text-Fabric loads a dataset of features, you can instruct it to get
+      the features from anywhere. That means it supports workflows where
+      annotations are produced by third parties and can be used against the
+      original corpus, without additional work. It also facilitates mappings
+      between ongoing versions of the corpus, so that annotations made on older
+      versions can be ported to newer versions without redoing the annotation
+      creation.
+    bodyMore: |+
+      ### Provenance
+
+      The foundational ideas derive from work done in and around the
+      [ETCBC](http://etcbc.nl) avant-la-lettre from 1970 onwards
+      by Eep Talstra, Crist-Jan Doedens,
+      ([Ph.D. thesis](https://books.google.nl/books?id=9ggOBRz1dO4C)),
+      Henk Harmsen, Ulrik Sandborg-Petersen ([Emdros](https://emdros.org)),
+      and many others.
+
+      Dirk Roorda entered in that world in 2007 as a 
+      [DANS](https://dans.knaw.nl/en)
+      employee, doing a joint small data project,
+      and a bigger project SHEBANQ in 2013/2014.
+      In 2013 he developed
+      [LAF-Fabric](https://github.com/dirkroorda/laf-fabric)
+      as a tool for constructing the website
+      [SHEBANQ](https://shebanq.ancient-data.org).
+
+      LAF-Fabric is based on the ISO standard
+      [Linguistic Annotation Framework (LAF)](https://www.iso.org/standard/37326.html).
+      LAF is an attempt to marry graph models to the 
+      [Text Encoding Initiative (TEI)](http://www.tei-c.org) which lives in XML.
+      It is a good try, but it turns out that using XML technology for
+      graphs is a pain. All the usual advantages of using the XML toolchain evaporate.
+
+      So he decided to leave XML and its associated syntactical complexity.
+      Everything that makes LAF-Fabric complicated was taken out,
+      as well as all things that are not essential for the sake of raw data processing.
+      That became Text-Fabric version 1 at the end of 2016.
+
+      It turned out that this move has freed the way to work towards higher-level goals:
+
+      * a new search engine (inspired by [MQL](https://emdros.org) and
+      * support for research data workflows.
+
+      Text-Fabric is an attempt to provide digital humanists with corpus research
+      functions based on technology that is easily accessible.
+
+      Hence, the implementation of Text-Fabric-search has been done from the ground up,
+      and uses a strategy that is very different from Ulrik's MQL search engine.
+
+      Work on Text-Fabric was continued at DANS till 2022and later
+      at [KNAW/Humanities Cluster](https://huc.knaw.nl).
+      
+      Recent work consists of making it work with GitLab, and importing the
+      [General Missives](https://github.com/CLARIAH/wp6-missieven)
+      into it, a volume of the
+      [Daghregisters](https://github.com/CLARIAH/wp6-daghregisters),
+      and a few
+      [works of W.F. Hermans](https://gitlab.huc.knaw.nl/hermans/works)
+      (not publicly accessible).
+
+title: Text-Fabric
