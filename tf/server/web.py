@@ -82,8 +82,6 @@ import os
 import sys
 import pickle
 
-from werkzeug.serving import run_simple
-
 from ..capable import Capable
 from ..parameters import HOST
 from ..core.helpers import console, abspath
@@ -104,6 +102,7 @@ MY_DIR = os.path.dirname(abspath(__file__))
 
 Cap = Capable("browser")
 (Flask, send_file) = Cap.loadFrom("flask", "Flask", "send_file")
+run_simple = Cap.loadFrom("werkzeug.serving", "run_simple")
 
 
 class Web(object):

@@ -92,8 +92,8 @@ class Capable:
                     Backend provider {extra} not supported.
                     Cannot reach online data on {extra}
                     Try installing text-fabric one of the following:
-                    `pip install text-fabric[{extra}]`
-                    `pip install text-fabric[all]`
+                    pip install text-fabric[{extra}]
+                    pip install text-fabric[all]
             """
                 )
             )
@@ -108,8 +108,8 @@ class Capable:
                     """
                     Text-Fabric browser not supported.
                     Try installing text-fabric one of the following:
-                    `pip install text-fabric[browser]`
-                    `pip install text-fabric[all]`
+                    pip install text-fabric[browser]
+                    pip install text-fabric[all]
             """
                 )
             )
