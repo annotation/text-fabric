@@ -8,14 +8,26 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ---
 
-## 10
+## 11
 
-## 10.2.7
+### 11.0
 
-2022-10-12
+### 11.0.0
 
-Small fixes.
-Packaging is now done with setup.cfg instead of setup.py.
+2022-11-11
+
+Text-Fabric can be installed with different capabilities.
+
+On some platforms not all requirements for Text-Fabric can be met, e.g.
+the Github or GitLab backends, or the Text-Fabric browser.
+
+You can now install a bare Text-Fabric, without those capabilities,
+or a more capable Text-Fabric with additional capabilities.
+
+Text-Fabric will detect what its capabilities are, and issue warnings
+if it asked to do tasks for which it lacks the capabilities.
+
+See more in `tf.about.install`.
 
 ## 10.2.6
 

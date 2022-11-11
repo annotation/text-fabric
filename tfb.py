@@ -22,7 +22,7 @@ VERSION_CONFIG = dict(
     setup=dict(
         file="setup.cfg",
         re=re.compile(r"""version\s*=\s*(\S+)"""),
-        mask="version='{}'",
+        mask="version = {}",
     ),
     parameters=dict(
         file="tf/parameters.py",

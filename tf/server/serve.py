@@ -12,8 +12,7 @@ functions for composing tables and passages.
 
 import pickle
 import markdown
-from flask import jsonify, redirect, render_template, make_response
-
+from ..capable import Capable
 from ..core.helpers import console, wrapMessages
 from ..advanced.helpers import RESULT
 from .wrap import (
@@ -25,10 +24,20 @@ from .wrap import (
 )
 from .servelib import getAbout, getFormData, zipTables
 
+
+Cap = Capable("browser")
+(jsonify, redirect, render_template, make_response) = Cap.loadFrom(
+    "flask", "jsonify", "redirect", "render_template", "make_response"
+)
+
+
 TIMEOUT = 180
 
 
 def serveTable(web, kind, getx=None, asDict=False):
+    if not Cap.can("browser"):
+        return ""
+
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -68,6 +77,9 @@ def serveTable(web, kind, getx=None, asDict=False):
 
 
 def serveQuery(web, getx, asDict=False):
+    if not Cap.can("browser"):
+        return ""
+
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -136,11 +148,18 @@ def serveQuery(web, getx, asDict=False):
         messages = ""
 
     return method(
-        pages=pages, table=table, nResults=total, messages=messages, features=features,
+        pages=pages,
+        table=table,
+        nResults=total,
+        messages=messages,
+        features=features,
     )
 
 
 def servePassage(web, getx):
+    if not Cap.can("browser"):
+        return ""
+
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -178,6 +197,9 @@ def servePassage(web, getx):
 
 
 def serveExport(web):
+    if not Cap.can("browser"):
+        return ""
+
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
@@ -241,6 +263,9 @@ def serveExport(web):
 
 
 def serveDownload(web):
+    if not Cap.can("browser"):
+        return ""
+
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
@@ -304,6 +329,9 @@ def serveDownload(web):
 
 
 def serveAll(web, anything):
+    if not Cap.can("browser"):
+        return ""
+
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
@@ -373,4 +401,7 @@ def serveAll(web, anything):
             templateData[k] = v
     templateData["appName"] = appName
     templateData["resetForm"] = ""
-    return render_template("index.html", **templateData,)
+    return render_template(
+        "index.html",
+        **templateData,
+    )

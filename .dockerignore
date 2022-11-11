@@ -1,0 +1,13 @@
+.*
+_*
+build
+codestyle
+data9
+dist
+legacy
+site
+test
+text_fabric.egg-info
+tools
+LICENSE
+tfb.py

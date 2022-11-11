@@ -79,11 +79,10 @@ import sys
 import pickle
 from functools import reduce
 
-import rpyc
-from rpyc.utils.server import ThreadedServer
-
 from ..parameters import GH
+from ..capable import Capable
 from ..core.helpers import console
+from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
@@ -93,6 +92,12 @@ from ..advanced.text import specialCharacters
 
 from .command import argKernel
 
+
+Cap = Capable("browser")
+rpyc = Cap.load("rpyc")
+ThreadedServer = Cap.loadFrom("rpyc", "ThreadedServer")
+
+
 TF_DONE = "TF setup done."
 TF_ERROR = "Could not set up TF"
 
@@ -101,9 +106,14 @@ TF_ERROR = "Could not set up TF"
 
 
 def makeTfKernel(app, appName, port):
+    if not Cap.can("browser"):
+        console(f"{TF_ERROR}")
+        return False
+
     if not app.api:
         console(f"{TF_ERROR}")
         return False
+
     TF = app.api.TF
     reset = TF.reset
     cache = TF.cache
@@ -604,6 +614,9 @@ def makeTfKernel(app, appName, port):
 
 
 def makeTfConnection(lhost, port, timeout):
+    if not Cap.can("browser"):
+        return None
+
     class TfConnection(object):
         def connect(self):
             try:
@@ -625,6 +638,11 @@ def makeTfConnection(lhost, port, timeout):
 def main(cargs=sys.argv):
     args = argKernel(cargs)
     if not args:
+        console(f"{TF_ERROR}")
+        return
+
+    if not Cap.can("browser"):
+        console(f"{TF_ERROR}")
         return
 
     (dataSource, portKernel) = args
@@ -653,6 +671,7 @@ def main(cargs=sys.argv):
         dataLoc,
         backend,
         True,
+        silent=AUTO,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -661,6 +680,7 @@ def main(cargs=sys.argv):
         version=version,
     )
     if app is None:
+        console(f"{TF_ERROR}")
         return
 
     kernel = makeTfKernel(app, appName, portKernel)

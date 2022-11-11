@@ -82,9 +82,9 @@ import os
 import sys
 import pickle
 
-from flask import Flask, send_file
 from werkzeug.serving import run_simple
 
+from ..capable import Capable
 from ..parameters import HOST
 from ..core.helpers import console, abspath
 from ..server.kernel import makeTfConnection
@@ -101,6 +101,9 @@ from .serve import (
 
 
 MY_DIR = os.path.dirname(abspath(__file__))
+
+Cap = Capable("browser")
+(Flask, send_file) = Cap.loadFrom("flask", "Flask", "send_file")
 
 
 class Web(object):
@@ -191,6 +194,9 @@ def factory(web):
 def main(cargs=sys.argv):
     args = argWeb(cargs)
     if not args:
+        return
+
+    if not Cap.can("browser"):
         return
 
     (dataSource, portKernel, portWeb) = args

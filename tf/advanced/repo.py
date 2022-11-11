@@ -389,13 +389,8 @@ import os
 import io
 import re
 from shutil import rmtree
-import requests
 import base64
 from zipfile import ZipFile
-
-from github import Github, GithubException, UnknownObjectException
-from gitlab import Gitlab
-from gitlab.exceptions import GitlabGetError
 
 from ..parameters import (
     GH,
@@ -407,9 +402,16 @@ from ..parameters import (
 )
 from ..core.helpers import console, htmlEsc, expanduser, initTree
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
+from ..capable import Capable
 from .helpers import dh, runsInNotebook
 from .zipdata import zipData
 
+Cap = Capable("github", "gitlab")
+requests = Cap.load("requests")
+(Github, GithubException, UnknownObjectException) = Cap.loadFrom(
+    "github", "Github", "GithubException", "UnknownObjectException"
+)
+(Gitlab, GitlabGetError) = Cap.loadFrom("gitlab", "Gitlab", "GitlabGetError")
 
 VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
 SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")
@@ -501,6 +503,17 @@ class Repo:
     def connect(self):
         backend = self.backend
         conn = self.conn
+
+        if backend != "github":
+            console(
+                "Release preparation not implemented for {backend}, only for github",
+                error=True,
+            )
+            return None
+
+        if not Cap.can(backend):
+            self.conn = None
+            return
 
         if not conn:
             ghPerson = os.environ.get("GHPERS", None)
@@ -741,6 +754,7 @@ def releaseData(
     dest: string, optional `DOWNLOADS`
         Path to where the zipped data should be stored
     """
+
     if source is None or not source:
         source = (backendRep(GH, "clone"),)
 
@@ -897,6 +911,10 @@ class Checkout:
         onGithub = self.onGithub
         conn = self.conn
         backend = self.backend
+
+        if not Cap.can(backend):
+            self.conn = None
+            return None
 
         self.canDownloadSubfolders = False
 
@@ -1312,7 +1330,7 @@ class Checkout:
                             again=False,
                         )
                         msg = "\tFailed"
-                        self.possibleError(msg, showErrors=showErrors)
+                        self.possibleError(msg, showErrors=showErrors, newline=True)
                         return False
                 else:
                     zf = g.repository_archive(format="zip", sha=commit)
@@ -1388,7 +1406,7 @@ class Checkout:
                         again=False,
                     )
                     msg = "\tFailed"
-                    self.possibleError(msg, showErrors=showErrors)
+                    self.possibleError(msg, showErrors=showErrors, newline=True)
                     good = False
         except Exception:
             msg = f"\tcould not save {label} to {destZip}"
@@ -1420,6 +1438,7 @@ class Checkout:
                 nonlocal good
                 if not good:
                     return
+
                 lead = "\t" * level
                 try:
                     contents = g.get_contents(subPath, ref=commit)
@@ -1464,7 +1483,9 @@ class Checkout:
         else:
             if onGithub:
                 msg = "\tFailed"
-                self.possibleError(msg, showErrors=showErrors if onGithub else True)
+                self.possibleError(
+                    msg, showErrors=showErrors if onGithub else True, newline=True
+                )
 
         return good
 

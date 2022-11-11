@@ -28,14 +28,16 @@ you run into problems later on.
 
 *macos*: click "Change install location" and set it to "Install for me only"
 
-*linux*: after installation, run the following command from a terminal where `username` should be changed
+*linux*: after installation, run the following command from a terminal
+where `username` should be changed
 to your username on the system:
 
 ``` sh
 sudo chown -R username:username /opt/JupyterLab
 ```
 
-*windows*: no extra instructions. Two installers will be launched, let them work with the same default
+*windows*: no extra instructions.
+Two installers will be launched, let them work with the same default
 location for installation.
 
 ### Install Text-Fabric
@@ -46,7 +48,7 @@ You have a fresh, empty notebook in front of you.
 In the first cell, type
 
 ``` sh
-%pip install text-fabric
+%pip install text-fabric[all]
 ```
 
 Text-Fabric is then downloaded and installed,
@@ -58,6 +60,32 @@ Now restart this notebook by clicking the circular arrow in the toolbar:
 
 This finishes the installation.
 You can wipe out this cell, or start a new notebook.
+
+#### Capabilities
+
+Text-Fabric has some powerful capabilities:
+
+* `browser`: the Text-Fabric browser, which runs a local webserver which lets you
+  have a browse and search experience in a local web environment
+* `github` and `gitlab`: repository backends from which Text-Fabric can load
+  corpus data on-demand.
+
+You can install Text-Fabric with a selection of capabilities:
+
+* `pip install text-fabric` *without additional capabilities*
+* `pip install text-fabric[all]` *with all additional capabilities*
+* `pip install text-fabric[github]` *with a github backend*
+* `pip install text-fabric[gitlab]` *with a gitlab backend*
+* `pip install text-fabric[browser]` *with the text-fabric browser enabled*
+* `pip install text-fabric[github,browser]` *with the selected extras*
+* `pip install text-fabric[github,gitlab]` *with the selected extras*
+
+On some shells you may have to put single quotes around the last argument:
+
+* `pip install 'text-fabric[browser]'`
+
+Even if Text-Fabric is not installed with certain capabilities,
+it will have those capabilities if the required modules are installed.
 
 ### Work with Text-Fabric
 

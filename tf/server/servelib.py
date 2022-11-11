@@ -15,9 +15,12 @@ import json
 from io import BytesIO
 from zipfile import ZipFile
 
-from flask import request
-
+from ..capable import Capable
 from ..parameters import ZIP_OPTIONS
+
+
+Cap = Capable("browser")
+request = Cap.loadFrom("flask", "request")
 
 
 DEFAULT_NAME = "default"
@@ -47,6 +50,9 @@ def getFormData(interfaceDefaults):
     Most of the data has a known function to the web server,
     but there is also a list of webapp dependent options.
     """
+
+    if not Cap.can("browser"):
+        return {}
 
     form = {}
     jobName = request.form.get("jobName", "").strip()

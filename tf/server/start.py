@@ -128,13 +128,13 @@ import sys
 import os
 from platform import system
 
-import psutil
 import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION, PROTOCOL, HOST
+from ..capable import Capable
 
 from .command import (
     argKill,
@@ -145,6 +145,10 @@ from .command import (
     repSlug,
 )
 from .kernel import TF_DONE, TF_ERROR
+
+Cap = Capable("browser")
+psutil = Cap.load("psutil")
+
 
 HELP = """
 USAGE
@@ -250,6 +254,7 @@ def filterProcess(proc):
 
 def indexProcesses():
     tfProcesses = {}
+
     for proc in psutil.process_iter(attrs=["pid", "name"]):
         test = filterProcess(proc)
         if test:
@@ -311,6 +316,9 @@ def main(cargs=sys.argv):
         console(HELP)
         return
     if len(cargs) >= 2 and any(arg == "-v" for arg in cargs[1:]):
+        return
+
+    if not Cap.can("browser"):
         return
 
     isWin = system().lower().startswith("win")
