@@ -125,7 +125,7 @@ So we will look for the first available port after this.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L1-L425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L1-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start kernel and webserver
@@ -257,13 +257,13 @@ import sys
 import os
 from platform import system
 
-import psutil
 import webbrowser
 from time import sleep
 from subprocess import PIPE, Popen
 
 from ..core.helpers import console
 from ..parameters import NAME, VERSION, PROTOCOL, HOST
+from ..capable import Capable
 
 from .command import (
     argKill,
@@ -274,6 +274,10 @@ from .command import (
     repSlug,
 )
 from .kernel import TF_DONE, TF_ERROR
+
+Cap = Capable(&#34;browser&#34;)
+psutil = Cap.load(&#34;psutil&#34;)
+
 
 HELP = &#34;&#34;&#34;
 USAGE
@@ -379,6 +383,7 @@ def filterProcess(proc):
 
 def indexProcesses():
     tfProcesses = {}
+
     for proc in psutil.process_iter(attrs=[&#34;pid&#34;, &#34;name&#34;]):
         test = filterProcess(proc)
         if test:
@@ -440,6 +445,9 @@ def main(cargs=sys.argv):
         console(HELP)
         return
     if len(cargs) &gt;= 2 and any(arg == &#34;-v&#34; for arg in cargs[1:]):
+        return
+
+    if not Cap.can(&#34;browser&#34;):
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
@@ -569,7 +577,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L301-L303" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L306-L308" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def connectPort(tfProcesses, kind, pos, slug):
     pInfo = tfProcesses.get(slug, {}).get(kind, None)
@@ -584,7 +592,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L211-L248" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L215-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def filterProcess(proc):
     procName = proc.info[&#34;name&#34;]
@@ -634,10 +642,11 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L251-L260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L255-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indexProcesses():
     tfProcesses = {}
+
     for proc in psutil.process_iter(attrs=[&#34;pid&#34;, &#34;name&#34;]):
         test = filterProcess(proc)
         if test:
@@ -649,14 +658,14 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.server.start.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.10/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.11/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L306-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L311-L429" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     console(BANNER)
@@ -666,6 +675,9 @@ if __name__ == &#34;__main__&#34;:
         console(HELP)
         return
     if len(cargs) &gt;= 2 and any(arg == &#34;-v&#34; for arg in cargs[1:]):
+        return
+
+    if not Cap.can(&#34;browser&#34;):
         return
 
     isWin = system().lower().startswith(&#34;win&#34;)
@@ -784,7 +796,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/start.py#L263-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/start.py#L268-L303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProcesses(tfProcesses, slug, term=False, kill=False):
     item = (&#34;killed&#34; if kill else &#34;terminated&#34;) if term else &#34;&#34;
@@ -911,7 +923,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="DANS"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

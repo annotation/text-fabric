@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/kernel.py#L1-L695" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/kernel.py#L1-L715" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -164,11 +164,10 @@ import sys
 import pickle
 from functools import reduce
 
-import rpyc
-from rpyc.utils.server import ThreadedServer
-
 from ..parameters import GH
+from ..capable import Capable
 from ..core.helpers import console
+from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
@@ -178,6 +177,12 @@ from ..advanced.text import specialCharacters
 
 from .command import argKernel
 
+
+Cap = Capable(&#34;browser&#34;)
+rpyc = Cap.load(&#34;rpyc&#34;)
+ThreadedServer = Cap.loadFrom(&#34;rpyc&#34;, &#34;ThreadedServer&#34;)
+
+
 TF_DONE = &#34;TF setup done.&#34;
 TF_ERROR = &#34;Could not set up TF&#34;
 
@@ -186,9 +191,14 @@ TF_ERROR = &#34;Could not set up TF&#34;
 
 
 def makeTfKernel(app, appName, port):
+    if not Cap.can(&#34;browser&#34;):
+        console(f&#34;{TF_ERROR}&#34;)
+        return False
+
     if not app.api:
         console(f&#34;{TF_ERROR}&#34;)
         return False
+
     TF = app.api.TF
     reset = TF.reset
     cache = TF.cache
@@ -689,6 +699,9 @@ def makeTfKernel(app, appName, port):
 
 
 def makeTfConnection(lhost, port, timeout):
+    if not Cap.can(&#34;browser&#34;):
+        return None
+
     class TfConnection(object):
         def connect(self):
             try:
@@ -710,6 +723,11 @@ def makeTfConnection(lhost, port, timeout):
 def main(cargs=sys.argv):
     args = argKernel(cargs)
     if not args:
+        console(f&#34;{TF_ERROR}&#34;)
+        return
+
+    if not Cap.can(&#34;browser&#34;):
+        console(f&#34;{TF_ERROR}&#34;)
         return
 
     (dataSource, portKernel) = args
@@ -738,6 +756,7 @@ def main(cargs=sys.argv):
         dataLoc,
         backend,
         True,
+        silent=AUTO,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -746,6 +765,7 @@ def main(cargs=sys.argv):
         version=version,
     )
     if app is None:
+        console(f&#34;{TF_ERROR}&#34;)
         return
 
     kernel = makeTfKernel(app, appName, portKernel)
@@ -788,18 +808,23 @@ if __name__ == &#34;__main__&#34;:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.kernel.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.10/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
+<span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.11/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/kernel.py#L625-L676" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/kernel.py#L638-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
     if not args:
+        console(f&#34;{TF_ERROR}&#34;)
+        return
+
+    if not Cap.can(&#34;browser&#34;):
+        console(f&#34;{TF_ERROR}&#34;)
         return
 
     (dataSource, portKernel) = args
@@ -828,6 +853,7 @@ if __name__ == &#34;__main__&#34;:
         dataLoc,
         backend,
         True,
+        silent=AUTO,
         checkout=checkout,
         mod=moduleRefs,
         locations=locations,
@@ -836,6 +862,7 @@ if __name__ == &#34;__main__&#34;:
         version=version,
     )
     if app is None:
+        console(f&#34;{TF_ERROR}&#34;)
         return
 
     kernel = makeTfKernel(app, appName, portKernel)
@@ -859,9 +886,12 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/kernel.py#L606-L619" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/kernel.py#L616-L632" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
+    if not Cap.can(&#34;browser&#34;):
+        return None
+
     class TfConnection(object):
         def connect(self):
             try:
@@ -885,12 +915,17 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/server/kernel.py#L103-L600" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/server/kernel.py#L108-L610" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
+    if not Cap.can(&#34;browser&#34;):
+        console(f&#34;{TF_ERROR}&#34;)
+        return False
+
     if not app.api:
         console(f&#34;{TF_ERROR}&#34;)
         return False
+
     TF = app.api.TF
     reset = TF.reset
     cache = TF.cache
@@ -1473,7 +1508,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="DANS"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

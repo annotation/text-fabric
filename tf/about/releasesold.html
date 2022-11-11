@@ -25,6 +25,145 @@
 <section id="section-intro">
 <p>Newer releases: <code><a title="tf.about.releases" href="releases.html">tf.about.releases</a></code></p>
 <h1 id="older-releases">Older releases</h1>
+<h2 id="10">10</h2>
+<h3 id="102">10.2</h3>
+<h4 id="1027">10.2.7</h4>
+<p>2022-10-12</p>
+<p>Small fixes.
+Packaging is now done with setup.cfg instead of setup.py.</p>
+<h4 id="1026">10.2.6</h4>
+<p>2022-09-23</p>
+<p>The function <code><a title="tf.core.nodes.Nodes.walk" href="../core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code> also accepts a parameter <code>nodes</code>,
+so that you can not only walk through the total nodes set, but also
+through arbitrary nodesets. Always in canonical order.</p>
+<p>There is a new function <code><a title="tf.core.helpers.xmlEsc" href="../core/helpers.html#tf.core.helpers.xmlEsc">xmlEsc()</a></code>.</p>
+<h4 id="1025">10.2.5</h4>
+<p>2022-09-13</p>
+<ul>
+<li>
+<p>fix of a bug in the TF-browser caused by the previous change: the headings of section-3 levels
+came out wrong</p>
+</li>
+<li>
+<p>the second parameter of <code>plainTuple()</code> and <code>prettyTuple()</code> is now optional.
+It passes the sequence number of the tuple to display.
+This is useful if the tuple is a member of a bigger list, but not if the tuple
+stands on its own.</p>
+</li>
+</ul>
+<h4 id="1022-4">10.2.2-4</h4>
+<p>2022-09-08</p>
+<p>Changes in the output of Text-Fabric to the console.
+It is detected whether it runs in interactive mode (e.g. Jupyter notebook) or not.
+If not, the display methods of the Jupyter notebook are suppressed,
+and many outputs are done in plain text instead of HTML.</p>
+<p>Fixes in volume support.</p>
+<p>Small fixes in version mappings.</p>
+<h4 id="1021">10.2.1</h4>
+<p>2022-08-23</p>
+<p>Changes in the messages that TF emits.
+Several functions have an optional <code>silent</code> parameter
+by which you could control the verbosity of TF.</p>
+<p>That parameter now accepts different values, although the old
+values still work with nearly the same effect.</p>
+<p>The default value for silent results in slightly terser
+behaviour than the previous default setting.</p>
+<p>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>.</p>
+<h4 id="1020">10.2.0</h4>
+<p>2022-08-18</p>
+<p>The <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> function has an extra optional parameter <code>loadData=True</code>
+by which you can prevent data loading.
+That is useful if you want to inspect properties of a dataset without
+the costly loading of much data.</p>
+<p>There is a new function to get existing volumes in a dataset:
+<code><a title="tf.volumes.extract.getVolumes" href="../volumes/extract.html#tf.volumes.extract.getVolumes">getVolumes()</a></code>.
+It is also available as methods on the <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> and <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> objects
+so you can also say <code>TF.getVolumes()</code> and <code>A.getVolumes()</code>.</p>
+<p>Improvements in the function <code><a title="tf.volumes.extract.extract" href="../volumes/extract.html#tf.volumes.extract.extract">extract()</a></code>:</p>
+<ul>
+<li>its third argument (<code>volumes</code>) is replaced from a positional
+argument into a keyword argument with default value <code>True</code>.</li>
+<li>Fixed a bug in reporting results </li>
+</ul>
+<p>Improvement in the function <code><a title="tf.volumes.collect.collect" href="../volumes/collect.html#tf.volumes.collect.collect">collect()</a></code>:</p>
+<ul>
+<li>Fixed a crash that occurred while executing this function under certain conditions</li>
+</ul>
+<h3 id="101">10.1</h3>
+<h4 id="1010">10.1.0</h4>
+<p>2022-07-13</p>
+<p>Addition of a module <code><a title="tf.convert.variants" href="../convert/variants.html">tf.convert.variants</a></code> that can be used in a <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.
+It can be used to process TEI app-lem-rdg elements (critical apparatus).
+What it does for you is to create sentence-like nodes from sentence-boundary information.
+It deals with the cases where variants have different sentence boundaries.</p>
+<p>Some minor fixes in defaults and documentation.</p>
+<h3 id="100">10.0</h3>
+<h4 id="1004">10.0.4</h4>
+<p>2022-07-04</p>
+<p>Addition to the <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> api: <code>cv.link()</code> to manually link a node
+to existing slots instead of relying on the automatic linking.</p>
+<h4 id="1003">10.0.3</h4>
+<p>2022-06-22</p>
+<p>Bug fix in the Text-Fabric browser.
+Spotted by Jorik Groen.</p>
+<p>The Text-Fabric browser was not able to download data correctly, because
+it communicated the name of the backend incorrectly to the TF-kernel.</p>
+<h4 id="1002">10.0.2</h4>
+<p>2022-06-20</p>
+<p>It is now also possible to have datasets and modules of datasets coming
+from different backends.</p>
+<p>Refactoring:</p>
+<ul>
+<li>ditched the word <code>host</code>. Used <code>backend</code> instead.</li>
+<li>the <code>~/text-fabric-data</code> cache dir now first has a layer of subdirectories
+according to the backend that the data comes from: <code>github</code>, <code>gitlab</code> and
+whatever server is serving a GitLab instance.</li>
+<li>subfolder download for GitLab is supported if the gitlab backend supports it.
+If not, we fall back on downloading the whole repo and then discarding what we
+do not need. Gitlabs with versions at least 14.4.0 support downloading of subfolders.</li>
+</ul>
+<h4 id="1001">10.0.1</h4>
+<p>2022-06-17</p>
+<p>Small fix. GitLab.com supports downloading of subfolders,
+and I am prepared to make use of that
+but the current python-gitlab module does not support that part of the API.
+So I work around it.</p>
+<h4 id="1000">10.0.0</h4>
+<p>2022-06-17</p>
+<p><strong>Additions</strong></p>
+<p><em>Backend support</em>: see <code><a title="tf.advanced.repo.checkoutRepo" href="../advanced/repo.html#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code> and <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code>.</p>
+<p>A backend is an online repository where TF apps/data can be stored.</p>
+<p>Up till now, Text-Fabric worked with a single backend: <strong>GitHub</strong>.
+It uses the API of GitHub to find releases and commits and to download
+required data on demand.</p>
+<p>With this version, Text-Fabric can also talk to GitLab instances.</p>
+<p>The most prominent calls on the backend are the <code>use()</code> function
+and the start of the Text-Fabric browser.</p>
+<p>They will work with a GitLab backend if you pass the instance address
+with the optional parameter <code>backend</code>:</p>
+<pre><code class="language-python">A = use(&quot;annotation/banks&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
+</code></pre>
+<p>or</p>
+<pre><code class="language-python">A = use(&quot;annotation/banks&quot;, backend=&quot;gitlab.com&quot;)
+</code></pre>
+<p>In the Text-Fabric browser that looks as follows:</p>
+<pre><code class="language-sh">text-fabric annotation/banks --backend=gitlab.huc.knaw.nl
+</code></pre>
+<p>or</p>
+<pre><code class="language-sh">text-fabric annotation/banks --backend=gitlab.com
+</code></pre>
+<p>When <code>backend</code> is omitted or is <code>None</code>, the backend defaults to <code>github</code>.</p>
+<p><strong>Limitations</strong></p>
+<p>GitLab does not support Jupyter Notebooks.
+And even if you converted them to HTML, GitLab does not offer a rendered view on HTML pages,
+unless you use GitLab Pages.</p>
+<p>But that is not always enabled.</p>
+<p>Currently, Text-Fabric does not support publishing to GitLab pages,
+although everything up to building a Pages site is supported.</p>
+<p>When on a closed on-premise installation of GitLab, there is no way to
+see rendered notebooks on NBViewer, simply because NBViewer has no access
+to the shielded notebooks.</p>
+<hr>
 <h2 id="9">9</h2>
 <h3 id="95">9.5</h3>
 <h4 id="952">9.5.2</h4>
@@ -68,6 +207,7 @@ when the node starts and something else when the node ends.</p>
 <li>functions with file or directory arguments always perform an expansion
 of a leading <code>~</code> to the user's home directory.</li>
 </ul>
+<h3 id="94">9.4</h3>
 <h4 id="944">9.4.4</h4>
 <p>2022-05-16</p>
 <p>Several minor improvements in various parts of the app.</p>
@@ -102,7 +242,7 @@ Setting it to <code>None</code> or 0 restores the default of 4 * maxNode.
 You cannot pass custom limits in the text-fabric browser.</p>
 </li>
 </ul>
-<h3 id="94">9.4</h3>
+<h3 id="93">9.3</h3>
 <h4 id="932">9.3.2</h4>
 <p>2022-03-21</p>
 <p>Bug in Text-Fabric browser: corpora that show a pretty display for section items instead
@@ -118,7 +258,7 @@ on the text format chosen.
 It is right below the query window.
 From there you can click to copy characters and then paste them in the
 query window.</p>
-<h4 id="93">9.3</h4>
+<h3 id="92">9.2</h3>
 <h4 id="925">9.2.5</h4>
 <p>2022-02-04</p>
 <p>When precomputing section data, better error messages are generated
@@ -141,7 +281,7 @@ so that older versions of older apps still can be loaded.</p>
 <p>The text-fabric browser did not start-up well.
 That has been fixed.
 Loading an app from an arbitrary location on the local machine has been fixed.</p>
-<h4 id="92">9.2</h4>
+<h3 id="91">9.1</h3>
 <p>2022-01-06</p>
 <p>A big reorganization, so that all things related to a corpus can be stored in the
 same neighbourhood.
@@ -287,7 +427,8 @@ Small fixes in the handling of these configuration settings.</p>
 It now works in Safari 15.0 on the Mac.
 It also works in browsers on iOs and iPadOs.
 The hints have been updated.</p>
-<h4 id="91">9.1</h4>
+<h3 id="90">9.0</h3>
+<h4 id="905">9.0.5</h4>
 <p>2021-09-10</p>
 <p><strong>Additions to the API</strong></p>
 <p>The display functions are</p>
@@ -366,7 +507,6 @@ out of portions without the need of having the whole work in RAM.</p>
 <li>"tf.compose.nodemaps" has moved to <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code></li>
 <li>"tf.compose.Versions" has moved to <code><a title="tf.dataset.nodemaps.Versions" href="../dataset/nodemaps.html#tf.dataset.nodemaps.Versions">Versions</a></code></li>
 </ul>
-<h3 id="90">9.0</h3>
 <hr>
 <h2 id="8">8</h2>
 <h3 id="85">8.5</h3>
@@ -572,7 +712,7 @@ that turns a graph fragment into a tree for display.</p>
 <p>The unravel function is also exposed as <code>A.unravel(node)</code>,
 see <code><a title="tf.advanced.unravel.unravel" href="../advanced/unravel.html#tf.advanced.unravel.unravel">unravel()</a></code>.</p>
 <p>Now you can define your own rendering function, taking the unraveled tree as input.</p>
-<h4 id="new-display-settings">New display settings</h4>
+<h5 id="new-display-settings">New display settings</h5>
 <p>See <code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>.</p>
 <ul>
 <li><code>plainGaps</code>: normally, gaps are shown in plain displays.
@@ -587,7 +727,7 @@ by default, and the user can switch them all on or all off.</p>
 combinations of node types.</p>
 </li>
 </ul>
-<h4 id="tf-browser">TF browser</h4>
+<h5 id="tf-browser">TF browser</h5>
 <p>Various fixes:</p>
 <ul>
 <li>Starting in v8, the ports through which the TF-browser communicates are no longer
@@ -622,7 +762,7 @@ all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
 <code>A.dm(markdownString)</code> and <code>A.dh(htmlString)</code>.</p>
 <p>See <code><a title="tf.advanced.helpers.dm" href="../advanced/helpers.html#tf.advanced.helpers.dm">dm()</a></code> and <code><a title="tf.advanced.helpers.dh" href="../advanced/helpers.html#tf.advanced.helpers.dh">dh()</a></code>.</p>
 </div>
-<h4 id="backward-incompatibility_1">Backward incompatibility</h4>
+<h5 id="backward-incompatibility_1">Backward incompatibility</h5>
 <div class="admonition caution">
 <p class="admonition-title">corpus apps</p>
 <p>The API between TF and its apps has changed.
@@ -1184,7 +1324,7 @@ Now the generic TF advanced is robust against this.</p>
 <p>2019-03-14</p>
 <p>Modified <code>E.feature.b()</code> so that it gives precedence to outgoing edges.</p>
 <p>Further tweaks in layout of <code>plain()</code>.</p>
-<h4 id="75_1">7.5</h4>
+<h4 id="750">7.5.0</h4>
 <p>2019-03-13</p>
 <p>API addition for <code>E</code> (edges):</p>
 <pre><code>E.feature.b()
@@ -1932,7 +2072,7 @@ So far it was fixed to <code>verse</code> for the bhsa and <code>tablet</code> f
 <p>The docs are lagging behind!
 But it is shown in the tutorials and you can observer it in the text-fabric browser.</p>
 <h3 id="50">5.0</h3>
-<h4 id="501234">5.0.1,2,3,4</h4>
+<h4 id="501-4">5.0.1-4</h4>
 <p>2018-06-19</p>
 <p>Addressed start-up problems.</p>
 <h4 id="500">5.0.0</h4>
@@ -1942,7 +2082,7 @@ It is implemented for Bhsa and Uruk.</p>
 <hr>
 <h2 id="4">4</h2>
 <h3 id="44">4.4</h3>
-<h4 id="4423">4.4.2,3</h4>
+<h4 id="442-3">4.4.2-3</h4>
 <p>2018-06-13</p>
 <p>New distribution method with setuptools.
 Text-Fabric has now dependencies on modules rpyc and bottle,
@@ -1963,7 +2103,7 @@ You can just say <code>\|</code> and <code>\.</code>.</p>
 <p>S.search() accepts a new optional parameter: <code>withContext</code>.
 It triggers the output of context information for nodes in the result tuples.</p>
 <h3 id="43">4.3</h3>
-<h4 id="434-435">4.3.4, 4.3.5</h4>
+<h4 id="434-5">4.3.4-5</h4>
 <p>2018-06-05</p>
 <p>Search API:</p>
 <p>The <code>/with/ /or/ /or/ /-/</code> quantifier is also allowed with zero <code>/or/</code> s.</p>
@@ -2104,7 +2244,7 @@ nesting level;</li>
 <li>cases have a feature <strong>depth</strong> now, indicating at which level of nesting they
 are.</li>
 </ul>
-<h4 id="348-9-10">3.4.8-9-10</h4>
+<h4 id="348-10">3.4.8-10</h4>
 <p>2018-04-30</p>
 <p>Various small fixes, such as:</p>
 <ul>
@@ -2396,7 +2536,7 @@ otherwise it does not work.</p>
 <p>2017-05-12</p>
 <p>Fixes. Added an extra default location for looking for text-fabric-data sources,
 for the benefit of running text-fabric within a shared notebook service.</p>
-<h4 id="235-236">2.3.5, 2.3.6</h4>
+<h4 id="235-6">2.3.5-6</h4>
 <p>2017-03-01</p>
 <p>Bug fix in Search. Spotted by Cody Kingham. Relational operators between atoms
 in the template got discarded after an outdent.</p>
@@ -2529,7 +2669,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/bdfc22ef873ae560a10c970610324e7117ff2933/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5760b670709c4be44256e51cdeea8af5d464ae31/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
@@ -2601,26 +2741,57 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#older-releases">Older releases</a><ul>
+<li><a href="#10">10</a><ul>
+<li><a href="#102">10.2</a><ul>
+<li><a href="#1027">10.2.7</a></li>
+<li><a href="#1026">10.2.6</a></li>
+<li><a href="#1025">10.2.5</a></li>
+<li><a href="#1022-4">10.2.2-4</a></li>
+<li><a href="#1021">10.2.1</a></li>
+<li><a href="#1020">10.2.0</a></li>
+</ul>
+</li>
+<li><a href="#101">10.1</a><ul>
+<li><a href="#1010">10.1.0</a></li>
+</ul>
+</li>
+<li><a href="#100">10.0</a><ul>
+<li><a href="#1004">10.0.4</a></li>
+<li><a href="#1003">10.0.3</a></li>
+<li><a href="#1002">10.0.2</a></li>
+<li><a href="#1001">10.0.1</a></li>
+<li><a href="#1000">10.0.0</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#9">9</a><ul>
 <li><a href="#95">9.5</a><ul>
 <li><a href="#952">9.5.2</a></li>
 <li><a href="#951">9.5.1</a></li>
 <li><a href="#950">9.5.0</a></li>
+</ul>
+</li>
+<li><a href="#94">9.4</a><ul>
 <li><a href="#944">9.4.4</a></li>
 <li><a href="#942-3">9.4.2-3</a></li>
 <li><a href="#941">9.4.1</a></li>
 <li><a href="#940">9.4.0</a></li>
 </ul>
 </li>
-<li><a href="#94">9.4</a><ul>
+<li><a href="#93">9.3</a><ul>
 <li><a href="#932">9.3.2</a></li>
 <li><a href="#930-1">9.3.0-1</a></li>
-<li><a href="#93">9.3</a></li>
+</ul>
+</li>
+<li><a href="#92">9.2</a><ul>
 <li><a href="#925">9.2.5</a></li>
 <li><a href="#924">9.2.4</a></li>
 <li><a href="#923">9.2.3</a></li>
 <li><a href="#921-2">9.2.1-2</a></li>
-<li><a href="#92">9.2</a></li>
+</ul>
+</li>
+<li><a href="#91">9.1</a><ul>
 <li><a href="#9113">9.1.13</a></li>
 <li><a href="#9112">9.1.12</a></li>
 <li><a href="#9111">9.1.11</a></li>
@@ -2633,14 +2804,16 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#914">9.1.4</a></li>
 <li><a href="#9123">9.1.2,3</a></li>
 <li><a href="#911">9.1.1</a></li>
-<li><a href="#91">9.1</a></li>
+</ul>
+</li>
+<li><a href="#90">9.0</a><ul>
+<li><a href="#905">9.0.5</a></li>
 <li><a href="#904">9.0.4</a></li>
 <li><a href="#902-903">9.0.2, 9.0.3</a></li>
 <li><a href="#901">9.0.1</a></li>
 <li><a href="#900">9.0.0</a></li>
 </ul>
 </li>
-<li><a href="#90">9.0</a></li>
 </ul>
 </li>
 <li><a href="#8">8</a><ul>
@@ -2681,16 +2854,20 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#833">8.3.3</a></li>
 <li><a href="#831-832">8.3.1, 8.3.2</a></li>
 <li><a href="#830">8.3.0</a></li>
-<li><a href="#backward-incompatibility">Backward incompatibility</a></li>
+<li><a href="#backward-incompatibility">Backward incompatibility</a><ul>
 <li><a href="#new-display-settings">New display settings</a></li>
 <li><a href="#tf-browser">TF browser</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#82">8.2</a><ul>
 <li><a href="#822">8.2.2</a></li>
 <li><a href="#821">8.2.1</a></li>
-<li><a href="#820">8.2.0</a></li>
+<li><a href="#820">8.2.0</a><ul>
 <li><a href="#backward-incompatibility_1">Backward incompatibility</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#81">8.1</a><ul>
@@ -2779,7 +2956,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#753">7.5.3</a></li>
 <li><a href="#752">7.5.2</a></li>
 <li><a href="#751">7.5.1</a></li>
-<li><a href="#75_1">7.5</a></li>
+<li><a href="#750">7.5.0</a></li>
 </ul>
 </li>
 <li><a href="#74">7.4</a><ul>
@@ -2930,7 +3107,7 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><a href="#50">5.0</a><ul>
-<li><a href="#501234">5.0.1,2,3,4</a></li>
+<li><a href="#501-4">5.0.1-4</a></li>
 <li><a href="#500">5.0.0</a></li>
 </ul>
 </li>
@@ -2938,13 +3115,13 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#4">4</a><ul>
 <li><a href="#44">4.4</a><ul>
-<li><a href="#4423">4.4.2,3</a></li>
+<li><a href="#442-3">4.4.2-3</a></li>
 <li><a href="#441">4.4.1</a></li>
 <li><a href="#440">4.4.0</a></li>
 </ul>
 </li>
 <li><a href="#43">4.3</a><ul>
-<li><a href="#434-435">4.3.4, 4.3.5</a></li>
+<li><a href="#434-5">4.3.4-5</a></li>
 <li><a href="#433">4.3.3</a></li>
 <li><a href="#432">4.3.2</a></li>
 <li><a href="#431">4.3.1</a></li>
@@ -2974,7 +3151,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#34">3.4</a><ul>
 <li><a href="#3412">3.4.12</a></li>
 <li><a href="#3411">3.4.11</a></li>
-<li><a href="#348-9-10">3.4.8-9-10</a></li>
+<li><a href="#348-10">3.4.8-10</a></li>
 <li><a href="#347">3.4.7</a></li>
 <li><a href="#346">3.4.6</a></li>
 <li><a href="#345">3.4.5</a></li>
@@ -3034,7 +3211,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#239">2.3.9</a></li>
 <li><a href="#238">2.3.8</a></li>
 <li><a href="#237">2.3.7</a></li>
-<li><a href="#235-236">2.3.5, 2.3.6</a></li>
+<li><a href="#235-6">2.3.5-6</a></li>
 <li><a href="#234">2.3.4</a></li>
 <li><a href="#233">2.3.3</a></li>
 <li><a href="#232">2.3.2</a></li>
@@ -3106,7 +3283,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="DANS"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
