@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L1-L1149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L1-L1149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -1228,7 +1228,7 @@ in <code><a title="tf.core.prepare" href="prepare.html">tf.core.prepare</a></cod
 <dl>
 <dt id="tf.core.fabric.FabricCore"><code class="flex name class">
 <span>class <span class="ident">FabricCore</span></span>
-<span>(</span><span>locations=None, modules=None, silent='terse')</span>
+<span>(</span><span>locations=None, modules=None, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialize the core API for a corpus.</p>
@@ -1297,7 +1297,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L121-L1149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L121-L1149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore(object):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -2388,7 +2388,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L530-L553" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L530-L553" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2417,7 +2417,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 </details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.explore"><code class="name flex">
-<span>def <span class="ident">explore</span></span>(<span>self, silent='terse', show=True)</span>
+<span>def <span class="ident">explore</span></span>(<span>self, silent='auto', show=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Makes categorization of all features in the dataset.</p>
@@ -2453,7 +2453,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L438-L512" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L438-L512" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2558,7 +2558,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L782-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L782-L812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2656,7 +2656,7 @@ metadata.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L814-L883" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L814-L883" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2731,7 +2731,7 @@ metadata.</p>
 </details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.load"><code class="name flex">
-<span>def <span class="ident">load</span></span>(<span>self, features, add=False, silent='terse')</span>
+<span>def <span class="ident">load</span></span>(<span>self, features, add=False, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads features from disk into RAM memory.</p>
@@ -2760,7 +2760,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L275-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L275-L436" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2927,7 +2927,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 </details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.loadAll"><code class="name flex">
-<span>def <span class="ident">loadAll</span></span>(<span>self, silent='terse')</span>
+<span>def <span class="ident">loadAll</span></span>(<span>self, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load all loadable features.</p>
@@ -2939,7 +2939,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L514-L528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L514-L528" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -2959,7 +2959,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 </details>
 </dd>
 <dt id="tf.core.fabric.FabricCore.save"><code class="name flex">
-<span>def <span class="ident">save</span></span>(<span>self, nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None, silent='terse')</span>
+<span>def <span class="ident">save</span></span>(<span>self, nodeFeatures={}, edgeFeatures={}, metaData={}, location=None, module=None, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Saves newly generated data to disk as TF features, nodes and/or edges.</p>
@@ -3040,7 +3040,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/core/fabric.py#L555-L780" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/core/fabric.py#L555-L780" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

@@ -137,24 +137,16 @@ for Edge does not support the
 element.</p>
 <h4 id="on-linux">On Linux?</h4>
 <p>On Ubuntu 18.04 Python 3.6 is already installed.
-But you have to install pip3 in order to add the Python package text-fabric.</p>
+But you have to install pip in order to add the Python package text-fabric.</p>
 <pre><code class="language-sh">sudo apt install python3-pip
 </code></pre>
 <h3 id="text-fabric">Text-Fabric</h3>
 <h3 id="installation">Installation</h3>
-<p>(macos or linux (non-anaconda))</p>
-<pre><code class="language-sh">pip3 install text-fabric
-</code></pre>
-<p>(windows or linux (anaconda))</p>
 <pre><code class="language-sh">pip install text-fabric
 </code></pre>
 <h4 id="to-3-or-not-to-3">To 3 or not to 3?</h4>
-<p>From now on we always use <code>python3</code> and <code>pip3</code> in instructions.</p>
-<p>On Windows you have to say <code>python</code> and <code>pip</code>.
-There are more differences, when you go further with programming.</p>
-<p>Also, if you use Anaconda, whether on Windows or Mac or Linux, it is <code>pip</code>.</p>
-<p>Advice: if you are serious on programming, consider switching to a <code>Unix</code>-like
-platform, such as Linux or the Mac (macos).</p>
+<p>On older versions of macos and/or linux you may have to say <code>pip3</code> instead of <code>pip</code>.
+The same holds for <code>python</code> versus <code>python3</code>.</p>
 <h4 id="on-linux_1">On Linux?</h4>
 <ul>
 <li>On Ubuntu the text-fabric script ends up in your <code>~/.local/bin</code> directory,
@@ -170,26 +162,26 @@ If you get tired of this, you can add this to your <code>.bashrc</code> file:</p
 export PATH
 </code></pre>
 <h3 id="upgrade-text-fabric">Upgrade Text-Fabric</h3>
-<pre><code class="language-sh">pip3 install --upgrade text-fabric
+<pre><code class="language-sh">pip install --upgrade text-fabric
 </code></pre>
 <h3 id="tf-data">TF data</h3>
 <p>In order to work with a corpus you need its data.</p>
 <p><code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> tells you how to get the corpus data.</p>
 <h2 id="jupyter-notebooklab">Jupyter notebook/lab</h2>
 <p>Optionally install <a href="https://jupyter.org">Jupyter</a> as well:</p>
-<pre><code class="language-sh">pip3 install jupyter
+<pre><code class="language-sh">pip install jupyter
 </code></pre>
 <p><em>Jupyter lab</em> is a nice context to work with Jupyter notebooks.
 Recommended for working with the
 the tutorials of Text-Fabric.
 Also when you want to copy and paste cells from one notebook
 to another.</p>
-<pre><code class="language-sh">pip3 install jupyterlab
+<pre><code class="language-sh">pip install jupyterlab
 </code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/install.md

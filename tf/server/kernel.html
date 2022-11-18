@@ -35,7 +35,7 @@ it is primarily template search that is offered.
 see <em>Kernel API</em> below.</p>
 <h2 id="start">Start</h2>
 <p>You can run the TF kernel as follows:</p>
-<pre><code class="language-sh">python3 -m tf.server.kernel ddd
+<pre><code class="language-sh">python -m tf.server.kernel ddd
 </code></pre>
 <p>where <code>ddd</code> points to a corpus, see <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code>.</p>
 <div class="admonition example">
@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/kernel.py#L1-L715" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/kernel.py#L1-L715" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -103,7 +103,7 @@ see *Kernel API* below.
 You can run the TF kernel as follows:
 
 ```sh
-python3 -m tf.server.kernel ddd
+python -m tf.server.kernel ddd
 ```
 
 where `ddd` points to a corpus, see `tf.app.use`.
@@ -815,7 +815,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/kernel.py#L638-L696" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/kernel.py#L638-L696" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -886,7 +886,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/kernel.py#L616-L632" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/kernel.py#L616-L632" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
     if not Cap.can(&#34;browser&#34;):
@@ -915,7 +915,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/kernel.py#L108-L610" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/kernel.py#L108-L610" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not Cap.can(&#34;browser&#34;):

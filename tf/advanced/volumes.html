@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/advanced/volumes.py#L1-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/volumes.py#L1-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -69,6 +69,9 @@ def volumesApi(app):
 
     TF = app.TF
 
+    if TF is None:
+        return
+
     app.collectionInfo = None
     app.volumeInfo = None
 
@@ -93,6 +96,9 @@ def getVolumes(app, *args, **kwargs):
 
     TF = app.TF
 
+    if TF is None:
+        return []
+
     return TF.getVolumes(*args, **kwargs)
 
 
@@ -101,12 +107,18 @@ def extract(app, *args, **kwargs):
 
     TF = app.TF
 
+    if TF is None:
+        return {}
+
     return TF.extract(*args, **kwargs)
 
 
 def collect(app, *args, **kwargs):
     &#34;&#34;&#34;Calls `tf.fabric.Fabric.collect` from an app object.&#34;&#34;&#34;
     TF = app.TF
+
+    if TF is None:
+        return False
 
     return TF.collect(*args, **kwargs)</code></pre>
 </details>
@@ -126,11 +138,14 @@ def collect(app, *args, **kwargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/advanced/volumes.py#L76-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/volumes.py#L85-L92" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(app, *args, **kwargs):
     &#34;&#34;&#34;Calls `tf.fabric.Fabric.collect` from an app object.&#34;&#34;&#34;
     TF = app.TF
+
+    if TF is None:
+        return False
 
     return TF.collect(*args, **kwargs)</code></pre>
 </details>
@@ -143,12 +158,15 @@ def collect(app, *args, **kwargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/advanced/volumes.py#L68-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/volumes.py#L74-L82" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(app, *args, **kwargs):
     &#34;&#34;&#34;Calls `tf.fabric.Fabric.extract` from an app object.&#34;&#34;&#34;
 
     TF = app.TF
+
+    if TF is None:
+        return {}
 
     return TF.extract(*args, **kwargs)</code></pre>
 </details>
@@ -167,7 +185,7 @@ so you can use it after</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/advanced/volumes.py#L51-L65" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/volumes.py#L54-L71" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(app, *args, **kwargs):
     &#34;&#34;&#34;Calls `tf.fabric.Fabric.getVolumes` from an app object.
@@ -182,6 +200,9 @@ so you can use it after</p>
     &#34;&#34;&#34;
 
     TF = app.TF
+
+    if TF is None:
+        return []
 
     return TF.getVolumes(*args, **kwargs)</code></pre>
 </details>
@@ -206,7 +227,7 @@ under the main directory with feature files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/advanced/volumes.py#L16-L48" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/volumes.py#L16-L51" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def volumesApi(app):
     &#34;&#34;&#34;Produce the volume support functions API.
@@ -232,6 +253,9 @@ under the main directory with feature files.</p>
         app.collect = types.MethodType(collect, app)
 
     TF = app.TF
+
+    if TF is None:
+        return
 
     app.collectionInfo = None
     app.volumeInfo = None

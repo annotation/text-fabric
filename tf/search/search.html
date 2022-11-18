@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L1-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L1-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search (top-level)
@@ -586,14 +586,14 @@ class Search(object):
 <dl>
 <dt id="tf.search.search.Search"><code class="flex name class">
 <span>class <span class="ident">Search</span></span>
-<span>(</span><span>api, silent='terse')</span>
+<span>(</span><span>api, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L11-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L11-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Search(object):
     &#34;&#34;&#34; &#34;&#34;&#34;
@@ -1174,7 +1174,7 @@ on the screen in a series of timed messages.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L391-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L391-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     &#34;&#34;&#34;Counts the results, with progress messages, optionally up to a limit.
@@ -1276,7 +1276,7 @@ returned as a tuple.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L324-L389" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L324-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None, _msgCache=False):
     &#34;&#34;&#34;Retrieves query results, up to a limit.
@@ -1388,7 +1388,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L477-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L477-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def glean(self, tup):
     &#34;&#34;&#34;Renders a single result into something human readable.
@@ -1474,7 +1474,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L461-L475" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L461-L475" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def relationsLegend(self):
     &#34;&#34;&#34;Dynamic info about the basic relations that can be used in templates.
@@ -1494,7 +1494,7 @@ See <code><a title="tf.advanced.display.show" href="../advanced/display.html#tf.
 </details>
 </dd>
 <dt id="tf.search.search.Search.search"><code class="name flex">
-<span>def <span class="ident">search</span></span>(<span>self, searchTemplate, limit=None, sets=None, shallow=False, silent='terse', here=True)</span>
+<span>def <span class="ident">search</span></span>(<span>self, searchTemplate, limit=None, sets=None, shallow=False, silent='auto', here=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Searches for combinations of nodes that together match a search template.</p>
@@ -1545,7 +1545,7 @@ and translated into a search plan. See <code><a title="tf.search.search.Search.s
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L167-L246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L167-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     self,
@@ -1651,7 +1651,7 @@ will be retrieved.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L435-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L435-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     &#34;&#34;&#34;Show the result of the latest study of a template.
@@ -1681,7 +1681,7 @@ will be retrieved.</dd>
 </details>
 </dd>
 <dt id="tf.search.search.Search.study"><code class="name flex">
-<span>def <span class="ident">study</span></span>(<span>self, searchTemplate, strategy=None, sets=None, shallow=False, here=True, silent='terse')</span>
+<span>def <span class="ident">study</span></span>(<span>self, searchTemplate, strategy=None, sets=None, shallow=False, here=True, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Studies a template to prepare for searching with it.</p>
@@ -1728,7 +1728,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L248-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L248-L322" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(
     self,
@@ -1808,7 +1808,7 @@ In the search template you can refer to those names to invoke those sets.</dd>
 </details>
 </dd>
 <dt id="tf.search.search.Search.tweakPerformance"><code class="name flex">
-<span>def <span class="ident">tweakPerformance</span></span>(<span>self, silent='terse', **kwargs)</span>
+<span>def <span class="ident">tweakPerformance</span></span>(<span>self, silent='auto', **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Tweak parameters that influence the search process.</p>
@@ -1911,7 +1911,7 @@ increase these values to 10000.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/search/search.py#L28-L165" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/search/search.py#L28-L165" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakPerformance(self, silent=SILENT_D, **kwargs):
     &#34;&#34;&#34;Tweak parameters that influence the search process.

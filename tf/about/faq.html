@@ -31,7 +31,7 @@ a lot of development going on.</p>
 <p>A working installation contains three parts that are updated occasionally,
 sometinmes slowly, other times rapidly:</p>
 <ul>
-<li>text-fabric itself, the Python library that you obtained by <code>pip3 install text-fabric</code>;</li>
+<li>text-fabric itself, the Python library that you obtained by <code>pip install text-fabric</code>;</li>
 <li>TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
 <code>text-fabric org/repo</code> or <code>A = use("org/repo")</code>;</li>
 <li>TF data, which was downloaded by that same statement that downloaded the app.</li>
@@ -42,19 +42,19 @@ sometinmes slowly, other times rapidly:</p>
 <p>Most likely, you installed Text-Fabric into another Python than you use when you run your
 Python programs. See Python Setup below.</p>
 <h3 id="failed-to-upgrade-text-fabric">Failed to upgrade Text-Fabric!</h3>
-<p>When you get errors doing <code>pip3 install text-fabric</code>, there is probably an older version around.
+<p>When you get errors doing <code>pip install text-fabric</code>, there is probably an older version around.
 You have to say</p>
-<pre><code class="language-sh">pip3 install --upgrade text-fabric
+<pre><code class="language-sh">pip install --upgrade text-fabric
 </code></pre>
 <p>If this still does not download the most recent version of <code>text-fabric</code>,
 it may have been caused by caching. Then say:</p>
-<pre><code class="language-sh">pip3 install --upgrade --no-cache-dir text-fabric
+<pre><code class="language-sh">pip install --upgrade --no-cache-dir text-fabric
 </code></pre>
 <p>You can check what the newest distributed version of Text-Fabric is on
 <a href="https://pypi.org/project/text-fabric/">PyPi</a>.</p>
 <h3 id="failed-to-upgrade-text-fabric-still">Failed to upgrade Text-Fabric (still)!</h3>
 <p>Old versions on your system might get in the way.</p>
-<p>Sometimes <code>pip3 uninstall text-fabric</code> fails to remove all traces of Text-Fabric.
+<p>Sometimes <code>pip uninstall text-fabric</code> fails to remove all traces of Text-Fabric.
 Here is how you can remove them manually:</p>
 <ul>
 <li>
@@ -80,7 +80,7 @@ Here is how you can remove them manually:</p>
 <p>After this, you can make a fresh install of <code>text-fabric</code>:</p>
 </li>
 </ul>
-<pre><code class="language-sh">pip3 install text-fabric
+<pre><code class="language-sh">pip install text-fabric
 </code></pre>
 <h2 id="python-setup">Python setup</h2>
 <p>If you are new to Python, it might be tricky to set up Python the right way.
@@ -161,7 +161,7 @@ from GitHub and familiarity with all the ways that Text-Fabric can obtain its da
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/about/faq.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/about/faq.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/faq.md

@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/web.py#L1-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/web.py#L1-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -195,8 +195,6 @@ import os
 import sys
 import pickle
 
-from werkzeug.serving import run_simple
-
 from ..capable import Capable
 from ..parameters import HOST
 from ..core.helpers import console, abspath
@@ -217,6 +215,7 @@ MY_DIR = os.path.dirname(abspath(__file__))
 
 Cap = Capable(&#34;browser&#34;)
 (Flask, send_file) = Cap.loadFrom(&#34;flask&#34;, &#34;Flask&#34;, &#34;send_file&#34;)
+run_simple = Cap.loadFrom(&#34;werkzeug.serving&#34;, &#34;run_simple&#34;)
 
 
 class Web(object):
@@ -353,7 +352,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/web.py#L125-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/web.py#L124-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -432,7 +431,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/web.py#L194-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/web.py#L193-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argWeb(cargs)
@@ -478,7 +477,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/server/web.py#L109-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/server/web.py#L108-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web(object):
     def __init__(self, portKernel):

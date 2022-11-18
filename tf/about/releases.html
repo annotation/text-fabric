@@ -33,6 +33,17 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
+<h3 id="1101">11.0.1</h3>
+<p>2022-11-18</p>
+<p>Small fixes: the newest version of the
+<a href="https://pygithub.readthedocs.io/en/latest/introduction.html">pygithub</a>
+module issues slightly different errors.
+Text-Fabric did not catch some of them, and went on after failures,
+which led to unspeakable and incomprehensible further errors.
+That has been fixed. </p>
+<p>As a consequence, we require the now newest release of that module,
+which in turns requires a Python version of at least 3.7.0.</p>
+<p>So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.</p>
 <h3 id="1100">11.0.0</h3>
 <p>2022-11-11</p>
 <p>Text-Fabric can be installed with different capabilities.</p>
@@ -43,146 +54,13 @@ or a more capable Text-Fabric with additional capabilities.</p>
 <p>Text-Fabric will detect what its capabilities are, and issue warnings
 if it asked to do tasks for which it lacks the capabilities.</p>
 <p>See more in <code><a title="tf.about.install" href="install.html">tf.about.install</a></code>.</p>
-<h2 id="1026">10.2.6</h2>
-<p>2022-09-23</p>
-<p>The function <code><a title="tf.core.nodes.Nodes.walk" href="../core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code> also accepts a parameter <code>nodes</code>,
-so that you can not only walk through the total nodes set, but also
-through arbitrary nodesets. Always in canonical order.</p>
-<p>There is a new function <code><a title="tf.core.helpers.xmlEsc" href="../core/helpers.html#tf.core.helpers.xmlEsc">xmlEsc()</a></code>.</p>
-<h2 id="1025">10.2.5</h2>
-<p>2022-09-13</p>
-<ul>
-<li>
-<p>fix of a bug in the TF-browser caused by the previous change: the headings of section-3 levels
-came out wrong</p>
-</li>
-<li>
-<p>the second parameter of <code>plainTuple()</code> and <code>prettyTuple()</code> is now optional.
-It passes the sequence number of the tuple to display.
-This is useful if the tuple is a member of a bigger list, but not if the tuple
-stands on its own.</p>
-</li>
-</ul>
-<h2 id="1022-4">10.2.2-4</h2>
-<p>2022-09-08</p>
-<p>Changes in the output of Text-Fabric to the console.
-It is detected whether it runs in interactive mode (e.g. Jupyter notebook) or not.
-If not, the display methods of the Jupyter notebook are suppressed,
-and many outputs are done in plain text instead of HTML.</p>
-<p>Fixes in volume support.</p>
-<p>Small fixes in version mappings.</p>
-<h2 id="1021">10.2.1</h2>
-<p>2022-08-23</p>
-<p>Changes in the messages that TF emits.
-Several functions have an optional <code>silent</code> parameter
-by which you could control the verbosity of TF.</p>
-<p>That parameter now accepts different values, although the old
-values still work with nearly the same effect.</p>
-<p>The default value for silent results in slightly terser
-behaviour than the previous default setting.</p>
-<p>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>.</p>
-<h2 id="1020">10.2.0</h2>
-<p>2022-08-18</p>
-<p>The <code><a title="tf.app.use" href="../app.html#tf.app.use">use()</a></code> function has an extra optional parameter <code>loadData=True</code>
-by which you can prevent data loading.
-That is useful if you want to inspect properties of a dataset without
-the costly loading of much data.</p>
-<p>There is a new function to get existing volumes in a dataset:
-<code><a title="tf.volumes.extract.getVolumes" href="../volumes/extract.html#tf.volumes.extract.getVolumes">getVolumes()</a></code>.
-It is also available as methods on the <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> and <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code> objects
-so you can also say <code>TF.getVolumes()</code> and <code>A.getVolumes()</code>.</p>
-<p>Improvements in the function <code><a title="tf.volumes.extract.extract" href="../volumes/extract.html#tf.volumes.extract.extract">extract()</a></code>:</p>
-<ul>
-<li>its third argument (<code>volumes</code>) is replaced from a positional
-argument into a keyword argument with default value <code>True</code>.</li>
-<li>Fixed a bug in reporting results </li>
-</ul>
-<p>Improvement in the function <code><a title="tf.volumes.collect.collect" href="../volumes/collect.html#tf.volumes.collect.collect">collect()</a></code>:</p>
-<ul>
-<li>Fixed a crash that occurred while executing this function under certain conditions</li>
-</ul>
-<h2 id="102">10.2</h2>
-<h2 id="1010">10.1.0</h2>
-<p>2022-07-13</p>
-<p>Addition of a module <code><a title="tf.convert.variants" href="../convert/variants.html">tf.convert.variants</a></code> that can be used in a <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion.
-It can be used to process TEI app-lem-rdg elements (critical apparatus).
-What it does for you is to create sentence-like nodes from sentence-boundary information.
-It deals with the cases where variants have different sentence boundaries.</p>
-<p>Some minor fixes in defaults and documentation.</p>
-<h2 id="101">10.1</h2>
-<h2 id="1004">10.0.4</h2>
-<p>2022-07-04</p>
-<p>Addition to the <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> api: <code>cv.link()</code> to manually link a node
-to existing slots instead of relying on the automatic linking.</p>
-<h2 id="1003">10.0.3</h2>
-<p>2022-06-22</p>
-<p>Bug fix in the Text-Fabric browser.
-Spotted by Jorik Groen.</p>
-<p>The Text-Fabric browser was not able to download data correctly, because
-it communicated the name of the backend incorrectly to the TF-kernel.</p>
-<h2 id="1002">10.0.2</h2>
-<p>2022-06-20</p>
-<p>It is now also possible to have datasets and modules of datasets coming
-from different backends.</p>
-<p>Refactoring:</p>
-<ul>
-<li>ditched the word <code>host</code>. Used <code>backend</code> instead.</li>
-<li>the <code>~/text-fabric-data</code> cache dir now first has a layer of subdirectories
-according to the backend that the data comes from: <code>github</code>, <code>gitlab</code> and
-whatever server is serving a GitLab instance.</li>
-<li>subfolder download for GitLab is supported if the gitlab backend supports it.
-If not, we fall back on downloading the whole repo and then discarding what we
-do not need. Gitlabs with versions at least 14.4.0 support downloading of subfolders.</li>
-</ul>
-<h2 id="1001">10.0.1</h2>
-<p>2022-06-17</p>
-<p>Small fix. GitLab.com supports downloading of subfolders,
-and I am prepared to make use of that
-but the current python-gitlab module does not support that part of the API.
-So I work around it.</p>
-<h2 id="1000">10.0.0</h2>
-<p>2022-06-17</p>
-<p><strong>Additions</strong></p>
-<p><em>Backend support</em>: see <code><a title="tf.advanced.repo.checkoutRepo" href="../advanced/repo.html#tf.advanced.repo.checkoutRepo">checkoutRepo()</a></code> and <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code>.</p>
-<p>A backend is an online repository where TF apps/data can be stored.</p>
-<p>Up till now, Text-Fabric worked with a single backend: <strong>GitHub</strong>.
-It uses the API of GitHub to find releases and commits and to download
-required data on demand.</p>
-<p>With this version, Text-Fabric can also talk to GitLab instances.</p>
-<p>The most prominent calls on the backend are the <code>use()</code> function
-and the start of the Text-Fabric browser.</p>
-<p>They will work with a GitLab backend if you pass the instance address
-with the optional parameter <code>backend</code>:</p>
-<pre><code class="language-python">A = use(&quot;annotation/banks&quot;, backend=&quot;gitlab.huc.knaw.nl&quot;)
-</code></pre>
-<p>or</p>
-<pre><code class="language-python">A = use(&quot;annotation/banks&quot;, backend=&quot;gitlab.com&quot;)
-</code></pre>
-<p>In the Text-Fabric browser that looks as follows:</p>
-<pre><code class="language-sh">text-fabric annotation/banks --backend=gitlab.huc.knaw.nl
-</code></pre>
-<p>or</p>
-<pre><code class="language-sh">text-fabric annotation/banks --backend=gitlab.com
-</code></pre>
-<p>When <code>backend</code> is omitted or is <code>None</code>, the backend defaults to <code>github</code>.</p>
-<p><strong>Limitations</strong></p>
-<p>GitLab does not support Jupyter Notebooks.
-And even if you converted them to HTML, GitLab does not offer a rendered view on HTML pages,
-unless you use GitLab Pages.</p>
-<p>But that is not always enabled.</p>
-<p>Currently, Text-Fabric does not support publishing to GitLab pages,
-although everything up to building a Pages site is supported.</p>
-<p>When on a closed on-premise installation of GitLab, there is no way to
-see rendered notebooks on NBViewer, simply because NBViewer has no access
-to the shielded notebooks.</p>
-<h2 id="100">10.0</h2>
 <hr>
 <h2 id="older-releases">Older releases</h2>
 <p>See <code><a title="tf.about.releasesold" href="releasesold.html">tf.about.releasesold</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ca87a0b6d3aa3ca0a1013b3db5a195eaef7b5ace/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -256,23 +134,10 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#110">11.0</a></li>
+<li><a href="#1101">11.0.1</a></li>
 <li><a href="#1100">11.0.0</a></li>
 </ul>
 </li>
-<li><a href="#1026">10.2.6</a></li>
-<li><a href="#1025">10.2.5</a></li>
-<li><a href="#1022-4">10.2.2-4</a></li>
-<li><a href="#1021">10.2.1</a></li>
-<li><a href="#1020">10.2.0</a></li>
-<li><a href="#102">10.2</a></li>
-<li><a href="#1010">10.1.0</a></li>
-<li><a href="#101">10.1</a></li>
-<li><a href="#1004">10.0.4</a></li>
-<li><a href="#1003">10.0.3</a></li>
-<li><a href="#1002">10.0.2</a></li>
-<li><a href="#1001">10.0.1</a></li>
-<li><a href="#1000">10.0.0</a></li>
-<li><a href="#100">10.0</a></li>
 <li><a href="#older-releases">Older releases</a></li>
 </ul>
 </li>
