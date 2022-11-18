@@ -10,7 +10,7 @@ a lot of development going on.
 A working installation contains three parts that are updated occasionally,
 sometinmes slowly, other times rapidly:
 
-* text-fabric itself, the Python library that you obtained by `pip3 install text-fabric`;
+* text-fabric itself, the Python library that you obtained by `pip install text-fabric`;
 * TF apps, the apps that are specialized in a specific corpus; you obtained it when you said
   `text-fabric org/repo` or `A = use("org/repo")`;
 * TF data, which was downloaded by that same statement that downloaded the app.
@@ -27,18 +27,18 @@ Python programs. See Python Setup below.
 
 ### Failed to upgrade Text-Fabric!
 
-When you get errors doing `pip3 install text-fabric`, there is probably an older version around.
+When you get errors doing `pip install text-fabric`, there is probably an older version around.
 You have to say
 
 ```sh
-pip3 install --upgrade text-fabric
+pip install --upgrade text-fabric
 ```
 
 If this still does not download the most recent version of `text-fabric`,
 it may have been caused by caching. Then say:
 
 ```sh
-pip3 install --upgrade --no-cache-dir text-fabric
+pip install --upgrade --no-cache-dir text-fabric
 ```
 
 You can check what the newest distributed version of Text-Fabric is on
@@ -48,7 +48,7 @@ You can check what the newest distributed version of Text-Fabric is on
 
 Old versions on your system might get in the way.
 
-Sometimes `pip3 uninstall text-fabric` fails to remove all traces of Text-Fabric.
+Sometimes `pip uninstall text-fabric` fails to remove all traces of Text-Fabric.
 Here is how you can remove them manually:
 
 * locate the `bin` directory of the current Python, it is something like
@@ -69,7 +69,7 @@ Here is how you can remove them manually:
 * After this, you can make a fresh install of `text-fabric`:
 
 ```sh
-pip3 install text-fabric
+pip install text-fabric
 ```
 
 ## Python setup

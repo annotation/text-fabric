@@ -18,7 +18,7 @@ see *Kernel API* below.
 You can run the TF kernel as follows:
 
 ```sh
-python3 -m tf.server.kernel ddd
+python -m tf.server.kernel ddd
 ```
 
 where `ddd` points to a corpus, see `tf.app.use`.

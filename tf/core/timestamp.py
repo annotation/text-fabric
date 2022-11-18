@@ -27,7 +27,7 @@ DEEP = "deep"
 """No output, except error messages.
 """
 
-SILENT_D = TERSE
+SILENT_D = AUTO
 """Default value for the silent parameter.
 
 The value is `"terse"`

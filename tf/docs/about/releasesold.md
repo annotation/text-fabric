@@ -1147,7 +1147,7 @@ There were two problems
 **NB: This is a backwards incompatible change. Strongly recommended:**
 
 ```sh
-pip3 install --upgrade text-fabric
+pip install --upgrade text-fabric
 ```
 
 **All known TF-apps (the ones in under the `annotation` org on GitHub) have been

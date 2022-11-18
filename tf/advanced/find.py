@@ -128,7 +128,7 @@ Your Text-Fabric is outdated and cannot use this version of the TF app `{org}/{r
 Recommendation: upgrade Text-Fabric.
 Hint:
 
-    pip3 install --upgrade text-fabric
+    pip install --upgrade text-fabric
 
 """,
                 error=True,

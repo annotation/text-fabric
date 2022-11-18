@@ -172,6 +172,7 @@ Most of the Text-Fabric API has not been loaded.
 """
                     )
             else:
+                self.TF = None
                 self.api = None
 
         if self.api:
@@ -560,7 +561,7 @@ def findApp(
     except Exception as e:
         if appClass is not App:
             console(
-                f"There was an error loading TF-app {appName} from {appPath}",
+                f"There was an error loading corpus {appName}",
                 error=True,
             )
             console(repr(e), error=True)

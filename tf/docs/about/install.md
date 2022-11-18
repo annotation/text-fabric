@@ -166,7 +166,7 @@ element.
 #### On Linux?
 
 On Ubuntu 18.04 Python 3.6 is already installed.
-But you have to install pip3 in order to add the Python package text-fabric.
+But you have to install pip in order to add the Python package text-fabric.
 
 ```sh
 sudo apt install python3-pip
@@ -176,29 +176,14 @@ sudo apt install python3-pip
 
 ### Installation
 
-(macos or linux (non-anaconda))
-
-```sh
-pip3 install text-fabric
-```
-
-(windows or linux (anaconda))
-
 ```sh
 pip install text-fabric
 ```
 
 #### To 3 or not to 3?
 
-From now on we always use `python3` and `pip3` in instructions.
-
-On Windows you have to say `python` and `pip`.
-There are more differences, when you go further with programming.
-
-Also, if you use Anaconda, whether on Windows or Mac or Linux, it is `pip`.
-
-Advice: if you are serious on programming, consider switching to a `Unix`-like
-platform, such as Linux or the Mac (macos).
+On older versions of macos and/or linux you may have to say `pip3` instead of `pip`.
+The same holds for `python` versus `python3`.
 
 #### On Linux?
 
@@ -222,7 +207,7 @@ export PATH
 ### Upgrade Text-Fabric
 
 ```sh
-pip3 install --upgrade text-fabric
+pip install --upgrade text-fabric
 ```
 
 ### TF data
@@ -236,7 +221,7 @@ In order to work with a corpus you need its data.
 Optionally install [Jupyter](https://jupyter.org) as well:
 
 ```sh
-pip3 install jupyter
+pip install jupyter
 ```
 
 *Jupyter lab* is a nice context to work with Jupyter notebooks.
@@ -246,5 +231,5 @@ Also when you want to copy and paste cells from one notebook
 to another.
 
 ```sh
-pip3 install jupyterlab
+pip install jupyterlab
 ```

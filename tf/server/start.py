@@ -4,7 +4,7 @@
 What the `text-fabric` script does is the same as:
 
 ```sh
-python3 -m tf.server.start
+python -m tf.server.start
 ```
 
 During start up the following happens:

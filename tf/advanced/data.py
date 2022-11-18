@@ -332,6 +332,8 @@ def getModulesData(*args):
 
     mData = AppData(*args)
     mData.getModules()
-    if mData.locations is None:
+
+    if not mData.good or mData.locations is None:
         return None
+
     return (mData.locations, mData.modules)

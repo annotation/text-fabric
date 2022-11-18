@@ -412,6 +412,8 @@ requests = Cap.load("requests")
     "github", "Github", "GithubException", "UnknownObjectException"
 )
 (Gitlab, GitlabGetError) = Cap.loadFrom("gitlab", "Gitlab", "GitlabGetError")
+requestsExceptions = Cap.loadFrom("requests", "exceptions")
+ConnectionError = requestsExceptions.ConnectionError
 
 VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
 SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")
@@ -419,6 +421,16 @@ SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")
 
 def GLPERS(backend):
     return f"GL_{SHELL_VAR_RE.sub('_', backend.upper())}_PERS"
+
+
+def catchRemaining(e):
+    eType = type(e)
+    if eType is ConnectionError:
+        console("no internet connection", error=True)
+    elif eType is IOError:
+        console("no internet", error=True)
+    else:
+        console(f"unexpected error from {e.__class__.__module__}: {str(e)}")
 
 
 class Repo:
@@ -544,11 +556,12 @@ class Repo:
             )
             self.repoOnline = conn.get_repo(f"{self.org}/{self.repo}")
             self.info("connected")
-        except GithubException as why:
+        except Exception as e:
             self.warning("failed")
-            self.warning(f"{backend} says: {why}")
-        except IOError:
-            self.warning("no internet")
+            if type(e) is GithubException:
+                self.warning(f"{backend} says: {str(e)}")
+            else:
+                catchRemaining(e)
 
         self.conn = conn
         return conn
@@ -619,8 +632,7 @@ class Repo:
             )
         except Exception as e:
             self.error("\tcannot create release", newline=True)
-            console(str(e), error=True)
-            return False
+            catchRemaining(e)
 
         self.newReleaseObj = newReleaseObj
         return True
@@ -648,7 +660,7 @@ class Repo:
             console(f"{dataFile} attached to release {newTag}")
         except Exception as e:
             self.error("\tcannot attach zipfile to release", newline=True)
-            console(str(e), error=True)
+            catchRemaining(e)
             return False
 
         return True
@@ -668,10 +680,12 @@ class Repo:
 
         try:
             r = g.get_latest_release()
-        except UnknownObjectException:
+        except Exception as e:
             self.error("\tno releases", newline=True)
-        except Exception:
-            self.error("\tcannot find releases", newline=True)
+            if type(e) is UnknownObjectException:
+                self.error("\tcannot find releases", newline=True)
+            else:
+                catchRemaining(e)
         return r
 
     def getCommit(self):
@@ -693,8 +707,9 @@ class Repo:
                 c = cs[0]
             else:
                 self.error("\tno commits")
-        except Exception:
+        except Exception as e:
             self.error("\tcannot find commits")
+            catchRemaining(e)
         return c
 
     def info(self, msg, newline=True):
@@ -921,7 +936,13 @@ class Checkout:
         if onGithub:
             person = os.environ.get("GHPERS", None)
             if person:
-                conn = Github(person)
+                try:
+                    conn = Github(person)
+                except Exception as e:
+                    self.error(f"Can't make connection to Github because of {e}")
+                    self.conn = None
+                    catchRemaining(e)
+                    return None
             else:
                 client = os.environ.get("GHCLIENT", None)
                 secret = os.environ.get("GHSECRET", None)
@@ -986,6 +1007,7 @@ class Checkout:
 
         if onGithub:
             try:
+                print("A")
                 rate = conn.get_rate_limit().core
                 self.info(
                     f"rate limit is {rate.limit} requests per hour,"
@@ -997,9 +1019,12 @@ class Checkout:
                         f"see {URL_TFDOC}/advanced/repo.html#github"
                     )
 
-            except GithubException as why:
+            except Exception as e:
                 self.warning("Could not get rate limit details")
-                self.warning(f"{bName} says: {why}")
+                if type(e) is GithubException:
+                    self.warning(f"{bName} says: {e}")
+                else:
+                    catchRemaining(e)
 
         self.info(
             f"\tconnecting to online {bName} repo {org}/{repo} ... ",
@@ -1007,25 +1032,26 @@ class Checkout:
         )
         repoOnline = None
 
-        try:
-            if onGithub:
-                try:
-                    repoOnline = conn.get_repo(f"{org}/{repo}")
-                    self.info("connected")
-                except GithubException as why:
-                    self.warning("failed")
-                    self.warning(f"{bName} says: {why}")
-            else:
-                try:
-                    repoOnline = conn.projects.get(f"{org}/{repo}")
-                    self.info("connected")
-                except GitlabGetError as why:
-                    self.warning("failed")
-                    self.warning(f"{bName} says: {why}")
-        except IOError as why:
-            self.warning("no internet")
-            self.warning("failed")
-            self.warning(f"{bName} says: {why}")
+        if onGithub:
+            try:
+                repoOnline = conn.get_repo(f"{org}/{repo}")
+                self.info("connected")
+            except Exception as e:
+                self.warning("failed")
+                if type(e) is GithubException:
+                    self.warning(f"{bName} says: {e}")
+                else:
+                    catchRemaining(e)
+        else:
+            try:
+                repoOnline = conn.projects.get(f"{org}/{repo}")
+                self.info("connected")
+            except Exception as e:
+                self.warning("failed")
+                if type(e) is GitlabGetError:
+                    self.warning(f"{bName} says: {e}")
+                else:
+                    catchRemaining(e)
 
         self.repoOnline = repoOnline
 
@@ -1159,11 +1185,13 @@ class Checkout:
                             self.error(
                                 f"The requested {label} is not available offline"
                             )
+                            self.error("A")
                     else:
                         self.warning(f"The requested {label} is not available offline")
                         self.error("No online connection")
                 elif not isOnline:
                     self.error(f"The requested {label} is not available online")
+                    self.error("C")
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -1408,8 +1436,9 @@ class Checkout:
                     msg = "\tFailed"
                     self.possibleError(msg, showErrors=showErrors, newline=True)
                     good = False
-        except Exception:
+        except Exception as e:
             msg = f"\tcould not save {label} to {destZip}"
+            console(str(e), error=True)
             self.possibleError(msg, showErrors=showErrors, again=True)
             os.chdir(cwd)
             return False
@@ -1442,14 +1471,19 @@ class Checkout:
                 lead = "\t" * level
                 try:
                     contents = g.get_contents(subPath, ref=commit)
-                except UnknownObjectException:
-                    msg = (
-                        f"{lead}No directory {subPath} in "
-                        f"{self.toString(commit, None, False, backend)}"
-                    )
-                    self.possibleError(msg, showErrors, again=True, indent=lead)
+                except Exception as e:
+                    if UnknownObjectException:
+                        msg = (
+                            f"{lead}No directory {subPath} in "
+                            f"{self.toString(commit, None, False, backend)}"
+                        )
+                        self.possibleError(msg, showErrors, again=True, indent=lead)
+                    else:
+                        catchRemaining(e)
+
                     good = False
                     return
+
                 for content in contents:
                     thisPath = content.path
                     self.info(f"\t{lead}{thisPath}...", newline=False)
@@ -1468,9 +1502,14 @@ class Checkout:
                             with open(fileDest, "wb") as fd:
                                 fd.write(fileData)
                             self.info("downloaded")
-                        except (GithubException, IOError):
-                            msg = "error"
-                            self.possibleError(msg, showErrors, again=True, indent=lead)
+                        except Exception as e:
+                            if type(e) is GithubException:
+                                msg = "error"
+                                self.possibleError(
+                                    msg, showErrors, again=True, indent=lead
+                                )
+                            else:
+                                catchRemaining(e)
                             good = False
 
             _downloadDir(self.dataDir, 0)
@@ -1514,16 +1553,12 @@ class Checkout:
         if onGithub:
             try:
                 r = g.get_release(release) if release else g.get_latest_release()
-            except UnknownObjectException:
+            except Exception as e:
                 self.possibleError(
                     f"\tcannot find release{msg}", showErrors, newline=True
                 )
-            except Exception:
-                self.possibleError(
-                    f"\tcannot find release{msg}",
-                    showErrors,
-                    newline=True,
-                )
+                if type(e) is not UnknownObjectException:
+                    catchRemaining(e)
         else:
             try:
                 if release:
@@ -1535,8 +1570,9 @@ class Checkout:
                         if releases
                         else None
                     )
-            except Exception:
+            except Exception as e:
                 r = None
+                console(str(e), error=True)
             if r is None:
                 self.possibleError(
                     f"\tcannot find release{msg}", showErrors, newline=True
@@ -1560,8 +1596,9 @@ class Checkout:
                     c = cs[0]
                 else:
                     self.error(f"\tcannot find commit{msg}")
-            except Exception:
+            except Exception as e:
                 self.error(f"\tcannot find commit{msg}")
+                console(str(e), error=True)
         else:
             try:
                 cs = g.commits.list(all=True)
@@ -1579,8 +1616,9 @@ class Checkout:
                             c = cs[-1]
                     if c is None:
                         self.error(f"\tcannot find commit{msg}")
-            except Exception:
+            except Exception as e:
                 self.error(f"\tcannot find commit{msg}")
+                console(str(e), error=True)
         return c
 
     def getReleaseFromObj(self, r):

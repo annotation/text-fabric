@@ -38,6 +38,9 @@ def volumesApi(app):
 
     TF = app.TF
 
+    if TF is None:
+        return
+
     app.collectionInfo = None
     app.volumeInfo = None
 
@@ -62,6 +65,9 @@ def getVolumes(app, *args, **kwargs):
 
     TF = app.TF
 
+    if TF is None:
+        return []
+
     return TF.getVolumes(*args, **kwargs)
 
 
@@ -70,11 +76,17 @@ def extract(app, *args, **kwargs):
 
     TF = app.TF
 
+    if TF is None:
+        return {}
+
     return TF.extract(*args, **kwargs)
 
 
 def collect(app, *args, **kwargs):
     """Calls `tf.fabric.Fabric.collect` from an app object."""
     TF = app.TF
+
+    if TF is None:
+        return False
 
     return TF.collect(*args, **kwargs)
