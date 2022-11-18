@@ -3,7 +3,7 @@ import re
 
 from IPython.display import display, Markdown, HTML
 
-from ..parameters import backendRep, TEMP_DIR
+from ..parameters import BACKEND_REP, TEMP_DIR
 from ..core.helpers import mdEsc, htmlEsc, expanduser, unexpanduser, QUAD, console
 from ..core.text import DEFAULT_FORMAT
 
@@ -157,7 +157,7 @@ def getLocalDir(backend, cfg, local, version):
     base = hasData(backend, local, org, repo, version, relative)
 
     if not base:
-        base = backendRep(backend, "cache")
+        base = BACKEND_REP(backend, "cache")
 
     return expanduser(f"{base}/{org}/{repo}/{TEMP_DIR}")
 
@@ -165,12 +165,12 @@ def getLocalDir(backend, cfg, local, version):
 def hasData(backend, local, org, repo, version, relative):
     versionRep = f"/{version}" if version else ""
     if local == "clone":
-        cloneBase = backendRep(backend, "clone")
+        cloneBase = BACKEND_REP(backend, "clone")
         ghTarget = f"{cloneBase}/{org}/{repo}/{relative}{versionRep}"
         if os.path.exists(ghTarget):
             return cloneBase
 
-    cacheBase = backendRep(backend, "cache")
+    cacheBase = BACKEND_REP(backend, "cache")
     cacheTarget = f"{cacheBase}/{org}/{repo}/{relative}{versionRep}"
     if os.path.exists(cacheTarget):
         return cacheBase

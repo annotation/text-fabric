@@ -8,7 +8,7 @@ import types
 from textwrap import dedent
 
 from ..parameters import (
-    backendRep,
+    BACKEND_REP,
     URL_TFDOC,
     SEARCHREF,
     APIREF,
@@ -73,7 +73,7 @@ def linksApi(app, silent=SILENT_D):
     charText = aContext.charText
 
     tutUrl = (
-        f"{backendRep(backend, 'urlnb')}/"
+        f"{BACKEND_REP(backend, 'urlnb')}/"
         f"{org}/{repo}/blob/master/tutorial/start.ipynb"
     )
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
@@ -124,7 +124,7 @@ def linksApi(app, silent=SILENT_D):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f"{backendRep(backend, 'url')}/{org}/{repo}/blob/master/{APP_APP}"
+    extraUrl = f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/blob/master/{APP_APP}"
     appLink = (
         outLink(
             f"{org}/{repo}/app {apiVersionRep}",
@@ -575,8 +575,8 @@ def _featuresPerModule(app, allMeta=False):
                 else fixedModuleIndex[mId]
                 if mId in fixedModuleIndex
                 else (
-                    f"{backendRep(backend, 'rep')}{org}/{repo}/{relative}",
-                    f"{backendRep(backend, 'url')}/{org}/{repo}/tree/master/{relative}",
+                    f"{BACKEND_REP(backend, 'rep')}{org}/{repo}/{relative}",
+                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/master/{relative}",
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -643,7 +643,7 @@ def _featuresPerModule(app, allMeta=False):
                 ""
                 if type(mId) is str
                 else (
-                    f"{backendRep(mBackend, 'url')}/"
+                    f"{BACKEND_REP(mBackend, 'url')}/"
                     f"{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
                 )
             )
@@ -799,7 +799,7 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
         )
     )
     relativeFlat = relative.replace("/", "-")
-    bUrl = backendRep(backend, "url")
+    bUrl = BACKEND_REP(backend, "url")
     url = (
         None
         if org is None or repo is None

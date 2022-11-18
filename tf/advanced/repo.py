@@ -395,12 +395,12 @@ from zipfile import ZipFile
 from ..parameters import (
     GH,
     URL_TFDOC,
-    backendRep,
+    BACKEND_REP,
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
 )
-from ..core.helpers import console, htmlEsc, expanduser, initTree
+from ..core.helpers import console, htmlEsc, expanduser, initTree, unexpanduser
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from ..capable import Capable
 from .helpers import dh, runsInNotebook
@@ -444,7 +444,7 @@ class Repo:
         folder,
         version,
         increase,
-        source=backendRep(GH, "clone"),
+        source=BACKEND_REP(GH, "clone"),
         dest=DOWNLOADS,
     ):
         self.org = org
@@ -771,7 +771,7 @@ def releaseData(
     """
 
     if source is None or not source:
-        source = (backendRep(GH, "clone"),)
+        source = (BACKEND_REP(GH, "clone"),)
 
     R = Repo(GH, org, repo, folder, version, increase, source=source, dest=dest)
     return R.newRelease()
@@ -811,9 +811,9 @@ class Checkout:
         extra = ""
         if local:
             if source is None:
-                source = backendRep(backend, "clone")
+                source = BACKEND_REP(backend, "clone")
             if dest is None:
-                dest = backendRep(backend, "cache")
+                dest = BACKEND_REP(backend, "cache")
 
             baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
@@ -951,8 +951,8 @@ class Checkout:
                 else:
                     conn = Github()
         else:
-            bUrl = backendRep(backend, "url")
-            bMachine = backendRep(backend, "machine")
+            bUrl = BACKEND_REP(backend, "url")
+            bMachine = BACKEND_REP(backend, "machine")
 
             person = os.environ.get(GLPERS(bMachine), None)
             if person:
@@ -998,7 +998,7 @@ class Checkout:
         org = self.org
         repo = self.repo
 
-        bName = backendRep(backend, "name")
+        bName = BACKEND_REP(backend, "name")
 
         if not conn:
             conn = self.login()
@@ -1007,7 +1007,6 @@ class Checkout:
 
         if onGithub:
             try:
-                print("A")
                 rate = conn.get_rate_limit().core
                 self.info(
                     f"rate limit is {rate.limit} requests per hour,"
@@ -1185,7 +1184,6 @@ class Checkout:
                             self.error(
                                 f"The requested {label} is not available offline"
                             )
-                            self.error("A")
                     else:
                         self.warning(f"The requested {label} is not available offline")
                         self.error("No online connection")
@@ -1228,7 +1226,8 @@ class Checkout:
             stateEsc = htmlEsc(state)
             offEsc = htmlEsc(offString)
             loc = f"{self.localBase}/{self.localDir}{self.versionRep}"
-            locEsc = htmlEsc(loc)
+            locRep = unexpanduser(loc)
+            locEsc = htmlEsc(locRep)
             if _browse:
                 self.info(
                     f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
@@ -1240,7 +1239,7 @@ class Checkout:
                         f'<b title="{stateEsc}">{labelEsc}:</b>'
                         f' <span title="{offEsc}">{locEsc}</span>'
                     ),
-                    f"{label}: {loc}",
+                    f"{label}: {locRep}",
                 )
 
     def download(self):
@@ -1333,7 +1332,7 @@ class Checkout:
             again = True
         else:
             g = where
-            notice = backendRep(backend, "name")
+            notice = BACKEND_REP(backend, "name")
             again = False
 
         self.info(f"\tdownloading from {notice} ... ")
@@ -1822,10 +1821,10 @@ def checkoutRepo(
     silent = silentConvert(silent)
 
     if source is None:
-        source = backendRep(backend, "clone")
+        source = BACKEND_REP(backend, "clone")
 
     if dest is None:
-        dest = backendRep(backend, "cache")
+        dest = BACKEND_REP(backend, "cache")
 
     def resolve(chkout, attempt=False):
         rData = Checkout(

@@ -12,6 +12,24 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
+### 11.0.2
+
+2022-11-21 ? (upcoming)
+
+Text-Fabric will detect if it runs on an iPad.
+On an iPad the home directory `~` is not writable.
+In that case, Text-Fabric will use `~/Documents` instead of `~`
+consistently.
+
+When Text-Fabric reports filenames on the interface, it always *unexpanduser*s
+it, so that it does not reveal the location of your home directory.
+
+Normally, it replaces your home directory by `~`, but on iPad it replaces
+*your home directory*`/Documents` by `~`.
+
+So if you publish notebooks made on an iPad or made on a computer,
+there is no difference in the reported file names.
+
 ### 11.0.1
 
 2022-11-18

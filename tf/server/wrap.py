@@ -13,7 +13,7 @@ from ..parameters import (
     DOI_URL_PREFIX,
     DOI_DEFAULT,
     DOI_TF,
-    backendRep,
+    BACKEND_REP,
 )
 from ..advanced.options import INTERFACE_OPTIONS
 
@@ -228,8 +228,8 @@ def wrapProvenance(form, provenance, setNames):
     for d in appProvenance:
         d = dict(d)
         backend = d["backend"]
-        bUrl = backendRep(backend, "url")
-        bName = backendRep(backend, "name")
+        bUrl = BACKEND_REP(backend, "url")
+        bName = BACKEND_REP(backend, "name")
         org = d["org"]
         repo = d["repo"]
         commit = d["commit"]

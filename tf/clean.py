@@ -17,7 +17,7 @@ import os
 import re
 from shutil import rmtree
 
-from .parameters import PACK_VERSION, backendRep
+from .parameters import PACK_VERSION, BACKEND_REP
 from .core.helpers import expanduser, unexpanduser as ux
 
 
@@ -77,8 +77,8 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         bases = [expanduser(specific)]
     else:
         if backend is not None:
-            backend = backendRep(backend, "norm")
-            bases = [backendRep(backend, kind) for kind in ("cache", "clone")]
+            backend = BACKEND_REP(backend, "norm")
+            bases = [BACKEND_REP(backend, kind) for kind in ("cache", "clone")]
 
     for base in bases:
         for triple in os.walk(base):

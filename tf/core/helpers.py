@@ -3,11 +3,7 @@ import sys
 import re
 from shutil import rmtree
 
-from ..parameters import OMAP
-
-
-def normpath(path):
-    return None if path is None else path.replace("\\", "/")
+from ..parameters import normpath, OMAP, HOME_DIR
 
 
 def abspath(path):
@@ -15,14 +11,19 @@ def abspath(path):
 
 
 def expanduser(path):
-    return normpath(os.path.expanduser(path))
+    nPath = normpath(path)
+    if nPath.startswith("~"):
+        return f"{HOME_DIR}{nPath[1:]}"
 
-
-HOME_DIR = expanduser("~")
+    return nPath
 
 
 def unexpanduser(path):
-    return normpath(path).replace(HOME_DIR, "~")
+    nPath = normpath(path)
+    if nPath.startswith(HOME_DIR):
+        return f"~{nPath[len(HOME_DIR):]}"
+
+    return nPath
 
 
 def setDir(obj):

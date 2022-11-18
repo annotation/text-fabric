@@ -9,6 +9,10 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
+def normpath(path):
+    return None if path is None else path.replace("\\", "/")
+
+
 VERSION = '11.0.1'
 """Program version.
 
@@ -127,7 +131,9 @@ RELATIVE = "tf"
 """Default relative path with a repo to the directory with tf files.
 """
 
-HOME_DIR = os.path.expanduser("~")
+ON_IPAD = sys.platform == "darwin" and os.uname().machine.startswith("iP")
+TILDE_DIR = normpath(os.path.expanduser("~"))
+HOME_DIR = f"{TILDE_DIR}/Documents" if ON_IPAD else TILDE_DIR
 
 GH = "github"
 """Name of GitHub backend."""
@@ -145,7 +151,7 @@ URL_NB = "https://nbviewer.jupyter.org"
 """Base url of NB-viewer."""
 
 
-def backendRep(be, kind, default=None):
+def BACKEND_REP(be, kind, default=None):
     """Various backend dependent values.
 
     First of all, the backend value is
@@ -154,8 +160,8 @@ def backendRep(be, kind, default=None):
     Parameters
     ----------
     be: string or None
-        the raw backend value.
-        It will be normailzed first, where missing, undefined, empty values are
+        The raw backend value.
+        It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
 
@@ -182,7 +188,7 @@ def backendRep(be, kind, default=None):
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend  specifier to a module
+        Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
 
     Returns
@@ -210,7 +216,7 @@ def backendRep(be, kind, default=None):
 
     if kind == "rep":
         if default is not None:
-            default = backendRep(default, "norm")
+            default = BACKEND_REP(default, "norm")
             if be == default:
                 return ""
         return f"<{be}>"
@@ -261,7 +267,7 @@ HOST = "localhost"
 PORT_BASE = 10000
 
 
-URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"
+URL_TFDOC = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""
 
 DOI_DEFAULT = "no DOI"
@@ -270,10 +276,10 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
+APIREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
 """Link to the Api docs of Text-Fabric."""
 
-SEARCHREF = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
+SEARCHREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
 """Link to the Search docs of Text-Fabric."""
 
 APP_CONFIG = "config.yaml"

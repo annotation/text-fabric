@@ -933,7 +933,7 @@ Default:
 import re
 import types
 
-from ..parameters import backendRep, URL_TFDOC
+from ..parameters import BACKEND_REP, URL_TFDOC
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
 from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
@@ -1049,7 +1049,7 @@ PROVENANCE_DEFAULTS = (
 
 def DOC_DEFAULTS(backend):
     return (
-        ("docRoot", f"{backendRep(backend, 'url')}"),
+        ("docRoot", f"{BACKEND_REP(backend, 'url')}"),
         ("docExt", ".md"),
         ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
         ("docPage", "home"),
@@ -1326,8 +1326,8 @@ def setAppSpecs(app, cfg, reset=False):
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
     specs = dict(
-        urlGh=backendRep(backend, "rep"),
-        urlNb=backendRep(backend, "urlnb"),
+        urlGh=BACKEND_REP(backend, "rep"),
+        urlNb=BACKEND_REP(backend, "urlnb"),
         tfDoc=URL_TFDOC,
     )
     app.specs = specs

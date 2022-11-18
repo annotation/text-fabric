@@ -3,7 +3,7 @@ import sys
 from zipfile import ZipFile
 
 from .helpers import splitModRef
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, backendRep, DOWNLOADS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, BACKEND_REP, DOWNLOADS
 from ..core.helpers import console, normpath, expanduser, initTree
 
 DW = expanduser(DOWNLOADS)
@@ -51,9 +51,9 @@ def zipData(
     dest=None,
 ):
     if source is None:
-        source = backendRep(backend, "clone")
+        source = BACKEND_REP(backend, "clone")
     if dest is None:
-        dest = f"{DW}/{backendRep(backend, 'norm')}"
+        dest = f"{DW}/{BACKEND_REP(backend, 'norm')}"
     relative = normpath(relative)
     console(f"Create release data for {org}/{repo}/{relative}")
     sourceBase = normpath(f"{source}/{org}")

@@ -71,7 +71,7 @@ from tf.parameters import (
     REPO,
     LS,
     ZIP_OPTIONS,
-    backendRep,
+    BACKEND_REP,
     URL_TFDOC,
     APP_CONFIG,
 )
@@ -276,7 +276,7 @@ class Make:
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
-        bUrl = backendRep(backend, "rep")
+        bUrl = BACKEND_REP(backend, "rep")
 
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -285,7 +285,7 @@ class Make:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-        cloneBase = backendRep(backend, "clone")
+        cloneBase = BACKEND_REP(backend, "clone")
 
         c = dict(
             backend=backend,
@@ -301,7 +301,7 @@ class Make:
             generatorUrl=f"{URL_TFDOC}/client/make/build.html",
             sourceUrl=f"{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch",
             issueUrl=f"{bUrl}/«org»/«searchRepo»/issues",
-            tutUrl=f"{backendRep(backend, 'urlnb')}/«org»/«repo»/blob/master/tutorial/start.ipynb",
+            tutUrl=f"{BACKEND_REP(backend, 'urlnb')}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
             appDir=f"{cloneBase}/«org»/«searchRepo»",
             localDir=f"«appDir»/{TEMP}",
@@ -1139,7 +1139,7 @@ class Make:
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        domain = backendRep(backend, "pages")
+        domain = BACKEND_REP(backend, "pages")
         console(
             f"Publishing on {domain} "
             f"{org}/{repo}:{','.join(clients)} from {siteDir} ..."

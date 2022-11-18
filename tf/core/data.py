@@ -16,6 +16,7 @@ from .helpers import (
     rangesFromSet,
     check32,
     console,
+    unexpanduser,
 )
 from .timestamp import SILENT_D, silentConvert
 
@@ -92,6 +93,7 @@ class Data(object):
             if self.method
             else self.dirName
         )
+        sourceRep = unexpanduser(sourceRep)
         msgFormat = "{:<1} {:<20} from {}"
         actionRep = ""
         good = True

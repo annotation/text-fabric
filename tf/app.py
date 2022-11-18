@@ -13,7 +13,7 @@ This power can be invoked by a very simple command: `use("org/repo")`.
 For a detailed description, see `tf.about.usefunc`.
 """
 
-from .parameters import backendRep
+from .parameters import BACKEND_REP
 from .advanced.app import findApp
 
 # START AN APP
@@ -65,5 +65,5 @@ def use(appName, *args, backend=None, **kwargs):
             parts.append("")
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, 'norm')
+    backend = BACKEND_REP(backend, 'norm')
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)
