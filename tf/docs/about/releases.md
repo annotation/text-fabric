@@ -14,7 +14,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0.2
 
-2022-11-21 ? (upcoming)
+2022-12-04
 
 Text-Fabric will detect if it runs on an iPad.
 On an iPad the home directory `~` is not writable.
