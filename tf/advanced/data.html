@@ -26,9 +26,9 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L1-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L1-L339" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">from ..parameters import backendRep
+<pre><code class="python">from ..parameters import BACKEND_REP
 from ..core.helpers import itemize, normpath, expandDir
 from .helpers import splitModRef
 from .repo import checkoutRepo
@@ -146,7 +146,7 @@ class AppData(object):
             relative = m[&#34;relative&#34;]
             theCheckout = m.get(&#34;checkout&#34;, checkout)
             theBackend = m.get(&#34;backend&#34;, backend)
-            bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+            bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
             ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
             if ref in seen:
@@ -275,8 +275,8 @@ class AppData(object):
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
-        backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
-        bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
+        backend = self.backend if backend is None else BACKEND_REP(backend, &#34;norm&#34;)
+        bRep = BACKEND_REP(backend, &#34;spec&#34;, default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -390,7 +390,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L323-L339" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L323-L339" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -450,7 +450,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L11-L320" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L11-L320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData(object):
     def __init__(
@@ -560,7 +560,7 @@ level just below the search locations.</dd>
             relative = m[&#34;relative&#34;]
             theCheckout = m.get(&#34;checkout&#34;, checkout)
             theBackend = m.get(&#34;backend&#34;, backend)
-            bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+            bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
             ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
             if ref in seen:
@@ -689,8 +689,8 @@ level just below the search locations.</dd>
             Additional informational attributes of the module, e.g. a DOI
         &#34;&#34;&#34;
 
-        backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
-        bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
+        backend = self.backend if backend is None else BACKEND_REP(backend, &#34;norm&#34;)
+        bRep = BACKEND_REP(backend, &#34;spec&#34;, default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations
@@ -780,7 +780,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -843,7 +843,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L219-L320" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L219-L320" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
@@ -874,8 +874,8 @@ location paths and the module paths.</p>
         Additional informational attributes of the module, e.g. a DOI
     &#34;&#34;&#34;
 
-    backend = self.backend if backend is None else backendRep(backend, &#34;norm&#34;)
-    bRep = backendRep(backend, &#34;spec&#34;, default=self.backend)
+    backend = self.backend if backend is None else BACKEND_REP(backend, &#34;norm&#34;)
+    bRep = BACKEND_REP(backend, &#34;spec&#34;, default=self.backend)
     version = self.version
     silent = self.silent
     mLocations = self.mLocations
@@ -958,7 +958,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L163-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L163-L217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -1028,7 +1028,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L135-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L135-L161" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1078,7 +1078,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/data.py#L90-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/data.py#L90-L133" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
@@ -1109,7 +1109,7 @@ checkout specifiers to the standard modules.</p>
         relative = m[&#34;relative&#34;]
         theCheckout = m.get(&#34;checkout&#34;, checkout)
         theBackend = m.get(&#34;backend&#34;, backend)
-        bRep = backendRep(theBackend, &#34;spec&#34;, default=backend)
+        bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
         ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
         if ref in seen:

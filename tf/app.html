@@ -34,7 +34,7 @@ settings for a corpus, and possibly some supporting application code and CSS sty
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/app.py#L1-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/app.py#L1-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Make use of a corpus.
@@ -51,7 +51,7 @@ This power can be invoked by a very simple command: `use(&#34;org/repo&#34;)`.
 For a detailed description, see `tf.about.usefunc`.
 &#34;&#34;&#34;
 
-from .parameters import backendRep
+from .parameters import BACKEND_REP
 from .advanced.app import findApp
 
 # START AN APP
@@ -103,7 +103,7 @@ def use(appName, *args, backend=None, **kwargs):
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, &#39;norm&#39;)
+    backend = BACKEND_REP(backend, &#39;norm&#39;)
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </section>
@@ -145,7 +145,7 @@ a customization of it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/app.py#L22-L69" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/app.py#L22-L69" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, backend=None, **kwargs):
     &#34;&#34;&#34;Make use of a corpus.
@@ -193,7 +193,7 @@ a customization of it.</p>
             parts.append(&#34;&#34;)
         (appName, checkoutApp) = parts
 
-    backend = backendRep(backend, &#39;norm&#39;)
+    backend = BACKEND_REP(backend, &#39;norm&#39;)
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </dd>

@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/parameters.py#L1-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L1-L367" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -41,7 +41,11 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;11.0.1&#39;
+def normpath(path):
+    return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)
+
+
+VERSION = &#39;11.0.2&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -159,7 +163,9 @@ RELATIVE = &#34;tf&#34;
 &#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
 &#34;&#34;&#34;
 
-HOME_DIR = os.path.expanduser(&#34;~&#34;)
+ON_IPAD = sys.platform == &#34;darwin&#34; and os.uname().machine.startswith(&#34;iP&#34;)
+TILDE_DIR = normpath(os.path.expanduser(&#34;~&#34;))
+HOME_DIR = f&#34;{TILDE_DIR}/Documents&#34; if ON_IPAD else TILDE_DIR
 
 GH = &#34;github&#34;
 &#34;&#34;&#34;Name of GitHub backend.&#34;&#34;&#34;
@@ -177,7 +183,7 @@ URL_NB = &#34;https://nbviewer.jupyter.org&#34;
 &#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
 
 
-def backendRep(be, kind, default=None):
+def BACKEND_REP(be, kind, default=None):
     &#34;&#34;&#34;Various backend dependent values.
 
     First of all, the backend value is
@@ -186,8 +192,8 @@ def backendRep(be, kind, default=None):
     Parameters
     ----------
     be: string or None
-        the raw backend value.
-        It will be normailzed first, where missing, undefined, empty values are
+        The raw backend value.
+        It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
 
@@ -214,7 +220,7 @@ def backendRep(be, kind, default=None):
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend  specifier to a module
+        Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
 
     Returns
@@ -242,7 +248,7 @@ def backendRep(be, kind, default=None):
 
     if kind == &#34;rep&#34;:
         if default is not None:
-            default = backendRep(default, &#34;norm&#34;)
+            default = BACKEND_REP(default, &#34;norm&#34;)
             if be == default:
                 return &#34;&#34;
         return f&#34;&lt;{be}&gt;&#34;
@@ -293,7 +299,7 @@ HOST = &#34;localhost&#34;
 PORT_BASE = 10000
 
 
-URL_TFDOC = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf&#34;
+URL_TFDOC = f&#34;https://{ORG}.{BACKEND_REP(GH, &#39;pages&#39;)}/{REPO}/tf&#34;
 &#34;&#34;&#34;Base url of the online Text-Fabric documentation.&#34;&#34;&#34;
 
 DOI_DEFAULT = &#34;no DOI&#34;
@@ -302,10 +308,10 @@ DOI_URL_PREFIX = &#34;https://doi.org&#34;
 DOI_TF = &#34;10.5281/zenodo.592193&#34;
 &#34;&#34;&#34;DOI of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
 
-APIREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/cheatsheet.html&#34;
+APIREF = f&#34;https://{ORG}.{BACKEND_REP(GH, &#39;pages&#39;)}/{REPO}/tf/cheatsheet.html&#34;
 &#34;&#34;&#34;Link to the Api docs of Text-Fabric.&#34;&#34;&#34;
 
-SEARCHREF = f&#34;https://{ORG}.{backendRep(GH, &#39;pages&#39;)}/{REPO}/tf/about/searchusage.html&#34;
+SEARCHREF = f&#34;https://{ORG}.{BACKEND_REP(GH, &#39;pages&#39;)}/{REPO}/tf/about/searchusage.html&#34;
 &#34;&#34;&#34;Link to the Search docs of Text-Fabric.&#34;&#34;&#34;
 
 APP_CONFIG = &#34;config.yaml&#34;
@@ -659,8 +665,8 @@ pickled and compressed to .tfx files.</p>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.parameters.backendRep"><code class="name flex">
-<span>def <span class="ident">backendRep</span></span>(<span>be, kind, default=None)</span>
+<dt id="tf.parameters.BACKEND_REP"><code class="name flex">
+<span>def <span class="ident">BACKEND_REP</span></span>(<span>be, kind, default=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Various backend dependent values.</p>
@@ -669,8 +675,8 @@ normalized. Then related values are computed.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>be</code></strong> :&ensp;<code>string</code> or <code>None</code></dt>
-<dd>the raw backend value.
-It will be normailzed first, where missing, undefined, empty values are
+<dd>The raw backend value.
+It will be normalized first, where missing, undefined, empty values are
 converted to the string <code>github</code>, and other values will be lower-cased.
 Also, <code>github.com</code> and <code>gitlab.com</code> will be shortened to <code>github</code> and <code>gitlab</code>.</dd>
 <dt><strong><code>kind</code></strong> :&ensp;<code>string</code></dt>
@@ -698,8 +704,7 @@ the empty string is returned instead.</li>
 <p>Only relevant for <code>kind</code> = <code>rep</code>.
 If <code>default</code> is passed and not None and <code>be</code> is equal to <code>default</code>,
 then the empty string is returned.</p>
-<p>Explanation: this is used to supply a backend
-specifier to a module
+<p>Explanation: this is used to supply a backend specifier to a module
 but only if that module has a different backend than the main module.</p>
 </dd>
 </dl>
@@ -709,9 +714,9 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/parameters.py#L148-L238" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L154-L244" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def backendRep(be, kind, default=None):
+<pre><code class="python">def BACKEND_REP(be, kind, default=None):
     &#34;&#34;&#34;Various backend dependent values.
 
     First of all, the backend value is
@@ -720,8 +725,8 @@ but only if that module has a different backend than the main module.</p>
     Parameters
     ----------
     be: string or None
-        the raw backend value.
-        It will be normailzed first, where missing, undefined, empty values are
+        The raw backend value.
+        It will be normalized first, where missing, undefined, empty values are
         converted to the string `github`, and other values will be lower-cased.
         Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
 
@@ -748,7 +753,7 @@ but only if that module has a different backend than the main module.</p>
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
 
-        Explanation: this is used to supply a backend  specifier to a module
+        Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
 
     Returns
@@ -776,7 +781,7 @@ but only if that module has a different backend than the main module.</p>
 
     if kind == &#34;rep&#34;:
         if default is not None:
-            default = backendRep(default, &#34;norm&#34;)
+            default = BACKEND_REP(default, &#34;norm&#34;)
             if be == default:
                 return &#34;&#34;
         return f&#34;&lt;{be}&gt;&#34;
@@ -802,6 +807,20 @@ but only if that module has a different backend than the main module.</p>
             else f&#34;{&#39;.&#39;.join(be.split(&#39;.&#39;))[0:-1]}.io&#34;
         )
     return None</code></pre>
+</details>
+</dd>
+<dt id="tf.parameters.normpath"><code class="name flex">
+<span>def <span class="ident">normpath</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def normpath(path):
+    return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -925,7 +944,8 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.parameters.backendRep" href="#tf.parameters.backendRep">backendRep</a></code></li>
+<li><code><a title="tf.parameters.BACKEND_REP" href="#tf.parameters.BACKEND_REP">BACKEND_REP</a></code></li>
+<li><code><a title="tf.parameters.normpath" href="#tf.parameters.normpath">normpath</a></code></li>
 </ul>
 </li>
 </ul>

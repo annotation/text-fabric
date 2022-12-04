@@ -2037,12 +2037,6 @@ INDEX=[
 "doc":""
 },
 {
-"ref":"tf.core.helpers.normpath",
-"url":34,
-"doc":"",
-"func":1
-},
-{
 "ref":"tf.core.helpers.abspath",
 "url":34,
 "doc":"",
@@ -2925,7 +2919,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":66,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  11  11.0  11.0.1 2022-11-18 Small fixes: the newest version of the [pygithub](https: pygithub.readthedocs.io/en/latest/introduction.html) module issues slightly different errors. Text-Fabric did not catch some of them, and went on after failures, which led to unspeakable and incomprehensible further errors. That has been fixed. As a consequence, we require the now newest release of that module, which in turns requires a Python version of at least 3.7.0. So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.  11.0.0 2022-11-11 Text-Fabric can be installed with different capabilities. On some platforms not all requirements for Text-Fabric can be met, e.g. the Github or GitLab backends, or the Text-Fabric browser. You can now install a bare Text-Fabric, without those capabilities, or a more capable Text-Fabric with additional capabilities. Text-Fabric will detect what its capabilities are, and issue warnings if it asked to do tasks for which it lacks the capabilities. See more in  tf.about.install .  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  11  11.0  11.0.2 2022-12-04 Text-Fabric will detect if it runs on an iPad. On an iPad the home directory  ~ is not writable. In that case, Text-Fabric will use  ~/Documents instead of  ~ consistently. When Text-Fabric reports filenames on the interface, it always  unexpanduser s it, so that it does not reveal the location of your home directory. Normally, it replaces your home directory by  ~ , but on iPad it replaces  your home directory /Documents by  ~ . So if you publish notebooks made on an iPad or made on a computer, there is no difference in the reported file names.  11.0.1 2022-11-18 Small fixes: the newest version of the [pygithub](https: pygithub.readthedocs.io/en/latest/introduction.html) module issues slightly different errors. Text-Fabric did not catch some of them, and went on after failures, which led to unspeakable and incomprehensible further errors. That has been fixed. As a consequence, we require the now newest release of that module, which in turns requires a Python version of at least 3.7.0. So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.  11.0.0 2022-11-11 Text-Fabric can be installed with different capabilities. On some platforms not all requirements for Text-Fabric can be met, e.g. the Github or GitLab backends, or the Text-Fabric browser. You can now install a bare Text-Fabric, without those capabilities, or a more capable Text-Fabric with additional capabilities. Text-Fabric will detect what its capabilities are, and issue warnings if it asked to do tasks for which it lacks the capabilities. See more in  tf.about.install .  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -3288,6 +3282,12 @@ INDEX=[
 "doc":" Parameters Fixed values for the whole program."
 },
 {
+"ref":"tf.parameters.normpath",
+"url":86,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.parameters.VERSION",
 "url":86,
 "doc":"Program version. This value is under control of the update process, as run by  build.py in the top-level directory of the repo."
@@ -3403,9 +3403,9 @@ INDEX=[
 "doc":"Base url of NB-viewer."
 },
 {
-"ref":"tf.parameters.backendRep",
+"ref":"tf.parameters.BACKEND_REP",
 "url":86,
-"doc":"Various backend dependent values. First of all, the backend value is normalized. Then related values are computed. Parameters      be: string or None the raw backend value. It will be normailzed first, where missing, undefined, empty values are converted to the string  github , and other values will be lower-cased. Also,  github.com and  gitlab.com will be shortened to  github and  gitlab . kind: string Indicates what kind of related value should be returned:   norm : the normalized value as described above   name : lowercase shortest name of the backend:  github or  gitlab or a server name like  gitlab.huc.knaw.nl   machine : lowercase machine name of the backend:  github.com or  gitlab.com or a server name like  gitlab.huc.knaw.nl   spec : enclosed in    . Depending on the parameter  default the empty string is returned instead.   clone : base directory where clones of repos in this backend are stored  ~/github , etc.   cache : base directory where data downloads from this backend are stored:  ~/text-fabric-data/github , etc.   url : url of the online backend   urlnb : url of notebooks from the online backend, rendered on NB-Viewer   pages : base url of the Pages service of the backend default: boolean, optional  False Only relevant for  kind =  rep . If  default is passed and not None and  be is equal to  default , then the empty string is returned. Explanation: this is used to supply a backend specifier to a module but only if that module has a different backend than the main module. Returns    - string",
+"doc":"Various backend dependent values. First of all, the backend value is normalized. Then related values are computed. Parameters      be: string or None The raw backend value. It will be normalized first, where missing, undefined, empty values are converted to the string  github , and other values will be lower-cased. Also,  github.com and  gitlab.com will be shortened to  github and  gitlab . kind: string Indicates what kind of related value should be returned:   norm : the normalized value as described above   name : lowercase shortest name of the backend:  github or  gitlab or a server name like  gitlab.huc.knaw.nl   machine : lowercase machine name of the backend:  github.com or  gitlab.com or a server name like  gitlab.huc.knaw.nl   spec : enclosed in    . Depending on the parameter  default the empty string is returned instead.   clone : base directory where clones of repos in this backend are stored  ~/github , etc.   cache : base directory where data downloads from this backend are stored:  ~/text-fabric-data/github , etc.   url : url of the online backend   urlnb : url of notebooks from the online backend, rendered on NB-Viewer   pages : base url of the Pages service of the backend default: boolean, optional  False Only relevant for  kind =  rep . If  default is passed and not None and  be is equal to  default , then the empty string is returned. Explanation: this is used to supply a backend specifier to a module but only if that module has a different backend than the main module. Returns    - string",
 "func":1
 },
 {

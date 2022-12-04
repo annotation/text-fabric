@@ -35,7 +35,7 @@ that you no longer need.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/clean.py#L1-L113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/clean.py#L1-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Clean
@@ -56,7 +56,7 @@ import os
 import re
 from shutil import rmtree
 
-from .parameters import PACK_VERSION, backendRep
+from .parameters import PACK_VERSION, BACKEND_REP
 from .core.helpers import expanduser, unexpanduser as ux
 
 
@@ -116,8 +116,8 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
         bases = [expanduser(specific)]
     else:
         if backend is not None:
-            backend = backendRep(backend, &#34;norm&#34;)
-            bases = [backendRep(backend, kind) for kind in (&#34;cache&#34;, &#34;clone&#34;)]
+            backend = BACKEND_REP(backend, &#34;norm&#34;)
+            bases = [BACKEND_REP(backend, kind) for kind in (&#34;cache&#34;, &#34;clone&#34;)]
 
     for base in bases:
         for triple in os.walk(base):
@@ -197,7 +197,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/clean.py#L40-L113" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/clean.py#L40-L113" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
     &#34;&#34;&#34;Clean up older compressed .tfx files.
@@ -239,8 +239,8 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
         bases = [expanduser(specific)]
     else:
         if backend is not None:
-            backend = backendRep(backend, &#34;norm&#34;)
-            bases = [backendRep(backend, kind) for kind in (&#34;cache&#34;, &#34;clone&#34;)]
+            backend = BACKEND_REP(backend, &#34;norm&#34;)
+            bases = [BACKEND_REP(backend, kind) for kind in (&#34;cache&#34;, &#34;clone&#34;)]
 
     for base in bases:
         for triple in os.walk(base):
@@ -283,7 +283,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/clean.py#L34-L37" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/clean.py#L34-L37" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def err(msg):
     &#34;&#34;&#34;Write to standard error output immediately.&#34;&#34;&#34;
@@ -299,7 +299,7 @@ If you pass <code>dry=False</code> the delete actions will really be executed.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/clean.py#L28-L31" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/clean.py#L28-L31" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def out(msg):
     &#34;&#34;&#34;Write to standard normal output immediately.&#34;&#34;&#34;

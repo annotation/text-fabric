@@ -26,14 +26,14 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
 from zipfile import ZipFile
 
 from .helpers import splitModRef
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, backendRep, DOWNLOADS
+from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, BACKEND_REP, DOWNLOADS
 from ..core.helpers import console, normpath, expanduser, initTree
 
 DW = expanduser(DOWNLOADS)
@@ -81,9 +81,9 @@ def zipData(
     dest=None,
 ):
     if source is None:
-        source = backendRep(backend, &#34;clone&#34;)
+        source = BACKEND_REP(backend, &#34;clone&#34;)
     if dest is None:
-        dest = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
+        dest = f&#34;{DW}/{BACKEND_REP(backend, &#39;norm&#39;)}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
@@ -238,7 +238,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -287,7 +287,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -301,9 +301,9 @@ if __name__ == &#34;__main__&#34;:
     dest=None,
 ):
     if source is None:
-        source = backendRep(backend, &#34;clone&#34;)
+        source = BACKEND_REP(backend, &#34;clone&#34;)
     if dest is None:
-        dest = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
+        dest = f&#34;{DW}/{BACKEND_REP(backend, &#39;norm&#39;)}&#34;
     relative = normpath(relative)
     console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)

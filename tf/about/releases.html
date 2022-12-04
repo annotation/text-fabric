@@ -33,6 +33,18 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
+<h3 id="1102">11.0.2</h3>
+<p>2022-12-04</p>
+<p>Text-Fabric will detect if it runs on an iPad.
+On an iPad the home directory <code>~</code> is not writable.
+In that case, Text-Fabric will use <code>~/Documents</code> instead of <code>~</code>
+consistently.</p>
+<p>When Text-Fabric reports filenames on the interface, it always <em>unexpanduser</em>s
+it, so that it does not reveal the location of your home directory.</p>
+<p>Normally, it replaces your home directory by <code>~</code>, but on iPad it replaces
+<em>your home directory</em><code>/Documents</code> by <code>~</code>.</p>
+<p>So if you publish notebooks made on an iPad or made on a computer,
+there is no difference in the reported file names.</p>
 <h3 id="1101">11.0.1</h3>
 <p>2022-11-18</p>
 <p>Small fixes: the newest version of the
@@ -60,7 +72,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20fa58ed57627c21bbf08126e187a383e626a8d6/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -134,6 +146,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#110">11.0</a></li>
+<li><a href="#1102">11.0.2</a></li>
 <li><a href="#1101">11.0.1</a></li>
 <li><a href="#1100">11.0.0</a></li>
 </ul>
