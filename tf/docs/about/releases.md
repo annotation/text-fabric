@@ -12,6 +12,12 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
+### 11.0.3
+
+2022-12-13 (upcoming)
+
+Small fixes for problems encountered when using gitlab backends.
+
 ### 11.0.2
 
 2022-12-04

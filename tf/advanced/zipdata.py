@@ -15,12 +15,15 @@ text-fabric-zip --help
 
 text-fabric-zip {org}/{repo}/{relative}
 
+text-fabric-zip {org}/{repo}/{relative} --backend=gitlab.huc.knaw.nl
+
 EFFECT
 
-Zips text-fabric data from your local github repository into
+Zips text-fabric data from your local github/gitlab repository into
 a release file, ready to be attached to a github release.
 
-Your repo must sit in ~/github/{org}/{repo}.
+Your repo must sit in `~/github/{org}/{repo}` or in `~/gitlab/{org}/{repo}`
+or in whatever Gitlab backend you have chosen.
 
 Your TF data is assumed to sit in the toplevel tf directory of your repo.
 But if it is somewhere else, you can pass relative, e.g phrases/heads/tf
@@ -31,9 +34,10 @@ The actual .tf files are in those version directories.
 
 Each of these version directories will be zipped into a separate file.
 
-The resulting zip files end up in ~/Downloads/{org}-release/{repo}
+The resulting zip files end up in ~/Downloads/{backend}/{org}-release/{repo}
 and the are named {relative}-{version}.zip
 (where the / in relative have been replaced by -)
+
 """
 
 EXCLUDE = {".DS_Store"}
@@ -162,7 +166,7 @@ def main(cargs=sys.argv):
     newArgs = []
     for arg in cargs:
         if arg.startswith("--backend="):
-            backend = arg[11:]
+            backend = arg[10:]
         else:
             newArgs.append(arg)
     cargs = newArgs

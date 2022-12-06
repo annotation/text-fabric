@@ -169,6 +169,9 @@ def BACKEND_REP(be, kind, default=None):
         Indicates what kind of related value should be returned:
 
         * `norm`: the normalized value as described above
+        * `tech`: technology of the backend: either `github` or `gitlab` or None;
+          we assume that there is only one GitHub; that there are many Gitlabs;
+          any backend that is not `github` is an instance of `gitlab`.
         * `name`: lowercase shortest name of the backend: `github` or `gitlab`
           or a server name like `gitlab.huc.knaw.nl`
         * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
@@ -208,8 +211,11 @@ def BACKEND_REP(be, kind, default=None):
     if kind == "norm":
         return be
 
+    if kind == "tech":
+        return be if be in {GH, GL} else GL
+
     if kind == "name":
-        return "GitHub" if be == GH else "GitLab" if be == GH else be
+        return "GitHub" if be == GH else "GitLab" if be == GL else be
 
     if kind == "machine":
         return "github.com" if be == GH else "gitlab.com" if be == GL else be

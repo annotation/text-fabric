@@ -523,7 +523,9 @@ class Repo:
             )
             return None
 
-        if not Cap.can(backend):
+        backendTech = BACKEND_REP(backend, "tech")
+
+        if not Cap.can(backendTech):
             self.conn = None
             return
 
@@ -927,7 +929,9 @@ class Checkout:
         conn = self.conn
         backend = self.backend
 
-        if not Cap.can(backend):
+        backendTech = BACKEND_REP(backend, "tech")
+
+        if not Cap.can(backendTech):
             self.conn = None
             return None
 
