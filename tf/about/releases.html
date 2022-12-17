@@ -33,6 +33,26 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
+<h3 id="1103">11.0.3</h3>
+<p>2022-12-17 (upcoming)</p>
+<p><strong>Backends</strong></p>
+<p>Small fixes for problems encountered when using gitlab backends.</p>
+<p><strong>Search</strong></p>
+<p>Fixed a problem spotted by Camil Staps: in the Text-Fabric browser valid queries
+with a quantifier gave error-like messages and no results.</p>
+<ul>
+<li>The cause was two-fold: the processing of quantifiers led to extra
+informational messages. (This is a regression)</li>
+<li>The Text-Fabric browser interpreted these messages as error messages.</li>
+</ul>
+<p>Both problems have been fixed.</p>
+<ul>
+<li>The extra informational messages are suppressed (as it was earlier the case).</li>
+<li>The result that the kernel passes to the webserver now includes a status parameter,
+separate from the messages, which conveys whether the query was successfull.
+Queries with informational messages and a positive status will have their results
+shown as well as their messages. </li>
+</ul>
 <h3 id="1102">11.0.2</h3>
 <p>2022-12-04</p>
 <p>Text-Fabric will detect if it runs on an iPad.
@@ -72,7 +92,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -146,6 +166,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#110">11.0</a></li>
+<li><a href="#1103">11.0.3</a></li>
 <li><a href="#1102">11.0.2</a></li>
 <li><a href="#1101">11.0.1</a></li>
 <li><a href="#1100">11.0.0</a></li>

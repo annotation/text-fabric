@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L1-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/zipdata.py#L1-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -45,12 +45,15 @@ text-fabric-zip --help
 
 text-fabric-zip {org}/{repo}/{relative}
 
+text-fabric-zip {org}/{repo}/{relative} --backend=gitlab.huc.knaw.nl
+
 EFFECT
 
-Zips text-fabric data from your local github repository into
+Zips text-fabric data from your local github/gitlab repository into
 a release file, ready to be attached to a github release.
 
-Your repo must sit in ~/github/{org}/{repo}.
+Your repo must sit in `~/github/{org}/{repo}` or in `~/gitlab/{org}/{repo}`
+or in whatever Gitlab backend you have chosen.
 
 Your TF data is assumed to sit in the toplevel tf directory of your repo.
 But if it is somewhere else, you can pass relative, e.g phrases/heads/tf
@@ -61,9 +64,10 @@ The actual .tf files are in those version directories.
 
 Each of these version directories will be zipped into a separate file.
 
-The resulting zip files end up in ~/Downloads/{org}-release/{repo}
+The resulting zip files end up in ~/Downloads/{backend}/{org}-release/{repo}
 and the are named {relative}-{version}.zip
 (where the / in relative have been replaced by -)
+
 &#34;&#34;&#34;
 
 EXCLUDE = {&#34;.DS_Store&#34;}
@@ -192,7 +196,7 @@ def main(cargs=sys.argv):
     newArgs = []
     for arg in cargs:
         if arg.startswith(&#34;--backend=&#34;):
-            backend = arg[11:]
+            backend = arg[10:]
         else:
             newArgs.append(arg)
     cargs = newArgs
@@ -238,7 +242,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L153-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/zipdata.py#L157-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -252,7 +256,7 @@ if __name__ == &#34;__main__&#34;:
     newArgs = []
     for arg in cargs:
         if arg.startswith(&#34;--backend=&#34;):
-            backend = arg[11:]
+            backend = arg[10:]
         else:
             newArgs.append(arg)
     cargs = newArgs
@@ -287,7 +291,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/advanced/zipdata.py#L42-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/zipdata.py#L46-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,

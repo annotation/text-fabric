@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L1-L367" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/parameters.py#L1-L373" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -45,7 +45,7 @@ def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)
 
 
-VERSION = &#39;11.0.2&#39;
+VERSION = &#39;11.0.3&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -201,6 +201,9 @@ def BACKEND_REP(be, kind, default=None):
         Indicates what kind of related value should be returned:
 
         * `norm`: the normalized value as described above
+        * `tech`: technology of the backend: either `github` or `gitlab` or None;
+          we assume that there is only one GitHub; that there are many Gitlabs;
+          any backend that is not `github` is an instance of `gitlab`.
         * `name`: lowercase shortest name of the backend: `github` or `gitlab`
           or a server name like `gitlab.huc.knaw.nl`
         * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
@@ -240,8 +243,11 @@ def BACKEND_REP(be, kind, default=None):
     if kind == &#34;norm&#34;:
         return be
 
+    if kind == &#34;tech&#34;:
+        return be if be in {GH, GL} else GL
+
     if kind == &#34;name&#34;:
-        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GH else be
+        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GL else be
 
     if kind == &#34;machine&#34;:
         return &#34;github.com&#34; if be == GH else &#34;gitlab.com&#34; if be == GL else be
@@ -684,6 +690,9 @@ Also, <code>github.com</code> and <code>gitlab.com</code> will be shortened to <
 <p>Indicates what kind of related value should be returned:</p>
 <ul>
 <li><code>norm</code>: the normalized value as described above</li>
+<li><code>tech</code>: technology of the backend: either <code>github</code> or <code>gitlab</code> or None;
+we assume that there is only one GitHub; that there are many Gitlabs;
+any backend that is not <code>github</code> is an instance of <code>gitlab</code>.</li>
 <li><code>name</code>: lowercase shortest name of the backend: <code>github</code> or <code>gitlab</code>
 or a server name like <code>gitlab.huc.knaw.nl</code></li>
 <li><code>machine</code>: lowercase machine name of the backend: <code>github.com</code> or <code>gitlab.com</code>
@@ -714,7 +723,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L154-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/parameters.py#L154-L250" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def BACKEND_REP(be, kind, default=None):
     &#34;&#34;&#34;Various backend dependent values.
@@ -734,6 +743,9 @@ but only if that module has a different backend than the main module.</p>
         Indicates what kind of related value should be returned:
 
         * `norm`: the normalized value as described above
+        * `tech`: technology of the backend: either `github` or `gitlab` or None;
+          we assume that there is only one GitHub; that there are many Gitlabs;
+          any backend that is not `github` is an instance of `gitlab`.
         * `name`: lowercase shortest name of the backend: `github` or `gitlab`
           or a server name like `gitlab.huc.knaw.nl`
         * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
@@ -773,8 +785,11 @@ but only if that module has a different backend than the main module.</p>
     if kind == &#34;norm&#34;:
         return be
 
+    if kind == &#34;tech&#34;:
+        return be if be in {GH, GL} else GL
+
     if kind == &#34;name&#34;:
-        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GH else be
+        return &#34;GitHub&#34; if be == GH else &#34;GitLab&#34; if be == GL else be
 
     if kind == &#34;machine&#34;:
         return &#34;github.com&#34; if be == GH else &#34;gitlab.com&#34; if be == GL else be
@@ -817,7 +832,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>

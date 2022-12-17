@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L1-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L1-L419" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -107,7 +107,7 @@ def serveTable(web, kind, getx=None, asDict=False):
         )
 
         if messages:
-            messages = wrapMessages(messages)
+            (status, messages) = wrapMessages(messages)
 
     return method(table=table, messages=messages)
 
@@ -141,11 +141,13 @@ def serveQuery(web, getx, asDict=False):
     if task:
         messages = &#34;&#34;
         table = None
+        status = True
         if task in wildQueries:
             messages = (
                 f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
                 + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
             )
+            status = False
         else:
             options = {
                 k: form.get(k, v)
@@ -153,7 +155,7 @@ def serveQuery(web, getx, asDict=False):
                 if v is not None
             }
             try:
-                (table, messages, features, start, total) = kernelApi.search(
+                (table, status, messages, features, start, total) = kernelApi.search(
                     task,
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
@@ -173,8 +175,9 @@ def serveQuery(web, getx, asDict=False):
                 console(f&#34;{task}\n{messages}&#34;, error=True)
                 wildQueries.add(task)
                 total = 0
+                status = False
 
-        if table is not None:
+        if status and table is not None:
             pages = pageLinks(total, form[&#34;position&#34;])
         # messages have already been shaped by search
         # if messages:
@@ -187,6 +190,7 @@ def serveQuery(web, getx, asDict=False):
         pages=pages,
         table=table,
         nResults=total,
+        status=status,
         messages=messages,
         features=features,
     )
@@ -313,6 +317,7 @@ def serveDownload(web):
     condenseType = form[&#34;condenseType&#34;] or None
     textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
+    queryStatus = True
     tupleResultsX = None
     queryResultsX = None
     messages = &#34;&#34;
@@ -323,7 +328,13 @@ def serveDownload(web):
         )
     else:
         try:
-            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
+            (
+                queryStatus,
+                queryMessages,
+                csvs,
+                tupleResultsX,
+                queryResultsX,
+            ) = kernelApi.csvs(
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
@@ -332,6 +343,7 @@ def serveDownload(web):
                 fmt=textFormat,
             )
         except TimeoutError:
+            queryStatus = False
             messages = f&#34;Aborted because query takes longer than {TIMEOUT} second&#34; + (
                 &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
             )
@@ -339,9 +351,9 @@ def serveDownload(web):
             wildQueries.add(task)
             return jsonify(messages=messages)
 
-    if queryMessages:
+    if not queryStatus:
         redirect(&#34;/&#34;)
-        return jsonify(messages=queryMessages)
+        return jsonify(status=queryStatus, messages=queryMessages)
 
     (header, appLogo, tfLogo) = kernelApi.header()
     provenance = kernelApi.provenance()
@@ -458,7 +470,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L331-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L343-L419" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     if not Cap.can(&#34;browser&#34;):
@@ -547,7 +559,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L265-L328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L269-L340" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web):
     if not Cap.can(&#34;browser&#34;):
@@ -564,6 +576,7 @@ def serveAll(web, anything):
     condenseType = form[&#34;condenseType&#34;] or None
     textFormat = form[&#34;textFormat&#34;] or None
     csvs = None
+    queryStatus = True
     tupleResultsX = None
     queryResultsX = None
     messages = &#34;&#34;
@@ -574,7 +587,13 @@ def serveAll(web, anything):
         )
     else:
         try:
-            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
+            (
+                queryStatus,
+                queryMessages,
+                csvs,
+                tupleResultsX,
+                queryResultsX,
+            ) = kernelApi.csvs(
                 task,
                 form[&#34;tuples&#34;],
                 form[&#34;sections&#34;],
@@ -583,6 +602,7 @@ def serveAll(web, anything):
                 fmt=textFormat,
             )
         except TimeoutError:
+            queryStatus = False
             messages = f&#34;Aborted because query takes longer than {TIMEOUT} second&#34; + (
                 &#34;&#34; if TIMEOUT == 1 else &#34;s&#34;
             )
@@ -590,9 +610,9 @@ def serveAll(web, anything):
             wildQueries.add(task)
             return jsonify(messages=messages)
 
-    if queryMessages:
+    if not queryStatus:
         redirect(&#34;/&#34;)
-        return jsonify(messages=queryMessages)
+        return jsonify(status=queryStatus, messages=queryMessages)
 
     (header, appLogo, tfLogo) = kernelApi.header()
     provenance = kernelApi.provenance()
@@ -623,7 +643,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L199-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L203-L266" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     if not Cap.can(&#34;browser&#34;):
@@ -699,7 +719,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L159-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L163-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     if not Cap.can(&#34;browser&#34;):
@@ -749,7 +769,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L79-L156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L79-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     if not Cap.can(&#34;browser&#34;):
@@ -780,11 +800,13 @@ def serveAll(web, anything):
     if task:
         messages = &#34;&#34;
         table = None
+        status = True
         if task in wildQueries:
             messages = (
                 f&#34;Aborted because query is known to take longer than {TIMEOUT} second&#34;
                 + (&#34;&#34; if TIMEOUT == 1 else &#34;s&#34;)
             )
+            status = False
         else:
             options = {
                 k: form.get(k, v)
@@ -792,7 +814,7 @@ def serveAll(web, anything):
                 if v is not None
             }
             try:
-                (table, messages, features, start, total) = kernelApi.search(
+                (table, status, messages, features, start, total) = kernelApi.search(
                     task,
                     form[&#34;batch&#34;],
                     position=form[&#34;position&#34;],
@@ -812,8 +834,9 @@ def serveAll(web, anything):
                 console(f&#34;{task}\n{messages}&#34;, error=True)
                 wildQueries.add(task)
                 total = 0
+                status = False
 
-        if table is not None:
+        if status and table is not None:
             pages = pageLinks(total, form[&#34;position&#34;])
         # messages have already been shaped by search
         # if messages:
@@ -826,6 +849,7 @@ def serveAll(web, anything):
         pages=pages,
         table=table,
         nResults=total,
+        status=status,
         messages=messages,
         features=features,
     )</code></pre>
@@ -839,7 +863,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/server/serve.py#L37-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/server/serve.py#L37-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     if not Cap.can(&#34;browser&#34;):
@@ -878,7 +902,7 @@ def serveAll(web, anything):
         )
 
         if messages:
-            messages = wrapMessages(messages)
+            (status, messages) = wrapMessages(messages)
 
     return method(table=table, messages=messages)</code></pre>
 </details>

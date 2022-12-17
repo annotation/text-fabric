@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/relations.py#L1-L1693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/relations.py#L1-L1812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search by relational patterns between nodes
@@ -70,12 +70,14 @@ def _l_gt(n, m):
 def _l_ranklt(Crank):
     def func(n, m):
         return Crank[n - 1] &lt; Crank[m - 1]
+
     return func
 
 
 def _l_rankgt(Crank):
     def func(n, m):
         return Crank[n - 1] &gt; Crank[m - 1]
+
     return func
 
 
@@ -311,12 +313,16 @@ def basicRelations(searchExe, api):
         if isSlotF and isSlotT:
             return _l_eq
         elif isSlotT:
+
             def func(n):
-                return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+
             return func
         elif isSlotF:
+
             def func(n):
                 return chain(ClevUp[n - 1], (n,))
+
             return func
         else:
 
@@ -336,16 +342,24 @@ def basicRelations(searchExe, api):
         if isSlotF and isSlotT:
             return _l_uneq
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)) != (n,)
+
             return func
         elif isSlotF:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != (m,)
+
             return func
         else:
+
             def func(n, m):
-                return frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                return frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                ) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+
             return func
 
     # DISJOINT SLOTS
@@ -356,16 +370,32 @@ def basicRelations(searchExe, api):
         if isSlotF and isSlotT:
             return _l_uneq
         elif isSlotT:
+
             def func(n, m):
-                return m not in frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                return m not in frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                )
+
             return func
         elif isSlotF:
+
             def func(n, m):
-                return n not in frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                return n not in frozenset(
+                    Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                )
+
             return func
         else:
+
             def func(n, m):
-                return len(frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))) == 0
+                return (
+                    len(
+                        frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                        &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    )
+                    == 0
+                )
+
             return func
 
     # EMBEDDED IN
@@ -378,12 +408,16 @@ def basicRelations(searchExe, api):
         elif isSlotT:
             return _l_em
         elif isSlotF:
+
             def func(n):
                 return ClevUp[n - 1]
+
             return func
         else:
+
             def func(n):
                 return ClevUp[n - 1]
+
             return func
 
     # EMBEDS
@@ -396,17 +430,27 @@ def basicRelations(searchExe, api):
         elif isSlotF:
             return _l_em
         elif isSlotT:
+
             def func(n):
                 return Eoslots[n - maxSlotP] if n &gt; maxSlot else ()
+
             return func
         else:
             if isSlotT is None:
+
                 def func(n):
-                    return chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP]) if n &gt; maxSlot else ()
+                    return (
+                        chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP])
+                        if n &gt; maxSlot
+                        else ()
+                    )
+
                 return func
             else:
+
                 def func(n):
-                    return (ClevDown[n - maxSlotP] if n &gt; maxSlot else ())
+                    return ClevDown[n - maxSlotP] if n &gt; maxSlot else ()
+
                 return func
 
     # BEFORE WRT SLOTS
@@ -417,16 +461,24 @@ def basicRelations(searchExe, api):
         if isSlotF and isSlotT:
             return _l_lt
         elif isSlotF:
+
             def func(n, m):
                 return n &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+
             return func
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; m
+
             return func
         else:
+
             def func(n, m):
-                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (
+                    Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m
+                )
+
             return func
 
     # AFTER WRT SLOTS
@@ -437,16 +489,24 @@ def basicRelations(searchExe, api):
         if isSlotF and isSlotT:
             return _l_gt
         elif isSlotF:
+
             def func(n, m):
                 return n &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+
             return func
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; m
+
             return func
         else:
+
             def func(n, m):
-                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (
+                    Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m
+                )
+
             return func
 
     # START AT SAME SLOT
@@ -458,16 +518,22 @@ def basicRelations(searchExe, api):
             return _l_eq
         elif isSlotF:
             if isSlotT is None:
+
                 def func(n):
                     return chain(CfirstSlots[n - 1], (n,))
+
                 return func
             else:
+
                 def func(n):
                     return CfirstSlots[n - 1]
+
                 return func
         elif isSlotT:
+
             def func(n):
                 return ((Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n),)
+
             return func
         else:
 
@@ -490,16 +556,22 @@ def basicRelations(searchExe, api):
             return _l_eq
         elif isSlotF:
             if isSlotT is None:
+
                 def func(n):
                     return chain(ClastSlots[n - 1], (n,))
+
                 return func
             else:
+
                 def func(n):
                     return ClastSlots[n - 1]
+
                 return func
         elif isSlotT:
+
             def func(n):
                 return ((Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n),)
+
             return func
         else:
 
@@ -581,8 +653,10 @@ def basicRelations(searchExe, api):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -638,8 +712,10 @@ def basicRelations(searchExe, api):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -692,8 +768,10 @@ def basicRelations(searchExe, api):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -781,8 +859,10 @@ def basicRelations(searchExe, api):
         isSlotF = isSlotType(fTp)
         isSlotT = isSlotType(tTp)
         if isSlotF and isSlotT:
+
             def func(n):
                 return (n + 1,) if n &lt; maxSlot else ()
+
             return func
         else:
             if isSlotT:
@@ -823,8 +903,10 @@ def basicRelations(searchExe, api):
         isSlotF = isSlotType(fTp)
         isSlotT = isSlotType(tTp)
         if isSlotF and isSlotT:
+
             def func(n):
                 return (n - 1,) if n &gt; 1 else ()
+
             return func
         else:
 
@@ -867,8 +949,10 @@ def basicRelations(searchExe, api):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1)
+
                 return func
             else:
                 if isSlotT:
@@ -911,8 +995,10 @@ def basicRelations(searchExe, api):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1)
+
                 return func
             else:
                 if isSlotT:
@@ -1296,38 +1382,58 @@ def basicRelations(searchExe, api):
         def edgeAccess(eFunc, doValues, value):
             if doValues:
                 if value is None:
+
                     def func(n):
                         return (m[0] for m in eFunc(n) if m[1] is None)
+
                     return func
                 elif value is True:
+
                     def func(n):
                         return (m[0] for m in eFunc(n))
+
                     return func
                 elif isinstance(value, types.FunctionType):
+
                     def func(n):
                         return (m[0] for m in eFunc(n) if value(m[1]))
+
                     return func
                 elif isinstance(value, reTp):
+
                     def func(n):
-                        return (m[0] for m in eFunc(n) if value is not None and value.search(m[1]))
+                        return (
+                            m[0]
+                            for m in eFunc(n)
+                            if value is not None and value.search(m[1])
+                        )
+
                     return func
                 else:
                     (ident, value) = value
                     if ident is None and value is True:
+
                         def func(n):
                             return (m[0] for m in eFunc(n))
+
                         return func
                     elif ident:
+
                         def func(n):
                             return (m[0] for m in eFunc(n) if m[1] in value)
+
                         return func
                     else:
+
                         def func(n):
                             return (m[0] for m in eFunc(n) if m[1] not in value)
+
                         return func
             else:
+
                 def func(n):
                     return eFunc(n)
+
                 return func
 
         def edgeRV(value):
@@ -1540,7 +1646,13 @@ def basicRelations(searchExe, api):
         relationsAll.extend([r, rc])
 
     searchExe.relations = [
-        dict(acro=r[0], spin=r[1], func=r[2], desc=r[3],) for r in relationsAll
+        dict(
+            acro=r[0],
+            spin=r[1],
+            func=r[2],
+            desc=r[3],
+        )
+        for r in relationsAll
     ]
     searchExe.relationFromName = dict(
         ((r[&#34;acro&#34;], i) for (i, r) in enumerate(searchExe.relations))
@@ -1653,7 +1765,11 @@ def add_F_Relations(searchExe, varRels):
             relations.extend(
                 [
                     dict(
-                        name=acro, acro=newAcro, spin=spin, func=func, desc=r[&#34;desc&#34;],
+                        name=acro,
+                        acro=newAcro,
+                        spin=spin,
+                        func=func,
+                        desc=r[&#34;desc&#34;],
                     ),
                     dict(
                         name=acroi,
@@ -1702,7 +1818,10 @@ def add_V_Relations(searchExe, varRels):
             relations.extend(
                 [
                     dict(
-                        acro=acro, spin=r[&#34;spin&#34;], func=r[&#34;func&#34;](val), desc=r[&#34;desc&#34;],
+                        acro=acro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](val),
+                        desc=r[&#34;desc&#34;],
                     ),
                     dict(
                         acro=acroi,
@@ -1739,7 +1858,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/relations.py#L1577-L1641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/relations.py#L1689-L1757" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_F_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1789,7 +1908,11 @@ def add_V_Relations(searchExe, varRels):
             relations.extend(
                 [
                     dict(
-                        name=acro, acro=newAcro, spin=spin, func=func, desc=r[&#34;desc&#34;],
+                        name=acro,
+                        acro=newAcro,
+                        spin=spin,
+                        func=func,
+                        desc=r[&#34;desc&#34;],
                     ),
                     dict(
                         name=acroi,
@@ -1816,7 +1939,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/relations.py#L1534-L1574" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/relations.py#L1646-L1686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_K_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1869,7 +1992,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/relations.py#L1644-L1693" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/relations.py#L1760-L1812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_V_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1901,7 +2024,10 @@ def add_V_Relations(searchExe, varRels):
             relations.extend(
                 [
                     dict(
-                        acro=acro, spin=r[&#34;spin&#34;], func=r[&#34;func&#34;](val), desc=r[&#34;desc&#34;],
+                        acro=acro,
+                        spin=r[&#34;spin&#34;],
+                        func=r[&#34;func&#34;](val),
+                        desc=r[&#34;desc&#34;],
                     ),
                     dict(
                         acro=acroi,
@@ -1931,7 +2057,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/relations.py#L51-L1531" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/relations.py#L53-L1643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basicRelations(searchExe, api):
     C = api.C
@@ -2165,12 +2291,16 @@ def add_V_Relations(searchExe, varRels):
         if isSlotF and isSlotT:
             return _l_eq
         elif isSlotT:
+
             def func(n):
-                return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                return Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+
             return func
         elif isSlotF:
+
             def func(n):
                 return chain(ClevUp[n - 1], (n,))
+
             return func
         else:
 
@@ -2190,16 +2320,24 @@ def add_V_Relations(searchExe, varRels):
         if isSlotF and isSlotT:
             return _l_uneq
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)) != (n,)
+
             return func
         elif isSlotF:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != (m,)
+
             return func
         else:
+
             def func(n, m):
-                return frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                return frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                ) != frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+
             return func
 
     # DISJOINT SLOTS
@@ -2210,16 +2348,32 @@ def add_V_Relations(searchExe, varRels):
         if isSlotF and isSlotT:
             return _l_uneq
         elif isSlotT:
+
             def func(n, m):
-                return m not in frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                return m not in frozenset(
+                    Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)
+                )
+
             return func
         elif isSlotF:
+
             def func(n, m):
-                return n not in frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                return n not in frozenset(
+                    Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,)
+                )
+
             return func
         else:
+
             def func(n, m):
-                return len(frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,)) &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))) == 0
+                return (
+                    len(
+                        frozenset(Eoslots[n - maxSlotP] if n &gt; maxSlot else (n,))
+                        &amp; frozenset(Eoslots[m - maxSlotP] if m &gt; maxSlot else (m,))
+                    )
+                    == 0
+                )
+
             return func
 
     # EMBEDDED IN
@@ -2232,12 +2386,16 @@ def add_V_Relations(searchExe, varRels):
         elif isSlotT:
             return _l_em
         elif isSlotF:
+
             def func(n):
                 return ClevUp[n - 1]
+
             return func
         else:
+
             def func(n):
                 return ClevUp[n - 1]
+
             return func
 
     # EMBEDS
@@ -2250,17 +2408,27 @@ def add_V_Relations(searchExe, varRels):
         elif isSlotF:
             return _l_em
         elif isSlotT:
+
             def func(n):
                 return Eoslots[n - maxSlotP] if n &gt; maxSlot else ()
+
             return func
         else:
             if isSlotT is None:
+
                 def func(n):
-                    return chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP]) if n &gt; maxSlot else ()
+                    return (
+                        chain(ClevDown[n - maxSlotP], Eoslots[n - maxSlotP])
+                        if n &gt; maxSlot
+                        else ()
+                    )
+
                 return func
             else:
+
                 def func(n):
-                    return (ClevDown[n - maxSlotP] if n &gt; maxSlot else ())
+                    return ClevDown[n - maxSlotP] if n &gt; maxSlot else ()
+
                 return func
 
     # BEFORE WRT SLOTS
@@ -2271,16 +2439,24 @@ def add_V_Relations(searchExe, varRels):
         if isSlotF and isSlotT:
             return _l_lt
         elif isSlotF:
+
             def func(n, m):
                 return n &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+
             return func
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; m
+
             return func
         else:
+
             def func(n, m):
-                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m)
+                return (Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n) &lt; (
+                    Eoslots[m - maxSlotP][0] if m &gt; maxSlot else m
+                )
+
             return func
 
     # AFTER WRT SLOTS
@@ -2291,16 +2467,24 @@ def add_V_Relations(searchExe, varRels):
         if isSlotF and isSlotT:
             return _l_gt
         elif isSlotF:
+
             def func(n, m):
                 return n &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+
             return func
         elif isSlotT:
+
             def func(n, m):
                 return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; m
+
             return func
         else:
+
             def func(n, m):
-                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m)
+                return (Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n) &gt; (
+                    Eoslots[m - maxSlotP][-1] if m &gt; maxSlot else m
+                )
+
             return func
 
     # START AT SAME SLOT
@@ -2312,16 +2496,22 @@ def add_V_Relations(searchExe, varRels):
             return _l_eq
         elif isSlotF:
             if isSlotT is None:
+
                 def func(n):
                     return chain(CfirstSlots[n - 1], (n,))
+
                 return func
             else:
+
                 def func(n):
                     return CfirstSlots[n - 1]
+
                 return func
         elif isSlotT:
+
             def func(n):
                 return ((Eoslots[n - maxSlotP][0] if n &gt; maxSlot else n),)
+
             return func
         else:
 
@@ -2344,16 +2534,22 @@ def add_V_Relations(searchExe, varRels):
             return _l_eq
         elif isSlotF:
             if isSlotT is None:
+
                 def func(n):
                     return chain(ClastSlots[n - 1], (n,))
+
                 return func
             else:
+
                 def func(n):
                     return ClastSlots[n - 1]
+
                 return func
         elif isSlotT:
+
             def func(n):
                 return ((Eoslots[n - maxSlotP][-1] if n &gt; maxSlot else n),)
+
             return func
         else:
 
@@ -2435,8 +2631,10 @@ def add_V_Relations(searchExe, varRels):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -2492,8 +2690,10 @@ def add_V_Relations(searchExe, varRels):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -2546,8 +2746,10 @@ def add_V_Relations(searchExe, varRels):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - k)), min((maxSlot, n + k)) + 1)
+
                 return func
             elif isSlotF:
                 if isSlotT is None:
@@ -2635,8 +2837,10 @@ def add_V_Relations(searchExe, varRels):
         isSlotF = isSlotType(fTp)
         isSlotT = isSlotType(tTp)
         if isSlotF and isSlotT:
+
             def func(n):
                 return (n + 1,) if n &lt; maxSlot else ()
+
             return func
         else:
             if isSlotT:
@@ -2677,8 +2881,10 @@ def add_V_Relations(searchExe, varRels):
         isSlotF = isSlotType(fTp)
         isSlotT = isSlotType(tTp)
         if isSlotF and isSlotT:
+
             def func(n):
                 return (n - 1,) if n &gt; 1 else ()
+
             return func
         else:
 
@@ -2721,8 +2927,10 @@ def add_V_Relations(searchExe, varRels):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n + 1 - k)), min((maxSlot, n + 1 + k)) + 1)
+
                 return func
             else:
                 if isSlotT:
@@ -2765,8 +2973,10 @@ def add_V_Relations(searchExe, varRels):
             isSlotF = isSlotType(fTp)
             isSlotT = isSlotType(tTp)
             if isSlotF and isSlotT:
+
                 def func(n):
                     return range(max((1, n - 1 - k)), min((maxSlot, n - 1 + k)) + 1)
+
                 return func
             else:
                 if isSlotT:
@@ -3150,38 +3360,58 @@ def add_V_Relations(searchExe, varRels):
         def edgeAccess(eFunc, doValues, value):
             if doValues:
                 if value is None:
+
                     def func(n):
                         return (m[0] for m in eFunc(n) if m[1] is None)
+
                     return func
                 elif value is True:
+
                     def func(n):
                         return (m[0] for m in eFunc(n))
+
                     return func
                 elif isinstance(value, types.FunctionType):
+
                     def func(n):
                         return (m[0] for m in eFunc(n) if value(m[1]))
+
                     return func
                 elif isinstance(value, reTp):
+
                     def func(n):
-                        return (m[0] for m in eFunc(n) if value is not None and value.search(m[1]))
+                        return (
+                            m[0]
+                            for m in eFunc(n)
+                            if value is not None and value.search(m[1])
+                        )
+
                     return func
                 else:
                     (ident, value) = value
                     if ident is None and value is True:
+
                         def func(n):
                             return (m[0] for m in eFunc(n))
+
                         return func
                     elif ident:
+
                         def func(n):
                             return (m[0] for m in eFunc(n) if m[1] in value)
+
                         return func
                     else:
+
                         def func(n):
                             return (m[0] for m in eFunc(n) if m[1] not in value)
+
                         return func
             else:
+
                 def func(n):
                     return eFunc(n)
+
                 return func
 
         def edgeRV(value):
@@ -3394,7 +3624,13 @@ def add_V_Relations(searchExe, varRels):
         relationsAll.extend([r, rc])
 
     searchExe.relations = [
-        dict(acro=r[0], spin=r[1], func=r[2], desc=r[3],) for r in relationsAll
+        dict(
+            acro=r[0],
+            spin=r[1],
+            func=r[2],
+            desc=r[3],
+        )
+        for r in relationsAll
     ]
     searchExe.relationFromName = dict(
         ((r[&#34;acro&#34;], i) for (i, r) in enumerate(searchExe.relations))

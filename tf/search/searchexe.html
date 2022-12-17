@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L1-L233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L1-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search execution management
@@ -39,15 +39,20 @@ from .semantics import semantics
 from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
-from ..parameters import SEARCH_FAIL_FACTOR
+from ..parameters import SEARCH_FAIL_FACTOR, YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
 from ..core.timestamp import DEEP
 
 
 PROGRESS = 100
 
 
-class SearchExe(object):
-    perfParams = {}
+class SearchExe:
+    perfDefaults = dict(
+        yarnRatio=YARN_RATIO,
+        tryLimitFrom=TRY_LIMIT_FROM,
+        tryLimitTo=TRY_LIMIT_TO,
+    )
+    perfParams = dict(**perfDefaults)
 
     @classmethod
     def setPerfParams(cls, params):
@@ -94,12 +99,10 @@ class SearchExe(object):
     def search(self, limit=None):
         api = self.api
         TF = api.TF
-        isSilent = TF.isSilent
         setSilent = TF.setSilent
-        wasSilent = isSilent()
         setSilent(True)
         self.study()
-        setSilent(wasSilent)
+        setSilent(self.silent)
         return self.fetch(limit=limit)
 
     def study(self, strategy=None):
@@ -107,10 +110,14 @@ class SearchExe(object):
         TF = api.TF
         info = TF.info
         indent = TF.indent
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         _msgCache = self._msgCache
 
         indent(level=0, reset=True)
         self.good = True
+
+        wasSilent = isSilent()
 
         setStrategy(self, strategy)
         if not self.good:
@@ -127,6 +134,10 @@ class SearchExe(object):
             cache=_msgCache,
         )
         spinAtoms(self)
+        # in spinAtoms an inner call to study may have happened due to quantifiers
+        # That will restore the silent level to what we had outside
+        # study(). So we have to make it deep again.
+        setSilent(wasSilent)
         info(
             f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
             cache=_msgCache,
@@ -230,7 +241,9 @@ class SearchExe(object):
         if good:
             info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
         else:
-            error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)
+            error(
+                f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache
+            )
 
     # SHOWING WITH THE SEARCH GRAPH ###
 
@@ -282,10 +295,15 @@ class SearchExe(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L18-L233" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L18-L246" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">class SearchExe(object):
-    perfParams = {}
+<pre><code class="python">class SearchExe:
+    perfDefaults = dict(
+        yarnRatio=YARN_RATIO,
+        tryLimitFrom=TRY_LIMIT_FROM,
+        tryLimitTo=TRY_LIMIT_TO,
+    )
+    perfParams = dict(**perfDefaults)
 
     @classmethod
     def setPerfParams(cls, params):
@@ -332,12 +350,10 @@ class SearchExe(object):
     def search(self, limit=None):
         api = self.api
         TF = api.TF
-        isSilent = TF.isSilent
         setSilent = TF.setSilent
-        wasSilent = isSilent()
         setSilent(True)
         self.study()
-        setSilent(wasSilent)
+        setSilent(self.silent)
         return self.fetch(limit=limit)
 
     def study(self, strategy=None):
@@ -345,10 +361,14 @@ class SearchExe(object):
         TF = api.TF
         info = TF.info
         indent = TF.indent
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         _msgCache = self._msgCache
 
         indent(level=0, reset=True)
         self.good = True
+
+        wasSilent = isSilent()
 
         setStrategy(self, strategy)
         if not self.good:
@@ -365,6 +385,10 @@ class SearchExe(object):
             cache=_msgCache,
         )
         spinAtoms(self)
+        # in spinAtoms an inner call to study may have happened due to quantifiers
+        # That will restore the silent level to what we had outside
+        # study(). So we have to make it deep again.
+        setSilent(wasSilent)
         info(
             f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
             cache=_msgCache,
@@ -468,7 +492,9 @@ class SearchExe(object):
         if good:
             info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
         else:
-            error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)
+            error(
+                f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache
+            )
 
     # SHOWING WITH THE SEARCH GRAPH ###
 
@@ -503,6 +529,10 @@ class SearchExe(object):
 </details>
 <h3>Class variables</h3>
 <dl>
+<dt id="tf.search.searchexe.SearchExe.perfDefaults"><code class="name">var <span class="ident">perfDefaults</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.search.searchexe.SearchExe.perfParams"><code class="name">var <span class="ident">perfParams</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -518,7 +548,7 @@ class SearchExe(object):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L21-L23" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L26-L28" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@classmethod
 def setPerfParams(cls, params):
@@ -536,7 +566,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L151-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L162-L215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def count(self, progress=None, limit=None):
     TF = self.api.TF
@@ -589,7 +619,9 @@ def setPerfParams(cls, params):
     if good:
         info(f&#34;Done: {i + 1} results&#34;, cache=_msgCache)
     else:
-        error(f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache)</code></pre>
+        error(
+            f&#34;cut off at {failLimit} results. There are more ...&#34;, cache=_msgCache
+        )</code></pre>
 </details>
 </dd>
 <dt id="tf.search.searchexe.SearchExe.fetch"><code class="name flex">
@@ -600,7 +632,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L116-L149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L127-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fetch(self, limit=None):
     api = self.api
@@ -646,17 +678,15 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L63-L72" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L68-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(self, limit=None):
     api = self.api
     TF = api.TF
-    isSilent = TF.isSilent
     setSilent = TF.setSilent
-    wasSilent = isSilent()
     setSilent(True)
     self.study()
-    setSilent(wasSilent)
+    setSilent(self.silent)
     return self.fetch(limit=limit)</code></pre>
 </details>
 </dd>
@@ -668,7 +698,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L209-L217" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L222-L230" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showOuterTemplate(self, _msgCache):
     error = self.api.TF.error
@@ -689,7 +719,7 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L206-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L219-L220" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showPlan(self, details=False):
     displayPlan(self, details=details)</code></pre>
@@ -703,17 +733,21 @@ def setPerfParams(cls, params):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/36d22d5f7413eb297ed26bf45a2571c864dcfa3d/tf/search/searchexe.py#L74-L114" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/search/searchexe.py#L77-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def study(self, strategy=None):
     api = self.api
     TF = api.TF
     info = TF.info
     indent = TF.indent
+    isSilent = TF.isSilent
+    setSilent = TF.setSilent
     _msgCache = self._msgCache
 
     indent(level=0, reset=True)
     self.good = True
+
+    wasSilent = isSilent()
 
     setStrategy(self, strategy)
     if not self.good:
@@ -730,6 +764,10 @@ def setPerfParams(cls, params):
         cache=_msgCache,
     )
     spinAtoms(self)
+    # in spinAtoms an inner call to study may have happened due to quantifiers
+    # That will restore the silent level to what we had outside
+    # study(). So we have to make it deep again.
+    setSilent(wasSilent)
     info(
         f&#34;Constraining search space with {len(self.qedges)} relations ...&#34;,
         cache=_msgCache,
@@ -824,6 +862,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="two-column">
 <li><code><a title="tf.search.searchexe.SearchExe.count" href="#tf.search.searchexe.SearchExe.count">count</a></code></li>
 <li><code><a title="tf.search.searchexe.SearchExe.fetch" href="#tf.search.searchexe.SearchExe.fetch">fetch</a></code></li>
+<li><code><a title="tf.search.searchexe.SearchExe.perfDefaults" href="#tf.search.searchexe.SearchExe.perfDefaults">perfDefaults</a></code></li>
 <li><code><a title="tf.search.searchexe.SearchExe.perfParams" href="#tf.search.searchexe.SearchExe.perfParams">perfParams</a></code></li>
 <li><code><a title="tf.search.searchexe.SearchExe.search" href="#tf.search.searchexe.SearchExe.search">search</a></code></li>
 <li><code><a title="tf.search.searchexe.SearchExe.setPerfParams" href="#tf.search.searchexe.SearchExe.setPerfParams">setPerfParams</a></code></li>
