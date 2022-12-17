@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/text.py#L1-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/text.py#L1-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from textwrap import dedent
@@ -116,10 +116,13 @@ def specialCharacters(app, fmt=None, _browse=False):
     &#34;&#34;&#34;
 
     inNb = app.inNb
+    aContext = app.context
+    formatCls = aContext.formatCls
 
     if fmt is None or fmt == &#34;&#34;:
         fmt = DEFAULT_FORMAT
 
+    textCls = formatCls[fmt].lower()
     formats = app.plainFormats
 
     if fmt.startswith(&#34;layout-&#34;):
@@ -145,30 +148,26 @@ def specialCharacters(app, fmt=None, _browse=False):
     )
 
     output = []
-    extraCls = &#39;&#34; class=&#34;ccline&#34;&#39; if _browse else &#34;&#34;
+    extraCls = &#34;ccline&#34;
     output.append(
         dedent(
             f&#34;&#34;&#34;\
         &lt;p&gt;&lt;b&gt;Special characters in &lt;code&gt;{fmt}&lt;/code&gt;&lt;/b&gt;&lt;/p&gt;
-        &lt;p{extraCls}&gt;
+        &lt;p class=&#34;{extraCls} {textCls}&#34;&gt;
         &#34;&#34;&#34;
         )
-        if inNb
-        else f&#34;Special characters in {fmt}&#34;
     )
     charReps = []
     for c in specials:
         cc = ord(c)
         charReps.append(
             (
-                f&#34;&#34;&#34;&lt;code class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
-                f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/code&gt;&#34;&#34;&#34;
-            ) if inNb
-            else f&#34;{c}&#34;
+                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
+                f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/span&gt;&#34;&#34;&#34;
+            )
         )
-    output.append((&#34;\n&#34; if inNb else &#34; &#34;).join(charReps))
-    if inNb:
-        output.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
+    output.append((&#34;\n&#34;).join(charReps))
+    output.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
 
     output = &#34;\n&#34;.join(output)
 
@@ -195,7 +194,7 @@ def specialCharacters(app, fmt=None, _browse=False):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/text.py#L39-L63" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/text.py#L39-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showFormats(app):
     inNb = app.inNb
@@ -249,7 +248,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/text.py#L66-L150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/text.py#L66-L149" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specialCharacters(app, fmt=None, _browse=False):
     &#34;&#34;&#34;Generate a widget for hard to type characters.
@@ -274,10 +273,13 @@ If not passed, the default format will be chosen.</dd>
     &#34;&#34;&#34;
 
     inNb = app.inNb
+    aContext = app.context
+    formatCls = aContext.formatCls
 
     if fmt is None or fmt == &#34;&#34;:
         fmt = DEFAULT_FORMAT
 
+    textCls = formatCls[fmt].lower()
     formats = app.plainFormats
 
     if fmt.startswith(&#34;layout-&#34;):
@@ -303,30 +305,26 @@ If not passed, the default format will be chosen.</dd>
     )
 
     output = []
-    extraCls = &#39;&#34; class=&#34;ccline&#34;&#39; if _browse else &#34;&#34;
+    extraCls = &#34;ccline&#34;
     output.append(
         dedent(
             f&#34;&#34;&#34;\
         &lt;p&gt;&lt;b&gt;Special characters in &lt;code&gt;{fmt}&lt;/code&gt;&lt;/b&gt;&lt;/p&gt;
-        &lt;p{extraCls}&gt;
+        &lt;p class=&#34;{extraCls} {textCls}&#34;&gt;
         &#34;&#34;&#34;
         )
-        if inNb
-        else f&#34;Special characters in {fmt}&#34;
     )
     charReps = []
     for c in specials:
         cc = ord(c)
         charReps.append(
             (
-                f&#34;&#34;&#34;&lt;code class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
-                f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/code&gt;&#34;&#34;&#34;
-            ) if inNb
-            else f&#34;{c}&#34;
+                f&#34;&#34;&#34;&lt;span class=&#34;ccoff {extraCls}&#34; &#34;&#34;&#34;
+                f&#34;&#34;&#34;onclick=&#34;copyChar(this, {cc})&#34;&gt;{htmlEsc(c)}&lt;/span&gt;&#34;&#34;&#34;
+            )
         )
-    output.append((&#34;\n&#34; if inNb else &#34; &#34;).join(charReps))
-    if inNb:
-        output.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
+    output.append((&#34;\n&#34;).join(charReps))
+    output.append(&#34;&#34;&#34;&lt;/p&gt;&#34;&#34;&#34;)
 
     output = &#34;\n&#34;.join(output)
 
@@ -346,7 +344,7 @@ If not passed, the default format will be chosen.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1c408a13c2e8fb6ca253e39d661a03a4e093bcd/tf/advanced/text.py#L10-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/text.py#L10-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def textApi(app):
     api = app.api
