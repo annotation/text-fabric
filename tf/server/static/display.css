@@ -364,12 +364,15 @@ div.pval {
   background-color: yellow ! important;
 }
 .ccon,.ccoff {
-  padding-right: 0.1rem;
-  padding-left: 0.1rem;
+  padding: 0.2rem;
+  margin: 0.2rem;
+  border: 0.1rem solid var(--letter-box-border);
+  border-radius: 0.1rem;
 }
 .ccline {
-  font-size: xx-large;
+  font-size: xx-large ! important;
   font-weight: bold;
+  line-height: 2em ! important;
 }
 /* TF header */
 
@@ -439,6 +442,7 @@ summary {
   --border-color2:      hsla(  0,   0%,  70%, 0.9  );
   --border-color3:      hsla(  0,   0%,  80%, 0.8  );
   --border-color4:      hsla(  0,   0%,  60%, 0.9  );
+	--letter-box-border:  hsla(  0,   0%,  80%, 0.5  );
   --border-width-nul:   2px;
   --border-width0:      2px;
   --border-width1:      3px;

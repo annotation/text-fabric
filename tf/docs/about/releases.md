@@ -12,9 +12,15 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
+### 11.0.4
+
+2023-01-01 (upcoming)
+
+Improved display of special characters in text-fabric browser.
+
 ### 11.0.3
 
-2022-12-17 (upcoming)
+2022-12-17
 
 **Backends**
 

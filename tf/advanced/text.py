@@ -86,10 +86,13 @@ def specialCharacters(app, fmt=None, _browse=False):
     """
 
     inNb = app.inNb
+    aContext = app.context
+    formatCls = aContext.formatCls
 
     if fmt is None or fmt == "":
         fmt = DEFAULT_FORMAT
 
+    textCls = formatCls[fmt].lower()
     formats = app.plainFormats
 
     if fmt.startswith("layout-"):
@@ -115,30 +118,26 @@ def specialCharacters(app, fmt=None, _browse=False):
     )
 
     output = []
-    extraCls = '" class="ccline"' if _browse else ""
+    extraCls = "ccline"
     output.append(
         dedent(
             f"""\
         <p><b>Special characters in <code>{fmt}</code></b></p>
-        <p{extraCls}>
+        <p class="{extraCls} {textCls}">
         """
         )
-        if inNb
-        else f"Special characters in {fmt}"
     )
     charReps = []
     for c in specials:
         cc = ord(c)
         charReps.append(
             (
-                f"""<code class="ccoff {extraCls}" """
-                f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</code>"""
-            ) if inNb
-            else f"{c}"
+                f"""<span class="ccoff {extraCls}" """
+                f"""onclick="copyChar(this, {cc})">{htmlEsc(c)}</span>"""
+            )
         )
-    output.append(("\n" if inNb else " ").join(charReps))
-    if inNb:
-        output.append("""</p>""")
+    output.append(("\n").join(charReps))
+    output.append("""</p>""")
 
     output = "\n".join(output)
 
