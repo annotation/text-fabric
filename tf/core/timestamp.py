@@ -46,7 +46,7 @@ def silentConvert(arg):
     return not not arg
 
 
-class Timestamp(object):
+class Timestamp:
     def __init__(self, silent=SILENT_D, level=None):
         """Create a controller for timed messages.
 

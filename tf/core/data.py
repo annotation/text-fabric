@@ -32,7 +32,7 @@ MEM_MSG = (
 )
 
 
-class Data(object):
+class Data:
     def __init__(
         self,
         path,

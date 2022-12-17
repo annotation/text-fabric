@@ -173,7 +173,7 @@ def runSearch(app, query, cache):
     options = dict(_msgCache=[])
     if app.sets is not None:
         options["sets"] = app.sets
-    (queryResults, messages, exe) = plainSearch(query, here=False, **options)
+    (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
     features = ()
     if exe:
         qnodes = getattr(exe, "qnodes", [])
@@ -183,9 +183,9 @@ def runSearch(app, query, cache):
             for (i, q) in enumerate(qnodes)
         )
     queryResults = tuple(sorted(queryResults))
-    runMessages = wrapMessages(S._msgCache)
-    cache[cacheKey] = (queryResults, (messages, runMessages), features)
-    return (queryResults, (messages, runMessages), features)
+    (runStatus, runMessages) = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (status, runStatus), (messages, runMessages), features)
+    return (queryResults, (status, runStatus), (messages, runMessages), features)
 
 
 def runSearchCondensed(app, query, cache, condenseType):
@@ -206,7 +206,7 @@ def runSearchCondensed(app, query, cache, condenseType):
     cacheKey = (query, True, condenseType)
     if cacheKey in cache:
         return cache[cacheKey]
-    (queryResults, messages, features) = runSearch(app, query, cache)
+    (queryResults, status, messages, features) = runSearch(app, query, cache)
     queryResults = condense(api, queryResults, condenseType, multiple=True)
-    cache[cacheKey] = (queryResults, messages, features)
-    return (queryResults, messages, features)
+    cache[cacheKey] = (queryResults, status, messages, features)
+    return (queryResults, status, messages, features)

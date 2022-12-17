@@ -27,11 +27,11 @@ so we have made it accessible in the `tf.core.computed.Computeds`-api.
 """
 
 
-class Computeds(object):
+class Computeds:
     pass
 
 
-class Computed(object):
+class Computed:
     """Provides access to precomputed data.
 
     For component `ccc` it is the result of `C.ccc` or `Cs('ccc')`.

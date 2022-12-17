@@ -47,7 +47,7 @@ API_REFS = dict(
 )
 
 
-class Api(object):
+class Api:
     def __init__(self, TF):
         self.TF = TF
         self.ignored = tuple(sorted(TF.featuresIgnored))

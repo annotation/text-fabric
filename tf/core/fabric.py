@@ -118,7 +118,7 @@ in `tf.core.prepare`.
 KIND = dict(__sections__="section", __structure__="structure")
 
 
-class FabricCore(object):
+class FabricCore:
     """Initialize the core API for a corpus.
 
     Top level management of

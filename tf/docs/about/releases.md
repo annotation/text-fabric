@@ -14,9 +14,28 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0.3
 
-2022-12-13 (upcoming)
+2022-12-17 (upcoming)
+
+**Backends**
 
 Small fixes for problems encountered when using gitlab backends.
+
+**Search**
+
+Fixed a problem spotted by Camil Staps: in the Text-Fabric browser valid queries
+with a quantifier gave error-like messages and no results.
+
+* The cause was two-fold: the processing of quantifiers led to extra
+informational messages. (This is a regression)
+* The Text-Fabric browser interpreted these messages as error messages.
+
+Both problems have been fixed.
+
+* The extra informational messages are suppressed (as it was earlier the case).
+* The result that the kernel passes to the webserver now includes a status parameter,
+separate from the messages, which conveys whether the query was successfull.
+Queries with informational messages and a positive status will have their results
+shown as well as their messages. 
 
 ### 11.0.2
 

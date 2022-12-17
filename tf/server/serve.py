@@ -71,7 +71,7 @@ def serveTable(web, kind, getx=None, asDict=False):
         )
 
         if messages:
-            messages = wrapMessages(messages)
+            (status, messages) = wrapMessages(messages)
 
     return method(table=table, messages=messages)
 
@@ -105,11 +105,13 @@ def serveQuery(web, getx, asDict=False):
     if task:
         messages = ""
         table = None
+        status = True
         if task in wildQueries:
             messages = (
                 f"Aborted because query is known to take longer than {TIMEOUT} second"
                 + ("" if TIMEOUT == 1 else "s")
             )
+            status = False
         else:
             options = {
                 k: form.get(k, v)
@@ -117,7 +119,7 @@ def serveQuery(web, getx, asDict=False):
                 if v is not None
             }
             try:
-                (table, messages, features, start, total) = kernelApi.search(
+                (table, status, messages, features, start, total) = kernelApi.search(
                     task,
                     form["batch"],
                     position=form["position"],
@@ -137,8 +139,9 @@ def serveQuery(web, getx, asDict=False):
                 console(f"{task}\n{messages}", error=True)
                 wildQueries.add(task)
                 total = 0
+                status = False
 
-        if table is not None:
+        if status and table is not None:
             pages = pageLinks(total, form["position"])
         # messages have already been shaped by search
         # if messages:
@@ -151,6 +154,7 @@ def serveQuery(web, getx, asDict=False):
         pages=pages,
         table=table,
         nResults=total,
+        status=status,
         messages=messages,
         features=features,
     )
@@ -277,6 +281,7 @@ def serveDownload(web):
     condenseType = form["condenseType"] or None
     textFormat = form["textFormat"] or None
     csvs = None
+    queryStatus = True
     tupleResultsX = None
     queryResultsX = None
     messages = ""
@@ -287,7 +292,13 @@ def serveDownload(web):
         )
     else:
         try:
-            (queryMessages, csvs, tupleResultsX, queryResultsX) = kernelApi.csvs(
+            (
+                queryStatus,
+                queryMessages,
+                csvs,
+                tupleResultsX,
+                queryResultsX,
+            ) = kernelApi.csvs(
                 task,
                 form["tuples"],
                 form["sections"],
@@ -296,6 +307,7 @@ def serveDownload(web):
                 fmt=textFormat,
             )
         except TimeoutError:
+            queryStatus = False
             messages = f"Aborted because query takes longer than {TIMEOUT} second" + (
                 "" if TIMEOUT == 1 else "s"
             )
@@ -303,9 +315,9 @@ def serveDownload(web):
             wildQueries.add(task)
             return jsonify(messages=messages)
 
-    if queryMessages:
+    if not queryStatus:
         redirect("/")
-        return jsonify(messages=queryMessages)
+        return jsonify(status=queryStatus, messages=queryMessages)
 
     (header, appLogo, tfLogo) = kernelApi.header()
     provenance = kernelApi.provenance()

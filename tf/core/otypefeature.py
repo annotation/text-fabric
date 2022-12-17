@@ -8,7 +8,7 @@ in any TF dataset, this pays off.
 """
 
 
-class OtypeFeature(object):
+class OtypeFeature:
     def __init__(self, api, metaData, data):
         self.api = api
         self.meta = metaData

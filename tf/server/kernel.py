@@ -476,15 +476,17 @@ def makeTfKernel(app, appName, port):
             total = 0
 
             results = ()
+            status = True
             messages = ("", "")
             if query:
-                (results, messages, features) = (
+                (results, status, messages, features) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if condensed and condenseType
                     else runSearch(app, query, cache)
                 )
 
-                if messages[0]:
+                status = status[0] and status[1]
+                if not status:
                     results = ()
                 total += len(results)
 
@@ -516,7 +518,7 @@ def makeTfKernel(app, appName, port):
                 getx=getx,
                 **options,
             )
-            return (table, " ".join(messages), featureStr, start, total)
+            return (table, status, " ".join(messages), featureStr, start, total)
 
         def exposed_csvs(self, query, tuples, sections, **options):
             """Gets query results etc. in plain csv format.
@@ -558,16 +560,20 @@ def makeTfKernel(app, appName, port):
             queryMessages = ("", "")
             features = ()
             if query:
-                (queryResults, queryMessages, features) = runSearch(app, query, cache)
-                (queryResultsC, queryMessagesC, featuresC) = (
+                (queryResults, queryStatus, queryMessages, features) = runSearch(
+                    app, query, cache
+                )
+                (queryResultsC, queryStatusC, queryMessagesC, featuresC) = (
                     runSearchCondensed(app, query, cache, condenseType)
-                    if not queryMessages[0] and condensed and condenseType
-                    else (None, ("", ""), None)
+                    if queryStatus[0] and queryStatus[1] and condensed and condenseType
+                    else (None, (False, False), ("", ""), None)
                 )
 
-                if queryMessages[0]:
+                queryStatus = queryStatus[0] and queryStatus[1]
+                queryStatusC = queryStatusC[0] and queryStatusC[1]
+                if not queryStatus:
                     queryResults = ()
-                if queryMessagesC[0]:
+                if not queryStatusC:
                     queryResultsC = ()
 
             csvs = (
@@ -593,6 +599,7 @@ def makeTfKernel(app, appName, port):
                 fmt=fmt,
             )
             return (
+                queryStatus,
                 " ".join(queryMessages[0]),
                 pickle.dumps(csvs),
                 pickle.dumps(tupleResultsX),
@@ -617,7 +624,7 @@ def makeTfConnection(lhost, port, timeout):
     if not Cap.can("browser"):
         return None
 
-    class TfConnection(object):
+    class TfConnection:
         def connect(self):
             try:
                 connection = rpyc.connect(

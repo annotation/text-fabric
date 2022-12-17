@@ -6,7 +6,7 @@
 SET_TYPES = {set, frozenset}
 
 
-class Locality(object):
+class Locality:
     """Methods by which you can navigate from a node to its neighborhood.
 
     Neighbours are: nodes that have slots in common, embedders and embeddees,

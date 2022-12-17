@@ -20,11 +20,11 @@ dictionary: `tf.core.nodefeature.NodeFeature.items`
 import collections
 
 
-class NodeFeatures(object):
+class NodeFeatures:
     pass
 
 
-class NodeFeature(object):
+class NodeFeature:
     """Provides access to (node) feature data.
 
     For feature `fff` it is the result of `F.fff` or `Fs('fff')`.

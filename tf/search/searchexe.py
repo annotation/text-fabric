@@ -8,15 +8,20 @@ from .semantics import semantics
 from .graph import connectedness, displayPlan
 from .spin import spinAtoms, spinEdges
 from .stitch import setStrategy, stitch
-from ..parameters import SEARCH_FAIL_FACTOR
+from ..parameters import SEARCH_FAIL_FACTOR, YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
 from ..core.timestamp import DEEP
 
 
 PROGRESS = 100
 
 
-class SearchExe(object):
-    perfParams = {}
+class SearchExe:
+    perfDefaults = dict(
+        yarnRatio=YARN_RATIO,
+        tryLimitFrom=TRY_LIMIT_FROM,
+        tryLimitTo=TRY_LIMIT_TO,
+    )
+    perfParams = dict(**perfDefaults)
 
     @classmethod
     def setPerfParams(cls, params):
@@ -63,12 +68,10 @@ class SearchExe(object):
     def search(self, limit=None):
         api = self.api
         TF = api.TF
-        isSilent = TF.isSilent
         setSilent = TF.setSilent
-        wasSilent = isSilent()
         setSilent(True)
         self.study()
-        setSilent(wasSilent)
+        setSilent(self.silent)
         return self.fetch(limit=limit)
 
     def study(self, strategy=None):
@@ -76,10 +79,14 @@ class SearchExe(object):
         TF = api.TF
         info = TF.info
         indent = TF.indent
+        isSilent = TF.isSilent
+        setSilent = TF.setSilent
         _msgCache = self._msgCache
 
         indent(level=0, reset=True)
         self.good = True
+
+        wasSilent = isSilent()
 
         setStrategy(self, strategy)
         if not self.good:
@@ -96,6 +103,10 @@ class SearchExe(object):
             cache=_msgCache,
         )
         spinAtoms(self)
+        # in spinAtoms an inner call to study may have happened due to quantifiers
+        # That will restore the silent level to what we had outside
+        # study(). So we have to make it deep again.
+        setSilent(wasSilent)
         info(
             f"Constraining search space with {len(self.qedges)} relations ...",
             cache=_msgCache,
@@ -199,7 +210,9 @@ class SearchExe(object):
         if good:
             info(f"Done: {i + 1} results", cache=_msgCache)
         else:
-            error(f"cut off at {failLimit} results. There are more ...", cache=_msgCache)
+            error(
+                f"cut off at {failLimit} results. There are more ...", cache=_msgCache
+            )
 
     # SHOWING WITH THE SEARCH GRAPH ###
 

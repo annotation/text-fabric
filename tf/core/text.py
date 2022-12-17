@@ -352,7 +352,7 @@ SEP = "-"
 TYPE_FMT_SEP = "#"
 
 
-class Text(object):
+class Text:
     """Low level text representation, including section headings.
 
     In addition to the methods that are directly defined, there are also

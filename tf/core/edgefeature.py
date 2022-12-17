@@ -26,11 +26,11 @@ import collections
 from .helpers import makeInverse, makeInverseVal
 
 
-class EdgeFeatures(object):
+class EdgeFeatures:
     pass
 
 
-class EdgeFeature(object):
+class EdgeFeature:
     """Provides access to (edge) feature data.
 
     For feature `fff` it is the result of `E.fff` or `Es('fff')`.

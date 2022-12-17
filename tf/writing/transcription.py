@@ -46,7 +46,7 @@ Font `CharisSIL-R`.
 import re
 
 
-class Transcription(object):
+class Transcription:
     """Conversion between unicode and various transcriptions.
 
     Usage notes:

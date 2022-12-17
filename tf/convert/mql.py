@@ -142,7 +142,7 @@ ENUM_LIMIT = 1000
 ONE_ENUM_TYPE = True
 
 
-class MQL(object):
+class MQL:
     def __init__(self, mqlDir, mqlName, tfFeatures, tmObj, silent=SILENT_D):
         self.silent = silentConvert(silent)
         tmObj.setSilent(silent)

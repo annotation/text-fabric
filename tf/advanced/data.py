@@ -8,7 +8,7 @@ from .links import provenanceLink
 # GET DATA FOR MAIN SOURCE AND ALL MODULES
 
 
-class AppData(object):
+class AppData:
     def __init__(
         self, app, backend, moduleRefs, locations, modules, version, checkout, silent
     ):

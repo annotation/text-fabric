@@ -105,7 +105,7 @@ Cap = Capable("browser")
 run_simple = Cap.loadFrom("werkzeug.serving", "run_simple")
 
 
-class Web(object):
+class Web:
     def __init__(self, portKernel):
         TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
         kernelApi = TF.connect()

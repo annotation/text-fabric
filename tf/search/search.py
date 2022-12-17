@@ -4,11 +4,10 @@
 
 from ..core.helpers import console, wrapMessages
 from .searchexe import SearchExe
-from ..parameters import YARN_RATIO, TRY_LIMIT_FROM, TRY_LIMIT_TO
 from ..core.timestamp import SILENT_D, AUTO, silentConvert
 
 
-class Search(object):
+class Search:
     """ """
 
     def __init__(self, api, silent=SILENT_D):
@@ -16,14 +15,9 @@ class Search(object):
         self.api = api
         self.silent = silent
         self.exe = None
-        self.perfDefaults = dict(
-            yarnRatio=YARN_RATIO,
-            tryLimitFrom=TRY_LIMIT_FROM,
-            tryLimitTo=TRY_LIMIT_TO,
-        )
+        perfDefaults = SearchExe.perfDefaults
         self.perfParams = {}
-        self.perfParams.update(self.perfDefaults)
-        SearchExe.setPerfParams(self.perfParams)
+        self.perfParams.update(perfDefaults)
 
     def tweakPerformance(self, silent=SILENT_D, **kwargs):
         """Tweak parameters that influence the search process.
@@ -141,7 +135,7 @@ class Search(object):
         info = TF.info
         isSilent = TF.isSilent
         setSilent = TF.setSilent
-        defaults = self.perfDefaults
+        defaults = SearchExe.perfDefaults
 
         wasSilent = isSilent()
         setSilent(silent)
@@ -240,9 +234,13 @@ class Search(object):
             self.exe = exe
         queryResults = exe.search(limit=limit)
         if type(_msgCache) is list:
-            messages = wrapMessages(_msgCache)
+            (status, messages) = wrapMessages(_msgCache)
             self._msgCache = _msgCache
-            return (queryResults, messages) if here else (queryResults, messages, exe)
+            return (
+                (queryResults, status, messages)
+                if here
+                else (queryResults, status, messages, exe)
+            )
         return queryResults
 
     def study(

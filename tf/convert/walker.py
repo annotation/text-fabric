@@ -146,7 +146,7 @@ from ..core.helpers import itemize, isInt
 from ..core.timestamp import SILENT_D, silentConvert
 
 
-class CV(object):
+class CV:
     S = "slot"
     N = "node"
     T = "terminate"

@@ -441,18 +441,23 @@ def wrapMessages(messages):
     if type(messages) is str:
         messages = messages.split("\n")
     html = []
+    status = True
     for msg in messages:
         if type(msg) is tuple:
             (error, nl, msgRep) = msg
+            if error:
+                status = False
             match = MSG_LINE_RE.match(msgRep)
             msg = msgRep + ("<br/>" if nl else "")
             clsName = "eline" if error and not match else "tline"
         else:
             match = MSG_LINE_RE.match(msg)
             clsName = "tline" if match else "eline"
+            if clsName == "eline":
+                status = False
             msg = msg.replace("\n", "<br/>")
         html.append(f'<span class="{clsName.lower()}">{msg}</span>')
-    return "".join(html)
+    return (status, "".join(html))
 
 
 def makeExamples(nodeList):

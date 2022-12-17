@@ -7,7 +7,7 @@ in any TF dataset, this pays off.
 """
 
 
-class OslotsFeature(object):
+class OslotsFeature:
     def __init__(self, api, metaData, data):
         self.api = api
         self.meta = metaData
