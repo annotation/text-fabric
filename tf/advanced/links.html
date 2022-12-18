@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L1-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L1-L909" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -184,9 +184,9 @@ def linksApi(app, silent=SILENT_D):
     )
     tutLink = (
         outLink(
-            &#34;App tutorial&#34;,
+            &#34;Tutorial&#34;,
             tutUrl,
-            &#34;App tutorial in Jupyter Notebook&#34;,
+            &#34;Tutorial in Jupyter Notebook&#34;,
             asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
@@ -232,58 +232,58 @@ def header(app, allMeta=False):
     tutLink = app.tutLink
 
     if app._browse:
-        return (
-            f&#34;&#34;&#34;\
-&lt;div class=&#34;hdlinks&#34;&gt;
-  {dataLink}
-  {charLink}
-  {featureLink}
-  {tfsLink}
-  {tutLink}
-&lt;/div&gt;\
-&#34;&#34;&#34;,
-            &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-            &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+        colofon = dedent(
+            f&#34;&#34;&#34;
+            &lt;div class=&#34;hdlinks&#34;&gt;
+              {dataLink}
+              {charLink}
+              {featureLink}
+              {tfsLink}
+              {tutLink}
+            &lt;/div&gt;
+            &#34;&#34;&#34;
         )
     else:
-        nodeInfo = _nodeTypeInfo(app)
-        featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb or app._browse:
-            tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {})) if app.sets else &#34;no custom sets&#34;
-            if inNb:
-                dh(
-                    f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                    f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                    f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-                    f&#34;{nodeInfo}&#34;
-                    f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
-                )
-            else:
-                return (
-                    (
-                        f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                        f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                        f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-                        f&#34;{nodeInfo}&#34;
-                        f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
-                    ),
-                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
-                )
+        colofon = &#34;&#34;
+
+    nodeInfo = _nodeTypeInfo(app)
+    featureInfo = _featuresPerModule(app, allMeta=allMeta or app._browse)
+    if inNb or app._browse:
+        tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = (
+            &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {}))
+            if app.sets
+            else &#34;no custom sets&#34;
+        )
+        commonHeader = dedent(
+            f&#34;&#34;&#34;
+            &lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;
+            &lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;
+            {nodeInfo}
+            &lt;b&gt;Sets:&lt;/b&gt; {setLine}&lt;br&gt;
+            &lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}
+            &#34;&#34;&#34;
+        )
+        if inNb:
+            dh(commonHeader)
         else:
-            tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
-            console(
-                f&#34;Text-Fabric:\n\t{tfLine}\n&#34;
-                f&#34;Data:\n\t{dataLine}\n&#34;
-                f&#34;Features:\n{featureInfo}\n&#34;,
-                f&#34;{nodeInfo}&#34;,
-                f&#34;Sets: {setLine}\n&#34;,
-                newline=False,
+            return (
+                colofon,
+                commonHeader,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
             )
+    else:
+        tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
+        console(
+            f&#34;Text-Fabric:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
+            f&#34;Sets: {setLine}\n&#34;,
+            f&#34;Features:\n{featureInfo}\n&#34;,
+            newline=False,
+        )
 
 
 def webLink(
@@ -572,23 +572,61 @@ def _nodeTypeInfo(app):
     doHtml = inNb or _browse
     api = app.api
     levels = api.C.levels.data
-    slotType = api.F.otype.slotType
+    otype = api.F.otype
+    slotType = otype.slotType
+    maxSlot = otype.maxSlot
 
     output = (
-        &#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;Node types&lt;/b&gt;&lt;/summary&gt;&#34; if doHtml else &#34;Node types:\n&#34;
+        &#34;&#34;&#34;&lt;details class=&#34;nodeinfo&#34;&gt;&lt;summary&gt;&lt;b&gt;Node types&lt;/b&gt;&lt;/summary&gt;&#34;&#34;&#34;
+        if doHtml
+        else &#34;Node types:\n&#34;
     )
 
+    if doHtml:
+        output += (
+            dedent(
+                &#34;&#34;&#34;
+            &lt;table class=&#34;nodeinfo&#34;&gt;
+                &lt;tr&gt;
+                    &lt;th&gt;Name&lt;/th&gt;
+                    &lt;th&gt;# of nodes&lt;/th&gt;
+                    &lt;th&gt;# slots/node&lt;/th&gt;
+                    &lt;th&gt;% coverage&lt;/th&gt;
+                &lt;tr&gt;
+            &#34;&#34;&#34;
+            )
+            if doHtml
+            else f&#34;{&#39;Name&#39;:&lt;20} {&#39;#nodes&#39;:&gt;7} {&#39;#slots/node&#39;:&gt;11} {&#39;%coverage&#39;:&gt;9}\n&#34;
+        )
     for (nType, av, start, end) in levels:
+        nNodes = end - start + 1
+        coverage = int(round(av * nNodes * 100 / maxSlot))
+        coverage = (
+            (f&#34;&lt;b&gt;{coverage}&lt;/b&gt;&#34; if doHtml else f&#34;*{coverage}*&#34;)
+            if coverage == 100
+            else coverage
+        )
         nTypeRep = (
             (f&#34;&lt;i&gt;{nType}&lt;/i&gt;&#34; if doHtml else f&#34;*{nType}*&#34;)
             if nType == slotType
             else nType
         )
-        output += f&#34;&lt;code&gt;{nTypeRep:20}&#34; if doHtml else f&#34;\t{nTypeRep:20}&#34;
-        output += &#34;&#34; if nType == slotType else f&#34;: {av:10.2f}&#34;
-        output += &#34;&lt;/code&gt;&lt;br&gt;&#34; if doHtml else &#34;\n&#34;
+        output += (
+            dedent(
+                f&#34;&#34;&#34;
+            &lt;tr&gt;
+                &lt;th&gt;{nTypeRep}&lt;/th&gt;
+                &lt;td&gt;{nNodes}&lt;/td&gt;
+                &lt;td&gt;{av:.2f}&lt;/td&gt;
+                &lt;td&gt;{coverage}&lt;/td&gt;
+            &lt;/tr&gt;
+            &#34;&#34;&#34;
+            )
+            if doHtml
+            else f&#34;{nTypeRep:&lt;20} {nNodes:&gt;7} {av:8.2f} {coverage:&gt;9}\n&#34;
+        )
 
-    output += &#34;&lt;/details&gt;&#34; if doHtml else &#34;\n&#34;
+    output += &#34;&lt;/table&gt;&lt;/details&gt;&#34; if doHtml else &#34;\n&#34;
     return output
 
 
@@ -928,7 +966,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -956,58 +994,58 @@ all that metadata except the description keys.</dd>
     tutLink = app.tutLink
 
     if app._browse:
-        return (
-            f&#34;&#34;&#34;\
-&lt;div class=&#34;hdlinks&#34;&gt;
-  {dataLink}
-  {charLink}
-  {featureLink}
-  {tfsLink}
-  {tutLink}
-&lt;/div&gt;\
-&#34;&#34;&#34;,
-            &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-            &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+        colofon = dedent(
+            f&#34;&#34;&#34;
+            &lt;div class=&#34;hdlinks&#34;&gt;
+              {dataLink}
+              {charLink}
+              {featureLink}
+              {tfsLink}
+              {tutLink}
+            &lt;/div&gt;
+            &#34;&#34;&#34;
         )
     else:
-        nodeInfo = _nodeTypeInfo(app)
-        featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb or app._browse:
-            tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {})) if app.sets else &#34;no custom sets&#34;
-            if inNb:
-                dh(
-                    f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                    f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                    f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-                    f&#34;{nodeInfo}&#34;
-                    f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
-                )
-            else:
-                return (
-                    (
-                        f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                        f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                        f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-                        f&#34;{nodeInfo}&#34;
-                        f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
-                    ),
-                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
-                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
-                )
+        colofon = &#34;&#34;
+
+    nodeInfo = _nodeTypeInfo(app)
+    featureInfo = _featuresPerModule(app, allMeta=allMeta or app._browse)
+    if inNb or app._browse:
+        tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = (
+            &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {}))
+            if app.sets
+            else &#34;no custom sets&#34;
+        )
+        commonHeader = dedent(
+            f&#34;&#34;&#34;
+            &lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;
+            &lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;
+            {nodeInfo}
+            &lt;b&gt;Sets:&lt;/b&gt; {setLine}&lt;br&gt;
+            &lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}
+            &#34;&#34;&#34;
+        )
+        if inNb:
+            dh(commonHeader)
         else:
-            tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
-            console(
-                f&#34;Text-Fabric:\n\t{tfLine}\n&#34;
-                f&#34;Data:\n\t{dataLine}\n&#34;
-                f&#34;Features:\n{featureInfo}\n&#34;,
-                f&#34;{nodeInfo}&#34;,
-                f&#34;Sets: {setLine}\n&#34;,
-                newline=False,
-            )</code></pre>
+            return (
+                colofon,
+                commonHeader,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+                &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+            )
+    else:
+        tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
+        console(
+            f&#34;Text-Fabric:\n\t{tfLine}\n&#34; f&#34;Data:\n\t{dataLine}\n&#34; f&#34;{nodeInfo}&#34;,
+            f&#34;Sets: {setLine}\n&#34;,
+            f&#34;Features:\n{featureInfo}\n&#34;,
+            newline=False,
+        )</code></pre>
 </details>
 </dd>
 <dt id="tf.advanced.links.linksApi"><code class="name flex">
@@ -1034,7 +1072,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1163,9 +1201,9 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     )
     tutLink = (
         outLink(
-            &#34;App tutorial&#34;,
+            &#34;Tutorial&#34;,
             tutUrl,
-            &#34;App tutorial in Jupyter Notebook&#34;,
+            &#34;Tutorial in Jupyter Notebook&#34;,
             asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
@@ -1212,7 +1250,7 @@ of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1282,7 +1320,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L815-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L853-L909" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -1364,7 +1402,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1447,7 +1485,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

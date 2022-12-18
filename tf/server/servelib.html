@@ -35,7 +35,7 @@ TF browser infrastructure, such as</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/server/servelib.py#L1-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/server/servelib.py#L1-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Common Server Related Functions
@@ -142,9 +142,9 @@ def getFormData(interfaceDefaults):
     return form
 
 
-def getAbout(header, provenance, form):
+def getAbout(colofon, header, provenance, form):
     return f&#34;&#34;&#34;
-{header}
+{colofon}
 
 {provenance}
 
@@ -214,18 +214,18 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.server.servelib.getAbout"><code class="name flex">
-<span>def <span class="ident">getAbout</span></span>(<span>header, provenance, form)</span>
+<span>def <span class="ident">getAbout</span></span>(<span>colofon, header, provenance, form)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/server/servelib.py#L106-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/server/servelib.py#L106-L139" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getAbout(header, provenance, form):
+<pre><code class="python">def getAbout(colofon, header, provenance, form):
     return f&#34;&#34;&#34;
-{header}
+{colofon}
 
 {provenance}
 
@@ -275,7 +275,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/server/servelib.py#L39-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/server/servelib.py#L39-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFormData(interfaceDefaults):
     &#34;&#34;&#34;Get form data.
@@ -352,7 +352,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/server/servelib.py#L31-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/server/servelib.py#L31-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getInt(x, default=1):
     if len(x) &gt; 15:
@@ -370,7 +370,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/server/servelib.py#L142-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/server/servelib.py#L142-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     appName = form[&#34;appName&#34;]
