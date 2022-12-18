@@ -14,9 +14,14 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0.4
 
-2023-01-01 (upcoming)
+2023-12-18
 
-Improved display of special characters in text-fabric browser.
+* Improved display of special characters in text-fabric browser.
+* When custom sets are loaded together with a data source, they are automatically
+  passed to the `sets` parameter in `A.search()`, so that you do not have to
+  pass them explicitly.
+* The header information after loading a dataset is improved: it contains a list of the 
+  custom sets that have been loaded and a list of the node types in the dataset
 
 ### 11.0.3
 

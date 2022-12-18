@@ -65,6 +65,12 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         Or you can save them with `tf.lib.writeSets`
         and use them in the TF browser.
 
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
@@ -112,7 +118,13 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
     silent = silentConvert(silent)
 
-    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
+    if app.sets:
+        passSets = {**app.sets}
+        if sets:
+            for (name, s) in sets.items():
+                passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)

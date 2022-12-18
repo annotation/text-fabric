@@ -13,7 +13,7 @@ def normpath(path):
     return None if path is None else path.replace("\\", "/")
 
 
-VERSION = '11.0.3'
+VERSION = '11.0.4'
 """Program version.
 
 This value is under control of the update process, as run by

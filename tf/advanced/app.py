@@ -126,6 +126,8 @@ class App:
 
         setDir(self)
 
+        self.sets = None
+
         if not self.api:
             self.sets = None
             if setFile:

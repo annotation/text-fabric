@@ -149,6 +149,7 @@ def serveQuery(web, getx, asDict=False):
     else:
         table = f"no {resultKind}s"
         messages = ""
+        status = True
 
     return method(
         pages=pages,

@@ -215,22 +215,42 @@ def header(app, allMeta=False):
             '<img class="hdlogo" src="/server/static/icon.png"/>',
         )
     else:
+        nodeInfo = _nodeTypeInfo(app)
         featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb:
+        if inNb or app._browse:
             tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
-            dh(
-                f"<b>Text-Fabric:</b> {tfLine}<br>"
-                f"<b>Data:</b> {dataLine}<br>"
-                f"<b>Features:</b><br>{featureInfo}"
-            )
+            setLine = ", ".join(f"<code>{x}</code>" for x in (app.sets or {})) if app.sets else "no custom sets"
+            if inNb:
+                dh(
+                    f"<b>Text-Fabric:</b> {tfLine}<br>"
+                    f"<b>Data:</b> {dataLine}<br>"
+                    f"<b>Features:</b><br>{featureInfo}"
+                    f"{nodeInfo}"
+                    f"<b>Sets:</b> {setLine}"
+                )
+            else:
+                return (
+                    (
+                        f"<b>Text-Fabric:</b> {tfLine}<br>"
+                        f"<b>Data:</b> {dataLine}<br>"
+                        f"<b>Features:</b><br>{featureInfo}"
+                        f"{nodeInfo}"
+                        f"<b>Sets:</b> {setLine}"
+                    ),
+                    '<img class="hdlogo" src="/data/static/logo.png"/>',
+                    '<img class="hdlogo" src="/server/static/icon.png"/>',
+                )
         else:
             tfLine = "\n\t".join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = "\n\t".join(x for x in (dataLink, charLink, featureLink) if x)
+            setLine = ", ".join(x for x in (app.sets or {}))
             console(
                 f"Text-Fabric:\n\t{tfLine}\n"
                 f"Data:\n\t{dataLine}\n"
                 f"Features:\n{featureInfo}\n",
+                f"{nodeInfo}",
+                f"Sets: {setLine}\n",
                 newline=False,
             )
 
@@ -515,6 +535,32 @@ def outLink(
     )
 
 
+def _nodeTypeInfo(app):
+    inNb = app.inNb
+    _browse = app._browse
+    doHtml = inNb or _browse
+    api = app.api
+    levels = api.C.levels.data
+    slotType = api.F.otype.slotType
+
+    output = (
+        "<details><summary><b>Node types</b></summary>" if doHtml else "Node types:\n"
+    )
+
+    for (nType, av, start, end) in levels:
+        nTypeRep = (
+            (f"<i>{nType}</i>" if doHtml else f"*{nType}*")
+            if nType == slotType
+            else nType
+        )
+        output += f"<code>{nTypeRep:20}" if doHtml else f"\t{nTypeRep:20}"
+        output += "" if nType == slotType else f": {av:10.2f}"
+        output += "</code><br>" if doHtml else "\n"
+
+    output += "</details>" if doHtml else "\n"
+    return output
+
+
 def _featuresPerModule(app, allMeta=False):
     """Generate a formatted list of loaded TF features, per module.
 
@@ -531,6 +577,8 @@ def _featuresPerModule(app, allMeta=False):
     api = app.api
     TF = app.TF
     inNb = app.inNb
+    _browse = app._browse
+    doHtml = inNb or _browse
     backend = app.backend
 
     aContext = app.context
@@ -654,7 +702,7 @@ def _featuresPerModule(app, allMeta=False):
                 <div class="fcorpus">
         """
             )
-            if inNb
+            if doHtml
             else f"{corpus}\n"
         )
 
@@ -679,7 +727,7 @@ def _featuresPerModule(app, allMeta=False):
             description = meta.get("description", "")
 
             edgeRep = "edge" if isEdge else ""
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f"""
                         <div class="frow">
@@ -697,17 +745,17 @@ def _featuresPerModule(app, allMeta=False):
                     if docUrl
                     else f'<span title="{featurePath}">{featureRep}</span>'
                 )
-                if inNb
+                if doHtml
                 else f"\t{featureRep:<20} "
             )
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f"""
                             </div>
                             <div class="fmono">{typeRep}</div>
                     """
                 )
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f"""
                             <details>
@@ -724,7 +772,7 @@ def _featuresPerModule(app, allMeta=False):
             if allMeta:
                 for (k, v) in sorted(meta.items()):
                     if k not in {"valueType", "description"}:
-                        if inNb:
+                        if doHtml:
                             k = htmlEsc(k)
                             v = htmlEsc(v)
                             output += dedent(
@@ -737,7 +785,7 @@ def _featuresPerModule(app, allMeta=False):
                             )
                         else:
                             output += f"\t\t{k}: {v}\n"
-                if inNb:
+                if doHtml:
                     output += dedent(
                         """
                                     </div>
@@ -746,13 +794,13 @@ def _featuresPerModule(app, allMeta=False):
                     )
                 else:
                     output += "\n"
-            if inNb:
+            if doHtml:
                 output += dedent(
                     """
                         </div>
                     """
                 )
-        if inNb:
+        if doHtml:
             output += dedent(
                 """
                     </div>
