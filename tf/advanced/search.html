@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/search.py#L1-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/search.py#L1-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -96,6 +96,12 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         Or you can save them with `tf.lib.writeSets`
         and use them in the TF browser.
 
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
@@ -143,7 +149,13 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
     silent = silentConvert(silent)
 
-    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
+    if app.sets:
+        passSets = {**app.sets}
+        if sets:
+            for (name, s) in sets.items():
+                passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)
@@ -266,7 +278,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/search.py#L154-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/search.py#L166-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -323,7 +335,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/search.py#L191-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/search.py#L203-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -392,6 +404,11 @@ You can produce them by hand-coding.
 Once you got them, you can use them over and over again in queries.
 Or you can save them with <code><a title="tf.lib.writeSets" href="../lib.html#tf.lib.writeSets">writeSets()</a></code>
 and use them in the TF browser.</p>
+<p>If the app has been loaded with the <code>setFile</code> parameter,
+the sets found in that file will automatically be added to the sets passed
+in this argument.
+If you pass sets with a name that also occur in the sets from the app,
+then the sets you pass override the sets of the app.</p>
 </dd>
 <dt><strong><code>sort</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd>
@@ -431,7 +448,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/search.py#L16-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/search.py#L16-L163" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
@@ -485,6 +502,12 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         Or you can save them with `tf.lib.writeSets`
         and use them in the TF browser.
 
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
     sort: boolean, optional `True`
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
@@ -532,7 +555,13 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
     silent = silentConvert(silent)
 
-    results = S.search(query, sets=sets, shallow=shallow, limit=limit)
+    if app.sets:
+        passSets = {**app.sets}
+        if sets:
+            for (name, s) in sets.items():
+                passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
     if not shallow:
         if not sort:
             results = list(results)
@@ -579,7 +608,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>

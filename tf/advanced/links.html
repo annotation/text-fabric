@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L1-L823" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L1-L871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -246,22 +246,42 @@ def header(app, allMeta=False):
             &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
         )
     else:
+        nodeInfo = _nodeTypeInfo(app)
         featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb:
+        if inNb or app._browse:
             tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            dh(
-                f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-            )
+            setLine = &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {})) if app.sets else &#34;no custom sets&#34;
+            if inNb:
+                dh(
+                    f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+                    f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+                    f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
+                    f&#34;{nodeInfo}&#34;
+                    f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
+                )
+            else:
+                return (
+                    (
+                        f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+                        f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+                        f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
+                        f&#34;{nodeInfo}&#34;
+                        f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
+                    ),
+                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+                )
         else:
             tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+            setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
             console(
                 f&#34;Text-Fabric:\n\t{tfLine}\n&#34;
                 f&#34;Data:\n\t{dataLine}\n&#34;
                 f&#34;Features:\n{featureInfo}\n&#34;,
+                f&#34;{nodeInfo}&#34;,
+                f&#34;Sets: {setLine}\n&#34;,
                 newline=False,
             )
 
@@ -546,6 +566,32 @@ def outLink(
     )
 
 
+def _nodeTypeInfo(app):
+    inNb = app.inNb
+    _browse = app._browse
+    doHtml = inNb or _browse
+    api = app.api
+    levels = api.C.levels.data
+    slotType = api.F.otype.slotType
+
+    output = (
+        &#34;&lt;details&gt;&lt;summary&gt;&lt;b&gt;Node types&lt;/b&gt;&lt;/summary&gt;&#34; if doHtml else &#34;Node types:\n&#34;
+    )
+
+    for (nType, av, start, end) in levels:
+        nTypeRep = (
+            (f&#34;&lt;i&gt;{nType}&lt;/i&gt;&#34; if doHtml else f&#34;*{nType}*&#34;)
+            if nType == slotType
+            else nType
+        )
+        output += f&#34;&lt;code&gt;{nTypeRep:20}&#34; if doHtml else f&#34;\t{nTypeRep:20}&#34;
+        output += &#34;&#34; if nType == slotType else f&#34;: {av:10.2f}&#34;
+        output += &#34;&lt;/code&gt;&lt;br&gt;&#34; if doHtml else &#34;\n&#34;
+
+    output += &#34;&lt;/details&gt;&#34; if doHtml else &#34;\n&#34;
+    return output
+
+
 def _featuresPerModule(app, allMeta=False):
     &#34;&#34;&#34;Generate a formatted list of loaded TF features, per module.
 
@@ -562,6 +608,8 @@ def _featuresPerModule(app, allMeta=False):
     api = app.api
     TF = app.TF
     inNb = app.inNb
+    _browse = app._browse
+    doHtml = inNb or _browse
     backend = app.backend
 
     aContext = app.context
@@ -685,7 +733,7 @@ def _featuresPerModule(app, allMeta=False):
                 &lt;div class=&#34;fcorpus&#34;&gt;
         &#34;&#34;&#34;
             )
-            if inNb
+            if doHtml
             else f&#34;{corpus}\n&#34;
         )
 
@@ -710,7 +758,7 @@ def _featuresPerModule(app, allMeta=False):
             description = meta.get(&#34;description&#34;, &#34;&#34;)
 
             edgeRep = &#34;edge&#34; if isEdge else &#34;&#34;
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f&#34;&#34;&#34;
                         &lt;div class=&#34;frow&#34;&gt;
@@ -728,17 +776,17 @@ def _featuresPerModule(app, allMeta=False):
                     if docUrl
                     else f&#39;&lt;span title=&#34;{featurePath}&#34;&gt;{featureRep}&lt;/span&gt;&#39;
                 )
-                if inNb
+                if doHtml
                 else f&#34;\t{featureRep:&lt;20} &#34;
             )
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f&#34;&#34;&#34;
                             &lt;/div&gt;
                             &lt;div class=&#34;fmono&#34;&gt;{typeRep}&lt;/div&gt;
                     &#34;&#34;&#34;
                 )
-            if inNb:
+            if doHtml:
                 output += dedent(
                     f&#34;&#34;&#34;
                             &lt;details&gt;
@@ -755,7 +803,7 @@ def _featuresPerModule(app, allMeta=False):
             if allMeta:
                 for (k, v) in sorted(meta.items()):
                     if k not in {&#34;valueType&#34;, &#34;description&#34;}:
-                        if inNb:
+                        if doHtml:
                             k = htmlEsc(k)
                             v = htmlEsc(v)
                             output += dedent(
@@ -768,7 +816,7 @@ def _featuresPerModule(app, allMeta=False):
                             )
                         else:
                             output += f&#34;\t\t{k}: {v}\n&#34;
-                if inNb:
+                if doHtml:
                     output += dedent(
                         &#34;&#34;&#34;
                                     &lt;/div&gt;
@@ -777,13 +825,13 @@ def _featuresPerModule(app, allMeta=False):
                     )
                 else:
                     output += &#34;\n&#34;
-            if inNb:
+            if doHtml:
                 output += dedent(
                     &#34;&#34;&#34;
                         &lt;/div&gt;
                     &#34;&#34;&#34;
                 )
-        if inNb:
+        if doHtml:
             output += dedent(
                 &#34;&#34;&#34;
                     &lt;/div&gt;
@@ -880,7 +928,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L178-L235" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the TF-app.
@@ -922,22 +970,42 @@ all that metadata except the description keys.</dd>
             &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
         )
     else:
+        nodeInfo = _nodeTypeInfo(app)
         featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb:
+        if inNb or app._browse:
             tfLine = &#34;, &#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = &#34;, &#34;.join(x for x in (dataLink, charLink, featureLink) if x)
-            dh(
-                f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
-                f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
-                f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
-            )
+            setLine = &#34;, &#34;.join(f&#34;&lt;code&gt;{x}&lt;/code&gt;&#34; for x in (app.sets or {})) if app.sets else &#34;no custom sets&#34;
+            if inNb:
+                dh(
+                    f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+                    f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+                    f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
+                    f&#34;{nodeInfo}&#34;
+                    f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
+                )
+            else:
+                return (
+                    (
+                        f&#34;&lt;b&gt;Text-Fabric:&lt;/b&gt; {tfLine}&lt;br&gt;&#34;
+                        f&#34;&lt;b&gt;Data:&lt;/b&gt; {dataLine}&lt;br&gt;&#34;
+                        f&#34;&lt;b&gt;Features:&lt;/b&gt;&lt;br&gt;{featureInfo}&#34;
+                        f&#34;{nodeInfo}&#34;
+                        f&#34;&lt;b&gt;Sets:&lt;/b&gt; {setLine}&#34;
+                    ),
+                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/data/static/logo.png&#34;/&gt;&#39;,
+                    &#39;&lt;img class=&#34;hdlogo&#34; src=&#34;/server/static/icon.png&#34;/&gt;&#39;,
+                )
         else:
             tfLine = &#34;\n\t&#34;.join(x for x in (tfLink, appLink, tfsLink) if x)
             dataLine = &#34;\n\t&#34;.join(x for x in (dataLink, charLink, featureLink) if x)
+            setLine = &#34;, &#34;.join(x for x in (app.sets or {}))
             console(
                 f&#34;Text-Fabric:\n\t{tfLine}\n&#34;
                 f&#34;Data:\n\t{dataLine}\n&#34;
                 f&#34;Features:\n{featureInfo}\n&#34;,
+                f&#34;{nodeInfo}&#34;,
+                f&#34;Sets: {setLine}\n&#34;,
                 newline=False,
             )</code></pre>
 </details>
@@ -966,7 +1034,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1144,7 +1212,7 @@ of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L479-L515" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1214,7 +1282,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L767-L823" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L815-L871" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -1296,7 +1364,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L379-L414" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1379,7 +1447,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/advanced/links.py#L238-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

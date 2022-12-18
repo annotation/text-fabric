@@ -34,8 +34,15 @@ all possibilities.</p>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
 <h3 id="1104">11.0.4</h3>
-<p>2023-01-01 (upcoming)</p>
-<p>Improved display of special characters in text-fabric browser.</p>
+<p>2023-12-18</p>
+<ul>
+<li>Improved display of special characters in text-fabric browser.</li>
+<li>When custom sets are loaded together with a data source, they are automatically
+passed to the <code>sets</code> parameter in <code>A.search()</code>, so that you do not have to
+pass them explicitly.</li>
+<li>The header information after loading a dataset is improved: it contains a list of the
+custom sets that have been loaded and a list of the node types in the dataset</li>
+</ul>
 <h3 id="1103">11.0.3</h3>
 <p>2022-12-17</p>
 <p><strong>Backends</strong></p>
@@ -95,7 +102,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/02d10d77b7ee712d71839cb8d3120bfecc05caeb/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c93f83425415710435deab4638760aa65fd1e4ce/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
