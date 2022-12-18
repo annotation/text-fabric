@@ -412,11 +412,11 @@ summary {
   align-content: flex-start;
 }
 .fmetakey {
-  min-width: 10rem;
+  min-width: 8em;
   font-family: monospace;
 }
 .fnamecat {
-  min-width: 10rem;
+  min-width: 8em;
 }
 .fnamecat.edge {
   font-weight: bold;

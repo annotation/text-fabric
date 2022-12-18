@@ -103,9 +103,9 @@ def getFormData(interfaceDefaults):
     return form
 
 
-def getAbout(header, provenance, form):
+def getAbout(colofon, header, provenance, form):
     return f"""
-{header}
+{colofon}
 
 {provenance}
 

@@ -12,7 +12,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
-### 11.0.4
+### 11.0.4-5
 
 2023-12-18
 
@@ -21,7 +21,10 @@ See the app-specific tutorials via `tf.about.corpora`.
   passed to the `sets` parameter in `A.search()`, so that you do not have to
   pass them explicitly.
 * The header information after loading a dataset is improved: it contains a list of the 
-  custom sets that have been loaded and a list of the node types in the dataset
+  custom sets that have been loaded and a list of the node types in the dataset,
+  with some statistics.
+* In the Text-Fabric browser this header information is shown when you expand a new
+  tab in the side bar: **Corpus**.
 
 ### 11.0.3
 

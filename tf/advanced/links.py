@@ -153,9 +153,9 @@ def linksApi(app, silent=SILENT_D):
     )
     tutLink = (
         outLink(
-            "App tutorial",
+            "Tutorial",
             tutUrl,
-            "App tutorial in Jupyter Notebook",
+            "Tutorial in Jupyter Notebook",
             asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
@@ -201,58 +201,58 @@ def header(app, allMeta=False):
     tutLink = app.tutLink
 
     if app._browse:
-        return (
-            f"""\
-<div class="hdlinks">
-  {dataLink}
-  {charLink}
-  {featureLink}
-  {tfsLink}
-  {tutLink}
-</div>\
-""",
-            '<img class="hdlogo" src="/data/static/logo.png"/>',
-            '<img class="hdlogo" src="/server/static/icon.png"/>',
+        colofon = dedent(
+            f"""
+            <div class="hdlinks">
+              {dataLink}
+              {charLink}
+              {featureLink}
+              {tfsLink}
+              {tutLink}
+            </div>
+            """
         )
     else:
-        nodeInfo = _nodeTypeInfo(app)
-        featureInfo = _featuresPerModule(app, allMeta=allMeta)
-        if inNb or app._browse:
-            tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = ", ".join(f"<code>{x}</code>" for x in (app.sets or {})) if app.sets else "no custom sets"
-            if inNb:
-                dh(
-                    f"<b>Text-Fabric:</b> {tfLine}<br>"
-                    f"<b>Data:</b> {dataLine}<br>"
-                    f"<b>Features:</b><br>{featureInfo}"
-                    f"{nodeInfo}"
-                    f"<b>Sets:</b> {setLine}"
-                )
-            else:
-                return (
-                    (
-                        f"<b>Text-Fabric:</b> {tfLine}<br>"
-                        f"<b>Data:</b> {dataLine}<br>"
-                        f"<b>Features:</b><br>{featureInfo}"
-                        f"{nodeInfo}"
-                        f"<b>Sets:</b> {setLine}"
-                    ),
-                    '<img class="hdlogo" src="/data/static/logo.png"/>',
-                    '<img class="hdlogo" src="/server/static/icon.png"/>',
-                )
+        colofon = ""
+
+    nodeInfo = _nodeTypeInfo(app)
+    featureInfo = _featuresPerModule(app, allMeta=allMeta or app._browse)
+    if inNb or app._browse:
+        tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = (
+            ", ".join(f"<code>{x}</code>" for x in (app.sets or {}))
+            if app.sets
+            else "no custom sets"
+        )
+        commonHeader = dedent(
+            f"""
+            <b>Text-Fabric:</b> {tfLine}<br>
+            <b>Data:</b> {dataLine}<br>
+            {nodeInfo}
+            <b>Sets:</b> {setLine}<br>
+            <b>Features:</b><br>{featureInfo}
+            """
+        )
+        if inNb:
+            dh(commonHeader)
         else:
-            tfLine = "\n\t".join(x for x in (tfLink, appLink, tfsLink) if x)
-            dataLine = "\n\t".join(x for x in (dataLink, charLink, featureLink) if x)
-            setLine = ", ".join(x for x in (app.sets or {}))
-            console(
-                f"Text-Fabric:\n\t{tfLine}\n"
-                f"Data:\n\t{dataLine}\n"
-                f"Features:\n{featureInfo}\n",
-                f"{nodeInfo}",
-                f"Sets: {setLine}\n",
-                newline=False,
+            return (
+                colofon,
+                commonHeader,
+                '<img class="hdlogo" src="/data/static/logo.png"/>',
+                '<img class="hdlogo" src="/server/static/icon.png"/>',
             )
+    else:
+        tfLine = "\n\t".join(x for x in (tfLink, appLink, tfsLink) if x)
+        dataLine = "\n\t".join(x for x in (dataLink, charLink, featureLink) if x)
+        setLine = ", ".join(x for x in (app.sets or {}))
+        console(
+            f"Text-Fabric:\n\t{tfLine}\n" f"Data:\n\t{dataLine}\n" f"{nodeInfo}",
+            f"Sets: {setLine}\n",
+            f"Features:\n{featureInfo}\n",
+            newline=False,
+        )
 
 
 def webLink(
@@ -541,23 +541,61 @@ def _nodeTypeInfo(app):
     doHtml = inNb or _browse
     api = app.api
     levels = api.C.levels.data
-    slotType = api.F.otype.slotType
+    otype = api.F.otype
+    slotType = otype.slotType
+    maxSlot = otype.maxSlot
 
     output = (
-        "<details><summary><b>Node types</b></summary>" if doHtml else "Node types:\n"
+        """<details class="nodeinfo"><summary><b>Node types</b></summary>"""
+        if doHtml
+        else "Node types:\n"
     )
 
+    if doHtml:
+        output += (
+            dedent(
+                """
+            <table class="nodeinfo">
+                <tr>
+                    <th>Name</th>
+                    <th># of nodes</th>
+                    <th># slots/node</th>
+                    <th>% coverage</th>
+                <tr>
+            """
+            )
+            if doHtml
+            else f"{'Name':<20} {'#nodes':>7} {'#slots/node':>11} {'%coverage':>9}\n"
+        )
     for (nType, av, start, end) in levels:
+        nNodes = end - start + 1
+        coverage = int(round(av * nNodes * 100 / maxSlot))
+        coverage = (
+            (f"<b>{coverage}</b>" if doHtml else f"*{coverage}*")
+            if coverage == 100
+            else coverage
+        )
         nTypeRep = (
             (f"<i>{nType}</i>" if doHtml else f"*{nType}*")
             if nType == slotType
             else nType
         )
-        output += f"<code>{nTypeRep:20}" if doHtml else f"\t{nTypeRep:20}"
-        output += "" if nType == slotType else f": {av:10.2f}"
-        output += "</code><br>" if doHtml else "\n"
+        output += (
+            dedent(
+                f"""
+            <tr>
+                <th>{nTypeRep}</th>
+                <td>{nNodes}</td>
+                <td>{av:.2f}</td>
+                <td>{coverage}</td>
+            </tr>
+            """
+            )
+            if doHtml
+            else f"{nTypeRep:<20} {nNodes:>7} {av:8.2f} {coverage:>9}\n"
+        )
 
-    output += "</details>" if doHtml else "\n"
+    output += "</table></details>" if doHtml else "\n"
     return output
 
 

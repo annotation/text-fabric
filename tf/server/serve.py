@@ -216,7 +216,7 @@ def serveExport(web):
 
     form = getFormData(interfaceDefaults)
 
-    (header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -260,7 +260,7 @@ def serveExport(web):
         queryTable=(
             queryMessages if queryMessages or queryTable is None else queryTable
         ),
-        colofon=f"{appLogo}{header}{tfLogo}",
+        colofon=f"{appLogo}{colofon}{tfLogo}",
         provenance=provenanceHtml,
         setNames=setNameHtml,
         **form,
@@ -320,7 +320,7 @@ def serveDownload(web):
         redirect("/")
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = kernelApi.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
@@ -328,7 +328,7 @@ def serveDownload(web):
     csvs = pickle.loads(csvs)
     tupleResultsX = pickle.loads(tupleResultsX)
     queryResultsX = pickle.loads(queryResultsX)
-    about = getAbout(header, provenanceMd, form)
+    about = getAbout(colofon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
     headers = {
@@ -362,7 +362,7 @@ def serveAll(web, anything):
     pages = ""
     passages = ""
 
-    (header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = kernelApi.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -395,7 +395,8 @@ def serveAll(web, anything):
     templateData = dict(
         css=css,
         characters=characters,
-        header=f"{appLogo}{header}{tfLogo}",
+        colofon=f"{appLogo}{colofon}{tfLogo}",
+        header=header,
         setNames=setNameHtml,
         options=options,
         optionsHelp=optionsHelp,

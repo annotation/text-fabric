@@ -25,6 +25,9 @@
 				<div status="help">
 					<a href="#">Help</a>
 				</div>
+				<div status="corpus">
+					<a href="#">Corpus</a>
+				</div>
 				<div status="jobs">
 					<a href="#">Jobs</a>
 				</div>
@@ -45,6 +48,14 @@
 					</div>
 					<div><img class="mainlogo" src="/server/static/huc.png"/></div>
 				</div>
+				<div status="corpus">
+					<div class="colofon">
+						{{colofon|safe}}
+					</div>
+					<div class="header">
+						{{header|safe}}
+					</div>
+        </div>
 				<div status="jobs">
 					<input
 						id="jobh" type="hidden" name="jobName"
@@ -169,9 +180,6 @@
 					</div>
 				</div>
 				<div status="help">
-					<div class="header">
-						{{header|safe}}
-					</div>
 					<details id="helpTf" class="help dstate">
 						<summary>Text-Fabric Browser</summary>
 						<p>Explore the {{appName}} corpus.</p>

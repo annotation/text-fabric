@@ -133,10 +133,21 @@ div.rightcolx {
 	border-radius: 4px;
 	padding: 10px 6px;
 	margin: 10px 4px;
-	width: 20rem;
+	/*width: 20rem;*/
+  min-width: 33vw;
+  max-width: 50vw;
 }
 #sidebarcont > div.active {
 	display: block;
+}
+.nodeinfo {
+  font-size: small;
+}
+table.nodeinfo td:nth-child(1) {
+  text-align: left;
+}
+table.nodeinfo td:nth-child(n + 1) {
+  text-align: right;
 }
 
 .ilab {

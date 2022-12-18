@@ -15,11 +15,15 @@ a:link, a:visited {
 
 /* HEADER */
 
-div.header {
+div.colofon {
 	display: flex;
+  font-size: small;
 	flex-flow: row nowrap;
 	justify-content: space-between;
 	align-items: flex-start;
+}
+div.header {
+  font-size: small;
 }
 img.hdlogo {
 	flex: 0 0 auto;
