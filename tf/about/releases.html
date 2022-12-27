@@ -33,6 +33,13 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
+<h3 id="1106">11.0.6</h3>
+<p>2023-12-27</p>
+<ul>
+<li>Small fix in the TF browser (<code>prettyTuple()</code> is called with <code>sec=</code> instead of <code>seq=</code>).</li>
+<li>Fix in advanced.search.py, introduced by revisiting some code that deals with sets.
+Reported by Oliver Glanz.</li>
+</ul>
 <h3 id="1104-5">11.0.4-5</h3>
 <p>2023-12-18</p>
 <ul>
@@ -105,7 +112,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3667c3ac5614c2e717c6284fd34479dbfb8e0ee6/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8386379820ff72bd587d7263b0f22a521c151dd/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -179,6 +186,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#110">11.0</a></li>
+<li><a href="#1106">11.0.6</a></li>
 <li><a href="#1104-5">11.0.4-5</a></li>
 <li><a href="#1103">11.0.3</a></li>
 <li><a href="#1102">11.0.2</a></li>
