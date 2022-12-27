@@ -12,6 +12,15 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
+### 11.0.6
+
+2023-12-27
+
+* Small fix in the TF browser (`prettyTuple()` is called with `sec=` instead of `seq=`).
+* Fix in advanced.search.py, introduced by revisiting some code that deals with sets.
+  Reported by Oliver Glanz.
+
+
 ### 11.0.4-5
 
 2023-12-18

@@ -295,7 +295,7 @@ def _plainTextSFinal(
         prettyTuple(
             app,
             (sNode,),
-            sec=secStr,
+            seq=secStr,
             condensed=False,
             condenseType=finalSecType,
             **display.consume(options, "condensed", "condenseType"),

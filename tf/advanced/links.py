@@ -571,8 +571,10 @@ def _nodeTypeInfo(app):
         nNodes = end - start + 1
         coverage = int(round(av * nNodes * 100 / maxSlot))
         coverage = (
-            (f"<b>{coverage}</b>" if doHtml else f"*{coverage}*")
+            (f"<b>{coverage}</b>" if doHtml else f"= {coverage:>7}")
             if coverage == 100
+            else (f"<i>{coverage}</i>" if doHtml else f"> {coverage:>7}")
+            if coverage > 100
             else coverage
         )
         nTypeRep = (

@@ -118,11 +118,10 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
     silent = silentConvert(silent)
 
-    if app.sets:
-        passSets = {**app.sets}
-        if sets:
-            for (name, s) in sets.items():
-                passSets[name] = s
+    passSets = {**app.sets} if app.sets else {}
+    if sets:
+        for (name, s) in sets.items():
+            passSets[name] = s
 
     results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
     if not shallow:
