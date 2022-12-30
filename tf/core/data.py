@@ -119,6 +119,8 @@ class Data:
                 if not origTime:
                     actionRep = "b"
                     good = self._readDataBin(_withGc=_withGc)
+                    if not good:
+                        actionRep = "X"  # no source and no readable binary present
                 elif not binTime or origTime > binTime:
                     actionRep = "C" if self.method else "T"
                     good = (
@@ -139,6 +141,16 @@ class Data:
                             actionRep = "M"
                         else:
                             good = self._readDataBin(_withGc=_withGc)
+                            if not good:
+                                actionRep = "C" if self.method else "T"
+                                print(f"{self.method=}")
+                                good = (
+                                    self._compute(metaOnly=metaOnly)
+                                    if self.method
+                                    else self._readTf(metaOnly=metaOnly)
+                                )
+                                if good:
+                                    self._writeDataBin()
             except MemoryError:
                 console(MEM_MSG)
                 good = False
@@ -636,12 +648,20 @@ class Data:
             return False
         if not _withGc:
             gc.disable()
-        with gzip.open(self.binPath, "rb") as f:
-            self.data = pickle.load(f)
-        if not _withGc:
-            gc.enable()
+
+        good = True
+
+        try:
+            with gzip.open(self.binPath, "rb") as f:
+                self.data = pickle.load(f)
+            good = True
+        except Exception:
+            good = False
+        finally:
+            if not _withGc:
+                gc.enable()
         self.dataLoaded = time.time()
-        return True
+        return good
 
     def cleanDataBin(self):
         if os.path.exists(self.binPath):

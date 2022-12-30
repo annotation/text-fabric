@@ -12,6 +12,16 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.0
 
+### 11.0.7
+
+2023-12-30
+
+This fixes issue
+[#78](https://github.com/annotation/text-fabric/issues/78),
+where Text-Fabric crashes if the binary data for a feature is corrupted.
+This may happen if Text-Fabric is interrupted in the precomputation stage.
+Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
+
 ### 11.0.6
 
 2023-12-27
