@@ -33,6 +33,13 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="110">11.0</h3>
+<h3 id="1107">11.0.7</h3>
+<p>2023-12-30</p>
+<p>This fixes issue
+<a href="https://github.com/annotation/text-fabric/issues/78">#78</a>,
+where Text-Fabric crashes if the binary data for a feature is corrupted.
+This may happen if Text-Fabric is interrupted in the precomputation stage.
+Thanks to <a href="https://github.com/sethbam9">Seth Howell</a> for reporting this.</p>
 <h3 id="1106">11.0.6</h3>
 <p>2023-12-27</p>
 <ul>
@@ -112,7 +119,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8386379820ff72bd587d7263b0f22a521c151dd/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -186,6 +193,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#110">11.0</a></li>
+<li><a href="#1107">11.0.7</a></li>
 <li><a href="#1106">11.0.6</a></li>
 <li><a href="#1104-5">11.0.4-5</a></li>
 <li><a href="#1103">11.0.3</a></li>
