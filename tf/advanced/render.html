@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/render.py#L1-L526" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/render.py#L1-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -233,6 +233,7 @@ def _plainTree(
     isHtml = options.isHtml
     fmt = options.fmt
     showGraphics = options.showGraphics
+    showMath = options.showMath
 
     settings = info.settings
     textMethod = settings.textMethod
@@ -254,6 +255,7 @@ def _plainTree(
     graphics = (
         getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else &#34;&#34;
     )
+
     contrib = &#34;&#34;
 
     if plainCustom is not None:
@@ -271,7 +273,8 @@ def _plainTree(
             level=level,
         )
         if text:
-            contrib = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{htmlSafe(text, isHtml)}&lt;/span&gt;&#39;
+            material = htmlSafe(text, isHtml, math=showMath)
+            contrib = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{material}&lt;/span&gt;&#39;
     else:
         tplFilled = getText(
             False,
@@ -495,6 +498,7 @@ def _getFeatures(info, n, nType):
     standardFeatures = options.standardFeatures
     suppress = options.suppress
     noneValues = options.noneValues
+    showMath = options.showMath
 
     settings = info.settings
     upMethod = settings.upMethod
@@ -545,7 +549,9 @@ def _getFeatures(info, n, nType):
                 if refNode is not None:
                     value = fsNamev(refNode)
 
-                value = None if value in noneValues else htmlEsc(value or &#34;&#34;)
+                value = (
+                    None if value in noneValues else htmlEsc(value or &#34;&#34;, math=showMath)
+                )
                 if value is not None:
                     value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
                     isBare = i &lt; bFeatures
@@ -585,7 +591,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/render.py#L28-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/render.py#L28-L74" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;

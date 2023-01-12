@@ -146,14 +146,28 @@ indicates whether plain and pretty displays should include associated
 graphic elements.</p>
 <div class="admonition caution">
 <p class="admonition-title">configuration</p>
-<p>Whether a corpus has graphics for some nodetypes and how to get them is configured in a
-corpus dependent app.</p>
+<p>Whether a corpus has graphics for some nodetypes and how to get them is
+configured in a corpus dependent app.</p>
 <p>If the corpus has no graphics, the default is <code>None</code>.</p>
+</div>
+</dd>
+<dt><strong><code>showMath</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether plain and pretty displays should interpret the <code>$</code>
+to mark mathematical formulas in TeX notation.</p>
+<div class="admonition caution">
+<p class="admonition-title">real dollars</p>
+<p>If you have a corpus where the character <code>$</code> is used in an ordinary way,
+this option should be set to <code>False</code>.</p>
 </div>
 </dd>
 <dt><strong><code>standardFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
 <dd><strong>interface option</strong>
 indicates whether pretty displays should show standard features and their values.</dd>
+<dt><strong><code>withLabels</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show labels.</dd>
 <dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p><strong>interface option</strong>
@@ -323,7 +337,7 @@ nodes will be linked with a web link
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L1-L584" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L1-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -447,14 +461,27 @@ showGraphics: boolean, optional `True`
     graphic elements.
 
     !!! caution &#34;configuration&#34;
-        Whether a corpus has graphics for some nodetypes and how to get them is configured in a
-        corpus dependent app.
+        Whether a corpus has graphics for some nodetypes and how to get them is
+        configured in a corpus dependent app.
 
         If the corpus has no graphics, the default is `None`.
+
+showMath: boolean, optional `False`
+    **interface option**
+    indicates whether plain and pretty displays should interpret the `$`
+    to mark mathematical formulas in TeX notation.
+
+    !!! caution &#34;real dollars&#34;
+        If you have a corpus where the character `$` is used in an ordinary way,
+        this option should be set to `False`.
 
 standardFeatures: boolean, optional `True`
     **interface option**
     indicates whether pretty displays should show standard features and their values.
+
+withLabels: boolean, optional `True`
+    **interface option**
+    indicates whether pretty displays should show labels.
 
 withNodes: boolean, optional `False`
     **interface option**
@@ -642,6 +669,14 @@ INTERFACE_OPTIONS = (
         True,
     ),
     (
+        &#34;withLabels&#34;,
+        True,
+        &#34;withl&#34;,
+        &#34;show labels&#34;,
+        &#34;Show additional labels in nodes.&#34;,
+        False,
+    ),
+    (
         &#34;withNodes&#34;,
         False,
         &#34;withn&#34;,
@@ -707,6 +742,14 @@ INTERFACE_OPTIONS = (
         &#34;graphic elements&#34;,
         &#34;Show graphical companion elements with the nodes.&#34;
         &#34; Only if the data set implements the logic for it.&#34;,
+        False,
+    ),
+    (
+        &#34;showMath&#34;,
+        False,
+        &#34;math&#34;,
+        &#34;mathematical formulas&#34;,
+        &#34;Interpret material within pairs of `$` as formulas in TeX notation.&#34;,
         False,
     ),
 )
@@ -929,7 +972,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L427-L584" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L456-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1100,7 +1143,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L519-L565" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L548-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1159,7 +1202,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L583-L584" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L612-L613" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1173,7 +1216,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L567-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L596-L610" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1200,7 +1243,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L471-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L500-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1259,7 +1302,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L445-L460" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L474-L489" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1287,7 +1330,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L462-L469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L491-L498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1310,7 +1353,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L413-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L442-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1335,7 +1378,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L419-L420" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L448-L449" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1349,7 +1392,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/27fb9bce310a3eee350ebd0b6bd86e59a1bb28cf/tf/advanced/options.py#L422-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/46f665254da03e6a2d6eee3e2aecbb5d382e8680/tf/advanced/options.py#L451-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)
