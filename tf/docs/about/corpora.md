@@ -64,6 +64,15 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [CLARIAH](https://github.com/CLARIAH)
 
+[CLARIAH/descartes](https://github.com/CLARIAH/wp6-missieven)
+:   *French*, *Latin*, *Dutch* 
+    Letters from and to Descartes, 1619 - 1650,
+    **René Descartes - Correspondance**;
+    Ch. Adam et G. Milhaud (eds. and illustrations, 1896-1911);
+    Katsuzo Murakami, Meguru Sasaki, Takehumi Tokoro (ascii digitization, 1998);
+    Erik-Jan Bos (ed, 2011); 
+    Dirk Roorda (converter TEI, 2011 and TF 2023)
+
 [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
     General Missives, 1600 - 1800,
