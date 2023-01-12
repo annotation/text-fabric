@@ -146,24 +146,46 @@ def mathEsc(val):
     return "" if val is None else (str(val).replace("$", "<span>$</span>"))
 
 
-def mdEsc(val):
+def mdEsc(val, math=False):
+    """Escape certain markdown characters.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
+    """
     return (
         ""
         if val is None
+        else (str(val).replace("|", "&#124;"))
+        if math
         else (str(val).replace("|", "&#124;").replace("$", "<span>$</span>"))
     )
 
 
-def htmlEsc(val):
+def htmlEsc(val, math=False):
     """Escape certain HTML characters by HTML entities.
 
     To prevent them to be interpreted as HTML
     in cases where you need them literally.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
     """
 
     return (
         ""
         if val is None
+        else (str(val).replace("&", "&amp;").replace("<", "&lt;"))
+        if math
         else (
             str(val)
             .replace("&", "&amp;")
@@ -194,16 +216,28 @@ def xmlEsc(val):
     )
 
 
-def mdhtmlEsc(val):
+def mdhtmlEsc(val, math=False):
     """Escape certain Markdown characters by HTML entities or span elements.
 
     To prevent them to be interpreted as Markdown
     in cases where you need them literally.
+
+    Parameters
+    ----------
+    val: string
+        The input value
+    math: boolean, optional False
+        Whether retain TeX notation.
+        If True, `$` is not escaped, if False, it is not escaped.
     """
 
     return (
         ""
         if val is None
+        else (
+            str(val).replace("&", "&amp;").replace("<", "&lt;").replace("|", "&#124;")
+        )
+        if math
         else (
             str(val)
             .replace("&", "&amp;")

@@ -12,6 +12,7 @@ functions for composing tables and passages.
 
 import pickle
 import markdown
+from textwrap import dedent
 from ..capable import Capable
 from ..core.helpers import console, wrapMessages
 from ..advanced.helpers import RESULT
@@ -353,6 +354,24 @@ def serveAll(web, anything):
     exampleSection = aContext.exampleSection
     exampleSectionHtml = aContext.exampleSectionHtml
     allowedValues = aContext.allowedValues
+    showMath = aContext.interfaceDefaults["showMath"]
+
+    mathjax = dedent(
+        """
+        <script>
+        globalThis.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+        </script>
+        <script
+            src="/server/static/mathjax/tex-chtml.js"
+            id="MathJax-script"
+            async
+        ></script>
+        """
+    ) if showMath else ""
 
     kernelApi = web.kernelApi
 
@@ -394,6 +413,7 @@ def serveAll(web, anything):
 
     templateData = dict(
         css=css,
+        mathjax=mathjax,
         characters=characters,
         colofon=f"{appLogo}{colofon}{tfLogo}",
         header=header,

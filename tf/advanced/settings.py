@@ -673,7 +673,7 @@ Default:
 
 Pretty displays: which node features to display as `name=value`.
 
-You can also specify lookup feature values for upper nodes, e.g. `{lex:gloss}`
+You can also specify lookup feature values for upper nodes, e.g. `lex:gloss`
 which will look for a `lex` node above the current node and retrieve its `gloss` value.
 
 Default:
@@ -686,7 +686,7 @@ Default:
 Pretty displays: which features to display by value only
 (the feature name is not mentioned).
 
-Things like `{lex:gloss}` are allowed.
+Things like `lex:gloss` are allowed.
 
 Default:
 :   list of string `''`

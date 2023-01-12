@@ -189,6 +189,7 @@ def _plainTree(
     isHtml = options.isHtml
     fmt = options.fmt
     showGraphics = options.showGraphics
+    showMath = options.showMath
 
     settings = info.settings
     textMethod = settings.textMethod
@@ -210,6 +211,7 @@ def _plainTree(
     graphics = (
         getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else ""
     )
+
     contrib = ""
 
     if plainCustom is not None:
@@ -227,7 +229,8 @@ def _plainTree(
             level=level,
         )
         if text:
-            contrib = f'<span class="{textCls}">{htmlSafe(text, isHtml)}</span>'
+            material = htmlSafe(text, isHtml, math=showMath)
+            contrib = f'<span class="{textCls}">{material}</span>'
     else:
         tplFilled = getText(
             False,
@@ -451,6 +454,7 @@ def _getFeatures(info, n, nType):
     standardFeatures = options.standardFeatures
     suppress = options.suppress
     noneValues = options.noneValues
+    showMath = options.showMath
 
     settings = info.settings
     upMethod = settings.upMethod
@@ -501,7 +505,9 @@ def _getFeatures(info, n, nType):
                 if refNode is not None:
                     value = fsNamev(refNode)
 
-                value = None if value in noneValues else htmlEsc(value or "")
+                value = (
+                    None if value in noneValues else htmlEsc(value or "", math=showMath)
+                )
                 if value is not None:
                     value = value.replace("\n", "<br/>")
                     isBare = i < bFeatures

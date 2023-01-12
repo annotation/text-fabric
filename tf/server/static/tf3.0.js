@@ -13,7 +13,18 @@ const copyChar = (el, c) => {
     el.className = 'ccon'
     navigator.clipboard.writeText(String.fromCharCode(c))
 }
-window.copyChar = copyChar
+globalThis.copyChar = copyChar
+
+
+const mathTypeset = () => {
+  const showMathOption = $("#math")
+  const showMath = showMathOption.prop("checked")
+
+  if (showMath) {
+    const { MathJax } = globalThis
+    MathJax.typeset()
+  }
+}
 
 const lastJobKey = 'tfLastJob'
 
@@ -172,6 +183,7 @@ const getTable = (kind, subkind, m, button) => {
       switchMode(m)
       storeForm()
       gotoFocus(kind)
+      mathTypeset()
     },
   })
 }
@@ -362,6 +374,7 @@ const getOpen = (kind, elem) => {
     success: data => {
       const { table } = data
       dest.html(table)
+      mathTypeset()
     },
   })
 }

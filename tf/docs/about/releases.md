@@ -10,11 +10,27 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.1
+
+### 11.1.0
+
+2023-01-12
+
+Mathematical formulas in TeX notation are supported.
+You can configure any app by putting `showMath: true` in its
+`config.yaml`, under interface defaults.
+
+Several small tweaks and fixes and the higher level functions: how text-fabric displays
+nodes in Jupyter Notebooks and in the Text-Fabric browser.
+
+It is used in the
+[letters of Descartes](https://github.com/CLARIAH/descartes-tf).
+
 ### 11.0
 
 ### 11.0.7
 
-2023-12-30
+2022-12-30
 
 This fixes issue
 [#78](https://github.com/annotation/text-fabric/issues/78),
@@ -24,7 +40,7 @@ Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
 
 ### 11.0.6
 
-2023-12-27
+2022-12-27
 
 * Small fix in the TF browser (`prettyTuple()` is called with `sec=` instead of `seq=`).
 * Fix in advanced.search.py, introduced by revisiting some code that deals with sets.
@@ -33,7 +49,7 @@ Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
 
 ### 11.0.4-5
 
-2023-12-18
+2022-12-18
 
 * Improved display of special characters in text-fabric browser.
 * When custom sets are loaded together with a data source, they are automatically

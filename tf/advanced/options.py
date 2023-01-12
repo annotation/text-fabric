@@ -120,14 +120,27 @@ showGraphics: boolean, optional `True`
     graphic elements.
 
     !!! caution "configuration"
-        Whether a corpus has graphics for some nodetypes and how to get them is configured in a
-        corpus dependent app.
+        Whether a corpus has graphics for some nodetypes and how to get them is
+        configured in a corpus dependent app.
 
         If the corpus has no graphics, the default is `None`.
+
+showMath: boolean, optional `False`
+    **interface option**
+    indicates whether plain and pretty displays should interpret the `$`
+    to mark mathematical formulas in TeX notation.
+
+    !!! caution "real dollars"
+        If you have a corpus where the character `$` is used in an ordinary way,
+        this option should be set to `False`.
 
 standardFeatures: boolean, optional `True`
     **interface option**
     indicates whether pretty displays should show standard features and their values.
+
+withLabels: boolean, optional `True`
+    **interface option**
+    indicates whether pretty displays should show labels.
 
 withNodes: boolean, optional `False`
     **interface option**
@@ -315,6 +328,14 @@ INTERFACE_OPTIONS = (
         True,
     ),
     (
+        "withLabels",
+        True,
+        "withl",
+        "show labels",
+        "Show additional labels in nodes.",
+        False,
+    ),
+    (
         "withNodes",
         False,
         "withn",
@@ -380,6 +401,14 @@ INTERFACE_OPTIONS = (
         "graphic elements",
         "Show graphical companion elements with the nodes."
         " Only if the data set implements the logic for it.",
+        False,
+    ),
+    (
+        "showMath",
+        False,
+        "math",
+        "mathematical formulas",
+        "Interpret material within pairs of `$` as formulas in TeX notation.",
         False,
     ),
 )

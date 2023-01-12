@@ -50,7 +50,7 @@ def _getLtr(app, options):
     )
 
 
-def dm(md, inNb=True):
+def dm(md, inNb=True, unexpand=False):
     """Display markdown.
 
     Parameters
@@ -59,6 +59,8 @@ def dm(md, inNb=True):
         Raw markdown string.
     inNb: boolean, optional True
         Whether the program runs in a notebook
+    unexpand: boolean
+        Whether to strip a potential user path from the value first
 
     Returns
     -------
@@ -67,13 +69,16 @@ def dm(md, inNb=True):
         else the raw markdown is printed to the output.
     """
 
+    if unexpand:
+        md = unexpanduser(md)
+
     if inNb:
-        display(Markdown(unexpanduser(md)))
+        display(Markdown(md))
     else:
         console(md)
 
 
-def dh(html, inNb=True):
+def dh(html, inNb=True, unexpand=False):
     """Display HTML.
 
     Parameters
@@ -82,6 +87,8 @@ def dh(html, inNb=True):
         Raw html string.
     inNb: boolean, optional True
         Whether the program runs in a notebook
+    unexpand: boolean
+        Whether to strip a potential user path from the value first
 
     Returns
     -------
@@ -90,8 +97,11 @@ def dh(html, inNb=True):
         else the raw HTML is printed to the output.
     """
 
+    if unexpand:
+        html = unexpanduser(html)
+
     if inNb:
-        display(HTML(unexpanduser(html)))
+        display(HTML(html))
     else:
         console(html)
 
@@ -217,8 +227,6 @@ def parseFeatures(features):
     ):
         return features
 
-    bare = []
-    indirect = {}
     feats = (
         ()
         if not features
@@ -226,6 +234,13 @@ def parseFeatures(features):
         if type(features) is str
         else tuple(features)
     )
+    return parseFeaturesLogical(feats)
+
+
+def parseFeaturesLogical(feats):
+    bare = []
+    indirect = {}
+
     for feat in feats:
         if not feat:
             continue
@@ -295,8 +310,8 @@ def transitiveClosure(relation, reflexiveExceptions):
     return descendants
 
 
-def htmlSafe(text, isHtml):
-    return text if isHtml else htmlEsc(text)
+def htmlSafe(text, isHtml, math=False):
+    return text if isHtml else htmlEsc(text, math=math)
 
 
 def getText(
@@ -305,6 +320,7 @@ def getText(
     display = app.display
     dContext = display.distill(options or {})
     ltr = _getLtr(app, dContext) or "ltr"
+    showMath = dContext.showMath
     T = app.api.T
     sectionTypeSet = T.sectionTypeSet
     structureTypeSet = T.structureTypeSet
@@ -313,12 +329,15 @@ def getText(
     templates = aContext.labels if isPretty else aContext.templates
 
     fmt = None if options is None else options.fmt
-    standardFeatures = True if options is None else options.standardFeatures
+    withLabels = True if options is None else options.withLabels
     isHtml = False if options is None else options.isHtml
     suppress = set() if options is None else options.suppress
 
     (tpl, feats) = templates[nType]
     x = "" if isPretty else " "
+
+    if not (tpl is True or withLabels):
+        return ""
 
     tplFilled = (
         (
@@ -341,34 +360,37 @@ def getText(
                     level=level,
                 ),
                 isHtml,
+                math=showMath,
             )
         )
         if tpl is True
         else (
             (
                 tpl.format(
-                    **{feat: getValue(app, n, nType, feat, suppress) for feat in feats}
+                    **{
+                        feat: getValue(app, n, nType, feat, suppress, math=showMath)
+                        for feat in feats
+                    }
                 )
                 + x
             )
-            if standardFeatures
-            else ""
         )
     )
     return tplFilled
 
 
-def getValue(app, n, nType, feat, suppress):
+def getValue(app, n, nType, feat, suppress, math=False):
     F = app.api.F
     Fs = app.api.Fs
 
     customMethods = app.customMethods
     transform = customMethods.transform
+
     if feat in suppress:
         val = ""
     else:
         featObj = Fs(feat) if hasattr(F, feat) else None
-        val = htmlEsc(featObj.v(n)) if featObj else None
+        val = htmlEsc(featObj.v(n), math=math) if featObj else None
         modifier = transform.get(nType, {}).get(feat, None)
         if modifier:
             val = modifier(n, val)

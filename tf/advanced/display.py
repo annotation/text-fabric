@@ -230,7 +230,7 @@ def loadCss(app):
         dedent(
             """
             <script>
-            const copyChar = (el, c) => {
+            globalThis.copyChar = (el, c) => {
                 for (const el of document.getElementsByClassName('ccon')) {
                     el.className = 'ccoff'
                 }
@@ -576,6 +576,7 @@ def plainTuple(
     highlights = dContext.highlights
     withPassage = dContext.withPassage
     skipCols = dContext.skipCols
+    showMath = dContext.showMath
 
     ltr = _getLtr(app, dContext) or "ltr"
 
@@ -629,7 +630,8 @@ def plainTuple(
                     withPassage=_doPassage(dContext, i),
                     highlights=highlights,
                     **newOptionsH,
-                )
+                ),
+                math=showMath
             )
             + "</span>"
             for (i, n) in enumerate(tup)
