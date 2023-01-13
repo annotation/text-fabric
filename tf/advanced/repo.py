@@ -1785,8 +1785,8 @@ def checkoutRepo(
     label: string, optional `data`
         If passed, it will will change the word "data" in info messages
         to what you choose.
-        We use `label='TF-app'` when we use this function to checkout the code
-        of a TF-app.
+        We use `label='app'` when we use this function to checkout the code
+        of a corpus app.
 
     Returns
     -------

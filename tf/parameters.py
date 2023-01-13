@@ -13,7 +13,7 @@ def normpath(path):
     return None if path is None else path.replace("\\", "/")
 
 
-VERSION = '11.1.0'
+VERSION = '11.1.1'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -23,6 +23,8 @@ This value is under control of the update process, as run by
 NAME = "Text-Fabric"
 """The name of the game: this program.
 """
+
+BANNER = f"This is {NAME} {VERSION}"
 
 PACK_VERSION = "3"
 """Data serialization version.

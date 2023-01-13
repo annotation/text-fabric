@@ -128,7 +128,7 @@ Without ranking information, Text-Fabric cannot know which of these is the outer
 the inner node.
 Text-Fabric has computed this information when it loaded the corpus for the first time,
 based on the average size of nodes. It is also possible that the corpus designer has overridden
-this by an explicit ranking in the settings of the TF-app of the corpus.
+this by an explicit ranking in the settings of the corpus app.
 
 We end up with a rather fine partition of all nodes in fragments, in such a way
 that no fragment crosses the boundaries of enclosing fragments.

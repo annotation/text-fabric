@@ -133,7 +133,7 @@ from time import sleep
 from subprocess import PIPE, Popen
 
 from ..core.helpers import console
-from ..parameters import NAME, VERSION, PROTOCOL, HOST
+from ..parameters import BANNER, PROTOCOL, HOST
 from ..capable import Capable
 
 from .command import (
@@ -208,8 +208,6 @@ FLAGS = set(
     -noweb
 """.strip().split()
 )
-
-BANNER = f"This is {NAME} {VERSION}"
 
 
 def filterProcess(proc):

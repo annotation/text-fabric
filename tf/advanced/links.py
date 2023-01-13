@@ -129,7 +129,7 @@ def linksApi(app, silent=SILENT_D):
         outLink(
             f"{org}/{repo}/app {apiVersionRep}",
             extraUrl,
-            f"{appName} TF-app",
+            f"{appName} app",
             asHtml=inNb or _browse,
         )
         if isCompatible and repo is not None
@@ -176,7 +176,7 @@ def linksApi(app, silent=SILENT_D):
 
 
 def header(app, allMeta=False):
-    """Generate a colofon of the TF-app.
+    """Generate a colofon of the app.
 
     This colofon will be displayed after initializing the advanced API,
     and it is packed with provenance and documentation links.
@@ -517,8 +517,8 @@ def outLink(
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
     asHtml: boolean, optional `True`
-        Whether we are in a notebook or in the browser. If not, a plain text representation
-        of the link will be made.
+        Whether we are in a notebook or in the browser.
+        If not, a plain text representation of the link will be made.
     """
 
     titleAtt = "" if title is None else f' title="{title}"'

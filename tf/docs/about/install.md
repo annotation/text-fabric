@@ -1,18 +1,49 @@
 # Install
 
-## Quick, fresh start
+## If you have already Python on your machine
 
-### Python and JupyterLab
+Make sure you have at least Python 3.7.0
 
-JupyterLab is a convenient interface to run Python programs, and Text-Fabric has
-been developed with this environment in mind.
-If you have not seen Jupyter notebooks before, look
-[here](https://jupyterlab.readthedocs.io/en/latest/getting_started/overview.html)
-or watch this
-[video](https://www.youtube.com/watch?v=DKiI6NfSIe8).
+Recommended: install JupyterLab:
+fire up a terminal (= command prompt) and say
 
-Install both Jupyter and Python in one go, as a desktop application running under.
-Macos, Linux or Windows.
+``` sh
+pip install jupyterlab
+```
+
+To get text-fabric, you can either fire up a terminal and say:
+
+``` sh
+pip install 'text-fabric[all]'
+```
+
+or fire up a Jupyter Notebook (`jupyter lab`)
+
+and in a cell say
+
+``` sh
+!pip install 'text-fabric[all]'
+```
+
+If you are in a notebook on an iPad, you can not install the full text-fabric.
+The iPad cannot install the libraries needed for the Text-Fabric browser.
+To install a reduced text-fabric, say
+
+``` sh
+!pip install text-fabric
+```
+
+Now restart this notebook by clicking the circular arrow in the toolbar:
+
+![restart](../images/restartkernel.png).
+
+## If you do not have Python
+
+The fastest way to set up everything you need to use Text-Fabric is by installing the
+JupyterLab Desktop application.
+
+This installs both JupyterLab and Python in one go,
+as a desktop application running under  Macos, Linux or Windows.
 
 The Jupyter Desktop App can be downloaded from
 [jupyterlab-desktop](https://github.com/jupyterlab/jupyterlab-desktop),
@@ -39,53 +70,6 @@ sudo chown -R username:username /opt/JupyterLab
 *windows*: no extra instructions.
 Two installers will be launched, let them work with the same default
 location for installation.
-
-### Install Text-Fabric
-
-Open the JupyterLab desktop application that you just have installed.
-You have a fresh, empty notebook in front of you.
-
-In the first cell, type
-
-``` sh
-%pip install text-fabric[all]
-```
-
-Text-Fabric is then downloaded and installed,
-together with the modules it depends on.
-
-Now restart this notebook by clicking the circular arrow in the toolbar:
-
-![restart](../images/restartkernel.png).
-
-This finishes the installation.
-You can wipe out this cell, or start a new notebook.
-
-#### Capabilities
-
-Text-Fabric has some powerful capabilities:
-
-* `browser`: the Text-Fabric browser, which runs a local webserver which lets you
-  have a browse and search experience in a local web environment
-* `github` and `gitlab`: repository backends from which Text-Fabric can load
-  corpus data on-demand.
-
-You can install Text-Fabric with a selection of capabilities:
-
-* `pip install text-fabric` *without additional capabilities*
-* `pip install text-fabric[all]` *with all additional capabilities*
-* `pip install text-fabric[github]` *with a github backend*
-* `pip install text-fabric[gitlab]` *with a gitlab backend*
-* `pip install text-fabric[browser]` *with the text-fabric browser enabled*
-* `pip install text-fabric[github,browser]` *with the selected extras*
-* `pip install text-fabric[github,gitlab]` *with the selected extras*
-
-On some shells you may have to put single quotes around the last argument:
-
-* `pip install 'text-fabric[browser]'`
-
-Even if Text-Fabric is not installed with certain capabilities,
-it will have those capabilities if the required modules are installed.
 
 ### Work with Text-Fabric
 
@@ -114,80 +98,25 @@ More extensive tutorials are available for other corpora, see `tf.about.corpora`
 ### Text-Fabric browser
 
 You can also work with Text-Fabric outside any programming context, just in the browser.
-A bit like SHEBANQ, the difference is that now your own computer is the one
-that serves the website, not something on the internet.
 
-Open a new notebook, and in its first cell type
+In a terminal, say
+
+``` sh
+text-fabric annotation/banks
+```
+
+Or, in a notebook cell, say
 
 ```
-%%sh
-text-fabric annotation/banks
+!text-fabric annotation/banks
 ```
 
 Wait a few seconds and you see a new window in your browser
 with an interface to submit queries to the corpus.
 
-When you are done, go back to the notebook, and close it.
+#### Note for Linux users
 
-## The long story ...
-
-### Computer
-
-Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
-It should run Linux, Macos, or Windows.
-
-!!! caution "close other programs"
-    When you run the Text-Fabric browser for the first time,
-    make sure that most of that minimum of 3GB RAM is actually available,
-    and not in use by other programs.
-
-### Python
-
-Install Python on your system (minimum version is 3.6.3).
-Make sure to install the 64-bit version.
-
-The leanest install is the standard Python distribution by [python.org](https://www.python.org/downloads/).
-
-You can also install it from [anaconda.com](https://www.anaconda.com/download).
-
-#### On Windows?
-
-Here Anaconda is more convenient than standard Python. 
-
-When installing Python, make sure that the installer adds the path to Python
-to your environment variables.
-
-**Install Chrome or Firefox and set it as your default browser.**
-The Text-Fabric browser does not display well in Microsoft Edge,
-for Edge does not support the
-[details](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
-element.
-
-#### On Linux?
-
-On Ubuntu 18.04 Python 3.6 is already installed.
-But you have to install pip in order to add the Python package text-fabric.
-
-```sh
-sudo apt install python3-pip
-```
-
-### Text-Fabric
-
-### Installation
-
-```sh
-pip install text-fabric
-```
-
-#### To 3 or not to 3?
-
-On older versions of macos and/or linux you may have to say `pip3` instead of `pip`.
-The same holds for `python` versus `python3`.
-
-#### On Linux?
-
-* On Ubuntu the text-fabric script ends up in your `~/.local/bin` directory,
+* On Ubuntu the `text-fabric` script ends up in your `~/.local/bin` directory,
   but this is not on your PATH.
 * You need to execute your `.profile` file first by:
 
@@ -204,32 +133,24 @@ PATH="~/.local/bin:${PATH}"
 export PATH
 ```
     
-### Upgrade Text-Fabric
+#### Note on `[all]`
 
-```sh
-pip install --upgrade text-fabric
-```
+Text-Fabric has some special capabilities:
 
-### TF data
+* `browser`: the Text-Fabric browser, which runs a local webserver which lets you
+  have a browse and search experience in a local web environment;
+* `github` and `gitlab`: repository backends from which Text-Fabric can load
+  corpus data on-demand.
 
-In order to work with a corpus you need its data.
+You can install Text-Fabric with a selection of capabilities:
 
-`tf.about.corpora` tells you how to get the corpus data.
+* `pip install 'text-fabric'` *without additional capabilities*
+* `pip install 'text-fabric[all]'` *with all additional capabilities*
+* `pip install 'text-fabric[github]'` *with a github backend*
+* `pip install 'text-fabric[gitlab]'` *with a gitlab backend*
+* `pip install 'text-fabric[browser]'` *with the text-fabric browser enabled*
+* `pip install 'text-fabric[github,browser]'` *with the selected extras*
+* `pip install 'text-fabric[github,gitlab]'` *with the selected extras*
 
-## Jupyter notebook/lab
-
-Optionally install [Jupyter](https://jupyter.org) as well:
-
-```sh
-pip install jupyter
-```
-
-*Jupyter lab* is a nice context to work with Jupyter notebooks.
-Recommended for working with the
-the tutorials of Text-Fabric.
-Also when you want to copy and paste cells from one notebook
-to another.
-
-```sh
-pip install jupyterlab
-```
+Even if Text-Fabric is not installed with certain capabilities,
+it will have those capabilities if the required modules are installed.

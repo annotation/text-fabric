@@ -186,10 +186,10 @@ is additional syntax in the first argument:
 ## Versions
 
 Text-Fabric expects that the data resides in version directories.
-The configuration of a TF-app specifies which version will be used.
+The configuration of a corpus app specifies which version will be used.
 You can override that by passing
 the optional argument `version="x.y.z"`.
-Where we do not have a TF-app that specifies the version,
+Where we do not have a corpus app that specifies the version,
 i.e. if you pass a `data:path/to/tf/data` string
 you must either:
 
@@ -314,7 +314,7 @@ The list of possible settings is spelled out in
 ## Hoisting
 
 The result of `A = use()` is that the variable `A` holds an object,
-the TF-app, loaded in memory, offering an API to the corpus data.
+the corpus app, loaded in memory, offering an API to the corpus data.
 You get that API by `api = A.api`, and then you have access to the particular members
 such as
 

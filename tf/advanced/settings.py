@@ -1,7 +1,7 @@
 """
 # App settings
 
-Developers can create TF-apps by specifying a `config.yaml` with settings.
+Developers can create corpus apps by specifying a `config.yaml` with settings.
 These settings will be read, checked, and transformed into configuration data
 that is read by the app, see `tf.advanced.settings.showContext`
 
@@ -21,7 +21,7 @@ data it has loaded.
 
 ## `apiVersion`
 
-To let Text-Fabric check whether its version matches the version of the TF-app
+To let Text-Fabric check whether its version matches the version of the corpus app
 
 Default:
 :   integer `1`
@@ -191,6 +191,9 @@ Replace `Transcription` by the writing system relevant for your data.
 
 If it is left out, it will point to the transcription table in the TF docs
 that corresponds with the writing setting.
+
+If the writing setting is also left out, it will point to the page
+from where you can find info about all supported writing systems.
 
 Default:
 :   string `{tfDoc}/writing/transcription/`
@@ -1056,7 +1059,7 @@ def DOC_DEFAULTS(backend):
         ("docUrl", "{docBase}/{docPage}{docExt}"),
         ("featureBase", "{docBase}/features/<feature>{docExt}"),
         ("featurePage", "home"),
-        ("charUrl", "{tfDoc}/writing/{language}.html"),
+        ("charUrl", "{tfDoc}/writing/{charLoc}"),
         ("charText", "How TF features represent text"),
     )
 
@@ -1343,6 +1346,8 @@ def setAppSpecs(app, cfg, reset=False):
     specs[dKey] = value
     for (k, v) in WRITING_DEFAULTS[value].items():
         specs[k] = v
+        if k == "language":
+            specs["charLoc"] = f"{v}.html" if v else ""
     extension = f" {value}" if value else ""
     defaultClsOrig = f"{DEFAULT_CLS_ORIG}{extension}"
     specs.update(extension=extension, defaultClsOrig=defaultClsOrig)

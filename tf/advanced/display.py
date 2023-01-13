@@ -452,16 +452,11 @@ def table(app, tuples, _asString=False, **options):
 
     ltr = _getLtr(app, dContext) or "ltr"
 
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
-
     item = condenseType if condensed else RESULT
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
+        skipCols = set()
 
     passageHead = f'</th><th class="tf {ltr}">p' if withPassage is True else ""
 
@@ -489,7 +484,7 @@ def table(app, tuples, _asString=False, **options):
                 position=None,
                 opened=False,
                 _asString=True,
-                skipCols=set(),
+                skipCols=skipCols,
                 **newOptions,
             )
         )
@@ -571,6 +566,7 @@ def plainTuple(
     inNb = app.inNb
 
     dContext = display.distill(options)
+    condensed = dContext.condensed
     condenseType = dContext.condenseType
     colorMap = dContext.colorMap
     highlights = dContext.highlights
@@ -578,10 +574,10 @@ def plainTuple(
     skipCols = dContext.skipCols
     showMath = dContext.showMath
 
-    ltr = _getLtr(app, dContext) or "ltr"
+    if condensed:
+        skipCols = set()
 
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
+    ltr = _getLtr(app, dContext) or "ltr"
 
     if withPassage is True:
         passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
@@ -622,18 +618,22 @@ def plainTuple(
             passageAtt = ""
 
         plainRep = "".join(
-            '<span class="col">'
-            + mdEsc(
-                app.plain(
-                    n,
-                    _inTuple=True,
-                    withPassage=_doPassage(dContext, i),
-                    highlights=highlights,
-                    **newOptionsH,
-                ),
-                math=showMath
+            ""
+            if i + 1 in skipCols
+            else (
+                '<span class="col">'
+                + mdEsc(
+                    app.plain(
+                        n,
+                        _inTuple=True,
+                        withPassage=_doPassage(dContext, i),
+                        highlights=highlights,
+                        **newOptionsH,
+                    ),
+                    math=showMath,
+                )
+                + "</span>"
             )
-            + "</span>"
             for (i, n) in enumerate(tup)
         )
         seqNo = -1 if seq is None else seq
@@ -658,7 +658,9 @@ def plainTuple(
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
-            app.plain(
+            ""
+            if i + 1 in skipCols
+            else app.plain(
                 n,
                 _inTuple=True,
                 _asString=True,
@@ -770,13 +772,6 @@ def show(app, tuples, _asString=False, **options):
     start = dContext.start
     condensed = dContext.condensed
     condenseType = dContext.condenseType
-    skipCols = dContext.skipCols
-
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
 
     api = app.api
     F = api.F
@@ -785,8 +780,6 @@ def show(app, tuples, _asString=False, **options):
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
-
-    newOptions = display.consume(options, "skipCols")
 
     html = []
 
@@ -797,9 +790,8 @@ def show(app, tuples, _asString=False, **options):
             tup,
             seq=i,
             item=item,
-            skipCols=set(),
             _asString=asString,
-            **newOptions,
+            **options,
         )
         if asString:
             html.append(thisResult)
@@ -851,14 +843,10 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     highlights = dContext.highlights
     condenseType = dContext.condenseType
     condensed = dContext.condensed
-    skipCols = dContext.skipCols
 
     _browse = app._browse
     inNb = app.inNb
     asString = _browse or _asString
-
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
         if asString:

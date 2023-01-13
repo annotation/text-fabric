@@ -267,8 +267,17 @@ noneValues: set, optional `None`
         all features, not only the custom features.
 
 skipCols: set, optional `set()`
-    indicates columns to skip in `show()`, `table()`, `prettyTuple()` and `plainTuple()`.
-    Maybe a space-separated string of numbers, or an iterable of integers.
+    indicates columns to skip in `show()`, `table()`;
+    no effect on `prettyTuple()` and `plainTuple()`.
+    Also no effect if `condensed` is True.
+
+    The columns are not really removed, but the cells in the columns
+    become empty.
+
+    So it will not disturb the highlighting of the tuples involved,
+    and it does not disturb the working of `colorMap`.
+
+    The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
 
 start: integer, optional `None`
@@ -358,7 +367,8 @@ INTERFACE_OPTIONS = (
         True,
         "withtp",
         "always show types when expanded",
-        "Show the node type for every node in the expanded view, even if <b>show types</b> is off.",
+        "Show the node type for every node in the expanded view, "
+        "even if <b>show types</b> is off.",
         False,
     ),
     (

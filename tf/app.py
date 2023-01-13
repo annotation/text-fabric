@@ -16,6 +16,7 @@ For a detailed description, see `tf.about.usefunc`.
 from .parameters import BACKEND_REP
 from .advanced.app import findApp
 
+
 # START AN APP
 
 
@@ -37,7 +38,7 @@ def use(appName, *args, backend=None, **kwargs):
         Do not pass any other positional argument!
 
     kwargs:
-        Used to initialize the TF-app that we use.
+        Used to initialize the corpus app that we use.
         That is either an uncustomized `tf.advanced.app.App` or
         a customization of it.
 

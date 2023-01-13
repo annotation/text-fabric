@@ -24,11 +24,6 @@ span.hlbx {
   margin: 4px;
 }
 
-span.plain {
-  display: inline-block;
-  white-space: pre-wrap;
-}
-
 :root {
 	--hl-strong:        hsla( 60, 100%,  70%, 0.9  );
 	--hl-rim:           hsla( 55,  80%,  50%, 1.0  );

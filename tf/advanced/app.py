@@ -138,6 +138,7 @@ class App:
             specs = getModulesData(
                 self, backend, mod, locations, modules, version, checkout, silent
             )
+
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f"{self.repoLocation}/{TEMP_DIR}"
@@ -403,6 +404,9 @@ def findApp(
 
     dataOrg = None
     dataRepo = None
+    inNb = runsInNotebook()
+
+    dm("**Locating corpus resources ...**", inNb=inNb)
 
     if dataLoc is None:
         if appLoc:
@@ -438,7 +442,7 @@ def findApp(
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label="TF-app",
+                label="app",
             )
             appBaseRep = f"{appBase}/" if appBase else ""
             appPath = f"{appBaseRep}{appDir}"
@@ -453,7 +457,7 @@ def findApp(
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label="TF-app",
+                label="app",
             )
             appBaseRep = f"{appBase}/" if appBase else ""
             appPath = f"{appBaseRep}{appDir}"
@@ -487,7 +491,7 @@ def findApp(
                         withPaths=True,
                         keep=False,
                         silent=silent,
-                        label="TF-app",
+                        label="app",
                     )
                     appBaseRep = f"{appBase}/" if appBase else ""
                     appPath = f"{appBaseRep}{appDir}"

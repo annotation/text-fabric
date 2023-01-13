@@ -14,7 +14,7 @@ The advanced API will do its best to generate sensible default settings from
 the corpus data, but a bit of nudging will usually improve the results of displaying
 structures of the corpus.
 
-For a list of current TF-apps, see `tf.about.corpora`.
+For a list of current corpora, see `tf.about.corpora`.
 
 ## Components
 
@@ -43,7 +43,7 @@ Corpus dependent helpers for the advanced API.
 
 ### other modules
 
-If you organize bits of the functionality of a TF-app into modules
+If you organize bits of the functionality of a corpus app into modules
 to be imported by `app.py`, you can put them in this same directory.
 
 !!! caution "Do not `import` app-dependent modules"

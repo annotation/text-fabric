@@ -243,7 +243,7 @@ set, not by Text-Fabric.
 
 !!! note "layout in formats"
     So far, text formats only result in plain text.
-    A TF-app (`tf.advanced.app`) may define and implement extra text
+    A corpus app (`tf.advanced.app`) may define and implement extra text
     formats which may invoke all HTML+CSS styling that you can think of.
 
 ### The T.text() function

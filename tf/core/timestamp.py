@@ -142,6 +142,32 @@ class Timestamp:
         if _asString:
             return result
 
+    def debug(self, msg, tm=True, nl=True, cache=0, force=False):
+        """Sends a debug message to the standard output.
+
+        Debug messages are normally silenced, in that case
+        nothing happens.
+
+        Parameters
+        ----------
+        msg: string
+            The string to be displayed
+        tm: boolean, optional `True`
+            Whether the message is to be prepended with the elapsed time.
+        nl: boolean, optional `True`
+            Whether a newline should be appended to the message.
+        cache: integer, optional `0`
+            Whether the message should be cached.
+        force: boolean, optional `False`
+            If True, any silent condition is overriden.
+
+        !!! caution "Silence"
+            Informational messages are not displayed in silent mode.
+        """
+
+        if force or self.silent in {VERBOSE}:
+            self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
+
     def info(self, msg, tm=True, nl=True, cache=0, force=False):
         """Sends an informational message to the standard output.
 

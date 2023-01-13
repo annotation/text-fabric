@@ -73,7 +73,7 @@ The data sharing workflow is built around the following assumptions:
 
 main corpus
 :   You work with a main corpus
-    (it is not necessary anymore that a TF-app exists for the main corpus).
+    (it is not necessary anymore that a corpus app exists for the main corpus).
     The TF features of the corpus must be versioned, i.e. they must sit
     in a subdirectory named after the version.
 
@@ -359,14 +359,14 @@ without fear of overwriting data.
 
 ### Check it out!
 
-When calling up data and a TF-app, you can go back in history:
+When calling up data and a corpus app, you can go back in history:
 to previous releases and previous commits, using a `checkout` parameter.
 
 You have already seen it, and here we spell them out in greater detail.
 
 You can specify the checkout parameter separately for 
 
-* the TF-app code (so you can go back to previous instantiations of the TF-app)
+* the corpus app code (so you can go back to previous instantiations of the corpus app)
 * the main data of the app plus its standard data modules
 * every data-module that you include by means of the `--mod=` parameter.
 
@@ -384,7 +384,7 @@ The values of the checkout parameters tell you to use data that is:
 
 You pass the checkout values as follows:
 
-* For the TF-app:
+* For the corpus app:
   **after the app name**:
   `bhsa:clone`, `oldbabylonian:local`, `quran`.
   If you leave it out, it defaults to the empty string: local copy or latest release or commit.

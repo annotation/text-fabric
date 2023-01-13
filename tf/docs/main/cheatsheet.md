@@ -1057,7 +1057,7 @@ from tf.advanced.find import loadModule
 ```
 mmm = loadModule("mmm", *args)
 ```
-:   load supporting TF-app specific module
+:   load specific module supporting the corpus app
 :   `tf.advanced.find.loadModule`
 
 ```

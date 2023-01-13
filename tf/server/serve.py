@@ -361,7 +361,8 @@ def serveAll(web, anything):
         <script>
         globalThis.MathJax = {
             tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
             }
         };
         </script>

@@ -735,7 +735,7 @@ Small fixes in the the layered search app and its documentation.
 
 2021-05-03
 
-There is a new piece of functionality in Text-Fabric: making search interfaces for existing TF-apps.
+There is a new piece of functionality in Text-Fabric: making search interfaces for existing corpus apps.
 These are static HTML+CSS+Javascript pages, that provide *layered search*.
 Text-Fabric has a new command `text-fabric-make dataset interfacename` which generates such an app
 from a bit of configuration and code, which you have to provide in the `app-`*dataset* repo.
@@ -1150,14 +1150,15 @@ There were two problems
 pip install --upgrade text-fabric
 ```
 
-**All known TF-apps (the ones in under the `annotation` org on GitHub) have been
+**All known corpus apps (the ones in under the `annotation` org on GitHub) have been
 adapted to this change.**
 
 **Text-Fabric auto-downloads the newest version of an app by default.
 As a consequence, if you have not upgraded Text-Fabric, it will fail.**
 
-*   The functionality offered by TF-apps is now called the *Advanced API*, as opposed to the
-    *core API*. Everything under `A` is the advanced API. The things under `F`, `E`, `L`, `T`,
+*   The functionality offered by corpus apps is now called the *Advanced API*,
+    as opposed to the *core API*. Everything under `A` is the advanced API. The
+    things under `F`, `E`, `L`, `T`,
     etc. are the core API.
 *   `A` will work also for TF datasets without an app. The advanced API will compute
     reasonable defaults based on what it finds in the TF data. It is still possible to
@@ -1238,7 +1239,7 @@ is a section node.
     also in cases where there was already a hyperlinked passage indicator.
     This is now suppressed.
 
-    **All known TF-apps (the ones in under the `annotation` org on GitHub) have been
+    **All known corpus apps (the ones in under the `annotation` org on GitHub) have been
     adapted to this change.**
 
 ### 7.10
@@ -1485,8 +1486,8 @@ Small fixes:
 Fixed a bug in fabric.py spotted by Ernst Boogert, where there was
 a confusion between `sections` and `structure`
 
-If a TF-app needs to import its own modules, there is the risk of conflicts
-when several TF-apps get loaded in the same program and they import modules
+If a corpus app needs to import its own modules, there is the risk of conflicts
+when several corpus apps get loaded in the same program and they import modules
 with the same name.
 TF offers a function `tf.advanced.find.loadModule`
 by which an app can dynamically load
@@ -1682,7 +1683,7 @@ See also the
 2019-04-12
 
 Small but important fix in the display logic of the `pretty()` function.
-The bug is not in the particular TF-apps that partly implementt `pretty()`,
+The bug is not in the particular corpus apps that partly implementt `pretty()`,
 but in the generic `tf.advanced.display` library that implements the other part.
 
 Thanks to Gyusang Jin, Christiaan Erwich and Cody Kingham for spottting it.
@@ -1708,12 +1709,12 @@ The `use()` function and the calling of the TF browser undergo an API change.
 
 ##### API addition:
 
-When calling up data and a TF-app, you can go back in history:
+When calling up data and a corpus app, you can go back in history:
 to previous releases and previous commits, using a `checkout` parameter.
 
 You can specify the checkout parameter separately for 
 
-* the TF-app code (so you can go back to previous instantiations of the TF-app)
+* the corpus app code (so you can go back to previous instantiations of the corpus app)
 * the main data of the app plus its standard data modules
 * every data-module that you include by means of the `--mod=` parameter.
 
@@ -1743,7 +1744,7 @@ and included data modules.
 ##### Advice
 
 In most cases, just do not use the checkout parameters at all.
-Then the TF-app will be kept updated, and you keep using the newest data.
+Then the corpus app will be kept updated, and you keep using the newest data.
 
 If you want to producing fixed output, not influenced by future changes,
 run TF once with a particular version or commit,
@@ -2102,7 +2103,7 @@ let it import its submodules correctly.
 2018-12-13
 
 * Text-Fabric has moved house from `Dans-labs` to `annotation` on GitHub.
-* The TF-apps have been moved to separate repos with name `app-`*xxxx*
+* The corpus apps have been moved to separate repos with name `app-`*xxxx*
   within [annotation](https://github.com/annotation)
 * The tutorials have been moved from the repos that store the corpus data
   to the `app`-*xxxx* repositories.

@@ -19,7 +19,7 @@ import os
 import collections
 from itertools import chain
 
-from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
+from ..parameters import BANNER, VERSION, LOCATIONS, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
     itemize,
@@ -198,7 +198,7 @@ class FabricCore:
         self.tmObj = tmObj
         setSilent = tmObj.setSilent
         setSilent(silent)
-        self.banner = f"This is {NAME} {VERSION}"
+        self.banner = BANNER
         """The banner the Text-Fabric.
 
         Will be shown just after start up, if the silence is not `deep`.
@@ -211,17 +211,13 @@ class FabricCore:
         (on32, warn, msg) = check32()
         warning = tmObj.warning
         info = tmObj.info
+        debug = tmObj.debug
 
         if on32:
             warning(warn, tm=False)
         if msg:
             info(msg, tm=False)
-        info(
-            f"""{self.banner}
-Api reference : {APIREF}
-""",
-            tm=False,
-        )
+        debug(self.banner, tm=False)
         self.good = True
 
         if modules is None:
@@ -304,7 +300,7 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
         error = tmObj.error
         cache = tmObj.cache
@@ -364,7 +360,7 @@ Api reference : {APIREF}
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
-                        info(
+                        debug(
                             f"Dataset without structure sections in {OTEXT}:"
                             f"no structure functions in the T-API"
                         )
@@ -902,6 +898,7 @@ Api reference : {APIREF}
     def _makeIndex(self):
         tmObj = self.tmObj
         info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
 
         self.features = {}
@@ -926,7 +923,7 @@ Api reference : {APIREF}
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
-        info(
+        debug(
             "{} features found and {} ignored".format(
                 len(tfFiles),
                 sum(len(x) for x in self.featuresIgnored.values()),
@@ -1031,7 +1028,7 @@ Api reference : {APIREF}
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         featuresOnly = self.featuresOnly
 
         silent = isSilent()
@@ -1102,7 +1099,7 @@ Api reference : {APIREF}
             addText(api)
             addSearch(api, silent)
         indent(level=0)
-        info("All features loaded/computed - for details use TF.isLoaded()")
+        debug("All features loaded/computed - for details use TF.isLoaded()")
         self.api = api
         setattr(self, "isLoaded", self.api.isLoaded)
         return api
@@ -1113,7 +1110,7 @@ Api reference : {APIREF}
         api = self.api
         tmObj = self.tmObj
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
 
         requestedSet = set(self.featuresRequested)
 
@@ -1146,4 +1143,4 @@ Api reference : {APIREF}
                                 delattr(api.F, fName)
                         fObj.unload()
         indent(level=0)
-        info("All additional features loaded - for details use TF.isLoaded()")
+        debug("All additional features loaded - for details use TF.isLoaded()")
