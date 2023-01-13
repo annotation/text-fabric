@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L1-L1149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L1-L1146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -59,7 +59,7 @@ import os
 import collections
 from itertools import chain
 
-from ..parameters import VERSION, NAME, APIREF, LOCATIONS, OTYPE, OSLOTS, OTEXT
+from ..parameters import BANNER, VERSION, LOCATIONS, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
     itemize,
@@ -238,7 +238,7 @@ class FabricCore:
         self.tmObj = tmObj
         setSilent = tmObj.setSilent
         setSilent(silent)
-        self.banner = f&#34;This is {NAME} {VERSION}&#34;
+        self.banner = BANNER
         &#34;&#34;&#34;The banner the Text-Fabric.
 
         Will be shown just after start up, if the silence is not `deep`.
@@ -251,17 +251,13 @@ class FabricCore:
         (on32, warn, msg) = check32()
         warning = tmObj.warning
         info = tmObj.info
+        debug = tmObj.debug
 
         if on32:
             warning(warn, tm=False)
         if msg:
             info(msg, tm=False)
-        info(
-            f&#34;&#34;&#34;{self.banner}
-Api reference : {APIREF}
-&#34;&#34;&#34;,
-            tm=False,
-        )
+        debug(self.banner, tm=False)
         self.good = True
 
         if modules is None:
@@ -344,7 +340,7 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
         error = tmObj.error
         cache = tmObj.cache
@@ -404,7 +400,7 @@ Api reference : {APIREF}
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
-                        info(
+                        debug(
                             f&#34;Dataset without structure sections in {OTEXT}:&#34;
                             f&#34;no structure functions in the T-API&#34;
                         )
@@ -942,6 +938,7 @@ Api reference : {APIREF}
     def _makeIndex(self):
         tmObj = self.tmObj
         info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
 
         self.features = {}
@@ -966,7 +963,7 @@ Api reference : {APIREF}
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
-        info(
+        debug(
             &#34;{} features found and {} ignored&#34;.format(
                 len(tfFiles),
                 sum(len(x) for x in self.featuresIgnored.values()),
@@ -1071,7 +1068,7 @@ Api reference : {APIREF}
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         featuresOnly = self.featuresOnly
 
         silent = isSilent()
@@ -1142,7 +1139,7 @@ Api reference : {APIREF}
             addText(api)
             addSearch(api, silent)
         indent(level=0)
-        info(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
+        debug(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
         self.api = api
         setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
         return api
@@ -1153,7 +1150,7 @@ Api reference : {APIREF}
         api = self.api
         tmObj = self.tmObj
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
 
         requestedSet = set(self.featuresRequested)
 
@@ -1186,7 +1183,7 @@ Api reference : {APIREF}
                                 delattr(api.F, fName)
                         fObj.unload()
         indent(level=0)
-        info(&#34;All additional features loaded - for details use TF.isLoaded()&#34;)</code></pre>
+        debug(&#34;All additional features loaded - for details use TF.isLoaded()&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -1297,7 +1294,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L121-L1149" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L121-L1146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1379,7 +1376,7 @@ also can add new formats to the Text-API.</p>
         self.tmObj = tmObj
         setSilent = tmObj.setSilent
         setSilent(silent)
-        self.banner = f&#34;This is {NAME} {VERSION}&#34;
+        self.banner = BANNER
         &#34;&#34;&#34;The banner the Text-Fabric.
 
         Will be shown just after start up, if the silence is not `deep`.
@@ -1392,17 +1389,13 @@ also can add new formats to the Text-API.</p>
         (on32, warn, msg) = check32()
         warning = tmObj.warning
         info = tmObj.info
+        debug = tmObj.debug
 
         if on32:
             warning(warn, tm=False)
         if msg:
             info(msg, tm=False)
-        info(
-            f&#34;&#34;&#34;{self.banner}
-Api reference : {APIREF}
-&#34;&#34;&#34;,
-            tm=False,
-        )
+        debug(self.banner, tm=False)
         self.good = True
 
         if modules is None:
@@ -1485,7 +1478,7 @@ Api reference : {APIREF}
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
         error = tmObj.error
         cache = tmObj.cache
@@ -1545,7 +1538,7 @@ Api reference : {APIREF}
                     self.textFeatures |= set(self.sectionFeatsWithLanguage)
                 if not self.structureTypes or not self.structureFeats:
                     if not add:
-                        info(
+                        debug(
                             f&#34;Dataset without structure sections in {OTEXT}:&#34;
                             f&#34;no structure functions in the T-API&#34;
                         )
@@ -2083,6 +2076,7 @@ Api reference : {APIREF}
     def _makeIndex(self):
         tmObj = self.tmObj
         info = tmObj.info
+        debug = tmObj.debug
         warning = tmObj.warning
 
         self.features = {}
@@ -2107,7 +2101,7 @@ Api reference : {APIREF}
                     self.featuresIgnored.setdefault(fName, []).append(featurePath)
             self.features[fName] = Data(chosenFPath, self.tmObj)
         self._getWriteLoc()
-        info(
+        debug(
             &#34;{} features found and {} ignored&#34;.format(
                 len(tfFiles),
                 sum(len(x) for x in self.featuresIgnored.values()),
@@ -2212,7 +2206,7 @@ Api reference : {APIREF}
         tmObj = self.tmObj
         isSilent = tmObj.isSilent
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
         featuresOnly = self.featuresOnly
 
         silent = isSilent()
@@ -2283,7 +2277,7 @@ Api reference : {APIREF}
             addText(api)
             addSearch(api, silent)
         indent(level=0)
-        info(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
+        debug(&#34;All features loaded/computed - for details use TF.isLoaded()&#34;)
         self.api = api
         setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
         return api
@@ -2294,7 +2288,7 @@ Api reference : {APIREF}
         api = self.api
         tmObj = self.tmObj
         indent = tmObj.indent
-        info = tmObj.info
+        debug = tmObj.debug
 
         requestedSet = set(self.featuresRequested)
 
@@ -2327,7 +2321,7 @@ Api reference : {APIREF}
                                 delattr(api.F, fName)
                         fObj.unload()
         indent(level=0)
-        info(&#34;All additional features loaded - for details use TF.isLoaded()&#34;)</code></pre>
+        debug(&#34;All additional features loaded - for details use TF.isLoaded()&#34;)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -2388,7 +2382,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L530-L553" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L526-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2453,7 +2447,7 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L438-L512" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L434-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
@@ -2558,7 +2552,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L782-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L778-L808" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2656,7 +2650,7 @@ metadata.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L814-L883" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L810-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2760,7 +2754,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L275-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L271-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2794,7 +2788,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
     isSilent = tmObj.isSilent
     setSilent = tmObj.setSilent
     indent = tmObj.indent
-    info = tmObj.info
+    debug = tmObj.debug
     warning = tmObj.warning
     error = tmObj.error
     cache = tmObj.cache
@@ -2854,7 +2848,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
                 self.textFeatures |= set(self.sectionFeatsWithLanguage)
             if not self.structureTypes or not self.structureFeats:
                 if not add:
-                    info(
+                    debug(
                         f&#34;Dataset without structure sections in {OTEXT}:&#34;
                         f&#34;no structure functions in the T-API&#34;
                     )
@@ -2939,7 +2933,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L514-L528" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L510-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
@@ -3040,7 +3034,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/core/fabric.py#L555-L780" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/core/fabric.py#L551-L776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,

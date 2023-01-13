@@ -557,7 +557,7 @@ The Recorder API has some additions <code><a title="tf.convert.recorder" href=".
 <p>Small fixes in the the layered search app and its documentation.</p>
 <h4 id="850">8.5.0</h4>
 <p>2021-05-03</p>
-<p>There is a new piece of functionality in Text-Fabric: making search interfaces for existing TF-apps.
+<p>There is a new piece of functionality in Text-Fabric: making search interfaces for existing corpus apps.
 These are static HTML+CSS+Javascript pages, that provide <em>layered search</em>.
 Text-Fabric has a new command <code>text-fabric-make dataset interfacename</code> which generates such an app
 from a bit of configuration and code, which you have to provide in the <code>app-</code><em>dataset</em> repo.</p>
@@ -861,13 +861,14 @@ the classic notebook sets.</li>
 <p><strong>NB: This is a backwards incompatible change. Strongly recommended:</strong></p>
 <pre><code class="language-sh">pip install --upgrade text-fabric
 </code></pre>
-<p><strong>All known TF-apps (the ones in under the <code>annotation</code> org on GitHub) have been
+<p><strong>All known corpus apps (the ones in under the <code>annotation</code> org on GitHub) have been
 adapted to this change.</strong></p>
 <p><strong>Text-Fabric auto-downloads the newest version of an app by default.
 As a consequence, if you have not upgraded Text-Fabric, it will fail.</strong></p>
 <ul>
-<li>The functionality offered by TF-apps is now called the <em>Advanced API</em>, as opposed to the
-<em>core API</em>. Everything under <code>A</code> is the advanced API. The things under <code>F</code>, <code>E</code>, <code>L</code>, <code>T</code>,
+<li>The functionality offered by corpus apps is now called the <em>Advanced API</em>,
+as opposed to the <em>core API</em>. Everything under <code>A</code> is the advanced API. The
+things under <code>F</code>, <code>E</code>, <code>L</code>, <code>T</code>,
 etc. are the core API.</li>
 <li><code>A</code> will work also for TF datasets without an app. The advanced API will compute
 reasonable defaults based on what it finds in the TF data. It is still possible to
@@ -940,7 +941,7 @@ your corpus requires is. See e.g. the Quran app.</li>
 <p>For tf-app developers: the <code>_plain()</code> function tended to add a link under the material
 also in cases where there was already a hyperlinked passage indicator.
 This is now suppressed.</p>
-<p><strong>All known TF-apps (the ones in under the <code>annotation</code> org on GitHub) have been
+<p><strong>All known corpus apps (the ones in under the <code>annotation</code> org on GitHub) have been
 adapted to this change.</strong></p>
 </li>
 </ul>
@@ -1102,8 +1103,8 @@ file names with characters such as <code>[ ]</code> in it.</li>
 <p>2019-05-23</p>
 <p>Fixed a bug in fabric.py spotted by Ernst Boogert, where there was
 a confusion between <code>sections</code> and <code>structure</code></p>
-<p>If a TF-app needs to import its own modules, there is the risk of conflicts
-when several TF-apps get loaded in the same program and they import modules
+<p>If a corpus app needs to import its own modules, there is the risk of conflicts
+when several corpus apps get loaded in the same program and they import modules
 with the same name.
 TF offers a function <code><a title="tf.advanced.find.loadModule" href="../advanced/find.html#tf.advanced.find.loadModule">loadModule()</a></code>
 by which an app can dynamically load
@@ -1232,7 +1233,7 @@ or from <code>m</code> to <code>n</code>, or both.</p>
 <h4 id="762">7.6.2</h4>
 <p>2019-04-12</p>
 <p>Small but important fix in the display logic of the <code>pretty()</code> function.
-The bug is not in the particular TF-apps that partly implementt <code>pretty()</code>,
+The bug is not in the particular corpus apps that partly implementt <code>pretty()</code>,
 but in the generic <code><a title="tf.advanced.display" href="../advanced/display.html">tf.advanced.display</a></code> library that implements the other part.</p>
 <p>Thanks to Gyusang Jin, Christiaan Erwich and Cody Kingham for spottting it.</p>
 <p>I wrote an account of the bug and its fixing in this
@@ -1247,11 +1248,11 @@ It is still recommended to make a release on GitHub now and them,
 but it is not necessary.</p>
 <p>The <code>use()</code> function and the calling of the TF browser undergo an API change.</p>
 <h5 id="api-addition">API addition:</h5>
-<p>When calling up data and a TF-app, you can go back in history:
+<p>When calling up data and a corpus app, you can go back in history:
 to previous releases and previous commits, using a <code>checkout</code> parameter.</p>
 <p>You can specify the checkout parameter separately for </p>
 <ul>
-<li>the TF-app code (so you can go back to previous instantiations of the TF-app)</li>
+<li>the corpus app code (so you can go back to previous instantiations of the corpus app)</li>
 <li>the main data of the app plus its standard data modules</li>
 <li>every data-module that you include by means of the <code>--mod=</code> parameter.</li>
 </ul>
@@ -1276,7 +1277,7 @@ calling the TF browser have been removed.</p>
 and included data modules.</p>
 <h5 id="advice">Advice</h5>
 <p>In most cases, just do not use the checkout parameters at all.
-Then the TF-app will be kept updated, and you keep using the newest data.</p>
+Then the corpus app will be kept updated, and you keep using the newest data.</p>
 <p>If you want to producing fixed output, not influenced by future changes,
 run TF once with a particular version or commit,
 and after that supply the value <code>local</code> as long as you wish.</p>
@@ -1505,7 +1506,7 @@ let it import its submodules correctly.</p>
 <p>2018-12-13</p>
 <ul>
 <li>Text-Fabric has moved house from <code>Dans-labs</code> to <code>annotation</code> on GitHub.</li>
-<li>The TF-apps have been moved to separate repos with name <code>app-</code><em>xxxx</em>
+<li>The corpus apps have been moved to separate repos with name <code>app-</code><em>xxxx</em>
 within <a href="https://github.com/annotation">annotation</a></li>
 <li>The tutorials have been moved from the repos that store the corpus data
 to the <code>app</code>-<em>xxxx</em> repositories.</li>
@@ -2669,7 +2670,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md

@@ -302,9 +302,17 @@ all features, not only the custom features.</p>
 </div>
 </dd>
 <dt><strong><code>skipCols</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
-<dd>indicates columns to skip in <code>show()</code>, <code>table()</code>, <code>prettyTuple()</code> and <code>plainTuple()</code>.
-Maybe a space-separated string of numbers, or an iterable of integers.
-Columns start at 1.</dd>
+<dd>
+<p>indicates columns to skip in <code>show()</code>, <code>table()</code>;
+no effect on <code>prettyTuple()</code> and <code>plainTuple()</code>.
+Also no effect if <code>condensed</code> is True.</p>
+<p>The columns are not really removed, but the cells in the columns
+become empty.</p>
+<p>So it will not disturb the highlighting of the tuples involved,
+and it does not disturb the working of <code>colorMap</code>.</p>
+<p>The value may be a space-separated string of numbers, or an iterable of integers.
+Columns start at 1.</p>
+</dd>
 <dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
 <dd><code>start</code> is the starting point for displaying the iterable of results.
 (1 is the first one).
@@ -337,7 +345,7 @@ nodes will be linked with a web link
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L1-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L1-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -608,8 +616,17 @@ noneValues: set, optional `None`
         all features, not only the custom features.
 
 skipCols: set, optional `set()`
-    indicates columns to skip in `show()`, `table()`, `prettyTuple()` and `plainTuple()`.
-    Maybe a space-separated string of numbers, or an iterable of integers.
+    indicates columns to skip in `show()`, `table()`;
+    no effect on `prettyTuple()` and `plainTuple()`.
+    Also no effect if `condensed` is True.
+
+    The columns are not really removed, but the cells in the columns
+    become empty.
+
+    So it will not disturb the highlighting of the tuples involved,
+    and it does not disturb the working of `colorMap`.
+
+    The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
 
 start: integer, optional `None`
@@ -699,7 +716,8 @@ INTERFACE_OPTIONS = (
         True,
         &#34;withtp&#34;,
         &#34;always show types when expanded&#34;,
-        &#34;Show the node type for every node in the expanded view, even if &lt;b&gt;show types&lt;/b&gt; is off.&#34;,
+        &#34;Show the node type for every node in the expanded view, &#34;
+        &#34;even if &lt;b&gt;show types&lt;/b&gt; is off.&#34;,
         False,
     ),
     (
@@ -972,7 +990,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L456-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L466-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1143,7 +1161,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L548-L594" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L558-L604" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1202,7 +1220,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L612-L613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L622-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1216,7 +1234,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L596-L610" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L606-L620" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1243,7 +1261,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L500-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L510-L556" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1302,7 +1320,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L474-L489" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L484-L499" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1330,7 +1348,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L491-L498" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L501-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1353,7 +1371,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L442-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L452-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1378,7 +1396,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L448-L449" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L458-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1392,7 +1410,7 @@ class Options:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/options.py#L451-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/options.py#L461-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

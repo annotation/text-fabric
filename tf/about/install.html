@@ -24,15 +24,31 @@
 </header>
 <section id="section-intro">
 <h1 id="install">Install</h1>
-<h2 id="quick-fresh-start">Quick, fresh start</h2>
-<h3 id="python-and-jupyterlab">Python and JupyterLab</h3>
-<p>JupyterLab is a convenient interface to run Python programs, and Text-Fabric has
-been developed with this environment in mind.
-If you have not seen Jupyter notebooks before, look
-<a href="https://jupyterlab.readthedocs.io/en/latest/getting_started/overview.html">here</a>
-or watch this
-<a href="https://www.youtube.com/watch?v=DKiI6NfSIe8">video</a>.</p>
-<p>Install both Jupyter and Python in one go, as a desktop application running under.
+<h2 id="if-you-have-already-python-on-your-machine">If you have already Python on your machine</h2>
+<p>Make sure you have at least Python 3.7.0</p>
+<p>Recommended: install JupyterLab:
+fire up a terminal (= command prompt) and say</p>
+<pre><code class="language-sh">pip install jupyterlab
+</code></pre>
+<p>To get text-fabric, you can either fire up a terminal and say:</p>
+<pre><code class="language-sh">pip install 'text-fabric[all]'
+</code></pre>
+<p>or fire up a Jupyter Notebook (<code>jupyter lab</code>)</p>
+<p>and in a cell say</p>
+<pre><code class="language-sh">!pip install 'text-fabric[all]'
+</code></pre>
+<p>If you are in a notebook on an iPad, you can not install the full text-fabric.
+The iPad cannot install the libraries needed for the Text-Fabric browser.
+To install a reduced text-fabric, say</p>
+<pre><code class="language-sh">!pip install text-fabric
+</code></pre>
+<p>Now restart this notebook by clicking the circular arrow in the toolbar:</p>
+<p><img alt="restart" src="../images/restartkernel.png">.</p>
+<h2 id="if-you-do-not-have-python">If you do not have Python</h2>
+<p>The fastest way to set up everything you need to use Text-Fabric is by installing the
+JupyterLab Desktop application.</p>
+<p>This installs both JupyterLab and Python in one go,
+as a desktop application running under
 Macos, Linux or Windows.</p>
 <p>The Jupyter Desktop App can be downloaded from
 <a href="https://github.com/jupyterlab/jupyterlab-desktop">jupyterlab-desktop</a>,
@@ -51,42 +67,6 @@ to your username on the system:</p>
 <p><em>windows</em>: no extra instructions.
 Two installers will be launched, let them work with the same default
 location for installation.</p>
-<h3 id="install-text-fabric">Install Text-Fabric</h3>
-<p>Open the JupyterLab desktop application that you just have installed.
-You have a fresh, empty notebook in front of you.</p>
-<p>In the first cell, type</p>
-<pre><code class="language-sh">%pip install text-fabric[all]
-</code></pre>
-<p>Text-Fabric is then downloaded and installed,
-together with the modules it depends on.</p>
-<p>Now restart this notebook by clicking the circular arrow in the toolbar:</p>
-<p><img alt="restart" src="../images/restartkernel.png">.</p>
-<p>This finishes the installation.
-You can wipe out this cell, or start a new notebook.</p>
-<h4 id="capabilities">Capabilities</h4>
-<p>Text-Fabric has some powerful capabilities:</p>
-<ul>
-<li><code>browser</code>: the Text-Fabric browser, which runs a local webserver which lets you
-have a browse and search experience in a local web environment</li>
-<li><code>github</code> and <code>gitlab</code>: repository backends from which Text-Fabric can load
-corpus data on-demand.</li>
-</ul>
-<p>You can install Text-Fabric with a selection of capabilities:</p>
-<ul>
-<li><code>pip install text-fabric</code> <em>without additional capabilities</em></li>
-<li><code>pip install text-fabric[all]</code> <em>with all additional capabilities</em></li>
-<li><code>pip install text-fabric[github]</code> <em>with a github backend</em></li>
-<li><code>pip install text-fabric[gitlab]</code> <em>with a gitlab backend</em></li>
-<li><code>pip install text-fabric[browser]</code> <em>with the text-fabric browser enabled</em></li>
-<li><code>pip install text-fabric[github,browser]</code> <em>with the selected extras</em></li>
-<li><code>pip install text-fabric[github,gitlab]</code> <em>with the selected extras</em></li>
-</ul>
-<p>On some shells you may have to put single quotes around the last argument:</p>
-<ul>
-<li><code>pip install 'text-fabric[browser]'</code></li>
-</ul>
-<p>Even if Text-Fabric is not installed with certain capabilities,
-it will have those capabilities if the required modules are installed.</p>
 <h3 id="work-with-text-fabric">Work with Text-Fabric</h3>
 <p>In a notebook, put this <em>incantation</em> in a cell and run it:</p>
 <pre><code>from tf.app import use
@@ -101,55 +81,18 @@ will see that data and load it quickly.</p>
 <a href="https://nbviewer.org/github/annotation/banks/blob/master/tutorial/use.ipynb">tutorial</a>.</p>
 <p>More extensive tutorials are available for other corpora, see <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <h3 id="text-fabric-browser">Text-Fabric browser</h3>
-<p>You can also work with Text-Fabric outside any programming context, just in the browser.
-A bit like SHEBANQ, the difference is that now your own computer is the one
-that serves the website, not something on the internet.</p>
-<p>Open a new notebook, and in its first cell type</p>
-<pre><code>%%sh
-text-fabric annotation/banks
+<p>You can also work with Text-Fabric outside any programming context, just in the browser.</p>
+<p>In a terminal, say</p>
+<pre><code class="language-sh">text-fabric annotation/banks
+</code></pre>
+<p>Or, in a notebook cell, say</p>
+<pre><code>!text-fabric annotation/banks
 </code></pre>
 <p>Wait a few seconds and you see a new window in your browser
 with an interface to submit queries to the corpus.</p>
-<p>When you are done, go back to the notebook, and close it.</p>
-<h2 id="the-long-story">The long story &hellip;</h2>
-<h3 id="computer">Computer</h3>
-<p>Your computer should be a 64-bit machine and it needs at least 3 GB RAM memory.
-It should run Linux, Macos, or Windows.</p>
-<div class="admonition caution">
-<p class="admonition-title">close other programs</p>
-<p>When you run the Text-Fabric browser for the first time,
-make sure that most of that minimum of 3GB RAM is actually available,
-and not in use by other programs.</p>
-</div>
-<h3 id="python">Python</h3>
-<p>Install Python on your system (minimum version is 3.6.3).
-Make sure to install the 64-bit version.</p>
-<p>The leanest install is the standard Python distribution by <a href="https://www.python.org/downloads/">python.org</a>.</p>
-<p>You can also install it from <a href="https://www.anaconda.com/download">anaconda.com</a>.</p>
-<h4 id="on-windows">On Windows?</h4>
-<p>Here Anaconda is more convenient than standard Python. </p>
-<p>When installing Python, make sure that the installer adds the path to Python
-to your environment variables.</p>
-<p><strong>Install Chrome or Firefox and set it as your default browser.</strong>
-The Text-Fabric browser does not display well in Microsoft Edge,
-for Edge does not support the
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details">details</a>
-element.</p>
-<h4 id="on-linux">On Linux?</h4>
-<p>On Ubuntu 18.04 Python 3.6 is already installed.
-But you have to install pip in order to add the Python package text-fabric.</p>
-<pre><code class="language-sh">sudo apt install python3-pip
-</code></pre>
-<h3 id="text-fabric">Text-Fabric</h3>
-<h3 id="installation">Installation</h3>
-<pre><code class="language-sh">pip install text-fabric
-</code></pre>
-<h4 id="to-3-or-not-to-3">To 3 or not to 3?</h4>
-<p>On older versions of macos and/or linux you may have to say <code>pip3</code> instead of <code>pip</code>.
-The same holds for <code>python</code> versus <code>python3</code>.</p>
-<h4 id="on-linux_1">On Linux?</h4>
+<h4 id="note-for-linux-users">Note for Linux users</h4>
 <ul>
-<li>On Ubuntu the text-fabric script ends up in your <code>~/.local/bin</code> directory,
+<li>On Ubuntu the <code>text-fabric</code> script ends up in your <code>~/.local/bin</code> directory,
 but this is not on your PATH.</li>
 <li>You need to execute your <code>.profile</code> file first by:</li>
 </ul>
@@ -161,27 +104,30 @@ If you get tired of this, you can add this to your <code>.bashrc</code> file:</p
 <pre><code class="language-sh">PATH=&quot;~/.local/bin:${PATH}&quot;
 export PATH
 </code></pre>
-<h3 id="upgrade-text-fabric">Upgrade Text-Fabric</h3>
-<pre><code class="language-sh">pip install --upgrade text-fabric
-</code></pre>
-<h3 id="tf-data">TF data</h3>
-<p>In order to work with a corpus you need its data.</p>
-<p><code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code> tells you how to get the corpus data.</p>
-<h2 id="jupyter-notebooklab">Jupyter notebook/lab</h2>
-<p>Optionally install <a href="https://jupyter.org">Jupyter</a> as well:</p>
-<pre><code class="language-sh">pip install jupyter
-</code></pre>
-<p><em>Jupyter lab</em> is a nice context to work with Jupyter notebooks.
-Recommended for working with the
-the tutorials of Text-Fabric.
-Also when you want to copy and paste cells from one notebook
-to another.</p>
-<pre><code class="language-sh">pip install jupyterlab
-</code></pre>
+<h4 id="note-on-all">Note on <code>[all]</code></h4>
+<p>Text-Fabric has some special capabilities:</p>
+<ul>
+<li><code>browser</code>: the Text-Fabric browser, which runs a local webserver which lets you
+have a browse and search experience in a local web environment;</li>
+<li><code>github</code> and <code>gitlab</code>: repository backends from which Text-Fabric can load
+corpus data on-demand.</li>
+</ul>
+<p>You can install Text-Fabric with a selection of capabilities:</p>
+<ul>
+<li><code>pip install 'text-fabric'</code> <em>without additional capabilities</em></li>
+<li><code>pip install 'text-fabric[all]'</code> <em>with all additional capabilities</em></li>
+<li><code>pip install 'text-fabric[github]'</code> <em>with a github backend</em></li>
+<li><code>pip install 'text-fabric[gitlab]'</code> <em>with a gitlab backend</em></li>
+<li><code>pip install 'text-fabric[browser]'</code> <em>with the text-fabric browser enabled</em></li>
+<li><code>pip install 'text-fabric[github,browser]'</code> <em>with the selected extras</em></li>
+<li><code>pip install 'text-fabric[github,gitlab]'</code> <em>with the selected extras</em></li>
+</ul>
+<p>Even if Text-Fabric is not installed with certain capabilities,
+it will have those capabilities if the required modules are installed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/install.md
@@ -253,34 +199,16 @@ setTimeout(() => input.focus(), 100);
 <div class="toc">
 <ul>
 <li><a href="#install">Install</a><ul>
-<li><a href="#quick-fresh-start">Quick, fresh start</a><ul>
-<li><a href="#python-and-jupyterlab">Python and JupyterLab</a></li>
-<li><a href="#install-text-fabric">Install Text-Fabric</a><ul>
-<li><a href="#capabilities">Capabilities</a></li>
-</ul>
-</li>
+<li><a href="#if-you-have-already-python-on-your-machine">If you have already Python on your machine</a></li>
+<li><a href="#if-you-do-not-have-python">If you do not have Python</a><ul>
 <li><a href="#work-with-text-fabric">Work with Text-Fabric</a></li>
-<li><a href="#text-fabric-browser">Text-Fabric browser</a></li>
+<li><a href="#text-fabric-browser">Text-Fabric browser</a><ul>
+<li><a href="#note-for-linux-users">Note for Linux users</a></li>
+<li><a href="#note-on-all">Note on [all]</a></li>
 </ul>
 </li>
-<li><a href="#the-long-story">The long story &hellip;</a><ul>
-<li><a href="#computer">Computer</a></li>
-<li><a href="#python">Python</a><ul>
-<li><a href="#on-windows">On Windows?</a></li>
-<li><a href="#on-linux">On Linux?</a></li>
 </ul>
 </li>
-<li><a href="#text-fabric">Text-Fabric</a></li>
-<li><a href="#installation">Installation</a><ul>
-<li><a href="#to-3-or-not-to-3">To 3 or not to 3?</a></li>
-<li><a href="#on-linux_1">On Linux?</a></li>
-</ul>
-</li>
-<li><a href="#upgrade-text-fabric">Upgrade Text-Fabric</a></li>
-<li><a href="#tf-data">TF data</a></li>
-</ul>
-</li>
-<li><a href="#jupyter-notebooklab">Jupyter notebook/lab</a></li>
 </ul>
 </li>
 </ul>

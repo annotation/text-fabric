@@ -178,10 +178,10 @@ but not in the migrated org/repo/app.</p>
 </ul>
 <h2 id="versions">Versions</h2>
 <p>Text-Fabric expects that the data resides in version directories.
-The configuration of a TF-app specifies which version will be used.
+The configuration of a corpus app specifies which version will be used.
 You can override that by passing
 the optional argument <code>version="x.y.z"</code>.
-Where we do not have a TF-app that specifies the version,
+Where we do not have a corpus app that specifies the version,
 i.e. if you pass a <code>data:path/to/tf/data</code> string
 you must either:</p>
 <ul>
@@ -285,7 +285,7 @@ provenanceSpec=dict(org="clariah", repo="wp6-missieven"),
 </div>
 <h2 id="hoisting">Hoisting</h2>
 <p>The result of <code>A = use()</code> is that the variable <code>A</code> holds an object,
-the TF-app, loaded in memory, offering an API to the corpus data.
+the corpus app, loaded in memory, offering an API to the corpus data.
 You get that API by <code>api = A.api</code>, and then you have access to the particular members
 such as</p>
 <ul>
@@ -396,7 +396,7 @@ data features, you can suppress the loading of data by</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md

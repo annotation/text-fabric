@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/parameters.py#L1-L373" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/parameters.py#L1-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -45,7 +45,7 @@ def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)
 
 
-VERSION = &#39;11.1.0&#39;
+VERSION = &#39;11.1.1&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -55,6 +55,8 @@ This value is under control of the update process, as run by
 NAME = &#34;Text-Fabric&#34;
 &#34;&#34;&#34;The name of the game: this program.
 &#34;&#34;&#34;
+
+BANNER = f&#34;This is {NAME} {VERSION}&#34;
 
 PACK_VERSION = &#34;3&#34;
 &#34;&#34;&#34;Data serialization version.
@@ -723,7 +725,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/parameters.py#L154-L250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/parameters.py#L156-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def BACKEND_REP(be, kind, default=None):
     &#34;&#34;&#34;Various backend dependent values.
@@ -832,7 +834,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>

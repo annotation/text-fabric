@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L1-L949" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L1-L937" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -520,16 +520,11 @@ def table(app, tuples, _asString=False, **options):
 
     ltr = _getLtr(app, dContext) or &#34;ltr&#34;
 
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
-
     item = condenseType if condensed else RESULT
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
+        skipCols = set()
 
     passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
 
@@ -557,7 +552,7 @@ def table(app, tuples, _asString=False, **options):
                 position=None,
                 opened=False,
                 _asString=True,
-                skipCols=set(),
+                skipCols=skipCols,
                 **newOptions,
             )
         )
@@ -639,6 +634,7 @@ def plainTuple(
     inNb = app.inNb
 
     dContext = display.distill(options)
+    condensed = dContext.condensed
     condenseType = dContext.condenseType
     colorMap = dContext.colorMap
     highlights = dContext.highlights
@@ -646,10 +642,10 @@ def plainTuple(
     skipCols = dContext.skipCols
     showMath = dContext.showMath
 
-    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+    if condensed:
+        skipCols = set()
 
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
 
     if withPassage is True:
         passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
@@ -690,18 +686,22 @@ def plainTuple(
             passageAtt = &#34;&#34;
 
         plainRep = &#34;&#34;.join(
-            &#39;&lt;span class=&#34;col&#34;&gt;&#39;
-            + mdEsc(
-                app.plain(
-                    n,
-                    _inTuple=True,
-                    withPassage=_doPassage(dContext, i),
-                    highlights=highlights,
-                    **newOptionsH,
-                ),
-                math=showMath
+            &#34;&#34;
+            if i + 1 in skipCols
+            else (
+                &#39;&lt;span class=&#34;col&#34;&gt;&#39;
+                + mdEsc(
+                    app.plain(
+                        n,
+                        _inTuple=True,
+                        withPassage=_doPassage(dContext, i),
+                        highlights=highlights,
+                        **newOptionsH,
+                    ),
+                    math=showMath,
+                )
+                + &#34;&lt;/span&gt;&#34;
             )
-            + &#34;&lt;/span&gt;&#34;
             for (i, n) in enumerate(tup)
         )
         seqNo = -1 if seq is None else seq
@@ -726,7 +726,9 @@ def plainTuple(
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
-            app.plain(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else app.plain(
                 n,
                 _inTuple=True,
                 _asString=True,
@@ -838,13 +840,6 @@ def show(app, tuples, _asString=False, **options):
     start = dContext.start
     condensed = dContext.condensed
     condenseType = dContext.condenseType
-    skipCols = dContext.skipCols
-
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
 
     api = app.api
     F = api.F
@@ -853,8 +848,6 @@ def show(app, tuples, _asString=False, **options):
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
-
-    newOptions = display.consume(options, &#34;skipCols&#34;)
 
     html = []
 
@@ -865,9 +858,8 @@ def show(app, tuples, _asString=False, **options):
             tup,
             seq=i,
             item=item,
-            skipCols=set(),
             _asString=asString,
-            **newOptions,
+            **options,
         )
         if asString:
             html.append(thisResult)
@@ -919,14 +911,10 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     highlights = dContext.highlights
     condenseType = dContext.condenseType
     condensed = dContext.condensed
-    skipCols = dContext.skipCols
 
     _browse = app._browse
     inNb = app.inNb
     asString = _browse or _asString
-
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
         if asString:
@@ -1050,7 +1038,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
@@ -1115,7 +1103,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1173,7 +1161,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1231,7 +1219,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1357,7 +1345,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L279-L402" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L279-L402" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1501,7 +1489,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1559,7 +1547,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1645,7 +1633,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L692-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L694-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1730,7 +1718,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L503-L689" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L498-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app,
@@ -1803,6 +1791,7 @@ Depending on <em>asString</em> above.</p></div>
     inNb = app.inNb
 
     dContext = display.distill(options)
+    condensed = dContext.condensed
     condenseType = dContext.condenseType
     colorMap = dContext.colorMap
     highlights = dContext.highlights
@@ -1810,10 +1799,10 @@ Depending on <em>asString</em> above.</p></div>
     skipCols = dContext.skipCols
     showMath = dContext.showMath
 
-    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+    if condensed:
+        skipCols = set()
 
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
 
     if withPassage is True:
         passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
@@ -1854,18 +1843,22 @@ Depending on <em>asString</em> above.</p></div>
             passageAtt = &#34;&#34;
 
         plainRep = &#34;&#34;.join(
-            &#39;&lt;span class=&#34;col&#34;&gt;&#39;
-            + mdEsc(
-                app.plain(
-                    n,
-                    _inTuple=True,
-                    withPassage=_doPassage(dContext, i),
-                    highlights=highlights,
-                    **newOptionsH,
-                ),
-                math=showMath
+            &#34;&#34;
+            if i + 1 in skipCols
+            else (
+                &#39;&lt;span class=&#34;col&#34;&gt;&#39;
+                + mdEsc(
+                    app.plain(
+                        n,
+                        _inTuple=True,
+                        withPassage=_doPassage(dContext, i),
+                        highlights=highlights,
+                        **newOptionsH,
+                    ),
+                    math=showMath,
+                )
+                + &#34;&lt;/span&gt;&#34;
             )
-            + &#34;&lt;/span&gt;&#34;
             for (i, n) in enumerate(tup)
         )
         seqNo = -1 if seq is None else seq
@@ -1890,7 +1883,9 @@ Depending on <em>asString</em> above.</p></div>
         html.append(passageRef)
     for (i, n) in enumerate(tup):
         html.append(
-            app.plain(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else app.plain(
                 n,
                 _inTuple=True,
                 _asString=True,
@@ -1962,7 +1957,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L893-L929" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L881-L917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -2037,7 +2032,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L811-L890" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L803-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2082,14 +2077,10 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     highlights = dContext.highlights
     condenseType = dContext.condenseType
     condensed = dContext.condensed
-    skipCols = dContext.skipCols
 
     _browse = app._browse
     inNb = app.inNb
     asString = _browse or _asString
-
-    if skipCols:
-        tup = tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
 
     if len(tup) == 0:
         if asString:
@@ -2153,7 +2144,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L729-L808" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L731-L800" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2199,13 +2190,6 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     start = dContext.start
     condensed = dContext.condensed
     condenseType = dContext.condenseType
-    skipCols = dContext.skipCols
-
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
 
     api = app.api
     F = api.F
@@ -2214,8 +2198,6 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
-
-    newOptions = display.consume(options, &#34;skipCols&#34;)
 
     html = []
 
@@ -2226,9 +2208,8 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
             tup,
             seq=i,
             item=item,
-            skipCols=set(),
             _asString=asString,
-            **newOptions,
+            **options,
         )
         if asString:
             html.append(thisResult)
@@ -2266,7 +2247,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/display.py#L408-L500" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/display.py#L408-L495" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -2315,16 +2296,11 @@ HTML string.</dd>
 
     ltr = _getLtr(app, dContext) or &#34;ltr&#34;
 
-    if skipCols:
-        tuples = tuple(
-            tuple(x for (i, x) in enumerate(tup) if i + 1 not in skipCols)
-            for tup in tuples
-        )
-
     item = condenseType if condensed else RESULT
 
     if condensed:
         tuples = condense(api, tuples, condenseType, multiple=True)
+        skipCols = set()
 
     passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
 
@@ -2352,7 +2328,7 @@ HTML string.</dd>
                 position=None,
                 opened=False,
                 _asString=True,
-                skipCols=set(),
+                skipCols=skipCols,
                 **newOptions,
             )
         )

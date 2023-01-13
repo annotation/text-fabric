@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L1-L573" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L1-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import types
@@ -168,6 +168,7 @@ class App:
             specs = getModulesData(
                 self, backend, mod, locations, modules, version, checkout, silent
             )
+
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f&#34;{self.repoLocation}/{TEMP_DIR}&#34;
@@ -433,6 +434,9 @@ def findApp(
 
     dataOrg = None
     dataRepo = None
+    inNb = runsInNotebook()
+
+    dm(&#34;**Locating corpus resources ...**&#34;, inNb=inNb)
 
     if dataLoc is None:
         if appLoc:
@@ -468,7 +472,7 @@ def findApp(
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label=&#34;TF-app&#34;,
+                label=&#34;app&#34;,
             )
             appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
             appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -483,7 +487,7 @@ def findApp(
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label=&#34;TF-app&#34;,
+                label=&#34;app&#34;,
             )
             appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
             appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -517,7 +521,7 @@ def findApp(
                         withPaths=True,
                         keep=False,
                         silent=silent,
-                        label=&#34;TF-app&#34;,
+                        label=&#34;app&#34;,
                     )
                     appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
                     appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -661,7 +665,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L326-L573" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L327-L577" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -743,6 +747,9 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 
     dataOrg = None
     dataRepo = None
+    inNb = runsInNotebook()
+
+    dm(&#34;**Locating corpus resources ...**&#34;, inNb=inNb)
 
     if dataLoc is None:
         if appLoc:
@@ -778,7 +785,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label=&#34;TF-app&#34;,
+                label=&#34;app&#34;,
             )
             appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
             appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -793,7 +800,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
                 withPaths=True,
                 keep=False,
                 silent=silent,
-                label=&#34;TF-app&#34;,
+                label=&#34;app&#34;,
             )
             appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
             appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -827,7 +834,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
                         withPaths=True,
                         keep=False,
                         silent=silent,
-                        label=&#34;TF-app&#34;,
+                        label=&#34;app&#34;,
                     )
                     appBaseRep = f&#34;{appBase}/&#34; if appBase else &#34;&#34;
                     appPath = f&#34;{appBaseRep}{appDir}&#34;
@@ -960,7 +967,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L41-L323" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L41-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1062,6 +1069,7 @@ loading features. Used to experiment with performance.</dd>
             specs = getModulesData(
                 self, backend, mod, locations, modules, version, checkout, silent
             )
+
             if specs:
                 (locations, modules) = specs
                 self.tempDir = f&#34;{self.repoLocation}/{TEMP_DIR}&#34;
@@ -1281,7 +1289,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L230-L254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L231-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1319,7 +1327,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L256-L261" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L257-L262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1354,7 +1362,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/advanced/app.py#L263-L323" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/app.py#L264-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.

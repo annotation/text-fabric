@@ -69,7 +69,7 @@ The TF browser can import those sets, so that you can use such queries in the br
 <dl>
 <dt>main corpus</dt>
 <dd>You work with a main corpus
-(it is not necessary anymore that a TF-app exists for the main corpus).
+(it is not necessary anymore that a corpus app exists for the main corpus).
 The TF features of the corpus must be versioned, i.e. they must sit
 in a subdirectory named after the version.</dd>
 <dt>versioned tf data</dt>
@@ -273,12 +273,12 @@ will still get the latest stable release.</p>
 <p>Now we are just reading data, so the following steps you can perform literally,
 without fear of overwriting data.</p>
 <h3 id="check-it-out">Check it out!</h3>
-<p>When calling up data and a TF-app, you can go back in history:
+<p>When calling up data and a corpus app, you can go back in history:
 to previous releases and previous commits, using a <code>checkout</code> parameter.</p>
 <p>You have already seen it, and here we spell them out in greater detail.</p>
 <p>You can specify the checkout parameter separately for </p>
 <ul>
-<li>the TF-app code (so you can go back to previous instantiations of the TF-app)</li>
+<li>the corpus app code (so you can go back to previous instantiations of the corpus app)</li>
 <li>the main data of the app plus its standard data modules</li>
 <li>every data-module that you include by means of the <code>--mod=</code> parameter.</li>
 </ul>
@@ -296,7 +296,7 @@ from the latest online commit</li>
 </ul>
 <p>You pass the checkout values as follows:</p>
 <ul>
-<li>For the TF-app:
+<li>For the corpus app:
 <strong>after the app name</strong>:
 <code>bhsa:clone</code>, <code>oldbabylonian:local</code>, <code>quran</code>.
 If you leave it out, it defaults to the empty string: local copy or latest release or commit.</li>
@@ -354,7 +354,7 @@ tutorial.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f84563b8132b239eb088c5e287b5f1dc82794ad8/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/about/datasharing.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/datasharing.md
