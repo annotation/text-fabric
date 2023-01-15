@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/zipdata.py#L1-L197" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ddfb3ac4b3e89311b0d63c181be8e18d408eaf97/tf/advanced/zipdata.py#L1-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -80,7 +80,7 @@ def zipData(
     relative=RELATIVE,
     version=None,
     tf=True,
-    keep=False,
+    keep=True,
     source=None,
     dest=None,
 ):
@@ -242,7 +242,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/zipdata.py#L157-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ddfb3ac4b3e89311b0d63c181be8e18d408eaf97/tf/advanced/zipdata.py#L157-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -284,14 +284,14 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="tf.advanced.zipdata.zipData"><code class="name flex">
-<span>def <span class="ident">zipData</span></span>(<span>backend, org, repo, relative='tf', version=None, tf=True, keep=False, source=None, dest=None)</span>
+<span>def <span class="ident">zipData</span></span>(<span>backend, org, repo, relative='tf', version=None, tf=True, keep=True, source=None, dest=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/advanced/zipdata.py#L46-L154" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ddfb3ac4b3e89311b0d63c181be8e18d408eaf97/tf/advanced/zipdata.py#L46-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -300,7 +300,7 @@ if __name__ == &#34;__main__&#34;:
     relative=RELATIVE,
     version=None,
     tf=True,
-    keep=False,
+    keep=True,
     source=None,
     dest=None,
 ):

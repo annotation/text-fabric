@@ -57,7 +57,7 @@ provide.</p>
     volume=None,
     collection=None,
     silent=&quot;auto&quot;,
-    loadData=False,
+    loadData=True,
     **configOverrides,
 )
 </code></pre>
@@ -393,10 +393,15 @@ If you need to get some information of a TF dataset that is not dependent on loa
 data features, you can suppress the loading of data by</p>
 <pre><code>A = use(&quot;org/repo&quot;, loadData=False)`
 </code></pre>
+<p>You can also prevent loading data of modules that are associated with the code
+data by default. These are the ones specified in the <code>config.yaml</code> file of
+the corpus app under <code>provenanceSpec &gt; moduleSpecs</code>:</p>
+<pre><code>A = use(&quot;org/repo&quot;, loadData=&quot;core&quot;)`
+</code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/b0efcf906206efd08dd7933add0a621d2a1838b1/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ddfb3ac4b3e89311b0d63c181be8e18d408eaf97/tf/about/usefunc.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/usefunc.md
