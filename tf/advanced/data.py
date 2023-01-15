@@ -104,6 +104,11 @@ class AppData:
         """
 
         app = self.app
+        loadData = app.loadData
+
+        if not loadData or loadData == "core":
+            return
+
         aContext = app.context
         moduleSpecs = aContext.moduleSpecs
         seen = self.seen

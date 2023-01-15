@@ -50,7 +50,7 @@ def zipData(
     relative=RELATIVE,
     version=None,
     tf=True,
-    keep=False,
+    keep=True,
     source=None,
     dest=None,
 ):

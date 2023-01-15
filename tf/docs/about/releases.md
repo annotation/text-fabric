@@ -12,6 +12,12 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.1
 
+### 11.1.2
+
+2023-01-15
+
+Small fix in math display.
+
 ### 11.1.1
 
 2023-01-13

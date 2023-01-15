@@ -46,7 +46,7 @@ A = use(
     volume=None,
     collection=None,
     silent="auto",
-    loadData=False,
+    loadData=True,
     **configOverrides,
 )
 ```
@@ -457,5 +457,14 @@ data features, you can suppress the loading of data by
 
 ```
 A = use("org/repo", loadData=False)`
+```
+
+You can also prevent loading data of modules that are associated with the code
+data by default. These are the ones specified in the `config.yaml` file of
+the corpus app under `provenanceSpec > moduleSpecs`:
+
+
+```
+A = use("org/repo", loadData="core")`
 ```
 

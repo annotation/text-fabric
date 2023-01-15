@@ -254,7 +254,9 @@ a:hover {
     border-radius: var(--border-width4);
 }
 span.plain {
-    display: inline-block;
+    /*display: inline-block;*/
+    display: inline-flex;
+    flex-flow: row wrap;
     white-space: pre-wrap;
 }
 .plain {

@@ -66,7 +66,7 @@ class App:
     ):
         """Set up the advanced TF API.
 
-        The parameters are explained in `tf.app.use`.
+        The parameters are explained in `tf.about.usefunc`.
 
         Parameters
         ----------
@@ -113,6 +113,7 @@ class App:
             volume=volume,
             collection=collection,
             silent=silent,
+            loadData=loadData,
             _browse=_browse,
         ).items():
             setattr(self, key, value)
