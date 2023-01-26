@@ -16,13 +16,13 @@ const copyChar = (el, c) => {
 globalThis.copyChar = copyChar
 
 
-const mathTypeset = () => {
+const mathTypeset = dest => {
   const showMathOption = $("#math")
   const showMath = showMathOption.prop("checked")
 
   if (showMath) {
     const { MathJax } = globalThis
-    MathJax.typeset()
+    MathJax.typeset(dest)
   }
 }
 
@@ -183,7 +183,7 @@ const getTable = (kind, subkind, m, button) => {
       switchMode(m)
       storeForm()
       gotoFocus(kind)
-      mathTypeset()
+      mathTypeset(destTable)
     },
   })
 }
@@ -374,7 +374,7 @@ const getOpen = (kind, elem) => {
     success: data => {
       const { table } = data
       dest.html(table)
-      mathTypeset()
+      mathTypeset(dest)
     },
   })
 }

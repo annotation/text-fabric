@@ -434,7 +434,7 @@ def _getNodePart(isPretty, info, n, outer, switched):
     sep = ":" if ntp and num else ""
 
     return (
-        f'<{elemb} class="nd">{ntp}{sep}{num}{line}</{eleme}>'
+        f'<{elemb} class="nd">{ntp}{sep}{num}{line} </{eleme}>'
         if ntp or num or line
         else ""
     )

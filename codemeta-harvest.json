@@ -1,4 +1,20 @@
 {
+    "author": {
+        "@type": "Person",
+        "givenName": "Dirk",
+        "familyName": "Roorda"
+    },
+    "producer": {
+        "@id": "https://github.com/annotation",
+        "email": "dirk.roorda@di.huc.knaw.nl",
+        "name": "annotation",
+        "url": "https://github.com/annotation"
+    },
+    "author": {
+        "@type": "Person",
+        "givenName": "Dirk",
+        "familyName": "Roorda"
+    },
     "softwareHelp": [
             {
                 "@id": "https://annotation.github.io/text-fabric/tf/index.html",
@@ -36,6 +52,43 @@
                 "name": "Tutorial for working with the General Missives (Dutch colonial history); family of Jupyter Notebooks",
                 "url": "https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/start.ipynb"
             }
+    ],
+    "targetProduct": [
+        {
+            "@type": "CommandLineApplication",
+            "name": "Text-Fabric",
+            "executableName": "text-fabric"
+        },
+        {
+            "@type": "SoftwareLibrary",
+            "name": "Text-Fabric",
+            "executableName": "tf"
+        },
+        {
+            "@type": "WebApplication",
+            "name": "Text-Fabric Browser",
+            "url": "http://localhost:8000",
+            "provider": {
+                "@type": "Organization",
+                "name": "annotation",
+                "url": "https://github.com/annotation"
+            }
+        }
+    ],
+    "applicationCategory": [
+        "https://vocabs.dariah.eu/tadirah/structuralAnalysis",
+        "https://vocabs.dariah.eu/tadirah/rhetoricalAnalysis",
+        "https://vocabs.dariah.eu/tadirah/commenting",
+        "https://vocabs.dariah.eu/tadirah/sharing",
+        "https://vocabs.dariah.eu/tadirah/highlighting",
+        "https://vocabs.dariah.eu/tadirah/interpreting",
+        "https://vocabs.dariah.eu/tadirah/archiving",
+        "https://vocabs.dariah.eu/tadirah/informationRetrieval",
+        "https://w3id.org/nwo-research-fields#TextualAndContentAnalysis",
+        "https://w3id.org/nwo-research-fields#TextualAndLinguisticCorpora",
+        "https://w3id.org/nwo-research-fields#ReligiousStudiesAndTheology",
+        "https://w3id.org/nwo-research-fields#BibleStudies",
+        "https://w3id.org/nwo-research-fields#ComputationalLinguisticsAndPhilology"
     ],
     "referencePublication": [
         {
@@ -246,6 +299,26 @@
                 "@type": "Organization",
                 "name": "KNAW/Humanities Cluster",
                 "url": "https://huc.knaw.nl"
+            }
+        }
+    ],
+    "funding": [
+        {
+            "@type": "Grant",
+            "name": "CLARIN-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
+            "funder": {
+                "@type": "Organization",
+                "name": "NWO", 
+                "url": "https://www.nwo.nl"
+            }
+        },
+        {
+            "@type": "Projects at DANS 2014-2022",
+            "name": "Development carried out as part of various projects at DANS",
+            "funder": {
+                "@type": "Organization",
+                "name": "Data Archiving and Networked Services",
+                "url": "https://www.dans.knaw.nl"
             }
         }
     ]

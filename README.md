@@ -6,6 +6,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1008899.svg)](https://doi.org/10.5281/zenodo.592193)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2592/badge)](https://bestpractices.coreinfrastructure.org/projects/2592)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+<img src="https://camo.githubusercontent.com/efdbaf92d577bd214ee5f26020d668e470045bd66de29266d8e74f336bd57d05/68747470733a2f2f773369642e6f72672f72657365617263682d746563686e6f6c6f67792d72656164696e6573732d6c6576656c732f4c6576656c3950726f76656e2e737667" alt="Technology Readiness Level 9/9 - Proven - Technology complete and proven in practise by real users" data-canonical-src="https://w3id.org/research-technology-readiness-levels/Level9Proven.svg" style="max-width: 100%;">
 ---
 
 A corpus of ancient texts and (linguistic) annotations represents a large body of knowledge.
