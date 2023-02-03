@@ -12,6 +12,13 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.1
 
+### 11.1.3
+
+2023-02-03
+
+In the Text-Fabric browser you can now resize the column in which you write
+your query.
+
 ### 11.1.2
 
 2023-01-15

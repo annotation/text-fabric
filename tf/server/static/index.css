@@ -26,13 +26,18 @@ div.page {
 }
 
 div.leftcol {
-	flex: 0 0 20rem;
+	flex: 1 0 auto;
 	border-right: 1pt solid var(--fog-rim);
 	padding-left: 4px;
 	padding-right: 8px;
 	height: 99vh;
 	overflow: auto;
+  resize: horizontal;
 	-webkit-overflow-scrolling: touch;
+}
+p.scharacters {
+  width: 20rem;
+  line-break: anywhere;
 }
 div.midcol {
 	flex: 0 0 auto;
@@ -43,7 +48,7 @@ div.midcol {
 	-webkit-overflow-scrolling: touch;
 }
 div.rightcol {
-	flex: 10 2 auto;
+	flex: 10 2 50%;
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: flex-start;

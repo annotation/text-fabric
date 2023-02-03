@@ -123,7 +123,7 @@ def specialCharacters(app, fmt=None, _browse=False):
         dedent(
             f"""\
         <p><b>Special characters in <code>{fmt}</code></b></p>
-        <p class="{extraCls} {textCls}">
+        <p class="scharacters {extraCls} {textCls}">
         """
         )
     )
