@@ -1,9 +1,12 @@
 import os
 import sys
 import re
-from shutil import rmtree
+from shutil import rmtree, copytree, copy
 
 from ..parameters import normpath, OMAP, HOME_DIR
+
+
+NBSP = "\u00a0"  # non-breaking space
 
 
 def abspath(path):
@@ -40,6 +43,30 @@ def expandDir(obj, dirName):
     elif dirName.startswith("."):
         dirName = dirName.replace(".", obj.curDir, 1)
     return dirName
+
+
+def getLocation():
+    """Get backend, org, repo of current directory.
+
+    We assume the current directory is inside
+
+    `~/backend/org/repo`
+
+    Returns
+    -------
+    tuple
+        backend, org, repo
+    """
+    curDir = unexpanduser(normpath(os.getcwd()))
+    if not curDir.startswith("~/"):
+        return (None, None, None)
+    curDir = curDir.removeprefix("~/")
+    parts = curDir.split("/")
+    if len(parts) == 1:
+        return (parts[0], None, None)
+    if len(parts) == 1:
+        return (parts[0], parts[1], None)
+    return (parts[0], parts[1], parts[2])
 
 
 def dirEmpty(target):
@@ -107,6 +134,59 @@ def initTree(path, fresh=False, gentle=False):
                 rmtree(path)
 
     if not exists or fresh:
+        os.makedirs(path, exist_ok=True)
+
+
+def fileExists(path):
+    """Whether a path exists as file on the file system.
+    """
+    return os.path.isfile(path)
+
+
+def fileRemove(path):
+    """Removes a file if it exists as file.
+    """
+    if fileExists(path):
+        os.remove(path)
+
+
+def fileCopy(pathSrc, pathDst):
+    """Copies a file if it exists as file.
+
+    Wipes the destination file, if it exists.
+    """
+    if fileExists(pathSrc):
+        fileRemove(pathDst)
+        copy(pathSrc, pathDst)
+
+
+def dirExists(path):
+    """Whether a path exists as directory on the file system.
+    """
+    return os.path.isdir(path)
+
+
+def dirRemove(path):
+    """Removes a directory if it exists as directory.
+    """
+    if dirExists(path):
+        rmtree(path)
+
+
+def dirCopy(pathSrc, pathDst):
+    """Copies a directory if it exists as directory.
+
+    Wipes the destination directory, if it exists.
+    """
+    if dirExists(pathSrc):
+        dirRemove(pathDst)
+        copytree(pathSrc, pathDst)
+
+
+def dirMake(path):
+    """Creates a directory if it does not already exist as directory.
+    """
+    if not dirExists(path):
         os.makedirs(path, exist_ok=True)
 
 

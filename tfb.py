@@ -6,7 +6,7 @@ from glob import glob
 from shutil import rmtree
 from subprocess import run
 
-from tools.pdocs import console, pdoc3serve, pdoc3, shipDocs
+from tf.tools.pdocs import console, pdoc3serve, pdoc3, shipDocs
 
 ORG = "annotation"
 REPO = "text-fabric"

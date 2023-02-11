@@ -12,6 +12,13 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.1
 
+### 11.1.4 (upcoming)
+
+2023-??-??
+
+Small improvement in rendering features with nodes: if a feature value ends with a space,
+it was invisible in a pretty display. now we replace the last space by a non-breaking space.
+
 ### 11.1.3
 
 2023-02-03

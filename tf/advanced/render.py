@@ -22,7 +22,7 @@ directly from an attribute in the tree.
 
 from .helpers import htmlSafe, NB, dh
 from .unravel import _unravel
-from ..core.helpers import htmlEsc, flattenToSet
+from ..core.helpers import NBSP, htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
@@ -510,6 +510,8 @@ def _getFeatures(info, n, nType):
                 )
                 if value is not None:
                     value = value.replace("\n", "<br/>")
+                    if value.endswith(" "):
+                        value = value[0:-1] + NBSP
                     isBare = i < bFeatures
                     isExtra = i >= nbFeatures
                     if (

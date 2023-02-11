@@ -6,6 +6,8 @@ from tf.core.helpers import console
 
 
 def checkDiffs(path1, path2):
+    """Check differences between runs of tf generations.
+    """
     def diffFeature(f):
         with open(f"{path1}/{f}.tf") as h:
             eLines = (
@@ -59,13 +61,13 @@ def checkDiffs(path1, path2):
         for f in sorted(addedOnes):
             console(f"\t\t{f}")
     else:
-        console(f"\tno features to add")
+        console("\tno features to add")
     if deletedOnes:
         console(f"\t{len(deletedOnes)} features to delete")
         for f in sorted(deletedOnes):
             console(f"\t\t{f}")
     else:
-        console(f"\tno features to delete")
+        console("\tno features to delete")
 
     console(f"\t{len(commonOnes)} features in common")
     for f in sorted(commonOnes):
@@ -74,4 +76,5 @@ def checkDiffs(path1, path2):
     console("Done")
 
 
-checkDiffs(*sys.argv[1:3])
+if __name__ == "__main__":
+    checkDiffs(*sys.argv[1:3])

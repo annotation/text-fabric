@@ -271,10 +271,8 @@ test/varia/characters.ipynb
 test/varia/clean.ipynb
 test/varia/writetf.ipynb
 test/widgets/Widget List.ipynb
-test/widgets/Widget List.py
 test/widgets/editing.ipynb
 test/widgets/example.ipynb
-test/widgets/example.py
 test/widgets/pure.py
 test/widgets/images/WidgetArch.png
 test/widgets/images/button.png
@@ -544,6 +542,11 @@ tf/server/static/mathjax/ui/.DS_Store
 tf/server/static/mathjax/ui/lazy.js
 tf/server/templates/export.html
 tf/server/templates/index.html
+tf/tools/__init__.py
+tf/tools/checkdiffs.py
+tf/tools/htmlFromNb.py
+tf/tools/pdocs.py
+tf/tools/release.py
 tf/volumes/__init__.py
 tf/volumes/collect.py
 tf/volumes/extract.py
@@ -554,6 +557,3 @@ tf/writing/hebrew.py
 tf/writing/neoaramaic.py
 tf/writing/syriac.py
 tf/writing/transcription.py
-tools/checkdiffs.py
-tools/pdocs.py
-tools/release.py

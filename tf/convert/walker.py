@@ -96,7 +96,7 @@ and to add them again.
 
 ## Dynamic Metadata
 
-When the director runs, you have already specified all your feature
+When the director runs, you may have already specified all your feature
 metadata, including the value types.
 
 But if some of that information is dependent on what you encounter in the
@@ -107,6 +107,13 @@ before running the director.
 
 (B) Update the metadata later on
 by issuing `cv.meta()` actions from within your director, see below.
+
+In doing this, you can remove the metadata from unused features,
+but you can also add metadata to features that have not got them yet.
+
+If the set of possible features is not known on beforehand,
+you can ask for the list of all feature names by means of
+`cv.features()`.
 
 ## Action methods
 
@@ -120,6 +127,7 @@ that steer the graph building:
 *   `tf.convert.walker.CV.link`
 *   `tf.convert.walker.CV.linked`
 *   `tf.convert.walker.CV.feature`
+*   `tf.convert.walker.CV.features`
 *   `tf.convert.walker.CV.edge`
 *   `tf.convert.walker.CV.meta`
 *   `tf.convert.walker.CV.occurs`
@@ -1016,6 +1024,20 @@ class CV:
                         intFeatures.discard(feat)
 
         self.good = self._checkFeatMeta(feat, featMeta) and good and self.good
+
+    def features(self):
+        """Get the list of all features.
+
+            featureNames = cv.features()
+
+        Returns
+        -------
+        list
+        """
+
+        nodeFeatures = self.nodeFeatures
+        edgeFeatures = self.edgeFeatures
+        return sorted(list(nodeFeatures) + list(edgeFeatures))
 
     def active(self, node):
         """Returns whether a node is currently active.

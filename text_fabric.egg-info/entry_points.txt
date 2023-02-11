@@ -1,4 +1,5 @@
 [console_scripts]
+htmlnotebooks = tf.tools.htmlFromNb:main
 text-fabric = tf.server.start:main
 text-fabric-make = tf.client.make.build:main
 text-fabric-zip = tf.advanced.zipdata:main
