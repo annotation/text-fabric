@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.about.install API documentation</title>
-<meta name="description" content="Install …" />
+<title>tf.tools API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -20,121 +20,26 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.about.install</code></h1>
+<h1 class="title">Module <code>tf.tools</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="install">Install</h1>
-<h2 id="if-you-have-already-python-on-your-machine">If you have already Python on your machine</h2>
-<p>Make sure you have at least Python 3.7.0</p>
-<p>Recommended: install JupyterLab:
-fire up a terminal (= command prompt) and say</p>
-<pre><code class="language-sh">pip install jupyterlab
-</code></pre>
-<p>To get text-fabric, you can either fire up a terminal and say:</p>
-<pre><code class="language-sh">pip install 'text-fabric[all]'
-</code></pre>
-<p>or fire up a Jupyter Notebook (<code>jupyter lab</code>)</p>
-<p>and in a cell say</p>
-<pre><code class="language-sh">!pip install 'text-fabric[all]'
-</code></pre>
-<p>If you are in a notebook on an iPad, you can not install the full text-fabric.
-The iPad cannot install the libraries needed for the Text-Fabric browser.
-To install a reduced text-fabric, say</p>
-<pre><code class="language-sh">!pip install text-fabric
-</code></pre>
-<p>Now restart this notebook by clicking the circular arrow in the toolbar:</p>
-<p><img alt="restart" src="../images/restartkernel.png">.</p>
-<h2 id="if-you-do-not-have-python">If you do not have Python</h2>
-<p>The fastest way to set up everything you need to use Text-Fabric is by installing the
-JupyterLab Desktop application.</p>
-<p>This installs both JupyterLab and Python in one go,
-as a desktop application running under
-Macos, Linux or Windows.</p>
-<p>The Jupyter Desktop App can be downloaded from
-<a href="https://github.com/jupyterlab/jupyterlab-desktop">jupyterlab-desktop</a>,
-choose the one that fits your system.</p>
-<p>After downloading, go to your downloads folder and install the application in the way
-you are used to, but notice the following:</p>
-<p><strong>on macos</strong>: right-click the <code>.pkg</code> file, answer the dialogbox with <code>OK</code>. </p>
-<p><strong>on all platforms</strong>: install for the current user, not for all users, otherwise
-you run into problems later on.</p>
-<p><em>macos</em>: click "Change install location" and set it to "Install for me only"</p>
-<p><em>linux</em>: after installation, run the following command from a terminal
-where <code>username</code> should be changed
-to your username on the system:</p>
-<pre><code class="language-sh">sudo chown -R username:username /opt/JupyterLab
-</code></pre>
-<p><em>windows</em>: no extra instructions.
-Two installers will be launched, let them work with the same default
-location for installation.</p>
-<h3 id="work-with-text-fabric">Work with Text-Fabric</h3>
-<p>In a notebook, put this <em>incantation</em> in a cell and run it:</p>
-<pre><code>from tf.app import use
-</code></pre>
-<p>And in a next cell, load the data of some corpus, e.g. <code>annotation/banks</code>.</p>
-<pre><code>A = use(&quot;annotation/banks&quot;)
-</code></pre>
-<p>The first time you do this you will see that the data is being downloaded and prepared for its first use.
-If you do this a second time, the data is already on your computer in preprocessed form, and Text-Fabric
-will see that data and load it quickly.</p>
-<p>From here you can use a
-<a href="https://nbviewer.org/github/annotation/banks/blob/master/tutorial/use.ipynb">tutorial</a>.</p>
-<p>More extensive tutorials are available for other corpora, see <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
-<h3 id="text-fabric-browser">Text-Fabric browser</h3>
-<p>You can also work with Text-Fabric outside any programming context, just in the browser.</p>
-<p>In a terminal, say</p>
-<pre><code class="language-sh">text-fabric annotation/banks
-</code></pre>
-<p>Or, in a notebook cell, say</p>
-<pre><code>!text-fabric annotation/banks
-</code></pre>
-<p>Wait a few seconds and you see a new window in your browser
-with an interface to submit queries to the corpus.</p>
-<h4 id="note-for-linux-users">Note for Linux users</h4>
-<ul>
-<li>On Ubuntu the <code>text-fabric</code> script ends up in your <code>~/.local/bin</code> directory,
-but this is not on your PATH.</li>
-<li>You need to execute your <code>.profile</code> file first by:</li>
-</ul>
-<pre><code class="language-sh">source ~/.profile
-</code></pre>
-<p>You need to do this every time when you open a new terminal and
-want to run Text-Fabric.
-If you get tired of this, you can add this to your <code>.bashrc</code> file:</p>
-<pre><code class="language-sh">PATH=&quot;~/.local/bin:${PATH}&quot;
-export PATH
-</code></pre>
-<h4 id="note-on-all">Note on <code>[all]</code></h4>
-<p>Text-Fabric has some special capabilities:</p>
-<ul>
-<li><code>browser</code>: the Text-Fabric browser, which runs a local webserver which lets you
-have a browse and search experience in a local web environment;</li>
-<li><code>github</code> and <code>gitlab</code>: repository backends from which Text-Fabric can load
-corpus data on-demand.</li>
-</ul>
-<p>You can install Text-Fabric with a selection of capabilities:</p>
-<ul>
-<li><code>pip install 'text-fabric'</code> <em>without additional capabilities</em></li>
-<li><code>pip install 'text-fabric[all]'</code> <em>with all additional capabilities</em></li>
-<li><code>pip install 'text-fabric[github]'</code> <em>with a github backend</em></li>
-<li><code>pip install 'text-fabric[gitlab]'</code> <em>with a gitlab backend</em></li>
-<li><code>pip install 'text-fabric[browser]'</code> <em>with the text-fabric browser enabled</em></li>
-<li><code>pip install 'text-fabric[github,browser]'</code> <em>with the selected extras</em></li>
-<li><code>pip install 'text-fabric[github,gitlab]'</code> <em>with the selected extras</em></li>
-</ul>
-<p>Even if Text-Fabric is not installed with certain capabilities,
-it will have those capabilities if the required modules are installed.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-.. include:: ../docs/about/install.md
-&#34;&#34;&#34;</code></pre>
-</details>
 </section>
 <section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="tf.tools.checkdiffs" href="checkdiffs.html">tf.tools.checkdiffs</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.tools.pdocs" href="pdocs.html">tf.tools.pdocs</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="tf.tools.release" href="release.html">tf.tools.release</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -197,26 +102,19 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#install">Install</a><ul>
-<li><a href="#if-you-have-already-python-on-your-machine">If you have already Python on your machine</a></li>
-<li><a href="#if-you-do-not-have-python">If you do not have Python</a><ul>
-<li><a href="#work-with-text-fabric">Work with Text-Fabric</a></li>
-<li><a href="#text-fabric-browser">Text-Fabric browser</a><ul>
-<li><a href="#note-for-linux-users">Note for Linux users</a></li>
-<li><a href="#note-on-all">Note on [all]</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+<li><code><a title="tf" href="../index.html">tf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="tf.tools.checkdiffs" href="checkdiffs.html">tf.tools.checkdiffs</a></code></li>
+<li><code><a title="tf.tools.pdocs" href="pdocs.html">tf.tools.pdocs</a></code></li>
+<li><code><a title="tf.tools.release" href="release.html">tf.tools.release</a></code></li>
 </ul>
 </li>
 </ul>

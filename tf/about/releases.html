@@ -33,6 +33,16 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="111">11.1</h3>
+<h3 id="1114">11.1.4</h3>
+<p>2023-02-12</p>
+<p>Small improvement in rendering features with nodes: if a feature value ends
+with a space,
+it was invisible in a pretty display. now we replace the last space by a
+non-breaking space.</p>
+<p>Small fix for when Text-Fabric is installed without extras, just
+<code>pip install text-fabric</code> and not <code>pip install 'text-fabric[all]'</code></p>
+<p>In that case text-fabric referred to an error class that
+was not imported. Spotted by Martijn Naaijer. Fixed.</p>
 <h3 id="1113">11.1.3</h3>
 <p>2023-02-03</p>
 <p>In the Text-Fabric browser you can now resize the column in which you write
@@ -139,7 +149,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5c61611730f5610ae57706fcf28c4facfbf9a1e7/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -213,6 +223,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#111">11.1</a></li>
+<li><a href="#1114">11.1.4</a></li>
 <li><a href="#1113">11.1.3</a></li>
 <li><a href="#1112">11.1.2</a></li>
 <li><a href="#1111">11.1.1</a></li>

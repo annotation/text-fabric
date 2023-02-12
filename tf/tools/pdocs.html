@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.client.make.gh API documentation</title>
+<title>tf.tools.pdocs API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -20,33 +20,36 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.client.make.gh</code></h1>
+<h1 class="title">Module <code>tf.tools.pdocs</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/client/make/gh.py#L1-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L1-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
+from shutil import rmtree, copytree, copyfile
 
-from subprocess import call, Popen, PIPE
+from subprocess import run, call, Popen, PIPE
 
 import errno
 import time
 import unicodedata
 
+
+SITE = &#34;site&#34;
 REMOTE = &#34;origin&#34;
 BRANCH = &#34;gh-pages&#34;
-SITE = &#34;site&#34;
+
 
 # COPIED FROM MKDOCS AND MODIFIED
 
 
 def console(*args):
-    sys.stdout.write(&#34; &#34;.join(args) + &#34;\n&#34;)
-    sys.stdout.flush()
+    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    sys.stderr.flush()
 
 
 def _enc(text):
@@ -70,7 +73,7 @@ def _write(pipe, data):
 
 
 def _normalize_path(path):
-    # Fix unicode pathnames on macos
+    # Fix unicode pathnames on OS X
     # See: https://stackoverflow.com/a/5582439/44289
     if sys.platform == &#34;darwin&#34;:
         return unicodedata.normalize(&#34;NFKC&#34;, _dec(path))
@@ -178,14 +181,75 @@ def _ghp_import():
     return result, _dec(err)
 
 
-def deploy(org, repo):
+def _gh_deploy(org, repo, pkg):
     (result, error) = _ghp_import()
     if not result:
         print(&#34;Failed to deploy to GitHub with error: \n%s&#34;, error)
         raise SystemExit(1)
     else:
-        url = f&#34;https://{org}.github.io/{repo}&#34;
-        print(&#34;Your documentation should shortly be available at: &#34; + url)</code></pre>
+        url = f&#34;https://{org}.github.io/{repo}/{pkg}&#34;
+        print(&#34;Your documentation should shortly be available at: &#34; + url)
+
+
+# END COPIED FROM MKDOCS AND MODIFIED
+
+
+TEMPLATE_LOC = &#34;{}/docs/templates&#34;
+
+
+def getCommand(pkg, asString=False):
+    templateLoc = TEMPLATE_LOC.format(pkg)
+
+    pdoc3 = [
+        &#34;pdoc3&#34;,
+        &#34;--force&#34;,
+        &#34;--html&#34;,
+        &#34;--output-dir&#34;,
+        SITE,
+        &#34;--template-dir&#34;,
+        templateLoc,
+    ]
+    return &#34; &#34;.join(pdoc3) if asString else pdoc3
+
+
+def pdoc3serve(pkg):
+    &#34;&#34;&#34;Build the docs into site and serve them.&#34;&#34;&#34;
+
+    proc = Popen([*getCommand(pkg), &#34;--http&#34;, &#34;:&#34;, pkg])
+    time.sleep(1)
+    run(f&#34;open http://localhost:8080/{pkg}&#34;, shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()
+
+
+def pdoc3(pkg):
+    &#34;&#34;&#34;Build the docs into site.&#34;&#34;&#34;
+
+    console(&#34;Build docs&#34;)
+    if os.path.exists(SITE):
+        console(f&#34;Remove previous build ({SITE})&#34;)
+        rmtree(SITE)
+    console(&#34;Generate docs with pdoc3&#34;)
+    run(f&#34;{getCommand(pkg, asString=True)} {pkg}&#34;, shell=True)
+    # console(&#34;Move docs into place&#34;)
+    # run(f&#34;mv {SITE}/{pkg}/* {SITE}&#34;, shell=True)
+    # rmtree(f&#34;{SITE}/{pkg}&#34;)
+    console(&#34;Copy over the images&#34;)
+    copytree(f&#34;{pkg}/docs/images&#34;, f&#34;{SITE}/{pkg}/images&#34;, dirs_exist_ok=True)
+
+    # a link from the old docs url to the new one
+    copyfile(f&#34;{pkg}/docs/index.html&#34;, f&#34;{SITE}/index.html&#34;)
+
+
+def shipDocs(org, repo, pkg, pdoc=True):
+    &#34;&#34;&#34;Build the docs into site and ship them.&#34;&#34;&#34;
+
+    if pdoc:
+        pdoc3(pkg)
+    _gh_deploy(org, repo, pkg)</code></pre>
 </details>
 </section>
 <section>
@@ -195,7 +259,7 @@ def deploy(org, repo):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.client.make.gh.console"><code class="name flex">
+<dt id="tf.tools.pdocs.console"><code class="name flex">
 <span>def <span class="ident">console</span></span>(<span>*args)</span>
 </code></dt>
 <dd>
@@ -203,31 +267,106 @@ def deploy(org, repo):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/client/make/gh.py#L17-L19" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L20-L22" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*args):
-    sys.stdout.write(&#34; &#34;.join(args) + &#34;\n&#34;)
-    sys.stdout.flush()</code></pre>
+    sys.stderr.write(&#34; &#34;.join(args) + &#34;\n&#34;)
+    sys.stderr.flush()</code></pre>
 </details>
 </dd>
-<dt id="tf.client.make.gh.deploy"><code class="name flex">
-<span>def <span class="ident">deploy</span></span>(<span>org, repo)</span>
+<dt id="tf.tools.pdocs.getCommand"><code class="name flex">
+<span>def <span class="ident">getCommand</span></span>(<span>pkg, asString=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/client/make/gh.py#L151-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L170-L182" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def deploy(org, repo):
-    (result, error) = _ghp_import()
-    if not result:
-        print(&#34;Failed to deploy to GitHub with error: \n%s&#34;, error)
-        raise SystemExit(1)
-    else:
-        url = f&#34;https://{org}.github.io/{repo}&#34;
-        print(&#34;Your documentation should shortly be available at: &#34; + url)</code></pre>
+<pre><code class="python">def getCommand(pkg, asString=False):
+    templateLoc = TEMPLATE_LOC.format(pkg)
+
+    pdoc3 = [
+        &#34;pdoc3&#34;,
+        &#34;--force&#34;,
+        &#34;--html&#34;,
+        &#34;--output-dir&#34;,
+        SITE,
+        &#34;--template-dir&#34;,
+        templateLoc,
+    ]
+    return &#34; &#34;.join(pdoc3) if asString else pdoc3</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.pdoc3"><code class="name flex">
+<span>def <span class="ident">pdoc3</span></span>(<span>pkg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L198-L214" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3(pkg):
+    &#34;&#34;&#34;Build the docs into site.&#34;&#34;&#34;
+
+    console(&#34;Build docs&#34;)
+    if os.path.exists(SITE):
+        console(f&#34;Remove previous build ({SITE})&#34;)
+        rmtree(SITE)
+    console(&#34;Generate docs with pdoc3&#34;)
+    run(f&#34;{getCommand(pkg, asString=True)} {pkg}&#34;, shell=True)
+    # console(&#34;Move docs into place&#34;)
+    # run(f&#34;mv {SITE}/{pkg}/* {SITE}&#34;, shell=True)
+    # rmtree(f&#34;{SITE}/{pkg}&#34;)
+    console(&#34;Copy over the images&#34;)
+    copytree(f&#34;{pkg}/docs/images&#34;, f&#34;{SITE}/{pkg}/images&#34;, dirs_exist_ok=True)
+
+    # a link from the old docs url to the new one
+    copyfile(f&#34;{pkg}/docs/index.html&#34;, f&#34;{SITE}/index.html&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.pdoc3serve"><code class="name flex">
+<span>def <span class="ident">pdoc3serve</span></span>(<span>pkg)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site and serve them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L185-L195" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pdoc3serve(pkg):
+    &#34;&#34;&#34;Build the docs into site and serve them.&#34;&#34;&#34;
+
+    proc = Popen([*getCommand(pkg), &#34;--http&#34;, &#34;:&#34;, pkg])
+    time.sleep(1)
+    run(f&#34;open http://localhost:8080/{pkg}&#34;, shell=True)
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        pass
+    proc.terminate()</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.pdocs.shipDocs"><code class="name flex">
+<span>def <span class="ident">shipDocs</span></span>(<span>org, repo, pkg, pdoc=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Build the docs into site and ship them.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/cd5065fcee88dc0c0be0f85bcd61a2d509696fcf/tf/tools/pdocs.py#L217-L222" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def shipDocs(org, repo, pkg, pdoc=True):
+    &#34;&#34;&#34;Build the docs into site and ship them.&#34;&#34;&#34;
+
+    if pdoc:
+        pdoc3(pkg)
+    _gh_deploy(org, repo, pkg)</code></pre>
 </details>
 </dd>
 </dl>
@@ -236,10 +375,10 @@ def deploy(org, repo):
 </section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../../tf/index.html">tf home</a> -
-<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -275,7 +414,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -294,13 +433,16 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.client.make" href="index.html">tf.client.make</a></code></li>
+<li><code><a title="tf.tools" href="index.html">tf.tools</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.client.make.gh.console" href="#tf.client.make.gh.console">console</a></code></li>
-<li><code><a title="tf.client.make.gh.deploy" href="#tf.client.make.gh.deploy">deploy</a></code></li>
+<li><code><a title="tf.tools.pdocs.console" href="#tf.tools.pdocs.console">console</a></code></li>
+<li><code><a title="tf.tools.pdocs.getCommand" href="#tf.tools.pdocs.getCommand">getCommand</a></code></li>
+<li><code><a title="tf.tools.pdocs.pdoc3" href="#tf.tools.pdocs.pdoc3">pdoc3</a></code></li>
+<li><code><a title="tf.tools.pdocs.pdoc3serve" href="#tf.tools.pdocs.pdoc3serve">pdoc3serve</a></code></li>
+<li><code><a title="tf.tools.pdocs.shipDocs" href="#tf.tools.pdocs.shipDocs">shipDocs</a></code></li>
 </ul>
 </li>
 </ul>
@@ -308,7 +450,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
