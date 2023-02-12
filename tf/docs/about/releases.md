@@ -12,12 +12,20 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.1
 
-### 11.1.4 (upcoming)
+### 11.1.4
 
-2023-??-??
+2023-02-12
 
-Small improvement in rendering features with nodes: if a feature value ends with a space,
-it was invisible in a pretty display. now we replace the last space by a non-breaking space.
+Small improvement in rendering features with nodes: if a feature value ends
+with a space,
+it was invisible in a pretty display. now we replace the last space by a
+non-breaking space.
+
+Small fix for when Text-Fabric is installed without extras, just
+`pip install text-fabric` and not `pip install 'text-fabric[all]'`
+
+In that case text-fabric referred to an error class that
+was not imported. Spotted by Martijn Naaijer. Fixed.
 
 ### 11.1.3
 

@@ -413,7 +413,7 @@ requests = Cap.load("requests")
 )
 (Gitlab, GitlabGetError) = Cap.loadFrom("gitlab", "Gitlab", "GitlabGetError")
 requestsExceptions = Cap.loadFrom("requests", "exceptions")
-ConnectionError = requestsExceptions.ConnectionError
+ConnectionError = requestsExceptions.ConnectionError if requestsExceptions else None
 
 VERSION_DIGIT_RE = re.compile(r"^([0-9]+).*")
 SHELL_VAR_RE = re.compile(r"[^A-Z0-9_]")

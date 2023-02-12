@@ -544,7 +544,6 @@ tf/server/templates/export.html
 tf/server/templates/index.html
 tf/tools/__init__.py
 tf/tools/checkdiffs.py
-tf/tools/htmlFromNb.py
 tf/tools/pdocs.py
 tf/tools/release.py
 tf/volumes/__init__.py
