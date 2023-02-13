@@ -95,6 +95,17 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     **Tischendorf 8th Edition**,
     Cody Kingham, Dirk Roorda
 
+## [Digital Theologians of the University of Copenhagen](https://github.com/DT-UCPH)
+
+[DT-UCPH/sp](https://github.com/DT-UCPH)
+:   *Hebrew*
+    [Samaritan Pentateuch](https://en.wikipedia.org/wiki/Samaritan_Pentateuch)
+    , 516 BCE - 70 AD,
+    **MS Dublin Chester Beatty Library 751 + MS Garizim 1**,
+    Martijn Naaijer, Christian Canu Højgaard
+
+    **At this time only Genesis has been converted.**
+
 ## [Eep Talstra Centre for Bible and Computer](https://github.com/etcbc)
 
 [etcbc/bhsa](https://github.com/etcbc/bhsa)
@@ -126,6 +137,30 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     New Testament, 0 - 1000,
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
+
+## [KNAW/Huygens](https://gitlab.huc.knaw.nl/tt)
+
+[hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
+:   *Dutch*
+    Complete Works of W.F. Hermans.
+    The conversion to Text-Fabric is work in progress.
+    So far these works have been done:
+
+    * Paranoia
+    * Sadistisch Universum
+    * Nooit meer slapen
+
+    Bram Oostveen, Peter Kegel, Dirk Roorda
+
+    **Not publicly accessible, the book is under copyright.**
+
+[mondriaan/letters](https://git.diginfra.nl/mondriaan/letters)
+:   *Dutch*
+    Letters of Piet Mondriaan. , 1892-1923.
+    Straight conversion from TEI to Text-Fabric,
+    Peter Boot et al, Dirk Roorda
+
+    ** Work in progress, not yet public*.*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
@@ -175,22 +210,6 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Quran, 600 - 900,
     **Quranic Arabic Corpus**,
     Cornelis van Lit, Dirk Roorda
-
-## [KNAW/Huygens](https://gitlab.huc.knaw.nl/tt)
-
-[hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
-:   *Dutch*
-    Complete Works of W.F. Hermans.
-    The conversion to Text-Fabric is work in progress.
-    So far these works have been done:
-
-    * Paranoia
-    * Sadistisch Universum
-    * Nooit meer slapen
-
-    Bram Oostveen, Peter Kegel, Dirk Roorda
-
-    **Not publicly accessible, the book is under copyright.**
 
 ## [University of Utrecht: Cornelis van Lit](https://github.com/among)
 
