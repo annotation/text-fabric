@@ -189,7 +189,7 @@ class Search:
         sets: dict
             If not `None`, it should be a dictionary of sets, keyed by a names.
 
-        limit: integer, optional `None`
+        limit: integer, optional None
             If `limit` is a positive number, it will fetch only that many results.
             If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 
@@ -292,7 +292,7 @@ class Search:
             If not `None`, it should be a dictionary of sets, keyed by a names.
             In the search template you can refer to those names to invoke those sets.
 
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         See Also
@@ -328,7 +328,7 @@ class Search:
         Parameters
         ----------
 
-        limit: integer, optional `None`
+        limit: integer, optional None
             If `limit` is a positive number, it will fetch only that many results.
             If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 
@@ -398,7 +398,7 @@ class Search:
             Every once for every `progress` results a progress message is shown
             when fetching results.
 
-        limit: integer, optional `None`
+        limit: integer, optional None
             If `limit` is a positive number, it will fetch only that many results.
             If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 
@@ -440,7 +440,7 @@ class Search:
 
         Parameters
         ----------
-        details: boolean, optional `False`
+        details: boolean, optional False
             If `True`, more information will be provided:
             an overview of the search space and a description of how the results
             will be retrieved.

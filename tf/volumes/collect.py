@@ -145,7 +145,7 @@ def collect(
     workLocation: string
         The directory into which the feature files of the work will be written.
 
-    overwrite: boolean, optional `None`
+    overwrite: boolean, optional None
         If True, the target collection will be
         be created and will replace any existing collection/volume of the same name.
         If None, the collection will only be created if it does not exist.
@@ -154,7 +154,7 @@ def collect(
         If False, refuses to proceed if the collection directory already exists.
 
 
-    volumeType, volumeFeature: string, optional `None`
+    volumeType, volumeFeature: string, optional None
         If a string value for one of these is passed,
         a new node type will be added to the work,
         with one new node for each volume: the volume node.
@@ -194,7 +194,7 @@ def collect(
         of type `volume`, and the feature `vol` provides the names `banks` and `river`
         for those nodes.
 
-    featureMeta: dict, optional `None`
+    featureMeta: dict, optional None
         The meta data of the volumes involved will be merged.
         If feature metadata of the same feature is encountered in different volumes,
         and if volumes specify different values for the same keys,
@@ -226,7 +226,7 @@ def collect(
         and will override anything with the same key
         that is already in one of the volumes.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
     Returns

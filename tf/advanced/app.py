@@ -73,16 +73,16 @@ class App:
         appName, appPath, checkout, version: string
         commit, release, local: string
         backend: string
-        checkout: string, optional `""`
-        mod: string or iterable, optional `[]`
-        version: string, optional `None`
-        locations, modules: string, optional `None`
+        checkout: string, optional ""
+        mod: string or iterable, optional []
+        version: string, optional None
+        locations, modules: string, optional None
         collection, volume: string, optional None
         api: object, optional, `None`
         setFile: string, optional, `None`
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
-        hoist: dict, optional `False`
+        hoist: dict, optional False
         configOverrides: key value pairs
 
         _withGc: boolean, optional True
@@ -241,7 +241,7 @@ The app "{appName}" will not work!
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         Returns
@@ -275,7 +275,7 @@ The app "{appName}" will not work!
 
         Parameters
         ----------
-        hoist: boolean, optional `False`
+        hoist: boolean, optional False
             Same as in `App`.
 
         !!! hint "the effect of the config settings"

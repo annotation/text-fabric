@@ -86,7 +86,7 @@ def displayApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally this parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent="deep"`.
@@ -181,7 +181,7 @@ def displayReset(app, *options):
 
     Parameters
     ----------
-    options: list, optional `[]`
+    options: list, optional []
         If present, only restore these options to their defaults.
         Otherwise, restore all display settings.
     """
@@ -292,12 +292,12 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
         The integers are the nodes, together they form a table.
         The table maybe uniform or not uniform,
         which matters to the output. See below.
-    toDir: string, optional `None`
+    toDir: string, optional None
         The destination directory for the exported file.
         By default it is your Downloads folder.
 
         If the directory does not exist, it will be created.
-    toFile: boolean, optional `results.tsv`
+    toFile: boolean, optional results.tsv
         The name of the exported file.
     options: dict
         Display options, see `tf.advanced.options`.
@@ -424,7 +424,7 @@ def table(app, tuples, _asString=False, **options):
         The integers are the nodes, together they form a table.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -515,19 +515,19 @@ def plainTuple(
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the first cell.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    position: integer, optional `None`
+    position: integer, optional None
         Which position counts as the focus position.
         If *seq* equals *position*, the tuple is in focus.
         The effect is to add the CSS class *focus* to the output HTML
         for the row of this tuple.
-    opened:  booolean, optional `False`
+    opened:  booolean, optional False
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
@@ -540,7 +540,7 @@ def plainTuple(
             This option has only effect when used in the TF browser.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -704,15 +704,15 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    _inTuple: boolean, optional `False`
+    _inTuple: boolean, optional False
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
         not be displayed in full.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
 
@@ -743,7 +743,7 @@ def show(app, tuples, _asString=False, **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -811,14 +811,14 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the heading.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -899,10 +899,10 @@ def pretty(app, n, explain=False, _asString=False, **options):
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
-    asString: boolean, optional `False`
+    asString: boolean, optional False
         If True, the result is returned as string
 
     Result

@@ -45,11 +45,11 @@ class Fabric(FabricCore):
 
     Parameters
     ----------
-    collection: string, optional `None`
+    collection: string, optional None
         If the collection exists, it will be loaded instead of the whole corpus.
         If the collection does not exist an error will be generated.
 
-    volume: string, optional `None`
+    volume: string, optional None
         If the volume exists, it will be loaded instead of the whole corpus.
         If the volume does not exist an error will be generated.
 

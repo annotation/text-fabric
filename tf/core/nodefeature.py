@@ -109,7 +109,7 @@ class NodeFeature:
 
         Parameters
         ----------
-        nodeTypes: set of string, optional `None`
+        nodeTypes: set of string, optional None
             If you pass a set of nodeTypes, only the values for nodes
             within those types will be counted.
 

@@ -63,7 +63,7 @@ class Timestamp:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             The verbosity. Here are the values and their effects:
 
             `"verbose"` or `False`:
@@ -152,13 +152,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution "Silence"
@@ -178,13 +178,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution "Silence"
@@ -204,13 +204,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution "Silence"
@@ -230,11 +230,11 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
 
         !!! caution "Silence"
@@ -252,13 +252,13 @@ class Timestamp:
         The reported time is with respect to a starting point, which can be reset.
         The starting points at different levels are independent of each other.
 
-        level: integer|boolean, optional `None`
+        level: integer|boolean, optional None
             The indentation level.
             If an integer, it sets the indentation level.
             If a boolean, it decreases or increases the indentation level,
             but not below zero. `True` increases the indent with one level,
             `False` decreases the indent.
-        reset: boolean, optional `False`
+        reset: boolean, optional False
             If `True`, the elapsed time to will be reset to 0 at the given level.
         """
 
@@ -294,7 +294,7 @@ class Timestamp:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         """
 
@@ -306,7 +306,7 @@ class Timestamp:
 
         Parameters
         ----------
-        deep: boolean, optional `False`
+        deep: boolean, optional False
             If `True` also suppress warnings.
         """
 

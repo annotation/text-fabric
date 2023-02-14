@@ -24,12 +24,12 @@ This class manages
 
 Parameters
 ----------
-baseTypes: string | iterable, optional `None`
+baseTypes: string | iterable, optional None`
     **interface option**
     Node types at the bottom of pretty displays.
     The default is app dependent, usually the slot type of the corpus.
 
-condensed: boolean, optional `False`
+condensed: boolean, optional False
     **interface option**
     indicates one of two modes of displaying the result list:
 
@@ -48,12 +48,12 @@ condensed: boolean, optional `False`
         in the tuple, the `colorMap` wants to assign it two colors!
         Yet one color will be chosen, and it is unpredictable which one.
 
-condenseType: string, optional `None`
+condenseType: string, optional None
     **interface option**
     The type of container to be used for condensing results.
     The default is app dependent, usually `verse` or `tablet`.
 
-fmt: string, optional `None`
+fmt: string, optional None
     **interface option**
     `fmt` is the text format that will be used for the representation.
     E.g. `text-orig-full`.
@@ -61,12 +61,12 @@ fmt: string, optional `None`
     !!! hint "Text formats"
         Use `T.formats` to inspect what text formats are available in your corpus.
 
-hideTypes: boolean | optional `True`
+hideTypes: boolean | optional True
     **interface option**
     If `True`, hidden types are in fact hidden, otherwise the hiding of types
     has no effect.
 
-hiddenTypes: string | iterable, optional `None`
+hiddenTypes: string | iterable, optional None
     **interface option**
     Node types that will not be shown in displays.
     All node types can be hidden, except the slot type and the section types.
@@ -82,7 +82,7 @@ hiddenTypes: string | iterable, optional `None`
 
     The default is app dependent, usually the empty set.
 
-lineNumbers: boolean, optional `False`
+lineNumbers: boolean, optional False
     **interface option**
     indicates whether line numbers should be displayed.
 
@@ -97,24 +97,24 @@ lineNumbers: boolean, optional `False`
 
         If the corpus has no line numbers, the default is `None`.
 
-plainGaps: boolean, optional `True`
+plainGaps: boolean, optional True
     **interface option**
     indicates whether gaps types should be displayed in plain displays.
     In pretty displays gaps are marked by dotted left-right borders of the nodes
     around the gaps. In plain displays such borders are generally disruptive,
     but it is possible to show them.
 
-prettyTypes: boolean, optional `False`
+prettyTypes: boolean, optional False
     **interface option**
     indicates whether node types should always be displayed in pretty displays.
     The node type of slot nodes is never displayed.
 
-queryFeatures: boolean, optional `True`
+queryFeatures: boolean, optional True
     **interface option**
     indicates whether pretty displays should show the features
     mentioned in the last query and their values.
 
-showGraphics: boolean, optional `True`
+showGraphics: boolean, optional True
     **interface option**
     indicates whether plain and pretty displays should include associated
     graphic elements.
@@ -125,7 +125,7 @@ showGraphics: boolean, optional `True`
 
         If the corpus has no graphics, the default is `None`.
 
-showMath: boolean, optional `False`
+showMath: boolean, optional False
     **interface option**
     indicates whether plain and pretty displays should interpret the `$`
     to mark mathematical formulas in TeX notation.
@@ -134,15 +134,15 @@ showMath: boolean, optional `False`
         If you have a corpus where the character `$` is used in an ordinary way,
         this option should be set to `False`.
 
-standardFeatures: boolean, optional `True`
+standardFeatures: boolean, optional True
     **interface option**
     indicates whether pretty displays should show standard features and their values.
 
-withLabels: boolean, optional `True`
+withLabels: boolean, optional True
     **interface option**
     indicates whether pretty displays should show labels.
 
-withNodes: boolean, optional `False`
+withNodes: boolean, optional False
     **interface option**
     indicates whether node numbers should be displayed.
 
@@ -158,12 +158,12 @@ withNodes: boolean, optional `False`
         * **L**: `tf.core.locality.Locality`
         * **T**: `tf.core.text.Text`
 
-withTypes: boolean, optional `False`
+withTypes: boolean, optional False
     **interface option**
     indicates whether node types should be displayed.
     The node type of slot nodes is never displayed.
 
-colorMap: dict, optional `None`
+colorMap: dict, optional None
     Which nodes of a tuple (or list of tuples) will be highlighted.
     If `colorMap` is `None` or missing, all nodes will be highlighted with
     the default highlight color, which is yellow.
@@ -186,11 +186,11 @@ colorMap: dict, optional `None`
         If you need to micro-manage, `highlights` is your thing.
         Whenever possible, use `colorMap`.
 
-end: int, optional `None`
+end: int, optional None
     `end` is the end point in the iterable of results.
     If `None`, displaying will stop after the end of the iterable.
 
-extraFeatures: string | iterable, optional `()`
+extraFeatures: string | iterable, optional ()
     A string or iterable of feature names.
     These features will be loaded automatically.
     In pretty displays these features will show up as `feature=value`,
@@ -208,14 +208,14 @@ extraFeatures: string | iterable, optional `()`
         look up a `lex` node from the current node (by means of `L.u(w, otype='lex')`,
         and if it finds one, it will read the `gloss` feature from it.
 
-full: boolean, optional `False`
+full: boolean, optional False
     For pretty displays: indicates that the whole object should be
     displayed, even if it is big.
 
     !!! hint "Big objects"
         Big objects are objects of a type that is bigger than the default condense type.
 
-highlights: dict | set, optional `{}`
+highlights: dict | set, optional {}
     When nodes such as verses and sentences and lines and cases are displayed
     by `plain()` or `pretty()`,
     their contents is also displayed. You can selectively highlight
@@ -246,7 +246,7 @@ highlights: dict | set, optional `{}`
         It does not harm performance if `highlights` maps
         lots of nodes outside the tuple as well.
 
-noneValues: set, optional `None`
+noneValues: set, optional None
     A set of values for which no display should be generated.
     The default set is `None` and the strings `NA`, `none`, `unknown`.
 
@@ -266,7 +266,7 @@ noneValues: set, optional `None`
         The contents of `noneValues` affect the display of
         all features, not only the custom features.
 
-skipCols: set, optional `set()`
+skipCols: set, optional set()
     indicates columns to skip in `show()`, `table()`;
     no effect on `prettyTuple()` and `plainTuple()`.
     Also no effect if `condensed` is True.
@@ -280,18 +280,18 @@ skipCols: set, optional `set()`
     The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
 
-start: integer, optional `None`
+start: integer, optional None
     `start` is the starting point for displaying the iterable of results.
     (1 is the first one).
     If `None`, displaying starts at the first element of the iterable.
 
-suppress: set, optional `set()`
+suppress: set, optional set()
     a set of names of features that should NOT be displayed.
     By default, quite a number of features is displayed for a node.
     If you find they clutter the display, you can turn them off
     selectively.
 
-tupleFeatures: iterable of 2-tuples, optional `()`
+tupleFeatures: iterable of 2-tuples, optional ()
     A bit like "extraFeatures" above, but more intricate.
     Only meant to steer the
     `A.export()` function below into outputting the
@@ -305,7 +305,7 @@ tupleFeatures: iterable of 2-tuples, optional `()`
 
     `features` may be given as an iterable or a space separated string of feature names.
 
-withPassage: boolean or set, optional `True`
+withPassage: boolean or set, optional True
     indicates whether a passage label should be put next to a displayed node
     or tuple of nodes.
     When passed with `table()`, or `plainTuple()`,

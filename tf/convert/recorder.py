@@ -126,7 +126,7 @@ class Recorder:
 
         Parameters
         ----------
-        api: obj, optional `None`
+        api: obj, optional None
             The handle of the API of a loaded TF corpus.
             This is needed for operations where the recorder needs
             TF intelligence associated with the nodes, e.g. their types.
@@ -188,7 +188,7 @@ class Recorder:
             If it is a string, the string will be added to the accumulator.
             If it is `None`, a default value will be added.
             The default value is passed through parameter `empty`.
-        empty: string, optional `zero-width-joiner`
+        empty: string, optional zero-width-joiner
             If the string parameter is `None`, this is the default value
             that will be added to the accumulator.
             If this parameter is absent, the zero-width joiner is used.
@@ -214,11 +214,11 @@ class Recorder:
 
         Parameters
         ----------
-        byType: boolean, optional `False`
+        byType: boolean, optional False
             If True, makes a separate node mapping per node type.
             For this it is needed that the Recorder has been
             passed a TF api when it was initialized.
-        simple: boolean, optional `False`
+        simple: boolean, optional False
             In some cases it is known on beforehand that at each textual position
             there is at most 1 node.
             Then it is more economical to fill the list with single nodes
@@ -296,18 +296,18 @@ where `api` is the result of
 
         Parameters
         ----------
-        byType: boolean, optional `False`
+        byType: boolean, optional False
             If True, makes a separate node mapping per node type.
             For this it is needed that the Recorder has been
             passed a TF api when it was initialized.
-        logical: boolean, optional `True`
+        logical: boolean, optional True
             If True, specs are represented as tuples of ranges
             and a range is represented as a tuple of a begin and end point,
             or as a single point.
             Points are integers.
             If False, ranges are represented by strings: `,` separated ranges,
             a ranges is b-e or p.
-        asEntries: boolean, optional `False`
+        asEntries: boolean, optional False
             If True, do not return the dict, but rather its entries.
 
         Returns
@@ -384,7 +384,7 @@ where `api` is the result of
 
         Parameters
         ----------
-        acceptMaterialOutsideNodes: boolean, optional `False`
+        acceptMaterialOutsideNodes: boolean, optional False
             If this is True, we accept that the text contains extra material that is not
             covered by any node.
             So condition 1 above is relaxed in that we accept no nodes for a textual
@@ -519,19 +519,19 @@ where `api` is the result of
             If False, the positions are taken as mappings from character
             positions to nodes. If True, they are a mapping from nodes to
             character positions.
-        posPath: string, optional `None`
+        posPath: string, optional None
             The file path to which the mapped positions are written.
             If absent, it equals `textPath` with `.pos` appended, or
             `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
-        byType: boolean, optional `False`
+        byType: boolean, optional False
             If True, writes separate node mappings per node type.
             For this it is needed that the Recorder has been
             passed a TF api when it was initialized.
             The file names are extended with the node type.
             This extension occurs just before the last `.` of the inferred `posPath`.
-        optimize: boolean, optional `True`
+        optimize: boolean, optional True
             Optimize file size. Only relevant if `byType` is True
             and `inverted` is False.
             The format of each line is:
@@ -637,7 +637,7 @@ where `api` is the result of
         ----------
         textPath: string
             The file path from which the accumulated text is read.
-        posPath: string, optional `None`
+        posPath: string, optional None
             The file path from which the mapped positions are read.
             If absent, it equals `textPath` with `.pos` appended.
             The file format is: one line for each character position,
@@ -681,7 +681,7 @@ where `api` is the result of
         ----------
         featurePath: string
             Path to the annotation file.
-        headers: boolean or iterable, optional `True`
+        headers: boolean or iterable, optional True
             Indicates whether the annotation file has headers.
             If not True, it may be an iterable of names, which will
             be used as headers.

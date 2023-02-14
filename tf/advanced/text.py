@@ -75,7 +75,7 @@ def specialCharacters(app, fmt=None, _browse=False):
 
     Parameters
     ----------
-    fmt: string, optional `None`
+    fmt: string, optional None
         The text format for which you want to display the character widget.
         If not passed, the default format will be chosen.
 

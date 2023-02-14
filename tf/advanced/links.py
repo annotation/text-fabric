@@ -43,7 +43,7 @@ def linksApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent="deep"`.
@@ -280,12 +280,12 @@ def webLink(
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    urlOnly: boolean, optional `False`
+    urlOnly: boolean, optional False
         If True, only the url will be returned.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
-    _noUrl: boolean, optional `False`
+    _noUrl: boolean, optional False
         Whether to put the generated url in the `href` attribute.
         It can be inhibited. This is useful for the TF-browser, which may want
         to attach an action to the link and navigate to a location based on
@@ -405,12 +405,12 @@ def showProvenance(app, jobName="program code", author="program author"):
 
     Parameters
     ----------
-    jobName: string, optional `program code`
+    jobName: string, optional program code
         E.g. the name of program in which you call this function.
         In the Text-Fabric browser the name of the job will be entered here.
         This item will be displayed together with the rest of the provenance.
 
-    author: string, optional `program author`
+    author: string, optional program author
         E.g. your own name.
         This item will be displayed together with the rest of the provenance.
     """
@@ -507,16 +507,16 @@ def outLink(
         The text of the link.
     href: string/URL
         The url of the link.
-    title: string, optional `None`
+    title: string, optional None
         The hint of the link.
-    target: string, optional `_blank`
+    target: string, optional _blank
         The target window/tab of the link.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    passage: string, optional `None`
+    passage: string, optional None
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    asHtml: boolean, optional `True`
+    asHtml: boolean, optional True
         Whether we are in a notebook or in the browser.
         If not, a plain text representation of the link will be made.
     """

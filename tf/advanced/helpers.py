@@ -461,7 +461,7 @@ def getResultsX(app, results, features, condenseType, fmt=None):
     condenseType: string
         A node type. Types smaller or equal than this type will have their text
         displayed in the result.
-    fmt: string, optional `None`
+    fmt: string, optional None
         A text format. If text has to be displayed, this format is used.
         If not passed, a default is used.
     """
@@ -540,7 +540,7 @@ def getTuplesX(app, results, condenseType, fmt=None):
     condenseType: string
         A node type. Types smaller or equal than this type will have their text
         displayed in the result.
-    fmt: string, optional `None`
+    fmt: string, optional None
         A text format. If text has to be displayed, this format is used.
         If not passed, a default is used.
     """

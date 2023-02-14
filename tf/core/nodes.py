@@ -254,10 +254,10 @@ class Nodes:
 
         Parameters
         ----------
-        nodes: iterable of int, optional `None`
+        nodes: iterable of int, optional None
             If `None`, walks through all nodes of the corpus in canonical order.
             Otherwise, walks through the given nodes in canonical order.
-        events: boolean, optional `False`
+        events: boolean, optional False
             If True, wraps the generated nodes in event tuples as described above.
 
         Returns

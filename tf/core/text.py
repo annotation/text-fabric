@@ -458,10 +458,10 @@ class Text:
         ----------
         n: integer
             The node whose containing section to retrieve.
-        lastSlot: boolean, optional `False`
+        lastSlot: boolean, optional False
             Whether the reference node will be the last slot contained by *n*
             or the first slot.
-        fillup: boolean, optional `False`
+        fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
         Returns
         -------
@@ -548,14 +548,14 @@ class Text:
         ----------
         n: integer
             The node whose heading to retrieve.
-        lastSlot: boolean, optional `False`
+        lastSlot: boolean, optional False
             Whether the reference node will be the last slot contained by *n*
             or the first slot.
-        lang: string, optional `en`
+        lang: string, optional en
             The language assumed for the section parts,
             as far as they are language dependent.
             Must be a 2-letter language code.
-        fillup: boolean, optional `False`
+        fillup: boolean, optional False
             Whether to fill up the tuple with missing section elements.
 
         Returns
@@ -606,7 +606,7 @@ class Text:
             and a chapter number and a verse number
             (both as strings or number depending on the value type of the
             corresponding feature).
-        lang: string, optional `en`
+        lang: string, optional en
             The language assumed for the section parts,
             as far as they are language dependent.
             Must be a 2-letter language code.
@@ -706,7 +706,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         Parameters
         ----------
-        node: integer, optional `None`
+        node: integer, optional None
             The node whose structure is asked for.
             If *node* is None, the complete structure of the whole dataset is returned.
 
@@ -744,10 +744,10 @@ There are {len(hdFromNd)} structural elements in the dataset.
 
         Parameters
         ----------
-        node: integer, optional `None`
+        node: integer, optional None
             The node whose structure is asked for.
             If *node* is None, the complete structure of the whole dataset is returned.
-        fullHeading: boolean, optional `False`
+        fullHeading: boolean, optional False
             Normally, for each structural element, only its own subheading is added.
             But if you want to see the full heading, consisting of the headings of a
             node and all of its parents, pass `True` for this parameter.
@@ -966,7 +966,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
             No attempt will be made to sort the nodes.
             If you need order, it is better to sort the nodes first.
 
-        fmt: boolean, optional `None`
+        fmt: boolean, optional None
             The text-format of the text representation.
 
             If it is not specified or `None`, each node will be formatted with
@@ -982,7 +982,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
             If a value for *fmt* is passed, but it is not a format defined in the
             *otext.tf* feature, there will be an error message and `None` is returned.
 
-        descend: boolean, optional `None`
+        descend: boolean, optional None
             Whether to descend to constituent nodes.
 
             If `True`, nodes will be replaced by a sequence of their consituent nodes,
@@ -1005,7 +1005,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
                 then the so-called descending leads to an empty
                 sequence of nodes and hence to an empty string.
 
-        explain: boolean, optional `False`
+        explain: boolean, optional False
             The logic of this function is subtle.
             If you call it and the results baffles you, pass `explain=True`
             and it will explain what it is doing.

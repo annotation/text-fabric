@@ -233,7 +233,7 @@ class TEI:
 
         Parameters
         ----------
-        sourceDir: string, optional `None`
+        sourceDir: string, optional None
             Path on the file system where the TEI source resides.
             It is assumed that there is one level of subfolders
             underneath, under which there are `.xml` files
@@ -243,19 +243,21 @@ class TEI:
 
             If sourceDir is None or does not exist, the program aborts with an error.
 
-        schemaFile: string, optional `None`
+        schemaFile: string, optional None
             If None, we use the full TEI schema.
             Otherwise, we use this file as custom TEI schema,
             but to be sure, we still analyse the full TEI schema and
             use the schemaFile passed here as overrides.
 
-        generic: dict, optional `{}`
+        generic: dict, optional {}
             Metadata for all generated TF feature.
 
-        reportDir: string, optional `.` (current directory)
+        reportDir: string, optional "."
             Directory to write the results of the `check` task to: an inventory
             of elements/attributes encountered, and possible validation errors.
             If the directory does not exist, it will be created.
+            The default value is `.` (i.e. the current directory in which
+            the script is invoked).
 
         transform: function, optional None
             If not None, a function that transforms text to text, used

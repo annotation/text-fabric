@@ -169,7 +169,7 @@ class FabricCore:
         So if you leave it out, Text-Fabric will just search the paths specified
         in `locations`.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
     _withGc: boolean, optional True
@@ -279,12 +279,12 @@ class FabricCore:
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        add: boolean, optional `False`
+        add: boolean, optional False
             The features will be added to the same currently loaded features, managed
             by the current API.
             Meant to be able to dynamically load features without reloading lots
             of features for nothing.
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         Returns
@@ -436,9 +436,9 @@ class FabricCore:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
-        show: boolean, optional `True`
+        show: boolean, optional True
             If `False`, the resulting dictionary is delivered in `TF.featureSets`;
             if `True`, the dictionary is returned as function result.
 
@@ -512,7 +512,7 @@ class FabricCore:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         """
 
@@ -631,7 +631,7 @@ class FabricCore:
             If you pass `location=path1` and `module=path2`,
             TF will save in `path1/path2`.
 
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         """
 

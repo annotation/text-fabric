@@ -123,7 +123,7 @@ def modify(
     targetLocation: string
         The directory into which the result dataset will be written.
 
-    mergeFeatures: dict, optional `None`
+    mergeFeatures: dict, optional None
         You can merge several features into one. This is especially useful if there
         are many features each operating on different node types, and you want to
         unify them into one feature.
@@ -145,14 +145,14 @@ def modify(
         For new features you may want to set the `valueType`, although we try
         hard to deduce it from the data available.
 
-    deleteFeatures: boolean | string | iterable, optional `None`
+    deleteFeatures: boolean | string | iterable, optional None
         This should be either a boolean value `True` or an iterable or space/comma
         separated string of features that you want to delete from the result.
 
         `True` means: all features will be deleted that are not the result of merging
         or adding features (see `mergeFeatures` above and `addFeatures` below.
 
-    addFeatures: dict, optional `None`
+    addFeatures: dict, optional None
         You can add as many features as you want, assigning values to all types,
         including new nodes of new types that have been generated in the steps before.
 
@@ -180,7 +180,7 @@ def modify(
         For new features you may want to set the `valueType`, although we try
         hard to deduce it from the data available.
 
-    mergeTypes: dict, optional `None`
+    mergeTypes: dict, optional None
         You can merge several node types into one.
         The merged node type will have the union of nodes of the types that are merged.
         All relevant features will stay the same, except the `otype` feature of course.
@@ -249,7 +249,7 @@ def modify(
             Merging is all about non-slot types.
             It is an error if a new type or an old type is a slot type.
 
-    deleteTypes: string | iterable, optional `None`
+    deleteTypes: string | iterable, optional None
         You can delete node types from the result altogether.
         You can specify a list of node types as an iterable or as a space
         separated string.
@@ -270,7 +270,7 @@ def modify(
             Deleting is all about non-slot types.
             It is an error to attempt to delete slot type.
 
-    addTypes: dict, optional `None`
+    addTypes: dict, optional None
         You may add as many node types as you want.
 
         Per node type that you add, you need to specify the current boundaries of
@@ -363,7 +363,7 @@ def modify(
                     ),
                 ),
 
-    featureMeta: dict, optional `None`
+    featureMeta: dict, optional None
         If the features you have specified in one of the paramers above are new,
         do not forget to pass metadata for them in this  parameter
         It is especially important to state the value type:
@@ -390,7 +390,7 @@ def modify(
 
         If you want to remove a key from a feature, give it the value None.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
     """
 

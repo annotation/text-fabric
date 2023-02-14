@@ -231,10 +231,10 @@ class EdgeFeature:
 
         Parameters
         ----------
-        nodeTypesFrom: set of string, optional `None`
+        nodeTypesFrom: set of string, optional None
             If you pass a set of nodeTypes here, only the values for edges
             that start *from* a node with such a type will be counted.
-        nodeTypesTo: set of string, optional `None`
+        nodeTypesTo: set of string, optional None
             If you pass a set of nodeTypes here, only the values for edges
             that go *to* a node with such a type will be counted.
 

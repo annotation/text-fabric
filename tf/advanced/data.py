@@ -37,7 +37,7 @@ class AppData:
             level just below the search locations.
         checkout: string
             A specifier to use a specific release or commit of a data repository.
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         """
@@ -244,9 +244,9 @@ class AppData:
             A specifier to use a specific release or commit of a data repository.
         backend: string
             The backend if different from the backend of the main module
-        isBase: boolean, optional `False`
+        isBase: boolean, optional False
             Whether this module is the main data of the corpus.
-        specs: dict, optional `False`
+        specs: dict, optional False
             Additional informational attributes of the module, e.g. a DOI
         """
 

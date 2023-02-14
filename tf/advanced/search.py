@@ -34,10 +34,10 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
 
-    shallow: boolean, optional `False`
+    shallow: boolean, optional False
         If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
 
@@ -46,7 +46,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
         If `False` or `0`, a list of all result tuples will be returned.
 
-    sets: dict, optional `None`
+    sets: dict, optional None
         If not `None`, it should be a dictionary of sets, keyed by a names.
         In `query` you can refer to those names to invoke those sets.
 
@@ -71,7 +71,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         If you pass sets with a name that also occur in the sets from the app,
         then the sets you pass override the sets of the app.
 
-    sort: boolean, optional `True`
+    sort: boolean, optional True
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
 
@@ -87,7 +87,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
         If it is a `False` value, no sorting will be applied.
 
-    limit: integer, optional `None`
+    limit: integer, optional None
         If `limit` is a positive number, it will fetch only that many results.
         If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 

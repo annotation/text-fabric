@@ -247,16 +247,16 @@ def makeTfKernel(app, appName, port):
             sec0: string | int
                 The level 0 section (book)-like label in which the passage occurs
 
-            sec1: string | int, optional `None`
+            sec1: string | int, optional None
                 The level 1 section (chapter)-like label to fetch
 
-            sec2: string | int, optional `None`
+            sec2: string | int, optional None
                 The level 2 section (verse-like) label that should get focus
 
             opened: set, optional, `set()`
                 The set of items that are currently expanded into pretty display
 
-            getx: string | int, optional `None`
+            getx: string | int, optional None
                 If given, only a single sec2 (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item/
@@ -381,7 +381,7 @@ def makeTfKernel(app, appName, port):
             opened: set, optional, `set()`
                 The set of items that are currently expanded into pretty display
 
-            getx: string | int, optional `None`
+            getx: string | int, optional None
                 If given, only a single sec2 (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item/
@@ -448,20 +448,20 @@ def makeTfKernel(app, appName, port):
             batch: int
                 The number of table rows to show on one page in the browser.
 
-            position: integer, optional `1`
+            position: integer, optional 1
                 The position that is in focus in the browser.
                 The navigation links take this position as the central point,
                 and enable the user to navigate to neighbouring results,
                 in ever bigger strides.
 
-            opened: set, optional, `set()`
+            opened: set, optional set()
                 The set of items that are currently expanded into pretty display.
                 Normally, only the information to provide a *plain*
                 representation of a result is being fetched,
                 but for the opened ones information is gathered for
                 pretty displays.
 
-            getx: string | int, optional `None`
+            getx: string | int, optional None
                 If given, only a single sec2 (verse) will be fetched, but in pretty
                 display.
                 `getx` is the identifier (section label, verse number) of the item/

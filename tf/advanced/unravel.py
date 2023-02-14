@@ -180,7 +180,7 @@ def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     ----------
     n: integer
         The node to unravel.
-    isPlain: boolean, optional `True`
+    isPlain: boolean, optional True
         Whether to unravel for plain display. Otherwise it is for pretty display.
         The tree structure is the same for both, but the tree is also dressed up
         with formatting information, which may differ for both modes.

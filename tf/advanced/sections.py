@@ -63,7 +63,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
 
             P005381 1:1
 
-    lang: string, optional `en`
+    lang: string, optional en`
         The language assumed for the section parts,
         as far as they are language dependent.
         Must be a 2-letter language code.
@@ -124,15 +124,15 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
 
     node: integer
         The node from which we obtain a section specification.
-    lastSlot: boolean, optional `False`
+    lastSlot: boolean, optional False
         Whether the reference node will be the last slot contained by the
         `node` argument or the first node.
         Otherwise it will be the first slot.
-    lang: string, optional `en`
+    lang: string, optional en
         The language assumed for the section parts,
         as far as they are language dependent.
         Must be a 2-letter language code.
-    fillup: boolean, optional `False`
+    fillup: boolean, optional False
         Same as for `tf.core.text.Text.sectionTuple`.
 
     Returns

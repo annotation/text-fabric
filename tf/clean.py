@@ -49,7 +49,7 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
     You find the current pack version in
     `tf.parameters`
 
-    tfd: boolean,  optional `True`
+    tfd: boolean,  optional True
         By default, your `~/text-fabric-data` is traversed and cleaned,
         but if you pass `tfd=False` it will be skipped.
     backend: string, optional, `None`

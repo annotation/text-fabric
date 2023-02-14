@@ -184,9 +184,9 @@ class Versions:
             version label of the version whose nodes are the source of the mapping
         vb: string
             version label of the version whose nodes are the target of the mapping
-        slotMap: dict, optional `None`
+        slotMap: dict, optional None
             The actual mapping between slots of the old version and the new version
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         """
         self.silent = silentConvert(silent)
@@ -343,14 +343,14 @@ class Versions:
 
         Parameters
         ----------
-        node: string | int, optional `None`
+        node: string | int, optional None
             The node or node type that you want to diagnose.
             If a string, it is a node type, and you get information about the nodes
             of that node type.
             If an int, it is a node, and you get information about that node.
             If `None`, you get information about all nodes.
 
-        label: char, optional `None`
+        label: char, optional None
             If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
@@ -490,7 +490,7 @@ class Versions:
         featureNames: tuple
             The names of the features to migrate.
             They may be node features or edge features or both.
-        location: string, optional `None`
+        location: string, optional None
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
         silent: string, optional None

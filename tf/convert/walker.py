@@ -165,7 +165,7 @@ class CV:
     def __init__(self, TF, silent=SILENT_D):
         """The object that contains the walker conversion machinery.
 
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         """
 
@@ -299,7 +299,7 @@ class CV:
 
             You can make changes to this later on, dynamically in your director.
 
-        warn: boolean, optional `True`
+        warn: boolean, optional True
             This regulates the response to warnings:
 
             `True` (default): stop after warnings (as if they are errors);
@@ -308,7 +308,7 @@ class CV:
 
             `None` suppress all warnings.
 
-        force: boolean, optional `False`
+        force: boolean, optional False
             This forces the process to continue after errors.
             Your TF set might not be valid.
             Yet this can be useful during testing, when you know
@@ -317,7 +317,7 @@ class CV:
             with little pieces. But then you get a kind of non-fatal errors that
             stand in the way of testing. For those cases: `force=True`.
 
-        generateTf: boolean, optional `True`
+        generateTf: boolean, optional True
             You can pass `False` here to suppress the actual writing of TF data.
             In that way you can dry-run the director to check for errors and warnings
 
@@ -702,7 +702,7 @@ class CV:
         ----------
         nType: string
             A node type, not the slot type
-        slots: iterable of int, optional `None`
+        slots: iterable of int, optional None
             The slots to assign to this node.
             If left out, the node is left as an embedding node and
             subsequent slots will be added to it automatically.
@@ -1073,7 +1073,7 @@ class CV:
 
         Parameters
         ----------
-        nTypes: iterable optional `None`
+        nTypes: iterable optional None
             If None, all active nodes are returned.
             Else the iterable lists a few node types,
             and only active nodes in these types are returned.

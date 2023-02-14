@@ -157,27 +157,27 @@ class Api:
 
         Parameters
         ----------
-        features: iterable | string, optional `None`
+        features: iterable | string, optional None
             The features to get info for.
             If absent or None: all features seen by TF.
             If a string, it is a comma and/or space spearated list of feature names.
             Otherwise the items of the iterable are feature names.
 
-        pretty: boolean, optional `True`
+        pretty: boolean, optional True
             If True, it prints an overview of all features seen by TF with
             information about kind, type, source location and loaded status.
             The amount of information printed can be tweaked by other parameters.
             Otherwise, it returns this information as a dict.
 
-        valueType: boolean, optional `True`
+        valueType: boolean, optional True
             Only relevant if `pretty=True`: whether to print the value type of
             the values in the feature file.
 
-        path: boolean, optional `True`
+        path: boolean, optional True
             Only relevant if `pretty=True`: whether to print the path name of
             the feature file.
 
-        meta: string|list|boolean, optional `"description"`
+        meta: string|list|boolean, optional "description"
             Only relevant if `pretty=True`: controls what metadata of the feature
             should be printed.
 

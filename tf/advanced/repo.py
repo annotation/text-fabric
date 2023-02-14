@@ -766,9 +766,9 @@ def releaseData(
             2 = bump intermediate version;
             3 = bump minor version
 
-    source: string, optional `None`
+    source: string, optional None`
         Path to where the local GitHub clones are stored
-    dest: string, optional `DOWNLOADS`
+    dest: string, optional DOWNLOADS
         Path to where the zipped data should be stored
     """
 
@@ -1735,7 +1735,7 @@ def checkoutRepo(
     repo: string, optional "banks"
         The *repo* on GitHub or the project on GitLab
 
-    folder: string, optional `tf`
+    folder: string, optional tf
         The subfolder in the repo that contains the text-fabric files.
         If the tf files are versioned, it is the directory that
         contains the version directories.
@@ -1771,18 +1771,18 @@ def checkoutRepo(
         The base of your local cache of downloaded tf feature files.
         If given, it overrides the semi-baked in `~/text-fabric-data` value.
 
-    withPaths: boolean, optional `True`
+    withPaths: boolean, optional True
         The data will be saved without the directory structure
         of files that are being downloaded.
 
-    keep: boolean, optional `True`
+    keep: boolean, optional True
         If False, the destination directory will be cleared
         before a download takes place.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
-    label: string, optional `data`
+    label: string, optional data
         If passed, it will will change the word "data" in info messages
         to what you choose.
         We use `label='app'` when we use this function to checkout the code

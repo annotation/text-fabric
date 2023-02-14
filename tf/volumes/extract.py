@@ -183,31 +183,31 @@ def extract(
             All volumes must be disjoint, they cannot have top-level sections
             in common.
 
-    byTitle: boolean, optional `True`
+    byTitle: boolean, optional True
         Whether the top-level sections are named by their sequence numbers
         (starting at 1).
         or by their titles.
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
-    api: object, optional `None`
+    api: object, optional None
         If given, assume it is the TF api of a loaded work
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
         will be loaded by Text-Fabric, and its api will be used subsequently.
 
-    overwrite: boolean, optional `None`
+    overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
         all be created and will replace any existing volumes of the same names.
         If None, only missing volumes will be created. No check will be performed
         as to whether existing volumes conform to the volume specifications.
         If False, refuses to proceed if any of the volume directories already exist.
 
-    checkOnly: boolean, optional `False`
+    checkOnly: boolean, optional False
         If True, only checks whether there is work to do based on the values
         of the `volumes` and `overwrite` parameters.
         If there is an error, returns False, otherwise returns the volumes in as

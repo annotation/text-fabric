@@ -188,7 +188,7 @@ def BACKEND_REP(be, kind, default=None):
         * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
         * `pages`: base url of the Pages service of the backend
 
-    default: boolean, optional `False`
+    default: boolean, optional False
         Only relevant for `kind` = `rep`.
         If `default` is passed and not None and `be` is equal to `default`,
         then the empty string is returned.
