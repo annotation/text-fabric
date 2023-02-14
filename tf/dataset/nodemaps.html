@@ -133,7 +133,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Nodemaps
@@ -321,9 +321,9 @@ class Versions:
             version label of the version whose nodes are the source of the mapping
         vb: string
             version label of the version whose nodes are the target of the mapping
-        slotMap: dict, optional `None`
+        slotMap: dict, optional None
             The actual mapping between slots of the old version and the new version
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
         self.silent = silentConvert(silent)
@@ -480,14 +480,14 @@ class Versions:
 
         Parameters
         ----------
-        node: string | int, optional `None`
+        node: string | int, optional None
             The node or node type that you want to diagnose.
             If a string, it is a node type, and you get information about the nodes
             of that node type.
             If an int, it is a node, and you get information about that node.
             If `None`, you get information about all nodes.
 
-        label: char, optional `None`
+        label: char, optional None
             If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
@@ -627,7 +627,7 @@ class Versions:
         featureNames: tuple
             The names of the features to migrate.
             They may be node features or edge features or both.
-        location: string, optional `None`
+        location: string, optional None
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
         silent: string, optional None
@@ -888,7 +888,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
@@ -923,9 +923,9 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
             version label of the version whose nodes are the source of the mapping
         vb: string
             version label of the version whose nodes are the target of the mapping
-        slotMap: dict, optional `None`
+        slotMap: dict, optional None
             The actual mapping between slots of the old version and the new version
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
         self.silent = silentConvert(silent)
@@ -1082,14 +1082,14 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 
         Parameters
         ----------
-        node: string | int, optional `None`
+        node: string | int, optional None
             The node or node type that you want to diagnose.
             If a string, it is a node type, and you get information about the nodes
             of that node type.
             If an int, it is a node, and you get information about that node.
             If `None`, you get information about all nodes.
 
-        label: char, optional `None`
+        label: char, optional None
             If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
             and the result is dependent on the value passed to *node*:
             if that is a single node, a boolean is returned telling whether that node
@@ -1229,7 +1229,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
         featureNames: tuple
             The names of the features to migrate.
             They may be node features or edge features or both.
-        location: string, optional `None`
+        location: string, optional None
             If absent, the migrated features will be saved in the newer dataset.
             Otherwise it is a path where the new features should be saved.
         silent: string, optional None
@@ -1454,7 +1454,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def caption(self, level, heading, good=None, newLine=True, continuation=False):
         silent = self.silent
@@ -1530,7 +1530,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1599,7 +1599,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1612,14 +1612,14 @@ by diagnostic label but now for all nodes.</p>
 
     Parameters
     ----------
-    node: string | int, optional `None`
+    node: string | int, optional None
         The node or node type that you want to diagnose.
         If a string, it is a node type, and you get information about the nodes
         of that node type.
         If an int, it is a node, and you get information about that node.
         If `None`, you get information about all nodes.
 
-    label: char, optional `None`
+    label: char, optional None
         If given, it is a diagnostic label (see `tf.dataset.nodemaps`),
         and the result is dependent on the value passed to *node*:
         if that is a single node, a boolean is returned telling whether that node
@@ -1679,7 +1679,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1703,7 +1703,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     edge = self.edge
@@ -1794,7 +1794,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1850,7 +1850,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -1886,7 +1886,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
     featureNames: tuple
         The names of the features to migrate.
         They may be node features or edge features or both.
-    location: string, optional `None`
+    location: string, optional None
         If absent, the migrated features will be saved in the newer dataset.
         Otherwise it is a path where the new features should be saved.
     silent: string, optional None
@@ -2045,7 +2045,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -2061,7 +2061,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb

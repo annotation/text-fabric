@@ -64,7 +64,7 @@ following order:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L1-L937" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L1-L937" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display
@@ -154,7 +154,7 @@ def displayApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally this parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -249,7 +249,7 @@ def displayReset(app, *options):
 
     Parameters
     ----------
-    options: list, optional `[]`
+    options: list, optional []
         If present, only restore these options to their defaults.
         Otherwise, restore all display settings.
     &#34;&#34;&#34;
@@ -360,12 +360,12 @@ def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
         The integers are the nodes, together they form a table.
         The table maybe uniform or not uniform,
         which matters to the output. See below.
-    toDir: string, optional `None`
+    toDir: string, optional None
         The destination directory for the exported file.
         By default it is your Downloads folder.
 
         If the directory does not exist, it will be created.
-    toFile: boolean, optional `results.tsv`
+    toFile: boolean, optional results.tsv
         The name of the exported file.
     options: dict
         Display options, see `tf.advanced.options`.
@@ -492,7 +492,7 @@ def table(app, tuples, _asString=False, **options):
         The integers are the nodes, together they form a table.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -583,19 +583,19 @@ def plainTuple(
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the first cell.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    position: integer, optional `None`
+    position: integer, optional None
         Which position counts as the focus position.
         If *seq* equals *position*, the tuple is in focus.
         The effect is to add the CSS class *focus* to the output HTML
         for the row of this tuple.
-    opened:  booolean, optional `False`
+    opened:  booolean, optional False
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
@@ -608,7 +608,7 @@ def plainTuple(
             This option has only effect when used in the TF browser.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -772,15 +772,15 @@ def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    _inTuple: boolean, optional `False`
+    _inTuple: boolean, optional False
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
         not be displayed in full.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
 
@@ -811,7 +811,7 @@ def show(app, tuples, _asString=False, **options):
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -879,14 +879,14 @@ def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the heading.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -967,10 +967,10 @@ def pretty(app, n, explain=False, _asString=False, **options):
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
-    asString: boolean, optional `False`
+    asString: boolean, optional False
         If True, the result is returned as string
 
     Result
@@ -1030,7 +1030,7 @@ with iterables of tuples of nodes (e.g. query results).</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
 Normally this parameter is taken from the app,
 but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
@@ -1038,7 +1038,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the display API.
@@ -1060,7 +1060,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally this parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -1103,7 +1103,7 @@ Otherwise, restore all display settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayReset(app, *options):
     &#34;&#34;&#34;Restore display parameters to their defaults.
@@ -1115,7 +1115,7 @@ Otherwise, restore all display settings.</dd>
 
     Parameters
     ----------
-    options: list, optional `[]`
+    options: list, optional []
         If present, only restore these options to their defaults.
         Otherwise, restore all display settings.
     &#34;&#34;&#34;
@@ -1161,7 +1161,7 @@ You can show the current values by means of <code><a title="tf.advanced.display.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displaySetup(app, **options):
     &#34;&#34;&#34;Set up all display parameters.
@@ -1219,7 +1219,7 @@ If no option is passes, all options will be shown.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def displayShow(app, *options):
     &#34;&#34;&#34;Show display parameters.
@@ -1345,7 +1345,7 @@ open it with <code>encoding=utf_16</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L279-L402" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L279-L402" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
     &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
@@ -1363,12 +1363,12 @@ open it with <code>encoding=utf_16</code>.</p>
         The integers are the nodes, together they form a table.
         The table maybe uniform or not uniform,
         which matters to the output. See below.
-    toDir: string, optional `None`
+    toDir: string, optional None
         The destination directory for the exported file.
         By default it is your Downloads folder.
 
         If the directory does not exist, it will be created.
-    toFile: boolean, optional `results.tsv`
+    toFile: boolean, optional results.tsv
         The name of the exported file.
     options: dict
         Display options, see `tf.advanced.options`.
@@ -1489,7 +1489,7 @@ which specify a table layout with right aligned cell contents by default.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCss(app):
     &#34;&#34;&#34;Export the CSS for this app.
@@ -1547,7 +1547,7 @@ Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadCss(app):
     &#34;&#34;&#34;Load the CSS for this app.
@@ -1633,7 +1633,7 @@ Depending on <code>_asString</code> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L694-L725" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L694-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
     &#34;&#34;&#34;Display the plain text of a node.
@@ -1648,15 +1648,15 @@ Depending on <code>_asString</code> above.</p></div>
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    _inTuple: boolean, optional `False`
+    _inTuple: boolean, optional False
         Whether the result is meant too end up in a table cell produced by
         `plainTuple`. In that case some extra node types count as big and will
         not be displayed in full.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
 
@@ -1718,7 +1718,7 @@ Depending on <em>asString</em> above.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L498-L691" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L498-L691" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def plainTuple(
     app,
@@ -1740,19 +1740,19 @@ Depending on <em>asString</em> above.</p></div>
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the first cell.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    position: integer, optional `None`
+    position: integer, optional None
         Which position counts as the focus position.
         If *seq* equals *position*, the tuple is in focus.
         The effect is to add the CSS class *focus* to the output HTML
         for the row of this tuple.
-    opened:  booolean, optional `False`
+    opened:  booolean, optional False
         Whether this tuple should be expandable to a `pretty` display.
         The normal output of this row will be wrapped in a
 
@@ -1765,7 +1765,7 @@ Depending on <em>asString</em> above.</p></div>
             This option has only effect when used in the TF browser.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -1957,7 +1957,7 @@ Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L881-L917" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L881-L917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
@@ -1980,10 +1980,10 @@ Otherwise the result is directly displayed in a notebook.</p></div>
         Node
     options: dict
         Display options, see `tf.advanced.options`.
-    explain: boolean, optional `False`
+    explain: boolean, optional False
         Whether to print a trace of which nodes have been visited and how these
         calls have contributed to the end result.
-    asString: boolean, optional `False`
+    asString: boolean, optional False
         If True, the result is returned as string
 
     Result
@@ -2032,7 +2032,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L803-L878" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L803-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
     &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
@@ -2045,14 +2045,14 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     ----------
     tup: iterable of integer
         The members of the tuple can be arbitrary nodes.
-    seq: integer, optional `None`
+    seq: integer, optional None
         an arbitrary number which will be displayed in the heading.
         This prepares the way for displaying query results, which come as
         a sequence of tuples of nodes.
         If None, no such number is displayed in the heading.
-    item: string, optional `result`
+    item: string, optional result
         A name for the tuple: it could be a result, or a chapter, or a line.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -2144,7 +2144,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L731-L800" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L731-L800" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def show(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Displays an iterable of tuples of nodes.
@@ -2161,7 +2161,7 @@ as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
     ----------
     tuples: iterable of tuples of integer
         The integers are the nodes, together they form a table.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.
@@ -2247,7 +2247,7 @@ HTML string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/display.py#L408-L495" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/display.py#L408-L495" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def table(app, tuples, _asString=False, **options):
     &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
@@ -2268,7 +2268,7 @@ HTML string.</dd>
         The integers are the nodes, together they form a table.
     options: dict
         Display options, see `tf.advanced.options`.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a HTML string or to display it directly
         inside a notebook. When the TF-browser uses this function it needs the
         HTML string.

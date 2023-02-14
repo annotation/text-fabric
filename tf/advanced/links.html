@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L1-L911" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L1-L911" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -74,7 +74,7 @@ def linksApi(app, silent=SILENT_D):
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -311,12 +311,12 @@ def webLink(
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    urlOnly: boolean, optional `False`
+    urlOnly: boolean, optional False
         If True, only the url will be returned.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
-    _noUrl: boolean, optional `False`
+    _noUrl: boolean, optional False
         Whether to put the generated url in the `href` attribute.
         It can be inhibited. This is useful for the TF-browser, which may want
         to attach an action to the link and navigate to a location based on
@@ -436,12 +436,12 @@ def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program auth
 
     Parameters
     ----------
-    jobName: string, optional `program code`
+    jobName: string, optional program code
         E.g. the name of program in which you call this function.
         In the Text-Fabric browser the name of the job will be entered here.
         This item will be displayed together with the rest of the provenance.
 
-    author: string, optional `program author`
+    author: string, optional program author
         E.g. your own name.
         This item will be displayed together with the rest of the provenance.
     &#34;&#34;&#34;
@@ -538,16 +538,16 @@ def outLink(
         The text of the link.
     href: string/URL
         The url of the link.
-    title: string, optional `None`
+    title: string, optional None
         The hint of the link.
-    target: string, optional `_blank`
+    target: string, optional _blank
         The target window/tab of the link.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    passage: string, optional `None`
+    passage: string, optional None
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    asHtml: boolean, optional `True`
+    asHtml: boolean, optional True
         Whether we are in a notebook or in the browser.
         If not, a plain text representation of the link will be made.
     &#34;&#34;&#34;
@@ -968,7 +968,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the app.
@@ -1066,7 +1066,7 @@ sections of the work are part of it.</p>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
 <dd>The high-level API object</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
 Normally the silent parameter is taken from the app,
 but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
@@ -1074,7 +1074,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1093,7 +1093,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     ----------
     app: obj
         The high-level API object
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
         Normally the silent parameter is taken from the app,
         but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
@@ -1252,7 +1252,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1265,16 +1265,16 @@ If not, a plain text representation of the link will be made.</dd>
         The text of the link.
     href: string/URL
         The url of the link.
-    title: string, optional `None`
+    title: string, optional None
         The hint of the link.
-    target: string, optional `_blank`
+    target: string, optional _blank
         The target window/tab of the link.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    passage: string, optional `None`
+    passage: string, optional None
         A passage indicator, which will end up in the `sec` attribute of the
         link element. Used by the TF-browser.
-    asHtml: boolean, optional `True`
+    asHtml: boolean, optional True
         Whether we are in a notebook or in the browser.
         If not, a plain text representation of the link will be made.
     &#34;&#34;&#34;
@@ -1322,7 +1322,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L855-L911" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L855-L911" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
     &#34;&#34;&#34;Generate a provenance link for a data source.
@@ -1404,7 +1404,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1415,12 +1415,12 @@ This item will be displayed together with the rest of the provenance.</dd>
 
     Parameters
     ----------
-    jobName: string, optional `program code`
+    jobName: string, optional program code
         E.g. the name of program in which you call this function.
         In the Text-Fabric browser the name of the job will be entered here.
         This item will be displayed together with the rest of the provenance.
 
-    author: string, optional `program author`
+    author: string, optional program author
         E.g. your own name.
         This item will be displayed together with the rest of the provenance.
     &#34;&#34;&#34;
@@ -1487,7 +1487,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1514,12 +1514,12 @@ other attributes.</dd>
         the node.
     clsName: string, optional default `None`
         A CSS class name to add to the resulting link element
-    urlOnly: boolean, optional `False`
+    urlOnly: boolean, optional False
         If True, only the url will be returned.
-    _asString: boolean, optional `False`
+    _asString: boolean, optional False
         Whether to deliver the result as a piece of HTML or to display the link
         on the (Jupyter) interface.
-    _noUrl: boolean, optional `False`
+    _noUrl: boolean, optional False
         Whether to put the generated url in the `href` attribute.
         It can be inhibited. This is useful for the TF-browser, which may want
         to attach an action to the link and navigate to a location based on

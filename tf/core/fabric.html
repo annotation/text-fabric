@@ -36,7 +36,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L1-L1146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L1-L1146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # FabricCore
@@ -209,7 +209,7 @@ class FabricCore:
         So if you leave it out, Text-Fabric will just search the paths specified
         in `locations`.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
     _withGc: boolean, optional True
@@ -319,12 +319,12 @@ class FabricCore:
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        add: boolean, optional `False`
+        add: boolean, optional False
             The features will be added to the same currently loaded features, managed
             by the current API.
             Meant to be able to dynamically load features without reloading lots
             of features for nothing.
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         Returns
@@ -476,9 +476,9 @@ class FabricCore:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
-        show: boolean, optional `True`
+        show: boolean, optional True
             If `False`, the resulting dictionary is delivered in `TF.featureSets`;
             if `True`, the dictionary is returned as function result.
 
@@ -552,7 +552,7 @@ class FabricCore:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -671,7 +671,7 @@ class FabricCore:
             If you pass `location=path1` and `module=path2`,
             TF will save in `path1/path2`.
 
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -1294,7 +1294,7 @@ also can add new formats to the Text-API.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L121-L1146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L121-L1146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class FabricCore:
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -1347,7 +1347,7 @@ also can add new formats to the Text-API.</p>
         So if you leave it out, Text-Fabric will just search the paths specified
         in `locations`.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
     _withGc: boolean, optional True
@@ -1457,12 +1457,12 @@ also can add new formats to the Text-API.</p>
             iterable of feature names.
             The feature names are just the names of `.tf` files
             without directory information and without extension.
-        add: boolean, optional `False`
+        add: boolean, optional False
             The features will be added to the same currently loaded features, managed
             by the current API.
             Meant to be able to dynamically load features without reloading lots
             of features for nothing.
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
 
         Returns
@@ -1614,9 +1614,9 @@ also can add new formats to the Text-API.</p>
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
-        show: boolean, optional `True`
+        show: boolean, optional True
             If `False`, the resulting dictionary is delivered in `TF.featureSets`;
             if `True`, the dictionary is returned as function result.
 
@@ -1690,7 +1690,7 @@ also can add new formats to the Text-API.</p>
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -1809,7 +1809,7 @@ also can add new formats to the Text-API.</p>
             If you pass `location=path1` and `module=path2`,
             TF will save in `path1/path2`.
 
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -2382,7 +2382,7 @@ all <code>.tfx</code> files inside the hidden <code>.<a title="tf" href="../inde
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L526-L549" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L526-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearCache(self):
     &#34;&#34;&#34;Clears the cache of compiled TF data.
@@ -2447,16 +2447,16 @@ There are other functions that give you the loaded features:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L434-L508" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L434-L508" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explore(self, silent=SILENT_D, show=True):
     &#34;&#34;&#34;Makes categorization of all features in the dataset.
 
     Parameters
     ----------
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
-    show: boolean, optional `True`
+    show: boolean, optional True
         If `False`, the resulting dictionary is delivered in `TF.featureSets`;
         if `True`, the dictionary is returned as function result.
 
@@ -2552,7 +2552,7 @@ and <code>.</code> to the current directory, both only at the start of <code>dir
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L778-L808" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L778-L808" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportMQL(self, mqlName, mqlDir):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
@@ -2650,7 +2650,7 @@ metadata.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L810-L879" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L810-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
@@ -2754,7 +2754,7 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L271-L432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L271-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, add=False, silent=SILENT_D):
     &#34;&#34;&#34;Loads features from disk into RAM memory.
@@ -2767,12 +2767,12 @@ if the feature could be loaded, else <code>False</code>.</dd>
         iterable of feature names.
         The feature names are just the names of `.tf` files
         without directory information and without extension.
-    add: boolean, optional `False`
+    add: boolean, optional False
         The features will be added to the same currently loaded features, managed
         by the current API.
         Meant to be able to dynamically load features without reloading lots
         of features for nothing.
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
     Returns
@@ -2933,14 +2933,14 @@ if the feature could be loaded, else <code>False</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L510-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L510-L524" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadAll(self, silent=SILENT_D):
     &#34;&#34;&#34;Load all loadable features.
 
     Parameters
     ----------
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 
@@ -3034,7 +3034,7 @@ TF will save in <code>path1/path2</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/fabric.py#L551-L776" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/fabric.py#L551-L776" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(
     self,
@@ -3119,7 +3119,7 @@ TF will save in <code>path1/path2</code>.</p>
         If you pass `location=path1` and `module=path2`,
         TF will save in `path1/path2`.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 

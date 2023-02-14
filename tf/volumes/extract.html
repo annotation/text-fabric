@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/volumes/extract.py#L1-L732" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/volumes/extract.py#L1-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -222,31 +222,31 @@ def extract(
             All volumes must be disjoint, they cannot have top-level sections
             in common.
 
-    byTitle: boolean, optional `True`
+    byTitle: boolean, optional True
         Whether the top-level sections are named by their sequence numbers
         (starting at 1).
         or by their titles.
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
-    api: object, optional `None`
+    api: object, optional None
         If given, assume it is the TF api of a loaded work
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
         will be loaded by Text-Fabric, and its api will be used subsequently.
 
-    overwrite: boolean, optional `None`
+    overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
         all be created and will replace any existing volumes of the same names.
         If None, only missing volumes will be created. No check will be performed
         as to whether existing volumes conform to the volume specifications.
         If False, refuses to proceed if any of the volume directories already exist.
 
-    checkOnly: boolean, optional `False`
+    checkOnly: boolean, optional False
         If True, only checks whether there is work to do based on the values
         of the `volumes` and `overwrite` parameters.
         If there is an error, returns False, otherwise returns the volumes in as
@@ -938,7 +938,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/volumes/extract.py#L81-L732" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/volumes/extract.py#L81-L732" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1045,31 +1045,31 @@ Top-level section 13 will not be extracted into a volume.</p>
             All volumes must be disjoint, they cannot have top-level sections
             in common.
 
-    byTitle: boolean, optional `True`
+    byTitle: boolean, optional True
         Whether the top-level sections are named by their sequence numbers
         (starting at 1).
         or by their titles.
         Default: by their titles.
         Note, that depending on the work, section titles may be strings or integers.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
 
-    api: object, optional `None`
+    api: object, optional None
         If given, assume it is the TF api of a loaded work
         from which the volumes are to be extracted.
         In this case, the `workLocation` parameter is not used.
         If absent or `None`, the dataset at `workLocation`
         will be loaded by Text-Fabric, and its api will be used subsequently.
 
-    overwrite: boolean, optional `None`
+    overwrite: boolean, optional None
         If True, the volumes defined by `volumes` will be
         all be created and will replace any existing volumes of the same names.
         If None, only missing volumes will be created. No check will be performed
         as to whether existing volumes conform to the volume specifications.
         If False, refuses to proceed if any of the volume directories already exist.
 
-    checkOnly: boolean, optional `False`
+    checkOnly: boolean, optional False
         If True, only checks whether there is work to do based on the values
         of the `volumes` and `overwrite` parameters.
         If there is an error, returns False, otherwise returns the volumes in as
@@ -1615,7 +1615,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/volumes/extract.py#L39-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.

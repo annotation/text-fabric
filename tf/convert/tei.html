@@ -200,7 +200,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L1-L1231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L1-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -437,7 +437,7 @@ class TEI:
 
         Parameters
         ----------
-        sourceDir: string, optional `None`
+        sourceDir: string, optional None
             Path on the file system where the TEI source resides.
             It is assumed that there is one level of subfolders
             underneath, under which there are `.xml` files
@@ -447,19 +447,21 @@ class TEI:
 
             If sourceDir is None or does not exist, the program aborts with an error.
 
-        schemaFile: string, optional `None`
+        schemaFile: string, optional None
             If None, we use the full TEI schema.
             Otherwise, we use this file as custom TEI schema,
             but to be sure, we still analyse the full TEI schema and
             use the schemaFile passed here as overrides.
 
-        generic: dict, optional `{}`
+        generic: dict, optional {}
             Metadata for all generated TF feature.
 
-        reportDir: string, optional `.` (current directory)
+        reportDir: string, optional &#34;.&#34;
             Directory to write the results of the `check` task to: an inventory
             of elements/attributes encountered, and possible validation errors.
             If the directory does not exist, it will be created.
+            The default value is `.` (i.e. the current directory in which
+            the script is invoked).
 
         transform: function, optional None
             If not None, a function that transforms text to text, used
@@ -1474,10 +1476,12 @@ but to be sure, we still analyse the full TEI schema and
 use the schemaFile passed here as overrides.</dd>
 <dt><strong><code>generic</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
 <dd>Metadata for all generated TF feature.</dd>
-<dt><strong><code>reportDir</code></strong> :&ensp;<code>string</code>, optional <code><code>.&lt;/code&gt; (current directory)</code></dt>
+<dt><strong><code>reportDir</code></strong> :&ensp;<code>string</code>, optional <code>"."</code></dt>
 <dd>Directory to write the results of the <code>check</code> task to: an inventory
 of elements/attributes encountered, and possible validation errors.
-If the directory does not exist, it will be created.</dd>
+If the directory does not exist, it will be created.
+The default value is <code>.</code> (i.e. the current directory in which
+the script is invoked).</dd>
 <dt><strong><code>transform</code></strong> :&ensp;<code>function</code>, optional <code>None</code></dt>
 <dd>If not None, a function that transforms text to text, used
 as a preprocessing step for each input xml file.</dd>
@@ -1494,7 +1498,7 @@ only the files in the test set are converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L214-L1231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L214-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -1518,7 +1522,7 @@ only the files in the test set are converted.</dd>
 
         Parameters
         ----------
-        sourceDir: string, optional `None`
+        sourceDir: string, optional None
             Path on the file system where the TEI source resides.
             It is assumed that there is one level of subfolders
             underneath, under which there are `.xml` files
@@ -1528,19 +1532,21 @@ only the files in the test set are converted.</dd>
 
             If sourceDir is None or does not exist, the program aborts with an error.
 
-        schemaFile: string, optional `None`
+        schemaFile: string, optional None
             If None, we use the full TEI schema.
             Otherwise, we use this file as custom TEI schema,
             but to be sure, we still analyse the full TEI schema and
             use the schemaFile passed here as overrides.
 
-        generic: dict, optional `{}`
+        generic: dict, optional {}
             Metadata for all generated TF feature.
 
-        reportDir: string, optional `.` (current directory)
+        reportDir: string, optional &#34;.&#34;
             Directory to write the results of the `check` task to: an inventory
             of elements/attributes encountered, and possible validation errors.
             If the directory does not exist, it will be created.
+            The default value is `.` (i.e. the current directory in which
+            the script is invoked).
 
         transform: function, optional None
             If not None, a function that transforms text to text, used
@@ -2531,7 +2537,7 @@ only the files in the test set are converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L329-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L331-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -2570,7 +2576,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L288-L327" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L290-L329" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -2637,7 +2643,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L430-L634" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L432-L636" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -2860,7 +2866,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L651-L698" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L653-L700" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convert(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -2925,7 +2931,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L638-L649" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L640-L651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -2964,7 +2970,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L702-L1091" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L704-L1093" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -3376,7 +3382,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L366-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L368-L389" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -3417,7 +3423,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L347-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L349-L366" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -3455,7 +3461,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L389-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L391-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -3519,7 +3525,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L1093-L1126" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L1095-L1128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -3583,7 +3589,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L1181-L1231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L1183-L1233" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -3672,7 +3678,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/convert/tei.py#L1128-L1179" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/convert/tei.py#L1130-L1181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.

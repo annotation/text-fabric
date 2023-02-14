@@ -29,7 +29,7 @@ with a time indication.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L1-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L1-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Timed messages
@@ -96,7 +96,7 @@ class Timestamp:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             The verbosity. Here are the values and their effects:
 
             `&#34;verbose&#34;` or `False`:
@@ -185,13 +185,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -211,13 +211,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -237,13 +237,13 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -263,11 +263,11 @@ class Timestamp:
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
 
         !!! caution &#34;Silence&#34;
@@ -285,13 +285,13 @@ class Timestamp:
         The reported time is with respect to a starting point, which can be reset.
         The starting points at different levels are independent of each other.
 
-        level: integer|boolean, optional `None`
+        level: integer|boolean, optional None
             The indentation level.
             If an integer, it sets the indentation level.
             If a boolean, it decreases or increases the indentation level,
             but not below zero. `True` increases the indent with one level,
             `False` decreases the indent.
-        reset: boolean, optional `False`
+        reset: boolean, optional False
             If `True`, the elapsed time to will be reset to 0 at the given level.
         &#34;&#34;&#34;
 
@@ -327,7 +327,7 @@ class Timestamp:
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -339,7 +339,7 @@ class Timestamp:
 
         Parameters
         ----------
-        deep: boolean, optional `False`
+        deep: boolean, optional False
             If `True` also suppress warnings.
         &#34;&#34;&#34;
 
@@ -407,7 +407,7 @@ class Timestamp:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L37-L46" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentConvert(arg):
     if arg is None:
@@ -469,7 +469,7 @@ Do not show the number of results after searches.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L49-L335" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L49-L335" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Timestamp:
     def __init__(self, silent=SILENT_D, level=None):
@@ -488,7 +488,7 @@ Do not show the number of results after searches.</p>
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             The verbosity. Here are the values and their effects:
 
             `&#34;verbose&#34;` or `False`:
@@ -577,13 +577,13 @@ Do not show the number of results after searches.</p>
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -603,13 +603,13 @@ Do not show the number of results after searches.</p>
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -629,13 +629,13 @@ Do not show the number of results after searches.</p>
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
-        force: boolean, optional `False`
+        force: boolean, optional False
             If True, any silent condition is overriden.
 
         !!! caution &#34;Silence&#34;
@@ -655,11 +655,11 @@ Do not show the number of results after searches.</p>
         ----------
         msg: string
             The string to be displayed
-        tm: boolean, optional `True`
+        tm: boolean, optional True
             Whether the message is to be prepended with the elapsed time.
-        nl: boolean, optional `True`
+        nl: boolean, optional True
             Whether a newline should be appended to the message.
-        cache: integer, optional `0`
+        cache: integer, optional 0
             Whether the message should be cached.
 
         !!! caution &#34;Silence&#34;
@@ -677,13 +677,13 @@ Do not show the number of results after searches.</p>
         The reported time is with respect to a starting point, which can be reset.
         The starting points at different levels are independent of each other.
 
-        level: integer|boolean, optional `None`
+        level: integer|boolean, optional None
             The indentation level.
             If an integer, it sets the indentation level.
             If a boolean, it decreases or increases the indentation level,
             but not below zero. `True` increases the indent with one level,
             `False` decreases the indent.
-        reset: boolean, optional `False`
+        reset: boolean, optional False
             If `True`, the elapsed time to will be reset to 0 at the given level.
         &#34;&#34;&#34;
 
@@ -719,7 +719,7 @@ Do not show the number of results after searches.</p>
 
         Parameters
         ----------
-        silent: string, optional `tf.core.timestamp.SILENT_D`
+        silent: string, optional tf.core.timestamp.SILENT_D
             See `tf.core.timestamp.Timestamp`
         &#34;&#34;&#34;
 
@@ -731,7 +731,7 @@ Do not show the number of results after searches.</p>
 
         Parameters
         ----------
-        deep: boolean, optional `False`
+        deep: boolean, optional False
             If `True` also suppress warnings.
         &#34;&#34;&#34;
 
@@ -769,7 +769,7 @@ Do not show the number of results after searches.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L129-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cache(self, _asString=False):
     if _asString:
@@ -815,7 +815,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L145-L169" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def debug(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends a debug message to the standard output.
@@ -827,13 +827,13 @@ nothing happens.</p>
     ----------
     msg: string
         The string to be displayed
-    tm: boolean, optional `True`
+    tm: boolean, optional True
         Whether the message is to be prepended with the elapsed time.
-    nl: boolean, optional `True`
+    nl: boolean, optional True
         Whether a newline should be appended to the message.
-    cache: integer, optional `0`
+    cache: integer, optional 0
         Whether the message should be cached.
-    force: boolean, optional `False`
+    force: boolean, optional False
         If True, any silent condition is overriden.
 
     !!! caution &#34;Silence&#34;
@@ -870,7 +870,7 @@ silent mode.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L223-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L223-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def error(self, msg, tm=True, nl=True, cache=0):
     &#34;&#34;&#34;Sends an warning message to the standard error.
@@ -882,11 +882,11 @@ silent mode.</p>
     ----------
     msg: string
         The string to be displayed
-    tm: boolean, optional `True`
+    tm: boolean, optional True
         Whether the message is to be prepended with the elapsed time.
-    nl: boolean, optional `True`
+    nl: boolean, optional True
         Whether a newline should be appended to the message.
-    cache: integer, optional `0`
+    cache: integer, optional 0
         Whether the message should be cached.
 
     !!! caution &#34;Silence&#34;
@@ -905,18 +905,18 @@ silent mode.</p>
 prepended to each of its lines.</p>
 <p>The reported time is with respect to a starting point, which can be reset.
 The starting points at different levels are independent of each other.</p>
-<p>level: integer|boolean, optional <code>None</code>
+<p>level: integer|boolean, optional None
 The indentation level.
 If an integer, it sets the indentation level.
 If a boolean, it decreases or increases the indentation level,
 but not below zero. <code>True</code> increases the indent with one level,
 <code>False</code> decreases the indent.
-reset: boolean, optional <code>False</code>
+reset: boolean, optional False
 If <code>True</code>, the elapsed time to will be reset to 0 at the given level.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L246-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L246-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def indent(self, level=None, reset=False, _verbose=None):
     &#34;&#34;&#34;Changes the indentation and timing of forthcoming messages.
@@ -927,13 +927,13 @@ If <code>True</code>, the elapsed time to will be reset to 0 at the given level.
     The reported time is with respect to a starting point, which can be reset.
     The starting points at different levels are independent of each other.
 
-    level: integer|boolean, optional `None`
+    level: integer|boolean, optional None
         The indentation level.
         If an integer, it sets the indentation level.
         If a boolean, it decreases or increases the indentation level,
         but not below zero. `True` increases the indent with one level,
         `False` decreases the indent.
-    reset: boolean, optional `False`
+    reset: boolean, optional False
         If `True`, the elapsed time to will be reset to 0 at the given level.
     &#34;&#34;&#34;
 
@@ -982,7 +982,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L171-L195" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def info(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an informational message to the standard output.
@@ -994,13 +994,13 @@ nothing happens.</p>
     ----------
     msg: string
         The string to be displayed
-    tm: boolean, optional `True`
+    tm: boolean, optional True
         Whether the message is to be prepended with the elapsed time.
-    nl: boolean, optional `True`
+    nl: boolean, optional True
         Whether a newline should be appended to the message.
-    cache: integer, optional `0`
+    cache: integer, optional 0
         Whether the message should be cached.
-    force: boolean, optional `False`
+    force: boolean, optional False
         If True, any silent condition is overriden.
 
     !!! caution &#34;Silence&#34;
@@ -1024,7 +1024,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L282-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L282-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isSilent(self):
     &#34;&#34;&#34;The current verbosity.
@@ -1045,7 +1045,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L100-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def raw_msg(self, msg, tm=True, nl=True, cache=0, error=False):
     # cache is a list: append to cache, do not output anything
@@ -1082,7 +1082,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L126-L127" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self):
     self.log = []</code></pre>
@@ -1101,14 +1101,14 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L292-L302" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L292-L302" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setSilent(self, silent):
     &#34;&#34;&#34;Set the verbosity.
 
     Parameters
     ----------
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
     &#34;&#34;&#34;
 
@@ -1124,7 +1124,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L317-L321" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L317-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOff(self):
     &#34;&#34;&#34;Enable informational messages.&#34;&#34;&#34;
@@ -1146,14 +1146,14 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L304-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L304-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def silentOn(self, deep=False):
     &#34;&#34;&#34;Suppress informational messages.
 
     Parameters
     ----------
-    deep: boolean, optional `False`
+    deep: boolean, optional False
         If `True` also suppress warnings.
     &#34;&#34;&#34;
 
@@ -1189,7 +1189,7 @@ nothing happens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/core/timestamp.py#L197-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/core/timestamp.py#L197-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def warning(self, msg, tm=True, nl=True, cache=0, force=False):
     &#34;&#34;&#34;Sends an warning message to the standard output.
@@ -1201,13 +1201,13 @@ nothing happens.</p>
     ----------
     msg: string
         The string to be displayed
-    tm: boolean, optional `True`
+    tm: boolean, optional True
         Whether the message is to be prepended with the elapsed time.
-    nl: boolean, optional `True`
+    nl: boolean, optional True
         Whether a newline should be appended to the message.
-    cache: integer, optional `0`
+    cache: integer, optional 0
         Whether the message should be cached.
-    force: boolean, optional `False`
+    force: boolean, optional False
         If True, any silent condition is overriden.
 
     !!! caution &#34;Silence&#34;

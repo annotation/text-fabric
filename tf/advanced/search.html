@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/search.py#L1-L223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/search.py#L1-L223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -65,10 +65,10 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
 
-    shallow: boolean, optional `False`
+    shallow: boolean, optional False
         If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
 
@@ -77,7 +77,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
         If `False` or `0`, a list of all result tuples will be returned.
 
-    sets: dict, optional `None`
+    sets: dict, optional None
         If not `None`, it should be a dictionary of sets, keyed by a names.
         In `query` you can refer to those names to invoke those sets.
 
@@ -102,7 +102,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
         If you pass sets with a name that also occur in the sets from the app,
         then the sets you pass override the sets of the app.
 
-    sort: boolean, optional `True`
+    sort: boolean, optional True
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
 
@@ -118,7 +118,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
 
         If it is a `False` value, no sorting will be applied.
 
-    limit: integer, optional `None`
+    limit: integer, optional None
         If `limit` is a positive number, it will fetch only that many results.
         If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 
@@ -277,7 +277,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/search.py#L165-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/search.py#L165-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -334,7 +334,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/search.py#L202-L223" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/search.py#L202-L223" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -379,7 +379,7 @@ the features that have been used in the query.</p>
 <dt><strong><code>query</code></strong> :&ensp;<code>dict</code></dt>
 <dd>the search template (<code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>)
 that has to be searched for.</dd>
-<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
 <dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
 <dt><strong><code>shallow</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
@@ -447,7 +447,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/search.py#L16-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/search.py#L16-L162" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
     &#34;&#34;&#34;Search with some high-level features.
@@ -470,10 +470,10 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         the search template (`tf.about.searchusage`)
         that has to be searched for.
 
-    silent: string, optional `tf.core.timestamp.SILENT_D`
+    silent: string, optional tf.core.timestamp.SILENT_D`
         See `tf.core.timestamp.Timestamp`
 
-    shallow: boolean, optional `False`
+    shallow: boolean, optional False
         If `True` or `1`, the result is a set of things that match the top-level element
         of the `query`.
 
@@ -482,7 +482,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
         If `False` or `0`, a list of all result tuples will be returned.
 
-    sets: dict, optional `None`
+    sets: dict, optional None
         If not `None`, it should be a dictionary of sets, keyed by a names.
         In `query` you can refer to those names to invoke those sets.
 
@@ -507,7 +507,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
         If you pass sets with a name that also occur in the sets from the app,
         then the sets you pass override the sets of the app.
 
-    sort: boolean, optional `True`
+    sort: boolean, optional True
         If `True` (default), search results will be returned in
         canonical order (`tf.core.nodes`).
 
@@ -523,7 +523,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
         If it is a `False` value, no sorting will be applied.
 
-    limit: integer, optional `None`
+    limit: integer, optional None
         If `limit` is a positive number, it will fetch only that many results.
         If it is negative, 0, None, or absent, it will fetch arbitrary many results.
 
@@ -606,7 +606,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/365f426a14662f9d438a531d29188fd75fc7f4f1/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>
