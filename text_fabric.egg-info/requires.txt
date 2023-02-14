@@ -1,6 +1,7 @@
 wheel
 markdown
 ipython
+lxml
 pyyaml>=5.3
 
 [all]

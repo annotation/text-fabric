@@ -10,6 +10,27 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.2 (upcoming)
+
+### 11.2.0 (upcoming)
+
+2023-02-??
+
+New converter: from TEI to Text-Fabric.
+This is a generic, but also somewhat dumb, converter that
+takes all information in a nest of TEI files and transforms
+it into a valid and ready-to-use TF dataset.
+
+See `tf.convert.tei`
+
+New tools in `tf.tools`:
+
+*   `tf.tools.nbconvert`: to convert a directory
+    of interlinked notebooks to HTML
+    and keeping the interlinking intact.
+*   `tf.tools.xmlschema`: to derive meaningful information
+    from an XML schema.
+
 ### 11.1
 
 ### 11.1.4

@@ -111,12 +111,91 @@ We have three conversion tasks:
     step is triggered. During precomputation some checks are performed. Once this
     has succeeded, we have a workable Text-Fabric dataset.
 
+Tasks can be run by passing any choice of task keywords to the
+`TEI.task()` method.
+
 We use [lxml](https://lxml.de) for XML parsing. During `convert` it is not used
 in validating mode, but we can trigger a validation step during `check`.
 
 However, some information about the elements, in particular whether they allow
 mixed content or not, will be read off the schemas, and will be used
 during conversion.
+
+## Flags
+
+We have one flag:
+
+1. `test`: only converts those files in the input that are named in a test set.
+
+The test set is passed as argument to the `TEI` constructur.
+
+The `test` flag is passed to the `TEI.task()` method.
+
+## Usage
+
+It is intended that you call this converter in a script.
+
+In that script you can define auxiliary Python functions and pass them
+to the converter. The `TEI` class has some hooks where such functions
+can be plugged in.
+
+Here you can also define a test set, in case you want to experiment with the
+conversion.
+
+Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.
+
+The resulting script will look like this:
+
+``` python
+from tf.convert.tei import TEI
+from tf.core.helpers import getLocation
+
+(BACKEND, ORG, REPO) = getLocation()
+BASE = os.path.expanduser(f"~/{BACKEND}")
+REPO_DIR = f"{BASE}/{ORG}/{REPO}"
+SOURCE_DIR = f"{REPO_DIR}/xml"
+VERSION_SOURCE = "2023-01-31"
+SCHEMA_FILE = f"{REPO_DIR}/resources/MD.xsd"
+REPORT_DIR = f"{REPO_DIR}/report"
+TF_DIR = f"{REPO_DIR}/tf"
+VERSION_TF = "0.1"
+
+GENERIC = dict(
+    author="Piet Mondriaan",
+    institute="KNAW/Huygens Amsterdam",
+    language="nl",
+    converters="Dirk Roorda (Text-Fabric)",
+    sourceFormat="TEI",
+    descriptionTf="Critical edition",
+)
+TEST_SET = set(
+    '''
+    18920227.xml
+    18920302.xml
+    18930711.xml
+    18980415.xml
+    '''.strip().split()
+)
+
+
+def transform(text):
+    return text.replace(",,", "-")
+
+
+T = TEI(
+    sourceDir=f"{SOURCE_DIR}/{VERSION_SOURCE}",
+    schemaFile=SCHEMA_FILE,
+    generic=GENERIC,
+    reportDir=REPORT_DIR,
+    transform=transform,
+    tfDir=f"{TF_DIR}/{VERSION_TF}",
+    testSet=TEST_SET,
+)
+
+T.run(os.path.basename(__file__))
+
+```
 """
 
 import sys
@@ -128,8 +207,8 @@ from lxml import etree
 from tf.fabric import Fabric
 from tf.core.helpers import console
 from tf.convert.walker import CV
-from tf.core.helpers import initTree, unexpanduser as ux
-from tt.xmlschema import Analysis as AnalysisCls
+from tf.core.helpers import initTree, dirExists, unexpanduser as ux
+from tf.tools.xmlschema import Analysis
 
 
 class TEI:
@@ -138,11 +217,65 @@ class TEI:
         sourceDir=None,
         schemaFile=None,
         generic={},
-        reportDir=None,
+        reportDir=".",
         transform=None,
-        tfDir=None,
+        tfDir="tf",
         testSet=set(),
     ):
+        """Converts TEI to TF.
+
+        Based on the arguments, it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the TEI input,
+        where nodes are created when start tags are encountered in the TEI,
+        and those same nodes are terminated upon encountering the corresponding
+        end tags.
+        Attributes of elements give rise to features on the corresponding nodes.
+
+        Parameters
+        ----------
+        sourceDir: string, optional `None`
+            Path on the file system where the TEI source resides.
+            It is assumed that there is one level of subfolders
+            underneath, under which there are `.xml` files
+            conforming to the TEI schema or some customisation of it.
+
+            The subfolder `__ignore__` is ignored.
+
+            If sourceDir is None or does not exist, the program aborts with an error.
+
+        schemaFile: string, optional `None`
+            If None, we use the full TEI schema.
+            Otherwise, we use this file as custom TEI schema,
+            but to be sure, we still analyse the full TEI schema and
+            use the schemaFile passed here as overrides.
+
+        generic: dict, optional `{}`
+            Metadata for all generated TF feature.
+
+        reportDir: string, optional `.` (current directory)
+            Directory to write the results of the `check` task to: an inventory
+            of elements/attributes encountered, and possible validation errors.
+            If the directory does not exist, it will be created.
+
+        transform: function, optional None
+            If not None, a function that transforms text to text, used
+            as a preprocessing step for each input xml file.
+
+        tfDir: string, optional None
+            The directory under which the text-fabric output file (with extension `.tf`)
+            are placed. If it does not exist, it will be created.
+            If you want your tf files in subdirectories named by a version number,
+            you have to include that version number in the value for `tfDir`.
+
+        testSet: set, optional empty
+            A set of file names. If you run the conversion in test mode
+            (pass `test` as argument to the `TEI.task()` method),
+            only the files in the test set are converted.
+        """
+        if sourceDir is None or not dirExists(sourceDir):
+            console(f"Source location does not exist: {sourceDir}")
+            quit()
+
         self.sourceDir = sourceDir
         self.schemaFile = schemaFile
         self.generic = generic
@@ -152,14 +285,22 @@ class TEI:
         self.testMode = False
         self.testSet = testSet
 
-    # SOURCE READING
-
-    # NS1 = "{http://www.tei-c.org/ns/1.0}"
-    # NS2 = "{http://www.w3.org/XML/1998/namespace}"
-    # NS3 = "{http://mondrian.huygens.knaw.nl/}"
-
     @staticmethod
     def help(program):
+        """Print a help text to the console.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        In order to give help on the command line, here is a pre-baked help text.
+        Only the name of the conversion script needs to be merged in.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string.
+        """
+
         console(
             f"""
 
@@ -187,6 +328,15 @@ class TEI:
 
     @staticmethod
     def getParser():
+        """Configure the lxml parser.
+
+        See [parser options](https://lxml.de/parsing.html#parser-options).
+
+        Returns
+        -------
+        object
+            A configured lxml parse object.
+        """
         return etree.XMLParser(
             remove_blank_text=True,
             collect_ids=False,
@@ -195,6 +345,16 @@ class TEI:
         )
 
     def getValidator(self):
+        """Parse the schema.
+
+        A parsed schemacan be used for XML-validation.
+        This will only happen during the `check` task.
+
+        Returns
+        -------
+        object
+            A configured lxml schema validator.
+        """
         schemaFile = self.schemaFile
 
         if schemaFile is None:
@@ -204,15 +364,39 @@ class TEI:
         return etree.XMLSchema(schemaDoc)
 
     def getElementInfo(self):
+        """Analyse the schema.
+
+        The XML schema has useful information about the XML elements that
+        occur in the source. Here we extract that information and make it
+        fast-accessible.
+
+        Returns
+        -------
+        dict
+            Keyed by element name (without namespaces), where the value
+            for each name is a tuple of booleans: whether the element is simple
+            or complex; whether the element allows mixed content or only pure content.
+        """
         schemaFile = self.schemaFile
 
-        Analysis = AnalysisCls(schemaFile)
-        if not Analysis.good:
+        A = Analysis()
+        A.configure(override=schemaFile)
+        A.interpret()
+        if not A.good:
             quit()
-        defs = Analysis.interpret()
-        return {name: (typ, mixed) for (name, typ, mixed) in defs}
+        return {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
     def getXML(self):
+        """Make an inventory of the TEI source files.
+
+        Returns
+        -------
+        tuple of tuple
+            The outer tuple has sorted entries corresponding to folders under the
+            TEI input directory.
+            Each such entry consists of the folder name and an inner tuple
+            that contains the file names in that folder, sorted.
+        """
         sourceDir = self.sourceDir
         testMode = self.testMode
         testSet = self.testSet
@@ -244,6 +428,24 @@ class TEI:
         return xmlFiles
 
     def check(self):
+        """Implementation of the "check" task.
+
+        It validates the TEI, but only if a schema file has been passed explicitly
+        when constructing the `TEI()` object.
+
+        Then it makes an inventory of all elements and attributes in the TEI files.
+
+        The inventory lists all elements and attributes, and many attribute values.
+        But is represents any digit with `n`, and some attributes that contain
+        ids or keywords, are reduced to the value `x`.
+
+        This information reduction helps to get a clear overview.
+
+        It writes reports to the `reportDir`:
+
+        *   `errors.txt`: validation errors
+        *   `elements.txt`: element/attribute inventory.
+        """
         sourceDir = self.sourceDir
         reportDir = self.reportDir
 
@@ -434,12 +636,28 @@ class TEI:
     # SET UP CONVERSION
 
     def getConverter(self):
+        """Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        """
         tfDir = self.tfDir
 
         TF = Fabric(locations=tfDir)
         return CV(TF)
 
     def convert(self):
+        """Implementation of the "convert" task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        """
         slotType = "u"
         otext = {
             "fmt:text-orig-full": "{ch}",
@@ -458,7 +676,7 @@ class TEI:
             ),
             ismeta=dict(
                 description="whether a slot or word is in the teiHeader element"
-            )
+            ),
         )
         self.featureMeta = featureMeta
 
@@ -482,6 +700,27 @@ class TEI:
     # DIRECTOR
 
     def getDirector(self):
+        """Factory for the director function.
+
+        The `tf.convert.walker` relies on a corpus dependent `director` function
+        that walks through the source data and spits out actions that
+        produces the TF dataset.
+
+        The director function that walks through the TEI input must be conditioned
+        by the properties defined in the TEI schema and the customised schema, if any,
+        that describes the source.
+
+        Also some special additions need to be programmed, such as an extra section
+        level, word boundaries, etc.
+
+        We collect all needed data, store it, and define a local director function
+        that has access to this data.
+
+        Returns
+        -------
+        function
+            The local director function that has been constructed.
+        """
         CHUNK_PARENTS = set(
             """
             teiHeader
@@ -535,7 +774,20 @@ class TEI:
         WHITE_RE = re.compile(r"\s\s+", re.S)
 
         def walkNode(cv, cur, node):
-            """Handle all elements in the XML file."""
+            """Internal function to deal with a single element.
+
+            Will be called recursively.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            """
             tag = etree.QName(node.tag).localname
             cur["nest"].append(tag)
 
@@ -549,16 +801,64 @@ class TEI:
             afterTag(cv, cur, node, tag)
 
         def isChunk(cur):
+            """Whether the current element counts as a chunk node.
+
+            Chunks are the third section level (folders are the first level,
+            files the second level).
+            Chunks are the immediate children of the `<teiHeader>` and the `<body>`
+            elements, and a few other elements also count as chunks.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
             nest = cur["nest"]
             return len(nest) > 1 and (
                 nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
             )
 
         def isEndInPure(cur):
+            """Whether the current end tag occurs in an element with pure content.
+
+            If that is the case, then it is very likely that the end tag also
+            marks the end of the current word.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
             nest = cur["nest"]
             return len(nest) > 1 and nest[-2] in cur["pureElems"]
 
         def startWord(cv, cur, ch):
+            """Start a word node if necessary.
+
+            Whenever we encounter a character, we determine
+            whether it starts or ends a word, and if it starts
+            one, this function takes care of the necessary actions.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            ch: string
+                A single character, the next slot in the result data.
+            """
             curWord = cur["word"]
             if not curWord:
                 prevWord = cur["prevWord"]
@@ -573,6 +873,22 @@ class TEI:
                 cur["wordStr"] += ch
 
         def finishWord(cv, cur, ch):
+            """Terminate a word node if necessary.
+
+            Whenever we encounter a character, we determine
+            whether it starts or ends a word, and if it ends
+            one, this function takes care of the necessary actions.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            ch: string
+                A single character, the next slot in the result data.
+            """
             curWord = cur["word"]
             if curWord:
                 cv.feature(curWord, str=cur["wordStr"])
@@ -586,6 +902,21 @@ class TEI:
                 cur["afterStr"] += ch
 
         def addSlot(cv, cur, ch):
+            """Add a slot.
+
+            Whenever we encounter a character, we add it as a new slot.
+            If needed, we start/terminate word nodes as well.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            ch: string
+                A single character, the next slot in the result data.
+            """
             if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
@@ -597,7 +928,20 @@ class TEI:
                 cv.feature(s, ismeta=1)
 
         def beforeChildren(cv, cur, node, tag):
-            """Node actions before dealing with the children."""
+            """Actions before dealing with the element's children.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            """
             if isChunk(cur):
                 cur["chunkNum"] += 1
                 cur["chunk"] = cv.node("chunk")
@@ -618,7 +962,20 @@ class TEI:
                     addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
-            """Node actions after dealing with the children, but before the end tag."""
+            """Node actions after dealing with the children, but before the end tag.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            """
             if isChunk(cur):
                 cv.terminate(cur["chunk"])
 
@@ -640,12 +997,43 @@ class TEI:
                 cv.terminate(curNode)
 
         def afterTag(cv, cur, node, tag):
-            """Node actions after dealing with the children and after the end tag."""
+            """Node actions after dealing with the children and after the end tag.
+
+            This is the place where we proces the `tail` of an lxml node: the
+            text material after the element and before the next open/close
+            tag of any element.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            """
             if node.tail:
                 for ch in WHITE_RE.sub(" ", node.tail):
                     addSlot(cv, cur, ch)
 
         def director(cv):
+            """Director function.
+
+            Here we program a walk through the TEI sources.
+            At every step of the walk we fire some actions that build TF nodes
+            and assign features for them.
+
+            Because everything is rather dynamic, we generate fairly standard
+            metadata for the features, namely a link to the tei website.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            """
             cur = {}
             cur["pureElems"] = {
                 x for (x, (typ, mixed)) in elemDefs.items() if not mixed
@@ -663,7 +1051,7 @@ class TEI:
                     console(f"\r{i:>4} {xmlFile:<50}", newline=False)
 
                     cur["file"] = cv.node("file")
-                    cv.feature(cur["file"], name=xmlFile)
+                    cv.feature(cur["file"], name=xmlFile.removesuffix(".xml"))
 
                     with open(f"{sourceDir}/{xmlFolder}/{xmlFile}") as fh:
                         text = fh.read()
@@ -702,7 +1090,25 @@ class TEI:
 
         return director
 
-    def loadTf(self):
+    def load(self):
+        """Implementation of the "load" task.
+
+        It loads the tf data that resides in the directory where the "convert" task
+        deliver its results.
+
+        During loading there are additional checks. If they succeed, we have evidence
+        that we have a valid TF dataset.
+
+        Also, during the first load intensive precomputation of TF data takes place,
+        the results of which will be cached in the invisible `.tf` directory there.
+
+        That makes the TF data ready to be loaded fast, next time it is needed.
+
+        Returns
+        -------
+        boolean
+            Whether the loading was successful.
+        """
         tfDir = self.tfDir
 
         if not os.path.exists(tfDir):
@@ -716,10 +1122,40 @@ class TEI:
         api = TF.load(loadableFeatures, silent=False)
         if api:
             console(f"max node = {api.F.otype.maxNode}")
-
-        return True
+            return True
+        return False
 
     def task(self, check=False, convert=False, load=False, test=None):
+        """Carry out any task, possibly modified by any flag.
+
+        This is a higher level function that can execute a selection of tasks.
+
+        The tasks will be executed in a fixed order: check, convert load.
+        But you can select which one(s) must be executed.
+
+        If multiple tasks must be executed and one fails, the subsequent tasks
+        will not be executed.
+
+        Parameters
+        ----------
+        check: boolean, optional False
+            Whether to carry out the "check" task.
+        convert: boolean, optional False
+            Whether to carry out the "convert" task.
+        load: boolean, optional False
+            Whether to carry out the "load" task.
+        test: boolean, optional None
+            Whether to run in test mode.
+            In test mode only the files in the test set are converted.
+
+            If None, it will read its value from the attribute `testMode` of the
+            `TEI` object.
+
+        Returns
+        -------
+        boolean
+            Whether all tasks have executed successfully.
+        """
         sourceDir = self.sourceDir
         reportDir = self.reportDir
         tfDir = self.tfDir
@@ -738,11 +1174,33 @@ class TEI:
             good = self.convert()
 
         if good and load:
-            good = self.loadTf()
+            good = self.load()
 
         return good
 
     def run(self, program=None):
+        """Carry out tasks specified by arguments on the command line.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        When that script is invoked, you can pass arguments to specify tasks
+        and flags.
+
+        This function inspects those arguments, and runs the specified tasks,
+        with the specified flags enabled.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string, in case a help text must be displayed.
+
+        Returns
+        -------
+        integer
+            In fact, this function will terminate the conversion program
+            an return a status code: 0 for succes, 1 for failure.
+        """
         programRep = "TEI-converter" if program is None else program
         possibleTasks = {"check", "convert", "load"}
         possibleFlags = {"test"}

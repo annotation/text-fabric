@@ -372,6 +372,7 @@ tf/client/static/png/tf.png
 tf/convert/__init__.py
 tf/convert/mql.py
 tf/convert/recorder.py
+tf/convert/tei.py
 tf/convert/tf.py
 tf/convert/variants.py
 tf/convert/walker.py
@@ -544,8 +545,10 @@ tf/server/templates/export.html
 tf/server/templates/index.html
 tf/tools/__init__.py
 tf/tools/checkdiffs.py
+tf/tools/nbconvert.py
 tf/tools/pdocs.py
 tf/tools/release.py
+tf/tools/xmlschema.py
 tf/volumes/__init__.py
 tf/volumes/collect.py
 tf/volumes/extract.py
