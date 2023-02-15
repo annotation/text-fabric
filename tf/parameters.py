@@ -13,7 +13,7 @@ def normpath(path):
     return None if path is None else path.replace("\\", "/")
 
 
-VERSION = '11.1.4'
+VERSION = "11.1.4"
 """Program version.
 
 This value is under control of the update process, as run by
@@ -153,7 +153,7 @@ URL_NB = "https://nbviewer.jupyter.org"
 """Base url of NB-viewer."""
 
 
-def BACKEND_REP(be, kind, default=None):
+def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
     """Various backend dependent values.
 
     First of all, the backend value is
@@ -195,6 +195,10 @@ def BACKEND_REP(be, kind, default=None):
 
         Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
+
+    org, repo, branch: string, optional None
+        An organization and repository and branch in a backend.
+        Only relevant for representation `tut`.
 
     Returns
     -------
@@ -240,6 +244,14 @@ def BACKEND_REP(be, kind, default=None):
 
     if kind == "urlnb":
         return f"{URL_NB}/{be}"
+
+    if kind == "tut":
+        onPremise = be not in {GL, GH}
+        return (
+            f"https://{org}.pages.{'.'.join(be.split('.')[1:])}/{repo}/start.html"
+            if onPremise
+            else f"{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb"
+        )
 
     if kind == "pages":
         return (
@@ -289,6 +301,12 @@ APIREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
 
 SEARCHREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
 """Link to the Search docs of Text-Fabric."""
+
+BRANCH_DEFAULT = "master"
+"""Default branch in repositories, older value."""
+
+BRANCH_DEFAULT_NEW = "main"
+"""Default branch in repositories, modern value."""
 
 APP_CONFIG = "config.yaml"
 """Name of the config file of a TF app."""

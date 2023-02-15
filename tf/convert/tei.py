@@ -148,10 +148,11 @@ from io import BytesIO
 
 import yaml
 from lxml import etree
-from tf.fabric import Fabric
-from tf.core.helpers import console
-from tf.convert.walker import CV
-from tf.core.helpers import (
+from ..parameters import BRANCH_DEFAULT_NEW
+from ..fabric import Fabric
+from ..core.helpers import console
+from ..convert.walker import CV
+from ..core.helpers import (
     initTree,
     dirExists,
     fileExists,
@@ -528,6 +529,7 @@ class TEI:
         force: boolean, optional False
             If True, the `app` task will overwrite existing files with generated
             files, and remove any files with `_generated` in the name.
+            Except for the logo, which will not be overwritten.
         """
         (backend, org, repo) = getLocation(repoDir)
         if any(s is None for s in (backend, org, repo)):
@@ -566,6 +568,11 @@ class TEI:
         self.transform = transform
         self.tfVersion = tfVersion
         self.tfPath = f"{tfDir}/{tfVersion}"
+        if (
+            "provenanceSpec" not in appConfig
+            or "branch" not in appConfig["provenanceSpec"]
+        ):
+            appConfig.setdefault("provenanceSpec", {})["branch"] = BRANCH_DEFAULT_NEW
         self.appConfig = appConfig
         self.docMaterial = docMaterial
         self.force = force
@@ -1549,6 +1556,9 @@ class TEI:
             else:
                 if itemExists:
                     target = itemTargetGen
+
+            if force and itemExists and name == "logo":
+                continue
 
             if hasTemplate:
                 sourceDir = f"{myDir}/{parent}"

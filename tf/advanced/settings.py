@@ -203,7 +203,7 @@ Default:
 Base url page for the corpus documentation
 
 Default:
-:   string `{docRoot}/{org}/{repo}/blob/master/docs`
+:   string `{docRoot}/{org}/{repo}/blob/{branch}/docs`
 
 ---
 
@@ -392,6 +392,18 @@ The version directory with the actual `tf` files that will be used.
 
 Default:
 :   string `null`
+
+---
+
+### `branch`
+
+The branch on the backend where the corpus data is stored.
+
+Nowadays, repositories typically work with `main` where they used to work
+with `master`.
+
+Default:
+:   string `master`
 
 ---
 
@@ -934,7 +946,7 @@ Default:
 import re
 import types
 
-from ..parameters import BACKEND_REP, URL_TFDOC
+from ..parameters import BACKEND_REP, URL_TFDOC, BRANCH_DEFAULT
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
 from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
@@ -1030,6 +1042,7 @@ PROVENANCE_DEFAULTS = (
     ("relative", RELATIVE_DEFAULT),
     ("graphicsRelative", None),
     ("version", None),
+    ("branch", BRANCH_DEFAULT),
     ("moduleSpecs", ()),
     ("zip", None),
     ("corpus", "TF dataset (unspecified)"),
@@ -1052,7 +1065,7 @@ def DOC_DEFAULTS(backend):
     return (
         ("docRoot", f"{BACKEND_REP(backend, 'url')}"),
         ("docExt", ".md"),
-        ("docBase", "{docRoot}/{org}/{repo}/blob/master/docs"),
+        ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}/docs"),
         ("docPage", "home"),
         ("docUrl", "{docBase}/{docPage}{docExt}"),
         ("featureBase", "{docBase}/features/<feature>{docExt}"),

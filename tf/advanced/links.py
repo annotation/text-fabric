@@ -66,16 +66,14 @@ def linksApi(app, silent=SILENT_D):
     org = aContext.org or ""
     repo = aContext.repo or ""
     version = aContext.version
+    branch = aContext.provenanceSpec["branch"]
     corpus = aContext.corpus
     featureBase = aContext.featureBase
     featurePage = aContext.featurePage
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = (
-        f"{BACKEND_REP(backend, 'urlnb')}/"
-        f"{org}/{repo}/blob/master/tutorial/start.ipynb"
-    )
+    tutUrl = BACKEND_REP(backend, "tut", org=org, repo=repo, branch=branch)
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = f"{org} - {repo} {version}"
@@ -124,7 +122,7 @@ def linksApi(app, silent=SILENT_D):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/blob/master/{APP_APP}"
+    extraUrl = f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/blob/{branch}/{APP_APP}"
     appLink = (
         outLink(
             f"{org}/{repo}/app {apiVersionRep}",
@@ -626,6 +624,7 @@ def _featuresPerModule(app, allMeta=False):
     mRepo = aContext.repo
     mRelative = aContext.relative
     version = aContext.version
+    branch = aContext.provenanceSpec["branch"]
     moduleSpecs = aContext.moduleSpecs
     corpus = aContext.corpus
     featureBase = aContext.featureBase
@@ -664,7 +663,7 @@ def _featuresPerModule(app, allMeta=False):
                 if mId in fixedModuleIndex
                 else (
                     f"{BACKEND_REP(backend, 'rep')}{org}/{repo}/{relative}",
-                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/master/{relative}",
+                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/{branch}/{relative}",
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -732,7 +731,7 @@ def _featuresPerModule(app, allMeta=False):
                 if type(mId) is str
                 else (
                     f"{BACKEND_REP(mBackend, 'url')}/"
-                    f"{mId[0]}/{mId[1]}/tree/master/{mId[2]}"
+                    f"{mId[0]}/{mId[1]}/tree/{branch}/{mId[2]}"
                 )
             )
         output += (
@@ -852,7 +851,9 @@ def _featuresPerModule(app, allMeta=False):
     return output
 
 
-def provenanceLink(backend, org, repo, version, commit, local, release, relative):
+def provenanceLink(
+    backend, org, repo, version, branch, commit, local, release, relative
+):
     """Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a backend repository.
@@ -869,6 +870,8 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
         Version of the data source.
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
+    branch: string
+        The branch on the backend of the repository (typically `master` or `main`)
     commit: string
         The commit hash of the repository
     local: boolean
@@ -891,7 +894,7 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
     url = (
         None
         if org is None or repo is None
-        else f"{bUrl}/{org}/{repo}/tree/master/{relative}"
+        else f"{bUrl}/{org}/{repo}/tree/{branch}/{relative}"
         if local
         else (
             (

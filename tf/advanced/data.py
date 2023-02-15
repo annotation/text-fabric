@@ -260,6 +260,7 @@ class AppData:
         app = self.app
         _browse = app._browse
         aContext = app.context
+        branch = aContext.provenanceSpec["branch"]
 
         relative = normpath(relative)
 
@@ -316,7 +317,7 @@ class AppData:
                 (
                     "live",
                     provenanceLink(
-                        backend, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, branch, commit, local, release, relative
                     ),
                 ),
                 ("doi", info["doi"]),

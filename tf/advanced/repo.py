@@ -1380,7 +1380,7 @@ class Checkout:
         good = True
 
         if g:
-            gitlabSlugRe = re.compile(f"^{repo}(?:-master)?-[^/]*/")
+            gitlabSlugRe = re.compile(f"^{repo}(?:-(?:master|main))?-[^/]*/")
         try:
             z = ZipFile(zf)
             initTree(destZip, fresh=not self.keep)
