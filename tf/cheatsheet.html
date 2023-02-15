@@ -1276,6 +1276,20 @@ from tf.lib import writeSets
 </dd>
 </dl>
 <hr>
+<h2 id="tei-import">TEI import</h2>
+<pre><code>from tf.convert.tei import TEI
+</code></pre>
+<dl>
+<dt><pre><code>T = TEI(...)
+</code></pre></dt>
+<dd>
+<p>convert TEI source to full-fledged TF dataset plus app plus docs</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.tei" href="convert/tei.html">tf.convert.tei</a></code></p>
+</dd>
+</dl>
+<hr>
 <h2 id="mql-interchange">MQL interchange</h2>
 <dl>
 <dt><pre><code>TF.exportMQL()
@@ -1378,7 +1392,7 @@ Clients are defined in the <code>app-{dataset}</code> repo, under <code>layereds
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1491,6 +1505,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#custom-node-sets-for-search">Custom node sets for search</a></li>
 <li><a href="#export-to-excel_1">Export to Excel</a></li>
 <li><a href="#interchange-with-external-annotation-tools">Interchange with external annotation tools</a></li>
+<li><a href="#tei-import">TEI import</a></li>
 <li><a href="#mql-interchange">MQL interchange</a></li>
 <li><a href="#walker-conversion">Walker conversion</a></li>
 <li><a href="#exploding">Exploding</a></li>

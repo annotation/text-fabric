@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/parameters.py#L1-L375" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/parameters.py#L1-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -45,7 +45,7 @@ def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)
 
 
-VERSION = &#39;11.1.4&#39;
+VERSION = &#34;11.1.4&#34;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -185,7 +185,7 @@ URL_NB = &#34;https://nbviewer.jupyter.org&#34;
 &#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
 
 
-def BACKEND_REP(be, kind, default=None):
+def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
     &#34;&#34;&#34;Various backend dependent values.
 
     First of all, the backend value is
@@ -227,6 +227,10 @@ def BACKEND_REP(be, kind, default=None):
 
         Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
+
+    org, repo, branch: string, optional None
+        An organization and repository and branch in a backend.
+        Only relevant for representation `tut`.
 
     Returns
     -------
@@ -272,6 +276,14 @@ def BACKEND_REP(be, kind, default=None):
 
     if kind == &#34;urlnb&#34;:
         return f&#34;{URL_NB}/{be}&#34;
+
+    if kind == &#34;tut&#34;:
+        onPremise = be not in {GL, GH}
+        return (
+            f&#34;https://{org}.pages.{&#39;.&#39;.join(be.split(&#39;.&#39;)[1:])}/{repo}/start.html&#34;
+            if onPremise
+            else f&#34;{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb&#34;
+        )
 
     if kind == &#34;pages&#34;:
         return (
@@ -321,6 +333,12 @@ APIREF = f&#34;https://{ORG}.{BACKEND_REP(GH, &#39;pages&#39;)}/{REPO}/tf/cheats
 
 SEARCHREF = f&#34;https://{ORG}.{BACKEND_REP(GH, &#39;pages&#39;)}/{REPO}/tf/about/searchusage.html&#34;
 &#34;&#34;&#34;Link to the Search docs of Text-Fabric.&#34;&#34;&#34;
+
+BRANCH_DEFAULT = &#34;master&#34;
+&#34;&#34;&#34;Default branch in repositories, older value.&#34;&#34;&#34;
+
+BRANCH_DEFAULT_NEW = &#34;main&#34;
+&#34;&#34;&#34;Default branch in repositories, modern value.&#34;&#34;&#34;
 
 APP_CONFIG = &#34;config.yaml&#34;
 &#34;&#34;&#34;Name of the config file of a TF app.&#34;&#34;&#34;
@@ -455,6 +473,14 @@ downgrade Text-Fabric</dd>
 <dt id="tf.parameters.APP_DISPLAY"><code class="name">var <span class="ident">APP_DISPLAY</span></code></dt>
 <dd>
 <div class="desc"><p>Relative path of the css file of a TF app.</p></div>
+</dd>
+<dt id="tf.parameters.BRANCH_DEFAULT"><code class="name">var <span class="ident">BRANCH_DEFAULT</span></code></dt>
+<dd>
+<div class="desc"><p>Default branch in repositories, older value.</p></div>
+</dd>
+<dt id="tf.parameters.BRANCH_DEFAULT_NEW"><code class="name">var <span class="ident">BRANCH_DEFAULT_NEW</span></code></dt>
+<dd>
+<div class="desc"><p>Default branch in repositories, modern value.</p></div>
 </dd>
 <dt id="tf.parameters.DOI_TF"><code class="name">var <span class="ident">DOI_TF</span></code></dt>
 <dd>
@@ -674,7 +700,7 @@ pickled and compressed to .tfx files.</p>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.parameters.BACKEND_REP"><code class="name flex">
-<span>def <span class="ident">BACKEND_REP</span></span>(<span>be, kind, default=None)</span>
+<span>def <span class="ident">BACKEND_REP</span></span>(<span>be, kind, org=None, repo=None, branch=None, default=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Various backend dependent values.</p>
@@ -718,6 +744,9 @@ then the empty string is returned.</p>
 <p>Explanation: this is used to supply a backend specifier to a module
 but only if that module has a different backend than the main module.</p>
 </dd>
+<dt><strong><code>org</code></strong>, <strong><code>repo</code></strong>, <strong><code>branch</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>An organization and repository and branch in a backend.
+Only relevant for representation <code>tut</code>.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <pre><code>string
@@ -725,9 +754,9 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/parameters.py#L156-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/parameters.py#L156-L264" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def BACKEND_REP(be, kind, default=None):
+<pre><code class="python">def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
     &#34;&#34;&#34;Various backend dependent values.
 
     First of all, the backend value is
@@ -769,6 +798,10 @@ but only if that module has a different backend than the main module.</p>
 
         Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
+
+    org, repo, branch: string, optional None
+        An organization and repository and branch in a backend.
+        Only relevant for representation `tut`.
 
     Returns
     -------
@@ -815,6 +848,14 @@ but only if that module has a different backend than the main module.</p>
     if kind == &#34;urlnb&#34;:
         return f&#34;{URL_NB}/{be}&#34;
 
+    if kind == &#34;tut&#34;:
+        onPremise = be not in {GL, GH}
+        return (
+            f&#34;https://{org}.pages.{&#39;.&#39;.join(be.split(&#39;.&#39;)[1:])}/{repo}/start.html&#34;
+            if onPremise
+            else f&#34;{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb&#34;
+        )
+
     if kind == &#34;pages&#34;:
         return (
             f&#34;{GH}.io&#34;
@@ -834,7 +875,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/parameters.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     return None if path is None else path.replace(&#34;\\&#34;, &#34;/&#34;)</code></pre>
@@ -918,6 +959,8 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.APP_CONFIG" href="#tf.parameters.APP_CONFIG">APP_CONFIG</a></code></li>
 <li><code><a title="tf.parameters.APP_CONFIG_OLD" href="#tf.parameters.APP_CONFIG_OLD">APP_CONFIG_OLD</a></code></li>
 <li><code><a title="tf.parameters.APP_DISPLAY" href="#tf.parameters.APP_DISPLAY">APP_DISPLAY</a></code></li>
+<li><code><a title="tf.parameters.BRANCH_DEFAULT" href="#tf.parameters.BRANCH_DEFAULT">BRANCH_DEFAULT</a></code></li>
+<li><code><a title="tf.parameters.BRANCH_DEFAULT_NEW" href="#tf.parameters.BRANCH_DEFAULT_NEW">BRANCH_DEFAULT_NEW</a></code></li>
 <li><code><a title="tf.parameters.DOI_TF" href="#tf.parameters.DOI_TF">DOI_TF</a></code></li>
 <li><code><a title="tf.parameters.DOWNLOADS" href="#tf.parameters.DOWNLOADS">DOWNLOADS</a></code></li>
 <li><code><a title="tf.parameters.EXPRESS_SYNC" href="#tf.parameters.EXPRESS_SYNC">EXPRESS_SYNC</a></code></li>

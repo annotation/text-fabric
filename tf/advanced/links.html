@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L1-L911" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L1-L914" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -97,19 +97,17 @@ def linksApi(app, silent=SILENT_D):
     org = aContext.org or &#34;&#34;
     repo = aContext.repo or &#34;&#34;
     version = aContext.version
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
     corpus = aContext.corpus
     featureBase = aContext.featureBase
     featurePage = aContext.featurePage
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = (
-        f&#34;{BACKEND_REP(backend, &#39;urlnb&#39;)}/&#34;
-        f&#34;{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
-    )
+    tutUrl = BACKEND_REP(backend, &#34;tut&#34;, org=org, repo=repo, branch=branch)
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
-    dataName = repo.upper()
+    dataName = f&#34;{org} - {repo} {version}&#34;
     collectionInfo = app.collectionInfo
     if collectionInfo:
         dataName += f&#34; collection {collectionInfo}&#34;
@@ -146,7 +144,7 @@ def linksApi(app, silent=SILENT_D):
             outLink(
                 &#34;Feature docs&#34;,
                 featureBase.replace(&#34;&lt;feature&gt;&#34;, featurePage).format(version=version),
-                f&#34;{repo.upper()} feature documentation&#34;,
+                f&#34;{org} - {repo} feature documentation&#34;,
                 asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase
@@ -155,7 +153,7 @@ def linksApi(app, silent=SILENT_D):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/blob/master/{APP_APP}&#34;
+    extraUrl = f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/blob/{branch}/{APP_APP}&#34;
     appLink = (
         outLink(
             f&#34;{org}/{repo}/app {apiVersionRep}&#34;,
@@ -657,6 +655,7 @@ def _featuresPerModule(app, allMeta=False):
     mRepo = aContext.repo
     mRelative = aContext.relative
     version = aContext.version
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
     moduleSpecs = aContext.moduleSpecs
     corpus = aContext.corpus
     featureBase = aContext.featureBase
@@ -695,7 +694,7 @@ def _featuresPerModule(app, allMeta=False):
                 if mId in fixedModuleIndex
                 else (
                     f&#34;{BACKEND_REP(backend, &#39;rep&#39;)}{org}/{repo}/{relative}&#34;,
-                    f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/tree/master/{relative}&#34;,
+                    f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/tree/{branch}/{relative}&#34;,
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -763,7 +762,7 @@ def _featuresPerModule(app, allMeta=False):
                 if type(mId) is str
                 else (
                     f&#34;{BACKEND_REP(mBackend, &#39;url&#39;)}/&#34;
-                    f&#34;{mId[0]}/{mId[1]}/tree/master/{mId[2]}&#34;
+                    f&#34;{mId[0]}/{mId[1]}/tree/{branch}/{mId[2]}&#34;
                 )
             )
         output += (
@@ -883,7 +882,9 @@ def _featuresPerModule(app, allMeta=False):
     return output
 
 
-def provenanceLink(backend, org, repo, version, commit, local, release, relative):
+def provenanceLink(
+    backend, org, repo, version, branch, commit, local, release, relative
+):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a backend repository.
@@ -900,6 +901,8 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
         Version of the data source.
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
+    branch: string
+        The branch on the backend of the repository (typically `master` or `main`)
     commit: string
         The commit hash of the repository
     local: boolean
@@ -922,7 +925,7 @@ def provenanceLink(backend, org, repo, version, commit, local, release, relative
     url = (
         None
         if org is None or repo is None
-        else f&#34;{bUrl}/{org}/{repo}/tree/master/{relative}&#34;
+        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}/{relative}&#34;
         if local
         else (
             (
@@ -968,7 +971,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L178-L255" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L176-L253" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the app.
@@ -1074,7 +1077,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L29-L175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L29-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1116,19 +1119,17 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     org = aContext.org or &#34;&#34;
     repo = aContext.repo or &#34;&#34;
     version = aContext.version
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
     corpus = aContext.corpus
     featureBase = aContext.featureBase
     featurePage = aContext.featurePage
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = (
-        f&#34;{BACKEND_REP(backend, &#39;urlnb&#39;)}/&#34;
-        f&#34;{org}/{repo}/blob/master/tutorial/start.ipynb&#34;
-    )
+    tutUrl = BACKEND_REP(backend, &#34;tut&#34;, org=org, repo=repo, branch=branch)
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
-    dataName = repo.upper()
+    dataName = f&#34;{org} - {repo} {version}&#34;
     collectionInfo = app.collectionInfo
     if collectionInfo:
         dataName += f&#34; collection {collectionInfo}&#34;
@@ -1165,7 +1166,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
             outLink(
                 &#34;Feature docs&#34;,
                 featureBase.replace(&#34;&lt;feature&gt;&#34;, featurePage).format(version=version),
-                f&#34;{repo.upper()} feature documentation&#34;,
+                f&#34;{org} - {repo} feature documentation&#34;,
                 asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase
@@ -1174,7 +1175,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/blob/master/{APP_APP}&#34;
+    extraUrl = f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/blob/{branch}/{APP_APP}&#34;
     appLink = (
         outLink(
             f&#34;{org}/{repo}/app {apiVersionRep}&#34;,
@@ -1252,7 +1253,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L499-L535" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L497-L533" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1294,7 +1295,7 @@ If not, a plain text representation of the link will be made.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.links.provenanceLink"><code class="name flex">
-<span>def <span class="ident">provenanceLink</span></span>(<span>backend, org, repo, version, commit, local, release, relative)</span>
+<span>def <span class="ident">provenanceLink</span></span>(<span>backend, org, repo, version, branch, commit, local, release, relative)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate a provenance link for a data source.</p>
@@ -1311,6 +1312,8 @@ If not, a plain text representation of the link will be made.</dd>
 <dd>Version of the data source.
 This is not the release or commit of a repo, but the subdirectory
 corresponding with a data version under a <code><a title="tf" href="../index.html">tf</a></code> directory with feature files.</dd>
+<dt><strong><code>branch</code></strong> :&ensp;<code>string</code></dt>
+<dd>The branch on the backend of the repository (typically <code>master</code> or <code>main</code>)</dd>
 <dt><strong><code>commit</code></strong> :&ensp;<code>string</code></dt>
 <dd>The commit hash of the repository</dd>
 <dt><strong><code>local</code></strong> :&ensp;<code>boolean</code></dt>
@@ -1322,9 +1325,11 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L855-L911" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L854-L914" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def provenanceLink(backend, org, repo, version, commit, local, release, relative):
+<pre><code class="python">def provenanceLink(
+    backend, org, repo, version, branch, commit, local, release, relative
+):
     &#34;&#34;&#34;Generate a provenance link for a data source.
 
     We assume the data source resides somewhere inside a backend repository.
@@ -1341,6 +1346,8 @@ by a backend repository</dd>
         Version of the data source.
         This is not the release or commit of a repo, but the subdirectory
         corresponding with a data version under a `tf` directory with feature files.
+    branch: string
+        The branch on the backend of the repository (typically `master` or `main`)
     commit: string
         The commit hash of the repository
     local: boolean
@@ -1363,7 +1370,7 @@ by a backend repository</dd>
     url = (
         None
         if org is None or repo is None
-        else f&#34;{bUrl}/{org}/{repo}/tree/master/{relative}&#34;
+        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}/{relative}&#34;
         if local
         else (
             (
@@ -1404,7 +1411,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L399-L434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L397-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1487,7 +1494,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/links.py#L258-L396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L256-L394" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

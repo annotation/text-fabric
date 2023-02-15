@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L1-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L1-L345" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..parameters import BACKEND_REP
 from ..core.helpers import itemize, normpath, expandDir
@@ -290,6 +290,7 @@ class AppData:
         app = self.app
         _browse = app._browse
         aContext = app.context
+        branch = aContext.provenanceSpec[&#34;branch&#34;]
 
         relative = normpath(relative)
 
@@ -346,7 +347,7 @@ class AppData:
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        backend, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, branch, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -395,7 +396,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L328-L344" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L329-L345" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -455,7 +456,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L11-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L11-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -709,6 +710,7 @@ level just below the search locations.</dd>
         app = self.app
         _browse = app._browse
         aContext = app.context
+        branch = aContext.provenanceSpec[&#34;branch&#34;]
 
         relative = normpath(relative)
 
@@ -765,7 +767,7 @@ level just below the search locations.</dd>
                 (
                     &#34;live&#34;,
                     provenanceLink(
-                        backend, org, repo, version, commit, local, release, relative
+                        backend, org, repo, version, branch, commit, local, release, relative
                     ),
                 ),
                 (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -790,7 +792,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -853,7 +855,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L224-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L224-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
@@ -894,6 +896,7 @@ location paths and the module paths.</p>
     app = self.app
     _browse = app._browse
     aContext = app.context
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
 
     relative = normpath(relative)
 
@@ -950,7 +953,7 @@ location paths and the module paths.</p>
             (
                 &#34;live&#34;,
                 provenanceLink(
-                    backend, org, repo, version, commit, local, release, relative
+                    backend, org, repo, version, branch, commit, local, release, relative
                 ),
             ),
             (&#34;doi&#34;, info[&#34;doi&#34;]),
@@ -968,7 +971,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L168-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L168-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -1038,7 +1041,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L140-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L140-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1088,7 +1091,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/55006bd0b9527a56ca518ce86430f1101656d582/tf/advanced/data.py#L90-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/data.py#L90-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
