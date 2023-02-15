@@ -78,7 +78,7 @@ def linksApi(app, silent=SILENT_D):
     )
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
-    dataName = repo.upper()
+    dataName = f"{org} - {repo} {version}"
     collectionInfo = app.collectionInfo
     if collectionInfo:
         dataName += f" collection {collectionInfo}"
@@ -115,7 +115,7 @@ def linksApi(app, silent=SILENT_D):
             outLink(
                 "Feature docs",
                 featureBase.replace("<feature>", featurePage).format(version=version),
-                f"{repo.upper()} feature documentation",
+                f"{org} - {repo} feature documentation",
                 asHtml=inNb or _browse,
             )
             if isCompatible and repo is not None and featureBase

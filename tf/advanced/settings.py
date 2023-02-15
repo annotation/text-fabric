@@ -62,7 +62,6 @@ Default:
 ### `exampleSection`
 
 Placeholder text for passage entry fields in the TF browser.
-"book" is the node type of top level sections.
 
 Default:
 :   string `book 1`
@@ -72,7 +71,6 @@ Default:
 ### `exampleSectionHtml`
 
 Formatted placeholder text for passage entry fields in the TF browser.
-"book" is the node type of top level sections.
 
 Default:
 :   string `<code>piece 1</code>`

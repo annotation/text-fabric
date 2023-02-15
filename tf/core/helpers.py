@@ -45,10 +45,19 @@ def expandDir(obj, dirName):
     return dirName
 
 
-def getLocation():
-    """Get backend, org, repo of current directory.
+def getLocation(targetDir=None):
+    """Get backend, org, repo of directory.
 
-    We assume the current directory is inside
+    Parameters
+    ----------
+    targetDir: string, optional None
+        If None, we take the current directory.
+        Otherwise, if it starts with a `/` we take it as the absolute
+        target directory.
+        Otherwise, we append it to the absolute path of the current directory,
+        with a `/` in between.
+
+    We assume the target directory is inside
 
     `~/backend/org/repo`
 
@@ -57,11 +66,23 @@ def getLocation():
     tuple
         backend, org, repo
     """
-    curDir = unexpanduser(normpath(os.getcwd()))
-    if not curDir.startswith("~/"):
+    curDir = normpath(os.getcwd())
+    if targetDir is not None:
+        targetDir = normpath(targetDir)
+
+    destDir = (
+        curDir
+        if targetDir is None
+        else targetDir
+        if targetDir.startswith("/")
+        else f"{curDir}/{targetDir}"
+    )
+    destDir = unexpanduser(destDir)
+
+    if not destDir.startswith("~/"):
         return (None, None, None)
-    curDir = curDir.removeprefix("~/")
-    parts = curDir.split("/")
+    destDir = destDir.removeprefix("~/")
+    parts = destDir.split("/")
     if len(parts) == 1:
         return (parts[0], None, None)
     if len(parts) == 1:
@@ -138,14 +159,12 @@ def initTree(path, fresh=False, gentle=False):
 
 
 def fileExists(path):
-    """Whether a path exists as file on the file system.
-    """
+    """Whether a path exists as file on the file system."""
     return os.path.isfile(path)
 
 
 def fileRemove(path):
-    """Removes a file if it exists as file.
-    """
+    """Removes a file if it exists as file."""
     if fileExists(path):
         os.remove(path)
 
@@ -161,14 +180,12 @@ def fileCopy(pathSrc, pathDst):
 
 
 def dirExists(path):
-    """Whether a path exists as directory on the file system.
-    """
+    """Whether a path exists as directory on the file system."""
     return os.path.isdir(path)
 
 
 def dirRemove(path):
-    """Removes a directory if it exists as directory.
-    """
+    """Removes a directory if it exists as directory."""
     if dirExists(path):
         rmtree(path)
 
@@ -184,8 +201,7 @@ def dirCopy(pathSrc, pathDst):
 
 
 def dirMake(path):
-    """Creates a directory if it does not already exist as directory.
-    """
+    """Creates a directory if it does not already exist as directory."""
     if not dirExists(path):
         os.makedirs(path, exist_ok=True)
 
@@ -618,7 +634,15 @@ def mergeDictOfSets(d1, d2):
 
 
 def mergeDict(source, overrides):
-    """Merge overrides into a source dictionary recursively."""
+    """Merge overrides into a source dictionary recursively.
+
+    Parameters
+    ----------
+    source: dict
+        The source dictionary, which will be modified by the overrides.
+    overrides: dict
+        The overrides, itself a dictionary.
+    """
 
     for (k, v) in overrides.items():
         if k in source and type(source[k]) is dict:

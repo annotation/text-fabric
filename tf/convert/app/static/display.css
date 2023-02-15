@@ -1,0 +1,20 @@
+.italic {
+  font-style: italic;
+}
+.bold {
+  font-weight: bold;
+}
+.margin {
+  position: relative;
+  top: -0.3em;
+  font-weight: bold;
+  color: #0000ee;
+}
+.sub {
+  vertical-align: sub;
+  font-size: small;
+}
+.sup {
+  vertical-align: super;
+  font-size: small;
+}

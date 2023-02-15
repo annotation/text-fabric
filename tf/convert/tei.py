@@ -9,11 +9,176 @@ dataset out of the source.
 Text-Fabric knows the TEI elements, because it will read and parse the complete
 TEI schema. From this the set of complex, mixed elements is distilled.
 
-If the TEI source conforms to a cutomised TEI schema, you can pass it to the TEI
+If the TEI source conforms to a customised TEI schema, you can pass it to the TEI
 importer, and it will read it and override the generic information of the TEI elements.
 
 The TEI conversion is rather straightforward because of some conventions
-that cannot be changed:
+that cannot be changed.
+
+## Tasks
+
+We have the following conversion tasks:
+
+1.  `check`: makes and inventory of all XML elements and attributes used.
+2.  `convert`: produces actual TF files by converting XML files.
+3.  `load`: loads the generated TF for the first time, by which the precomputation
+    step is triggered. During precomputation some checks are performed. Once this
+    has succeeded, we have a workable Text-Fabric dataset.
+4.  `app`: creates or updates a corpus specific TF-app with minimal sensible settings,
+    plus basic documentation.
+
+Tasks can be run by passing any choice of task keywords to the
+`TEI.task()` method.
+
+## Flags
+
+We have one flag:
+
+1. `test`: only converts those files in the input that are named in a test set.
+
+The test set is passed as argument to the `TEI` constructur.
+
+The `test` flag is passed to the `TEI.task()` method.
+
+## Usage
+
+It is intended that you call this converter in a script.
+
+In that script you can define auxiliary Python functions and pass them
+to the converter. The `TEI` class has some hooks where such functions
+can be plugged in.
+
+Here you can also define a test set, in case you want to experiment with the
+conversion.
+
+Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.
+
+The resulting script will look like this:
+
+``` python
+
+import os
+from tf.convert.tei import TEI
+
+
+TEST_SET = set(
+    '''
+    18920227_HMKR_0001.xml
+    18920302_HMKR_0002.xml
+    18930711_PM_RANI_5003.xml
+    18980415y_PRIX_0007.xml
+    '''.strip().split()
+)
+
+AUTHOR = "Piet Mondriaan"
+TITLE = "Letters"
+INSTITUTE = "KNAW/Huygens Amsterdam"
+
+GENERIC = dict(
+    author=AUTHOR,
+    title=TITLE,
+    institute=INSTITUTE,
+    language="nl",
+    converters="Dirk Roorda (Text-Fabric)",
+    sourceFormat="TEI",
+    descriptionTf="Critical edition",
+)
+
+ABOUT_TEXT = '''
+# CONTRIBUTORS
+
+Researcher: Mariken Teeuwen
+
+Editors: Peter Boot et al.
+'''
+
+TRANSCRIPTION_TEXT = '''
+
+The TEI has been validated and polished
+before generating the TF data.
+'''
+
+DOC_MATERIAL = dict(
+    about=ABOUT_TEXT,
+    trans=TRANSCRIPTION_TEXT,
+)
+
+APP_CONFIG = dict(
+    provenanceSpec=dict(
+        corpus=f"{GENERIC['author']} - {GENERIC['title']}",
+        doi="10.5281/zenodo.nnnnnn",
+    )
+)
+
+
+HY = "\u2010"  # hyphen
+
+
+def transform(text):
+    return text.replace(",,", HY)
+
+
+T = TEI(
+    schema="MD",
+    sourceVersion="2023-01-31",
+    testSet=TEST_SET,
+    generic=GENERIC,
+    transform=transform,
+    tfVersion="0.1",
+    appConfig=APP_CONFIG,
+    docMaterial=DOC_MATERIAL,
+    force=True,
+)
+
+T.run(os.path.basename(__file__))
+```
+"""
+
+import sys
+import os
+import collections
+import re
+from textwrap import dedent
+from io import BytesIO
+
+import yaml
+from lxml import etree
+from tf.fabric import Fabric
+from tf.core.helpers import console
+from tf.convert.walker import CV
+from tf.core.helpers import (
+    initTree,
+    dirExists,
+    fileExists,
+    fileCopy,
+    fileRemove,
+    mergeDict,
+    getLocation,
+    unexpanduser as ux,
+)
+from tf.tools.xmlschema import Analysis
+
+
+__pdoc__ = {}
+
+DOC_TRANS = """
+## Essentials
+
+*   Text-Fabric non-slot nodes correspond to TEI elements in the source.
+*   Text-Fabric node-features correspond to TEI attributes.
+*   Text-Fabric slot nodes correspond to characters in TEI element content.
+
+In order to understand the encoding, you need to know
+
+*   the [TEI elements](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ELEMENTS.html).
+*   the [TEI attributes](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ATTS.html).
+*   the [Text-Fabric datamodel](https://annotation.github.io/text-fabric/tf/about/datamodel.html)
+
+The TEI to TF conversion is an almost literal and very faithful transformation from
+the TEI source files to a Text-Fabric data set.
+
+But there are some peculiarities.
 
 ## Sectioning
 
@@ -31,7 +196,7 @@ consisting of xml files, the TEI files.
     feature `name` containing its name.
 1.  A third section level, named `chunk` will be made.
     For each immediate child element of `<teiHeader>` and for each immediate child
-    element of `<body>`, a chunk node will be created, wit a feature `cn`
+    element of `<body>`, a chunk node will be created, wit a feature `chunk`
     containing the number of the chunk within the file, starting with 1.
     Also the following elements will trigger a chunk node:
     `<facsimile>`, `<fsdDecl>`, `<sourceDoc>`, and `<standOff>`.
@@ -101,191 +266,307 @@ a bit.
     So if the input has elements `tei:abb` and `ns:abb`, we'll see just the node
     type `abb` in the output.
 
-## Tasks, parsing, and validation
+## Validation
 
-We have three conversion tasks:
-
-1.  `check`: makes and inventory of all XML elements and attributes used.
-2.  `convert`: produces actual TF files by converting XML files.
-3.  `load`: loads the generated TF for the first time, by which the precomputation
-    step is triggered. During precomputation some checks are performed. Once this
-    has succeeded, we have a workable Text-Fabric dataset.
-
-Tasks can be run by passing any choice of task keywords to the
-`TEI.task()` method.
-
-We use [lxml](https://lxml.de) for XML parsing. During `convert` it is not used
+We have used [lxml](https://lxml.de) for XML parsing. During `convert` it is not used
 in validating mode, but we can trigger a validation step during `check`.
 
 However, some information about the elements, in particular whether they allow
-mixed content or not, will be read off the schemas, and will be used
+mixed content or not, has been gleaned from the schemas, and has been used
 during conversion.
 
-## Flags
+Care has been taken that the names of these extra nodes and features do not collide
+with element/attribute names of the TEI.
 
-We have one flag:
+## TF noded and features
 
-1. `test`: only converts those files in the input that are named in a test set.
+(only in as far they are not in 1-1 correspondence with TEI elements and attributes)
 
-The test set is passed as argument to the `TEI` constructur.
+### node type `folder`
 
-The `test` flag is passed to the `TEI.task()` method.
+*The type of subfolders of TEI documents.*
 
-## Usage
+**Section level 1.**
 
-It is intended that you call this converter in a script.
+**Features**
 
-In that script you can define auxiliary Python functions and pass them
-to the converter. The `TEI` class has some hooks where such functions
-can be plugged in.
+feature | description
+--- | ---
+folder | name of the subfolder
 
-Here you can also define a test set, in case you want to experiment with the
-conversion.
+### node type `file`
 
-Last, but not least, you can assemble all the input parameters needed to
-get the conversion off the ground.
+*The type of individual TEI documents.*
 
-The resulting script will look like this:
+**Section level 2.**
 
-``` python
-from tf.convert.tei import TEI
-from tf.core.helpers import getLocation
+**Features**
 
-(BACKEND, ORG, REPO) = getLocation()
-BASE = os.path.expanduser(f"~/{BACKEND}")
-REPO_DIR = f"{BASE}/{ORG}/{REPO}"
-SOURCE_DIR = f"{REPO_DIR}/xml"
-VERSION_SOURCE = "2023-01-31"
-SCHEMA_FILE = f"{REPO_DIR}/resources/MD.xsd"
-REPORT_DIR = f"{REPO_DIR}/report"
-TF_DIR = f"{REPO_DIR}/tf"
-VERSION_TF = "0.1"
+feature | description
+--- | ---
+file | name of the file, without the `.xml` extension. Other extensions are included.
 
-GENERIC = dict(
-    author="Piet Mondriaan",
-    institute="KNAW/Huygens Amsterdam",
-    language="nl",
-    converters="Dirk Roorda (Text-Fabric)",
-    sourceFormat="TEI",
-    descriptionTf="Critical edition",
-)
-TEST_SET = set(
-    '''
-    18920227.xml
-    18920302.xml
-    18930711.xml
-    18980415.xml
-    '''.strip().split()
-)
+### node type `chunk`
 
+*Top-level division of material inside a document.*
 
-def transform(text):
-    return text.replace(",,", "-")
+**Section level 3.**
 
+**Features**
 
-T = TEI(
-    sourceDir=f"{SOURCE_DIR}/{VERSION_SOURCE}",
-    schemaFile=SCHEMA_FILE,
-    generic=GENERIC,
-    reportDir=REPORT_DIR,
-    transform=transform,
-    tfDir=f"{TF_DIR}/{VERSION_TF}",
-    testSet=TEST_SET,
-)
+feature | description
+--- | ---
+chunk | sequence number of the chunk within the document, starting with 1.
 
-T.run(os.path.basename(__file__))
+### node type `word`
 
-```
+*Individual words, without punctuation.*
+
+**Features**
+
+feature | description
+--- | ---
+str | the characters of the word, without soft hyphens.
+after | the non-word characters after the word, up till the next word.
+ismeta=whether a word is in the teiHeader element
+
+### node type `char`
+
+*Unicode characters.*
+
+**Slot type.**
+
+The characters of the text of the elements.
+Ignorable whitespace has been discarded, and is not present in the TF dataset.
+Meaningful whitespace has been condensed to single spaces.
+
+Some empty slots have been inserted to mark the place of empty elements.
+
+**Features**
+
+feature | description
+--- | ---
+ch | the unicode character in that slot. There are also slots
+empty | whether a slot has been inserted in an empty element
+ismeta=whether a slot is in the teiHeader element
 """
-
-import sys
-import os
-import collections
-import re
-from io import BytesIO
-from lxml import etree
-from tf.fabric import Fabric
-from tf.core.helpers import console
-from tf.convert.walker import CV
-from tf.core.helpers import initTree, dirExists, unexpanduser as ux
-from tf.tools.xmlschema import Analysis
 
 
 class TEI:
     def __init__(
         self,
-        sourceDir=None,
-        schemaFile=None,
-        generic={},
-        reportDir=".",
-        transform=None,
-        tfDir="tf",
+        repoDir=".",
+        sourceVersion="0.1",
+        schema=None,
         testSet=set(),
+        generic={},
+        transform=None,
+        tfVersion="0.1",
+        appConfig={},
+        docMaterial={},
+        force=False,
     ):
         """Converts TEI to TF.
 
-        Based on the arguments, it defines all the ingredients to carry out
-        a `tf.convert.walker` conversion of the TEI input,
-        where nodes are created when start tags are encountered in the TEI,
-        and those same nodes are terminated upon encountering the corresponding
-        end tags.
-        Attributes of elements give rise to features on the corresponding nodes.
+        We adopt a fair bit of "convention over configuration" here, in order to lessen
+        the burden for the user of specifying so many details.
+
+        Based on current direcotry from where the script is called,
+        it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the TEI input.
+
+        This function is assumed to work in the context of a repository,
+        i.e. a directory on your computer relative to which the input directory exists,
+        and various output directories: `tf`, `app`, `docs`.
+
+        Your current directory must be somewhere inside
+
+        ```
+        ~/backend/org/repo
+        ```
+
+        where
+
+        *   `~` is your home directory;
+        *   `backend` is an online *backend* name,
+            like `github`, `gitlab`, `git.huc.knaw.nl`;
+        *   `org` is an organisation, person, or group in the backend;
+        *   `repo` is a repository in the `org`.
+
+        This is only about the directory structure on your local computer;
+        it is not required that you have online incarnations of your repository
+        in that backend.
+        Even your local repository does not have to be a git repository.
+
+        The only thing that matters is that the full path to your repo can be parsed
+        as a sequence of *home*/*backend*/*org*/*repo*.
+
+        Relative to the repo directory the program expects and creates
+        input/output directories.
+
+        ## Input directories
+
+        ### `tei`
+
+        *Location of the TEI-XML sources.*
+
+        **If it does not exist, the program aborts with an error.**
+
+        Several levels of subfolders are assumed:
+
+        1.  the version of the source (this could be a date string).
+        2.  volumes/collections of documents. The subfolder `__ignore__` is ignored.
+        3.  the TEI documents themselves, conforming to the TEI schema or some
+            customisation of it.
+
+        ### `schema`
+
+        *Location of the TEI-XML schemas against which the sources can be validated.*
+
+        One of them should be a `.xsd` file, and the parameter `schema` may specify
+        that name (without extension).
+
+        We use this file as custom TEI schema,
+        but to be sure, we still analyse the full TEI schema and
+        use the schema passed here as a set of overriding element definitions.
+
+        If no schema is specified, we use the *full* TEI schema.
+
+        ## Output directories
+
+        ### `report`
+
+        Directory to write the results of the `check` task to: an inventory
+        of elements/attributes encountered, and possible validation errors.
+        If the directory does not exist, it will be created.
+        The default value is `.` (i.e. the current directory in which
+        the script is invoked).
+
+        ### `tf`
+
+        The directory under which the text-fabric output file (with extension `.tf`)
+        are placed.
+        If it does not exist, it will be created.
+        The tf files will be generated in a subdirectory named by a version number,
+        passed as `tfVersion`.
+
+        ### `app` and `docs`
+
+        Location of additional TF-app configuration and documentation files.
+        If they do not exist, they will be created with some sensible default
+        settings and generated documentation.
+        These settings can be overriden by the parameter `appConfig`.
+        Also a default `display.css` file and a logo are added.
+
+        If such a file already exists, it will be left untouched and a generated file
+        is put next to the item, with `_generated` in the file name.
+
+        This behaviour can be modified by passing `force=True` to the initialization
+        of the TEI object.
+
+        ### `docs`
+
+        Location of additional documentation.
+        This can be generated or had-written material, or a mixture of the two.
+
+        !!! caution "Dataloss by overwriting app and docs files.
+            When `force` is `False`, the app docs files will not be overwritten by
+            generated files. Instead, the generated files are produced
+            alongside them, with `_generated` in their names.
+            These `_generated` files will be overwritten by successive runs
+            of the `app` task.
+
+            When you have generated your files, and they cannot be improved anymore,
+            be sure to set `force` to `False`.
+
+            Then you can edit the apps and docs files by hand, and they will not be
+            overwritten inadvertently.
 
         Parameters
         ----------
-        sourceDir: string, optional None
-            Path on the file system where the TEI source resides.
-            It is assumed that there is one level of subfolders
-            underneath, under which there are `.xml` files
-            conforming to the TEI schema or some customisation of it.
 
-            The subfolder `__ignore__` is ignored.
+        sourceVersion: string, optional "0.1"
+            Version of the source files. This is the name of a top-level
+            subfolder of the `tei` input folder.
 
-            If sourceDir is None or does not exist, the program aborts with an error.
-
-        schemaFile: string, optional None
-            If None, we use the full TEI schema.
-            Otherwise, we use this file as custom TEI schema,
-            but to be sure, we still analyse the full TEI schema and
-            use the schemaFile passed here as overrides.
-
-        generic: dict, optional {}
-            Metadata for all generated TF feature.
-
-        reportDir: string, optional "."
-            Directory to write the results of the `check` task to: an inventory
-            of elements/attributes encountered, and possible validation errors.
-            If the directory does not exist, it will be created.
-            The default value is `.` (i.e. the current directory in which
-            the script is invoked).
-
-        transform: function, optional None
-            If not None, a function that transforms text to text, used
-            as a preprocessing step for each input xml file.
-
-        tfDir: string, optional None
-            The directory under which the text-fabric output file (with extension `.tf`)
-            are placed. If it does not exist, it will be created.
-            If you want your tf files in subdirectories named by a version number,
-            you have to include that version number in the value for `tfDir`.
+        schema: string, optional None
+            Which XML schema to be used, if not specified we fall back on full TEI.
+            If specified, leave out the `.xsd` extension. The file is relative to the
+            `schema` directory.
 
         testSet: set, optional empty
             A set of file names. If you run the conversion in test mode
             (pass `test` as argument to the `TEI.task()` method),
             only the files in the test set are converted.
+
+        generic: dict, optional {}
+            Metadata for all generated TF feature.
+
+        transform: function, optional None
+            If not None, a function that transforms text to text, used
+            as a preprocessing step for each input xml file.
+
+        tfVersion: string, optional "0.1"
+            Version of the generated tf files. This is the name of a top-level
+            subfolder of the `tf` output folder.
+
+        appConfig: dict, optional {}
+            Additional configuration settings, which will override the initial
+            settings.
+
+        docMaterial: dict, optional {}
+            Additional documentation:
+
+            *   under key `about`: colofon-like information;
+            *   under key `trans`: additional information about the
+                transcription and encoding details.
+
+        force: boolean, optional False
+            If True, the `app` task will overwrite existing files with generated
+            files, and remove any files with `_generated` in the name.
         """
+        (backend, org, repo) = getLocation(repoDir)
+        if any(s is None for s in (backend, org, repo)):
+            console("Not working in a repo: {backend=} {org=} {repo=}")
+            quit()
+
+        console(f"Working in repository {org}/{repo} in backend {backend}")
+
+        base = os.path.expanduser(f"~/{backend}")
+        repoDir = f"{base}/{org}/{repo}"
+        sourceDir = f"{repoDir}/tei/{sourceVersion}"
+        reportDir = f"{repoDir}/report"
+        tfDir = f"{repoDir}/tf"
+        appDir = f"{repoDir}/app"
+        docsDir = f"{repoDir}/docs"
+
+        self.repoDir = repoDir
+        self.sourceDir = sourceDir
+        self.reportDir = reportDir
+        self.tfDir = tfDir
+        self.appDir = appDir
+        self.docsDir = docsDir
+        self.org = org
+        self.repo = repo
+
         if sourceDir is None or not dirExists(sourceDir):
             console(f"Source location does not exist: {sourceDir}")
             quit()
 
-        self.sourceDir = sourceDir
-        self.schemaFile = schemaFile
-        self.generic = generic
-        self.reportDir = reportDir
-        self.transform = transform
-        self.tfDir = tfDir
+        self.schema = schema
+        self.schemaFile = None if schema is None else f"{repoDir}/schema/{schema}.xsd"
+        self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
+        self.generic = generic
+        self.transform = transform
+        self.tfVersion = tfVersion
+        self.tfPath = f"{tfDir}/{tfVersion}"
+        self.appConfig = appConfig
+        self.docMaterial = docMaterial
+        self.force = force
+        myDir = os.path.dirname(os.path.abspath(__file__))
+        self.myDir = myDir
 
     @staticmethod
     def help(program):
@@ -321,6 +602,8 @@ class TEI:
                 just converts TEI to TF
             load:
                 just loads the generated TF;
+            load:
+                just configures the TF-app for the result;
 
         flags:
             test:
@@ -429,7 +712,7 @@ class TEI:
         )
         return xmlFiles
 
-    def check(self):
+    def checkTask(self):
         """Implementation of the "check" task.
 
         It validates the TEI, but only if a schema file has been passed explicitly
@@ -645,12 +928,12 @@ class TEI:
         object
             The `tf.convert.walker.CV` converter object, initialized.
         """
-        tfDir = self.tfDir
+        tfPath = self.tfPath
 
-        TF = Fabric(locations=tfDir)
+        TF = Fabric(locations=tfPath)
         return CV(TF)
 
-    def convert(self):
+    def convertTask(self):
         """Implementation of the "convert" task.
 
         It sets up the `tf.convert.walker` machinery and runs it.
@@ -660,16 +943,17 @@ class TEI:
         boolean
             Whether the conversion was successful.
         """
-        slotType = "u"
+        slotType = "char"
         otext = {
             "fmt:text-orig-full": "{ch}",
-            "sectionFeatures": "name,name,cn",
+            "sectionFeatures": "folder,file,chunk",
             "sectionTypes": "folder,file,chunk",
         }
-        intFeatures = {"empty", "cn"}
+        intFeatures = {"empty", "chunk"}
         featureMeta = dict(
-            name=dict(description="name of source folder or file"),
-            cn=dict(description="number of a chunk within a file"),
+            folder=dict(description="name of source folder"),
+            file=dict(description="name of source file"),
+            chunk=dict(description="number of a chunk within a file"),
             ch=dict(description="the unicode character of a slot"),
             str=dict(description="the text of a word"),
             after=dict(description="the text after a word till the next word"),
@@ -682,10 +966,16 @@ class TEI:
         )
         self.featureMeta = featureMeta
 
-        tfDir = self.tfDir
+        schema = self.schema
+        tfVersion = self.tfVersion
+        tfPath = self.tfPath
         generic = self.generic
+        generic["sourceFormat"] = "TEI"
+        generic["version"] = tfVersion
+        if schema:
+            generic["schema"] = schema
 
-        initTree(tfDir, fresh=True, gentle=True)
+        initTree(tfPath, fresh=True, gentle=True)
 
         cv = self.getConverter()
 
@@ -947,7 +1237,7 @@ class TEI:
             if isChunk(cur):
                 cur["chunkNum"] += 1
                 cur["chunk"] = cv.node("chunk")
-                cv.feature(cur["chunk"], cn=cur["chunkNum"])
+                cv.feature(cur["chunk"], chunk=cur["chunkNum"])
 
             if tag == "teiHeader":
                 cur["inHeader"] = True
@@ -1046,14 +1336,14 @@ class TEI:
                 console(xmlFolder)
 
                 cur["folder"] = cv.node("folder")
-                cv.feature(cur["folder"], name=xmlFolder)
+                cv.feature(cur["folder"], folder=xmlFolder)
 
                 for xmlFile in xmlFiles:
                     i += 1
                     console(f"\r{i:>4} {xmlFile:<50}", newline=False)
 
                     cur["file"] = cv.node("file")
-                    cv.feature(cur["file"], name=xmlFile.removesuffix(".xml"))
+                    cv.feature(cur["file"], file=xmlFile.removesuffix(".xml"))
 
                     with open(f"{sourceDir}/{xmlFolder}/{xmlFile}") as fh:
                         text = fh.read()
@@ -1092,7 +1382,7 @@ class TEI:
 
         return director
 
-    def load(self):
+    def loadTask(self):
         """Implementation of the "load" task.
 
         It loads the tf data that resides in the directory where the "convert" task
@@ -1111,14 +1401,14 @@ class TEI:
         boolean
             Whether the loading was successful.
         """
-        tfDir = self.tfDir
+        tfPath = self.tfPath
 
-        if not os.path.exists(tfDir):
-            console(f"Directory {ux(tfDir)} does not exist.")
+        if not os.path.exists(tfPath):
+            console(f"Directory {ux(tfPath)} does not exist.")
             console("No tf found, nothing to load")
             return False
 
-        TF = Fabric(locations=[tfDir])
+        TF = Fabric(locations=[tfPath])
         allFeatures = TF.explore(silent=True, show=True)
         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
         api = TF.load(loadableFeatures, silent=False)
@@ -1127,7 +1417,152 @@ class TEI:
             return True
         return False
 
-    def task(self, check=False, convert=False, load=False, test=None):
+    # APP CREATION/UPDATING
+
+    def appTask(self):
+        """Implementation of the "app" task.
+
+        It creates/updates a corpus-specific app.
+        There should be a valid TF dataset in place, because some
+        settings in the app derive from it.
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        """
+        repoDir = self.repoDir
+        myDir = self.myDir
+        appConfig = self.appConfig
+        force = self.force
+
+        itemSpecs = (
+            ("about", "docs", "about.md", False),
+            ("trans", "docs", "transcription.md", False),
+            ("config", "app", "config.yaml", True),
+            ("display", "app/static", "display.css", True),
+            ("logo", "app/static", "logo.png", True),
+        )
+        items = {
+            s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
+        }
+
+        def createConfig(itemSource, itemTarget):
+            tfVersion = self.tfVersion
+
+            with open(itemSource) as fh:
+                settings = yaml.load(fh, Loader=yaml.FullLoader)
+
+            mergeDict(settings, appConfig)
+
+            text = yaml.dump(settings, allow_unicode=True)
+
+            text = text.replace("«version»", f'"{tfVersion}"')
+
+            with open(itemTarget, "w") as fh:
+                fh.write(text)
+
+        def createAbout():
+            org = self.org
+            repo = self.repo
+            generic = self.generic
+
+            generic = "\n\n".join(
+                f"## {key}\n\n{value}\n" for (key, value) in generic.items()
+            )
+
+            return (
+                dedent(
+                    f"""
+                # Corpus {org} - {repo}
+
+                """
+                )
+                + generic
+                + dedent(
+                    """
+
+                    ## Conversion
+
+                    Converted from TEI to Text-Fabric
+
+                    ## See also
+
+                    *   [transcription](transcription.md)
+                    """
+                )
+            )
+
+        def createTranscription():
+            org = self.org
+            repo = self.repo
+            generic = self.generic
+
+            generic = "\n\n".join(
+                f"## {key}\n\n{value}\n" for (key, value) in generic.items()
+            )
+
+            return (
+                dedent(
+                    f"""
+                # Corpus {org} - {repo}
+
+                """
+                )
+                + DOC_TRANS
+                + dedent(
+                    """
+
+                    ## See also
+
+                    *   [about](about.md)
+                    """
+                )
+            )
+
+        console("App updating ...")
+
+        for (name, info) in items.items():
+            parent = info["parent"]
+            file = info["file"]
+            hasTemplate = info["hasTemplate"]
+
+            targetDir = f"{repoDir}/{parent}"
+            itemTarget = f"{targetDir}/{file}"
+            fileParts = file.rsplit(".", 1)
+            if len(fileParts) == 1:
+                fileParts = [file, ""]
+            (fileBase, fileExt) = fileParts
+            itemTargetGen = f"{targetDir}/{fileBase}_generated.{fileExt}"
+            itemExists = fileExists(itemTarget)
+            itemGenExists = fileExists(itemTargetGen)
+
+            existRep = "exists " if itemExists else "missing"
+            changeRep = "generated" if itemExists else "added   "
+
+            initTree(targetDir, fresh=False)
+
+            if force:
+                target = itemTarget
+                if itemGenExists:
+                    fileRemove(itemTargetGen)
+            else:
+                if itemExists:
+                    target = itemTargetGen
+
+            if hasTemplate:
+                sourceDir = f"{myDir}/{parent}"
+                itemSource = f"{sourceDir}/{file}"
+                (createConfig if name == "config" else fileCopy)(itemSource, target)
+
+            else:
+                with open(target, "w") as fh:
+                    fh.write(
+                        (createAbout if name == "about" else createTranscription)()
+                    )
+            console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
+
+    def task(self, check=False, convert=False, load=False, app=False, test=None):
         """Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
@@ -1146,6 +1581,8 @@ class TEI:
             Whether to carry out the "convert" task.
         load: boolean, optional False
             Whether to carry out the "load" task.
+        app: boolean, optional False
+            Whether to carry out the "app" task.
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
@@ -1160,7 +1597,7 @@ class TEI:
         """
         sourceDir = self.sourceDir
         reportDir = self.reportDir
-        tfDir = self.tfDir
+        tfPath = self.tfPath
 
         if test is not None:
             self.testMode = test
@@ -1169,14 +1606,17 @@ class TEI:
 
         if check:
             console(f"TEI to TF checking: {ux(sourceDir)} => {ux(reportDir)}")
-            good = self.check()
+            good = self.checkTask()
 
         if good and convert:
-            console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfDir)}")
-            good = self.convert()
+            console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
+            good = self.convertTask()
 
         if good and load:
-            good = self.load()
+            good = self.loadTask()
+
+        if good and app:
+            good = self.appTask()
 
         return good
 
@@ -1204,7 +1644,7 @@ class TEI:
             an return a status code: 0 for succes, 1 for failure.
         """
         programRep = "TEI-converter" if program is None else program
-        possibleTasks = {"check", "convert", "load"}
+        possibleTasks = {"check", "convert", "load", "app"}
         possibleFlags = {"test"}
         possibleArgs = possibleTasks | possibleFlags
 
@@ -1231,3 +1671,6 @@ class TEI:
             sys.exit(0)
         else:
             sys.exit(1)
+
+
+__pdoc__["TEI"] = DOC_TRANS
