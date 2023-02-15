@@ -998,6 +998,20 @@ Recorder()
 
 ---
 
+## TEI import
+
+```
+from tf.convert.tei import TEI
+```
+
+```
+T = TEI(...)
+```
+:   convert TEI source to full-fledged TF dataset plus app plus docs
+:   `tf.convert.tei`
+
+---
+
 ## MQL interchange
 
 ```

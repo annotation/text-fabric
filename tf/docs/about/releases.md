@@ -21,6 +21,9 @@ This is a generic, but also somewhat dumb, converter that
 takes all information in a nest of TEI files and transforms
 it into a valid and ready-to-use TF dataset.
 
+But it is also a somewhat smart, because it generates a TF app
+and documentation for the new dataset.
+
 See `tf.convert.tei`
 
 New tools in `tf.tools`:
