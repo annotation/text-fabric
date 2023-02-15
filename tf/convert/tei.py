@@ -12,6 +12,10 @@ TEI schema. From this the set of complex, mixed elements is distilled.
 If the TEI source conforms to a customised TEI schema, you can pass it to the TEI
 importer, and it will read it and override the generic information of the TEI elements.
 
+The converter goes the extra mile: it generates a TF-app and documentation
+(an *about.md* file and a *transcription.md* file), in such a way that the Text-Fabric
+browser is instantly usable.
+
 The TEI conversion is rather straightforward because of some conventions
 that cannot be changed.
 
@@ -1042,10 +1046,6 @@ class TEI:
 
         IN_WORD_HYPHENS = {HY, "-"}
 
-        TEI_LINK_ATTS = (
-            "https://www.tei-c.org/release/doc/tei-p5-doc/en/html/REF-ATTS.html"
-        )
-
         ZWSP = "\u200b"  # zero-width space
 
         sourceDir = self.sourceDir
@@ -1374,7 +1374,7 @@ class TEI:
                 if fName not in featureMeta:
                     cv.meta(
                         fName,
-                        description=f"this is TEI attribute {fName}, see {TEI_LINK_ATTS}",
+                        description=f"this is TEI attribute {fName}",
                         valueType="str",
                     )
             console("source reading done")
