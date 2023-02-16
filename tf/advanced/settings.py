@@ -407,6 +407,33 @@ Default:
 
 ---
 
+### `pages`
+
+The url pattern of the Pages publication service of the backend, in case it is
+unpredicatable from the backend itself.
+
+If this value is `None`, the following defaults are used, depending on the choice of
+backend:
+
+*   for `github.com` the default is `github.io`,
+    so pages are addressed by *org*`.github.io/`*repo*;
+*   for `gitlab.com` the default is `gitlab.io`,
+    so pages are addressed by *org*`.gitlab.io/`*repo*;
+*   for on-premiss gitlab, e.g. `git.diginfra.net` the default is
+    `pages.diginfra.net`,
+    so pages are addressed by *org*`.pages.diginfra.net/`*repo*;
+
+If these defaults do not work for a particular situation, you can change the
+pattern here. For example, in the last case above, if the on-premiss gitlab has a
+repository `mondriaan/letters` whose pages are served on
+`mondriaan.diginfra.vu/letters`, you have to specify `pages="diginfra.vu"` .
+
+
+Default:
+:   void `None`
+
+---
+
 ### `webBase`
 
 If present, the base url for an online edition of the corpus.
@@ -1043,6 +1070,7 @@ PROVENANCE_DEFAULTS = (
     ("graphicsRelative", None),
     ("version", None),
     ("branch", BRANCH_DEFAULT),
+    ("pages", None),
     ("moduleSpecs", ()),
     ("zip", None),
     ("corpus", "TF dataset (unspecified)"),

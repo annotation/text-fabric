@@ -301,7 +301,6 @@ class Make:
             generatorUrl=f"{URL_TFDOC}/client/make/build.html",
             sourceUrl=f"{bUrl}/«org»/«searchRepo»/tree/master/layeredsearch",
             issueUrl=f"{bUrl}/«org»/«searchRepo»/issues",
-            tutUrl=f"{BACKEND_REP(backend, 'urlnb')}/«org»/«repo»/blob/master/tutorial/start.ipynb",
             staticDir=STATIC_DIR,
             appDir=f"{cloneBase}/«org»/«searchRepo»",
             localDir=f"«appDir»/{TEMP}",
@@ -495,11 +494,6 @@ class Make:
                         "«writingUrl»",
                         "characters and transliteration for «writing»",
                     ),
-                    related=(
-                        "text-fabric «org»/«repo»",
-                        "«tutUrl»",
-                        "using Text-Fabric on the same corpus",
-                    ),
                 ),
             )
 
@@ -563,6 +557,8 @@ class Make:
 
     def makeClientSettings(self):
         C = self.C
+        org = self.org
+        repo = self.repo
         layerSettings = C.layerSettings
         A = self.A
         api = A.api
@@ -579,6 +575,14 @@ class Make:
         # set up the configuration that informs the client code
         # and the code that generates the data for the client
 
+        urls = C.urls
+        tutUrl = self.A.flexLink("tut")
+        urls["related"] = (
+            f"text-fabric {org}/{repo}",
+            tutUrl,
+            "using Text-Fabric on the same corpus",
+        )
+
         clientConfig = dict(
             memSavingMethod=C.memSavingMethod,
             mainConfig=C.mainConfig,
@@ -588,7 +592,7 @@ class Make:
                 backend=C.backend,
                 org=C.org,
                 repo=C.repo,
-                urls=C.urls,
+                urls=urls,
                 description=C.description,
             ),
             ntypes=typeSeq,

@@ -10,6 +10,7 @@ from textwrap import dedent
 from ..parameters import (
     BACKEND_REP,
     URL_TFDOC,
+    URL_NB,
     SEARCHREF,
     APIREF,
     APP_APP,
@@ -54,6 +55,7 @@ def linksApi(app, silent=SILENT_D):
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
+    app.flexLink = types.MethodType(flexLink, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
 
@@ -73,7 +75,6 @@ def linksApi(app, silent=SILENT_D):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = BACKEND_REP(backend, "tut", org=org, repo=repo, branch=branch)
     apiVersionRep = "" if apiVersion is None else f" v{apiVersion}"
 
     dataName = f"{org} - {repo} {version}"
@@ -152,7 +153,7 @@ def linksApi(app, silent=SILENT_D):
     tutLink = (
         outLink(
             "Tutorial",
-            tutUrl,
+            flexLink(app, "tut"),
             "Tutorial in Jupyter Notebook",
             asHtml=inNb or _browse,
         )
@@ -912,3 +913,57 @@ def provenanceLink(
         )
     )
     return (text, url)
+
+
+def flexLink(app, kind):
+    """Produce documentation links that are heavily dependent on the backend.
+
+    These are links to tutorials and other documentation.
+
+    If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
+    But if the backend is on-premiss, we assume that notebooks are
+    converted to html and then published on the Pages of the on-premiss GitLab.
+
+    What exactly the link to such an on-premiss Pages service is, may depend on
+    a config setting.
+
+    This function resolves all that.
+
+    !!! note "Converting notebooks to HTML"
+        There is now a tool in text-fabric to convert a directory of notebooks to
+        HTML. See `tf.tools.nbconvert`.
+
+    Parameters
+    ----------
+    kind: string
+        Indicates what kind of url value should be returned:
+
+        *   `pages`: url of the repo in the Pages service of the backend;
+        *   `tut`: url of the start tutorial, either on NB viewer or in the Pages
+            service of the backend.
+
+    Returns
+    -------
+        string
+            The complete url.
+    """
+    backend = app.backend
+    aContext = app.context
+    org = aContext.org or ""
+    repo = aContext.repo or ""
+    branch = aContext.provenanceSpec["branch"]
+    pages = aContext.provenanceSpec["pages"]
+
+    if kind == "pages":
+        pages = pages or BACKEND_REP(backend, kind)
+        return f"https://{org}.{pages}/{repo}"
+
+    if kind == "tut":
+        be = BACKEND_REP(backend, "norm")
+        onPremise = be not in {GL, GH}
+
+        if onPremise:
+            pages = pages or BACKEND_REP(backend, "pages")
+            return f"https://{org}.{pages}/{repo}/tutorial/start.html"
+
+        return f"{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb"

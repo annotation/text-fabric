@@ -13,7 +13,7 @@ def normpath(path):
     return None if path is None else path.replace("\\", "/")
 
 
-VERSION = "11.1.4"
+VERSION = '11.2.0'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -153,7 +153,7 @@ URL_NB = "https://nbviewer.jupyter.org"
 """Base url of NB-viewer."""
 
 
-def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
+def BACKEND_REP(be, kind, default=None):
     """Various backend dependent values.
 
     First of all, the backend value is
@@ -196,10 +196,6 @@ def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
         Explanation: this is used to supply a backend specifier to a module
         but only if that module has a different backend than the main module.
 
-    org, repo, branch: string, optional None
-        An organization and repository and branch in a backend.
-        Only relevant for representation `tut`.
-
     Returns
     -------
         string
@@ -213,6 +209,7 @@ def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
         if be in {GL, f"{GL}.com"}
         else be
     )
+    beTail = ".".join(be.split(".")[1:])
 
     if kind == "norm":
         return be
@@ -245,21 +242,13 @@ def BACKEND_REP(be, kind, org=None, repo=None, branch=None, default=None):
     if kind == "urlnb":
         return f"{URL_NB}/{be}"
 
-    if kind == "tut":
-        onPremise = be not in {GL, GH}
-        return (
-            f"https://{org}.pages.{'.'.join(be.split('.')[1:])}/{repo}/start.html"
-            if onPremise
-            else f"{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb"
-        )
-
     if kind == "pages":
         return (
             f"{GH}.io"
             if be == GH
             else f"{GL}.io"
             if be == GL
-            else f"{'.'.join(be.split('.'))[0:-1]}.io"
+            else f"pages.{beTail}"
         )
     return None
 

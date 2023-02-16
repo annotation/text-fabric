@@ -2,43 +2,50 @@
 
 ## Initialisation, configuration, meta data, and linking
 
-```
+``` python
 A = use('org/repo')
 ```
 :   start up and load a corpus from a repository and deliver its API.
 :   See `tf.about.usefunc`
 
-```
+``` python
 A.load(features)
 ```
 :   Load an extra bunch of features. 
 :   `tf.advanced.app.App.load`
 
-```
+``` python
 A.showContext(...)
 ```
 :   show app settings
 :   `tf.advanced.settings.showContext`
 
-```
+``` python
 A.header(allMeta=False)
 ```
 :   show colofon
 :   `tf.advanced.links.header`
 
-```
+``` python
 A.showProvenance(...)
 ```
 :   show provenance of code and data
 :   `tf.advanced.links.showProvenance`
 
-```
+``` python
 A.webLink(n, ...)
 ```
 :   hyperlink to node n on the web
 :   `tf.advanced.links.webLink`
 
+``` python
+A.flexLink("pages")
+A.flexLink("tut")
 ```
+:   hyperlink to app tutorial and documentation
+:   `tf.advanced.links.flexLink`
+
+``` python
 A.isLoaded(features=None)
 ```
 :   Show information about loaded features
@@ -48,97 +55,97 @@ A.isLoaded(features=None)
 
 ## Displaying
 
-```
+``` python
 A.specialCharacters()
 ```
 :   show all hard-to-type characters in the corpus in a widget
 :   `tf.advanced.text.specialCharacters`
 
-```
+``` python
 A.showFormats()
 ```
 :   show all text formats and their definitions
 :   `tf.advanced.text.showFormats`
 
-```
+``` python
 A.dm(markdownString)
 ```
 :   display markdown string in notebook
 :   `tf.advanced.helpers.dm`
 
-```
+``` python
 A.dh(htmlString)
 ```
 :   display HTML string in notebook
 :   `tf.advanced.helpers.dh`
 
-```
+``` python
 A.method(option1=value1, option2=value2, ...)
 ```
 :   Many of the following methods accept these options as keyword arguments: 
 :   `tf.advanced.options`
 
-```
+``` python
 A.displayShow(...)
 ```
 :   show display options
 :   `tf.advanced.display.displayShow`
 
-```
+``` python
 A.displayReset(...)
 ```
 :   reset display options
 :   `tf.advanced.display.displayReset`
 
-```
+``` python
 A.displaySetup(...)
 ```
 :   set up display options
 :   `tf.advanced.display.displaySetup`
 
-```
+``` python
 A.table(results, ...)
 ```
 :   plain rendering of tuple of tuples of node
 :   `tf.advanced.display.table`
 
-```
+``` python
 A.plainTuple(tup, ...)
 ```
 :   plain rendering of tuple of node
 :   `tf.advanced.display.plainTuple`
 
-```
+``` python
 A.plain(node, ...)
 ```
 :   plain rendering of node
 :   `tf.advanced.display.plain`
 
-```
+``` python
 A.show(results, ...)
 ```
 :   pretty rendering of tuple of tuples of node
 :   `tf.advanced.display.show`
 
-```
+``` python
 A.prettyTuple(tup, ...)
 ```
 :   pretty rendering of tuple of node
 :   `tf.advanced.display.prettyTuple`
 
-```
+``` python
 A.pretty(node, ...)
 ```
 :   pretty rendering of node
 :   `tf.advanced.display.pretty`
 
-```
+``` python
 A.unravel(node, ...)
 ```
 :   convert a graph to a tree
 :   `tf.advanced.unravel.unravel`
 
-```
+``` python
 A.getCss()
 ```
 :   get the complete CSS stylesheet for this app
@@ -148,7 +155,7 @@ A.getCss()
 
 ## Search (high level)
 
-```
+``` python
 A.search(...)
 ```
 :   search, collect and deliver results, report number of results
@@ -158,19 +165,19 @@ A.search(...)
 
 ## Sections and Structure
 
-```
+``` python
 A.nodeFromSectionStr(...)
 ```
 :   lookup node for sectionheading
 :   `tf.advanced.sections.nodeFromSectionStr`
 
-```
+``` python
 A.sectionStrFromNode(...)
 ```
 :   lookup section heading for node
 :   `tf.advanced.sections.sectionStrFromNode`
 
-```
+``` python
 A.structureStrFromNode(...)
 ```
 :   lookup structure heading for node
@@ -182,21 +189,21 @@ A.structureStrFromNode(...)
 
 See also `tf.about.volumes`.
 
-```
+``` python
 A.getVolumes()
 ```
 :   list all volumes of this dataset
 :   `tf.fabric.Fabric.getVolumes`
 
 
-```
+``` python
 A.extract(volumes, ...)
 ```
 :   export volumes based on a volume specification
 :   `tf.fabric.Fabric.extract`
 
 
-```
+``` python
 A.collect(volumes, ...)
 ```
 :   collect several volumes into a new collection
@@ -207,7 +214,7 @@ A.collect(volumes, ...)
 
 ## Export to Excel
 
-```
+``` python
 A.export(results, ...)
 ```
 :   export formatted data
@@ -217,19 +224,19 @@ A.export(results, ...)
 
 # Logging
 
-```
+``` python
 A.dm(markdownString)
 ```
 :   display markdown string in notebook
 :   `tf.advanced.helpers.dm`
 
-```
+``` python
 A.dh(htmlString)
 ```
 :   display HTML string in notebook
 :   `tf.advanced.helpers.dh`
 
-```
+``` python
 A.version
 ```
 :   version number of data of the corpus.
@@ -237,55 +244,55 @@ A.version
 
 The following methods work also for `TF.` instead of `A.`:
 
-```
+``` python
 A.banner
 ```
 :   banner of the Text-Fabric program.
 :   `tf.fabric.Fabric.banner`
 
-```
+``` python
 A.isSilent()
 ```
 :   report the verbosity of Text-Fabric
 :   `tf.core.timestamp.Timestamp.isSilent`
 
-```
+``` python
 A.silentOn(deep=False)
 ```
 :   make TF (deeply) silent from now on.
 :   `tf.core.timestamp.Timestamp.silentOn`
 
-```
+``` python
 A.silentOff()
 ```
 :   make TF talkative from now on.
 :   `tf.core.timestamp.Timestamp.silentOff`
 
-```
+``` python
 A.setSilent(silent)
 ```
 :   set the verbosity of Text-Fabric.
 :   `tf.core.timestamp.Timestamp.setSilent`
 
-```
+``` python
 A.indent(level=None, reset=False)
 ```
 :   Sets up indentation and timing of following messages
 :   `tf.core.timestamp.Timestamp.indent`
 
-```
+``` python
 A.info(msg, tm=True, nl=True, ...)
 ```
 :   informational message
 :   `tf.core.timestamp.Timestamp.info`
 
-```
+``` python
 A.warning(msg, tm=True, nl=True, ...)
 ```
 :   warning message
 :   `tf.core.timestamp.Timestamp.warning`
 
-```
+``` python
 A.error(msg, tm=True, nl=True, ...)
 ```
 :   error message
@@ -299,37 +306,37 @@ A.error(msg, tm=True, nl=True, ...)
 
 Read about the canonical ordering here: `tf.core.nodes`.
 
-```
+``` python
 N.walk()
 ```
 :   generator of all nodes in canonical ordering
 :   `tf.core.nodes.Nodes.walk`
 
-```
+``` python
 N.sortNodes(nodes)
 ```
 :   sorts `nodes` in the canonical ordering
 :   `tf.core.nodes.Nodes.sortNodes`
 
-```
+``` python
 N.otypeRank[nodeType]
 ```
 :   ranking position of `nodeType`
 :   `tf.core.nodes.Nodes.otypeRank`
 
-```
+``` python
 N.sortKey(node)
 ```
 :   defines the canonical ordering on nodes
 :   `tf.core.nodes.Nodes.sortKey`
 
-```
+``` python
 N.sortKeyTuple(tup)
 ```
 :   extends the canonical ordering on nodes to tuples of nodes
 :   `tf.core.nodes.Nodes.sortKeyTuple`
 
-```
+``` python
 N.sortKeyChunk(node)
 ```
 :   defines the canonical ordering on node chunks
@@ -339,43 +346,43 @@ N.sortKeyChunk(node)
 
 ## `F.` Node features
 
-```
+``` python
 Fall()
 ```
 :   all loaded feature names (node features only)
 :   `tf.core.api.Api.Fall`
 
-```
+``` python
 F.fff.v(node)
 ```
 :   get value of node feature `fff`
 :   `tf.core.nodefeature.NodeFeature.v`
 
-```
+``` python
 F.fff.s(value)
 ```
 :   get nodes where feature `fff` has `value`
 :   `tf.core.nodefeature.NodeFeature.s`
 
-```
+``` python
 F.fff.freqList(...)
 ```
 :   frequency list of values of `fff`
 :   `tf.core.nodefeature.NodeFeature.freqList`
 
-```
+``` python
 F.fff.items(...)
 ```
 :   generator of all entries of `fff` as mapping from nodes to values
 :   `tf.core.nodefeature.NodeFeature.items`
 
-```
+``` python
 F.fff.meta
 ```
 :   meta data of feature `fff`
 :   `tf.core.nodefeature.NodeFeature.meta`
 
-```
+``` python
 Fs('fff')
 ```
 :   identical to `F.ffff`, usable if name of feature is variable
@@ -387,55 +394,55 @@ Fs('fff')
 
 Maps nodes to their types.
 
-```
+``` python
 F.otype.v(node)
 ```
 :   get type of `node`
 :   `tf.core.otypefeature.OtypeFeature.v`
 
-```
+``` python
 F.otype.s(nodeType)
 ```
 :   get all nodes of type `nodeType`
 :   `tf.core.otypefeature.OtypeFeature.s`
 
-```
+``` python
 F.otype.sInterval(nodeType)
 ```
 :   gives start and ending nodes of `nodeType`
 :   `tf.core.otypefeature.OtypeFeature.sInterval`
 
-```
+``` python
 F.otype.items(...)
 ```
 :   generator of all (node, type) pairs.
 :   `tf.core.otypefeature.OtypeFeature.items`
 
-```
+``` python
 F.otype.meta
 ```
 :   meta data of feature `otype`
 :   `tf.core.otypefeature.OtypeFeature.meta`
 
-```
+``` python
 F.otype.maxSlot
 ```
 :   the last slot node
 :   `tf.core.otypefeature.OtypeFeature.maxSlot`
 
-```
+``` python
 F.otype.maxNode
 ```
 :   the last node
 :   `tf.core.otypefeature.OtypeFeature.maxNode`
 
-```
+``` python
 F.otype.slotType
 ```
 :   the slot type
 :   `tf.core.otypefeature.OtypeFeature.slotType`
 
-```
+``` python
 F.otype.all
 ```
 :   sorted list of all node types
@@ -445,49 +452,49 @@ F.otype.all
 
 ## `E.` Edge features
 
-```
+``` python
 Eall()
 ```
 :   all loaded feature names (edge features only)
 :   `tf.core.api.Api.Eall`
 
-```
+``` python
 E.fff.f(node)
 ```
 :   get value of feature `fff` for edges *from* node
 :   `tf.core.edgefeature.EdgeFeature.f`
 
-```
+``` python
 E.fff.t(node)
 ```
 :   get value of feature `fff` for edges *to* node
 :   `tf.core.edgefeature.EdgeFeature.t`
 
-```
+``` python
 E.fff.freqList(...)
 ```
 :   frequency list of values of `fff`
 :   `tf.core.edgefeature.EdgeFeature.freqList`
 
-```
+``` python
 E.fff.items(...)
 ```
 :   generator of all entries of `fff` as mapping from edges to values
 :   `tf.core.edgefeature.EdgeFeature.items`
 
-```
+``` python
 E.fff.b(node)
 ```
 :   get value of feature `fff` for edges *from* and *to* node
 :   `tf.core.edgefeature.EdgeFeature.b`
 
-```
+``` python
 E.fff.meta
 ```
 :   all meta data of feature `fff`
 :   `tf.core.edgefeature.EdgeFeature.meta`
 
-```
+``` python
 Es('fff')
 ```
 :   identical to `E.fff`, usable if name of feature is variable
@@ -499,19 +506,19 @@ Es('fff')
 
 Maps nodes to the set of slots they occupy.
 
-```
+``` python
 E.oslots.items(...)
 ```
 :   generator of all entries of `oslots` as mapping from nodes to sets of slots
 :   `tf.core.oslotsfeature.OslotsFeature.items`
 
-```
+``` python
 E.oslots.s(node)
 ```
 :   set of slots linked to `node`
 :   `tf.core.oslotsfeature.OslotsFeature.s`
 
-```
+``` python
 E.oslots.meta
 ```
 :   all meta data of feature `oslots`
@@ -521,31 +528,31 @@ E.oslots.meta
 
 ## `L.` Locality
 
-```
+``` python
 L.i(node, otype=...)
 ```
 :   go to intersecting nodes
 :   `tf.core.locality.Locality.i`
 
-```
+``` python
 L.u(node, otype=...)
 ```
 :   go one level up
 :   `tf.core.locality.Locality.u`
 
-```
+``` python
 L.d(node, otype=...)
 ```
 :   go one level down
 :   `tf.core.locality.Locality.d`
 
-```
+``` python
 L.p(node, otype=...)
 ```
 :   go to adjacent previous nodes
 :   `tf.core.locality.Locality.p`
 
-```
+``` python
 L.n(node, otype=...)
 ```
 :   go to adjacent next nodes
@@ -555,7 +562,7 @@ L.n(node, otype=...)
 
 ## `T.` Text
 
-```
+``` python
 T.text(node, fmt=..., ...)
 ```
 :   give formatted text associated with node
@@ -567,19 +574,19 @@ T.text(node, fmt=..., ...)
 
 Rigid 1 or 2 or 3 sectioning system
 
-```
+``` python
 T.sectionTuple(node)
 ```
 :   give tuple of section nodes that contain node
 :   `tf.core.text.Text.sectionTuple`
 
-```
+``` python
 T.sectionFromNode(node)
 ```
 :   give section heading of node
 :   `tf.core.text.Text.sectionFromNode`
 
-```
+``` python
 T.nodeFromSection(section)
 ```
 :   give node for section heading
@@ -591,49 +598,49 @@ T.nodeFromSection(section)
 
 Flexible multilevel sectioning system
 
-```
+``` python
 T.headingFromNode(node)
 ```
 :   give structure heading of node
 :   `tf.core.text.Text.headingFromNode`
 
-```
+``` python
 T.nodeFromHeading(heading)
 ```
 :   give node for structure heading
 :   `tf.core.text.Text.nodeFromHeading`
 
-```
+``` python
 T.structureInfo()
 ```
 :   give summary of dataset structure
 :   `tf.core.text.Text.structureInfo`
 
-```
+``` python
 T.structure(node)
 ```
 :   give structure of `node` and all in it.
 :   `tf.core.text.Text.structure`
 
-```
+``` python
 T.structurePretty(node)
 ```
 :   pretty print structure of `node` and all in it.
 :   `tf.core.text.Text.structurePretty`
 
-```
+``` python
 T.top()
 ```
 :   give all top-level structural nodes in the dataset
 :   `tf.core.text.Text.top`
 
-```
+``` python
 T.up(node)
 ```
 :   gives parent of structural node
 :   `tf.core.text.Text.up`
 
-```
+``` python
 T.down(node)
 ```
 :   gives children of structural node
@@ -647,25 +654,25 @@ T.down(node)
 
 ### Preparation
 
-```
+``` python
 S.search(query, limit=None)
 ```
 :   Query the TF dataset with a template
 :   `tf.search.search.Search.search`
 
-```
+``` python
 S.study(query, ...)
 ```
 :   Study the query in order to set up a plan
 :   `tf.search.search.Search.study`
 
-```
+``` python
 S.showPlan(details=False)
 ```
 :   Show the search plan resulting from the last study.
 :   `tf.search.search.Search.showPlan`
 
-```
+``` python
 S.relationsLegend()
 ```
 :   Catalog of all relational devices in search templates
@@ -675,19 +682,19 @@ S.relationsLegend()
 
 ### Fetching results
 
-```
+``` python
 S.count(progress=None, limit=None)
 ```
 :   Count the results, up to a limit
 :   `tf.search.search.Search.count`
 
-```
+``` python
 S.fetch(limit=None, ...)
 ```
 :   Fetches the results, up to a limit
 :   `tf.search.search.Search.fetch`
 
-```
+``` python
 S.glean(tup)
 ```
 :   Renders a single result into something human readable.
@@ -697,7 +704,7 @@ S.glean(tup)
 
 ### Implementation
 
-```
+``` python
 S.tweakPerformance(...)
 ```
 :   Set certain parameters that influence the performance of search.
@@ -711,68 +718,68 @@ Access to precomputed data: `tf.core.computed.Computeds`.
 
 All components have just one useful attribute: `.data`.
 
-```
+``` python
 Call()
 ```
 :   all precomputed data component names
 :   `tf.core.api.Api.Call`
 
-```
+``` python
 Cs('ccc')
 ```
 :   identical to `C.ccc`, usable if name of component is variable
 :   `tf.core.api.Api.Cs`
 
-```
+``` python
 C.levels.data
 ```
 :   various statistics on node types
 :   `tf.core.prepare.levels`
 
-```
+``` python
 C.order.data
 ```
 :   the canonical order of the nodes (`tf.core.nodes`)
 :   `tf.core.prepare.order`
 
-```
+``` python
 C.rank.data
 ```
 :   the rank of the nodes in the canonical order (`tf.core.nodes`)
 :   `tf.core.prepare.rank`
 
-```
+``` python
 C.levUp.data
 ```
 :   feeds the `tf.core.locality.Locality.u` function
 :   `tf.core.prepare.levUp`
 
-```
+``` python
 C.levDown.data
 ```
 :   feeds the `tf.core.locality.Locality.d` function
 :   `tf.core.prepare.levDown`
 
-```
+``` python
 C.boundary.data
 ```
 :   feeds the `tf.core.locality.Locality.p` and `tf.core.locality.Locality.n`
     functions
 :   `tf.core.prepare.boundary`
 
-```
+``` python
 C.characters.data
 ```
 :   frequency list of characters in a corpus, separately for all the text formats
 :   `tf.core.prepare.characters`
 
-```
+``` python
 C.sections.data
 ```
 :   feeds the section part of `tf.core.text`
 :   `tf.core.prepare.sections`
 
-```
+``` python
 C.structure.data
 ```
 :   feeds the structure part of `tf.core.text`
@@ -784,7 +791,7 @@ C.structure.data
 
 ## Loading
 
-```
+``` python
 TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent="auto")
 ```
 :   Initialize API on work or single volume or collection of a work
@@ -794,43 +801,43 @@ TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silen
 :   `tf.fabric.Fabric`
 
 
-```
+``` python
 TF.isLoaded(features=None)
 ```
 :   Show information about loaded features
 :   `tf.core.api.Api.isLoaded`
 
-```
+``` python
 TF.explore(show=True)
 ```
 :   Get features by category, loaded or unloaded
 :   `tf.fabric.Fabric.explore`
 
-```
+``` python
 TF.loadAll(silent="auto")
 ```
 :   Load all loadable features. 
 :   `tf.fabric.Fabric.loadAll`
 
-```
+``` python
 TF.load(features, add=False)
 ```
 :   Load a bunch of features from scratch or additionally. 
 :   `tf.fabric.Fabric.load`
 
-```
+``` python
 TF.ensureLoaded(features)
 ```
 :   Make sure that features are loaded.
 :   `tf.core.api.Api.ensureLoaded`
 
-```
+``` python
 TF.makeAvailableIn(globals())
 ```
 :   Make the members of the core API available in the global scope
 :   `tf.core.api.Api.makeAvailableIn`
 
-```
+``` python
 TF.ignored
 ```
 :   Which features have been overridden.
@@ -842,21 +849,21 @@ TF.ignored
 
 See also `tf.about.volumes`.
 
-```
+``` python
 TF.getVolumes()
 ```
 :   list all volumes of this dataset
 :   `tf.fabric.Fabric.getVolumes`
 
 
-```
+``` python
 TF.extract(volumes, ...)
 ```
 :   export volumes based on a volume specification
 :   `tf.fabric.Fabric.extract`
 
 
-```
+``` python
 TF.collect(volumes, ...)
 ```
 :   collect several volumes into a new collection
@@ -865,7 +872,7 @@ TF.collect(volumes, ...)
 
 ## Saving
 
-```
+``` python
 TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
 ```
 :   Save a bunch of newly generated features to disk.
@@ -875,23 +882,23 @@ TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
 
 ## House keeping
 
-```
+``` python
 TF.version
 ```
 :   version number of Text-Fabric.
 :   `tf.fabric.Fabric.version`
 
-```
+``` python
 TF.clearCache()
 ```
 :   clears the cache of compiled TF data
 :   `tf.fabric.Fabric.clearCache`
 
-```
+``` python
 from tf.clean import clean
 ```
 
-```
+``` python
 clean()
 ```
 :   clears the cache of compiled TF data
@@ -904,7 +911,7 @@ clean()
 TF datasets per volume or collection of a work.
 See also `tf.about.volumes`.
 
-```
+``` python
 from tf.volumes import getVolumes
 
 getVolumes(volumeDir)
@@ -912,7 +919,7 @@ getVolumes(volumeDir)
 :   List volumes in a directory.
 :   `tf.volumes.extract.getVolumes`
 
-```
+``` python
 from tf.volumes import extract
 
 extract(work, volumes, ...)
@@ -920,7 +927,7 @@ extract(work, volumes, ...)
 :   Extracts volumes from a work
 :   `tf.volumes.extract`
 
-```
+``` python
 from tf.volumes import collect
 
 collect(volumes, work, ...)
@@ -932,7 +939,7 @@ collect(volumes, work, ...)
 
 # Dataset Operations
 
-```
+``` python
 from tf.dataset import modify
 
 modify(source, target, ...)
@@ -940,7 +947,7 @@ modify(source, target, ...)
 :   Modifies a TF datasets into one new TF dataset
 :   `tf.dataset.modify`
 
-```
+``` python
 from tf.dataset import Versions
 
 Versions(api, va, vb, slotMap)
@@ -955,18 +962,18 @@ Versions(api, va, vb, slotMap)
 
 ## Custom node sets for search
 
-```
+``` python
 from tf.lib import readSets
 from tf.lib import writeSets
 ```
 
-```
+``` python
 readSets(sourceFile)
 ```
 :   reads a named sets from file
 :   `tf.lib.readSets`
 
-```
+``` python
 writeSets(sets, destFile)
 ```
 :   writes a named sets to file
@@ -976,7 +983,7 @@ writeSets(sets, destFile)
 
 ## Export to Excel
 
-```
+``` python
 A.export(results, ...)
 ```
 :   export formatted data
@@ -986,11 +993,11 @@ A.export(results, ...)
 
 ## Interchange with external annotation tools
 
-```
+``` python
 from convert.recorder import Recorder
 ```
 
-```
+``` python
 Recorder()
 ```
 :   generate annotatable plain text and import annotations
@@ -1000,11 +1007,11 @@ Recorder()
 
 ## TEI import
 
-```
+``` python
 from tf.convert.tei import TEI
 ```
 
-```
+``` python
 T = TEI(...)
 ```
 :   convert TEI source to full-fledged TF dataset plus app plus docs
@@ -1014,13 +1021,13 @@ T = TEI(...)
 
 ## MQL interchange
 
-```
+``` python
 TF.exportMQL()
 ```
 :   export loaded dataset to MQL
 : `tf.fabric.Fabric.exportMQL`
 
-```
+``` python
 TF.importMQL()
 ```
 :   convert MQL file to TF dataset
@@ -1030,11 +1037,11 @@ TF.importMQL()
 
 ## Walker conversion
 
-```
+``` python
 from tf.convert.walker import CV
 ```
 
-```
+``` python
 cv = CV(TF)
 ```
 :   convert structured data to TF dataset
@@ -1044,11 +1051,11 @@ cv = CV(TF)
 
 ## Exploding
 
-```
+``` python
 from tf.convert.tf import explode
 ```
 
-```
+``` python
 explode(inLocation, outLocation)
 ```
 :   explode TF feature files to straight data files without optimizations
@@ -1058,17 +1065,17 @@ explode(inLocation, outLocation)
 
 # TF-App development
 
-```
+``` python
 A.reuse()
 ```
 :   reload config data
 :   `tf.advanced.app.App.reuse`
 
-```
+``` python
 from tf.advanced.find import loadModule
 ```
 
-```
+``` python
 mmm = loadModule("mmm", *args)
 ```
 :   load specific module supporting the corpus app
@@ -1080,11 +1087,13 @@ mmm = loadModule("mmm", *args)
 :   settings for a TF-App
 :   `tf.advanced.settings`
 
+---
+
 # Layered search
 
-(these are commandline instructions)
+(these work on the commandline if Text-Fabric is installed)
 
-```
+``` sh
 text-fabric-make {dataset} {client} ship
 ```
 :   generate a static site with a search interface in client-side javascript and
@@ -1092,11 +1101,46 @@ text-fabric-make {dataset} {client} ship
     If `{client}` is left out, generate all clients that are defined for this
     dataset.
     Clients are defined in the `app-{dataset}` repo, under `layeredsearch`.
+    More commands
+    [here](https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py).
+:   `tf.client.make.build`
 
-```
+``` sh
 text-fabric-make {dataset} serve
 ```
 :   serve the search interfaces defined for `{dataset}` locally.
 
 More commands
 [here](https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py).
+
+---
+
+# Command-line tools
+
+(these work on the commandline if Text-Fabric is installed)
+
+``` sh
+text-fabric {org}/{repo}
+```
+:   Starts the text-fabric browser for the corpus in *org*/*repo*.
+:   `tf.server.start`
+
+``` sh
+text-fabric-zip {org}/{repo}
+```
+:   Zips the TF dataset in *org*/*repo* so that it can be attached to a release on
+    Github/GitLab.
+:   `tf.advanced.zipdata`
+
+``` sh
+nbconvert {inDirectory} {outDirectory}
+```
+:   Converts notebooks in *inDirectory* to HTML and stores them in *outDirectory*.
+:   `tf.tools.nbconvert`
+
+``` sh
+xmlschema analysis {schema}.xsd
+```
+:   Analyses an XML *schema* file and extracts meaningful information for processing
+    the XML that adheres to that schema.
+:   `tf.tools.xmlschema`

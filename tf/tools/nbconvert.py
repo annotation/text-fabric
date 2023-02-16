@@ -9,10 +9,14 @@ from ..core.helpers import initTree, fileCopy
 __pdoc__ = {}
 
 HELP = """
-python nbconvert.py inputDir outputDir
+
+``` sh
+nbconvert inputDir outputDir
+```
 
 Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
 Copies all other files in *inputDir* to *outputDir*.
+If *outputDir* does not exist, it will be created.
 
 Makes sure that all links in the resulting html to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.

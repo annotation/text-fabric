@@ -10,13 +10,14 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.2 (upcoming)
+### 11.2
 
-### 11.2.0 (upcoming)
+### 11.2.0
 
-2023-02-??
+2023-02-16
 
-New converter: from TEI to Text-Fabric.
+#### New converter: TEI to TF
+
 This is a generic, but also somewhat dumb, converter that
 takes all information in a nest of TEI files and transforms
 it into a valid and ready-to-use TF dataset.
@@ -26,13 +27,39 @@ and documentation for the new dataset.
 
 See `tf.convert.tei`
 
-New tools in `tf.tools`:
+#### New command line tool: nbconvert
 
-*   `tf.tools.nbconvert`: to convert a directory
-    of interlinked notebooks to HTML
-    and keeping the interlinking intact.
-*   `tf.tools.xmlschema`: to derive meaningful information
-    from an XML schema.
+``` sh
+nbconvert inDirectory outDirectory
+```
+
+Converts a directory of interlinked notebooks to HTML and keeps the
+interlinking intact.  Handy if you want to show your notebooks in the Pages
+service of GitHub or GitLab, bypassing NBViewer.
+
+See `tf.tools.nbconvert`
+
+#### New command line tool: xmlschema
+
+``` sh
+xmlschema analyse schema.xsd
+```
+
+Derives meaningful information from an XML schema.
+
+See `tf.tools.xmlschema`
+
+#### New API function: flexLink
+
+`A.flexLink()` generates an app-dependent link
+to a tutorial or document served via the Pages of GitHub or GitLab.
+
+See `tf.advanced.links.flexLink`
+
+#### Other improvements
+
+Various app-configuration improvements under the hood, solving all kinds of edge
+cases, mostly having to do with on-premiss GitLab backends.
 
 ### 11.1
 
