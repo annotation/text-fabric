@@ -26,7 +26,7 @@
 <h1 id="a-advanced-api"><code>A.</code> Advanced API</h1>
 <h2 id="initialisation-configuration-meta-data-and-linking">Initialisation, configuration, meta data, and linking</h2>
 <dl>
-<dt><pre><code>A = use('org/repo')
+<dt><pre><code class="language-python">A = use('org/repo')
 </code></pre></dt>
 <dd>
 <p>start up and load a corpus from a repository and deliver its API.</p>
@@ -34,7 +34,7 @@
 <dd>
 <p>See <code><a title="tf.about.usefunc" href="about/usefunc.html">tf.about.usefunc</a></code></p>
 </dd>
-<dt><pre><code>A.load(features)
+<dt><pre><code class="language-python">A.load(features)
 </code></pre></dt>
 <dd>
 <p>Load an extra bunch of features. </p>
@@ -42,7 +42,7 @@
 <dd>
 <p><code><a title="tf.advanced.app.App.load" href="advanced/app.html#tf.advanced.app.App.load">App.load()</a></code></p>
 </dd>
-<dt><pre><code>A.showContext(...)
+<dt><pre><code class="language-python">A.showContext(...)
 </code></pre></dt>
 <dd>
 <p>show app settings</p>
@@ -50,7 +50,7 @@
 <dd>
 <p><code><a title="tf.advanced.settings.showContext" href="advanced/settings.html#tf.advanced.settings.showContext">showContext()</a></code></p>
 </dd>
-<dt><pre><code>A.header(allMeta=False)
+<dt><pre><code class="language-python">A.header(allMeta=False)
 </code></pre></dt>
 <dd>
 <p>show colofon</p>
@@ -58,7 +58,7 @@
 <dd>
 <p><code><a title="tf.advanced.links.header" href="advanced/links.html#tf.advanced.links.header">header()</a></code></p>
 </dd>
-<dt><pre><code>A.showProvenance(...)
+<dt><pre><code class="language-python">A.showProvenance(...)
 </code></pre></dt>
 <dd>
 <p>show provenance of code and data</p>
@@ -66,7 +66,7 @@
 <dd>
 <p><code><a title="tf.advanced.links.showProvenance" href="advanced/links.html#tf.advanced.links.showProvenance">showProvenance()</a></code></p>
 </dd>
-<dt><pre><code>A.webLink(n, ...)
+<dt><pre><code class="language-python">A.webLink(n, ...)
 </code></pre></dt>
 <dd>
 <p>hyperlink to node n on the web</p>
@@ -74,7 +74,16 @@
 <dd>
 <p><code><a title="tf.advanced.links.webLink" href="advanced/links.html#tf.advanced.links.webLink">webLink()</a></code></p>
 </dd>
-<dt><pre><code>A.isLoaded(features=None)
+<dt><pre><code class="language-python">A.flexLink(&quot;pages&quot;)
+A.flexLink(&quot;tut&quot;)
+</code></pre></dt>
+<dd>
+<p>hyperlink to app tutorial and documentation</p>
+</dd>
+<dd>
+<p><code><a title="tf.advanced.links.flexLink" href="advanced/links.html#tf.advanced.links.flexLink">flexLink()</a></code></p>
+</dd>
+<dt><pre><code class="language-python">A.isLoaded(features=None)
 </code></pre></dt>
 <dd>
 <p>Show information about loaded features</p>
@@ -86,7 +95,7 @@
 <hr>
 <h2 id="displaying">Displaying</h2>
 <dl>
-<dt><pre><code>A.specialCharacters()
+<dt><pre><code class="language-python">A.specialCharacters()
 </code></pre></dt>
 <dd>
 <p>show all hard-to-type characters in the corpus in a widget</p>
@@ -94,7 +103,7 @@
 <dd>
 <p><code><a title="tf.advanced.text.specialCharacters" href="advanced/text.html#tf.advanced.text.specialCharacters">specialCharacters()</a></code></p>
 </dd>
-<dt><pre><code>A.showFormats()
+<dt><pre><code class="language-python">A.showFormats()
 </code></pre></dt>
 <dd>
 <p>show all text formats and their definitions</p>
@@ -102,7 +111,7 @@
 <dd>
 <p><code><a title="tf.advanced.text.showFormats" href="advanced/text.html#tf.advanced.text.showFormats">showFormats()</a></code></p>
 </dd>
-<dt><pre><code>A.dm(markdownString)
+<dt><pre><code class="language-python">A.dm(markdownString)
 </code></pre></dt>
 <dd>
 <p>display markdown string in notebook</p>
@@ -110,7 +119,7 @@
 <dd>
 <p><code><a title="tf.advanced.helpers.dm" href="advanced/helpers.html#tf.advanced.helpers.dm">dm()</a></code></p>
 </dd>
-<dt><pre><code>A.dh(htmlString)
+<dt><pre><code class="language-python">A.dh(htmlString)
 </code></pre></dt>
 <dd>
 <p>display HTML string in notebook</p>
@@ -118,7 +127,7 @@
 <dd>
 <p><code><a title="tf.advanced.helpers.dh" href="advanced/helpers.html#tf.advanced.helpers.dh">dh()</a></code></p>
 </dd>
-<dt><pre><code>A.method(option1=value1, option2=value2, ...)
+<dt><pre><code class="language-python">A.method(option1=value1, option2=value2, ...)
 </code></pre></dt>
 <dd>
 <p>Many of the following methods accept these options as keyword arguments: </p>
@@ -126,7 +135,7 @@
 <dd>
 <p><code><a title="tf.advanced.options" href="advanced/options.html">tf.advanced.options</a></code></p>
 </dd>
-<dt><pre><code>A.displayShow(...)
+<dt><pre><code class="language-python">A.displayShow(...)
 </code></pre></dt>
 <dd>
 <p>show display options</p>
@@ -134,7 +143,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.displayShow" href="advanced/display.html#tf.advanced.display.displayShow">displayShow()</a></code></p>
 </dd>
-<dt><pre><code>A.displayReset(...)
+<dt><pre><code class="language-python">A.displayReset(...)
 </code></pre></dt>
 <dd>
 <p>reset display options</p>
@@ -142,7 +151,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.displayReset" href="advanced/display.html#tf.advanced.display.displayReset">displayReset()</a></code></p>
 </dd>
-<dt><pre><code>A.displaySetup(...)
+<dt><pre><code class="language-python">A.displaySetup(...)
 </code></pre></dt>
 <dd>
 <p>set up display options</p>
@@ -150,7 +159,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.displaySetup" href="advanced/display.html#tf.advanced.display.displaySetup">displaySetup()</a></code></p>
 </dd>
-<dt><pre><code>A.table(results, ...)
+<dt><pre><code class="language-python">A.table(results, ...)
 </code></pre></dt>
 <dd>
 <p>plain rendering of tuple of tuples of node</p>
@@ -158,7 +167,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.table" href="advanced/display.html#tf.advanced.display.table">table()</a></code></p>
 </dd>
-<dt><pre><code>A.plainTuple(tup, ...)
+<dt><pre><code class="language-python">A.plainTuple(tup, ...)
 </code></pre></dt>
 <dd>
 <p>plain rendering of tuple of node</p>
@@ -166,7 +175,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.plainTuple" href="advanced/display.html#tf.advanced.display.plainTuple">plainTuple()</a></code></p>
 </dd>
-<dt><pre><code>A.plain(node, ...)
+<dt><pre><code class="language-python">A.plain(node, ...)
 </code></pre></dt>
 <dd>
 <p>plain rendering of node</p>
@@ -174,7 +183,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.plain" href="advanced/display.html#tf.advanced.display.plain">plain()</a></code></p>
 </dd>
-<dt><pre><code>A.show(results, ...)
+<dt><pre><code class="language-python">A.show(results, ...)
 </code></pre></dt>
 <dd>
 <p>pretty rendering of tuple of tuples of node</p>
@@ -182,7 +191,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.show" href="advanced/display.html#tf.advanced.display.show">show()</a></code></p>
 </dd>
-<dt><pre><code>A.prettyTuple(tup, ...)
+<dt><pre><code class="language-python">A.prettyTuple(tup, ...)
 </code></pre></dt>
 <dd>
 <p>pretty rendering of tuple of node</p>
@@ -190,7 +199,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.prettyTuple" href="advanced/display.html#tf.advanced.display.prettyTuple">prettyTuple()</a></code></p>
 </dd>
-<dt><pre><code>A.pretty(node, ...)
+<dt><pre><code class="language-python">A.pretty(node, ...)
 </code></pre></dt>
 <dd>
 <p>pretty rendering of node</p>
@@ -198,7 +207,7 @@
 <dd>
 <p><code><a title="tf.advanced.display.pretty" href="advanced/display.html#tf.advanced.display.pretty">pretty()</a></code></p>
 </dd>
-<dt><pre><code>A.unravel(node, ...)
+<dt><pre><code class="language-python">A.unravel(node, ...)
 </code></pre></dt>
 <dd>
 <p>convert a graph to a tree</p>
@@ -206,7 +215,7 @@
 <dd>
 <p><code><a title="tf.advanced.unravel.unravel" href="advanced/unravel.html#tf.advanced.unravel.unravel">unravel()</a></code></p>
 </dd>
-<dt><pre><code>A.getCss()
+<dt><pre><code class="language-python">A.getCss()
 </code></pre></dt>
 <dd>
 <p>get the complete CSS stylesheet for this app</p>
@@ -218,7 +227,7 @@
 <hr>
 <h2 id="search-high-level">Search (high level)</h2>
 <dl>
-<dt><pre><code>A.search(...)
+<dt><pre><code class="language-python">A.search(...)
 </code></pre></dt>
 <dd>
 <p>search, collect and deliver results, report number of results</p>
@@ -230,7 +239,7 @@
 <hr>
 <h2 id="sections-and-structure">Sections and Structure</h2>
 <dl>
-<dt><pre><code>A.nodeFromSectionStr(...)
+<dt><pre><code class="language-python">A.nodeFromSectionStr(...)
 </code></pre></dt>
 <dd>
 <p>lookup node for sectionheading</p>
@@ -238,7 +247,7 @@
 <dd>
 <p><code><a title="tf.advanced.sections.nodeFromSectionStr" href="advanced/sections.html#tf.advanced.sections.nodeFromSectionStr">nodeFromSectionStr()</a></code></p>
 </dd>
-<dt><pre><code>A.sectionStrFromNode(...)
+<dt><pre><code class="language-python">A.sectionStrFromNode(...)
 </code></pre></dt>
 <dd>
 <p>lookup section heading for node</p>
@@ -246,7 +255,7 @@
 <dd>
 <p><code><a title="tf.advanced.sections.sectionStrFromNode" href="advanced/sections.html#tf.advanced.sections.sectionStrFromNode">sectionStrFromNode()</a></code></p>
 </dd>
-<dt><pre><code>A.structureStrFromNode(...)
+<dt><pre><code class="language-python">A.structureStrFromNode(...)
 </code></pre></dt>
 <dd>
 <p>lookup structure heading for node</p>
@@ -259,7 +268,7 @@
 <h2 id="volumes-and-collections">Volumes and collections</h2>
 <p>See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.volumes</a></code>.</p>
 <dl>
-<dt><pre><code>A.getVolumes()
+<dt><pre><code class="language-python">A.getVolumes()
 </code></pre></dt>
 <dd>
 <p>list all volumes of this dataset</p>
@@ -267,7 +276,7 @@
 <dd>
 <p><code><a title="tf.fabric.Fabric.getVolumes" href="fabric.html#tf.fabric.Fabric.getVolumes">Fabric.getVolumes()</a></code></p>
 </dd>
-<dt><pre><code>A.extract(volumes, ...)
+<dt><pre><code class="language-python">A.extract(volumes, ...)
 </code></pre></dt>
 <dd>
 <p>export volumes based on a volume specification</p>
@@ -275,7 +284,7 @@
 <dd>
 <p><code><a title="tf.fabric.Fabric.extract" href="fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code></p>
 </dd>
-<dt><pre><code>A.collect(volumes, ...)
+<dt><pre><code class="language-python">A.collect(volumes, ...)
 </code></pre></dt>
 <dd>
 <p>collect several volumes into a new collection</p>
@@ -290,7 +299,7 @@
 <hr>
 <h2 id="export-to-excel">Export to Excel</h2>
 <dl>
-<dt><pre><code>A.export(results, ...)
+<dt><pre><code class="language-python">A.export(results, ...)
 </code></pre></dt>
 <dd>
 <p>export formatted data</p>
@@ -302,7 +311,7 @@
 <hr>
 <h1 id="logging">Logging</h1>
 <dl>
-<dt><pre><code>A.dm(markdownString)
+<dt><pre><code class="language-python">A.dm(markdownString)
 </code></pre></dt>
 <dd>
 <p>display markdown string in notebook</p>
@@ -310,7 +319,7 @@
 <dd>
 <p><code><a title="tf.advanced.helpers.dm" href="advanced/helpers.html#tf.advanced.helpers.dm">dm()</a></code></p>
 </dd>
-<dt><pre><code>A.dh(htmlString)
+<dt><pre><code class="language-python">A.dh(htmlString)
 </code></pre></dt>
 <dd>
 <p>display HTML string in notebook</p>
@@ -318,7 +327,7 @@
 <dd>
 <p><code><a title="tf.advanced.helpers.dh" href="advanced/helpers.html#tf.advanced.helpers.dh">dh()</a></code></p>
 </dd>
-<dt><pre><code>A.version
+<dt><pre><code class="language-python">A.version
 </code></pre></dt>
 <dd>
 <p>version number of data of the corpus.</p>
@@ -329,7 +338,7 @@
 </dl>
 <p>The following methods work also for <code>TF.</code> instead of <code>A.</code>:</p>
 <dl>
-<dt><pre><code>A.banner
+<dt><pre><code class="language-python">A.banner
 </code></pre></dt>
 <dd>
 <p>banner of the Text-Fabric program.</p>
@@ -337,7 +346,7 @@
 <dd>
 <p><code><a title="tf.fabric.Fabric.banner" href="core/fabric.html#tf.core.fabric.FabricCore.banner">Fabric.banner</a></code></p>
 </dd>
-<dt><pre><code>A.isSilent()
+<dt><pre><code class="language-python">A.isSilent()
 </code></pre></dt>
 <dd>
 <p>report the verbosity of Text-Fabric</p>
@@ -345,7 +354,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.isSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.isSilent">Timestamp.isSilent()</a></code></p>
 </dd>
-<dt><pre><code>A.silentOn(deep=False)
+<dt><pre><code class="language-python">A.silentOn(deep=False)
 </code></pre></dt>
 <dd>
 <p>make TF (deeply) silent from now on.</p>
@@ -353,7 +362,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.silentOn" href="core/timestamp.html#tf.core.timestamp.Timestamp.silentOn">Timestamp.silentOn()</a></code></p>
 </dd>
-<dt><pre><code>A.silentOff()
+<dt><pre><code class="language-python">A.silentOff()
 </code></pre></dt>
 <dd>
 <p>make TF talkative from now on.</p>
@@ -361,7 +370,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.silentOff" href="core/timestamp.html#tf.core.timestamp.Timestamp.silentOff">Timestamp.silentOff()</a></code></p>
 </dd>
-<dt><pre><code>A.setSilent(silent)
+<dt><pre><code class="language-python">A.setSilent(silent)
 </code></pre></dt>
 <dd>
 <p>set the verbosity of Text-Fabric.</p>
@@ -369,7 +378,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.setSilent" href="core/timestamp.html#tf.core.timestamp.Timestamp.setSilent">Timestamp.setSilent()</a></code></p>
 </dd>
-<dt><pre><code>A.indent(level=None, reset=False)
+<dt><pre><code class="language-python">A.indent(level=None, reset=False)
 </code></pre></dt>
 <dd>
 <p>Sets up indentation and timing of following messages</p>
@@ -377,7 +386,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.indent" href="core/timestamp.html#tf.core.timestamp.Timestamp.indent">Timestamp.indent()</a></code></p>
 </dd>
-<dt><pre><code>A.info(msg, tm=True, nl=True, ...)
+<dt><pre><code class="language-python">A.info(msg, tm=True, nl=True, ...)
 </code></pre></dt>
 <dd>
 <p>informational message</p>
@@ -385,7 +394,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.info" href="core/timestamp.html#tf.core.timestamp.Timestamp.info">Timestamp.info()</a></code></p>
 </dd>
-<dt><pre><code>A.warning(msg, tm=True, nl=True, ...)
+<dt><pre><code class="language-python">A.warning(msg, tm=True, nl=True, ...)
 </code></pre></dt>
 <dd>
 <p>warning message</p>
@@ -393,7 +402,7 @@
 <dd>
 <p><code><a title="tf.core.timestamp.Timestamp.warning" href="core/timestamp.html#tf.core.timestamp.Timestamp.warning">Timestamp.warning()</a></code></p>
 </dd>
-<dt><pre><code>A.error(msg, tm=True, nl=True, ...)
+<dt><pre><code class="language-python">A.error(msg, tm=True, nl=True, ...)
 </code></pre></dt>
 <dd>
 <p>error message</p>
@@ -407,7 +416,7 @@
 <h2 id="n-nodes"><code>N.</code> Nodes</h2>
 <p>Read about the canonical ordering here: <code><a title="tf.core.nodes" href="core/nodes.html">tf.core.nodes</a></code>.</p>
 <dl>
-<dt><pre><code>N.walk()
+<dt><pre><code class="language-python">N.walk()
 </code></pre></dt>
 <dd>
 <p>generator of all nodes in canonical ordering</p>
@@ -415,7 +424,7 @@
 <dd>
 <p><code><a title="tf.core.nodes.Nodes.walk" href="core/nodes.html#tf.core.nodes.Nodes.walk">Nodes.walk()</a></code></p>
 </dd>
-<dt><pre><code>N.sortNodes(nodes)
+<dt><pre><code class="language-python">N.sortNodes(nodes)
 </code></pre></dt>
 <dd>
 <p>sorts <code>nodes</code> in the canonical ordering</p>
@@ -423,7 +432,7 @@
 <dd>
 <p><code><a title="tf.core.nodes.Nodes.sortNodes" href="core/nodes.html#tf.core.nodes.Nodes.sortNodes">Nodes.sortNodes()</a></code></p>
 </dd>
-<dt><pre><code>N.otypeRank[nodeType]
+<dt><pre><code class="language-python">N.otypeRank[nodeType]
 </code></pre></dt>
 <dd>
 <p>ranking position of <code>nodeType</code></p>
@@ -431,7 +440,7 @@
 <dd>
 <p><code><a title="tf.core.nodes.Nodes.otypeRank" href="core/nodes.html#tf.core.nodes.Nodes.otypeRank">Nodes.otypeRank</a></code></p>
 </dd>
-<dt><pre><code>N.sortKey(node)
+<dt><pre><code class="language-python">N.sortKey(node)
 </code></pre></dt>
 <dd>
 <p>defines the canonical ordering on nodes</p>
@@ -439,7 +448,7 @@
 <dd>
 <p><code><a title="tf.core.nodes.Nodes.sortKey" href="core/nodes.html#tf.core.nodes.Nodes.sortKey">Nodes.sortKey</a></code></p>
 </dd>
-<dt><pre><code>N.sortKeyTuple(tup)
+<dt><pre><code class="language-python">N.sortKeyTuple(tup)
 </code></pre></dt>
 <dd>
 <p>extends the canonical ordering on nodes to tuples of nodes</p>
@@ -447,7 +456,7 @@
 <dd>
 <p><code><a title="tf.core.nodes.Nodes.sortKeyTuple" href="core/nodes.html#tf.core.nodes.Nodes.sortKeyTuple">Nodes.sortKeyTuple</a></code></p>
 </dd>
-<dt><pre><code>N.sortKeyChunk(node)
+<dt><pre><code class="language-python">N.sortKeyChunk(node)
 </code></pre></dt>
 <dd>
 <p>defines the canonical ordering on node chunks</p>
@@ -459,7 +468,7 @@
 <hr>
 <h2 id="f-node-features"><code>F.</code> Node features</h2>
 <dl>
-<dt><pre><code>Fall()
+<dt><pre><code class="language-python">Fall()
 </code></pre></dt>
 <dd>
 <p>all loaded feature names (node features only)</p>
@@ -467,7 +476,7 @@
 <dd>
 <p><code><a title="tf.core.api.Api.Fall" href="core/api.html#tf.core.api.Api.Fall">Api.Fall()</a></code></p>
 </dd>
-<dt><pre><code>F.fff.v(node)
+<dt><pre><code class="language-python">F.fff.v(node)
 </code></pre></dt>
 <dd>
 <p>get value of node feature <code>fff</code></p>
@@ -475,7 +484,7 @@
 <dd>
 <p><code><a title="tf.core.nodefeature.NodeFeature.v" href="core/nodefeature.html#tf.core.nodefeature.NodeFeature.v">NodeFeature.v()</a></code></p>
 </dd>
-<dt><pre><code>F.fff.s(value)
+<dt><pre><code class="language-python">F.fff.s(value)
 </code></pre></dt>
 <dd>
 <p>get nodes where feature <code>fff</code> has <code>value</code></p>
@@ -483,7 +492,7 @@
 <dd>
 <p><code><a title="tf.core.nodefeature.NodeFeature.s" href="core/nodefeature.html#tf.core.nodefeature.NodeFeature.s">NodeFeature.s()</a></code></p>
 </dd>
-<dt><pre><code>F.fff.freqList(...)
+<dt><pre><code class="language-python">F.fff.freqList(...)
 </code></pre></dt>
 <dd>
 <p>frequency list of values of <code>fff</code></p>
@@ -491,7 +500,7 @@
 <dd>
 <p><code><a title="tf.core.nodefeature.NodeFeature.freqList" href="core/nodefeature.html#tf.core.nodefeature.NodeFeature.freqList">NodeFeature.freqList()</a></code></p>
 </dd>
-<dt><pre><code>F.fff.items(...)
+<dt><pre><code class="language-python">F.fff.items(...)
 </code></pre></dt>
 <dd>
 <p>generator of all entries of <code>fff</code> as mapping from nodes to values</p>
@@ -499,7 +508,7 @@
 <dd>
 <p><code><a title="tf.core.nodefeature.NodeFeature.items" href="core/nodefeature.html#tf.core.nodefeature.NodeFeature.items">NodeFeature.items()</a></code></p>
 </dd>
-<dt><pre><code>F.fff.meta
+<dt><pre><code class="language-python">F.fff.meta
 </code></pre></dt>
 <dd>
 <p>meta data of feature <code>fff</code></p>
@@ -507,7 +516,7 @@
 <dd>
 <p><code><a title="tf.core.nodefeature.NodeFeature.meta" href="core/nodefeature.html#tf.core.nodefeature.NodeFeature.meta">NodeFeature.meta</a></code></p>
 </dd>
-<dt><pre><code>Fs('fff')
+<dt><pre><code class="language-python">Fs('fff')
 </code></pre></dt>
 <dd>
 <p>identical to <code>F.ffff</code>, usable if name of feature is variable</p>
@@ -520,7 +529,7 @@
 <h2 id="special-node-feature-otype">Special node feature <code>otype</code></h2>
 <p>Maps nodes to their types.</p>
 <dl>
-<dt><pre><code>F.otype.v(node)
+<dt><pre><code class="language-python">F.otype.v(node)
 </code></pre></dt>
 <dd>
 <p>get type of <code>node</code></p>
@@ -528,7 +537,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.v" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.v">OtypeFeature.v()</a></code></p>
 </dd>
-<dt><pre><code>F.otype.s(nodeType)
+<dt><pre><code class="language-python">F.otype.s(nodeType)
 </code></pre></dt>
 <dd>
 <p>get all nodes of type <code>nodeType</code></p>
@@ -536,7 +545,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.s" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.s">OtypeFeature.s()</a></code></p>
 </dd>
-<dt><pre><code>F.otype.sInterval(nodeType)
+<dt><pre><code class="language-python">F.otype.sInterval(nodeType)
 </code></pre></dt>
 <dd>
 <p>gives start and ending nodes of <code>nodeType</code></p>
@@ -544,7 +553,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.sInterval" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.sInterval">OtypeFeature.sInterval()</a></code></p>
 </dd>
-<dt><pre><code>F.otype.items(...)
+<dt><pre><code class="language-python">F.otype.items(...)
 </code></pre></dt>
 <dd>
 <p>generator of all (node, type) pairs.</p>
@@ -552,7 +561,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.items" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.items">OtypeFeature.items()</a></code></p>
 </dd>
-<dt><pre><code>F.otype.meta
+<dt><pre><code class="language-python">F.otype.meta
 </code></pre></dt>
 <dd>
 <p>meta data of feature <code>otype</code></p>
@@ -560,7 +569,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.meta" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.meta">OtypeFeature.meta</a></code></p>
 </dd>
-<dt><pre><code>F.otype.maxSlot
+<dt><pre><code class="language-python">F.otype.maxSlot
 </code></pre></dt>
 <dd>
 <p>the last slot node</p>
@@ -568,7 +577,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.maxSlot" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.maxSlot">OtypeFeature.maxSlot</a></code></p>
 </dd>
-<dt><pre><code>F.otype.maxNode
+<dt><pre><code class="language-python">F.otype.maxNode
 </code></pre></dt>
 <dd>
 <p>the last node</p>
@@ -576,7 +585,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.maxNode" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.maxNode">OtypeFeature.maxNode</a></code></p>
 </dd>
-<dt><pre><code>F.otype.slotType
+<dt><pre><code class="language-python">F.otype.slotType
 </code></pre></dt>
 <dd>
 <p>the slot type</p>
@@ -584,7 +593,7 @@
 <dd>
 <p><code><a title="tf.core.otypefeature.OtypeFeature.slotType" href="core/otypefeature.html#tf.core.otypefeature.OtypeFeature.slotType">OtypeFeature.slotType</a></code></p>
 </dd>
-<dt><pre><code>F.otype.all
+<dt><pre><code class="language-python">F.otype.all
 </code></pre></dt>
 <dd>
 <p>sorted list of all node types</p>
@@ -596,7 +605,7 @@
 <hr>
 <h2 id="e-edge-features"><code>E.</code> Edge features</h2>
 <dl>
-<dt><pre><code>Eall()
+<dt><pre><code class="language-python">Eall()
 </code></pre></dt>
 <dd>
 <p>all loaded feature names (edge features only)</p>
@@ -604,7 +613,7 @@
 <dd>
 <p><code><a title="tf.core.api.Api.Eall" href="core/api.html#tf.core.api.Api.Eall">Api.Eall()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.f(node)
+<dt><pre><code class="language-python">E.fff.f(node)
 </code></pre></dt>
 <dd>
 <p>get value of feature <code>fff</code> for edges <em>from</em> node</p>
@@ -612,7 +621,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.f" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.f">EdgeFeature.f()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.t(node)
+<dt><pre><code class="language-python">E.fff.t(node)
 </code></pre></dt>
 <dd>
 <p>get value of feature <code>fff</code> for edges <em>to</em> node</p>
@@ -620,7 +629,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.t" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.t">EdgeFeature.t()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.freqList(...)
+<dt><pre><code class="language-python">E.fff.freqList(...)
 </code></pre></dt>
 <dd>
 <p>frequency list of values of <code>fff</code></p>
@@ -628,7 +637,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.freqList" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.freqList">EdgeFeature.freqList()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.items(...)
+<dt><pre><code class="language-python">E.fff.items(...)
 </code></pre></dt>
 <dd>
 <p>generator of all entries of <code>fff</code> as mapping from edges to values</p>
@@ -636,7 +645,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.items" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.items">EdgeFeature.items()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.b(node)
+<dt><pre><code class="language-python">E.fff.b(node)
 </code></pre></dt>
 <dd>
 <p>get value of feature <code>fff</code> for edges <em>from</em> and <em>to</em> node</p>
@@ -644,7 +653,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.b" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.b">EdgeFeature.b()</a></code></p>
 </dd>
-<dt><pre><code>E.fff.meta
+<dt><pre><code class="language-python">E.fff.meta
 </code></pre></dt>
 <dd>
 <p>all meta data of feature <code>fff</code></p>
@@ -652,7 +661,7 @@
 <dd>
 <p><code><a title="tf.core.edgefeature.EdgeFeature.meta" href="core/edgefeature.html#tf.core.edgefeature.EdgeFeature.meta">EdgeFeature.meta</a></code></p>
 </dd>
-<dt><pre><code>Es('fff')
+<dt><pre><code class="language-python">Es('fff')
 </code></pre></dt>
 <dd>
 <p>identical to <code>E.fff</code>, usable if name of feature is variable</p>
@@ -665,7 +674,7 @@
 <h2 id="special-edge-feature-oslots">Special edge feature <code>oslots</code></h2>
 <p>Maps nodes to the set of slots they occupy.</p>
 <dl>
-<dt><pre><code>E.oslots.items(...)
+<dt><pre><code class="language-python">E.oslots.items(...)
 </code></pre></dt>
 <dd>
 <p>generator of all entries of <code>oslots</code> as mapping from nodes to sets of slots</p>
@@ -673,7 +682,7 @@
 <dd>
 <p><code><a title="tf.core.oslotsfeature.OslotsFeature.items" href="core/oslotsfeature.html#tf.core.oslotsfeature.OslotsFeature.items">OslotsFeature.items()</a></code></p>
 </dd>
-<dt><pre><code>E.oslots.s(node)
+<dt><pre><code class="language-python">E.oslots.s(node)
 </code></pre></dt>
 <dd>
 <p>set of slots linked to <code>node</code></p>
@@ -681,7 +690,7 @@
 <dd>
 <p><code><a title="tf.core.oslotsfeature.OslotsFeature.s" href="core/oslotsfeature.html#tf.core.oslotsfeature.OslotsFeature.s">OslotsFeature.s()</a></code></p>
 </dd>
-<dt><pre><code>E.oslots.meta
+<dt><pre><code class="language-python">E.oslots.meta
 </code></pre></dt>
 <dd>
 <p>all meta data of feature <code>oslots</code></p>
@@ -693,7 +702,7 @@
 <hr>
 <h2 id="l-locality"><code>L.</code> Locality</h2>
 <dl>
-<dt><pre><code>L.i(node, otype=...)
+<dt><pre><code class="language-python">L.i(node, otype=...)
 </code></pre></dt>
 <dd>
 <p>go to intersecting nodes</p>
@@ -701,7 +710,7 @@
 <dd>
 <p><code><a title="tf.core.locality.Locality.i" href="core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code></p>
 </dd>
-<dt><pre><code>L.u(node, otype=...)
+<dt><pre><code class="language-python">L.u(node, otype=...)
 </code></pre></dt>
 <dd>
 <p>go one level up</p>
@@ -709,7 +718,7 @@
 <dd>
 <p><code><a title="tf.core.locality.Locality.u" href="core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code></p>
 </dd>
-<dt><pre><code>L.d(node, otype=...)
+<dt><pre><code class="language-python">L.d(node, otype=...)
 </code></pre></dt>
 <dd>
 <p>go one level down</p>
@@ -717,7 +726,7 @@
 <dd>
 <p><code><a title="tf.core.locality.Locality.d" href="core/locality.html#tf.core.locality.Locality.d">Locality.d()</a></code></p>
 </dd>
-<dt><pre><code>L.p(node, otype=...)
+<dt><pre><code class="language-python">L.p(node, otype=...)
 </code></pre></dt>
 <dd>
 <p>go to adjacent previous nodes</p>
@@ -725,7 +734,7 @@
 <dd>
 <p><code><a title="tf.core.locality.Locality.p" href="core/locality.html#tf.core.locality.Locality.p">Locality.p()</a></code></p>
 </dd>
-<dt><pre><code>L.n(node, otype=...)
+<dt><pre><code class="language-python">L.n(node, otype=...)
 </code></pre></dt>
 <dd>
 <p>go to adjacent next nodes</p>
@@ -737,7 +746,7 @@
 <hr>
 <h2 id="t-text"><code>T.</code> Text</h2>
 <dl>
-<dt><pre><code>T.text(node, fmt=..., ...)
+<dt><pre><code class="language-python">T.text(node, fmt=..., ...)
 </code></pre></dt>
 <dd>
 <p>give formatted text associated with node</p>
@@ -750,7 +759,7 @@
 <h2 id="sections">Sections</h2>
 <p>Rigid 1 or 2 or 3 sectioning system</p>
 <dl>
-<dt><pre><code>T.sectionTuple(node)
+<dt><pre><code class="language-python">T.sectionTuple(node)
 </code></pre></dt>
 <dd>
 <p>give tuple of section nodes that contain node</p>
@@ -758,7 +767,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.sectionTuple" href="core/text.html#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code></p>
 </dd>
-<dt><pre><code>T.sectionFromNode(node)
+<dt><pre><code class="language-python">T.sectionFromNode(node)
 </code></pre></dt>
 <dd>
 <p>give section heading of node</p>
@@ -766,7 +775,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.sectionFromNode" href="core/text.html#tf.core.text.Text.sectionFromNode">Text.sectionFromNode()</a></code></p>
 </dd>
-<dt><pre><code>T.nodeFromSection(section)
+<dt><pre><code class="language-python">T.nodeFromSection(section)
 </code></pre></dt>
 <dd>
 <p>give node for section heading</p>
@@ -779,7 +788,7 @@
 <h2 id="structure">Structure</h2>
 <p>Flexible multilevel sectioning system</p>
 <dl>
-<dt><pre><code>T.headingFromNode(node)
+<dt><pre><code class="language-python">T.headingFromNode(node)
 </code></pre></dt>
 <dd>
 <p>give structure heading of node</p>
@@ -787,7 +796,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.headingFromNode" href="core/text.html#tf.core.text.Text.headingFromNode">Text.headingFromNode()</a></code></p>
 </dd>
-<dt><pre><code>T.nodeFromHeading(heading)
+<dt><pre><code class="language-python">T.nodeFromHeading(heading)
 </code></pre></dt>
 <dd>
 <p>give node for structure heading</p>
@@ -795,7 +804,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.nodeFromHeading" href="core/text.html#tf.core.text.Text.nodeFromHeading">Text.nodeFromHeading()</a></code></p>
 </dd>
-<dt><pre><code>T.structureInfo()
+<dt><pre><code class="language-python">T.structureInfo()
 </code></pre></dt>
 <dd>
 <p>give summary of dataset structure</p>
@@ -803,7 +812,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.structureInfo" href="core/text.html#tf.core.text.Text.structureInfo">Text.structureInfo()</a></code></p>
 </dd>
-<dt><pre><code>T.structure(node)
+<dt><pre><code class="language-python">T.structure(node)
 </code></pre></dt>
 <dd>
 <p>give structure of <code>node</code> and all in it.</p>
@@ -811,7 +820,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.structure" href="core/text.html#tf.core.text.Text.structure">Text.structure()</a></code></p>
 </dd>
-<dt><pre><code>T.structurePretty(node)
+<dt><pre><code class="language-python">T.structurePretty(node)
 </code></pre></dt>
 <dd>
 <p>pretty print structure of <code>node</code> and all in it.</p>
@@ -819,7 +828,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.structurePretty" href="core/text.html#tf.core.text.Text.structurePretty">Text.structurePretty()</a></code></p>
 </dd>
-<dt><pre><code>T.top()
+<dt><pre><code class="language-python">T.top()
 </code></pre></dt>
 <dd>
 <p>give all top-level structural nodes in the dataset</p>
@@ -827,7 +836,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.top" href="core/text.html#tf.core.text.Text.top">Text.top()</a></code></p>
 </dd>
-<dt><pre><code>T.up(node)
+<dt><pre><code class="language-python">T.up(node)
 </code></pre></dt>
 <dd>
 <p>gives parent of structural node</p>
@@ -835,7 +844,7 @@
 <dd>
 <p><code><a title="tf.core.text.Text.up" href="core/text.html#tf.core.text.Text.up">Text.up()</a></code></p>
 </dd>
-<dt><pre><code>T.down(node)
+<dt><pre><code class="language-python">T.down(node)
 </code></pre></dt>
 <dd>
 <p>gives children of structural node</p>
@@ -849,7 +858,7 @@
 <p><a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/searchRough.ipynb">searchRough</a></p>
 <h3 id="preparation">Preparation</h3>
 <dl>
-<dt><pre><code>S.search(query, limit=None)
+<dt><pre><code class="language-python">S.search(query, limit=None)
 </code></pre></dt>
 <dd>
 <p>Query the TF dataset with a template</p>
@@ -857,7 +866,7 @@
 <dd>
 <p><code><a title="tf.search.search.Search.search" href="search/search.html#tf.search.search.Search.search">Search.search()</a></code></p>
 </dd>
-<dt><pre><code>S.study(query, ...)
+<dt><pre><code class="language-python">S.study(query, ...)
 </code></pre></dt>
 <dd>
 <p>Study the query in order to set up a plan</p>
@@ -865,7 +874,7 @@
 <dd>
 <p><code><a title="tf.search.search.Search.study" href="search/search.html#tf.search.search.Search.study">Search.study()</a></code></p>
 </dd>
-<dt><pre><code>S.showPlan(details=False)
+<dt><pre><code class="language-python">S.showPlan(details=False)
 </code></pre></dt>
 <dd>
 <p>Show the search plan resulting from the last study.</p>
@@ -873,7 +882,7 @@
 <dd>
 <p><code><a title="tf.search.search.Search.showPlan" href="search/search.html#tf.search.search.Search.showPlan">Search.showPlan()</a></code></p>
 </dd>
-<dt><pre><code>S.relationsLegend()
+<dt><pre><code class="language-python">S.relationsLegend()
 </code></pre></dt>
 <dd>
 <p>Catalog of all relational devices in search templates</p>
@@ -885,7 +894,7 @@
 <hr>
 <h3 id="fetching-results">Fetching results</h3>
 <dl>
-<dt><pre><code>S.count(progress=None, limit=None)
+<dt><pre><code class="language-python">S.count(progress=None, limit=None)
 </code></pre></dt>
 <dd>
 <p>Count the results, up to a limit</p>
@@ -893,7 +902,7 @@
 <dd>
 <p><code><a title="tf.search.search.Search.count" href="search/search.html#tf.search.search.Search.count">Search.count()</a></code></p>
 </dd>
-<dt><pre><code>S.fetch(limit=None, ...)
+<dt><pre><code class="language-python">S.fetch(limit=None, ...)
 </code></pre></dt>
 <dd>
 <p>Fetches the results, up to a limit</p>
@@ -901,7 +910,7 @@
 <dd>
 <p><code><a title="tf.search.search.Search.fetch" href="search/search.html#tf.search.search.Search.fetch">Search.fetch()</a></code></p>
 </dd>
-<dt><pre><code>S.glean(tup)
+<dt><pre><code class="language-python">S.glean(tup)
 </code></pre></dt>
 <dd>
 <p>Renders a single result into something human readable.</p>
@@ -913,7 +922,7 @@
 <hr>
 <h3 id="implementation">Implementation</h3>
 <dl>
-<dt><pre><code>S.tweakPerformance(...)
+<dt><pre><code class="language-python">S.tweakPerformance(...)
 </code></pre></dt>
 <dd>
 <p>Set certain parameters that influence the performance of search.</p>
@@ -927,7 +936,7 @@
 <p>Access to precomputed data: <code><a title="tf.core.computed.Computeds" href="core/computed.html#tf.core.computed.Computeds">Computeds</a></code>.</p>
 <p>All components have just one useful attribute: <code>.data</code>.</p>
 <dl>
-<dt><pre><code>Call()
+<dt><pre><code class="language-python">Call()
 </code></pre></dt>
 <dd>
 <p>all precomputed data component names</p>
@@ -935,7 +944,7 @@
 <dd>
 <p><code><a title="tf.core.api.Api.Call" href="core/api.html#tf.core.api.Api.Call">Api.Call()</a></code></p>
 </dd>
-<dt><pre><code>Cs('ccc')
+<dt><pre><code class="language-python">Cs('ccc')
 </code></pre></dt>
 <dd>
 <p>identical to <code>C.ccc</code>, usable if name of component is variable</p>
@@ -943,7 +952,7 @@
 <dd>
 <p><code><a title="tf.core.api.Api.Cs" href="core/api.html#tf.core.api.Api.Cs">Api.Cs()</a></code></p>
 </dd>
-<dt><pre><code>C.levels.data
+<dt><pre><code class="language-python">C.levels.data
 </code></pre></dt>
 <dd>
 <p>various statistics on node types</p>
@@ -951,7 +960,7 @@
 <dd>
 <p><code><a title="tf.core.prepare.levels" href="core/prepare.html#tf.core.prepare.levels">levels()</a></code></p>
 </dd>
-<dt><pre><code>C.order.data
+<dt><pre><code class="language-python">C.order.data
 </code></pre></dt>
 <dd>
 <p>the canonical order of the nodes (<code><a title="tf.core.nodes" href="core/nodes.html">tf.core.nodes</a></code>)</p>
@@ -959,7 +968,7 @@
 <dd>
 <p><code><a title="tf.core.prepare.order" href="core/prepare.html#tf.core.prepare.order">order()</a></code></p>
 </dd>
-<dt><pre><code>C.rank.data
+<dt><pre><code class="language-python">C.rank.data
 </code></pre></dt>
 <dd>
 <p>the rank of the nodes in the canonical order (<code><a title="tf.core.nodes" href="core/nodes.html">tf.core.nodes</a></code>)</p>
@@ -967,7 +976,7 @@
 <dd>
 <p><code><a title="tf.core.prepare.rank" href="core/prepare.html#tf.core.prepare.rank">rank()</a></code></p>
 </dd>
-<dt><pre><code>C.levUp.data
+<dt><pre><code class="language-python">C.levUp.data
 </code></pre></dt>
 <dd>
 <p>feeds the <code><a title="tf.core.locality.Locality.u" href="core/locality.html#tf.core.locality.Locality.u">Locality.u()</a></code> function</p>
@@ -975,7 +984,7 @@
 <dd>
 <p><code><a title="tf.core.prepare.levUp" href="core/prepare.html#tf.core.prepare.levUp">levUp()</a></code></p>
 </dd>
-<dt><pre><code>C.levDown.data
+<dt><pre><code class="language-python">C.levDown.data
 </code></pre></dt>
 <dd>
 <p>feeds the <code><a title="tf.core.locality.Locality.d" href="core/locality.html#tf.core.locality.Locality.d">Locality.d()</a></code> function</p>
@@ -983,7 +992,7 @@
 <dd>
 <p><code><a title="tf.core.prepare.levDown" href="core/prepare.html#tf.core.prepare.levDown">levDown()</a></code></p>
 </dd>
-<dt><pre><code>C.boundary.data
+<dt><pre><code class="language-python">C.boundary.data
 </code></pre></dt>
 <dd>
 <p>feeds the <code><a title="tf.core.locality.Locality.p" href="core/locality.html#tf.core.locality.Locality.p">Locality.p()</a></code> and <code><a title="tf.core.locality.Locality.n" href="core/locality.html#tf.core.locality.Locality.n">Locality.n()</a></code>
@@ -992,7 +1001,7 @@ functions</p>
 <dd>
 <p><code><a title="tf.core.prepare.boundary" href="core/prepare.html#tf.core.prepare.boundary">boundary()</a></code></p>
 </dd>
-<dt><pre><code>C.characters.data
+<dt><pre><code class="language-python">C.characters.data
 </code></pre></dt>
 <dd>
 <p>frequency list of characters in a corpus, separately for all the text formats</p>
@@ -1000,7 +1009,7 @@ functions</p>
 <dd>
 <p><code><a title="tf.core.prepare.characters" href="core/prepare.html#tf.core.prepare.characters">characters()</a></code></p>
 </dd>
-<dt><pre><code>C.sections.data
+<dt><pre><code class="language-python">C.sections.data
 </code></pre></dt>
 <dd>
 <p>feeds the section part of <code><a title="tf.core.text" href="core/text.html">tf.core.text</a></code></p>
@@ -1008,7 +1017,7 @@ functions</p>
 <dd>
 <p><code><a title="tf.core.prepare.sections" href="core/prepare.html#tf.core.prepare.sections">sections()</a></code></p>
 </dd>
-<dt><pre><code>C.structure.data
+<dt><pre><code class="language-python">C.structure.data
 </code></pre></dt>
 <dd>
 <p>feeds the structure part of <code><a title="tf.core.text" href="core/text.html">tf.core.text</a></code></p>
@@ -1021,7 +1030,7 @@ functions</p>
 <h1 id="tf-dataset"><code>TF.</code> Dataset</h1>
 <h2 id="loading">Loading</h2>
 <dl>
-<dt><pre><code>TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=&quot;auto&quot;)
+<dt><pre><code class="language-python">TF = Fabric(locations=dirs, modules=subdirs, volume=None, collection=None, silent=&quot;auto&quot;)
 </code></pre></dt>
 <dd>
 <p>Initialize API on work or single volume or collection of a work
@@ -1032,7 +1041,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric" href="fabric.html#tf.fabric.Fabric">Fabric</a></code></p>
 </dd>
-<dt><pre><code>TF.isLoaded(features=None)
+<dt><pre><code class="language-python">TF.isLoaded(features=None)
 </code></pre></dt>
 <dd>
 <p>Show information about loaded features</p>
@@ -1040,7 +1049,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.core.api.Api.isLoaded" href="core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code></p>
 </dd>
-<dt><pre><code>TF.explore(show=True)
+<dt><pre><code class="language-python">TF.explore(show=True)
 </code></pre></dt>
 <dd>
 <p>Get features by category, loaded or unloaded</p>
@@ -1048,7 +1057,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.explore" href="core/fabric.html#tf.core.fabric.FabricCore.explore">FabricCore.explore()</a></code></p>
 </dd>
-<dt><pre><code>TF.loadAll(silent=&quot;auto&quot;)
+<dt><pre><code class="language-python">TF.loadAll(silent=&quot;auto&quot;)
 </code></pre></dt>
 <dd>
 <p>Load all loadable features. </p>
@@ -1056,7 +1065,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.loadAll" href="core/fabric.html#tf.core.fabric.FabricCore.loadAll">FabricCore.loadAll()</a></code></p>
 </dd>
-<dt><pre><code>TF.load(features, add=False)
+<dt><pre><code class="language-python">TF.load(features, add=False)
 </code></pre></dt>
 <dd>
 <p>Load a bunch of features from scratch or additionally. </p>
@@ -1064,7 +1073,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.load" href="core/fabric.html#tf.core.fabric.FabricCore.load">FabricCore.load()</a></code></p>
 </dd>
-<dt><pre><code>TF.ensureLoaded(features)
+<dt><pre><code class="language-python">TF.ensureLoaded(features)
 </code></pre></dt>
 <dd>
 <p>Make sure that features are loaded.</p>
@@ -1072,7 +1081,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.core.api.Api.ensureLoaded" href="core/api.html#tf.core.api.Api.ensureLoaded">Api.ensureLoaded()</a></code></p>
 </dd>
-<dt><pre><code>TF.makeAvailableIn(globals())
+<dt><pre><code class="language-python">TF.makeAvailableIn(globals())
 </code></pre></dt>
 <dd>
 <p>Make the members of the core API available in the global scope</p>
@@ -1080,7 +1089,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.core.api.Api.makeAvailableIn" href="core/api.html#tf.core.api.Api.makeAvailableIn">Api.makeAvailableIn()</a></code></p>
 </dd>
-<dt><pre><code>TF.ignored
+<dt><pre><code class="language-python">TF.ignored
 </code></pre></dt>
 <dd>
 <p>Which features have been overridden.</p>
@@ -1093,7 +1102,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <h2 id="volumes">Volumes</h2>
 <p>See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.volumes</a></code>.</p>
 <dl>
-<dt><pre><code>TF.getVolumes()
+<dt><pre><code class="language-python">TF.getVolumes()
 </code></pre></dt>
 <dd>
 <p>list all volumes of this dataset</p>
@@ -1101,7 +1110,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.getVolumes" href="fabric.html#tf.fabric.Fabric.getVolumes">Fabric.getVolumes()</a></code></p>
 </dd>
-<dt><pre><code>TF.extract(volumes, ...)
+<dt><pre><code class="language-python">TF.extract(volumes, ...)
 </code></pre></dt>
 <dd>
 <p>export volumes based on a volume specification</p>
@@ -1109,7 +1118,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.extract" href="fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code></p>
 </dd>
-<dt><pre><code>TF.collect(volumes, ...)
+<dt><pre><code class="language-python">TF.collect(volumes, ...)
 </code></pre></dt>
 <dd>
 <p>collect several volumes into a new collection</p>
@@ -1123,7 +1132,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 </dl>
 <h2 id="saving">Saving</h2>
 <dl>
-<dt><pre><code>TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
+<dt><pre><code class="language-python">TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
 </code></pre></dt>
 <dd>
 <p>Save a bunch of newly generated features to disk.</p>
@@ -1135,7 +1144,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <hr>
 <h2 id="house-keeping">House keeping</h2>
 <dl>
-<dt><pre><code>TF.version
+<dt><pre><code class="language-python">TF.version
 </code></pre></dt>
 <dd>
 <p>version number of Text-Fabric.</p>
@@ -1143,7 +1152,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <dd>
 <p><code><a title="tf.fabric.Fabric.version" href="core/fabric.html#tf.core.fabric.FabricCore.version">Fabric.version</a></code></p>
 </dd>
-<dt><pre><code>TF.clearCache()
+<dt><pre><code class="language-python">TF.clearCache()
 </code></pre></dt>
 <dd>
 <p>clears the cache of compiled TF data</p>
@@ -1152,10 +1161,10 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <p><code><a title="tf.fabric.Fabric.clearCache" href="core/fabric.html#tf.core.fabric.FabricCore.clearCache">FabricCore.clearCache()</a></code></p>
 </dd>
 </dl>
-<pre><code>from tf.clean import clean
+<pre><code class="language-python">from tf.clean import clean
 </code></pre>
 <dl>
-<dt><pre><code>clean()
+<dt><pre><code class="language-python">clean()
 </code></pre></dt>
 <dd>
 <p>clears the cache of compiled TF data</p>
@@ -1169,7 +1178,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <p>TF datasets per volume or collection of a work.
 See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.volumes</a></code>.</p>
 <dl>
-<dt><pre><code>from tf.volumes import getVolumes
+<dt><pre><code class="language-python">from tf.volumes import getVolumes
 
 getVolumes(volumeDir)
 </code></pre></dt>
@@ -1179,7 +1188,7 @@ getVolumes(volumeDir)
 <dd>
 <p><code><a title="tf.volumes.extract.getVolumes" href="volumes/extract.html#tf.volumes.extract.getVolumes">getVolumes()</a></code></p>
 </dd>
-<dt><pre><code>from tf.volumes import extract
+<dt><pre><code class="language-python">from tf.volumes import extract
 
 extract(work, volumes, ...)
 </code></pre></dt>
@@ -1189,7 +1198,7 @@ extract(work, volumes, ...)
 <dd>
 <p><code><a title="tf.volumes.extract" href="volumes/extract.html">tf.volumes.extract</a></code></p>
 </dd>
-<dt><pre><code>from tf.volumes import collect
+<dt><pre><code class="language-python">from tf.volumes import collect
 
 collect(volumes, work, ...)
 </code></pre></dt>
@@ -1203,7 +1212,7 @@ collect(volumes, work, ...)
 <hr>
 <h1 id="dataset-operations">Dataset Operations</h1>
 <dl>
-<dt><pre><code>from tf.dataset import modify
+<dt><pre><code class="language-python">from tf.dataset import modify
 
 modify(source, target, ...)
 </code></pre></dt>
@@ -1213,7 +1222,7 @@ modify(source, target, ...)
 <dd>
 <p><code><a title="tf.dataset.modify" href="dataset/modify.html">tf.dataset.modify</a></code></p>
 </dd>
-<dt><pre><code>from tf.dataset import Versions
+<dt><pre><code class="language-python">from tf.dataset import Versions
 
 Versions(api, va, vb, slotMap)
 </code></pre></dt>
@@ -1228,11 +1237,11 @@ to a complete node mapping</p>
 <hr>
 <h1 id="data-interchange">Data Interchange</h1>
 <h2 id="custom-node-sets-for-search">Custom node sets for search</h2>
-<pre><code>from tf.lib import readSets
+<pre><code class="language-python">from tf.lib import readSets
 from tf.lib import writeSets
 </code></pre>
 <dl>
-<dt><pre><code>readSets(sourceFile)
+<dt><pre><code class="language-python">readSets(sourceFile)
 </code></pre></dt>
 <dd>
 <p>reads a named sets from file</p>
@@ -1240,7 +1249,7 @@ from tf.lib import writeSets
 <dd>
 <p><code><a title="tf.lib.readSets" href="lib.html#tf.lib.readSets">readSets()</a></code></p>
 </dd>
-<dt><pre><code>writeSets(sets, destFile)
+<dt><pre><code class="language-python">writeSets(sets, destFile)
 </code></pre></dt>
 <dd>
 <p>writes a named sets to file</p>
@@ -1252,7 +1261,7 @@ from tf.lib import writeSets
 <hr>
 <h2 id="export-to-excel_1">Export to Excel</h2>
 <dl>
-<dt><pre><code>A.export(results, ...)
+<dt><pre><code class="language-python">A.export(results, ...)
 </code></pre></dt>
 <dd>
 <p>export formatted data</p>
@@ -1263,10 +1272,10 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="interchange-with-external-annotation-tools">Interchange with external annotation tools</h2>
-<pre><code>from convert.recorder import Recorder
+<pre><code class="language-python">from convert.recorder import Recorder
 </code></pre>
 <dl>
-<dt><pre><code>Recorder()
+<dt><pre><code class="language-python">Recorder()
 </code></pre></dt>
 <dd>
 <p>generate annotatable plain text and import annotations</p>
@@ -1277,10 +1286,10 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="tei-import">TEI import</h2>
-<pre><code>from tf.convert.tei import TEI
+<pre><code class="language-python">from tf.convert.tei import TEI
 </code></pre>
 <dl>
-<dt><pre><code>T = TEI(...)
+<dt><pre><code class="language-python">T = TEI(...)
 </code></pre></dt>
 <dd>
 <p>convert TEI source to full-fledged TF dataset plus app plus docs</p>
@@ -1292,7 +1301,7 @@ from tf.lib import writeSets
 <hr>
 <h2 id="mql-interchange">MQL interchange</h2>
 <dl>
-<dt><pre><code>TF.exportMQL()
+<dt><pre><code class="language-python">TF.exportMQL()
 </code></pre></dt>
 <dd>
 <p>export loaded dataset to MQL</p>
@@ -1300,7 +1309,7 @@ from tf.lib import writeSets
 <dd>
 <p><code><a title="tf.fabric.Fabric.exportMQL" href="core/fabric.html#tf.core.fabric.FabricCore.exportMQL">FabricCore.exportMQL()</a></code></p>
 </dd>
-<dt><pre><code>TF.importMQL()
+<dt><pre><code class="language-python">TF.importMQL()
 </code></pre></dt>
 <dd>
 <p>convert MQL file to TF dataset</p>
@@ -1311,10 +1320,10 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="walker-conversion">Walker conversion</h2>
-<pre><code>from tf.convert.walker import CV
+<pre><code class="language-python">from tf.convert.walker import CV
 </code></pre>
 <dl>
-<dt><pre><code>cv = CV(TF)
+<dt><pre><code class="language-python">cv = CV(TF)
 </code></pre></dt>
 <dd>
 <p>convert structured data to TF dataset</p>
@@ -1325,10 +1334,10 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="exploding">Exploding</h2>
-<pre><code>from tf.convert.tf import explode
+<pre><code class="language-python">from tf.convert.tf import explode
 </code></pre>
 <dl>
-<dt><pre><code>explode(inLocation, outLocation)
+<dt><pre><code class="language-python">explode(inLocation, outLocation)
 </code></pre></dt>
 <dd>
 <p>explode TF feature files to straight data files without optimizations</p>
@@ -1340,7 +1349,7 @@ from tf.lib import writeSets
 <hr>
 <h1 id="tf-app-development">TF-App development</h1>
 <dl>
-<dt><pre><code>A.reuse()
+<dt><pre><code class="language-python">A.reuse()
 </code></pre></dt>
 <dd>
 <p>reload config data</p>
@@ -1349,10 +1358,10 @@ from tf.lib import writeSets
 <p><code><a title="tf.advanced.app.App.reuse" href="advanced/app.html#tf.advanced.app.App.reuse">App.reuse()</a></code></p>
 </dd>
 </dl>
-<pre><code>from tf.advanced.find import loadModule
+<pre><code class="language-python">from tf.advanced.find import loadModule
 </code></pre>
 <dl>
-<dt><pre><code>mmm = loadModule(&quot;mmm&quot;, *args)
+<dt><pre><code class="language-python">mmm = loadModule(&quot;mmm&quot;, *args)
 </code></pre></dt>
 <dd>
 <p>load specific module supporting the corpus app</p>
@@ -1369,19 +1378,25 @@ from tf.lib import writeSets
 <p><code><a title="tf.advanced.settings" href="advanced/settings.html">tf.advanced.settings</a></code></p>
 </dd>
 </dl>
+<hr>
 <h1 id="layered-search">Layered search</h1>
-<p>(these are commandline instructions)</p>
+<p>(these work on the commandline if Text-Fabric is installed)</p>
 <dl>
-<dt><pre><code>text-fabric-make {dataset} {client} ship
+<dt><pre><code class="language-sh">text-fabric-make {dataset} {client} ship
 </code></pre></dt>
 <dd>
 <p>generate a static site with a search interface in client-side javascript and
 publish it to GitHub pages.
 If <code>{client}</code> is left out, generate all clients that are defined for this
 dataset.
-Clients are defined in the <code>app-{dataset}</code> repo, under <code>layeredsearch</code>.</p>
+Clients are defined in the <code>app-{dataset}</code> repo, under <code>layeredsearch</code>.
+More commands
+<a href="https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py">here</a>.</p>
 </dd>
-<dt><pre><code>text-fabric-make {dataset} serve
+<dd>
+<p><code><a title="tf.client.make.build" href="client/make/build.html">tf.client.make.build</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">text-fabric-make {dataset} serve
 </code></pre></dt>
 <dd>
 <p>serve the search interfaces defined for <code>{dataset}</code> locally.</p>
@@ -1389,10 +1404,49 @@ Clients are defined in the <code>app-{dataset}</code> repo, under <code>layereds
 </dl>
 <p>More commands
 <a href="https://github.com/annotation/text-fabric/blob/master/tf/client/make/help.py">here</a>.</p>
+<hr>
+<h1 id="command-line-tools">Command-line tools</h1>
+<p>(these work on the commandline if Text-Fabric is installed)</p>
+<dl>
+<dt><pre><code class="language-sh">text-fabric {org}/{repo}
+</code></pre></dt>
+<dd>
+<p>Starts the text-fabric browser for the corpus in <em>org</em>/<em>repo</em>.</p>
+</dd>
+<dd>
+<p><code><a title="tf.server.start" href="server/start.html">tf.server.start</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">text-fabric-zip {org}/{repo}
+</code></pre></dt>
+<dd>
+<p>Zips the TF dataset in <em>org</em>/<em>repo</em> so that it can be attached to a release on
+Github/GitLab.</p>
+</dd>
+<dd>
+<p><code><a title="tf.advanced.zipdata" href="advanced/zipdata.html">tf.advanced.zipdata</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">nbconvert {inDirectory} {outDirectory}
+</code></pre></dt>
+<dd>
+<p>Converts notebooks in <em>inDirectory</em> to HTML and stores them in <em>outDirectory</em>.</p>
+</dd>
+<dd>
+<p><code><a title="tf.tools.nbconvert" href="tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">xmlschema analysis {schema}.xsd
+</code></pre></dt>
+<dd>
+<p>Analyses an XML <em>schema</em> file and extracts meaningful information for processing
+the XML that adheres to that schema.</p>
+</dd>
+<dd>
+<p><code><a title="tf.tools.xmlschema" href="tools/xmlschema.html">tf.tools.xmlschema</a></code></p>
+</dd>
+</dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1513,6 +1567,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#tf-app-development">TF-App development</a></li>
 <li><a href="#layered-search">Layered search</a></li>
+<li><a href="#command-line-tools">Command-line tools</a></li>
 </ul>
 </div>
 <ul id="index">

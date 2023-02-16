@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L1-L914" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L1-L969" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -41,6 +41,7 @@ from textwrap import dedent
 from ..parameters import (
     BACKEND_REP,
     URL_TFDOC,
+    URL_NB,
     SEARCHREF,
     APIREF,
     APP_APP,
@@ -85,6 +86,7 @@ def linksApi(app, silent=SILENT_D):
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
+    app.flexLink = types.MethodType(flexLink, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
 
@@ -104,7 +106,6 @@ def linksApi(app, silent=SILENT_D):
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = BACKEND_REP(backend, &#34;tut&#34;, org=org, repo=repo, branch=branch)
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataName = f&#34;{org} - {repo} {version}&#34;
@@ -183,7 +184,7 @@ def linksApi(app, silent=SILENT_D):
     tutLink = (
         outLink(
             &#34;Tutorial&#34;,
-            tutUrl,
+            flexLink(app, &#34;tut&#34;),
             &#34;Tutorial in Jupyter Notebook&#34;,
             asHtml=inNb or _browse,
         )
@@ -942,7 +943,61 @@ def provenanceLink(
             else f&#34;{bUrl}/{org}/{repo}/tree/{commit}/{relative}&#34;
         )
     )
-    return (text, url)</code></pre>
+    return (text, url)
+
+
+def flexLink(app, kind):
+    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the backend.
+
+    These are links to tutorials and other documentation.
+
+    If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
+    But if the backend is on-premiss, we assume that notebooks are
+    converted to html and then published on the Pages of the on-premiss GitLab.
+
+    What exactly the link to such an on-premiss Pages service is, may depend on
+    a config setting.
+
+    This function resolves all that.
+
+    !!! note &#34;Converting notebooks to HTML&#34;
+        There is now a tool in text-fabric to convert a directory of notebooks to
+        HTML. See `tf.tools.nbconvert`.
+
+    Parameters
+    ----------
+    kind: string
+        Indicates what kind of url value should be returned:
+
+        *   `pages`: url of the repo in the Pages service of the backend;
+        *   `tut`: url of the start tutorial, either on NB viewer or in the Pages
+            service of the backend.
+
+    Returns
+    -------
+        string
+            The complete url.
+    &#34;&#34;&#34;
+    backend = app.backend
+    aContext = app.context
+    org = aContext.org or &#34;&#34;
+    repo = aContext.repo or &#34;&#34;
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
+    pages = aContext.provenanceSpec[&#34;pages&#34;]
+
+    if kind == &#34;pages&#34;:
+        pages = pages or BACKEND_REP(backend, kind)
+        return f&#34;https://{org}.{pages}/{repo}&#34;
+
+    if kind == &#34;tut&#34;:
+        be = BACKEND_REP(backend, &#34;norm&#34;)
+        onPremise = be not in {GL, GH}
+
+        if onPremise:
+            pages = pages or BACKEND_REP(backend, &#34;pages&#34;)
+            return f&#34;https://{org}.{pages}/{repo}/tutorial/start.html&#34;
+
+        return f&#34;{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -952,6 +1007,98 @@ def provenanceLink(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.links.flexLink"><code class="name flex">
+<span>def <span class="ident">flexLink</span></span>(<span>app, kind)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produce documentation links that are heavily dependent on the backend.</p>
+<p>These are links to tutorials and other documentation.</p>
+<p>If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
+But if the backend is on-premiss, we assume that notebooks are
+converted to html and then published on the Pages of the on-premiss GitLab.</p>
+<p>What exactly the link to such an on-premiss Pages service is, may depend on
+a config setting.</p>
+<p>This function resolves all that.</p>
+<div class="admonition note">
+<p class="admonition-title">Converting notebooks to HTML</p>
+<p>There is now a tool in text-fabric to convert a directory of notebooks to
+HTML. See <code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code>.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>kind</code></strong> :&ensp;<code>string</code></dt>
+<dd>
+<p>Indicates what kind of url value should be returned:</p>
+<ul>
+<li><code>pages</code>: url of the repo in the Pages service of the backend;</li>
+<li><code>tut</code>: url of the start tutorial, either on NB viewer or in the Pages
+service of the backend.</li>
+</ul>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<pre><code>string
+    The complete url.
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L918-L969" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def flexLink(app, kind):
+    &#34;&#34;&#34;Produce documentation links that are heavily dependent on the backend.
+
+    These are links to tutorials and other documentation.
+
+    If the backend is GitLab or GitHub, notebooks can be viewed on NBviewer.
+    But if the backend is on-premiss, we assume that notebooks are
+    converted to html and then published on the Pages of the on-premiss GitLab.
+
+    What exactly the link to such an on-premiss Pages service is, may depend on
+    a config setting.
+
+    This function resolves all that.
+
+    !!! note &#34;Converting notebooks to HTML&#34;
+        There is now a tool in text-fabric to convert a directory of notebooks to
+        HTML. See `tf.tools.nbconvert`.
+
+    Parameters
+    ----------
+    kind: string
+        Indicates what kind of url value should be returned:
+
+        *   `pages`: url of the repo in the Pages service of the backend;
+        *   `tut`: url of the start tutorial, either on NB viewer or in the Pages
+            service of the backend.
+
+    Returns
+    -------
+        string
+            The complete url.
+    &#34;&#34;&#34;
+    backend = app.backend
+    aContext = app.context
+    org = aContext.org or &#34;&#34;
+    repo = aContext.repo or &#34;&#34;
+    branch = aContext.provenanceSpec[&#34;branch&#34;]
+    pages = aContext.provenanceSpec[&#34;pages&#34;]
+
+    if kind == &#34;pages&#34;:
+        pages = pages or BACKEND_REP(backend, kind)
+        return f&#34;https://{org}.{pages}/{repo}&#34;
+
+    if kind == &#34;tut&#34;:
+        be = BACKEND_REP(backend, &#34;norm&#34;)
+        onPremise = be not in {GL, GH}
+
+        if onPremise:
+            pages = pages or BACKEND_REP(backend, &#34;pages&#34;)
+            return f&#34;https://{org}.{pages}/{repo}/tutorial/start.html&#34;
+
+        return f&#34;{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb&#34;</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.links.header"><code class="name flex">
 <span>def <span class="ident">header</span></span>(<span>app, allMeta=False)</span>
 </code></dt>
@@ -971,7 +1118,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L176-L253" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L177-L254" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the app.
@@ -1077,7 +1224,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L29-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L30-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1107,6 +1254,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     backend = app.backend
     app.showProvenance = types.MethodType(showProvenance, app)
     app.header = types.MethodType(header, app)
+    app.flexLink = types.MethodType(flexLink, app)
     app.webLink = types.MethodType(webLink, app)
     isCompatible = app.isCompatible
 
@@ -1126,7 +1274,6 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     charUrl = aContext.charUrl
     charText = aContext.charText
 
-    tutUrl = BACKEND_REP(backend, &#34;tut&#34;, org=org, repo=repo, branch=branch)
     apiVersionRep = &#34;&#34; if apiVersion is None else f&#34; v{apiVersion}&#34;
 
     dataName = f&#34;{org} - {repo} {version}&#34;
@@ -1205,7 +1352,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
     tutLink = (
         outLink(
             &#34;Tutorial&#34;,
-            tutUrl,
+            flexLink(app, &#34;tut&#34;),
             &#34;Tutorial in Jupyter Notebook&#34;,
             asHtml=inNb or _browse,
         )
@@ -1253,7 +1400,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L497-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L498-L534" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1325,7 +1472,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L854-L914" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L855-L915" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(
     backend, org, repo, version, branch, commit, local, release, relative
@@ -1411,7 +1558,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L397-L432" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L398-L433" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1494,7 +1641,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/advanced/links.py#L256-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/advanced/links.py#L257-L395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False
@@ -1706,6 +1853,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
+<li><code><a title="tf.advanced.links.flexLink" href="#tf.advanced.links.flexLink">flexLink</a></code></li>
 <li><code><a title="tf.advanced.links.header" href="#tf.advanced.links.header">header</a></code></li>
 <li><code><a title="tf.advanced.links.linksApi" href="#tf.advanced.links.linksApi">linksApi</a></code></li>
 <li><code><a title="tf.advanced.links.outLink" href="#tf.advanced.links.outLink">outLink</a></code></li>

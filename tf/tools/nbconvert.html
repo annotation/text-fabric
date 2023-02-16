@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/tools/nbconvert.py#L1-L131" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L1-L135" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -39,10 +39,14 @@ from ..core.helpers import initTree, fileCopy
 __pdoc__ = {}
 
 HELP = &#34;&#34;&#34;
-python nbconvert.py inputDir outputDir
+
+``` sh
+nbconvert inputDir outputDir
+```
 
 Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
 Copies all other files in *inputDir* to *outputDir*.
+If *outputDir* does not exist, it will be created.
 
 Makes sure that all links in the resulting html to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
@@ -176,7 +180,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/tools/nbconvert.py#L118-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L122-L128" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     args = sys.argv[1:]
@@ -191,9 +195,11 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">task</span></span>(<span>inputDir, outputDir)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>python nbconvert.py inputDir outputDir</p>
+<div class="desc"><pre><code class="language-sh">nbconvert inputDir outputDir
+</code></pre>
 <p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files in <em>outputDir</em>.
-Copies all other files in <em>inputDir</em> to <em>outputDir</em>.</p>
+Copies all other files in <em>inputDir</em> to <em>outputDir</em>.
+If <em>outputDir</em> does not exist, it will be created.</p>
 <p>Makes sure that all links in the resulting html to one of the
 original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
 <p>Command switches</p>
@@ -203,7 +209,7 @@ original <code>.ipynb</code> files are transformed in links to the converted <co
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/tools/nbconvert.py#L30-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L34-L119" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(inputDir, outputDir):
     if not os.path.isdir(inputDir):

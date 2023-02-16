@@ -32,24 +32,36 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
-<h3 id="112-upcoming">11.2 (upcoming)</h3>
-<h3 id="1120-upcoming">11.2.0 (upcoming)</h3>
-<p>2023-02-??</p>
-<p>New converter: from TEI to Text-Fabric.
-This is a generic, but also somewhat dumb, converter that
+<h3 id="112">11.2</h3>
+<h3 id="1120">11.2.0</h3>
+<p>2023-02-16</p>
+<h4 id="new-converter-tei-to-tf">New converter: TEI to TF</h4>
+<p>This is a generic, but also somewhat dumb, converter that
 takes all information in a nest of TEI files and transforms
 it into a valid and ready-to-use TF dataset.</p>
 <p>But it is also a somewhat smart, because it generates a TF app
 and documentation for the new dataset.</p>
 <p>See <code><a title="tf.convert.tei" href="../convert/tei.html">tf.convert.tei</a></code></p>
-<p>New tools in <code><a title="tf.tools" href="../tools/index.html">tf.tools</a></code>:</p>
-<ul>
-<li><code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code>: to convert a directory
-of interlinked notebooks to HTML
-and keeping the interlinking intact.</li>
-<li><code><a title="tf.tools.xmlschema" href="../tools/xmlschema.html">tf.tools.xmlschema</a></code>: to derive meaningful information
-from an XML schema.</li>
-</ul>
+<h4 id="new-command-line-tool-nbconvert">New command line tool: nbconvert</h4>
+<pre><code class="language-sh">nbconvert inDirectory outDirectory
+</code></pre>
+<p>Converts a directory of interlinked notebooks to HTML and keeps the
+interlinking intact.
+Handy if you want to show your notebooks in the Pages
+service of GitHub or GitLab, bypassing NBViewer.</p>
+<p>See <code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
+<h4 id="new-command-line-tool-xmlschema">New command line tool: xmlschema</h4>
+<pre><code class="language-sh">xmlschema analyse schema.xsd
+</code></pre>
+<p>Derives meaningful information from an XML schema.</p>
+<p>See <code><a title="tf.tools.xmlschema" href="../tools/xmlschema.html">tf.tools.xmlschema</a></code></p>
+<h4 id="new-api-function-flexlink">New API function: flexLink</h4>
+<p><code>A.flexLink()</code> generates an app-dependent link
+to a tutorial or document served via the Pages of GitHub or GitLab.</p>
+<p>See <code><a title="tf.advanced.links.flexLink" href="../advanced/links.html#tf.advanced.links.flexLink">flexLink()</a></code></p>
+<h4 id="other-improvements">Other improvements</h4>
+<p>Various app-configuration improvements under the hood, solving all kinds of edge
+cases, mostly having to do with on-premiss GitLab backends.</p>
 <h3 id="111">11.1</h3>
 <h3 id="1114">11.1.4</h3>
 <p>2023-02-12</p>
@@ -167,7 +179,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/06826614cfaacd37a22571973282ae2f72b42b9d/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -240,8 +252,15 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
-<li><a href="#112-upcoming">11.2 (upcoming)</a></li>
-<li><a href="#1120-upcoming">11.2.0 (upcoming)</a></li>
+<li><a href="#112">11.2</a></li>
+<li><a href="#1120">11.2.0</a><ul>
+<li><a href="#new-converter-tei-to-tf">New converter: TEI to TF</a></li>
+<li><a href="#new-command-line-tool-nbconvert">New command line tool: nbconvert</a></li>
+<li><a href="#new-command-line-tool-xmlschema">New command line tool: xmlschema</a></li>
+<li><a href="#new-api-function-flexlink">New API function: flexLink</a></li>
+<li><a href="#other-improvements">Other improvements</a></li>
+</ul>
+</li>
 <li><a href="#111">11.1</a></li>
 <li><a href="#1114">11.1.4</a></li>
 <li><a href="#1113">11.1.3</a></li>
