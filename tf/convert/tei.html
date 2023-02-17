@@ -145,7 +145,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1-L1686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1-L1686" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -944,7 +944,7 @@ class TEI:
 
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node, analysis):
+            def nodeInfo(node):
                 tag = etree.QName(node.tag).localname
                 atts = node.attrib
 
@@ -972,9 +972,9 @@ class TEI:
                                 dest[tag][k][w.strip()] += 1
 
                 for child in node.iterchildren(tag=etree.Element):
-                    nodeInfo(child, analysis)
+                    nodeInfo(child)
 
-            nodeInfo(root, analysis)
+            nodeInfo(root)
 
         def writeErrors():
             errorFile = f&#34;{reportDir}/errors.txt&#34;
@@ -2069,7 +2069,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L360-L1683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L360-L1683" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -2509,7 +2509,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node, analysis):
+            def nodeInfo(node):
                 tag = etree.QName(node.tag).localname
                 atts = node.attrib
 
@@ -2537,9 +2537,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
                                 dest[tag][k][w.strip()] += 1
 
                 for child in node.iterchildren(tag=etree.Element):
-                    nodeInfo(child, analysis)
+                    nodeInfo(child)
 
-            nodeInfo(root, analysis)
+            nodeInfo(root)
 
         def writeErrors():
             errorFile = f&#34;{reportDir}/errors.txt&#34;
@@ -3412,7 +3412,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L625-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L625-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -3451,7 +3451,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L582-L623" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L582-L623" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -3516,7 +3516,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1429-L1573" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1429-L1573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -3685,7 +3685,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L726-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L726-L930" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -3759,7 +3759,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
         NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-        def nodeInfo(node, analysis):
+        def nodeInfo(node):
             tag = etree.QName(node.tag).localname
             atts = node.attrib
 
@@ -3787,9 +3787,9 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                             dest[tag][k][w.strip()] += 1
 
             for child in node.iterchildren(tag=etree.Element):
-                nodeInfo(child, analysis)
+                nodeInfo(child)
 
-        nodeInfo(root, analysis)
+        nodeInfo(root)
 
     def writeErrors():
         errorFile = f&#34;{reportDir}/errors.txt&#34;
@@ -3908,7 +3908,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L947-L1001" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L947-L1001" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3980,7 +3980,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L934-L945" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L934-L945" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -4019,7 +4019,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1005-L1390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1005-L1390" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -4427,7 +4427,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L662-L683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L662-L683" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -4468,7 +4468,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L643-L660" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L643-L660" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -4506,7 +4506,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L685-L724" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L685-L724" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -4570,7 +4570,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1392-L1425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1392-L1425" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -4634,7 +4634,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1633-L1683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1633-L1683" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -4725,7 +4725,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/convert/tei.py#L1575-L1631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1575-L1631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, app=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.

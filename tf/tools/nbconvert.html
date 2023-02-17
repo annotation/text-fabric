@@ -26,14 +26,15 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L1-L135" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/nbconvert.py#L1-L232" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
 import re
 from subprocess import run
+from textwrap import dedent
 
-from ..core.helpers import initTree, fileCopy
+from ..core.helpers import initTree, fileCopy, console, unexpanduser as ux
 
 
 __pdoc__ = {}
@@ -41,8 +42,12 @@ __pdoc__ = {}
 HELP = &#34;&#34;&#34;
 
 ``` sh
-nbconvert inputDir outputDir
+nbconvert inputDir [outputDir]
 ```
+
+Two modes:
+
+1. If outputDir is given:
 
 Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
 Copies all other files in *inputDir* to *outputDir*.
@@ -50,6 +55,11 @@ If *outputDir* does not exist, it will be created.
 
 Makes sure that all links in the resulting html to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
+
+2. Without outputDir
+
+Generates an index.html file in inputDir with links
+to all html files that can be recursively found inside the inputDir.
 
 Command switches
 
@@ -61,13 +71,100 @@ Command switches
 &#34;&#34;&#34;
 
 
-def task(inputDir, outputDir):
-    if not os.path.isdir(inputDir):
-        print(f&#34;Input directory does not exist: {inputDir}&#34;)
-        return 1
-    initTree(outputDir, fresh=True)
+HTML_EXT = &#34;.html&#34;
+NB_EXT = &#34;.ipynb&#34;
+INDEX = &#34;index.html&#34;
 
-    nbext = &#34;.ipynb&#34;
+
+def task(*args):
+    inputDir = args[0]
+    if not os.path.isdir(inputDir):
+        console(f&#34;Input directory does not exist: {inputDir}&#34;)
+        return 1
+
+    if len(args) == 1:
+        makeIndex(inputDir)
+    else:
+        convertDir(inputDir, args[1])
+
+
+def makeIndex(inputDir):
+    htmlStart = dedent(
+        &#34;&#34;&#34;
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+            &lt;head&gt;
+                &lt;meta charset=&#34;utf-8&#34;/&gt;
+            &lt;/head&gt;
+            &lt;style&gt;
+            div {
+                padding-left: 3em;
+            }
+            &lt;/style&gt;
+            &lt;body&gt;
+        &#34;&#34;&#34;
+    )
+    htmlEnd = dedent(
+        &#34;&#34;&#34;
+            &lt;/body&gt;
+        &lt;/html&gt;
+        &#34;&#34;&#34;
+    )
+
+    def doSubDir(path):
+        subInputDir = inputDir if path == &#34;&#34; else f&#34;{inputDir}/{path}&#34;
+
+        theseLinks = []
+
+        with os.scandir(subInputDir) as dh:
+            for entry in dh:
+                name = entry.name
+                if name.startswith(&#34;.&#34;):
+                    continue
+                subPath = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
+                if entry.is_dir():
+                    subResult = doSubDir(subPath)
+                    if len(subResult) &gt; 0:
+                        theseLinks.append((name, path, doSubDir(subPath)))
+                elif name.endswith(HTML_EXT) and name != INDEX:
+                    theseLinks.append((name, path))
+        return sorted(theseLinks)
+
+    def formatDir(entry):
+        if len(entry) == 3:
+            (name, path, subEntries) = entry
+            subResults = &#34;\n&#34;.join(formatDir(subEntry) for subEntry in subEntries)
+            return dedent(
+                f&#34;&#34;&#34;
+                &lt;details&gt;
+                    &lt;summary&gt;{name}&lt;/summary&gt;
+                    &lt;div&gt;
+                        {subResults}
+                    &lt;/div&gt;
+                &lt;/details&gt;
+                &#34;&#34;&#34;
+            ).strip()
+        else:
+            (name, path) = entry
+            url = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
+            return f&#34;&#34;&#34;&lt;a href=&#34;{url}&#34;&gt;{name.removesuffix(HTML_EXT)}&lt;/a&gt;&lt;br&gt;&#34;&#34;&#34;
+
+    console(f&#34;Creating a table of contents for {ux(inputDir)}&#34;)
+    result = doSubDir(&#34;&#34;)
+
+    html = &#34;\n&#34;.join(formatDir(d) for d in result)
+
+    html = f&#34;{htmlStart}{html}{htmlEnd}&#34;
+    filePath = INDEX if inputDir == &#34;&#34; else f&#34;{inputDir}/{INDEX}&#34;
+
+    with open(filePath, &#34;w&#34;) as fh:
+        fh.write(html)
+
+    console(f&#34;Created {ux(filePath)}&#34;)
+
+
+def convertDir(inputDir, outputDir):
+    initTree(outputDir, fresh=True)
 
     convertedNotebooks = []
 
@@ -84,14 +181,15 @@ def task(inputDir, outputDir):
         with os.scandir(subInputDir) as dh:
             for entry in dh:
                 name = entry.name
+                if name.startswith(&#34;.&#34;):
+                    continue
                 subPath = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
                 if entry.is_dir():
                     doSubDir(subPath)
-                elif name.endswith(nbext):
+                elif name.endswith(NB_EXT):
                     theseNotebooks.append(name)
                 else:
-                    if not name.startswith(&#34;.&#34;):
-                        fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
+                    fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
 
         if len(theseNotebooks):
             command = &#34;jupyter nbconvert --to html&#34;
@@ -99,11 +197,10 @@ def task(inputDir, outputDir):
                 f&#34;{subInputDir}/{escapeSpace(name)}&#34; for name in theseNotebooks
             )
             commandLine = f&#34;{command} --output-dir={subOutputDir} {inFiles}&#34;
-            print(commandLine)
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
                 convertedNotebooks.append(
-                    (subOutputDir, thisNotebook.replace(nbext, &#34;&#34;))
+                    (subOutputDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
                 )
 
     doSubDir(&#34;&#34;)
@@ -126,7 +223,7 @@ def task(inputDir, outputDir):
                 )
             )
             (?:
-                {nbext}
+                {NB_EXT}
             )
             (
                 [&#39;&#34;]
@@ -138,10 +235,10 @@ def task(inputDir, outputDir):
     def processLinks(text):
         return LINK_RE.sub(r&#34;\1.html\2&#34;, text)
 
-    print(&#34;fixing links to converted notebooks:&#34;)
+    console(&#34;fixing links to converted notebooks:&#34;)
     for (path, name) in convertedNotebooks:
         pathName = f&#34;{path}/{name}.html&#34;
-        print(pathName)
+        console(pathName)
         with open(pathName) as fh:
             text = fh.read()
         text = processLinks(text)
@@ -151,8 +248,8 @@ def task(inputDir, outputDir):
 
 def main():
     args = sys.argv[1:]
-    if &#34;-h&#34; in args or &#34;--help&#34; in args or len(args) != 2:
-        print(HELP)
+    if &#34;-h&#34; in args or &#34;--help&#34; in args or len(args) not in {1, 2}:
+        console(HELP)
         quit()
 
     return task(*args)
@@ -172,52 +269,18 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.tools.nbconvert.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
+<dt id="tf.tools.nbconvert.convertDir"><code class="name flex">
+<span>def <span class="ident">convertDir</span></span>(<span>inputDir, outputDir)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L122-L128" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/nbconvert.py#L136-L216" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def main():
-    args = sys.argv[1:]
-    if &#34;-h&#34; in args or &#34;--help&#34; in args or len(args) != 2:
-        print(HELP)
-        quit()
-
-    return task(*args)</code></pre>
-</details>
-</dd>
-<dt id="tf.tools.nbconvert.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>inputDir, outputDir)</span>
-</code></dt>
-<dd>
-<div class="desc"><pre><code class="language-sh">nbconvert inputDir outputDir
-</code></pre>
-<p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files in <em>outputDir</em>.
-Copies all other files in <em>inputDir</em> to <em>outputDir</em>.
-If <em>outputDir</em> does not exist, it will be created.</p>
-<p>Makes sure that all links in the resulting html to one of the
-original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
-<p>Command switches</p>
-<pre><code>-h
---help
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9be1bdbe02385d4ed8231c3ac9e2aecc4022580d/tf/tools/nbconvert.py#L34-L119" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def task(inputDir, outputDir):
-    if not os.path.isdir(inputDir):
-        print(f&#34;Input directory does not exist: {inputDir}&#34;)
-        return 1
+<pre><code class="python">def convertDir(inputDir, outputDir):
     initTree(outputDir, fresh=True)
-
-    nbext = &#34;.ipynb&#34;
 
     convertedNotebooks = []
 
@@ -234,14 +297,15 @@ original <code>.ipynb</code> files are transformed in links to the converted <co
         with os.scandir(subInputDir) as dh:
             for entry in dh:
                 name = entry.name
+                if name.startswith(&#34;.&#34;):
+                    continue
                 subPath = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
                 if entry.is_dir():
                     doSubDir(subPath)
-                elif name.endswith(nbext):
+                elif name.endswith(NB_EXT):
                     theseNotebooks.append(name)
                 else:
-                    if not name.startswith(&#34;.&#34;):
-                        fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
+                    fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
 
         if len(theseNotebooks):
             command = &#34;jupyter nbconvert --to html&#34;
@@ -249,11 +313,10 @@ original <code>.ipynb</code> files are transformed in links to the converted <co
                 f&#34;{subInputDir}/{escapeSpace(name)}&#34; for name in theseNotebooks
             )
             commandLine = f&#34;{command} --output-dir={subOutputDir} {inFiles}&#34;
-            print(commandLine)
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
                 convertedNotebooks.append(
-                    (subOutputDir, thisNotebook.replace(nbext, &#34;&#34;))
+                    (subOutputDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
                 )
 
     doSubDir(&#34;&#34;)
@@ -276,7 +339,7 @@ original <code>.ipynb</code> files are transformed in links to the converted <co
                 )
             )
             (?:
-                {nbext}
+                {NB_EXT}
             )
             (
                 [&#39;&#34;]
@@ -288,15 +351,160 @@ original <code>.ipynb</code> files are transformed in links to the converted <co
     def processLinks(text):
         return LINK_RE.sub(r&#34;\1.html\2&#34;, text)
 
-    print(&#34;fixing links to converted notebooks:&#34;)
+    console(&#34;fixing links to converted notebooks:&#34;)
     for (path, name) in convertedNotebooks:
         pathName = f&#34;{path}/{name}.html&#34;
-        print(pathName)
+        console(pathName)
         with open(pathName) as fh:
             text = fh.read()
         text = processLinks(text)
         with open(pathName, &#34;w&#34;) as fh:
             fh.write(text)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.nbconvert.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/nbconvert.py#L219-L225" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main():
+    args = sys.argv[1:]
+    if &#34;-h&#34; in args or &#34;--help&#34; in args or len(args) not in {1, 2}:
+        console(HELP)
+        quit()
+
+    return task(*args)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.nbconvert.makeIndex"><code class="name flex">
+<span>def <span class="ident">makeIndex</span></span>(<span>inputDir)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/nbconvert.py#L61-L133" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def makeIndex(inputDir):
+    htmlStart = dedent(
+        &#34;&#34;&#34;
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+            &lt;head&gt;
+                &lt;meta charset=&#34;utf-8&#34;/&gt;
+            &lt;/head&gt;
+            &lt;style&gt;
+            div {
+                padding-left: 3em;
+            }
+            &lt;/style&gt;
+            &lt;body&gt;
+        &#34;&#34;&#34;
+    )
+    htmlEnd = dedent(
+        &#34;&#34;&#34;
+            &lt;/body&gt;
+        &lt;/html&gt;
+        &#34;&#34;&#34;
+    )
+
+    def doSubDir(path):
+        subInputDir = inputDir if path == &#34;&#34; else f&#34;{inputDir}/{path}&#34;
+
+        theseLinks = []
+
+        with os.scandir(subInputDir) as dh:
+            for entry in dh:
+                name = entry.name
+                if name.startswith(&#34;.&#34;):
+                    continue
+                subPath = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
+                if entry.is_dir():
+                    subResult = doSubDir(subPath)
+                    if len(subResult) &gt; 0:
+                        theseLinks.append((name, path, doSubDir(subPath)))
+                elif name.endswith(HTML_EXT) and name != INDEX:
+                    theseLinks.append((name, path))
+        return sorted(theseLinks)
+
+    def formatDir(entry):
+        if len(entry) == 3:
+            (name, path, subEntries) = entry
+            subResults = &#34;\n&#34;.join(formatDir(subEntry) for subEntry in subEntries)
+            return dedent(
+                f&#34;&#34;&#34;
+                &lt;details&gt;
+                    &lt;summary&gt;{name}&lt;/summary&gt;
+                    &lt;div&gt;
+                        {subResults}
+                    &lt;/div&gt;
+                &lt;/details&gt;
+                &#34;&#34;&#34;
+            ).strip()
+        else:
+            (name, path) = entry
+            url = name if path == &#34;&#34; else f&#34;{path}/{name}&#34;
+            return f&#34;&#34;&#34;&lt;a href=&#34;{url}&#34;&gt;{name.removesuffix(HTML_EXT)}&lt;/a&gt;&lt;br&gt;&#34;&#34;&#34;
+
+    console(f&#34;Creating a table of contents for {ux(inputDir)}&#34;)
+    result = doSubDir(&#34;&#34;)
+
+    html = &#34;\n&#34;.join(formatDir(d) for d in result)
+
+    html = f&#34;{htmlStart}{html}{htmlEnd}&#34;
+    filePath = INDEX if inputDir == &#34;&#34; else f&#34;{inputDir}/{INDEX}&#34;
+
+    with open(filePath, &#34;w&#34;) as fh:
+        fh.write(html)
+
+    console(f&#34;Created {ux(filePath)}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.nbconvert.task"><code class="name flex">
+<span>def <span class="ident">task</span></span>(<span>*args)</span>
+</code></dt>
+<dd>
+<div class="desc"><pre><code class="language-sh">nbconvert inputDir [outputDir]
+</code></pre>
+<p>Two modes:</p>
+<ol>
+<li>If outputDir is given:</li>
+</ol>
+<p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files in <em>outputDir</em>.
+Copies all other files in <em>inputDir</em> to <em>outputDir</em>.
+If <em>outputDir</em> does not exist, it will be created.</p>
+<p>Makes sure that all links in the resulting html to one of the
+original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
+<ol>
+<li>Without outputDir</li>
+</ol>
+<p>Generates an index.html file in inputDir with links
+to all html files that can be recursively found inside the inputDir.</p>
+<p>Command switches</p>
+<pre><code>-h
+--help
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/nbconvert.py#L49-L58" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def task(*args):
+    inputDir = args[0]
+    if not os.path.isdir(inputDir):
+        console(f&#34;Input directory does not exist: {inputDir}&#34;)
+        return 1
+
+    if len(args) == 1:
+        makeIndex(inputDir)
+    else:
+        convertDir(inputDir, args[1])</code></pre>
 </details>
 </dd>
 </dl>
@@ -368,7 +576,9 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.tools.nbconvert.convertDir" href="#tf.tools.nbconvert.convertDir">convertDir</a></code></li>
 <li><code><a title="tf.tools.nbconvert.main" href="#tf.tools.nbconvert.main">main</a></code></li>
+<li><code><a title="tf.tools.nbconvert.makeIndex" href="#tf.tools.nbconvert.makeIndex">makeIndex</a></code></li>
 <li><code><a title="tf.tools.nbconvert.task" href="#tf.tools.nbconvert.task">task</a></code></li>
 </ul>
 </li>
