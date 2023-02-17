@@ -795,7 +795,7 @@ class TEI:
 
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
-            def nodeInfo(node, analysis):
+            def nodeInfo(node):
                 tag = etree.QName(node.tag).localname
                 atts = node.attrib
 
@@ -823,9 +823,9 @@ class TEI:
                                 dest[tag][k][w.strip()] += 1
 
                 for child in node.iterchildren(tag=etree.Element):
-                    nodeInfo(child, analysis)
+                    nodeInfo(child)
 
-            nodeInfo(root, analysis)
+            nodeInfo(root)
 
         def writeErrors():
             errorFile = f"{reportDir}/errors.txt"

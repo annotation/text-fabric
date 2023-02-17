@@ -12,6 +12,15 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.2
 
+### 11.2.1 (Upcoming)
+
+2023-??-??
+
+Addition to the nbconvert tool: `tf.tools.nbconvert`:
+If you pass only an input dir, it creates an html index for that directory.
+You can put that in the top of your `public` folder in GitLab,
+so that readers of the Pages documentation can navigate to all generated docs.
+
 ### 11.2.0
 
 2023-02-16
