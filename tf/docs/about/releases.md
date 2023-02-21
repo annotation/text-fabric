@@ -14,12 +14,27 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.2.1 (Upcoming)
 
-2023-??-??
+2023-02-??
 
 Addition to the nbconvert tool: `tf.tools.nbconvert`:
 If you pass only an input dir, it creates an html index for that directory.
 You can put that in the top of your `public` folder in GitLab,
 so that readers of the Pages documentation can navigate to all generated docs.
+
+A fix in `tf.tools.xmlschema`: while analysing definitions in an `xsd` file,
+the imports of other `xsd` files were not heeded. Now they are.
+But not recursively, because in the examples I saw, files imported
+each other mutually or with cycles.
+
+Various enhancements to the `tf.convert.TEI` conversion:
+
+*   a fix in whitespace handling (the whitespace removal was a bit too aggressive),
+    the root cause of this was the afore-mentioned bug in `tf.tools.xmlschema`;
+*   a text format with layout is defined and set as the default;
+*   text within the tei header and notes is displayed in a different color.
+
+A fix of an error, spotted by Christian C. Høygaard, while loading a TF resource in
+a slightly unusual way. 
 
 ### 11.2.0
 

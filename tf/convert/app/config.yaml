@@ -1,5 +1,8 @@
 apiVersion: 3
 dataDisplay:
+  textFormats:
+    layout-orig-full: 
+      method: layout
   excludedFeatures: []
   noneValues:
   - none
@@ -10,7 +13,8 @@ docs:
   docPage: about
   featureBase: '{docBase}/transcription.md'
   featurePage: transcription
-interfaceDefaults: {}
+interfaceDefaults: 
+  fmt: layout-orig-full
 provenanceSpec:
   corpus: '{org} - {repo}'
   doi: 10.5281/zenodo.notyet
@@ -21,5 +25,7 @@ provenanceSpec:
   webLang: en
   webUrl: '{webBase}/<1>/<2>/<3>&version={version}'
   webUrlLex: '{webBase}/word?version={version}&id=<lid>'
-typeDisplay: {}
+typeDisplay:
+  word:
+    base: true
 writing: ''

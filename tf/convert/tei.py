@@ -162,7 +162,7 @@ from ..core.helpers import (
     getLocation,
     unexpanduser as ux,
 )
-from tf.tools.xmlschema import Analysis
+from ..tools.xmlschema import Analysis
 
 
 __pdoc__ = {}
@@ -226,10 +226,9 @@ and hyphens.
     see the Python documentation of the function
     [`isalnum()`](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
 1.  Hyphens are Unicode characters 002D (ascii hyphen) and 2010 (unicode hyphen).
-1.  Words get two features:
+1.  Words get the following features:
     *   `str`: the alphanumeric string that is the word;
     *   `after`: the non-alphanumeric string after the word unti the following word.
-    *   `ismeta`: 1 if the word occurs in inside the `<teiHeader>`, no value otherwise.
 
 ## Slots
 
@@ -237,17 +236,68 @@ The basic unit is the unicode character.
 For each character in the input we make a slot, but the correspondence is not
 quite 1-1.
 
-1. Spaces are stripped when they are between elements whose parent does not allow
-   mixed content; other whitespace is reduced to a single space.
-1. All slots inside the teiHeader will get the feature `ismeta` set to 1;
-   for slots inside the body, `ismeta` has no value.
-1. Empty elements will receive one extra slot; this will anchor the element to
-   a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
-   as character value.
-1. Slots get the following features:
-   *    `ch`: the character of the slot
-   *    `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
-    *   `ismeta`: 1 if the slot occurs in inside the `<teiHeader>`, no value otherwise.
+1.  Spaces are stripped when they are between elements whose parent does not allow
+    mixed content; other whitespace is reduced to a single space.
+1.  All slots inside the teiHeader will get the feature `is_meta` set to 1;
+    for slots inside the body, `is_meta` has no value.
+1.  Empty elements will receive one extra slot; this will anchor the element to
+    a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
+    as character value.
+1.  Slots get the following features:
+    *   `ch`: the character of the slot
+    *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
+
+## Text kinds and text formatting
+
+We record in additional features whether text occurs in metadata elements and
+in note elements and what formatting specifiers influence the text.
+These features are provided for characters and words, and have only one value: 1.
+The absence of values means that the corresponding property does not hold.
+
+The following features are added:
+
+*   `is_meta`: 1 if the word occurs in inside the `<teiHeader>`, no value otherwise.
+*   `is_note`: 1 if the word occurs in inside the `<note>`, no value otherwise.
+*   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
+
+Special formatting for the `rend_`*r* features is supported for some values of *r*.
+The conversion supports these out-of-the-box:
+
+`italic`
+`bold`
+`underline`
+`center`
+`large`
+`spaced`
+`margin`
+`above`
+`below`
+`sub`
+`sup`
+`super`
+
+It is possible for the corpus designer to add more formatting on a per-corpus
+basis by adding it to the `display.css` in the app directory of the corpus.
+Unsupported values get a generic kind of special format: an orange-like color.
+
+Special formatting becomes visible when material is rendered in a `layout` text
+format.
+
+## Text-formats
+
+Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.
+
+There are two kind of text-formats: those that start with the word `layout` and
+those that start with `text`.
+
+The `text` formats do not apply any kind of special formating, the `layout` formats
+do.
+
+We have the following formats:
+
+*   `text-orig-full`: all text
+*   `layout-orig-full`: all text, formatted in HTML
 
 ## Simplifications
 
@@ -297,7 +347,7 @@ with element/attribute names of the TEI.
 
 feature | description
 --- | ---
-folder | name of the subfolder
+`folder` | name of the subfolder
 
 ### node type `file`
 
@@ -309,7 +359,7 @@ folder | name of the subfolder
 
 feature | description
 --- | ---
-file | name of the file, without the `.xml` extension. Other extensions are included.
+`file` | name of the file, without the `.xml` extension. Other extensions are included.
 
 ### node type `chunk`
 
@@ -321,7 +371,7 @@ file | name of the file, without the `.xml` extension. Other extensions are incl
 
 feature | description
 --- | ---
-chunk | sequence number of the chunk within the document, starting with 1.
+`chunk` | sequence number of the chunk within the document, starting with 1.
 
 ### node type `word`
 
@@ -331,9 +381,11 @@ chunk | sequence number of the chunk within the document, starting with 1.
 
 feature | description
 --- | ---
-str | the characters of the word, without soft hyphens.
-after | the non-word characters after the word, up till the next word.
-ismeta=whether a word is in the teiHeader element
+`str` | the characters of the word, without soft hyphens.
+`after` | the non-word characters after the word, up till the next word.
+`is_meta` | whether a word is in the teiHeader element
+`is_note` | whether a word is in a note element
+`rend_`*r* | whether a word is under the influence of a `rend="`*r*`"` attribute.
 
 ### node type `char`
 
@@ -351,9 +403,11 @@ Some empty slots have been inserted to mark the place of empty elements.
 
 feature | description
 --- | ---
-ch | the unicode character in that slot. There are also slots
-empty | whether a slot has been inserted in an empty element
-ismeta=whether a slot is in the teiHeader element
+`ch` | the unicode character in that slot. There are also slots
+`empty` | whether a slot has been inserted in an empty element
+`is_meta` | whether a character is in the teiHeader element
+`is_note` | whether a character is in a note element
+`rend_`*r* | whether a character is under the influence of a `rend="`*r*`"` attribute.
 """
 
 
@@ -428,8 +482,15 @@ class TEI:
 
         *Location of the TEI-XML schemas against which the sources can be validated.*
 
-        One of them should be a `.xsd` file, and the parameter `schema` may specify
-        that name (without extension).
+        It should be an `.xsd` file, and the parameter `schema` may specify
+        its name (without extension).
+
+        !!! note "Multiple `.xsd` files"
+            When you started with a `.rng` file and used `tf.tools.xmlschema` to
+            convert it to `xsd`, you may have got multiple `.xsd` files.
+            One of them has the same base name as the original `.rng` file,
+            and you should pass that name. It will import the remaining `.xsd` files,
+            so do not throw them away.
 
         We use this file as custom TEI schema,
         but to be sure, we still analyse the full TEI schema and
@@ -613,7 +674,7 @@ class TEI:
                 just converts TEI to TF
             load:
                 just loads the generated TF;
-            load:
+            app:
                 just configures the TF-app for the result;
 
         flags:
@@ -634,7 +695,7 @@ class TEI:
             A configured lxml parse object.
         """
         return etree.XMLParser(
-            remove_blank_text=True,
+            remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
             remove_pis=True,
@@ -643,7 +704,7 @@ class TEI:
     def getValidator(self):
         """Parse the schema.
 
-        A parsed schemacan be used for XML-validation.
+        A parsed schema can be used for XML-validation.
         This will only happen during the `check` task.
 
         Returns
@@ -971,10 +1032,12 @@ class TEI:
             empty=dict(
                 description="whether a slot has been inserted in an empty element"
             ),
-            ismeta=dict(
+            is_meta=dict(
                 description="whether a slot or word is in the teiHeader element"
             ),
+            is_note=dict(description="whether a slot or word is in the note element"),
         )
+        self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
         schema = self.schema
@@ -1057,6 +1120,7 @@ class TEI:
 
         sourceDir = self.sourceDir
         featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
         transform = self.transform
 
         transformFunc = (
@@ -1070,7 +1134,12 @@ class TEI:
 
         # WALKERS
 
-        WHITE_RE = re.compile(r"\s\s+", re.S)
+        WHITE_TRIM_RE = re.compile(r"\s\s+", re.S)
+        WHITE_DEL_RE = re.compile(r"\s+", re.S)
+        NON_NAME_RE = re.compile(r"[^a-zA-Z0-9_]+", re.S)
+
+        def makeNameLike(x):
+            return NON_NAME_RE.sub("_", x).strip("_")
 
         def walkNode(cv, cur, node):
             """Internal function to deal with a single element.
@@ -1122,11 +1191,31 @@ class TEI:
                 nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
             )
 
+        def isPure(cur):
+            """Whether the current tag has pure content.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
+            nest = cur["nest"]
+            return len(nest) > 0 and nest[-1] in cur["pureElems"]
+
         def isEndInPure(cur):
             """Whether the current end tag occurs in an element with pure content.
 
             If that is the case, then it is very likely that the end tag also
             marks the end of the current word.
+
+            And we should not strip spaces after it.
 
             Parameters
             ----------
@@ -1164,9 +1253,15 @@ class TEI:
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur["afterStr"])
                 if ch is not None:
-                    cur["word"] = cv.node("word")
+                    curWord = cv.node("word")
+                    cur["word"] = curWord
                     if cur["inHeader"]:
-                        cv.feature(cur["word"], ismeta=1)
+                        cv.feature(curWord, is_meta=1)
+                    if cur["inNote"]:
+                        cv.feature(curWord, is_note=1)
+                    for (r, stack) in cur.get("rend", {}).items():
+                        if len(stack) > 0:
+                            cv.feature(curWord, **{f"rend_{r}": 1})
 
             if ch is not None:
                 cur["wordStr"] += ch
@@ -1224,7 +1319,12 @@ class TEI:
             s = cv.slot()
             cv.feature(s, ch=ch)
             if cur["inHeader"]:
-                cv.feature(s, ismeta=1)
+                cv.feature(s, is_meta=1)
+            if cur["inNote"]:
+                cv.feature(s, is_note=1)
+            for (r, stack) in cur.get("rend", {}).items():
+                if len(stack) > 0:
+                    cv.feature(s, **{f"rend_{r}": 1})
 
         def beforeChildren(cv, cur, node, tag):
             """Actions before dealing with the element's children.
@@ -1248,6 +1348,8 @@ class TEI:
 
             if tag == "teiHeader":
                 cur["inHeader"] = True
+            elif tag == "note":
+                cur["inNote"] = True
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
@@ -1255,9 +1357,14 @@ class TEI:
                 atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
                 if len(atts):
                     cv.feature(curNode, **atts)
+                    if "rend" in atts:
+                        rValue = atts["rend"]
+                        r = makeNameLike(rValue)
+                        if r:
+                            cur.setdefault("rend", {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_RE.sub(" ", node.text):
+                for ch in WHITE_TRIM_RE.sub(" ", node.text):
                     addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
@@ -1278,9 +1385,6 @@ class TEI:
             if isChunk(cur):
                 cv.terminate(cur["chunk"])
 
-            if tag == "teiHeader":
-                cur["inHeader"] = False
-
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
                     finishWord(cv, cur, None)
@@ -1291,7 +1395,9 @@ class TEI:
                     s = cv.slot()
                     cv.feature(s, ch=ZWSP, empty=1)
                     if cur["inHeader"]:
-                        cv.feature(s, ismeta=1)
+                        cv.feature(s, is_meta=1)
+                    if cur["inNote"]:
+                        cv.feature(s, is_note=1)
 
                 cv.terminate(curNode)
 
@@ -1314,9 +1420,34 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             """
+            if tag == "teiHeader":
+                cur["inHeader"] = False
+            elif tag == "note":
+                cur["inNote"] = False
+
+            if tag not in PASS_THROUGH:
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if "rend" in atts:
+                    rValue = atts["rend"]
+                    r = makeNameLike(rValue)
+                    if r:
+                        cur["rend"][r].pop()
+
             if node.tail:
-                for ch in WHITE_RE.sub(" ", node.tail):
-                    addSlot(cv, cur, ch)
+                tailMaterial = WHITE_DEL_RE.sub("", node.tail)
+                if isPure(cur):
+                    if tailMaterial:
+                        elem = cur["nest"][-1]
+                        console(
+                            "WARNING: Text material after "
+                            f"<{tag}> in pure-content element <{elem}>"
+                        )
+                        stack = "-".join(cur["nest"])
+                        console(f"\tElement stack: {stack}-{tag}")
+                        console(f"\tMaterial: `{tailMaterial}`")
+                else:
+                    for ch in tailMaterial:
+                        addSlot(cv, cur, ch)
 
         def director(cv):
             """Director function.
@@ -1358,6 +1489,7 @@ class TEI:
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
                         cur["inHeader"] = False
+                        cur["inNote"] = False
                         cur["nest"] = []
                         cur["elems"] = []
                         cur["chunkNum"] = 0
@@ -1379,11 +1511,20 @@ class TEI:
                     cv.meta(fName)
             for fName in cv.features():
                 if fName not in featureMeta:
-                    cv.meta(
-                        fName,
-                        description=f"this is TEI attribute {fName}",
-                        valueType="str",
-                    )
+                    if fName.startswith("rend_"):
+                        r = fName[5:]
+                        cv.meta(
+                            fName,
+                            description=f"whether text is to be rendered as {r}",
+                            valueType="int",
+                        )
+                        intFeatures.add(fName)
+                    else:
+                        cv.meta(
+                            fName,
+                            description=f"this is TEI attribute {fName}",
+                            valueType="str",
+                        )
             console("source reading done")
             return True
 
@@ -1446,9 +1587,10 @@ class TEI:
         itemSpecs = (
             ("about", "docs", "about.md", False),
             ("trans", "docs", "transcription.md", False),
-            ("config", "app", "config.yaml", True),
-            ("display", "app/static", "display.css", True),
             ("logo", "app/static", "logo.png", True),
+            ("display", "app/static", "display.css", True),
+            ("config", "app", "config.yaml", True),
+            ("app", "app", "app.py", True),
         )
         items = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs

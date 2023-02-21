@@ -731,7 +731,7 @@ def _featuresPerModule(app, allMeta=False):
                 ""
                 if type(mId) is str
                 else (
-                    f"{BACKEND_REP(mBackend, 'url')}/"
+                    f"{BACKEND_REP(backend, 'url')}/"
                     f"{mId[0]}/{mId[1]}/tree/{branch}/{mId[2]}"
                 )
             )

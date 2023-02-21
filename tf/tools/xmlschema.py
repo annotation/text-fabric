@@ -116,7 +116,7 @@ from subprocess import run
 
 from lxml import etree
 
-from ..core.helpers import console
+from ..core.helpers import console, fileExists
 
 
 class Analysis:
@@ -159,7 +159,7 @@ class Analysis:
         ----------
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         """
 
         self.debug = debug
@@ -177,7 +177,7 @@ class Analysis:
             The path of another schema intended to override parts of the baseSchema.
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         """
 
         if baseSchema is None:
@@ -185,21 +185,74 @@ class Analysis:
             baseSchema = f"{myDir}/tei/tei_all.xsd"
 
         self.baseSchema = baseSchema
+        self.baseSchemaDir = os.path.dirname(baseSchema)
         self.override = override
+        self.overrideDir = None if override is None else os.path.dirname(override)
+
+        def findImports(node):
+            """Inner function to walk through the xsd and get the import statements.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            """
+            tag = etree.QName(node.tag).localname
+            if tag == "import":
+                otherFile = node.attrib.get("schemaLocation", "??")
+                if otherFile not in {"xml.xsd", "teix.xsd"}:
+                    sep = "/" if schemaDir else ""
+                    otherPath = f"{schemaDir}{sep}{otherFile}"
+                    otherExists = fileExists(otherPath)
+                    status = "exists" if otherExists else "missing"
+                    kind = "INFO" if otherExists else "WARN~ING"
+                    console(f"{kind}: Needs {otherFile} ({status})")
+                    if otherExists:
+                        dependents.append(otherPath)
+
+            for child in node.iterchildren(tag=etree.Element):
+                findImports(child)
+
+        roots = []
+        self.roots = roots
+        oroots = []
+        self.oroots = oroots
 
         try:
             with open(baseSchema) as fh:
                 tree = etree.parse(fh)
 
-            self.root = tree.getroot()
+            root = tree.getroot()
+            roots.append(root)
+            schemaDir = self.baseSchemaDir
+            dependents = []
 
-            self.oroot = None
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    roots.append(dRoot)
 
             if override is not None:
                 with open(override) as fh:
-                    otree = etree.parse(fh)
+                    tree = etree.parse(fh)
 
-                self.oroot = otree.getroot()
+                root = tree.getroot()
+                oroots.append(root)
+                schemaDir = self.overrideDir
+                dependents = []
+
+                findImports(root)
+
+                for dependent in dependents:
+                    with open(dependent) as fh:
+                        dTree = etree.parse(fh)
+                        dRoot = dTree.getroot()
+                        oroots.append(dRoot)
 
             self.good = True
 
@@ -267,8 +320,10 @@ class Analysis:
         """
 
         debug = self.debug
-        root = self.root
+        roots = self.roots
+        oroots = self.oroots
         types = self.types
+        override = self.override
 
         definitions = {}
         redefinitions = collections.Counter()
@@ -330,24 +385,24 @@ class Analysis:
                 findDefs(child, defining, top)
 
         console(f"Analysing {self.baseSchema}")
-        findDefs(root, False, False)
+        for root in roots:
+            findDefs(root, False, False)
         if debug:
-            self.printElems()
+            self.showElems()
         self.resolve(definitions)
 
         baseDefinitions = definitions
 
-        oroot = self.oroot
-
         self.overrides = {}
 
-        if oroot is not None:
+        if len(oroots) > 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f"Analysing {self.override}")
-            findDefs(oroot, False, False)
+            console(f"Analysing {override}")
+            for root in oroots:
+                findDefs(root, False, False)
             if debug:
-                self.printElems()
+                self.showElems()
             self.resolve(definitions)
 
             for (name, odef) in definitions.items():
@@ -374,6 +429,7 @@ class Analysis:
             for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
             if info["tag"] == "element" and not info["abstract"]
         )
+        self.showOverrides()
 
     def getDefs(self, asTsv=False):
         """Delivers the analysis results.
@@ -462,12 +518,12 @@ class Analysis:
             if changed:
                 console(f"\tround {i:>3}: {changed:>3} changes")
                 if debug:
-                    self.printElems()
+                    self.showElems()
             else:
                 break
 
-    def printElems(self):
-        """Pretty print the current state of definitions.
+    def showElems(self):
+        """Shows the current state of definitions.
 
         Mainly for debugging.
         """
@@ -491,6 +547,22 @@ class Analysis:
         console("=============================================")
         for (name, amount) in sorted(redefinitions.items()):
             console(f"{amount:>3}x {name}")
+
+    def showOverrides(self):
+        """Shows the overriding definitions.
+        """
+        override = self.override
+
+        if override:
+            overrides = self.overrides
+            same = sum(1 for x in overrides.items() if x[1] is None)
+            distinct = len(overrides) - same
+            console(f"{same:>3} identical override(s)")
+            console(f"{distinct:>3} changing override(s)")
+        for (name, trans) in sorted(
+            x for x in self.overrides.items() if x[1] is not None
+        ):
+            console(f"\t{name} {trans}")
 
     def task(self, task, *args):
         """Implements a higher level task.
@@ -536,16 +608,6 @@ class Analysis:
             defs = self.getDefs(asTsv=True)
 
             console(f"{len(defs):>3} elements defined")
-            if override:
-                overrides = self.overrides
-                same = sum(1 for x in overrides.items() if x[1] is None)
-                distinct = len(overrides) - same
-                console(f"{same:>3} identical override(s)")
-                console(f"{distinct:>3} changing override(s)")
-            for (name, trans) in sorted(
-                x for x in self.overrides.items() if x[1] is not None
-            ):
-                console(f"\t{name} {trans}")
             with open(outputFile, "w") as fh:
                 fh.write(defs)
             console(f"Analysis written to {outputFile}\n")
