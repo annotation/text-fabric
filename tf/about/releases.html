@@ -34,11 +34,24 @@ all possibilities.</p>
 <h2 id="11">11</h2>
 <h3 id="112">11.2</h3>
 <h3 id="1121-upcoming">11.2.1 (Upcoming)</h3>
-<p>2023-??-??</p>
+<p>2023-02-??</p>
 <p>Addition to the nbconvert tool: <code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code>:
 If you pass only an input dir, it creates an html index for that directory.
 You can put that in the top of your <code>public</code> folder in GitLab,
 so that readers of the Pages documentation can navigate to all generated docs.</p>
+<p>A fix in <code><a title="tf.tools.xmlschema" href="../tools/xmlschema.html">tf.tools.xmlschema</a></code>: while analysing definitions in an <code>xsd</code> file,
+the imports of other <code>xsd</code> files were not heeded. Now they are.
+But not recursively, because in the examples I saw, files imported
+each other mutually or with cycles.</p>
+<p>Various enhancements to the <code>tf.convert.TEI</code> conversion:</p>
+<ul>
+<li>a fix in whitespace handling (the whitespace removal was a bit too aggressive),
+the root cause of this was the afore-mentioned bug in <code><a title="tf.tools.xmlschema" href="../tools/xmlschema.html">tf.tools.xmlschema</a></code>;</li>
+<li>a text format with layout is defined and set as the default;</li>
+<li>text within the tei header and notes is displayed in a different color.</li>
+</ul>
+<p>A fix of an error, spotted by Christian C. Høygaard, while loading a TF resource in
+a slightly unusual way. </p>
 <h3 id="1120">11.2.0</h3>
 <p>2023-02-16</p>
 <h4 id="new-converter-tei-to-tf">New converter: TEI to TF</h4>
@@ -185,7 +198,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md

@@ -107,7 +107,7 @@ defs = A.getDefs()}
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L1-L608" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L1-L670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 ## Meaningful information from XML schemas.
@@ -227,7 +227,7 @@ from subprocess import run
 
 from lxml import etree
 
-from ..core.helpers import console
+from ..core.helpers import console, fileExists
 
 
 class Analysis:
@@ -270,7 +270,7 @@ class Analysis:
         ----------
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         &#34;&#34;&#34;
 
         self.debug = debug
@@ -288,7 +288,7 @@ class Analysis:
             The path of another schema intended to override parts of the baseSchema.
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         &#34;&#34;&#34;
 
         if baseSchema is None:
@@ -296,21 +296,74 @@ class Analysis:
             baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
 
         self.baseSchema = baseSchema
+        self.baseSchemaDir = os.path.dirname(baseSchema)
         self.override = override
+        self.overrideDir = None if override is None else os.path.dirname(override)
+
+        def findImports(node):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            if tag == &#34;import&#34;:
+                otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+                if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                    sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                    otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                    otherExists = fileExists(otherPath)
+                    status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
+                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    if otherExists:
+                        dependents.append(otherPath)
+
+            for child in node.iterchildren(tag=etree.Element):
+                findImports(child)
+
+        roots = []
+        self.roots = roots
+        oroots = []
+        self.oroots = oroots
 
         try:
             with open(baseSchema) as fh:
                 tree = etree.parse(fh)
 
-            self.root = tree.getroot()
+            root = tree.getroot()
+            roots.append(root)
+            schemaDir = self.baseSchemaDir
+            dependents = []
 
-            self.oroot = None
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    roots.append(dRoot)
 
             if override is not None:
                 with open(override) as fh:
-                    otree = etree.parse(fh)
+                    tree = etree.parse(fh)
 
-                self.oroot = otree.getroot()
+                root = tree.getroot()
+                oroots.append(root)
+                schemaDir = self.overrideDir
+                dependents = []
+
+                findImports(root)
+
+                for dependent in dependents:
+                    with open(dependent) as fh:
+                        dTree = etree.parse(fh)
+                        dRoot = dTree.getroot()
+                        oroots.append(dRoot)
 
             self.good = True
 
@@ -378,8 +431,10 @@ class Analysis:
         &#34;&#34;&#34;
 
         debug = self.debug
-        root = self.root
+        roots = self.roots
+        oroots = self.oroots
         types = self.types
+        override = self.override
 
         definitions = {}
         redefinitions = collections.Counter()
@@ -441,24 +496,24 @@ class Analysis:
                 findDefs(child, defining, top)
 
         console(f&#34;Analysing {self.baseSchema}&#34;)
-        findDefs(root, False, False)
+        for root in roots:
+            findDefs(root, False, False)
         if debug:
-            self.printElems()
+            self.showElems()
         self.resolve(definitions)
 
         baseDefinitions = definitions
 
-        oroot = self.oroot
-
         self.overrides = {}
 
-        if oroot is not None:
+        if len(oroots) &gt; 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f&#34;Analysing {self.override}&#34;)
-            findDefs(oroot, False, False)
+            console(f&#34;Analysing {override}&#34;)
+            for root in oroots:
+                findDefs(root, False, False)
             if debug:
-                self.printElems()
+                self.showElems()
             self.resolve(definitions)
 
             for (name, odef) in definitions.items():
@@ -485,6 +540,7 @@ class Analysis:
             for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
             if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
         )
+        self.showOverrides()
 
     def getDefs(self, asTsv=False):
         &#34;&#34;&#34;Delivers the analysis results.
@@ -573,12 +629,12 @@ class Analysis:
             if changed:
                 console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
                 if debug:
-                    self.printElems()
+                    self.showElems()
             else:
                 break
 
-    def printElems(self):
-        &#34;&#34;&#34;Pretty print the current state of definitions.
+    def showElems(self):
+        &#34;&#34;&#34;Shows the current state of definitions.
 
         Mainly for debugging.
         &#34;&#34;&#34;
@@ -602,6 +658,22 @@ class Analysis:
         console(&#34;=============================================&#34;)
         for (name, amount) in sorted(redefinitions.items()):
             console(f&#34;{amount:&gt;3}x {name}&#34;)
+
+    def showOverrides(self):
+        &#34;&#34;&#34;Shows the overriding definitions.
+        &#34;&#34;&#34;
+        override = self.override
+
+        if override:
+            overrides = self.overrides
+            same = sum(1 for x in overrides.items() if x[1] is None)
+            distinct = len(overrides) - same
+            console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        for (name, trans) in sorted(
+            x for x in self.overrides.items() if x[1] is not None
+        ):
+            console(f&#34;\t{name} {trans}&#34;)
 
     def task(self, task, *args):
         &#34;&#34;&#34;Implements a higher level task.
@@ -647,16 +719,6 @@ class Analysis:
             defs = self.getDefs(asTsv=True)
 
             console(f&#34;{len(defs):&gt;3} elements defined&#34;)
-            if override:
-                overrides = self.overrides
-                same = sum(1 for x in overrides.items() if x[1] is None)
-                distinct = len(overrides) - same
-                console(f&#34;{same:&gt;3} identical override(s)&#34;)
-                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-            for (name, trans) in sorted(
-                x for x in self.overrides.items() if x[1] is not None
-            ):
-                console(f&#34;\t{name} {trans}&#34;)
             with open(outputFile, &#34;w&#34;) as fh:
                 fh.write(defs)
             console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -734,7 +796,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L601-L603" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L663-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = Analysis()
@@ -757,12 +819,12 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt><strong><code>debug</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to run in debug mode or not.
-In debug mode more information is printed on the console.</dd>
+In debug mode more information is shown on the console.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L122-L598" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L122-L660" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Analysis:
     types = set(
@@ -804,7 +866,7 @@ In debug mode more information is printed on the console.</dd>
         ----------
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         &#34;&#34;&#34;
 
         self.debug = debug
@@ -822,7 +884,7 @@ In debug mode more information is printed on the console.</dd>
             The path of another schema intended to override parts of the baseSchema.
         debug: boolean, optional False
             Whether to run in debug mode or not.
-            In debug mode more information is printed on the console.
+            In debug mode more information is shown on the console.
         &#34;&#34;&#34;
 
         if baseSchema is None:
@@ -830,21 +892,74 @@ In debug mode more information is printed on the console.</dd>
             baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
 
         self.baseSchema = baseSchema
+        self.baseSchemaDir = os.path.dirname(baseSchema)
         self.override = override
+        self.overrideDir = None if override is None else os.path.dirname(override)
+
+        def findImports(node):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            if tag == &#34;import&#34;:
+                otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+                if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                    sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                    otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                    otherExists = fileExists(otherPath)
+                    status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
+                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    if otherExists:
+                        dependents.append(otherPath)
+
+            for child in node.iterchildren(tag=etree.Element):
+                findImports(child)
+
+        roots = []
+        self.roots = roots
+        oroots = []
+        self.oroots = oroots
 
         try:
             with open(baseSchema) as fh:
                 tree = etree.parse(fh)
 
-            self.root = tree.getroot()
+            root = tree.getroot()
+            roots.append(root)
+            schemaDir = self.baseSchemaDir
+            dependents = []
 
-            self.oroot = None
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    roots.append(dRoot)
 
             if override is not None:
                 with open(override) as fh:
-                    otree = etree.parse(fh)
+                    tree = etree.parse(fh)
 
-                self.oroot = otree.getroot()
+                root = tree.getroot()
+                oroots.append(root)
+                schemaDir = self.overrideDir
+                dependents = []
+
+                findImports(root)
+
+                for dependent in dependents:
+                    with open(dependent) as fh:
+                        dTree = etree.parse(fh)
+                        dRoot = dTree.getroot()
+                        oroots.append(dRoot)
 
             self.good = True
 
@@ -912,8 +1027,10 @@ In debug mode more information is printed on the console.</dd>
         &#34;&#34;&#34;
 
         debug = self.debug
-        root = self.root
+        roots = self.roots
+        oroots = self.oroots
         types = self.types
+        override = self.override
 
         definitions = {}
         redefinitions = collections.Counter()
@@ -975,24 +1092,24 @@ In debug mode more information is printed on the console.</dd>
                 findDefs(child, defining, top)
 
         console(f&#34;Analysing {self.baseSchema}&#34;)
-        findDefs(root, False, False)
+        for root in roots:
+            findDefs(root, False, False)
         if debug:
-            self.printElems()
+            self.showElems()
         self.resolve(definitions)
 
         baseDefinitions = definitions
 
-        oroot = self.oroot
-
         self.overrides = {}
 
-        if oroot is not None:
+        if len(oroots) &gt; 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f&#34;Analysing {self.override}&#34;)
-            findDefs(oroot, False, False)
+            console(f&#34;Analysing {override}&#34;)
+            for root in oroots:
+                findDefs(root, False, False)
             if debug:
-                self.printElems()
+                self.showElems()
             self.resolve(definitions)
 
             for (name, odef) in definitions.items():
@@ -1019,6 +1136,7 @@ In debug mode more information is printed on the console.</dd>
             for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
             if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
         )
+        self.showOverrides()
 
     def getDefs(self, asTsv=False):
         &#34;&#34;&#34;Delivers the analysis results.
@@ -1107,12 +1225,12 @@ In debug mode more information is printed on the console.</dd>
             if changed:
                 console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
                 if debug:
-                    self.printElems()
+                    self.showElems()
             else:
                 break
 
-    def printElems(self):
-        &#34;&#34;&#34;Pretty print the current state of definitions.
+    def showElems(self):
+        &#34;&#34;&#34;Shows the current state of definitions.
 
         Mainly for debugging.
         &#34;&#34;&#34;
@@ -1136,6 +1254,22 @@ In debug mode more information is printed on the console.</dd>
         console(&#34;=============================================&#34;)
         for (name, amount) in sorted(redefinitions.items()):
             console(f&#34;{amount:&gt;3}x {name}&#34;)
+
+    def showOverrides(self):
+        &#34;&#34;&#34;Shows the overriding definitions.
+        &#34;&#34;&#34;
+        override = self.override
+
+        if override:
+            overrides = self.overrides
+            same = sum(1 for x in overrides.items() if x[1] is None)
+            distinct = len(overrides) - same
+            console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        for (name, trans) in sorted(
+            x for x in self.overrides.items() if x[1] is not None
+        ):
+            console(f&#34;\t{name} {trans}&#34;)
 
     def task(self, task, *args):
         &#34;&#34;&#34;Implements a higher level task.
@@ -1181,16 +1315,6 @@ In debug mode more information is printed on the console.</dd>
             defs = self.getDefs(asTsv=True)
 
             console(f&#34;{len(defs):&gt;3} elements defined&#34;)
-            if override:
-                overrides = self.overrides
-                same = sum(1 for x in overrides.items() if x[1] is None)
-                distinct = len(overrides) - same
-                console(f&#34;{same:&gt;3} identical override(s)&#34;)
-                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-            for (name, trans) in sorted(
-                x for x in self.overrides.items() if x[1] is not None
-            ):
-                console(f&#34;\t{name} {trans}&#34;)
             with open(outputFile, &#34;w&#34;) as fh:
                 fh.write(defs)
             console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -1274,7 +1398,7 @@ and within xs:element those that are "abstract" come first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L214-L237" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L267-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def eKey(x):
@@ -1310,7 +1434,7 @@ def eKey(x):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L138-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L138-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help():
@@ -1336,7 +1460,7 @@ def help():
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L412-L414" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L468-L470" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repKind(k):
@@ -1351,7 +1475,7 @@ def repKind(k):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L408-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L464-L466" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repMixed(m):
@@ -1375,12 +1499,12 @@ to analyse. If None, the complete TEI schema is chosen.</dd>
 <dd>The path of another schema intended to override parts of the baseSchema.</dd>
 <dt><strong><code>debug</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to run in debug mode or not.
-In debug mode more information is printed on the console.</dd>
+In debug mode more information is shown on the console.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L168-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L168-L265" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def configure(self, baseSchema=None, override=None):
     &#34;&#34;&#34;Configure for an XML schema and overrides
@@ -1394,7 +1518,7 @@ In debug mode more information is printed on the console.</dd>
         The path of another schema intended to override parts of the baseSchema.
     debug: boolean, optional False
         Whether to run in debug mode or not.
-        In debug mode more information is printed on the console.
+        In debug mode more information is shown on the console.
     &#34;&#34;&#34;
 
     if baseSchema is None:
@@ -1402,21 +1526,74 @@ In debug mode more information is printed on the console.</dd>
         baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
 
     self.baseSchema = baseSchema
+    self.baseSchemaDir = os.path.dirname(baseSchema)
     self.override = override
+    self.overrideDir = None if override is None else os.path.dirname(override)
+
+    def findImports(node):
+        &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+        This function is called recursively for child nodes.
+
+        Parameters
+        ----------
+        node: Object
+            The current node.
+        &#34;&#34;&#34;
+        tag = etree.QName(node.tag).localname
+        if tag == &#34;import&#34;:
+            otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+            if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                otherExists = fileExists(otherPath)
+                status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
+                console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                if otherExists:
+                    dependents.append(otherPath)
+
+        for child in node.iterchildren(tag=etree.Element):
+            findImports(child)
+
+    roots = []
+    self.roots = roots
+    oroots = []
+    self.oroots = oroots
 
     try:
         with open(baseSchema) as fh:
             tree = etree.parse(fh)
 
-        self.root = tree.getroot()
+        root = tree.getroot()
+        roots.append(root)
+        schemaDir = self.baseSchemaDir
+        dependents = []
 
-        self.oroot = None
+        findImports(root)
+
+        for dependent in dependents:
+            with open(dependent) as fh:
+                dTree = etree.parse(fh)
+                dRoot = dTree.getroot()
+                roots.append(dRoot)
 
         if override is not None:
             with open(override) as fh:
-                otree = etree.parse(fh)
+                tree = etree.parse(fh)
 
-            self.oroot = otree.getroot()
+            root = tree.getroot()
+            oroots.append(root)
+            schemaDir = self.overrideDir
+            dependents = []
+
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    oroots.append(dRoot)
 
         self.good = True
 
@@ -1454,7 +1631,7 @@ If all went well, there are n such absences!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L378-L406" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L434-L462" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDefs(self, asTsv=False):
     &#34;&#34;&#34;Delivers the analysis results.
@@ -1513,7 +1690,7 @@ If all went well, there are n such absences!</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L239-L376" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L292-L432" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def interpret(self):
     &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
@@ -1546,8 +1723,10 @@ If all went well, there are n such absences!</p></div>
     &#34;&#34;&#34;
 
     debug = self.debug
-    root = self.root
+    roots = self.roots
+    oroots = self.oroots
     types = self.types
+    override = self.override
 
     definitions = {}
     redefinitions = collections.Counter()
@@ -1609,24 +1788,24 @@ If all went well, there are n such absences!</p></div>
             findDefs(child, defining, top)
 
     console(f&#34;Analysing {self.baseSchema}&#34;)
-    findDefs(root, False, False)
+    for root in roots:
+        findDefs(root, False, False)
     if debug:
-        self.printElems()
+        self.showElems()
     self.resolve(definitions)
 
     baseDefinitions = definitions
 
-    oroot = self.oroot
-
     self.overrides = {}
 
-    if oroot is not None:
+    if len(oroots) &gt; 0:
         definitions = {}
         redefinitions = collections.Counter()
-        console(f&#34;Analysing {self.override}&#34;)
-        findDefs(oroot, False, False)
+        console(f&#34;Analysing {override}&#34;)
+        for root in oroots:
+            findDefs(root, False, False)
         if debug:
-            self.printElems()
+            self.showElems()
         self.resolve(definitions)
 
         for (name, odef) in definitions.items():
@@ -1652,45 +1831,8 @@ If all went well, there are n such absences!</p></div>
         (name, info.get(&#34;kind&#34;, None), info.get(&#34;mixed&#34;, None))
         for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
         if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
-    )</code></pre>
-</details>
-</dd>
-<dt id="tf.tools.xmlschema.Analysis.printElems"><code class="name flex">
-<span>def <span class="ident">printElems</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Pretty print the current state of definitions.</p>
-<p>Mainly for debugging.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L469-L493" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def printElems(self):
-    &#34;&#34;&#34;Pretty print the current state of definitions.
-
-    Mainly for debugging.
-    &#34;&#34;&#34;
-    definitions = self.definitions
-    redefinitions = self.redefinitions
-
-    for (name, info) in sorted(definitions.items(), key=self.eKey):
-        tag = info[&#34;tag&#34;]
-        mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
-        abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
-        kind = info.get(&#34;kind&#34;, &#34;---&#34;)
-        subs = info.get(&#34;subs&#34;)
-        subsRep = f&#34;==&gt; {subs}&#34; if subs else &#34;&#34;
-        base = info.get(&#34;base&#34;)
-        baseRep = f&#34;&lt;== {base}&#34; if base else &#34;&#34;
-        console(
-            f&#34;{name:&lt;30} in {tag:&lt;20} &#34;
-            f&#34;({kind:&lt;7}) ({mixed}) ({abstract}) {subsRep}{baseRep}&#34;
-        )
-
-    console(&#34;=============================================&#34;)
-    for (name, amount) in sorted(redefinitions.items()):
-        console(f&#34;{amount:&gt;3}x {name}&#34;)</code></pre>
+    )
+    self.showOverrides()</code></pre>
 </details>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.resolve"><code class="name flex">
@@ -1704,7 +1846,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L416-L467" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L472-L523" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve(self, definitions):
     &#34;&#34;&#34;Resolve indirections in the definitions.
@@ -1755,7 +1897,7 @@ in places where the names occur.</p></div>
         if changed:
             console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
             if debug:
-                self.printElems()
+                self.showElems()
         else:
             break</code></pre>
 </details>
@@ -1775,7 +1917,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L561-L598" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L623-L660" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self):
     &#34;&#34;&#34;Run a task specified by arguments on the command line.
@@ -1817,6 +1959,71 @@ in places where the names occur.</p></div>
     return 0 if self.task(task, *args) else 1</code></pre>
 </details>
 </dd>
+<dt id="tf.tools.xmlschema.Analysis.showElems"><code class="name flex">
+<span>def <span class="ident">showElems</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the current state of definitions.</p>
+<p>Mainly for debugging.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L525-L549" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showElems(self):
+    &#34;&#34;&#34;Shows the current state of definitions.
+
+    Mainly for debugging.
+    &#34;&#34;&#34;
+    definitions = self.definitions
+    redefinitions = self.redefinitions
+
+    for (name, info) in sorted(definitions.items(), key=self.eKey):
+        tag = info[&#34;tag&#34;]
+        mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
+        abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
+        kind = info.get(&#34;kind&#34;, &#34;---&#34;)
+        subs = info.get(&#34;subs&#34;)
+        subsRep = f&#34;==&gt; {subs}&#34; if subs else &#34;&#34;
+        base = info.get(&#34;base&#34;)
+        baseRep = f&#34;&lt;== {base}&#34; if base else &#34;&#34;
+        console(
+            f&#34;{name:&lt;30} in {tag:&lt;20} &#34;
+            f&#34;({kind:&lt;7}) ({mixed}) ({abstract}) {subsRep}{baseRep}&#34;
+        )
+
+    console(&#34;=============================================&#34;)
+    for (name, amount) in sorted(redefinitions.items()):
+        console(f&#34;{amount:&gt;3}x {name}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.showOverrides"><code class="name flex">
+<span>def <span class="ident">showOverrides</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the overriding definitions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L551-L565" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showOverrides(self):
+    &#34;&#34;&#34;Shows the overriding definitions.
+    &#34;&#34;&#34;
+    override = self.override
+
+    if override:
+        overrides = self.overrides
+        same = sum(1 for x in overrides.items() if x[1] is None)
+        distinct = len(overrides) - same
+        console(f&#34;{same:&gt;3} identical override(s)&#34;)
+        console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+    for (name, trans) in sorted(
+        x for x in self.overrides.items() if x[1] is not None
+    ):
+        console(f&#34;\t{name} {trans}&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.tools.xmlschema.Analysis.task"><code class="name flex">
 <span>def <span class="ident">task</span></span>(<span>self, task, *args)</span>
 </code></dt>
@@ -1839,7 +2046,7 @@ Not all tasks require both.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/tools/xmlschema.py#L495-L559" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/tools/xmlschema.py#L567-L621" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, task, *args):
     &#34;&#34;&#34;Implements a higher level task.
@@ -1885,16 +2092,6 @@ Not all tasks require both.</dd>
         defs = self.getDefs(asTsv=True)
 
         console(f&#34;{len(defs):&gt;3} elements defined&#34;)
-        if override:
-            overrides = self.overrides
-            same = sum(1 for x in overrides.items() if x[1] is None)
-            distinct = len(overrides) - same
-            console(f&#34;{same:&gt;3} identical override(s)&#34;)
-            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-        for (name, trans) in sorted(
-            x for x in self.overrides.items() if x[1] is not None
-        ):
-            console(f&#34;\t{name} {trans}&#34;)
         with open(outputFile, &#34;w&#34;) as fh:
             fh.write(defs)
         console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -1998,11 +2195,12 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.tools.xmlschema.Analysis.help" href="#tf.tools.xmlschema.Analysis.help">help</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.interpret" href="#tf.tools.xmlschema.Analysis.interpret">interpret</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.notInteresting" href="#tf.tools.xmlschema.Analysis.notInteresting">notInteresting</a></code></li>
-<li><code><a title="tf.tools.xmlschema.Analysis.printElems" href="#tf.tools.xmlschema.Analysis.printElems">printElems</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.repKind" href="#tf.tools.xmlschema.Analysis.repKind">repKind</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.repMixed" href="#tf.tools.xmlschema.Analysis.repMixed">repMixed</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.resolve" href="#tf.tools.xmlschema.Analysis.resolve">resolve</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.run" href="#tf.tools.xmlschema.Analysis.run">run</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.showElems" href="#tf.tools.xmlschema.Analysis.showElems">showElems</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.showOverrides" href="#tf.tools.xmlschema.Analysis.showOverrides">showOverrides</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.task" href="#tf.tools.xmlschema.Analysis.task">task</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.types" href="#tf.tools.xmlschema.Analysis.types">types</a></code></li>
 </ul>

@@ -145,7 +145,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1-L1686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1-L1828" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -311,7 +311,7 @@ from ..core.helpers import (
     getLocation,
     unexpanduser as ux,
 )
-from tf.tools.xmlschema import Analysis
+from ..tools.xmlschema import Analysis
 
 
 __pdoc__ = {}
@@ -375,10 +375,9 @@ and hyphens.
     see the Python documentation of the function
     [`isalnum()`](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
 1.  Hyphens are Unicode characters 002D (ascii hyphen) and 2010 (unicode hyphen).
-1.  Words get two features:
+1.  Words get the following features:
     *   `str`: the alphanumeric string that is the word;
     *   `after`: the non-alphanumeric string after the word unti the following word.
-    *   `ismeta`: 1 if the word occurs in inside the `&lt;teiHeader&gt;`, no value otherwise.
 
 ## Slots
 
@@ -386,17 +385,68 @@ The basic unit is the unicode character.
 For each character in the input we make a slot, but the correspondence is not
 quite 1-1.
 
-1. Spaces are stripped when they are between elements whose parent does not allow
-   mixed content; other whitespace is reduced to a single space.
-1. All slots inside the teiHeader will get the feature `ismeta` set to 1;
-   for slots inside the body, `ismeta` has no value.
-1. Empty elements will receive one extra slot; this will anchor the element to
-   a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
-   as character value.
-1. Slots get the following features:
-   *    `ch`: the character of the slot
-   *    `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
-    *   `ismeta`: 1 if the slot occurs in inside the `&lt;teiHeader&gt;`, no value otherwise.
+1.  Spaces are stripped when they are between elements whose parent does not allow
+    mixed content; other whitespace is reduced to a single space.
+1.  All slots inside the teiHeader will get the feature `is_meta` set to 1;
+    for slots inside the body, `is_meta` has no value.
+1.  Empty elements will receive one extra slot; this will anchor the element to
+    a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
+    as character value.
+1.  Slots get the following features:
+    *   `ch`: the character of the slot
+    *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
+
+## Text kinds and text formatting
+
+We record in additional features whether text occurs in metadata elements and
+in note elements and what formatting specifiers influence the text.
+These features are provided for characters and words, and have only one value: 1.
+The absence of values means that the corresponding property does not hold.
+
+The following features are added:
+
+*   `is_meta`: 1 if the word occurs in inside the `&lt;teiHeader&gt;`, no value otherwise.
+*   `is_note`: 1 if the word occurs in inside the `&lt;note&gt;`, no value otherwise.
+*   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
+
+Special formatting for the `rend_`*r* features is supported for some values of *r*.
+The conversion supports these out-of-the-box:
+
+`italic`
+`bold`
+`underline`
+`center`
+`large`
+`spaced`
+`margin`
+`above`
+`below`
+`sub`
+`sup`
+`super`
+
+It is possible for the corpus designer to add more formatting on a per-corpus
+basis by adding it to the `display.css` in the app directory of the corpus.
+Unsupported values get a generic kind of special format: an orange-like color.
+
+Special formatting becomes visible when material is rendered in a `layout` text
+format.
+
+## Text-formats
+
+Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.
+
+There are two kind of text-formats: those that start with the word `layout` and
+those that start with `text`.
+
+The `text` formats do not apply any kind of special formating, the `layout` formats
+do.
+
+We have the following formats:
+
+*   `text-orig-full`: all text
+*   `layout-orig-full`: all text, formatted in HTML
 
 ## Simplifications
 
@@ -446,7 +496,7 @@ with element/attribute names of the TEI.
 
 feature | description
 --- | ---
-folder | name of the subfolder
+`folder` | name of the subfolder
 
 ### node type `file`
 
@@ -458,7 +508,7 @@ folder | name of the subfolder
 
 feature | description
 --- | ---
-file | name of the file, without the `.xml` extension. Other extensions are included.
+`file` | name of the file, without the `.xml` extension. Other extensions are included.
 
 ### node type `chunk`
 
@@ -470,7 +520,7 @@ file | name of the file, without the `.xml` extension. Other extensions are incl
 
 feature | description
 --- | ---
-chunk | sequence number of the chunk within the document, starting with 1.
+`chunk` | sequence number of the chunk within the document, starting with 1.
 
 ### node type `word`
 
@@ -480,9 +530,11 @@ chunk | sequence number of the chunk within the document, starting with 1.
 
 feature | description
 --- | ---
-str | the characters of the word, without soft hyphens.
-after | the non-word characters after the word, up till the next word.
-ismeta=whether a word is in the teiHeader element
+`str` | the characters of the word, without soft hyphens.
+`after` | the non-word characters after the word, up till the next word.
+`is_meta` | whether a word is in the teiHeader element
+`is_note` | whether a word is in a note element
+`rend_`*r* | whether a word is under the influence of a `rend=&#34;`*r*`&#34;` attribute.
 
 ### node type `char`
 
@@ -500,9 +552,11 @@ Some empty slots have been inserted to mark the place of empty elements.
 
 feature | description
 --- | ---
-ch | the unicode character in that slot. There are also slots
-empty | whether a slot has been inserted in an empty element
-ismeta=whether a slot is in the teiHeader element
+`ch` | the unicode character in that slot. There are also slots
+`empty` | whether a slot has been inserted in an empty element
+`is_meta` | whether a character is in the teiHeader element
+`is_note` | whether a character is in a note element
+`rend_`*r* | whether a character is under the influence of a `rend=&#34;`*r*`&#34;` attribute.
 &#34;&#34;&#34;
 
 
@@ -577,8 +631,15 @@ class TEI:
 
         *Location of the TEI-XML schemas against which the sources can be validated.*
 
-        One of them should be a `.xsd` file, and the parameter `schema` may specify
-        that name (without extension).
+        It should be an `.xsd` file, and the parameter `schema` may specify
+        its name (without extension).
+
+        !!! note &#34;Multiple `.xsd` files&#34;
+            When you started with a `.rng` file and used `tf.tools.xmlschema` to
+            convert it to `xsd`, you may have got multiple `.xsd` files.
+            One of them has the same base name as the original `.rng` file,
+            and you should pass that name. It will import the remaining `.xsd` files,
+            so do not throw them away.
 
         We use this file as custom TEI schema,
         but to be sure, we still analyse the full TEI schema and
@@ -762,7 +823,7 @@ class TEI:
                 just converts TEI to TF
             load:
                 just loads the generated TF;
-            load:
+            app:
                 just configures the TF-app for the result;
 
         flags:
@@ -783,7 +844,7 @@ class TEI:
             A configured lxml parse object.
         &#34;&#34;&#34;
         return etree.XMLParser(
-            remove_blank_text=True,
+            remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
             remove_pis=True,
@@ -792,7 +853,7 @@ class TEI:
     def getValidator(self):
         &#34;&#34;&#34;Parse the schema.
 
-        A parsed schemacan be used for XML-validation.
+        A parsed schema can be used for XML-validation.
         This will only happen during the `check` task.
 
         Returns
@@ -1120,10 +1181,12 @@ class TEI:
             empty=dict(
                 description=&#34;whether a slot has been inserted in an empty element&#34;
             ),
-            ismeta=dict(
+            is_meta=dict(
                 description=&#34;whether a slot or word is in the teiHeader element&#34;
             ),
+            is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
         schema = self.schema
@@ -1206,6 +1269,7 @@ class TEI:
 
         sourceDir = self.sourceDir
         featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
         transform = self.transform
 
         transformFunc = (
@@ -1219,7 +1283,12 @@ class TEI:
 
         # WALKERS
 
-        WHITE_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+        WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+        WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+
+        def makeNameLike(x):
+            return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
         def walkNode(cv, cur, node):
             &#34;&#34;&#34;Internal function to deal with a single element.
@@ -1271,11 +1340,31 @@ class TEI:
                 nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
             )
 
+        def isPure(cur):
+            &#34;&#34;&#34;Whether the current tag has pure content.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            nest = cur[&#34;nest&#34;]
+            return len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
+
         def isEndInPure(cur):
             &#34;&#34;&#34;Whether the current end tag occurs in an element with pure content.
 
             If that is the case, then it is very likely that the end tag also
             marks the end of the current word.
+
+            And we should not strip spaces after it.
 
             Parameters
             ----------
@@ -1313,9 +1402,15 @@ class TEI:
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
                 if ch is not None:
-                    cur[&#34;word&#34;] = cv.node(&#34;word&#34;)
+                    curWord = cv.node(&#34;word&#34;)
+                    cur[&#34;word&#34;] = curWord
                     if cur[&#34;inHeader&#34;]:
-                        cv.feature(cur[&#34;word&#34;], ismeta=1)
+                        cv.feature(curWord, is_meta=1)
+                    if cur[&#34;inNote&#34;]:
+                        cv.feature(curWord, is_note=1)
+                    for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                        if len(stack) &gt; 0:
+                            cv.feature(curWord, **{f&#34;rend_{r}&#34;: 1})
 
             if ch is not None:
                 cur[&#34;wordStr&#34;] += ch
@@ -1373,7 +1468,12 @@ class TEI:
             s = cv.slot()
             cv.feature(s, ch=ch)
             if cur[&#34;inHeader&#34;]:
-                cv.feature(s, ismeta=1)
+                cv.feature(s, is_meta=1)
+            if cur[&#34;inNote&#34;]:
+                cv.feature(s, is_note=1)
+            for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                if len(stack) &gt; 0:
+                    cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def beforeChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -1397,6 +1497,8 @@ class TEI:
 
             if tag == &#34;teiHeader&#34;:
                 cur[&#34;inHeader&#34;] = True
+            elif tag == &#34;note&#34;:
+                cur[&#34;inNote&#34;] = True
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
@@ -1404,9 +1506,14 @@ class TEI:
                 atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
                 if len(atts):
                     cv.feature(curNode, **atts)
+                    if &#34;rend&#34; in atts:
+                        rValue = atts[&#34;rend&#34;]
+                        r = makeNameLike(rValue)
+                        if r:
+                            cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_RE.sub(&#34; &#34;, node.text):
+                for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
                     addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
@@ -1427,9 +1534,6 @@ class TEI:
             if isChunk(cur):
                 cv.terminate(cur[&#34;chunk&#34;])
 
-            if tag == &#34;teiHeader&#34;:
-                cur[&#34;inHeader&#34;] = False
-
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
                     finishWord(cv, cur, None)
@@ -1440,7 +1544,9 @@ class TEI:
                     s = cv.slot()
                     cv.feature(s, ch=ZWSP, empty=1)
                     if cur[&#34;inHeader&#34;]:
-                        cv.feature(s, ismeta=1)
+                        cv.feature(s, is_meta=1)
+                    if cur[&#34;inNote&#34;]:
+                        cv.feature(s, is_note=1)
 
                 cv.terminate(curNode)
 
@@ -1463,9 +1569,34 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            if tag == &#34;teiHeader&#34;:
+                cur[&#34;inHeader&#34;] = False
+            elif tag == &#34;note&#34;:
+                cur[&#34;inNote&#34;] = False
+
+            if tag not in PASS_THROUGH:
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if &#34;rend&#34; in atts:
+                    rValue = atts[&#34;rend&#34;]
+                    r = makeNameLike(rValue)
+                    if r:
+                        cur[&#34;rend&#34;][r].pop()
+
             if node.tail:
-                for ch in WHITE_RE.sub(&#34; &#34;, node.tail):
-                    addSlot(cv, cur, ch)
+                tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+                if isPure(cur):
+                    if tailMaterial:
+                        elem = cur[&#34;nest&#34;][-1]
+                        console(
+                            &#34;WARNING: Text material after &#34;
+                            f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                        )
+                        stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                        console(f&#34;\tElement stack: {stack}-{tag}&#34;)
+                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+                else:
+                    for ch in tailMaterial:
+                        addSlot(cv, cur, ch)
 
         def director(cv):
             &#34;&#34;&#34;Director function.
@@ -1507,6 +1638,7 @@ class TEI:
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
                         cur[&#34;inHeader&#34;] = False
+                        cur[&#34;inNote&#34;] = False
                         cur[&#34;nest&#34;] = []
                         cur[&#34;elems&#34;] = []
                         cur[&#34;chunkNum&#34;] = 0
@@ -1528,11 +1660,20 @@ class TEI:
                     cv.meta(fName)
             for fName in cv.features():
                 if fName not in featureMeta:
-                    cv.meta(
-                        fName,
-                        description=f&#34;this is TEI attribute {fName}&#34;,
-                        valueType=&#34;str&#34;,
-                    )
+                    if fName.startswith(&#34;rend_&#34;):
+                        r = fName[5:]
+                        cv.meta(
+                            fName,
+                            description=f&#34;whether text is to be rendered as {r}&#34;,
+                            valueType=&#34;int&#34;,
+                        )
+                        intFeatures.add(fName)
+                    else:
+                        cv.meta(
+                            fName,
+                            description=f&#34;this is TEI attribute {fName}&#34;,
+                            valueType=&#34;str&#34;,
+                        )
             console(&#34;source reading done&#34;)
             return True
 
@@ -1595,9 +1736,10 @@ class TEI:
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
             (&#34;trans&#34;, &#34;docs&#34;, &#34;transcription.md&#34;, False),
-            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
             (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
+            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
+            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
+            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
         )
         items = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
@@ -1901,10 +2043,9 @@ and hyphens.</p>
 see the Python documentation of the function
 <a href="https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str"><code>isalnum()</code></a></li>
 <li>Hyphens are Unicode characters 002D (ascii hyphen) and 2010 (unicode hyphen).</li>
-<li>Words get two features:<ul>
+<li>Words get the following features:<ul>
 <li><code>str</code>: the alphanumeric string that is the word;</li>
 <li><code>after</code>: the non-alphanumeric string after the word unti the following word.</li>
-<li><code>ismeta</code>: 1 if the word occurs in inside the <code>&lt;teiHeader&gt;</code>, no value otherwise.</li>
 </ul>
 </li>
 </ol>
@@ -1915,18 +2056,59 @@ quite 1-1.</p>
 <ol>
 <li>Spaces are stripped when they are between elements whose parent does not allow
 mixed content; other whitespace is reduced to a single space.</li>
-<li>All slots inside the teiHeader will get the feature <code>ismeta</code> set to 1;
-for slots inside the body, <code>ismeta</code> has no value.</li>
+<li>All slots inside the teiHeader will get the feature <code>is_meta</code> set to 1;
+for slots inside the body, <code>is_meta</code> has no value.</li>
 <li>Empty elements will receive one extra slot; this will anchor the element to
 a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
 as character value.</li>
-<li>Slots get the following features:</li>
+<li>Slots get the following features:<ul>
 <li><code>ch</code>: the character of the slot</li>
-<li><code>empty</code>: 1 if the slot has been inserted as an empty slot, no value otherwise.<ul>
-<li><code>ismeta</code>: 1 if the slot occurs in inside the <code>&lt;teiHeader&gt;</code>, no value otherwise.</li>
+<li><code>empty</code>: 1 if the slot has been inserted as an empty slot, no value otherwise.</li>
 </ul>
 </li>
 </ol>
+<h2 id="text-kinds-and-text-formatting">Text kinds and text formatting</h2>
+<p>We record in additional features whether text occurs in metadata elements and
+in note elements and what formatting specifiers influence the text.
+These features are provided for characters and words, and have only one value: 1.
+The absence of values means that the corresponding property does not hold.</p>
+<p>The following features are added:</p>
+<ul>
+<li><code>is_meta</code>: 1 if the word occurs in inside the <code>&lt;teiHeader&gt;</code>, no value otherwise.</li>
+<li><code>is_note</code>: 1 if the word occurs in inside the <code>&lt;note&gt;</code>, no value otherwise.</li>
+<li><code>rend_</code><em>r</em>: for any <em>r</em> that is the value of a <code>rend</code> attribute.</li>
+</ul>
+<p>Special formatting for the <code>rend_</code><em>r</em> features is supported for some values of <em>r</em>.
+The conversion supports these out-of-the-box:</p>
+<p><code>italic</code>
+<code>bold</code>
+<code>underline</code>
+<code>center</code>
+<code>large</code>
+<code>spaced</code>
+<code>margin</code>
+<code>above</code>
+<code>below</code>
+<code>sub</code>
+<code>sup</code>
+<code>super</code></p>
+<p>It is possible for the corpus designer to add more formatting on a per-corpus
+basis by adding it to the <code>display.css</code> in the app directory of the corpus.
+Unsupported values get a generic kind of special format: an orange-like color.</p>
+<p>Special formatting becomes visible when material is rendered in a <code>layout</code> text
+format.</p>
+<h2 id="text-formats">Text-formats</h2>
+<p>Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.</p>
+<p>There are two kind of text-formats: those that start with the word <code>layout</code> and
+those that start with <code>text</code>.</p>
+<p>The <code>text</code> formats do not apply any kind of special formating, the <code>layout</code> formats
+do.</p>
+<p>We have the following formats:</p>
+<ul>
+<li><code>text-orig-full</code>: all text</li>
+<li><code>layout-orig-full</code>: all text, formatted in HTML</li>
+</ul>
 <h2 id="simplifications">Simplifications</h2>
 <p>XML is complicated, the TEI guidelines use that complexity to the full.
 In particular, it is difficult to determine what the set of TEI elements is
@@ -1970,7 +2152,7 @@ with element/attribute names of the TEI.</p>
 </thead>
 <tbody>
 <tr>
-<td>folder</td>
+<td><code>folder</code></td>
 <td>name of the subfolder</td>
 </tr>
 </tbody>
@@ -1988,7 +2170,7 @@ with element/attribute names of the TEI.</p>
 </thead>
 <tbody>
 <tr>
-<td>file</td>
+<td><code>file</code></td>
 <td>name of the file, without the <code>.xml</code> extension. Other extensions are included.</td>
 </tr>
 </tbody>
@@ -2006,7 +2188,7 @@ with element/attribute names of the TEI.</p>
 </thead>
 <tbody>
 <tr>
-<td>chunk</td>
+<td><code>chunk</code></td>
 <td>sequence number of the chunk within the document, starting with 1.</td>
 </tr>
 </tbody>
@@ -2023,16 +2205,24 @@ with element/attribute names of the TEI.</p>
 </thead>
 <tbody>
 <tr>
-<td>str</td>
+<td><code>str</code></td>
 <td>the characters of the word, without soft hyphens.</td>
 </tr>
 <tr>
-<td>after</td>
+<td><code>after</code></td>
 <td>the non-word characters after the word, up till the next word.</td>
 </tr>
 <tr>
-<td>ismeta=whether a word is in the teiHeader element</td>
-<td></td>
+<td><code>is_meta</code></td>
+<td>whether a word is in the teiHeader element</td>
+</tr>
+<tr>
+<td><code>is_note</code></td>
+<td>whether a word is in a note element</td>
+</tr>
+<tr>
+<td><code>rend_</code><em>r</em></td>
+<td>whether a word is under the influence of a <code>rend="</code><em>r</em><code>"</code> attribute.</td>
 </tr>
 </tbody>
 </table>
@@ -2053,23 +2243,31 @@ Meaningful whitespace has been condensed to single spaces.</p>
 </thead>
 <tbody>
 <tr>
-<td>ch</td>
+<td><code>ch</code></td>
 <td>the unicode character in that slot. There are also slots</td>
 </tr>
 <tr>
-<td>empty</td>
+<td><code>empty</code></td>
 <td>whether a slot has been inserted in an empty element</td>
 </tr>
 <tr>
-<td>ismeta=whether a slot is in the teiHeader element</td>
-<td></td>
+<td><code>is_meta</code></td>
+<td>whether a character is in the teiHeader element</td>
+</tr>
+<tr>
+<td><code>is_note</code></td>
+<td>whether a character is in a note element</td>
+</tr>
+<tr>
+<td><code>rend_</code><em>r</em></td>
+<td>whether a character is under the influence of a <code>rend="</code><em>r</em><code>"</code> attribute.</td>
 </tr>
 </tbody>
 </table></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L360-L1683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L414-L1825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -2142,8 +2340,15 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
         *Location of the TEI-XML schemas against which the sources can be validated.*
 
-        One of them should be a `.xsd` file, and the parameter `schema` may specify
-        that name (without extension).
+        It should be an `.xsd` file, and the parameter `schema` may specify
+        its name (without extension).
+
+        !!! note &#34;Multiple `.xsd` files&#34;
+            When you started with a `.rng` file and used `tf.tools.xmlschema` to
+            convert it to `xsd`, you may have got multiple `.xsd` files.
+            One of them has the same base name as the original `.rng` file,
+            and you should pass that name. It will import the remaining `.xsd` files,
+            so do not throw them away.
 
         We use this file as custom TEI schema,
         but to be sure, we still analyse the full TEI schema and
@@ -2327,7 +2532,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 just converts TEI to TF
             load:
                 just loads the generated TF;
-            load:
+            app:
                 just configures the TF-app for the result;
 
         flags:
@@ -2348,7 +2553,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
             A configured lxml parse object.
         &#34;&#34;&#34;
         return etree.XMLParser(
-            remove_blank_text=True,
+            remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
             remove_pis=True,
@@ -2357,7 +2562,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
     def getValidator(self):
         &#34;&#34;&#34;Parse the schema.
 
-        A parsed schemacan be used for XML-validation.
+        A parsed schema can be used for XML-validation.
         This will only happen during the `check` task.
 
         Returns
@@ -2685,10 +2890,12 @@ Meaningful whitespace has been condensed to single spaces.</p>
             empty=dict(
                 description=&#34;whether a slot has been inserted in an empty element&#34;
             ),
-            ismeta=dict(
+            is_meta=dict(
                 description=&#34;whether a slot or word is in the teiHeader element&#34;
             ),
+            is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
         schema = self.schema
@@ -2771,6 +2978,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
         sourceDir = self.sourceDir
         featureMeta = self.featureMeta
+        intFeatures = self.intFeatures
         transform = self.transform
 
         transformFunc = (
@@ -2784,7 +2992,12 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
         # WALKERS
 
-        WHITE_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+        WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+        WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+        NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+
+        def makeNameLike(x):
+            return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
         def walkNode(cv, cur, node):
             &#34;&#34;&#34;Internal function to deal with a single element.
@@ -2836,11 +3049,31 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
             )
 
+        def isPure(cur):
+            &#34;&#34;&#34;Whether the current tag has pure content.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            nest = cur[&#34;nest&#34;]
+            return len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
+
         def isEndInPure(cur):
             &#34;&#34;&#34;Whether the current end tag occurs in an element with pure content.
 
             If that is the case, then it is very likely that the end tag also
             marks the end of the current word.
+
+            And we should not strip spaces after it.
 
             Parameters
             ----------
@@ -2878,9 +3111,15 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
                 if ch is not None:
-                    cur[&#34;word&#34;] = cv.node(&#34;word&#34;)
+                    curWord = cv.node(&#34;word&#34;)
+                    cur[&#34;word&#34;] = curWord
                     if cur[&#34;inHeader&#34;]:
-                        cv.feature(cur[&#34;word&#34;], ismeta=1)
+                        cv.feature(curWord, is_meta=1)
+                    if cur[&#34;inNote&#34;]:
+                        cv.feature(curWord, is_note=1)
+                    for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                        if len(stack) &gt; 0:
+                            cv.feature(curWord, **{f&#34;rend_{r}&#34;: 1})
 
             if ch is not None:
                 cur[&#34;wordStr&#34;] += ch
@@ -2938,7 +3177,12 @@ Meaningful whitespace has been condensed to single spaces.</p>
             s = cv.slot()
             cv.feature(s, ch=ch)
             if cur[&#34;inHeader&#34;]:
-                cv.feature(s, ismeta=1)
+                cv.feature(s, is_meta=1)
+            if cur[&#34;inNote&#34;]:
+                cv.feature(s, is_note=1)
+            for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                if len(stack) &gt; 0:
+                    cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def beforeChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -2962,6 +3206,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
             if tag == &#34;teiHeader&#34;:
                 cur[&#34;inHeader&#34;] = True
+            elif tag == &#34;note&#34;:
+                cur[&#34;inNote&#34;] = True
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
@@ -2969,9 +3215,14 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
                 if len(atts):
                     cv.feature(curNode, **atts)
+                    if &#34;rend&#34; in atts:
+                        rValue = atts[&#34;rend&#34;]
+                        r = makeNameLike(rValue)
+                        if r:
+                            cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_RE.sub(&#34; &#34;, node.text):
+                for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
                     addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
@@ -2992,9 +3243,6 @@ Meaningful whitespace has been condensed to single spaces.</p>
             if isChunk(cur):
                 cv.terminate(cur[&#34;chunk&#34;])
 
-            if tag == &#34;teiHeader&#34;:
-                cur[&#34;inHeader&#34;] = False
-
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
                     finishWord(cv, cur, None)
@@ -3005,7 +3253,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
                     s = cv.slot()
                     cv.feature(s, ch=ZWSP, empty=1)
                     if cur[&#34;inHeader&#34;]:
-                        cv.feature(s, ismeta=1)
+                        cv.feature(s, is_meta=1)
+                    if cur[&#34;inNote&#34;]:
+                        cv.feature(s, is_note=1)
 
                 cv.terminate(curNode)
 
@@ -3028,9 +3278,34 @@ Meaningful whitespace has been condensed to single spaces.</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            if tag == &#34;teiHeader&#34;:
+                cur[&#34;inHeader&#34;] = False
+            elif tag == &#34;note&#34;:
+                cur[&#34;inNote&#34;] = False
+
+            if tag not in PASS_THROUGH:
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if &#34;rend&#34; in atts:
+                    rValue = atts[&#34;rend&#34;]
+                    r = makeNameLike(rValue)
+                    if r:
+                        cur[&#34;rend&#34;][r].pop()
+
             if node.tail:
-                for ch in WHITE_RE.sub(&#34; &#34;, node.tail):
-                    addSlot(cv, cur, ch)
+                tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+                if isPure(cur):
+                    if tailMaterial:
+                        elem = cur[&#34;nest&#34;][-1]
+                        console(
+                            &#34;WARNING: Text material after &#34;
+                            f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                        )
+                        stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                        console(f&#34;\tElement stack: {stack}-{tag}&#34;)
+                        console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+                else:
+                    for ch in tailMaterial:
+                        addSlot(cv, cur, ch)
 
         def director(cv):
             &#34;&#34;&#34;Director function.
@@ -3072,6 +3347,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
                         cur[&#34;inHeader&#34;] = False
+                        cur[&#34;inNote&#34;] = False
                         cur[&#34;nest&#34;] = []
                         cur[&#34;elems&#34;] = []
                         cur[&#34;chunkNum&#34;] = 0
@@ -3093,11 +3369,20 @@ Meaningful whitespace has been condensed to single spaces.</p>
                     cv.meta(fName)
             for fName in cv.features():
                 if fName not in featureMeta:
-                    cv.meta(
-                        fName,
-                        description=f&#34;this is TEI attribute {fName}&#34;,
-                        valueType=&#34;str&#34;,
-                    )
+                    if fName.startswith(&#34;rend_&#34;):
+                        r = fName[5:]
+                        cv.meta(
+                            fName,
+                            description=f&#34;whether text is to be rendered as {r}&#34;,
+                            valueType=&#34;int&#34;,
+                        )
+                        intFeatures.add(fName)
+                    else:
+                        cv.meta(
+                            fName,
+                            description=f&#34;this is TEI attribute {fName}&#34;,
+                            valueType=&#34;str&#34;,
+                        )
             console(&#34;source reading done&#34;)
             return True
 
@@ -3160,9 +3445,10 @@ Meaningful whitespace has been condensed to single spaces.</p>
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
             (&#34;trans&#34;, &#34;docs&#34;, &#34;transcription.md&#34;, False),
-            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
             (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
+            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
+            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
+            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
         )
         items = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
@@ -3412,7 +3698,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L625-L641" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L686-L702" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -3426,7 +3712,7 @@ def getParser():
         A configured lxml parse object.
     &#34;&#34;&#34;
     return etree.XMLParser(
-        remove_blank_text=True,
+        remove_blank_text=False,
         collect_ids=False,
         remove_comments=True,
         remove_pis=True,
@@ -3451,7 +3737,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L582-L623" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L643-L684" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -3487,7 +3773,7 @@ def help(program):
             just converts TEI to TF
         load:
             just loads the generated TF;
-        load:
+        app:
             just configures the TF-app for the result;
 
     flags:
@@ -3516,7 +3802,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1429-L1573" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1570-L1715" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -3538,9 +3824,10 @@ settings in the app derive from it.</p>
     itemSpecs = (
         (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
         (&#34;trans&#34;, &#34;docs&#34;, &#34;transcription.md&#34;, False),
-        (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-        (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
         (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
+        (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
+        (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
+        (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
     )
     items = {
         s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
@@ -3685,7 +3972,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L726-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L787-L991" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -3908,7 +4195,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L947-L1001" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1008-L1064" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3937,10 +4224,12 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         empty=dict(
             description=&#34;whether a slot has been inserted in an empty element&#34;
         ),
-        ismeta=dict(
+        is_meta=dict(
             description=&#34;whether a slot or word is in the teiHeader element&#34;
         ),
+        is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
     )
+    self.intFeatures = intFeatures
     self.featureMeta = featureMeta
 
     schema = self.schema
@@ -3980,7 +4269,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L934-L945" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L995-L1006" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -4019,7 +4308,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1005-L1390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1068-L1531" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -4076,6 +4365,7 @@ that has access to this data.</p>
 
     sourceDir = self.sourceDir
     featureMeta = self.featureMeta
+    intFeatures = self.intFeatures
     transform = self.transform
 
     transformFunc = (
@@ -4089,7 +4379,12 @@ that has access to this data.</p>
 
     # WALKERS
 
-    WHITE_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+    WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
+    WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+    NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
+
+    def makeNameLike(x):
+        return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
     def walkNode(cv, cur, node):
         &#34;&#34;&#34;Internal function to deal with a single element.
@@ -4141,11 +4436,31 @@ that has access to this data.</p>
             nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
         )
 
+    def isPure(cur):
+        &#34;&#34;&#34;Whether the current tag has pure content.
+
+        And we should not strip spaces after it.
+
+        Parameters
+        ----------
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+        nest = cur[&#34;nest&#34;]
+        return len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
+
     def isEndInPure(cur):
         &#34;&#34;&#34;Whether the current end tag occurs in an element with pure content.
 
         If that is the case, then it is very likely that the end tag also
         marks the end of the current word.
+
+        And we should not strip spaces after it.
 
         Parameters
         ----------
@@ -4183,9 +4498,15 @@ that has access to this data.</p>
             if prevWord is not None:
                 cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
             if ch is not None:
-                cur[&#34;word&#34;] = cv.node(&#34;word&#34;)
+                curWord = cv.node(&#34;word&#34;)
+                cur[&#34;word&#34;] = curWord
                 if cur[&#34;inHeader&#34;]:
-                    cv.feature(cur[&#34;word&#34;], ismeta=1)
+                    cv.feature(curWord, is_meta=1)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(curWord, is_note=1)
+                for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                    if len(stack) &gt; 0:
+                        cv.feature(curWord, **{f&#34;rend_{r}&#34;: 1})
 
         if ch is not None:
             cur[&#34;wordStr&#34;] += ch
@@ -4243,7 +4564,12 @@ that has access to this data.</p>
         s = cv.slot()
         cv.feature(s, ch=ch)
         if cur[&#34;inHeader&#34;]:
-            cv.feature(s, ismeta=1)
+            cv.feature(s, is_meta=1)
+        if cur[&#34;inNote&#34;]:
+            cv.feature(s, is_note=1)
+        for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+            if len(stack) &gt; 0:
+                cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
     def beforeChildren(cv, cur, node, tag):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -4267,6 +4593,8 @@ that has access to this data.</p>
 
         if tag == &#34;teiHeader&#34;:
             cur[&#34;inHeader&#34;] = True
+        elif tag == &#34;note&#34;:
+            cur[&#34;inNote&#34;] = True
 
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
@@ -4274,9 +4602,14 @@ that has access to this data.</p>
             atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
+                if &#34;rend&#34; in atts:
+                    rValue = atts[&#34;rend&#34;]
+                    r = makeNameLike(rValue)
+                    if r:
+                        cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
         if node.text:
-            for ch in WHITE_RE.sub(&#34; &#34;, node.text):
+            for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
                 addSlot(cv, cur, ch)
 
     def afterChildren(cv, cur, node, tag):
@@ -4297,9 +4630,6 @@ that has access to this data.</p>
         if isChunk(cur):
             cv.terminate(cur[&#34;chunk&#34;])
 
-        if tag == &#34;teiHeader&#34;:
-            cur[&#34;inHeader&#34;] = False
-
         if tag not in PASS_THROUGH:
             if isEndInPure(cur):
                 finishWord(cv, cur, None)
@@ -4310,7 +4640,9 @@ that has access to this data.</p>
                 s = cv.slot()
                 cv.feature(s, ch=ZWSP, empty=1)
                 if cur[&#34;inHeader&#34;]:
-                    cv.feature(s, ismeta=1)
+                    cv.feature(s, is_meta=1)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(s, is_note=1)
 
             cv.terminate(curNode)
 
@@ -4333,9 +4665,34 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
+        if tag == &#34;teiHeader&#34;:
+            cur[&#34;inHeader&#34;] = False
+        elif tag == &#34;note&#34;:
+            cur[&#34;inNote&#34;] = False
+
+        if tag not in PASS_THROUGH:
+            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            if &#34;rend&#34; in atts:
+                rValue = atts[&#34;rend&#34;]
+                r = makeNameLike(rValue)
+                if r:
+                    cur[&#34;rend&#34;][r].pop()
+
         if node.tail:
-            for ch in WHITE_RE.sub(&#34; &#34;, node.tail):
-                addSlot(cv, cur, ch)
+            tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+            if isPure(cur):
+                if tailMaterial:
+                    elem = cur[&#34;nest&#34;][-1]
+                    console(
+                        &#34;WARNING: Text material after &#34;
+                        f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
+                    )
+                    stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                    console(f&#34;\tElement stack: {stack}-{tag}&#34;)
+                    console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
+            else:
+                for ch in tailMaterial:
+                    addSlot(cv, cur, ch)
 
     def director(cv):
         &#34;&#34;&#34;Director function.
@@ -4377,6 +4734,7 @@ that has access to this data.</p>
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
                     cur[&#34;inHeader&#34;] = False
+                    cur[&#34;inNote&#34;] = False
                     cur[&#34;nest&#34;] = []
                     cur[&#34;elems&#34;] = []
                     cur[&#34;chunkNum&#34;] = 0
@@ -4398,11 +4756,20 @@ that has access to this data.</p>
                 cv.meta(fName)
         for fName in cv.features():
             if fName not in featureMeta:
-                cv.meta(
-                    fName,
-                    description=f&#34;this is TEI attribute {fName}&#34;,
-                    valueType=&#34;str&#34;,
-                )
+                if fName.startswith(&#34;rend_&#34;):
+                    r = fName[5:]
+                    cv.meta(
+                        fName,
+                        description=f&#34;whether text is to be rendered as {r}&#34;,
+                        valueType=&#34;int&#34;,
+                    )
+                    intFeatures.add(fName)
+                else:
+                    cv.meta(
+                        fName,
+                        description=f&#34;this is TEI attribute {fName}&#34;,
+                        valueType=&#34;str&#34;,
+                    )
         console(&#34;source reading done&#34;)
         return True
 
@@ -4427,7 +4794,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L662-L683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L723-L744" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -4458,7 +4825,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 </code></dt>
 <dd>
 <div class="desc"><p>Parse the schema.</p>
-<p>A parsed schemacan be used for XML-validation.
+<p>A parsed schema can be used for XML-validation.
 This will only happen during the <code>check</code> task.</p>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -4468,12 +4835,12 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L643-L660" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L704-L721" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
 
-    A parsed schemacan be used for XML-validation.
+    A parsed schema can be used for XML-validation.
     This will only happen during the `check` task.
 
     Returns
@@ -4506,7 +4873,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L685-L724" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L746-L785" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -4570,7 +4937,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1392-L1425" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1533-L1566" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -4634,7 +5001,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1633-L1683" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1775-L1825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -4725,7 +5092,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/8e1b53b0a23822f11419fe4ba1197a1824d3dffc/tf/convert/tei.py#L1575-L1631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1717-L1773" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, app=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
