@@ -145,7 +145,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1-L1828" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1-L1842" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -408,6 +408,10 @@ The following features are added:
 *   `is_meta`: 1 if the word occurs in inside the `&lt;teiHeader&gt;`, no value otherwise.
 *   `is_note`: 1 if the word occurs in inside the `&lt;note&gt;`, no value otherwise.
 *   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
+
+All these features are defined for `char` and `word` nodes.
+For word nodes, the value of these features is set equal to what these features
+are for their first character.
 
 Special formatting for the `rend_`*r* features is supported for some values of *r*.
 The conversion supports these out-of-the-box:
@@ -1283,8 +1287,7 @@ class TEI:
 
         # WALKERS
 
-        WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
-        WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+        WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
         def makeNameLike(x):
@@ -1513,8 +1516,19 @@ class TEI:
                             cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
-                    addSlot(cv, cur, ch)
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+                if isPure(cur):
+                    if textMaterial and textMaterial != &#34; &#34;:
+                        console(
+                            &#34;WARNING: Text material at the start of &#34;
+                            f&#34;pure-content element &lt;{tag}&gt;&#34;
+                        )
+                        stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                        console(f&#34;\tElement stack: {stack}&#34;)
+                        console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+                else:
+                    for ch in textMaterial:
+                        addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -1583,9 +1597,9 @@ class TEI:
                         cur[&#34;rend&#34;][r].pop()
 
             if node.tail:
-                tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
                 if isPure(cur):
-                    if tailMaterial:
+                    if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[&#34;nest&#34;][-1]
                         console(
                             &#34;WARNING: Text material after &#34;
@@ -2078,6 +2092,9 @@ The absence of values means that the corresponding property does not hold.</p>
 <li><code>is_note</code>: 1 if the word occurs in inside the <code>&lt;note&gt;</code>, no value otherwise.</li>
 <li><code>rend_</code><em>r</em>: for any <em>r</em> that is the value of a <code>rend</code> attribute.</li>
 </ul>
+<p>All these features are defined for <code>char</code> and <code>word</code> nodes.
+For word nodes, the value of these features is set equal to what these features
+are for their first character.</p>
 <p>Special formatting for the <code>rend_</code><em>r</em> features is supported for some values of <em>r</em>.
 The conversion supports these out-of-the-box:</p>
 <p><code>italic</code>
@@ -2267,7 +2284,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L414-L1825" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L418-L1839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -2992,8 +3009,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
         # WALKERS
 
-        WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
-        WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+        WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
         def makeNameLike(x):
@@ -3222,8 +3238,19 @@ Meaningful whitespace has been condensed to single spaces.</p>
                             cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
-                    addSlot(cv, cur, ch)
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+                if isPure(cur):
+                    if textMaterial and textMaterial != &#34; &#34;:
+                        console(
+                            &#34;WARNING: Text material at the start of &#34;
+                            f&#34;pure-content element &lt;{tag}&gt;&#34;
+                        )
+                        stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                        console(f&#34;\tElement stack: {stack}&#34;)
+                        console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+                else:
+                    for ch in textMaterial:
+                        addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -3292,9 +3319,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
                         cur[&#34;rend&#34;][r].pop()
 
             if node.tail:
-                tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
                 if isPure(cur):
-                    if tailMaterial:
+                    if tailMaterial and tailMaterial != &#34; &#34;:
                         elem = cur[&#34;nest&#34;][-1]
                         console(
                             &#34;WARNING: Text material after &#34;
@@ -3698,7 +3725,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L686-L702" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L690-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -3737,7 +3764,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L643-L684" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L647-L688" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -3802,7 +3829,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1570-L1715" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1584-L1729" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -3972,7 +3999,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L787-L991" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L791-L995" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -4195,7 +4222,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1008-L1064" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1012-L1068" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -4269,7 +4296,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L995-L1006" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L999-L1010" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -4308,7 +4335,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1068-L1531" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1072-L1545" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -4379,8 +4406,7 @@ that has access to this data.</p>
 
     # WALKERS
 
-    WHITE_TRIM_RE = re.compile(r&#34;\s\s+&#34;, re.S)
-    WHITE_DEL_RE = re.compile(r&#34;\s+&#34;, re.S)
+    WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
     NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
     def makeNameLike(x):
@@ -4609,8 +4635,19 @@ that has access to this data.</p>
                         cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
 
         if node.text:
-            for ch in WHITE_TRIM_RE.sub(&#34; &#34;, node.text):
-                addSlot(cv, cur, ch)
+            textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+            if isPure(cur):
+                if textMaterial and textMaterial != &#34; &#34;:
+                    console(
+                        &#34;WARNING: Text material at the start of &#34;
+                        f&#34;pure-content element &lt;{tag}&gt;&#34;
+                    )
+                    stack = &#34;-&#34;.join(cur[&#34;nest&#34;])
+                    console(f&#34;\tElement stack: {stack}&#34;)
+                    console(f&#34;\tMaterial: `{textMaterial}`&#34;)
+            else:
+                for ch in textMaterial:
+                    addSlot(cv, cur, ch)
 
     def afterChildren(cv, cur, node, tag):
         &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -4679,9 +4716,9 @@ that has access to this data.</p>
                     cur[&#34;rend&#34;][r].pop()
 
         if node.tail:
-            tailMaterial = WHITE_DEL_RE.sub(&#34;&#34;, node.tail)
+            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
             if isPure(cur):
-                if tailMaterial:
+                if tailMaterial and tailMaterial != &#34; &#34;:
                     elem = cur[&#34;nest&#34;][-1]
                     console(
                         &#34;WARNING: Text material after &#34;
@@ -4794,7 +4831,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L723-L744" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L727-L748" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -4835,7 +4872,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L704-L721" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L708-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -4873,7 +4910,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L746-L785" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L750-L789" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -4937,7 +4974,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1533-L1566" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1547-L1580" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -5001,7 +5038,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1775-L1825" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1789-L1839" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -5092,7 +5129,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6acbd2e477761bb2f63465d924c642cf2b609ddd/tf/convert/tei.py#L1717-L1773" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/convert/tei.py#L1731-L1787" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, app=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
