@@ -12,9 +12,20 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.2
 
-### 11.2.1 (Upcoming)
+### 11.2.2
 
-2023-02-??
+2023-02-22
+
+Added `tf.convert.xml`, a straightforward, generic XML to TF converter, obtained from
+`tf.convert.tei` by stripping almost all intelligence from it.
+It serves as a stub to start off with your own XML to TF conversion program.
+
+For an example how to use it, see its application to the 
+[Greek New Testament, lowfat trees](https://github.com/ETCBC/nestle1904).
+
+### 11.2.1
+
+2023-02-21
 
 Addition to the nbconvert tool: `tf.tools.nbconvert`:
 If you pass only an input dir, it creates an html index for that directory.

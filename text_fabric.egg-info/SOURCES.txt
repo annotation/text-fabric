@@ -376,6 +376,7 @@ tf/convert/tei.py
 tf/convert/tf.py
 tf/convert/variants.py
 tf/convert/walker.py
+tf/convert/xml.py
 tf/core/__init__.py
 tf/core/api.py
 tf/core/computed.py

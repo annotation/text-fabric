@@ -260,6 +260,10 @@ The following features are added:
 *   `is_note`: 1 if the word occurs in inside the `<note>`, no value otherwise.
 *   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
 
+All these features are defined for `char` and `word` nodes.
+For word nodes, the value of these features is set equal to what these features
+are for their first character.
+
 Special formatting for the `rend_`*r* features is supported for some values of *r*.
 The conversion supports these out-of-the-box:
 
@@ -1134,8 +1138,7 @@ class TEI:
 
         # WALKERS
 
-        WHITE_TRIM_RE = re.compile(r"\s\s+", re.S)
-        WHITE_DEL_RE = re.compile(r"\s+", re.S)
+        WHITE_TRIM_RE = re.compile(r"\s+", re.S)
         NON_NAME_RE = re.compile(r"[^a-zA-Z0-9_]+", re.S)
 
         def makeNameLike(x):
@@ -1364,8 +1367,19 @@ class TEI:
                             cur.setdefault("rend", {}).setdefault(r, []).append(True)
 
             if node.text:
-                for ch in WHITE_TRIM_RE.sub(" ", node.text):
-                    addSlot(cv, cur, ch)
+                textMaterial = WHITE_TRIM_RE.sub(" ", node.text)
+                if isPure(cur):
+                    if textMaterial and textMaterial != " ":
+                        console(
+                            "WARNING: Text material at the start of "
+                            f"pure-content element <{tag}>"
+                        )
+                        stack = "-".join(cur["nest"])
+                        console(f"\tElement stack: {stack}")
+                        console(f"\tMaterial: `{textMaterial}`")
+                else:
+                    for ch in textMaterial:
+                        addSlot(cv, cur, ch)
 
         def afterChildren(cv, cur, node, tag):
             """Node actions after dealing with the children, but before the end tag.
@@ -1434,9 +1448,9 @@ class TEI:
                         cur["rend"][r].pop()
 
             if node.tail:
-                tailMaterial = WHITE_DEL_RE.sub("", node.tail)
+                tailMaterial = WHITE_TRIM_RE.sub(" ", node.tail)
                 if isPure(cur):
-                    if tailMaterial:
+                    if tailMaterial and tailMaterial != " ":
                         elem = cur["nest"][-1]
                         console(
                             "WARNING: Text material after "
