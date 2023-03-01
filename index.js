@@ -230,7 +230,7 @@ INDEX=[
 {
 "ref":"tf.advanced.sections.sectionStrFromNode",
 "url":4,
-"doc":"The heading of a section to which a node belongs. Compare  tf.core.text.Text.nodeFromSection . node: integer The node from which we obtain a section specification. lastSlot: boolean, optional False Whether the reference node will be the last slot contained by the  node argument or the first node. Otherwise it will be the first slot. lang: string, optional en The language assumed for the section parts, as far as they are language dependent. Must be a 2-letter language code. fillup: boolean, optional False Same as for  tf.core.text.Text.sectionTuple . Returns    - section heading:string Corresponds to the reference node. The result is built from the labels of the individual section levels, with dummies for missing parts if  fillup is true.",
+"doc":"The heading of a section to which a node belongs. Compare  tf.core.text.Text.nodeFromSection . Parameters      node: integer The node from which we obtain a section specification. lastSlot: boolean, optional False Whether the reference node will be the last slot contained by the  node argument or the first node. Otherwise it will be the first slot. lang: string, optional en The language assumed for the section parts, as far as they are language dependent. Must be a 2-letter language code. fillup: boolean, optional False Same as for  tf.core.text.Text.sectionTuple . Returns    - section heading:string Corresponds to the reference node. The result is built from the labels of the individual section levels, with dummies for missing parts if  fillup is true.",
 "func":1
 },
 {

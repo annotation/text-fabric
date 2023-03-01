@@ -44,7 +44,7 @@ without regard for how they are to be displayed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/advanced/sections.py#L1-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/advanced/sections.py#L1-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Section
 
@@ -170,6 +170,8 @@ def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
 
     Compare `tf.core.text.Text.nodeFromSection`.
 
+    Parameters
+    ----------
     node: integer
         The node from which we obtain a section specification.
     lastSlot: boolean, optional False
@@ -296,7 +298,7 @@ Must be a 2-letter language code.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/advanced/sections.py#L37-L117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/advanced/sections.py#L37-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nodeFromSectionStr(app, sectionStr, lang=&#34;en&#34;):
     &#34;&#34;&#34;Find the node of a section string.
@@ -387,18 +389,21 @@ Must be a 2-letter language code.</dd>
 <dd>
 <div class="desc"><p>The heading of a section to which a node belongs.</p>
 <p>Compare <code><a title="tf.core.text.Text.nodeFromSection" href="../core/text.html#tf.core.text.Text.nodeFromSection">Text.nodeFromSection()</a></code>.</p>
-<p>node: integer
-The node from which we obtain a section specification.
-lastSlot: boolean, optional False
-Whether the reference node will be the last slot contained by the
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>integer</code></dt>
+<dd>The node from which we obtain a section specification.</dd>
+<dt><strong><code>lastSlot</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether the reference node will be the last slot contained by the
 <code>node</code> argument or the first node.
-Otherwise it will be the first slot.
-lang: string, optional en
-The language assumed for the section parts,
+Otherwise it will be the first slot.</dd>
+<dt><strong><code>lang</code></strong> :&ensp;<code>string</code>, optional <code>en</code></dt>
+<dd>The language assumed for the section parts,
 as far as they are language dependent.
-Must be a 2-letter language code.
-fillup: boolean, optional False
-Same as for <code><a title="tf.core.text.Text.sectionTuple" href="../core/text.html#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code>.</p>
+Must be a 2-letter language code.</dd>
+<dt><strong><code>fillup</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Same as for <code><a title="tf.core.text.Text.sectionTuple" href="../core/text.html#tf.core.text.Text.sectionTuple">Text.sectionTuple()</a></code>.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>section heading:string</code></dt>
@@ -409,13 +414,15 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/advanced/sections.py#L120-L158" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/advanced/sections.py#L120-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionStrFromNode(app, n, lang=&#34;en&#34;, lastSlot=False, fillup=False):
     &#34;&#34;&#34;The heading of a section to which a node belongs.
 
     Compare `tf.core.text.Text.nodeFromSection`.
 
+    Parameters
+    ----------
     node: integer
         The node from which we obtain a section specification.
     lastSlot: boolean, optional False
@@ -460,7 +467,7 @@ with dummies for missing parts if <em>fillup</em> is true.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/advanced/sections.py#L30-L34" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sectionsApi(app):
     app.nodeFromSectionStr = types.MethodType(nodeFromSectionStr, app)
@@ -486,7 +493,7 @@ The result is built from the labels of the individual section levels.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/advanced/sections.py#L161-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/advanced/sections.py#L163-L193" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structureStrFromNode(app, n):
     &#34;&#34;&#34;The heading of a structure to which a node belongs.
