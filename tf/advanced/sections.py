@@ -122,6 +122,8 @@ def sectionStrFromNode(app, n, lang="en", lastSlot=False, fillup=False):
 
     Compare `tf.core.text.Text.nodeFromSection`.
 
+    Parameters
+    ----------
     node: integer
         The node from which we obtain a section specification.
     lastSlot: boolean, optional False
