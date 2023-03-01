@@ -370,6 +370,11 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
         When you want to read the exported file programmatically,
         open it with `encoding=utf_16`.
+
+    !!! caution "Quotes"
+        If the text of a field starts with a single or double quote,
+        we insert a backslash in front of it, otherwise programs like
+        Excel and Numbers will treat it in a special way.
     """
 
     display = app.display
@@ -392,11 +397,15 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
+    def escq(x):
+        s = str(x)
+        return s if s == "" else f"\\{s}" if s[0] in {"'", '"'} else s
+
     with open(toPath, "w", encoding="utf_16_le") as fh:
         fh.write(
             "\ufeff"
             + "".join(
-                ("\t".join("" if t is None else str(t) for t in tup) + "\n")
+                ("\t".join("" if t is None else escq(t) for t in tup) + "\n")
                 for tup in resultsX
             )
         )

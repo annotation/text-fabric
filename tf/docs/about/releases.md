@@ -12,6 +12,13 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.2
 
+### 11.2.3 (upcoming)
+
+Fix in `tf.display.export`: if a value starts with a quote, it will be preceded by a backslash,
+otherwise it disturbs Excel and Numbers when they read it in a tab-separated file.
+
+2023-??-??
+
 ### 11.2.2
 
 2023-02-22

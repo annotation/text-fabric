@@ -104,8 +104,6 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     **MS Dublin Chester Beatty Library 751 + MS Garizim 1**,
     Martijn Naaijer, Christian Canu Højgaard
 
-    **At this time only Genesis has been converted.**
-
 ## [Eep Talstra Centre for Bible and Computer](https://github.com/etcbc)
 
 [etcbc/bhsa](https://github.com/etcbc/bhsa)
