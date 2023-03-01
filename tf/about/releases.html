@@ -33,6 +33,10 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="112">11.2</h3>
+<h3 id="1123-upcoming">11.2.3 (upcoming)</h3>
+<p>Fix in <code>tf.display.export</code>: if a value starts with a quote, it will be preceded by a backslash,
+otherwise it disturbs Excel and Numbers when they read it in a tab-separated file.</p>
+<p>2023-??-??</p>
 <h3 id="1122">11.2.2</h3>
 <p>2023-02-22</p>
 <p>Added <code><a title="tf.convert.xml" href="../convert/xml.html">tf.convert.xml</a></code>, a straightforward, generic XML to TF converter, obtained from
@@ -205,7 +209,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/20a11ec8c00eaa300322fdd0de11bdb896c605ed/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/4a66a10ee98ec6272bc6cee729a9a731cb83db0c/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -279,6 +283,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#112">11.2</a></li>
+<li><a href="#1123-upcoming">11.2.3 (upcoming)</a></li>
 <li><a href="#1122">11.2.2</a></li>
 <li><a href="#1121">11.2.1</a></li>
 <li><a href="#1120">11.2.0</a><ul>
