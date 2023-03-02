@@ -78,7 +78,6 @@
         {
             "@type": "WebApplication",
             "name": "Text-Fabric Browser",
-            "url": "http://localhost:8000",
             "provider": {
                 "@type": "Organization",
                 "name": "annotation",
