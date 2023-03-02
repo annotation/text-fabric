@@ -284,8 +284,8 @@
             }
         },
         {
-            "@type": "Projects at DANS 2014-2022",
-            "name": "Development carried out as part of various projects at DANS",
+            "@type": "Grant",
+            "name": "Development carried out as part of various projects at DANS 2014-2022",
             "funder": {
                 "@type": "Organization",
                 "name": "Data Archiving and Networked Services",
@@ -293,32 +293,12 @@
             }
         },
         {
-            "@type": "Projects at KNAW/Humanities Cluster 2022",
-            "name": "Development carried out as part of various projects at HuC",
+            "@type": "Grant",
+            "name": "Development carried out as part of various projects at KNAW/Humanities Cluster 2022",
             "funder": {
                 "@type": "Organization",
                 "name": "KNAW/Humanities Cluster",
                 "url": "https://huc.knaw.nl"
-            }
-        }
-    ],
-    "funding": [
-        {
-            "@type": "Grant",
-            "name": "CLARIN-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
-            "funder": {
-                "@type": "Organization",
-                "name": "NWO", 
-                "url": "https://www.nwo.nl"
-            }
-        },
-        {
-            "@type": "Projects at DANS 2014-2022",
-            "name": "Development carried out as part of various projects at DANS",
-            "funder": {
-                "@type": "Organization",
-                "name": "Data Archiving and Networked Services",
-                "url": "https://www.dans.knaw.nl"
             }
         }
     ]
