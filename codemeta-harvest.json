@@ -5,10 +5,20 @@
         "familyName": "Roorda"
     },
     "producer": {
-        "@id": "https://github.com/annotation",
-        "email": "dirk.roorda@di.huc.knaw.nl",
-        "name": "annotation",
-        "url": "https://github.com/annotation"
+        "@id": "https://huc.knaw.nl",
+        "@type": "Organization",
+        "name": "KNAW Humanities Cluster",
+        "url": "https://huc.knaw.nl",
+        "parentOrganization": {
+            "@id": "https://knaw.nl",
+            "@type": "Organization",
+            "name": "KNAW",
+            "url": "https://knaw.nl",
+            "location": {
+                "@type": "Place",
+                "name": "Amsterdam"
+            }
+        }
     },
     "author": {
         "@type": "Person",
@@ -297,9 +307,7 @@
             "@type": "Grant",
             "name": "Development carried out as part of various projects at KNAW/Humanities Cluster 2022",
             "funder": {
-                "@type": "Organization",
-                "name": "KNAW/Humanities Cluster",
-                "url": "https://huc.knaw.nl"
+                "@id": "https://huc.knaw.nl"
             }
         }
     ]
