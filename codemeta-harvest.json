@@ -53,6 +53,7 @@
                 "url": "https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/start.ipynb"
             }
     ],
+    "thumbnailUrl": "https://github.com/annotation/text-fabric/raw/master/tf/docs/images/tf-small.png",
     "targetProduct": [
         {
             "@type": "CommandLineApplication",
