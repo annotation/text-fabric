@@ -5,10 +5,20 @@
         "familyName": "Roorda"
     },
     "producer": {
-        "@id": "https://github.com/annotation",
-        "email": "dirk.roorda@di.huc.knaw.nl",
-        "name": "annotation",
-        "url": "https://github.com/annotation"
+        "@id": "https://huc.knaw.nl",
+        "@type": "Organization",
+        "name": "KNAW Humanities Cluster",
+        "url": "https://huc.knaw.nl",
+        "parentOrganization": {
+            "@id": "https://knaw.nl",
+            "@type": "Organization",
+            "name": "KNAW",
+            "url": "https://knaw.nl",
+            "location": {
+                "@type": "Place",
+                "name": "Amsterdam"
+            }
+        }
     },
     "author": {
         "@type": "Person",
@@ -53,6 +63,7 @@
                 "url": "https://nbviewer.org/github/CLARIAH/wp6-missieven/blob/master/tutorial/start.ipynb"
             }
     ],
+    "thumbnailUrl": "https://github.com/annotation/text-fabric/raw/master/tf/docs/images/tf-small.png",
     "targetProduct": [
         {
             "@type": "CommandLineApplication",
@@ -67,7 +78,6 @@
         {
             "@type": "WebApplication",
             "name": "Text-Fabric Browser",
-            "url": "http://localhost:8000",
             "provider": {
                 "@type": "Organization",
                 "name": "annotation",
@@ -284,41 +294,19 @@
             }
         },
         {
-            "@type": "Projects at DANS 2014-2022",
-            "name": "Development carried out as part of various projects at DANS",
+            "@type": "Grant",
+            "name": "Development carried out as part of various projects at DANS 2014-2022",
             "funder": {
                 "@type": "Organization",
                 "name": "Data Archiving and Networked Services",
                 "url": "https://www.dans.knaw.nl"
             }
         },
-        {
-            "@type": "Projects at KNAW/Humanities Cluster 2022",
-            "name": "Development carried out as part of various projects at HuC",
-            "funder": {
-                "@type": "Organization",
-                "name": "KNAW/Humanities Cluster",
-                "url": "https://huc.knaw.nl"
-            }
-        }
-    ],
-    "funding": [
         {
             "@type": "Grant",
-            "name": "CLARIN-NL (NWO grant 184.021.003), Call IV: SHEBANQ",
+            "name": "Development carried out as part of various projects at KNAW/Humanities Cluster 2022",
             "funder": {
-                "@type": "Organization",
-                "name": "NWO", 
-                "url": "https://www.nwo.nl"
-            }
-        },
-        {
-            "@type": "Projects at DANS 2014-2022",
-            "name": "Development carried out as part of various projects at DANS",
-            "funder": {
-                "@type": "Organization",
-                "name": "Data Archiving and Networked Services",
-                "url": "https://www.dans.knaw.nl"
+                "@id": "https://huc.knaw.nl"
             }
         }
     ]
