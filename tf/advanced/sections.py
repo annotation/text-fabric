@@ -63,7 +63,7 @@ def nodeFromSectionStr(app, sectionStr, lang="en"):
 
             P005381 1:1
 
-    lang: string, optional en`
+    lang: string, optional en
         The language assumed for the section parts,
         as far as they are language dependent.
         Must be a 2-letter language code.
