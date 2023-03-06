@@ -132,6 +132,7 @@ T = TEI(
     schema=&quot;MD&quot;,
     sourceVersion=&quot;2023-01-31&quot;,
     testSet=TEST_SET,
+    sectionModel=dict(model=&quot;I&quot;),
     generic=GENERIC,
     transform=transform,
     tfVersion=&quot;0.1&quot;,
@@ -145,7 +146,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1-L1842" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1-L2230" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -276,6 +277,7 @@ T = TEI(
     schema=&#34;MD&#34;,
     sourceVersion=&#34;2023-01-31&#34;,
     testSet=TEST_SET,
+    sectionModel=dict(model=&#34;I&#34;),
     generic=GENERIC,
     transform=transform,
     tfVersion=&#34;0.1&#34;,
@@ -339,14 +341,26 @@ But there are some peculiarities.
 The material is divided into three levels of sections, mainly for the purposes
 of text display.
 
-It is assumed that the source is a directory consisting of subdirectories
+But how these levels relate to the source material is a different matter.
+
+The conversion supports a few sectioning models that specify this.
+This aspect is *work-in-progress*, because TEI sources differ wildly in how they
+are sectioned.
+The sectioning models that are currently supported correspond to cases we have
+encountered, we have not done exhaustive research into TEI sectioning in practice.
+
+### Model I: folders and files
+
+This model assumes that the source is a directory consisting of folders
 consisting of xml files, the TEI files.
 
+There are three section levels: folder - file - subdivision in file.
+
 1.  Subdirectories and files are sorted in the lexicographic ordering
-1.  The subdirectory `__ignore__` is ignored.
-1.  For each subdirectory, a section level 1 node will be created, with
+1.  The folder `__ignore__` is ignored.
+1.  For each folder, a section level 1 node will be created, with
     feature `name` containing its name.
-1.  For each file in a subdirecotry, a section level 2 node will be created, with
+1.  For each file in a folder, a section level 2 node will be created, with
     feature `name` containing its name.
 1.  A third section level, named `chunk` will be made.
     For each immediate child element of `&lt;teiHeader&gt;` and for each immediate child
@@ -355,6 +369,39 @@ consisting of xml files, the TEI files.
     Also the following elements will trigger a chunk node:
     `&lt;facsimile&gt;`, `&lt;fsdDecl&gt;`, `&lt;sourceDoc&gt;`, and `&lt;standOff&gt;`.
 
+### Model II: single file and divs.
+
+This model assumes that the source is a single TEI file.
+
+There are two section levels: &#34;chapter&#34;like - &#34;p&#34;like.
+
+1.  The name of the source file is not recorded.
+1.  The first section level, named `chapter` will be made as follows:
+    For the `&lt;teiHeader&gt;` and for each immediate child
+    element of `&lt;body&gt;`, a chapter node will be created, wit a feature `chapter`
+    containing the content of the first element with certain properties that
+    follows the section-1-level element.
+1.  The properties of the heading bearing element is given by its element
+    name and a dictionary of attribute values.
+    For example:
+
+    ```
+    element = &#34;head&#34;
+    attributes = dict(rend=&#34;h3&#34;)
+    ```
+
+    Heading bearing elements also occur in the text, and are treated in the same
+    way as all other element. The only special thing is that their plain text
+    content is used as the value of a feature.
+1.  The second section level, named `chunk` consists of the top-level elements within
+    the chapters, except certain empty elements, such as breaks.
+1.  Section-2-level nodes get a feature `chunk` with a chunk number.
+1.  `cn` is positive for `&lt;p&gt;` elements, and it is the sequence number
+    of the `p` within the chapter.
+1.  `cn` is negative for all other elements of section-level-2. For those elements
+    it is the sequence number of the non-p immediate children of the chapter.
+
+### Specifying a sectioning model
 
 ## Elements and attributes
 
@@ -564,6 +611,72 @@ feature | description
 &#34;&#34;&#34;
 
 
+SECTION_MODELS = dict(I={}, II=dict(element=(str, &#34;head&#34;), attributes=(dict, {})))
+SECTION_MODEL_DEFAULT = &#34;I&#34;
+
+
+def checkSectionModel(sectionModel):
+    if sectionModel is None:
+        model = SECTION_MODEL_DEFAULT
+        console(f&#34;WARNING: No section model specified. Assuming model {model}.&#34;)
+        criteria = {k: v[1] for (k, v) in SECTION_MODELS[model].items()}
+        return dict(model=model, criteria=criteria)
+
+    if type(sectionModel) is str:
+        if sectionModel in SECTION_MODELS:
+            sectionModel = dict(model=sectionModel)
+        else:
+            console(f&#34;WARNING: unknown section model: {sectionModel}&#34;)
+            return False
+
+    elif type(sectionModel) is not dict:
+        console(
+            f&#34;ERROR: Section model must be a dict. You passed a {type(sectionModel)}&#34;
+        )
+        return False
+
+    model = sectionModel.get(&#34;model&#34;, None)
+    if model is None:
+        model = SECTION_MODEL_DEFAULT
+        console(f&#34;WARNING: No section model specified. Assuming model {model}.&#34;)
+        sectionModel[&#34;model&#34;] = model
+    if model not in SECTION_MODELS:
+        console(f&#34;WARNING: unknown section model: {sectionModel}&#34;)
+        return False
+
+    criteria = {k: v for (k, v) in sectionModel.items() if k != &#34;model&#34;}
+    modelCriteria = SECTION_MODELS[model]
+
+    good = True
+    delKeys = []
+
+    for (k, v) in criteria.items():
+        if k not in modelCriteria:
+            console(f&#34;WARNING: ignoring unknown model criterium {k}={v}&#34;)
+            delKeys.append(k)
+        elif type(v) is not modelCriteria[k][0]:
+            console(
+                f&#34;ERROR: criterium {k} should have type {modelCriteria[k][0]}&#34;
+                f&#34; but {v} has type {type(v)}&#34;
+            )
+            good = False
+    if good:
+        for k in delKeys:
+            del criteria[k]
+
+    for (k, v) in modelCriteria.items():
+        if k not in criteria:
+            console(
+                f&#34;WARNING: model criterium {k} not specified, taking default {v[1]}&#34;
+            )
+            criteria[k] = v[1]
+
+    if not good:
+        return False
+
+    return dict(model=model, criteria=criteria)
+
+
 class TEI:
     def __init__(
         self,
@@ -571,6 +684,7 @@ class TEI:
         sourceVersion=&#34;0.1&#34;,
         schema=None,
         testSet=set(),
+        sectionModel=None,
         generic={},
         transform=None,
         tfVersion=&#34;0.1&#34;,
@@ -666,7 +780,7 @@ class TEI:
         The directory under which the text-fabric output file (with extension `.tf`)
         are placed.
         If it does not exist, it will be created.
-        The tf files will be generated in a subdirectory named by a version number,
+        The tf files will be generated in a folder named by a version number,
         passed as `tfVersion`.
 
         ### `app` and `docs`
@@ -718,6 +832,30 @@ class TEI:
             (pass `test` as argument to the `TEI.task()` method),
             only the files in the test set are converted.
 
+        sectionModel: dict, optional {}
+            If not passed, or an empty dict, section model I is assumed.
+            A section model must be specified with the parameters relevant for the
+            model:
+
+            ```
+            dict(model=&#34;II&#34;, element=&#34;head&#34;, attributes=dict(rend=&#34;h3&#34;))
+            ```
+
+            or
+
+            ```
+            dict(model=&#34;I&#34;)
+            ```
+
+            because model I does not require parameters.
+
+            For model II, the default parameters are:
+
+            ```
+            element=&#34;head&#34;
+            attributes={}
+            ```
+
         generic: dict, optional {}
             Metadata for all generated TF feature.
 
@@ -747,7 +885,7 @@ class TEI:
         &#34;&#34;&#34;
         (backend, org, repo) = getLocation(repoDir)
         if any(s is None for s in (backend, org, repo)):
-            console(&#34;Not working in a repo: {backend=} {org=} {repo=}&#34;)
+            console(&#34;Not working in a repo: backend={backend} org={org} repo={repo}&#34;)
             quit()
 
         console(f&#34;Working in repository {org}/{repo} in backend {backend}&#34;)
@@ -778,6 +916,11 @@ class TEI:
         self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
+        sectionModel = checkSectionModel(sectionModel)
+        if not sectionModel:
+            quit()
+        self.sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionCriteria = sectionModel.get(&#34;criteria&#34;, None)
         self.generic = generic
         self.transform = transform
         self.tfVersion = tfVersion
@@ -894,6 +1037,7 @@ class TEI:
         A.interpret()
         if not A.good:
             quit()
+
         return {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
     def getXML(self):
@@ -901,41 +1045,64 @@ class TEI:
 
         Returns
         -------
-        tuple of tuple
+        tuple of tuple | string
+            If section model I is in force:
+
             The outer tuple has sorted entries corresponding to folders under the
             TEI input directory.
             Each such entry consists of the folder name and an inner tuple
             that contains the file names in that folder, sorted.
+
+            If section model II is in force:
+
+            It is the name of the single XML file.
         &#34;&#34;&#34;
         sourceDir = self.sourceDir
-        testMode = self.testMode
-        testSet = self.testSet
+        sectionModel = self.sectionModel
+        console(f&#34;Section model {sectionModel}&#34;)
 
-        IGNORE = &#34;__ignore__&#34;
+        if sectionModel == &#34;I&#34;:
+            testMode = self.testMode
+            testSet = self.testSet
 
-        xmlFilesRaw = collections.defaultdict(list)
+            IGNORE = &#34;__ignore__&#34;
 
-        with os.scandir(sourceDir) as dh:
-            for folder in dh:
-                folderName = folder.name
-                if folderName == IGNORE:
-                    continue
-                if not folder.is_dir():
-                    continue
-                with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
-                    for file in fh:
-                        fileName = file.name
-                        if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
-                            continue
-                        if testMode and fileName not in testSet:
-                            continue
-                        xmlFilesRaw[folderName].append(fileName)
+            xmlFilesRaw = collections.defaultdict(list)
 
-        xmlFiles = tuple(
-            (folderName, tuple(sorted(fileNames)))
-            for (folderName, fileNames) in sorted(xmlFilesRaw.items())
-        )
-        return xmlFiles
+            with os.scandir(sourceDir) as dh:
+                for folder in dh:
+                    folderName = folder.name
+                    if folderName == IGNORE:
+                        continue
+                    if not folder.is_dir():
+                        continue
+                    with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                        for file in fh:
+                            fileName = file.name
+                            if not (
+                                fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
+                            ):
+                                continue
+                            if testMode and fileName not in testSet:
+                                continue
+                            xmlFilesRaw[folderName].append(fileName)
+
+            xmlFiles = tuple(
+                (folderName, tuple(sorted(fileNames)))
+                for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+            )
+            return xmlFiles
+
+        if sectionModel == &#34;II&#34;:
+            xmlFile = None
+            with os.scandir(sourceDir) as fh:
+                for file in fh:
+                    fileName = file.name
+                    if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                        continue
+                    xmlFile = fileName
+                    break
+            return xmlFile
 
     def checkTask(self):
         &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -958,6 +1125,7 @@ class TEI:
         &#34;&#34;&#34;
         sourceDir = self.sourceDir
         reportDir = self.reportDir
+        sectionModel = self.sectionModel
 
         kindLabels = dict(
             format=&#34;FORMATTING ATTRIBUTES&#34;,
@@ -1107,35 +1275,49 @@ class TEI:
             )
 
         NS_RE = re.compile(r&#34;&#34;&#34;\{[^}]+}&#34;&#34;&#34;)
-        i = 0
-        for (xmlFolder, xmlFiles) in self.getXML():
-            console(xmlFolder)
-            for xmlFile in xmlFiles:
-                i += 1
-                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
-                tree = etree.parse(xmlPath, parser)
-                if validator is not None and not validator.validate(tree):
-                    theseErrors = []
-                    for entry in validator.error_log:
-                        msg = entry.message
-                        msg = NS_RE.sub(&#34;&#34;, msg)
-                        if filterError(msg):
-                            continue
-                        # domain = entry.domain_name
-                        # typ = entry.type_name
-                        level = entry.level_name
-                        line = entry.line
-                        col = entry.column
-                        address = f&#34;{line}:{col}&#34;
-                        theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
-                    if len(theseErrors):
-                        console(&#34;ERROR&#34;)
-                        errors.append((xmlFile, theseErrors))
-                    continue
 
-                root = tree.getroot()
-                analyse(root, analysis)
+        def doXMLFile(xmlPath):
+            tree = etree.parse(xmlPath, parser)
+            if validator is not None and not validator.validate(tree):
+                theseErrors = []
+                for entry in validator.error_log:
+                    msg = entry.message
+                    msg = NS_RE.sub(&#34;&#34;, msg)
+                    if filterError(msg):
+                        continue
+                    # domain = entry.domain_name
+                    # typ = entry.type_name
+                    level = entry.level_name
+                    line = entry.line
+                    col = entry.column
+                    address = f&#34;{line}:{col}&#34;
+                    theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
+                if len(theseErrors):
+                    console(&#34;ERROR&#34;)
+                    errors.append((xmlFile, theseErrors))
+                return
+
+            root = tree.getroot()
+            analyse(root, analysis)
+
+        if sectionModel == &#34;I&#34;:
+            i = 0
+            for (xmlFolder, xmlFiles) in self.getXML():
+                console(xmlFolder)
+                for xmlFile in xmlFiles:
+                    i += 1
+                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                    xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                    doXMLFile(xmlPath)
+
+        elif sectionModel == &#34;II&#34;:
+            xmlFile = self.getXML()
+            if xmlFile is None:
+                console(&#34;No XML files found!&#34;)
+                return False
+
+            xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+            doXMLFile(xmlPath)
 
         console(&#34;&#34;)
         writeReport()
@@ -1168,16 +1350,23 @@ class TEI:
         boolean
             Whether the conversion was successful.
         &#34;&#34;&#34;
+        sectionModel = self.sectionModel
+
         slotType = &#34;char&#34;
+
+        sectionFeatures = &#34;folder,file,chunk&#34;
+        sectionTypes = &#34;folder,file,chunk&#34;
+        if sectionModel == &#34;II&#34;:
+            sectionFeatures = &#34;chapter,chunk&#34;
+            sectionTypes = &#34;chapter,chunk&#34;
+
         otext = {
             &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
-            &#34;sectionFeatures&#34;: &#34;folder,file,chunk&#34;,
-            &#34;sectionTypes&#34;: &#34;folder,file,chunk&#34;,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
         featureMeta = dict(
-            folder=dict(description=&#34;name of source folder&#34;),
-            file=dict(description=&#34;name of source file&#34;),
             chunk=dict(description=&#34;number of a chunk within a file&#34;),
             ch=dict(description=&#34;the unicode character of a slot&#34;),
             str=dict(description=&#34;the text of a word&#34;),
@@ -1190,6 +1379,12 @@ class TEI:
             ),
             is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        if sectionModel == &#34;II&#34;:
+            featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
+        else:
+            featureMeta[&#34;folder&#34;] = dict(description=&#34;name of source folder&#34;)
+            featureMeta[&#34;file&#34;] = dict(description=&#34;name of source file&#34;)
+
         self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
@@ -1240,6 +1435,9 @@ class TEI:
         function
             The local director function that has been constructed.
         &#34;&#34;&#34;
+        TEI_HEADER = &#34;teiHeader&#34;
+        BODY = &#34;body&#34;
+
         CHUNK_PARENTS = set(
             &#34;&#34;&#34;
             teiHeader
@@ -1290,6 +1488,60 @@ class TEI:
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
+        EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+            addSpan
+            alt
+            anchor
+            anyElement
+            attRef
+            binary
+            caesura
+            catRef
+            cb
+            citeData
+            classRef
+            conversion
+            damageSpan
+            dataFacet
+            default
+            delSpan
+            elementRef
+            empty
+            equiv
+            fsdLink
+            gb
+            handShift
+            iff
+            lacunaEnd
+            lacunaStart
+            lb
+            link
+            localProp
+            macroRef
+            milestone
+            move
+            numeric
+            param
+            path
+            pause
+            pb
+            ptr
+            redo
+            refState
+            specDesc
+            specGrpRef
+            symbol
+            textNode
+            then
+            undo
+            unicodeProp
+            unihanProp
+            variantEncoding
+            when
+            witEnd
+            witStart
+        &#34;&#34;&#34;.strip().split())
+
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
@@ -1320,13 +1572,21 @@ class TEI:
             cur[&#34;nest&#34;].pop()
             afterTag(cv, cur, node, tag)
 
-        def isChunk(cur):
-            &#34;&#34;&#34;Whether the current element counts as a chunk node.
+        def isChapter(cur):
+            &#34;&#34;&#34;Whether the current element counts as a chapter node.
 
-            Chunks are the third section level (folders are the first level,
-            files the second level).
-            Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
-            elements, and a few other elements also count as chunks.
+            ## Model I
+
+            Not relevant: there are no chapter nodes.
+
+            ## Model II
+
+            Chapters are the highest section level (the only lower level is chunks).
+
+            Chapters come in two kinds:
+
+            *   the TEI header
+            *   the immediate children of the `&lt;body&gt;` elements.
 
             Parameters
             ----------
@@ -1338,9 +1598,64 @@ class TEI:
             -------
             boolean
             &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
+            if sectionModel == &#34;II&#34;:
+                nest = cur[&#34;nest&#34;]
+                nNest = len(nest)
+
+                if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+                    return False
+
+                return nNest &gt; 0 and (
+                    nest[-1] == TEI_HEADER or (nNest &gt; 1 and nest[-2] == BODY)
+                )
+
+            return False
+
+        def isChunk(cur):
+            &#34;&#34;&#34;Whether the current element counts as a chunk node.
+
+            ## Model I
+
+            Chunks are the lowest section level (the higher levels are folders
+            and then files)
+
+            Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
+            elements, and a few other elements also count as chunks.
+
+            ## Model II
+
+            Chunks are the lowest section level (the only higher level is chapters).
+
+            Chunks are the immediate children of the chapters, and they come in two
+            kinds: the ones that are `&lt;p&gt;` elements, and the rest.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
             nest = cur[&#34;nest&#34;]
-            return len(nest) &gt; 1 and (
-                nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
+            nNest = len(nest)
+
+            if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+                return False
+
+            if sectionModel == &#34;II&#34;:
+                return nNest &gt; 1 and (
+                    nest[-2] == TEI_HEADER or (nNest &gt; 2 and nest[-3] == BODY)
+                )
+
+            return nNest &gt; 0 and (
+                nest[-1] in CHUNK_ELEMS or (nNest &gt; 1 and nest[-2] in CHUNK_PARENTS)
             )
 
         def isPure(cur):
@@ -1493,20 +1808,58 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if isChunk(cur):
-                cur[&#34;chunkNum&#34;] += 1
-                cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
-                cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+            sectionModel = self.sectionModel
+            sectionCriteria = self.sectionCriteria
+            atts = None
 
-            if tag == &#34;teiHeader&#34;:
+            if sectionModel == &#34;II&#34;:
+                if isChapter(cur):
+                    cur[&#34;chapter&#34;] = cv.node(&#34;chapter&#34;)
+                    cur[&#34;chunkPNum&#34;] = 0
+                    cur[&#34;chunkONum&#34;] = 0
+                elif isChunk(cur):
+                    cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                    if tag == &#34;p&#34;:
+                        cur[&#34;chunkPNum&#34;] += 1
+                        cn = cur[&#34;chunkPNum&#34;]
+                    else:
+                        cur[&#34;chunkONum&#34;] -= 1
+                        cn = cur[&#34;chunkONum&#34;]
+                    cv.feature(cur[&#34;chunk&#34;], chunk=cn)
+                if tag == sectionCriteria[&#34;element&#34;]:
+                    atts = {
+                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                    }
+                    criticalAtts = sectionCriteria[&#34;attributes&#34;]
+                    match = True
+                    for (k, v) in atts.items():
+                        if criticalAtts.get(k, None) != v:
+                            match = False
+                            break
+                    if match:
+                        heading = etree.tostring(
+                            node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                        ).replace(&#34;\n&#34;, &#34; &#34;)
+                        cv.feature(cur[&#34;chapter&#34;], chapter=heading)
+            else:
+                if isChunk(cur):
+                    cur[&#34;chunkNum&#34;] += 1
+                    cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                    cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+
+            if tag == TEI_HEADER:
                 cur[&#34;inHeader&#34;] = True
+                cv.feature(cur[&#34;chapter&#34;], chapter=&#34;TEI header&#34;)
             elif tag == &#34;note&#34;:
                 cur[&#34;inNote&#34;] = True
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
                 cur[&#34;elems&#34;].append(curNode)
-                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if atts is None:
+                    atts = {
+                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                    }
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -1545,8 +1898,15 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if isChunk(cur):
-                cv.terminate(cur[&#34;chunk&#34;])
+            sectionModel = self.sectionModel
+            if sectionModel == &#34;II&#34;:
+                if isChapter(cur):
+                    cv.terminate(cur[&#34;chapter&#34;])
+                elif isChunk(cur):
+                    cv.terminate(cur[&#34;chunk&#34;])
+            else:
+                if isChunk(cur):
+                    cv.terminate(cur[&#34;chunk&#34;])
 
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
@@ -1583,7 +1943,7 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if tag == &#34;teiHeader&#34;:
+            if tag == TEI_HEADER:
                 cur[&#34;inHeader&#34;] = False
             elif tag == &#34;note&#34;:
                 cur[&#34;inNote&#34;] = False
@@ -1627,47 +1987,76 @@ class TEI:
             cv: object
                 The convertor object, needed to issue actions.
             &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
             cur = {}
             cur[&#34;pureElems&#34;] = {
                 x for (x, (typ, mixed)) in elemDefs.items() if not mixed
             }
 
-            i = 0
-            for (xmlFolder, xmlFiles) in self.getXML():
-                console(xmlFolder)
+            if sectionModel == &#34;I&#34;:
+                i = 0
+                for (xmlFolder, xmlFiles) in self.getXML():
+                    console(xmlFolder)
 
-                cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
-                cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+                    cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+                    cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
 
-                for xmlFile in xmlFiles:
-                    i += 1
-                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                    for xmlFile in xmlFiles:
+                        i += 1
+                        console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
 
-                    cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
-                    cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+                        cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                        cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
 
-                    with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
-                        text = fh.read()
-                        text = transformFunc(text)
-                        tree = etree.parse(text, parser)
-                        root = tree.getroot()
-                        cur[&#34;inHeader&#34;] = False
-                        cur[&#34;inNote&#34;] = False
-                        cur[&#34;nest&#34;] = []
-                        cur[&#34;elems&#34;] = []
-                        cur[&#34;chunkNum&#34;] = 0
-                        cur[&#34;word&#34;] = None
-                        cur[&#34;prevWord&#34;] = None
-                        cur[&#34;wordStr&#34;] = &#34;&#34;
-                        cur[&#34;afterStr&#34;] = &#34;&#34;
-                        walkNode(cv, cur, root)
+                        with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                            text = fh.read()
+                            text = transformFunc(text)
+                            tree = etree.parse(text, parser)
+                            root = tree.getroot()
+                            cur[&#34;inHeader&#34;] = False
+                            cur[&#34;inNote&#34;] = False
+                            cur[&#34;nest&#34;] = []
+                            cur[&#34;elems&#34;] = []
+                            cur[&#34;chunkNum&#34;] = 0
+                            cur[&#34;word&#34;] = None
+                            cur[&#34;prevWord&#34;] = None
+                            cur[&#34;wordStr&#34;] = &#34;&#34;
+                            cur[&#34;afterStr&#34;] = &#34;&#34;
+                            walkNode(cv, cur, root)
 
-                    addSlot(cv, cur, None)
-                    cv.terminate(cur[&#34;file&#34;])
+                        addSlot(cv, cur, None)
+                        cv.terminate(cur[&#34;file&#34;])
 
-                cv.terminate(cur[&#34;folder&#34;])
+                    cv.terminate(cur[&#34;folder&#34;])
 
-            console(&#34;&#34;)
+                console(&#34;&#34;)
+
+            elif sectionModel == &#34;II&#34;:
+                xmlFile = self.getXML()
+                if xmlFile is None:
+                    console(&#34;No XML files found!&#34;)
+                    return False
+
+                with open(f&#34;{sourceDir}/{xmlFile}&#34;) as fh:
+                    text = fh.read()
+                    text = transformFunc(text)
+                    tree = etree.parse(text, parser)
+                    root = tree.getroot()
+                    cur[&#34;inHeader&#34;] = False
+                    cur[&#34;inNote&#34;] = False
+                    cur[&#34;nest&#34;] = []
+                    cur[&#34;elems&#34;] = []
+                    cur[&#34;chunkPNum&#34;] = 0
+                    cur[&#34;chunkONum&#34;] = 0
+                    cur[&#34;word&#34;] = None
+                    cur[&#34;prevWord&#34;] = None
+                    cur[&#34;wordStr&#34;] = &#34;&#34;
+                    cur[&#34;afterStr&#34;] = &#34;&#34;
+                    for child in root.iterchildren(tag=etree.Element):
+                        walkNode(cv, cur, child)
+
+                addSlot(cv, cur, None)
 
             for fName in featureMeta:
                 if not cv.occurs(fName):
@@ -1996,13 +2385,88 @@ __pdoc__[&#34;TEI&#34;] = DOC_TRANS</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.convert.tei.checkSectionModel"><code class="name flex">
+<span>def <span class="ident">checkSectionModel</span></span>(<span>sectionModel)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L468-L527" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def checkSectionModel(sectionModel):
+    if sectionModel is None:
+        model = SECTION_MODEL_DEFAULT
+        console(f&#34;WARNING: No section model specified. Assuming model {model}.&#34;)
+        criteria = {k: v[1] for (k, v) in SECTION_MODELS[model].items()}
+        return dict(model=model, criteria=criteria)
+
+    if type(sectionModel) is str:
+        if sectionModel in SECTION_MODELS:
+            sectionModel = dict(model=sectionModel)
+        else:
+            console(f&#34;WARNING: unknown section model: {sectionModel}&#34;)
+            return False
+
+    elif type(sectionModel) is not dict:
+        console(
+            f&#34;ERROR: Section model must be a dict. You passed a {type(sectionModel)}&#34;
+        )
+        return False
+
+    model = sectionModel.get(&#34;model&#34;, None)
+    if model is None:
+        model = SECTION_MODEL_DEFAULT
+        console(f&#34;WARNING: No section model specified. Assuming model {model}.&#34;)
+        sectionModel[&#34;model&#34;] = model
+    if model not in SECTION_MODELS:
+        console(f&#34;WARNING: unknown section model: {sectionModel}&#34;)
+        return False
+
+    criteria = {k: v for (k, v) in sectionModel.items() if k != &#34;model&#34;}
+    modelCriteria = SECTION_MODELS[model]
+
+    good = True
+    delKeys = []
+
+    for (k, v) in criteria.items():
+        if k not in modelCriteria:
+            console(f&#34;WARNING: ignoring unknown model criterium {k}={v}&#34;)
+            delKeys.append(k)
+        elif type(v) is not modelCriteria[k][0]:
+            console(
+                f&#34;ERROR: criterium {k} should have type {modelCriteria[k][0]}&#34;
+                f&#34; but {v} has type {type(v)}&#34;
+            )
+            good = False
+    if good:
+        for k in delKeys:
+            del criteria[k]
+
+    for (k, v) in modelCriteria.items():
+        if k not in criteria:
+            console(
+                f&#34;WARNING: model criterium {k} not specified, taking default {v[1]}&#34;
+            )
+            criteria[k] = v[1]
+
+    if not good:
+        return False
+
+    return dict(model=model, criteria=criteria)</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>repoDir='.', sourceVersion='0.1', schema=None, testSet=set(), generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False)</span>
+<span>(</span><span>repoDir='.', sourceVersion='0.1', schema=None, testSet=set(), sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="essentials">Essentials</h2>
@@ -2023,14 +2487,22 @@ the TEI source files to a Text-Fabric data set.</p>
 <h2 id="sectioning">Sectioning</h2>
 <p>The material is divided into three levels of sections, mainly for the purposes
 of text display.</p>
-<p>It is assumed that the source is a directory consisting of subdirectories
+<p>But how these levels relate to the source material is a different matter.</p>
+<p>The conversion supports a few sectioning models that specify this.
+This aspect is <em>work-in-progress</em>, because TEI sources differ wildly in how they
+are sectioned.
+The sectioning models that are currently supported correspond to cases we have
+encountered, we have not done exhaustive research into TEI sectioning in practice.</p>
+<h3 id="model-i-folders-and-files">Model I: folders and files</h3>
+<p>This model assumes that the source is a directory consisting of folders
 consisting of xml files, the TEI files.</p>
+<p>There are three section levels: folder - file - subdivision in file.</p>
 <ol>
 <li>Subdirectories and files are sorted in the lexicographic ordering</li>
-<li>The subdirectory <code>__ignore__</code> is ignored.</li>
-<li>For each subdirectory, a section level 1 node will be created, with
+<li>The folder <code>__ignore__</code> is ignored.</li>
+<li>For each folder, a section level 1 node will be created, with
 feature <code>name</code> containing its name.</li>
-<li>For each file in a subdirecotry, a section level 2 node will be created, with
+<li>For each file in a folder, a section level 2 node will be created, with
 feature <code>name</code> containing its name.</li>
 <li>A third section level, named <code>chunk</code> will be made.
 For each immediate child element of <code>&lt;teiHeader&gt;</code> and for each immediate child
@@ -2039,6 +2511,39 @@ containing the number of the chunk within the file, starting with 1.
 Also the following elements will trigger a chunk node:
 <code>&lt;facsimile&gt;</code>, <code>&lt;fsdDecl&gt;</code>, <code>&lt;sourceDoc&gt;</code>, and <code>&lt;standOff&gt;</code>.</li>
 </ol>
+<h3 id="model-ii-single-file-and-divs">Model II: single file and divs.</h3>
+<p>This model assumes that the source is a single TEI file.</p>
+<p>There are two section levels: "chapter"like - "p"like.</p>
+<ol>
+<li>The name of the source file is not recorded.</li>
+<li>The first section level, named <code>chapter</code> will be made as follows:
+For the <code>&lt;teiHeader&gt;</code> and for each immediate child
+element of <code>&lt;body&gt;</code>, a chapter node will be created, wit a feature <code>chapter</code>
+containing the content of the first element with certain properties that
+follows the section-1-level element.</li>
+<li>
+<p>The properties of the heading bearing element is given by its element
+name and a dictionary of attribute values.
+For example:</p>
+<p><code>element = "head"
+attributes = dict(rend="h3")</code></p>
+<p>Heading bearing elements also occur in the text, and are treated in the same
+way as all other element. The only special thing is that their plain text
+content is used as the value of a feature.
+1.
+The second section level, named <code>chunk</code> consists of the top-level elements within
+the chapters, except certain empty elements, such as breaks.
+1.
+Section-2-level nodes get a feature <code>chunk</code> with a chunk number.
+1.
+<code>cn</code> is positive for <code>&lt;p&gt;</code> elements, and it is the sequence number
+of the <code>p</code> within the chapter.
+1.
+<code>cn</code> is negative for all other elements of section-level-2. For those elements
+it is the sequence number of the non-p immediate children of the chapter.</p>
+</li>
+</ol>
+<h3 id="specifying-a-sectioning-model">Specifying a sectioning model</h3>
 <h2 id="elements-and-attributes">Elements and attributes</h2>
 <ol>
 <li>All elements, except <code>&lt;TEI&gt;</code> and <code>&lt;teiHeader&gt;</code> result in nodes whose type is
@@ -2284,7 +2789,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L418-L1839" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L530-L2227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -2293,6 +2798,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         sourceVersion=&#34;0.1&#34;,
         schema=None,
         testSet=set(),
+        sectionModel=None,
         generic={},
         transform=None,
         tfVersion=&#34;0.1&#34;,
@@ -2388,7 +2894,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         The directory under which the text-fabric output file (with extension `.tf`)
         are placed.
         If it does not exist, it will be created.
-        The tf files will be generated in a subdirectory named by a version number,
+        The tf files will be generated in a folder named by a version number,
         passed as `tfVersion`.
 
         ### `app` and `docs`
@@ -2440,6 +2946,30 @@ Meaningful whitespace has been condensed to single spaces.</p>
             (pass `test` as argument to the `TEI.task()` method),
             only the files in the test set are converted.
 
+        sectionModel: dict, optional {}
+            If not passed, or an empty dict, section model I is assumed.
+            A section model must be specified with the parameters relevant for the
+            model:
+
+            ```
+            dict(model=&#34;II&#34;, element=&#34;head&#34;, attributes=dict(rend=&#34;h3&#34;))
+            ```
+
+            or
+
+            ```
+            dict(model=&#34;I&#34;)
+            ```
+
+            because model I does not require parameters.
+
+            For model II, the default parameters are:
+
+            ```
+            element=&#34;head&#34;
+            attributes={}
+            ```
+
         generic: dict, optional {}
             Metadata for all generated TF feature.
 
@@ -2469,7 +2999,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         &#34;&#34;&#34;
         (backend, org, repo) = getLocation(repoDir)
         if any(s is None for s in (backend, org, repo)):
-            console(&#34;Not working in a repo: {backend=} {org=} {repo=}&#34;)
+            console(&#34;Not working in a repo: backend={backend} org={org} repo={repo}&#34;)
             quit()
 
         console(f&#34;Working in repository {org}/{repo} in backend {backend}&#34;)
@@ -2500,6 +3030,11 @@ Meaningful whitespace has been condensed to single spaces.</p>
         self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
+        sectionModel = checkSectionModel(sectionModel)
+        if not sectionModel:
+            quit()
+        self.sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionCriteria = sectionModel.get(&#34;criteria&#34;, None)
         self.generic = generic
         self.transform = transform
         self.tfVersion = tfVersion
@@ -2616,6 +3151,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         A.interpret()
         if not A.good:
             quit()
+
         return {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
     def getXML(self):
@@ -2623,41 +3159,64 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
         Returns
         -------
-        tuple of tuple
+        tuple of tuple | string
+            If section model I is in force:
+
             The outer tuple has sorted entries corresponding to folders under the
             TEI input directory.
             Each such entry consists of the folder name and an inner tuple
             that contains the file names in that folder, sorted.
+
+            If section model II is in force:
+
+            It is the name of the single XML file.
         &#34;&#34;&#34;
         sourceDir = self.sourceDir
-        testMode = self.testMode
-        testSet = self.testSet
+        sectionModel = self.sectionModel
+        console(f&#34;Section model {sectionModel}&#34;)
 
-        IGNORE = &#34;__ignore__&#34;
+        if sectionModel == &#34;I&#34;:
+            testMode = self.testMode
+            testSet = self.testSet
 
-        xmlFilesRaw = collections.defaultdict(list)
+            IGNORE = &#34;__ignore__&#34;
 
-        with os.scandir(sourceDir) as dh:
-            for folder in dh:
-                folderName = folder.name
-                if folderName == IGNORE:
-                    continue
-                if not folder.is_dir():
-                    continue
-                with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
-                    for file in fh:
-                        fileName = file.name
-                        if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
-                            continue
-                        if testMode and fileName not in testSet:
-                            continue
-                        xmlFilesRaw[folderName].append(fileName)
+            xmlFilesRaw = collections.defaultdict(list)
 
-        xmlFiles = tuple(
-            (folderName, tuple(sorted(fileNames)))
-            for (folderName, fileNames) in sorted(xmlFilesRaw.items())
-        )
-        return xmlFiles
+            with os.scandir(sourceDir) as dh:
+                for folder in dh:
+                    folderName = folder.name
+                    if folderName == IGNORE:
+                        continue
+                    if not folder.is_dir():
+                        continue
+                    with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                        for file in fh:
+                            fileName = file.name
+                            if not (
+                                fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
+                            ):
+                                continue
+                            if testMode and fileName not in testSet:
+                                continue
+                            xmlFilesRaw[folderName].append(fileName)
+
+            xmlFiles = tuple(
+                (folderName, tuple(sorted(fileNames)))
+                for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+            )
+            return xmlFiles
+
+        if sectionModel == &#34;II&#34;:
+            xmlFile = None
+            with os.scandir(sourceDir) as fh:
+                for file in fh:
+                    fileName = file.name
+                    if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                        continue
+                    xmlFile = fileName
+                    break
+            return xmlFile
 
     def checkTask(self):
         &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -2680,6 +3239,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         &#34;&#34;&#34;
         sourceDir = self.sourceDir
         reportDir = self.reportDir
+        sectionModel = self.sectionModel
 
         kindLabels = dict(
             format=&#34;FORMATTING ATTRIBUTES&#34;,
@@ -2829,35 +3389,49 @@ Meaningful whitespace has been condensed to single spaces.</p>
             )
 
         NS_RE = re.compile(r&#34;&#34;&#34;\{[^}]+}&#34;&#34;&#34;)
-        i = 0
-        for (xmlFolder, xmlFiles) in self.getXML():
-            console(xmlFolder)
-            for xmlFile in xmlFiles:
-                i += 1
-                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
-                tree = etree.parse(xmlPath, parser)
-                if validator is not None and not validator.validate(tree):
-                    theseErrors = []
-                    for entry in validator.error_log:
-                        msg = entry.message
-                        msg = NS_RE.sub(&#34;&#34;, msg)
-                        if filterError(msg):
-                            continue
-                        # domain = entry.domain_name
-                        # typ = entry.type_name
-                        level = entry.level_name
-                        line = entry.line
-                        col = entry.column
-                        address = f&#34;{line}:{col}&#34;
-                        theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
-                    if len(theseErrors):
-                        console(&#34;ERROR&#34;)
-                        errors.append((xmlFile, theseErrors))
-                    continue
 
-                root = tree.getroot()
-                analyse(root, analysis)
+        def doXMLFile(xmlPath):
+            tree = etree.parse(xmlPath, parser)
+            if validator is not None and not validator.validate(tree):
+                theseErrors = []
+                for entry in validator.error_log:
+                    msg = entry.message
+                    msg = NS_RE.sub(&#34;&#34;, msg)
+                    if filterError(msg):
+                        continue
+                    # domain = entry.domain_name
+                    # typ = entry.type_name
+                    level = entry.level_name
+                    line = entry.line
+                    col = entry.column
+                    address = f&#34;{line}:{col}&#34;
+                    theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
+                if len(theseErrors):
+                    console(&#34;ERROR&#34;)
+                    errors.append((xmlFile, theseErrors))
+                return
+
+            root = tree.getroot()
+            analyse(root, analysis)
+
+        if sectionModel == &#34;I&#34;:
+            i = 0
+            for (xmlFolder, xmlFiles) in self.getXML():
+                console(xmlFolder)
+                for xmlFile in xmlFiles:
+                    i += 1
+                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                    xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                    doXMLFile(xmlPath)
+
+        elif sectionModel == &#34;II&#34;:
+            xmlFile = self.getXML()
+            if xmlFile is None:
+                console(&#34;No XML files found!&#34;)
+                return False
+
+            xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+            doXMLFile(xmlPath)
 
         console(&#34;&#34;)
         writeReport()
@@ -2890,16 +3464,23 @@ Meaningful whitespace has been condensed to single spaces.</p>
         boolean
             Whether the conversion was successful.
         &#34;&#34;&#34;
+        sectionModel = self.sectionModel
+
         slotType = &#34;char&#34;
+
+        sectionFeatures = &#34;folder,file,chunk&#34;
+        sectionTypes = &#34;folder,file,chunk&#34;
+        if sectionModel == &#34;II&#34;:
+            sectionFeatures = &#34;chapter,chunk&#34;
+            sectionTypes = &#34;chapter,chunk&#34;
+
         otext = {
             &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
-            &#34;sectionFeatures&#34;: &#34;folder,file,chunk&#34;,
-            &#34;sectionTypes&#34;: &#34;folder,file,chunk&#34;,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
         featureMeta = dict(
-            folder=dict(description=&#34;name of source folder&#34;),
-            file=dict(description=&#34;name of source file&#34;),
             chunk=dict(description=&#34;number of a chunk within a file&#34;),
             ch=dict(description=&#34;the unicode character of a slot&#34;),
             str=dict(description=&#34;the text of a word&#34;),
@@ -2912,6 +3493,12 @@ Meaningful whitespace has been condensed to single spaces.</p>
             ),
             is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        if sectionModel == &#34;II&#34;:
+            featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
+        else:
+            featureMeta[&#34;folder&#34;] = dict(description=&#34;name of source folder&#34;)
+            featureMeta[&#34;file&#34;] = dict(description=&#34;name of source file&#34;)
+
         self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
@@ -2962,6 +3549,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
         function
             The local director function that has been constructed.
         &#34;&#34;&#34;
+        TEI_HEADER = &#34;teiHeader&#34;
+        BODY = &#34;body&#34;
+
         CHUNK_PARENTS = set(
             &#34;&#34;&#34;
             teiHeader
@@ -3012,6 +3602,60 @@ Meaningful whitespace has been condensed to single spaces.</p>
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
+        EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+            addSpan
+            alt
+            anchor
+            anyElement
+            attRef
+            binary
+            caesura
+            catRef
+            cb
+            citeData
+            classRef
+            conversion
+            damageSpan
+            dataFacet
+            default
+            delSpan
+            elementRef
+            empty
+            equiv
+            fsdLink
+            gb
+            handShift
+            iff
+            lacunaEnd
+            lacunaStart
+            lb
+            link
+            localProp
+            macroRef
+            milestone
+            move
+            numeric
+            param
+            path
+            pause
+            pb
+            ptr
+            redo
+            refState
+            specDesc
+            specGrpRef
+            symbol
+            textNode
+            then
+            undo
+            unicodeProp
+            unihanProp
+            variantEncoding
+            when
+            witEnd
+            witStart
+        &#34;&#34;&#34;.strip().split())
+
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
@@ -3042,13 +3686,21 @@ Meaningful whitespace has been condensed to single spaces.</p>
             cur[&#34;nest&#34;].pop()
             afterTag(cv, cur, node, tag)
 
-        def isChunk(cur):
-            &#34;&#34;&#34;Whether the current element counts as a chunk node.
+        def isChapter(cur):
+            &#34;&#34;&#34;Whether the current element counts as a chapter node.
 
-            Chunks are the third section level (folders are the first level,
-            files the second level).
-            Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
-            elements, and a few other elements also count as chunks.
+            ## Model I
+
+            Not relevant: there are no chapter nodes.
+
+            ## Model II
+
+            Chapters are the highest section level (the only lower level is chunks).
+
+            Chapters come in two kinds:
+
+            *   the TEI header
+            *   the immediate children of the `&lt;body&gt;` elements.
 
             Parameters
             ----------
@@ -3060,9 +3712,64 @@ Meaningful whitespace has been condensed to single spaces.</p>
             -------
             boolean
             &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
+            if sectionModel == &#34;II&#34;:
+                nest = cur[&#34;nest&#34;]
+                nNest = len(nest)
+
+                if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+                    return False
+
+                return nNest &gt; 0 and (
+                    nest[-1] == TEI_HEADER or (nNest &gt; 1 and nest[-2] == BODY)
+                )
+
+            return False
+
+        def isChunk(cur):
+            &#34;&#34;&#34;Whether the current element counts as a chunk node.
+
+            ## Model I
+
+            Chunks are the lowest section level (the higher levels are folders
+            and then files)
+
+            Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
+            elements, and a few other elements also count as chunks.
+
+            ## Model II
+
+            Chunks are the lowest section level (the only higher level is chapters).
+
+            Chunks are the immediate children of the chapters, and they come in two
+            kinds: the ones that are `&lt;p&gt;` elements, and the rest.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
             nest = cur[&#34;nest&#34;]
-            return len(nest) &gt; 1 and (
-                nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
+            nNest = len(nest)
+
+            if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+                return False
+
+            if sectionModel == &#34;II&#34;:
+                return nNest &gt; 1 and (
+                    nest[-2] == TEI_HEADER or (nNest &gt; 2 and nest[-3] == BODY)
+                )
+
+            return nNest &gt; 0 and (
+                nest[-1] in CHUNK_ELEMS or (nNest &gt; 1 and nest[-2] in CHUNK_PARENTS)
             )
 
         def isPure(cur):
@@ -3215,20 +3922,58 @@ Meaningful whitespace has been condensed to single spaces.</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if isChunk(cur):
-                cur[&#34;chunkNum&#34;] += 1
-                cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
-                cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+            sectionModel = self.sectionModel
+            sectionCriteria = self.sectionCriteria
+            atts = None
 
-            if tag == &#34;teiHeader&#34;:
+            if sectionModel == &#34;II&#34;:
+                if isChapter(cur):
+                    cur[&#34;chapter&#34;] = cv.node(&#34;chapter&#34;)
+                    cur[&#34;chunkPNum&#34;] = 0
+                    cur[&#34;chunkONum&#34;] = 0
+                elif isChunk(cur):
+                    cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                    if tag == &#34;p&#34;:
+                        cur[&#34;chunkPNum&#34;] += 1
+                        cn = cur[&#34;chunkPNum&#34;]
+                    else:
+                        cur[&#34;chunkONum&#34;] -= 1
+                        cn = cur[&#34;chunkONum&#34;]
+                    cv.feature(cur[&#34;chunk&#34;], chunk=cn)
+                if tag == sectionCriteria[&#34;element&#34;]:
+                    atts = {
+                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                    }
+                    criticalAtts = sectionCriteria[&#34;attributes&#34;]
+                    match = True
+                    for (k, v) in atts.items():
+                        if criticalAtts.get(k, None) != v:
+                            match = False
+                            break
+                    if match:
+                        heading = etree.tostring(
+                            node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                        ).replace(&#34;\n&#34;, &#34; &#34;)
+                        cv.feature(cur[&#34;chapter&#34;], chapter=heading)
+            else:
+                if isChunk(cur):
+                    cur[&#34;chunkNum&#34;] += 1
+                    cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                    cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+
+            if tag == TEI_HEADER:
                 cur[&#34;inHeader&#34;] = True
+                cv.feature(cur[&#34;chapter&#34;], chapter=&#34;TEI header&#34;)
             elif tag == &#34;note&#34;:
                 cur[&#34;inNote&#34;] = True
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
                 cur[&#34;elems&#34;].append(curNode)
-                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if atts is None:
+                    atts = {
+                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                    }
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -3267,8 +4012,15 @@ Meaningful whitespace has been condensed to single spaces.</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if isChunk(cur):
-                cv.terminate(cur[&#34;chunk&#34;])
+            sectionModel = self.sectionModel
+            if sectionModel == &#34;II&#34;:
+                if isChapter(cur):
+                    cv.terminate(cur[&#34;chapter&#34;])
+                elif isChunk(cur):
+                    cv.terminate(cur[&#34;chunk&#34;])
+            else:
+                if isChunk(cur):
+                    cv.terminate(cur[&#34;chunk&#34;])
 
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
@@ -3305,7 +4057,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
-            if tag == &#34;teiHeader&#34;:
+            if tag == TEI_HEADER:
                 cur[&#34;inHeader&#34;] = False
             elif tag == &#34;note&#34;:
                 cur[&#34;inNote&#34;] = False
@@ -3349,47 +4101,76 @@ Meaningful whitespace has been condensed to single spaces.</p>
             cv: object
                 The convertor object, needed to issue actions.
             &#34;&#34;&#34;
+            sectionModel = self.sectionModel
+
             cur = {}
             cur[&#34;pureElems&#34;] = {
                 x for (x, (typ, mixed)) in elemDefs.items() if not mixed
             }
 
-            i = 0
-            for (xmlFolder, xmlFiles) in self.getXML():
-                console(xmlFolder)
+            if sectionModel == &#34;I&#34;:
+                i = 0
+                for (xmlFolder, xmlFiles) in self.getXML():
+                    console(xmlFolder)
 
-                cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
-                cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+                    cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+                    cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
 
-                for xmlFile in xmlFiles:
-                    i += 1
-                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                    for xmlFile in xmlFiles:
+                        i += 1
+                        console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
 
-                    cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
-                    cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+                        cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                        cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
 
-                    with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
-                        text = fh.read()
-                        text = transformFunc(text)
-                        tree = etree.parse(text, parser)
-                        root = tree.getroot()
-                        cur[&#34;inHeader&#34;] = False
-                        cur[&#34;inNote&#34;] = False
-                        cur[&#34;nest&#34;] = []
-                        cur[&#34;elems&#34;] = []
-                        cur[&#34;chunkNum&#34;] = 0
-                        cur[&#34;word&#34;] = None
-                        cur[&#34;prevWord&#34;] = None
-                        cur[&#34;wordStr&#34;] = &#34;&#34;
-                        cur[&#34;afterStr&#34;] = &#34;&#34;
-                        walkNode(cv, cur, root)
+                        with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                            text = fh.read()
+                            text = transformFunc(text)
+                            tree = etree.parse(text, parser)
+                            root = tree.getroot()
+                            cur[&#34;inHeader&#34;] = False
+                            cur[&#34;inNote&#34;] = False
+                            cur[&#34;nest&#34;] = []
+                            cur[&#34;elems&#34;] = []
+                            cur[&#34;chunkNum&#34;] = 0
+                            cur[&#34;word&#34;] = None
+                            cur[&#34;prevWord&#34;] = None
+                            cur[&#34;wordStr&#34;] = &#34;&#34;
+                            cur[&#34;afterStr&#34;] = &#34;&#34;
+                            walkNode(cv, cur, root)
 
-                    addSlot(cv, cur, None)
-                    cv.terminate(cur[&#34;file&#34;])
+                        addSlot(cv, cur, None)
+                        cv.terminate(cur[&#34;file&#34;])
 
-                cv.terminate(cur[&#34;folder&#34;])
+                    cv.terminate(cur[&#34;folder&#34;])
 
-            console(&#34;&#34;)
+                console(&#34;&#34;)
+
+            elif sectionModel == &#34;II&#34;:
+                xmlFile = self.getXML()
+                if xmlFile is None:
+                    console(&#34;No XML files found!&#34;)
+                    return False
+
+                with open(f&#34;{sourceDir}/{xmlFile}&#34;) as fh:
+                    text = fh.read()
+                    text = transformFunc(text)
+                    tree = etree.parse(text, parser)
+                    root = tree.getroot()
+                    cur[&#34;inHeader&#34;] = False
+                    cur[&#34;inNote&#34;] = False
+                    cur[&#34;nest&#34;] = []
+                    cur[&#34;elems&#34;] = []
+                    cur[&#34;chunkPNum&#34;] = 0
+                    cur[&#34;chunkONum&#34;] = 0
+                    cur[&#34;word&#34;] = None
+                    cur[&#34;prevWord&#34;] = None
+                    cur[&#34;wordStr&#34;] = &#34;&#34;
+                    cur[&#34;afterStr&#34;] = &#34;&#34;
+                    for child in root.iterchildren(tag=etree.Element):
+                        walkNode(cv, cur, child)
+
+                addSlot(cv, cur, None)
 
             for fName in featureMeta:
                 if not cv.occurs(fName):
@@ -3725,7 +4506,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L690-L706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L832-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -3764,7 +4545,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L647-L688" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L789-L830" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -3829,7 +4610,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1584-L1729" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1972-L2117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -3999,7 +4780,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L791-L995" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L957-L1176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -4022,6 +4803,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     &#34;&#34;&#34;
     sourceDir = self.sourceDir
     reportDir = self.reportDir
+    sectionModel = self.sectionModel
 
     kindLabels = dict(
         format=&#34;FORMATTING ATTRIBUTES&#34;,
@@ -4171,35 +4953,49 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         )
 
     NS_RE = re.compile(r&#34;&#34;&#34;\{[^}]+}&#34;&#34;&#34;)
-    i = 0
-    for (xmlFolder, xmlFiles) in self.getXML():
-        console(xmlFolder)
-        for xmlFile in xmlFiles:
-            i += 1
-            console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-            xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
-            tree = etree.parse(xmlPath, parser)
-            if validator is not None and not validator.validate(tree):
-                theseErrors = []
-                for entry in validator.error_log:
-                    msg = entry.message
-                    msg = NS_RE.sub(&#34;&#34;, msg)
-                    if filterError(msg):
-                        continue
-                    # domain = entry.domain_name
-                    # typ = entry.type_name
-                    level = entry.level_name
-                    line = entry.line
-                    col = entry.column
-                    address = f&#34;{line}:{col}&#34;
-                    theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
-                if len(theseErrors):
-                    console(&#34;ERROR&#34;)
-                    errors.append((xmlFile, theseErrors))
-                continue
 
-            root = tree.getroot()
-            analyse(root, analysis)
+    def doXMLFile(xmlPath):
+        tree = etree.parse(xmlPath, parser)
+        if validator is not None and not validator.validate(tree):
+            theseErrors = []
+            for entry in validator.error_log:
+                msg = entry.message
+                msg = NS_RE.sub(&#34;&#34;, msg)
+                if filterError(msg):
+                    continue
+                # domain = entry.domain_name
+                # typ = entry.type_name
+                level = entry.level_name
+                line = entry.line
+                col = entry.column
+                address = f&#34;{line}:{col}&#34;
+                theseErrors.append(f&#34;{address:&lt;6} {level:} {msg}\n&#34;)
+            if len(theseErrors):
+                console(&#34;ERROR&#34;)
+                errors.append((xmlFile, theseErrors))
+            return
+
+        root = tree.getroot()
+        analyse(root, analysis)
+
+    if sectionModel == &#34;I&#34;:
+        i = 0
+        for (xmlFolder, xmlFiles) in self.getXML():
+            console(xmlFolder)
+            for xmlFile in xmlFiles:
+                i += 1
+                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                doXMLFile(xmlPath)
+
+    elif sectionModel == &#34;II&#34;:
+        xmlFile = self.getXML()
+        if xmlFile is None:
+            console(&#34;No XML files found!&#34;)
+            return False
+
+        xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+        doXMLFile(xmlPath)
 
     console(&#34;&#34;)
     writeReport()
@@ -4222,7 +5018,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1012-L1068" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1193-L1262" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -4234,16 +5030,23 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     boolean
         Whether the conversion was successful.
     &#34;&#34;&#34;
+    sectionModel = self.sectionModel
+
     slotType = &#34;char&#34;
+
+    sectionFeatures = &#34;folder,file,chunk&#34;
+    sectionTypes = &#34;folder,file,chunk&#34;
+    if sectionModel == &#34;II&#34;:
+        sectionFeatures = &#34;chapter,chunk&#34;
+        sectionTypes = &#34;chapter,chunk&#34;
+
     otext = {
         &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
-        &#34;sectionFeatures&#34;: &#34;folder,file,chunk&#34;,
-        &#34;sectionTypes&#34;: &#34;folder,file,chunk&#34;,
+        &#34;sectionFeatures&#34;: sectionFeatures,
+        &#34;sectionTypes&#34;: sectionTypes,
     }
     intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
     featureMeta = dict(
-        folder=dict(description=&#34;name of source folder&#34;),
-        file=dict(description=&#34;name of source file&#34;),
         chunk=dict(description=&#34;number of a chunk within a file&#34;),
         ch=dict(description=&#34;the unicode character of a slot&#34;),
         str=dict(description=&#34;the text of a word&#34;),
@@ -4256,6 +5059,12 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         ),
         is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
     )
+    if sectionModel == &#34;II&#34;:
+        featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
+    else:
+        featureMeta[&#34;folder&#34;] = dict(description=&#34;name of source folder&#34;)
+        featureMeta[&#34;file&#34;] = dict(description=&#34;name of source file&#34;)
+
     self.intFeatures = intFeatures
     self.featureMeta = featureMeta
 
@@ -4296,7 +5105,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L999-L1010" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1180-L1191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -4335,7 +5144,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1072-L1545" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1266-L1933" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -4359,6 +5168,9 @@ that has access to this data.</p>
     function
         The local director function that has been constructed.
     &#34;&#34;&#34;
+    TEI_HEADER = &#34;teiHeader&#34;
+    BODY = &#34;body&#34;
+
     CHUNK_PARENTS = set(
         &#34;&#34;&#34;
         teiHeader
@@ -4409,6 +5221,60 @@ that has access to this data.</p>
     WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
     NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
+    EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+        addSpan
+        alt
+        anchor
+        anyElement
+        attRef
+        binary
+        caesura
+        catRef
+        cb
+        citeData
+        classRef
+        conversion
+        damageSpan
+        dataFacet
+        default
+        delSpan
+        elementRef
+        empty
+        equiv
+        fsdLink
+        gb
+        handShift
+        iff
+        lacunaEnd
+        lacunaStart
+        lb
+        link
+        localProp
+        macroRef
+        milestone
+        move
+        numeric
+        param
+        path
+        pause
+        pb
+        ptr
+        redo
+        refState
+        specDesc
+        specGrpRef
+        symbol
+        textNode
+        then
+        undo
+        unicodeProp
+        unihanProp
+        variantEncoding
+        when
+        witEnd
+        witStart
+    &#34;&#34;&#34;.strip().split())
+
     def makeNameLike(x):
         return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
@@ -4439,13 +5305,21 @@ that has access to this data.</p>
         cur[&#34;nest&#34;].pop()
         afterTag(cv, cur, node, tag)
 
-    def isChunk(cur):
-        &#34;&#34;&#34;Whether the current element counts as a chunk node.
+    def isChapter(cur):
+        &#34;&#34;&#34;Whether the current element counts as a chapter node.
 
-        Chunks are the third section level (folders are the first level,
-        files the second level).
-        Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
-        elements, and a few other elements also count as chunks.
+        ## Model I
+
+        Not relevant: there are no chapter nodes.
+
+        ## Model II
+
+        Chapters are the highest section level (the only lower level is chunks).
+
+        Chapters come in two kinds:
+
+        *   the TEI header
+        *   the immediate children of the `&lt;body&gt;` elements.
 
         Parameters
         ----------
@@ -4457,9 +5331,64 @@ that has access to this data.</p>
         -------
         boolean
         &#34;&#34;&#34;
+        sectionModel = self.sectionModel
+
+        if sectionModel == &#34;II&#34;:
+            nest = cur[&#34;nest&#34;]
+            nNest = len(nest)
+
+            if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+                return False
+
+            return nNest &gt; 0 and (
+                nest[-1] == TEI_HEADER or (nNest &gt; 1 and nest[-2] == BODY)
+            )
+
+        return False
+
+    def isChunk(cur):
+        &#34;&#34;&#34;Whether the current element counts as a chunk node.
+
+        ## Model I
+
+        Chunks are the lowest section level (the higher levels are folders
+        and then files)
+
+        Chunks are the immediate children of the `&lt;teiHeader&gt;` and the `&lt;body&gt;`
+        elements, and a few other elements also count as chunks.
+
+        ## Model II
+
+        Chunks are the lowest section level (the only higher level is chapters).
+
+        Chunks are the immediate children of the chapters, and they come in two
+        kinds: the ones that are `&lt;p&gt;` elements, and the rest.
+
+        Parameters
+        ----------
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+        sectionModel = self.sectionModel
+
         nest = cur[&#34;nest&#34;]
-        return len(nest) &gt; 1 and (
-            nest[-1] in CHUNK_ELEMS or nest[-2] in CHUNK_PARENTS
+        nNest = len(nest)
+
+        if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
+            return False
+
+        if sectionModel == &#34;II&#34;:
+            return nNest &gt; 1 and (
+                nest[-2] == TEI_HEADER or (nNest &gt; 2 and nest[-3] == BODY)
+            )
+
+        return nNest &gt; 0 and (
+            nest[-1] in CHUNK_ELEMS or (nNest &gt; 1 and nest[-2] in CHUNK_PARENTS)
         )
 
     def isPure(cur):
@@ -4612,20 +5541,58 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
-        if isChunk(cur):
-            cur[&#34;chunkNum&#34;] += 1
-            cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
-            cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+        sectionModel = self.sectionModel
+        sectionCriteria = self.sectionCriteria
+        atts = None
 
-        if tag == &#34;teiHeader&#34;:
+        if sectionModel == &#34;II&#34;:
+            if isChapter(cur):
+                cur[&#34;chapter&#34;] = cv.node(&#34;chapter&#34;)
+                cur[&#34;chunkPNum&#34;] = 0
+                cur[&#34;chunkONum&#34;] = 0
+            elif isChunk(cur):
+                cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                if tag == &#34;p&#34;:
+                    cur[&#34;chunkPNum&#34;] += 1
+                    cn = cur[&#34;chunkPNum&#34;]
+                else:
+                    cur[&#34;chunkONum&#34;] -= 1
+                    cn = cur[&#34;chunkONum&#34;]
+                cv.feature(cur[&#34;chunk&#34;], chunk=cn)
+            if tag == sectionCriteria[&#34;element&#34;]:
+                atts = {
+                    etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                }
+                criticalAtts = sectionCriteria[&#34;attributes&#34;]
+                match = True
+                for (k, v) in atts.items():
+                    if criticalAtts.get(k, None) != v:
+                        match = False
+                        break
+                if match:
+                    heading = etree.tostring(
+                        node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                    ).replace(&#34;\n&#34;, &#34; &#34;)
+                    cv.feature(cur[&#34;chapter&#34;], chapter=heading)
+        else:
+            if isChunk(cur):
+                cur[&#34;chunkNum&#34;] += 1
+                cur[&#34;chunk&#34;] = cv.node(&#34;chunk&#34;)
+                cv.feature(cur[&#34;chunk&#34;], chunk=cur[&#34;chunkNum&#34;])
+
+        if tag == TEI_HEADER:
             cur[&#34;inHeader&#34;] = True
+            cv.feature(cur[&#34;chapter&#34;], chapter=&#34;TEI header&#34;)
         elif tag == &#34;note&#34;:
             cur[&#34;inNote&#34;] = True
 
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
             cur[&#34;elems&#34;].append(curNode)
-            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            if atts is None:
+                atts = {
+                    etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                }
             if len(atts):
                 cv.feature(curNode, **atts)
                 if &#34;rend&#34; in atts:
@@ -4664,8 +5631,15 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
-        if isChunk(cur):
-            cv.terminate(cur[&#34;chunk&#34;])
+        sectionModel = self.sectionModel
+        if sectionModel == &#34;II&#34;:
+            if isChapter(cur):
+                cv.terminate(cur[&#34;chapter&#34;])
+            elif isChunk(cur):
+                cv.terminate(cur[&#34;chunk&#34;])
+        else:
+            if isChunk(cur):
+                cv.terminate(cur[&#34;chunk&#34;])
 
         if tag not in PASS_THROUGH:
             if isEndInPure(cur):
@@ -4702,7 +5676,7 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
-        if tag == &#34;teiHeader&#34;:
+        if tag == TEI_HEADER:
             cur[&#34;inHeader&#34;] = False
         elif tag == &#34;note&#34;:
             cur[&#34;inNote&#34;] = False
@@ -4746,47 +5720,76 @@ that has access to this data.</p>
         cv: object
             The convertor object, needed to issue actions.
         &#34;&#34;&#34;
+        sectionModel = self.sectionModel
+
         cur = {}
         cur[&#34;pureElems&#34;] = {
             x for (x, (typ, mixed)) in elemDefs.items() if not mixed
         }
 
-        i = 0
-        for (xmlFolder, xmlFiles) in self.getXML():
-            console(xmlFolder)
+        if sectionModel == &#34;I&#34;:
+            i = 0
+            for (xmlFolder, xmlFiles) in self.getXML():
+                console(xmlFolder)
 
-            cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
-            cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+                cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+                cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
 
-            for xmlFile in xmlFiles:
-                i += 1
-                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                for xmlFile in xmlFiles:
+                    i += 1
+                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
 
-                cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
-                cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+                    cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                    cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
 
-                with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
-                    text = fh.read()
-                    text = transformFunc(text)
-                    tree = etree.parse(text, parser)
-                    root = tree.getroot()
-                    cur[&#34;inHeader&#34;] = False
-                    cur[&#34;inNote&#34;] = False
-                    cur[&#34;nest&#34;] = []
-                    cur[&#34;elems&#34;] = []
-                    cur[&#34;chunkNum&#34;] = 0
-                    cur[&#34;word&#34;] = None
-                    cur[&#34;prevWord&#34;] = None
-                    cur[&#34;wordStr&#34;] = &#34;&#34;
-                    cur[&#34;afterStr&#34;] = &#34;&#34;
-                    walkNode(cv, cur, root)
+                    with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                        text = fh.read()
+                        text = transformFunc(text)
+                        tree = etree.parse(text, parser)
+                        root = tree.getroot()
+                        cur[&#34;inHeader&#34;] = False
+                        cur[&#34;inNote&#34;] = False
+                        cur[&#34;nest&#34;] = []
+                        cur[&#34;elems&#34;] = []
+                        cur[&#34;chunkNum&#34;] = 0
+                        cur[&#34;word&#34;] = None
+                        cur[&#34;prevWord&#34;] = None
+                        cur[&#34;wordStr&#34;] = &#34;&#34;
+                        cur[&#34;afterStr&#34;] = &#34;&#34;
+                        walkNode(cv, cur, root)
 
-                addSlot(cv, cur, None)
-                cv.terminate(cur[&#34;file&#34;])
+                    addSlot(cv, cur, None)
+                    cv.terminate(cur[&#34;file&#34;])
 
-            cv.terminate(cur[&#34;folder&#34;])
+                cv.terminate(cur[&#34;folder&#34;])
 
-        console(&#34;&#34;)
+            console(&#34;&#34;)
+
+        elif sectionModel == &#34;II&#34;:
+            xmlFile = self.getXML()
+            if xmlFile is None:
+                console(&#34;No XML files found!&#34;)
+                return False
+
+            with open(f&#34;{sourceDir}/{xmlFile}&#34;) as fh:
+                text = fh.read()
+                text = transformFunc(text)
+                tree = etree.parse(text, parser)
+                root = tree.getroot()
+                cur[&#34;inHeader&#34;] = False
+                cur[&#34;inNote&#34;] = False
+                cur[&#34;nest&#34;] = []
+                cur[&#34;elems&#34;] = []
+                cur[&#34;chunkPNum&#34;] = 0
+                cur[&#34;chunkONum&#34;] = 0
+                cur[&#34;word&#34;] = None
+                cur[&#34;prevWord&#34;] = None
+                cur[&#34;wordStr&#34;] = &#34;&#34;
+                cur[&#34;afterStr&#34;] = &#34;&#34;
+                for child in root.iterchildren(tag=etree.Element):
+                    walkNode(cv, cur, child)
+
+            addSlot(cv, cur, None)
 
         for fName in featureMeta:
             if not cv.occurs(fName):
@@ -4831,7 +5834,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L727-L748" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L869-L891" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -4854,6 +5857,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
     A.interpret()
     if not A.good:
         quit()
+
     return {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}</code></pre>
 </details>
 </dd>
@@ -4872,7 +5876,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L708-L725" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L850-L867" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -4901,57 +5905,85 @@ This will only happen during the <code>check</code> task.</p>
 <div class="desc"><p>Make an inventory of the TEI source files.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>tuple</code> of <code>tuple</code></dt>
-<dd>The outer tuple has sorted entries corresponding to folders under the
+<dt><code>tuple</code> of <code>tuple | string</code></dt>
+<dd>
+<p>If section model I is in force:</p>
+<p>The outer tuple has sorted entries corresponding to folders under the
 TEI input directory.
 Each such entry consists of the folder name and an inner tuple
-that contains the file names in that folder, sorted.</dd>
+that contains the file names in that folder, sorted.</p>
+<p>If section model II is in force:</p>
+<p>It is the name of the single XML file.</p>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L750-L789" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L893-L955" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
 
     Returns
     -------
-    tuple of tuple
+    tuple of tuple | string
+        If section model I is in force:
+
         The outer tuple has sorted entries corresponding to folders under the
         TEI input directory.
         Each such entry consists of the folder name and an inner tuple
         that contains the file names in that folder, sorted.
+
+        If section model II is in force:
+
+        It is the name of the single XML file.
     &#34;&#34;&#34;
     sourceDir = self.sourceDir
-    testMode = self.testMode
-    testSet = self.testSet
+    sectionModel = self.sectionModel
+    console(f&#34;Section model {sectionModel}&#34;)
 
-    IGNORE = &#34;__ignore__&#34;
+    if sectionModel == &#34;I&#34;:
+        testMode = self.testMode
+        testSet = self.testSet
 
-    xmlFilesRaw = collections.defaultdict(list)
+        IGNORE = &#34;__ignore__&#34;
 
-    with os.scandir(sourceDir) as dh:
-        for folder in dh:
-            folderName = folder.name
-            if folderName == IGNORE:
-                continue
-            if not folder.is_dir():
-                continue
-            with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
-                for file in fh:
-                    fileName = file.name
-                    if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
-                        continue
-                    if testMode and fileName not in testSet:
-                        continue
-                    xmlFilesRaw[folderName].append(fileName)
+        xmlFilesRaw = collections.defaultdict(list)
 
-    xmlFiles = tuple(
-        (folderName, tuple(sorted(fileNames)))
-        for (folderName, fileNames) in sorted(xmlFilesRaw.items())
-    )
-    return xmlFiles</code></pre>
+        with os.scandir(sourceDir) as dh:
+            for folder in dh:
+                folderName = folder.name
+                if folderName == IGNORE:
+                    continue
+                if not folder.is_dir():
+                    continue
+                with os.scandir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                    for file in fh:
+                        fileName = file.name
+                        if not (
+                            fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
+                        ):
+                            continue
+                        if testMode and fileName not in testSet:
+                            continue
+                        xmlFilesRaw[folderName].append(fileName)
+
+        xmlFiles = tuple(
+            (folderName, tuple(sorted(fileNames)))
+            for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+        )
+        return xmlFiles
+
+    if sectionModel == &#34;II&#34;:
+        xmlFile = None
+        with os.scandir(sourceDir) as fh:
+            for file in fh:
+                fileName = file.name
+                if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                    continue
+                xmlFile = fileName
+                break
+        return xmlFile</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.loadTask"><code class="name flex">
@@ -4974,7 +6006,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1547-L1580" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1935-L1968" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -5038,7 +6070,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1789-L1839" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L2177-L2227" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -5129,7 +6161,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e9b7fa7282b794435fe7de9063e2682a9277b11b/tf/convert/tei.py#L1731-L1787" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L2119-L2175" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, app=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
@@ -5262,6 +6294,11 @@ setTimeout(() => input.focus(), 100);
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.convert.tei.checkSectionModel" href="#tf.convert.tei.checkSectionModel">checkSectionModel</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
