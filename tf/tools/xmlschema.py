@@ -316,7 +316,7 @@ class Analysis:
 
         The absence of the element *kind* and *mixed* status are indicated
         with `None`.
-        If all went well, there are n such absences!
+        If all went well, there are no such absences!
         """
 
         debug = self.debug

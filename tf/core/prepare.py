@@ -270,7 +270,7 @@ def levUp(info, error, otype, oslots, rank):
     info("listing embedders of all nodes")
     embedders = []
     for n in range(1, maxSlot + 1):
-        contentEmbedders = oslotsInv[n]
+        contentEmbedders = oslotsInv.get(n, tuple())
         embedders.append(
             tuple(
                 sorted(
