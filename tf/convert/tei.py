@@ -1372,6 +1372,11 @@ class TEI:
         WHITE_TRIM_RE = re.compile(r"\s+", re.S)
         NON_NAME_RE = re.compile(r"[^a-zA-Z0-9_]+", re.S)
 
+        NOTE_LIKE = set(
+            """
+            note
+            """.strip().split()
+        )
         EMPTY_ELEMENTS = set(
             """
             addSpan
@@ -1425,7 +1430,7 @@ class TEI:
             when
             witEnd
             witStart
-        """.strip().split()
+            """.strip().split()
         )
 
         def makeNameLike(x):
@@ -1719,14 +1724,15 @@ class TEI:
                         cur["chunkONum"] -= 1
                         cn = cur["chunkONum"]
                     cv.feature(cur["chunk"], chunk=cn)
+
                 if tag == sectionCriteria["element"]:
                     atts = {
                         etree.QName(k).localname: v for (k, v) in node.attrib.items()
                     }
                     criticalAtts = sectionCriteria["attributes"]
                     match = True
-                    for (k, v) in atts.items():
-                        if criticalAtts.get(k, None) != v:
+                    for (k, v) in criticalAtts.items():
+                        if atts.get(k, None) != v:
                             match = False
                             break
                     if match:
@@ -1743,8 +1749,9 @@ class TEI:
             if tag == TEI_HEADER:
                 cur["inHeader"] = True
                 cv.feature(cur["chapter"], chapter="TEI header")
-            elif tag == "note":
+            if tag in NOTE_LIKE:
                 cur["inNote"] = True
+                finishWord(cv, cur, None)
 
             if tag not in PASS_THROUGH:
                 curNode = cv.node(tag)
@@ -1841,7 +1848,7 @@ class TEI:
             """
             if tag == TEI_HEADER:
                 cur["inHeader"] = False
-            elif tag == "note":
+            elif tag in NOTE_LIKE:
                 cur["inNote"] = False
 
             if tag not in PASS_THROUGH:
@@ -2162,6 +2169,8 @@ class TEI:
                         (createAbout if name == "about" else createTranscription)()
                     )
             console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
+
+        return True
 
     # START the TEXT-FABRIC BROWSER on this CORPUS
 
