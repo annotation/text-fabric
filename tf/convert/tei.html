@@ -46,6 +46,7 @@ step is triggered. During precomputation some checks are performed. Once this
 has succeeded, we have a workable Text-Fabric dataset.</li>
 <li><code>app</code>: creates or updates a corpus specific TF-app with minimal sensible settings,
 plus basic documentation.</li>
+<li><code>browse</code>: starts the text-fabric browser on the newly created dataset.</li>
 </ol>
 <p>Tasks can be run by passing any choice of task keywords to the
 <code><a title="tf.convert.tei.TEI.task" href="#tf.convert.tei.TEI.task">TEI.task()</a></code> method.</p>
@@ -132,6 +133,7 @@ T = TEI(
     schema=&quot;MD&quot;,
     sourceVersion=&quot;2023-01-31&quot;,
     testSet=TEST_SET,
+    slotLevel=&quot;word&quot;,
     sectionModel=dict(model=&quot;I&quot;),
     generic=GENERIC,
     transform=transform,
@@ -146,7 +148,7 @@ T.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1-L2230" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L1-L2306" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -180,6 +182,7 @@ We have the following conversion tasks:
     has succeeded, we have a workable Text-Fabric dataset.
 4.  `app`: creates or updates a corpus specific TF-app with minimal sensible settings,
     plus basic documentation.
+4.  `browse`: starts the text-fabric browser on the newly created dataset.
 
 Tasks can be run by passing any choice of task keywords to the
 `TEI.task()` method.
@@ -277,6 +280,7 @@ T = TEI(
     schema=&#34;MD&#34;,
     sourceVersion=&#34;2023-01-31&#34;,
     testSet=TEST_SET,
+    slotLevel=&#34;word&#34;,
     sectionModel=dict(model=&#34;I&#34;),
     generic=GENERIC,
     transform=transform,
@@ -296,6 +300,7 @@ import collections
 import re
 from textwrap import dedent
 from io import BytesIO
+from subprocess import run
 
 import yaml
 from lxml import etree
@@ -442,6 +447,25 @@ quite 1-1.
 1.  Slots get the following features:
     *   `ch`: the character of the slot
     *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
+
+## Words as slots
+
+It is also possible to take the word as basic unit instead of the character.
+The decision to do so can be passed as a parameter (`wordAsSlot`).
+Here is what that entails:
+
+1. Instead of inserting empty characters for empty elements, we insert empty words,
+   with ZERO-WIDTH-SPACE (Unicode 200B) as value for feature `str` and `empty=1`.
+2. Nodes that contain only part of the characters of a word, will contain the whole
+   word.
+3. Features that have different values for different characters in the word,
+   will have the most salient value for the whole word.
+   The concept of *salient* is rather coarse:
+
+   *    `None` values are the least salient
+   *    for integer values: bigger values are more salient than smaller values
+   *    for string values: linger strings are more salient than smaller strings,
+        for strings of equal length the lexicographic ordering holds.
 
 ## Text kinds and text formatting
 
@@ -684,6 +708,7 @@ class TEI:
         sourceVersion=&#34;0.1&#34;,
         schema=None,
         testSet=set(),
+        wordAsSlot=True,
         sectionModel=None,
         generic={},
         transform=None,
@@ -832,6 +857,9 @@ class TEI:
             (pass `test` as argument to the `TEI.task()` method),
             only the files in the test set are converted.
 
+        wordAsSlot: boolean, optional False
+            Whether to take words as the basic entities (slots).
+            If not, the characters are taken as basic entities.
         sectionModel: dict, optional {}
             If not passed, or an empty dict, section model I is assumed.
             A section model must be specified with the parameters relevant for the
@@ -904,6 +932,7 @@ class TEI:
         self.tfDir = tfDir
         self.appDir = appDir
         self.docsDir = docsDir
+        self.backend = backend
         self.org = org
         self.repo = repo
 
@@ -916,6 +945,7 @@ class TEI:
         self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
+        self.wordAsSlot = wordAsSlot
         sectionModel = checkSectionModel(sectionModel)
         if not sectionModel:
             quit()
@@ -972,6 +1002,8 @@ class TEI:
                 just loads the generated TF;
             app:
                 just configures the TF-app for the result;
+            browse:
+                just starts the text-fabric browser on the result;
 
         flags:
             test:
@@ -1350,9 +1382,10 @@ class TEI:
         boolean
             Whether the conversion was successful.
         &#34;&#34;&#34;
+        wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
 
-        slotType = &#34;char&#34;
+        slotType = &#34;word&#34; if wordAsSlot else &#34;char&#34;
 
         sectionFeatures = &#34;folder,file,chunk&#34;
         sectionTypes = &#34;folder,file,chunk&#34;
@@ -1360,15 +1393,15 @@ class TEI:
             sectionFeatures = &#34;chapter,chunk&#34;
             sectionTypes = &#34;chapter,chunk&#34;
 
+        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
         otext = {
-            &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+            &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
         featureMeta = dict(
             chunk=dict(description=&#34;number of a chunk within a file&#34;),
-            ch=dict(description=&#34;the unicode character of a slot&#34;),
             str=dict(description=&#34;the text of a word&#34;),
             after=dict(description=&#34;the text after a word till the next word&#34;),
             empty=dict(
@@ -1379,6 +1412,8 @@ class TEI:
             ),
             is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        if not wordAsSlot:
+            featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
         if sectionModel == &#34;II&#34;:
             featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
         else:
@@ -1470,6 +1505,7 @@ class TEI:
         ZWSP = &#34;\u200b&#34;  # zero-width space
 
         sourceDir = self.sourceDir
+        wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
         transform = self.transform
@@ -1488,7 +1524,8 @@ class TEI:
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
-        EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+        EMPTY_ELEMENTS = set(
+            &#34;&#34;&#34;
             addSpan
             alt
             anchor
@@ -1540,7 +1577,8 @@ class TEI:
             when
             witEnd
             witStart
-        &#34;&#34;&#34;.strip().split())
+        &#34;&#34;&#34;.strip().split()
+        )
 
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
@@ -1720,7 +1758,7 @@ class TEI:
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
                 if ch is not None:
-                    curWord = cv.node(&#34;word&#34;)
+                    curWord = cv.slot() if wordAsSlot else cv.node(&#34;word&#34;)
                     cur[&#34;word&#34;] = curWord
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(curWord, is_meta=1)
@@ -1753,7 +1791,8 @@ class TEI:
             curWord = cur[&#34;word&#34;]
             if curWord:
                 cv.feature(curWord, str=cur[&#34;wordStr&#34;])
-                cv.terminate(curWord)
+                if not wordAsSlot:
+                    cv.terminate(curWord)
                 cur[&#34;word&#34;] = None
                 cur[&#34;wordStr&#34;] = &#34;&#34;
                 cur[&#34;prevWord&#34;] = curWord
@@ -1765,7 +1804,9 @@ class TEI:
         def addSlot(cv, cur, ch):
             &#34;&#34;&#34;Add a slot.
 
-            Whenever we encounter a character, we add it as a new slot.
+            Whenever we encounter a character, we add it as a new slot, unless
+            `wordAsSlot` is in force. In that case we suppress the triggering of a
+            slot node.
             If needed, we start/terminate word nodes as well.
 
             Parameters
@@ -1783,15 +1824,19 @@ class TEI:
             else:
                 finishWord(cv, cur, ch)
 
-            s = cv.slot()
-            cv.feature(s, ch=ch)
-            if cur[&#34;inHeader&#34;]:
-                cv.feature(s, is_meta=1)
-            if cur[&#34;inNote&#34;]:
-                cv.feature(s, is_note=1)
-            for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
-                if len(stack) &gt; 0:
-                    cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+            if wordAsSlot:
+                s = cur[&#34;word&#34;]
+            else:
+                s = cv.slot()
+                cv.feature(s, ch=ch)
+            if s is not None:
+                if cur[&#34;inHeader&#34;]:
+                    cv.feature(s, is_meta=1)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(s, is_note=1)
+                for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                    if len(stack) &gt; 0:
+                        cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def beforeChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -1916,7 +1961,10 @@ class TEI:
 
                 if not cv.linked(curNode):
                     s = cv.slot()
-                    cv.feature(s, ch=ZWSP, empty=1)
+                    if wordAsSlot:
+                        cv.feature(s, str=ZWSP, empty=1)
+                    else:
+                        cv.feature(s, ch=ZWSP, empty=1)
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(s, is_meta=1)
                     if cur[&#34;inNote&#34;]:
@@ -2243,8 +2291,9 @@ class TEI:
 
             initTree(targetDir, fresh=False)
 
+            target = itemTarget
+
             if force:
-                target = itemTarget
                 if itemGenExists:
                     fileRemove(itemTargetGen)
             else:
@@ -2266,7 +2315,31 @@ class TEI:
                     )
             console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
 
-    def task(self, check=False, convert=False, load=False, app=False, test=None):
+    # START the TEXT-FABRIC BROWSER on this CORPUS
+
+    def browseTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+        It gives a shell command to start the text-fabric browser on
+        the newly created corpus.
+        There should be a valid TF dataset and app configuraiton in place
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        org = self.org
+        repo = self.repo
+        backend = self.backend
+
+        backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+        run(f&#34;text-fabric {org}/{repo}:clone --checkout=clone {backendOpt}&#34;, shell=True)
+        return True
+
+    def task(
+        self, check=False, convert=False, load=False, app=False, browse=False, test=None
+    ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
@@ -2287,6 +2360,8 @@ class TEI:
             Whether to carry out the &#34;load&#34; task.
         app: boolean, optional False
             Whether to carry out the &#34;app&#34; task.
+        browse: boolean, optional False
+            Whether to carry out the &#34;browse&#34; task&#34;
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
@@ -2322,6 +2397,9 @@ class TEI:
         if good and app:
             good = self.appTask()
 
+        if good and browse:
+            good = self.browseTask()
+
         return good
 
     def run(self, program=None):
@@ -2348,7 +2426,7 @@ class TEI:
             an return a status code: 0 for succes, 1 for failure.
         &#34;&#34;&#34;
         programRep = &#34;TEI-converter&#34; if program is None else program
-        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;}
+        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;browse&#34;}
         possibleFlags = {&#34;test&#34;}
         possibleArgs = possibleTasks | possibleFlags
 
@@ -2395,7 +2473,7 @@ __pdoc__[&#34;TEI&#34;] = DOC_TRANS</code></pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L468-L527" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L490-L549" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -2466,7 +2544,7 @@ __pdoc__[&#34;TEI&#34;] = DOC_TRANS</code></pre>
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>repoDir='.', sourceVersion='0.1', schema=None, testSet=set(), sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False)</span>
+<span>(</span><span>repoDir='.', sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="essentials">Essentials</h2>
@@ -2585,6 +2663,27 @@ as character value.</li>
 <li><code>empty</code>: 1 if the slot has been inserted as an empty slot, no value otherwise.</li>
 </ul>
 </li>
+</ol>
+<h2 id="words-as-slots">Words as slots</h2>
+<p>It is also possible to take the word as basic unit instead of the character.
+The decision to do so can be passed as a parameter (<code>wordAsSlot</code>).
+Here is what that entails:</p>
+<ol>
+<li>Instead of inserting empty characters for empty elements, we insert empty words,
+with ZERO-WIDTH-SPACE (Unicode 200B) as value for feature <code>str</code> and <code>empty=1</code>.</li>
+<li>Nodes that contain only part of the characters of a word, will contain the whole
+word.</li>
+<li>
+<p>Features that have different values for different characters in the word,
+will have the most salient value for the whole word.
+The concept of <em>salient</em> is rather coarse:</p>
+</li>
+<li>
+<p><code>None</code> values are the least salient</p>
+</li>
+<li>for integer values: bigger values are more salient than smaller values</li>
+<li>for string values: linger strings are more salient than smaller strings,
+for strings of equal length the lexicographic ordering holds.</li>
 </ol>
 <h2 id="text-kinds-and-text-formatting">Text kinds and text formatting</h2>
 <p>We record in additional features whether text occurs in metadata elements and
@@ -2789,7 +2888,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L530-L2227" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L552-L2303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -2798,6 +2897,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         sourceVersion=&#34;0.1&#34;,
         schema=None,
         testSet=set(),
+        wordAsSlot=True,
         sectionModel=None,
         generic={},
         transform=None,
@@ -2946,6 +3046,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
             (pass `test` as argument to the `TEI.task()` method),
             only the files in the test set are converted.
 
+        wordAsSlot: boolean, optional False
+            Whether to take words as the basic entities (slots).
+            If not, the characters are taken as basic entities.
         sectionModel: dict, optional {}
             If not passed, or an empty dict, section model I is assumed.
             A section model must be specified with the parameters relevant for the
@@ -3018,6 +3121,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         self.tfDir = tfDir
         self.appDir = appDir
         self.docsDir = docsDir
+        self.backend = backend
         self.org = org
         self.repo = repo
 
@@ -3030,6 +3134,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
+        self.wordAsSlot = wordAsSlot
         sectionModel = checkSectionModel(sectionModel)
         if not sectionModel:
             quit()
@@ -3086,6 +3191,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 just loads the generated TF;
             app:
                 just configures the TF-app for the result;
+            browse:
+                just starts the text-fabric browser on the result;
 
         flags:
             test:
@@ -3464,9 +3571,10 @@ Meaningful whitespace has been condensed to single spaces.</p>
         boolean
             Whether the conversion was successful.
         &#34;&#34;&#34;
+        wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
 
-        slotType = &#34;char&#34;
+        slotType = &#34;word&#34; if wordAsSlot else &#34;char&#34;
 
         sectionFeatures = &#34;folder,file,chunk&#34;
         sectionTypes = &#34;folder,file,chunk&#34;
@@ -3474,15 +3582,15 @@ Meaningful whitespace has been condensed to single spaces.</p>
             sectionFeatures = &#34;chapter,chunk&#34;
             sectionTypes = &#34;chapter,chunk&#34;
 
+        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
         otext = {
-            &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+            &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
         featureMeta = dict(
             chunk=dict(description=&#34;number of a chunk within a file&#34;),
-            ch=dict(description=&#34;the unicode character of a slot&#34;),
             str=dict(description=&#34;the text of a word&#34;),
             after=dict(description=&#34;the text after a word till the next word&#34;),
             empty=dict(
@@ -3493,6 +3601,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
             ),
             is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
         )
+        if not wordAsSlot:
+            featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
         if sectionModel == &#34;II&#34;:
             featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
         else:
@@ -3584,6 +3694,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         ZWSP = &#34;\u200b&#34;  # zero-width space
 
         sourceDir = self.sourceDir
+        wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
         transform = self.transform
@@ -3602,7 +3713,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
         WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
         NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
-        EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+        EMPTY_ELEMENTS = set(
+            &#34;&#34;&#34;
             addSpan
             alt
             anchor
@@ -3654,7 +3766,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
             when
             witEnd
             witStart
-        &#34;&#34;&#34;.strip().split())
+        &#34;&#34;&#34;.strip().split()
+        )
 
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
@@ -3834,7 +3947,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
                 if ch is not None:
-                    curWord = cv.node(&#34;word&#34;)
+                    curWord = cv.slot() if wordAsSlot else cv.node(&#34;word&#34;)
                     cur[&#34;word&#34;] = curWord
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(curWord, is_meta=1)
@@ -3867,7 +3980,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
             curWord = cur[&#34;word&#34;]
             if curWord:
                 cv.feature(curWord, str=cur[&#34;wordStr&#34;])
-                cv.terminate(curWord)
+                if not wordAsSlot:
+                    cv.terminate(curWord)
                 cur[&#34;word&#34;] = None
                 cur[&#34;wordStr&#34;] = &#34;&#34;
                 cur[&#34;prevWord&#34;] = curWord
@@ -3879,7 +3993,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
         def addSlot(cv, cur, ch):
             &#34;&#34;&#34;Add a slot.
 
-            Whenever we encounter a character, we add it as a new slot.
+            Whenever we encounter a character, we add it as a new slot, unless
+            `wordAsSlot` is in force. In that case we suppress the triggering of a
+            slot node.
             If needed, we start/terminate word nodes as well.
 
             Parameters
@@ -3897,15 +4013,19 @@ Meaningful whitespace has been condensed to single spaces.</p>
             else:
                 finishWord(cv, cur, ch)
 
-            s = cv.slot()
-            cv.feature(s, ch=ch)
-            if cur[&#34;inHeader&#34;]:
-                cv.feature(s, is_meta=1)
-            if cur[&#34;inNote&#34;]:
-                cv.feature(s, is_note=1)
-            for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
-                if len(stack) &gt; 0:
-                    cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+            if wordAsSlot:
+                s = cur[&#34;word&#34;]
+            else:
+                s = cv.slot()
+                cv.feature(s, ch=ch)
+            if s is not None:
+                if cur[&#34;inHeader&#34;]:
+                    cv.feature(s, is_meta=1)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(s, is_note=1)
+                for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                    if len(stack) &gt; 0:
+                        cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
         def beforeChildren(cv, cur, node, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -4030,7 +4150,10 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
                 if not cv.linked(curNode):
                     s = cv.slot()
-                    cv.feature(s, ch=ZWSP, empty=1)
+                    if wordAsSlot:
+                        cv.feature(s, str=ZWSP, empty=1)
+                    else:
+                        cv.feature(s, ch=ZWSP, empty=1)
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(s, is_meta=1)
                     if cur[&#34;inNote&#34;]:
@@ -4357,8 +4480,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
 
             initTree(targetDir, fresh=False)
 
+            target = itemTarget
+
             if force:
-                target = itemTarget
                 if itemGenExists:
                     fileRemove(itemTargetGen)
             else:
@@ -4380,7 +4504,31 @@ Meaningful whitespace has been condensed to single spaces.</p>
                     )
             console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
 
-    def task(self, check=False, convert=False, load=False, app=False, test=None):
+    # START the TEXT-FABRIC BROWSER on this CORPUS
+
+    def browseTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+        It gives a shell command to start the text-fabric browser on
+        the newly created corpus.
+        There should be a valid TF dataset and app configuraiton in place
+
+        Returns
+        -------
+        boolean
+            Whether the operation was successful.
+        &#34;&#34;&#34;
+        org = self.org
+        repo = self.repo
+        backend = self.backend
+
+        backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+        run(f&#34;text-fabric {org}/{repo}:clone --checkout=clone {backendOpt}&#34;, shell=True)
+        return True
+
+    def task(
+        self, check=False, convert=False, load=False, app=False, browse=False, test=None
+    ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
@@ -4401,6 +4549,8 @@ Meaningful whitespace has been condensed to single spaces.</p>
             Whether to carry out the &#34;load&#34; task.
         app: boolean, optional False
             Whether to carry out the &#34;app&#34; task.
+        browse: boolean, optional False
+            Whether to carry out the &#34;browse&#34; task&#34;
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
@@ -4436,6 +4586,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
         if good and app:
             good = self.appTask()
 
+        if good and browse:
+            good = self.browseTask()
+
         return good
 
     def run(self, program=None):
@@ -4462,7 +4615,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
             an return a status code: 0 for succes, 1 for failure.
         &#34;&#34;&#34;
         programRep = &#34;TEI-converter&#34; if program is None else program
-        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;}
+        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;browse&#34;}
         possibleFlags = {&#34;test&#34;}
         possibleArgs = possibleTasks | possibleFlags
 
@@ -4506,7 +4659,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L832-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L862-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -4545,7 +4698,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L789-L830" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L817-L860" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -4583,6 +4736,8 @@ def help(program):
             just loads the generated TF;
         app:
             just configures the TF-app for the result;
+        browse:
+            just starts the text-fabric browser on the result;
 
     flags:
         test:
@@ -4610,7 +4765,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1972-L2117" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L2018-L2164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -4736,8 +4891,9 @@ settings in the app derive from it.</p>
 
         initTree(targetDir, fresh=False)
 
+        target = itemTarget
+
         if force:
-            target = itemTarget
             if itemGenExists:
                 fileRemove(itemTargetGen)
         else:
@@ -4760,6 +4916,45 @@ settings in the app derive from it.</p>
         console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.tei.TEI.browseTask"><code class="name flex">
+<span>def <span class="ident">browseTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "browse" task.</p>
+<p>It gives a shell command to start the text-fabric browser on
+the newly created corpus.
+There should be a valid TF dataset and app configuraiton in place</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the operation was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L2168-L2186" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def browseTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
+
+    It gives a shell command to start the text-fabric browser on
+    the newly created corpus.
+    There should be a valid TF dataset and app configuraiton in place
+
+    Returns
+    -------
+    boolean
+        Whether the operation was successful.
+    &#34;&#34;&#34;
+    org = self.org
+    repo = self.repo
+    backend = self.backend
+
+    backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
+    run(f&#34;text-fabric {org}/{repo}:clone --checkout=clone {backendOpt}&#34;, shell=True)
+    return True</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.tei.TEI.checkTask"><code class="name flex">
 <span>def <span class="ident">checkTask</span></span>(<span>self)</span>
 </code></dt>
@@ -4780,7 +4975,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L957-L1176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L987-L1206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -5018,7 +5213,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1193-L1262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L1223-L1295" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -5030,9 +5225,10 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     boolean
         Whether the conversion was successful.
     &#34;&#34;&#34;
+    wordAsSlot = self.wordAsSlot
     sectionModel = self.sectionModel
 
-    slotType = &#34;char&#34;
+    slotType = &#34;word&#34; if wordAsSlot else &#34;char&#34;
 
     sectionFeatures = &#34;folder,file,chunk&#34;
     sectionTypes = &#34;folder,file,chunk&#34;
@@ -5040,15 +5236,15 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         sectionFeatures = &#34;chapter,chunk&#34;
         sectionTypes = &#34;chapter,chunk&#34;
 
+    textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
     otext = {
-        &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+        &#34;fmt:text-orig-full&#34;: textFeatures,
         &#34;sectionFeatures&#34;: sectionFeatures,
         &#34;sectionTypes&#34;: sectionTypes,
     }
     intFeatures = {&#34;empty&#34;, &#34;chunk&#34;}
     featureMeta = dict(
         chunk=dict(description=&#34;number of a chunk within a file&#34;),
-        ch=dict(description=&#34;the unicode character of a slot&#34;),
         str=dict(description=&#34;the text of a word&#34;),
         after=dict(description=&#34;the text after a word till the next word&#34;),
         empty=dict(
@@ -5059,6 +5255,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         ),
         is_note=dict(description=&#34;whether a slot or word is in the note element&#34;),
     )
+    if not wordAsSlot:
+        featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
     if sectionModel == &#34;II&#34;:
         featureMeta[&#34;chapter&#34;] = dict(description=&#34;name of chapter&#34;)
     else:
@@ -5105,7 +5303,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1180-L1191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L1210-L1221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -5144,7 +5342,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1266-L1933" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L1299-L1979" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -5203,6 +5401,7 @@ that has access to this data.</p>
     ZWSP = &#34;\u200b&#34;  # zero-width space
 
     sourceDir = self.sourceDir
+    wordAsSlot = self.wordAsSlot
     featureMeta = self.featureMeta
     intFeatures = self.intFeatures
     transform = self.transform
@@ -5221,7 +5420,8 @@ that has access to this data.</p>
     WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
     NON_NAME_RE = re.compile(r&#34;[^a-zA-Z0-9_]+&#34;, re.S)
 
-    EMPTY_ELEMENTS = set(&#34;&#34;&#34;
+    EMPTY_ELEMENTS = set(
+        &#34;&#34;&#34;
         addSpan
         alt
         anchor
@@ -5273,7 +5473,8 @@ that has access to this data.</p>
         when
         witEnd
         witStart
-    &#34;&#34;&#34;.strip().split())
+    &#34;&#34;&#34;.strip().split()
+    )
 
     def makeNameLike(x):
         return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
@@ -5453,7 +5654,7 @@ that has access to this data.</p>
             if prevWord is not None:
                 cv.feature(prevWord, after=cur[&#34;afterStr&#34;])
             if ch is not None:
-                curWord = cv.node(&#34;word&#34;)
+                curWord = cv.slot() if wordAsSlot else cv.node(&#34;word&#34;)
                 cur[&#34;word&#34;] = curWord
                 if cur[&#34;inHeader&#34;]:
                     cv.feature(curWord, is_meta=1)
@@ -5486,7 +5687,8 @@ that has access to this data.</p>
         curWord = cur[&#34;word&#34;]
         if curWord:
             cv.feature(curWord, str=cur[&#34;wordStr&#34;])
-            cv.terminate(curWord)
+            if not wordAsSlot:
+                cv.terminate(curWord)
             cur[&#34;word&#34;] = None
             cur[&#34;wordStr&#34;] = &#34;&#34;
             cur[&#34;prevWord&#34;] = curWord
@@ -5498,7 +5700,9 @@ that has access to this data.</p>
     def addSlot(cv, cur, ch):
         &#34;&#34;&#34;Add a slot.
 
-        Whenever we encounter a character, we add it as a new slot.
+        Whenever we encounter a character, we add it as a new slot, unless
+        `wordAsSlot` is in force. In that case we suppress the triggering of a
+        slot node.
         If needed, we start/terminate word nodes as well.
 
         Parameters
@@ -5516,15 +5720,19 @@ that has access to this data.</p>
         else:
             finishWord(cv, cur, ch)
 
-        s = cv.slot()
-        cv.feature(s, ch=ch)
-        if cur[&#34;inHeader&#34;]:
-            cv.feature(s, is_meta=1)
-        if cur[&#34;inNote&#34;]:
-            cv.feature(s, is_note=1)
-        for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
-            if len(stack) &gt; 0:
-                cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
+        if wordAsSlot:
+            s = cur[&#34;word&#34;]
+        else:
+            s = cv.slot()
+            cv.feature(s, ch=ch)
+        if s is not None:
+            if cur[&#34;inHeader&#34;]:
+                cv.feature(s, is_meta=1)
+            if cur[&#34;inNote&#34;]:
+                cv.feature(s, is_note=1)
+            for (r, stack) in cur.get(&#34;rend&#34;, {}).items():
+                if len(stack) &gt; 0:
+                    cv.feature(s, **{f&#34;rend_{r}&#34;: 1})
 
     def beforeChildren(cv, cur, node, tag):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
@@ -5649,7 +5857,10 @@ that has access to this data.</p>
 
             if not cv.linked(curNode):
                 s = cv.slot()
-                cv.feature(s, ch=ZWSP, empty=1)
+                if wordAsSlot:
+                    cv.feature(s, str=ZWSP, empty=1)
+                else:
+                    cv.feature(s, ch=ZWSP, empty=1)
                 if cur[&#34;inHeader&#34;]:
                     cv.feature(s, is_meta=1)
                 if cur[&#34;inNote&#34;]:
@@ -5834,7 +6045,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L869-L891" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L899-L921" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self):
     &#34;&#34;&#34;Analyse the schema.
@@ -5876,7 +6087,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L850-L867" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L880-L897" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -5919,7 +6130,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L893-L955" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L923-L985" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -6006,7 +6217,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L1935-L1968" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L1981-L2014" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -6070,7 +6281,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L2177-L2227" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L2253-L2303" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -6096,7 +6307,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
         an return a status code: 0 for succes, 1 for failure.
     &#34;&#34;&#34;
     programRep = &#34;TEI-converter&#34; if program is None else program
-    possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;}
+    possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;browse&#34;}
     possibleFlags = {&#34;test&#34;}
     possibleArgs = possibleTasks | possibleFlags
 
@@ -6126,7 +6337,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, test=None)</span>
+<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, browse=False, test=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
@@ -6145,6 +6356,8 @@ will not be executed.</p>
 <dd>Whether to carry out the "load" task.</dd>
 <dt><strong><code>app</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to carry out the "app" task.</dd>
+<dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the "browse" task"</dd>
 <dt><strong><code>test</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>
 <p>Whether to run in test mode.
@@ -6161,9 +6374,11 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/357ab16785fae9814e5e4aebcff0ed7f22ea3c3a/tf/convert/tei.py#L2119-L2175" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1a26afa93848673a4e7bc2b0977cea1242bb54c7/tf/convert/tei.py#L2188-L2251" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def task(self, check=False, convert=False, load=False, app=False, test=None):
+<pre><code class="python">def task(
+    self, check=False, convert=False, load=False, app=False, browse=False, test=None
+):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
     This is a higher level function that can execute a selection of tasks.
@@ -6184,6 +6399,8 @@ In test mode only the files in the test set are converted.</p>
         Whether to carry out the &#34;load&#34; task.
     app: boolean, optional False
         Whether to carry out the &#34;app&#34; task.
+    browse: boolean, optional False
+        Whether to carry out the &#34;browse&#34; task&#34;
     test: boolean, optional None
         Whether to run in test mode.
         In test mode only the files in the test set are converted.
@@ -6218,6 +6435,9 @@ In test mode only the files in the test set are converted.</p>
 
     if good and app:
         good = self.appTask()
+
+    if good and browse:
+        good = self.browseTask()
 
     return good</code></pre>
 </details>
@@ -6307,6 +6527,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.convert.tei.TEI" href="#tf.convert.tei.TEI">TEI</a></code></h4>
 <ul class="two-column">
 <li><code><a title="tf.convert.tei.TEI.appTask" href="#tf.convert.tei.TEI.appTask">appTask</a></code></li>
+<li><code><a title="tf.convert.tei.TEI.browseTask" href="#tf.convert.tei.TEI.browseTask">browseTask</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.checkTask" href="#tf.convert.tei.TEI.checkTask">checkTask</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.convertTask" href="#tf.convert.tei.TEI.convertTask">convertTask</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.getConverter" href="#tf.convert.tei.TEI.getConverter">getConverter</a></code></li>
