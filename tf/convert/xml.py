@@ -368,7 +368,7 @@ class XML:
         """
         (backend, org, repo) = getLocation(repoDir)
         if any(s is None for s in (backend, org, repo)):
-            console("Not working in a repo: {backend=} {org=} {repo=}")
+            console("Not working in a repo: backend={backend} org={org} repo={repo}")
             quit()
 
         console(f"Working in repository {org}/{repo} in backend {backend}")

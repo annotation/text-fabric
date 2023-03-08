@@ -143,7 +143,6 @@ class Data:
                             good = self._readDataBin(_withGc=_withGc)
                             if not good:
                                 actionRep = "C" if self.method else "T"
-                                print(f"{self.method=}")
                                 good = (
                                     self._compute(metaOnly=metaOnly)
                                     if self.method

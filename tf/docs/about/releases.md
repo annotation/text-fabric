@@ -12,12 +12,22 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.2
 
-### 11.2.3 (upcoming)
+### 11.2.3
 
-Fix in `tf.display.export`: if a value starts with a quote, it will be preceded by a backslash,
+2023-03-08
+
+Improvements in the TEI to TF conversion:
+
+*   you can opt for the word as slot type instead of the character;
+    this gives a bit of a lower resolution, but data processing is much quicker;
+*   you can choose between two sectioning models
+    1.  folders, files, top-level elements as chunks
+    1.  top-level elements as chapters, elements below it as chunks.
+
+Fix in `tf.advanced.display.export`: if a value starts with a quote, it will be preceded by a backslash,
 otherwise it disturbs Excel and Numbers when they read it in a tab-separated file.
 
-2023-??-??
+Other small fixes.
 
 ### 11.2.2
 
@@ -44,7 +54,7 @@ the imports of other `xsd` files were not heeded. Now they are.
 But not recursively, because in the examples I saw, files imported
 each other mutually or with cycles.
 
-Various enhancements to the `tf.convert.TEI` conversion:
+Various enhancements to the `tf.convert.tei` conversion:
 
 *   a fix in whitespace handling (the whitespace removal was a bit too aggressive),
     the root cause of this was the afore-mentioned bug in `tf.tools.xmlschema`;

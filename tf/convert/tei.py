@@ -128,7 +128,7 @@ T = TEI(
     schema="MD",
     sourceVersion="2023-01-31",
     testSet=TEST_SET,
-    slotLevel="word",
+    wordAsSlot=True,
     sectionModel=dict(model="I"),
     generic=GENERIC,
     transform=transform,
@@ -176,7 +176,7 @@ DOC_TRANS = """
 
 *   Text-Fabric non-slot nodes correspond to TEI elements in the source.
 *   Text-Fabric node-features correspond to TEI attributes.
-*   Text-Fabric slot nodes correspond to characters in TEI element content.
+*   Text-Fabric slot nodes correspond to characters or words in TEI element content.
 
 In order to understand the encoding, you need to know
 
@@ -230,11 +230,14 @@ There are two section levels: "chapter"like - "p"like.
 
 1.  The name of the source file is not recorded.
 1.  The first section level, named `chapter` will be made as follows:
-    For the `<teiHeader>` and for each immediate child
-    element of `<body>`, a chapter node will be created, wit a feature `chapter`
-    containing the content of the first element with certain properties that
-    follows the section-1-level element.
-1.  The properties of the heading bearing element is given by its element
+    *   `<teiHeader>` is a chapter;
+    *   immediate children of `<text>` are chapters,
+        except the *text structure* elements
+        `<front>`, `<body>`, `<back>` and `<group>`;
+    *   immediate children of the text structure elements are chapters;
+1.  The heading of a chapter is either the text in a heading-bearing element,
+    or, if no such element is found, a sequence number and the tag name;
+1.  The heading bearing element is searched by its element
     name and a dictionary of attribute values.
     For example:
 
@@ -243,8 +246,11 @@ There are two section levels: "chapter"like - "p"like.
     attributes = dict(rend="h3")
     ```
 
-    Heading bearing elements also occur in the text, and are treated in the same
-    way as all other element. The only special thing is that their plain text
+    Any element that follows the chapter element and satisfies these criteria,
+    defines the heading.
+
+1.  Heading bearing elements also occur in the text, and are treated in the same
+    way as all other elements. The only special thing is that their plain text
     content is used as the value of a feature.
 1.  The second section level, named `chunk` consists of the top-level elements within
     the chapters, except certain empty elements, such as breaks.
@@ -281,6 +287,11 @@ and hyphens.
 
 ## Slots
 
+Whether characters of words are taken as the basic unit (*slot*) is decided
+by the parameter `wordAsSlot`, passed to the conversion.
+
+### Characters as slots
+
 The basic unit is the unicode character.
 For each character in the input we make a slot, but the correspondence is not
 quite 1-1.
@@ -289,21 +300,24 @@ quite 1-1.
     mixed content; other whitespace is reduced to a single space.
 1.  All slots inside the teiHeader will get the feature `is_meta` set to 1;
     for slots inside the body, `is_meta` has no value.
-1.  Empty elements will receive one extra slot; this will anchor the element to
+1.  Necessarily empty elements will cause a feature `empty_`*tag*`=1` on the
+    last slot; *tag* is the name of the empty element. All attributes of such
+    an element go into features `empty_`*tag*`_`*att*`=`*value* on the same slot.
+1.  Empty elements that are not necessarily empty will receive one extra slot;
+    this will anchor the element to
     a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
     as character value.
 1.  Slots get the following features:
     *   `ch`: the character of the slot
     *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
 
-## Words as slots
+### Words as slots
 
-It is also possible to take the word as basic unit instead of the character.
-The decision to do so can be passed as a parameter (`wordAsSlot`).
-Here is what that entails:
+The basic unit is the word, as detected by the rules above.
 
-1. Instead of inserting empty characters for empty elements, we insert empty words,
-   with ZERO-WIDTH-SPACE (Unicode 200B) as value for feature `str` and `empty=1`.
+1. Instead of inserting empty characters for accidentally empty elements,
+   we insert empty words, with ZERO-WIDTH-SPACE (Unicode 200B) as value for
+   feature `str` and `empty=1`.
 2. Nodes that contain only part of the characters of a word, will contain the whole
    word.
 3. Features that have different values for different characters in the word,
@@ -413,7 +427,7 @@ with element/attribute names of the TEI.
 
 *The type of subfolders of TEI documents.*
 
-**Section level 1.**
+**Section level 1, in model I**
 
 **Features**
 
@@ -425,7 +439,7 @@ feature | description
 
 *The type of individual TEI documents.*
 
-**Section level 2.**
+**Section level 2, in model I**
 
 **Features**
 
@@ -433,11 +447,24 @@ feature | description
 --- | ---
 `file` | name of the file, without the `.xml` extension. Other extensions are included.
 
+### node type `chapter`
+
+*The type of chapters in a TEI document.*
+
+**Section level 1, in model II**
+
+**Features**
+
+feature | description
+--- | ---
+`chapter` | heading of the chapter
+
 ### node type `chunk`
 
-*Top-level division of material inside a document.*
+*Top-level division of material inside a document in model I,
+paragraph-like division in model II.*
 
-**Section level 3.**
+**Section level 3, in model I and level 2 in model II**
 
 **Features**
 
@@ -1319,14 +1346,17 @@ class TEI:
             The local director function that has been constructed.
         """
         TEI_HEADER = "teiHeader"
-        BODY = "body"
 
-        CHUNK_PARENTS = set(
+        TEXT_ANCESTOR = "text"
+        TEXT_ANCESTORS = set(
             """
-            teiHeader
+            front
             body
+            back
+            group
             """.strip().split()
         )
+        CHUNK_PARENTS = TEXT_ANCESTORS | {TEI_HEADER}
 
         CHUNK_ELEMS = set(
             """
@@ -1432,6 +1462,12 @@ class TEI:
             witStart
             """.strip().split()
         )
+        NEWLINE_ELEMENTS = set(
+            """
+            lb
+            pb
+            """.strip().split()
+        )
 
         def makeNameLike(x):
             return NON_NAME_RE.sub("_", x).strip("_")
@@ -1476,8 +1512,11 @@ class TEI:
 
             Chapters come in two kinds:
 
-            *   the TEI header
-            *   the immediate children of the `<body>` elements.
+            *   the TEI header;
+            *   the immediate children of `<text>`
+                except `<front>`, `<body>`, `<back>`, `<group>`;
+            *   the immediate children of
+                `<front>`, `<body>`, `<back>`, `<group>`.
 
             Parameters
             ----------
@@ -1499,7 +1538,15 @@ class TEI:
                     return False
 
                 return nNest > 0 and (
-                    nest[-1] == TEI_HEADER or (nNest > 1 and nest[-2] == BODY)
+                    nest[-1] == TEI_HEADER
+                    or (
+                        nNest > 1
+                        and (
+                            nest[-2] in TEXT_ANCESTORS
+                            or nest[-2] == TEXT_ANCESTOR
+                            and nest[-1] not in TEXT_ANCESTORS
+                        )
+                    )
                 )
 
             return False
@@ -1537,16 +1584,34 @@ class TEI:
             nest = cur["nest"]
             nNest = len(nest)
 
-            if nNest > 0 and nest[-1] in EMPTY_ELEMENTS:
-                return False
+            # if nNest > 0 and nest[-1] in EMPTY_ELEMENTS:
+            #     return False
 
             if sectionModel == "II":
                 return nNest > 1 and (
-                    nest[-2] == TEI_HEADER or (nNest > 2 and nest[-3] == BODY)
+                    nest[-2] == TEI_HEADER
+                    or (
+                        nNest > 2
+                        and (
+                            nest[-3] in TEXT_ANCESTORS
+                            and nest[-1] not in EMPTY_ELEMENTS
+                            or nest[-3] == TEXT_ANCESTOR
+                            and nest[-2] not in TEXT_ANCESTORS
+                        )
+                    )
                 )
 
             return nNest > 0 and (
-                nest[-1] in CHUNK_ELEMS or (nNest > 1 and nest[-2] in CHUNK_PARENTS)
+                nest[-1] in CHUNK_ELEMS
+                or (
+                    nNest > 1
+                    and (
+                        nest[-2] in CHUNK_PARENTS
+                        and nest[-1] not in EMPTY_ELEMENTS
+                        or nest[-2] == TEXT_ANCESTOR
+                        and nest[-1] not in TEXT_ANCESTORS
+                    )
+                )
             )
 
         def isPure(cur):
@@ -1611,7 +1676,10 @@ class TEI:
                 if prevWord is not None:
                     cv.feature(prevWord, after=cur["afterStr"])
                 if ch is not None:
-                    curWord = cv.slot() if wordAsSlot else cv.node("word")
+                    if wordAsSlot:
+                        curWord = cv.slot()
+                    else:
+                        curWord = cv.node("word")
                     cur["word"] = curWord
                     if cur["inHeader"]:
                         cv.feature(curWord, is_meta=1)
@@ -1624,7 +1692,7 @@ class TEI:
             if ch is not None:
                 cur["wordStr"] += ch
 
-        def finishWord(cv, cur, ch):
+        def finishWord(cv, cur, ch, withNewline):
             """Terminate a word node if necessary.
 
             Whenever we encounter a character, we determine
@@ -1640,6 +1708,8 @@ class TEI:
                 and relevant for some next steps in the walk.
             ch: string
                 A single character, the next slot in the result data.
+            withNewline:
+                Whether to add a newline after the word.
             """
             curWord = cur["word"]
             if curWord:
@@ -1653,6 +1723,8 @@ class TEI:
 
             if ch is not None:
                 cur["afterStr"] += ch
+            if withNewline:
+                cur["afterStr"] += "\n"
 
         def addSlot(cv, cur, ch):
             """Add a slot.
@@ -1675,12 +1747,13 @@ class TEI:
             if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
-                finishWord(cv, cur, ch)
+                finishWord(cv, cur, ch, False)
 
             if wordAsSlot:
                 s = cur["word"]
             else:
                 s = cv.slot()
+                cur["slot"] = s
                 cv.feature(s, ch=ch)
             if s is not None:
                 if cur["inHeader"]:
@@ -1708,15 +1781,23 @@ class TEI:
             """
             sectionModel = self.sectionModel
             sectionCriteria = self.sectionCriteria
-            atts = None
+
+            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
 
             if sectionModel == "II":
                 if isChapter(cur):
+                    cur["chapterNum"] += 1
                     cur["chapter"] = cv.node("chapter")
+                    cv.feature(cur["chapter"], chapter=f"{cur['chapterNum']} {tag}")
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
-                elif isChunk(cur):
                     cur["chunk"] = cv.node("chunk")
+                    cur["infirstChunk"] = True
+                elif isChunk(cur):
+                    if cur["infirstChunk"]:
+                        cur["infirstChunk"] = False
+                    else:
+                        cur["chunk"] = cv.node("chunk")
                     if tag == "p":
                         cur["chunkPNum"] += 1
                         cn = cur["chunkPNum"]
@@ -1726,9 +1807,6 @@ class TEI:
                     cv.feature(cur["chunk"], chunk=cn)
 
                 if tag == sectionCriteria["element"]:
-                    atts = {
-                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
-                    }
                     criticalAtts = sectionCriteria["attributes"]
                     match = True
                     for (k, v) in criticalAtts.items():
@@ -1740,6 +1818,10 @@ class TEI:
                             node, encoding="unicode", method="text", with_tail=False
                         ).replace("\n", " ")
                         cv.feature(cur["chapter"], chapter=heading)
+                        chapterNum = cur["chapterNum"]
+                        console(
+                            f"\rchapter {chapterNum:>4} {heading:<50}", newline=False
+                        )
             else:
                 if isChunk(cur):
                     cur["chunkNum"] += 1
@@ -1748,25 +1830,41 @@ class TEI:
 
             if tag == TEI_HEADER:
                 cur["inHeader"] = True
-                cv.feature(cur["chapter"], chapter="TEI header")
+                if sectionModel == "II":
+                    cv.feature(cur["chapter"], chapter="TEI header")
             if tag in NOTE_LIKE:
                 cur["inNote"] = True
-                finishWord(cv, cur, None)
+                finishWord(cv, cur, None, False)
 
             if tag not in PASS_THROUGH:
-                curNode = cv.node(tag)
-                cur["elems"].append(curNode)
-                if atts is None:
-                    atts = {
-                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
-                    }
-                if len(atts):
-                    cv.feature(curNode, **atts)
-                    if "rend" in atts:
-                        rValue = atts["rend"]
-                        r = makeNameLike(rValue)
-                        if r:
-                            cur.setdefault("rend", {}).setdefault(r, []).append(True)
+                mustEmpty = tag in EMPTY_ELEMENTS
+                if mustEmpty:
+                    curNode = cur["word"] if wordAsSlot else cur["slot"]
+                    if curNode is None:
+                        curNode = cv.slot()
+                        if wordAsSlot:
+                            cur["word"] = curNode
+                        else:
+                            cur["slot"] = curNode
+                    emptyAtts = {f"empty_{tag}_{k}": v for (k, v) in atts.items()}
+                    emptyAtts[f"empty_{tag}"] = 1
+                    mustNewLine = tag in NEWLINE_ELEMENTS
+                    if mustNewLine:
+                        cv.feature(curNode, after="\n")
+                    if len(emptyAtts):
+                        cv.feature(curNode, **emptyAtts)
+                else:
+                    curNode = cv.node(tag)
+                    cur["elems"].append(curNode)
+                    if len(atts):
+                        cv.feature(curNode, **atts)
+                        if "rend" in atts:
+                            rValue = atts["rend"]
+                            r = makeNameLike(rValue)
+                            if r:
+                                cur.setdefault("rend", {}).setdefault(r, []).append(
+                                    True
+                                )
 
             if node.text:
                 textMaterial = WHITE_TRIM_RE.sub(" ", node.text)
@@ -1799,33 +1897,44 @@ class TEI:
                 The tag of the lxml node.
             """
             sectionModel = self.sectionModel
-            if sectionModel == "II":
-                if isChapter(cur):
-                    cv.terminate(cur["chapter"])
-                elif isChunk(cur):
-                    cv.terminate(cur["chunk"])
-            else:
-                if isChunk(cur):
-                    cv.terminate(cur["chunk"])
+            isChap = isChapter(cur)
+            isChnk = isChunk(cur)
 
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
-                    finishWord(cv, cur, None)
+                    finishWord(cv, cur, None, False)
 
-                curNode = cur["elems"].pop()
+                mustEmpty = tag in EMPTY_ELEMENTS
+                if not mustEmpty:
+                    curNode = cur["elems"].pop()
 
-                if not cv.linked(curNode):
-                    s = cv.slot()
-                    if wordAsSlot:
-                        cv.feature(s, str=ZWSP, empty=1)
-                    else:
-                        cv.feature(s, ch=ZWSP, empty=1)
-                    if cur["inHeader"]:
-                        cv.feature(s, is_meta=1)
-                    if cur["inNote"]:
-                        cv.feature(s, is_note=1)
+                if not mustEmpty or isChnk:
+                    if not cv.linked(curNode):
+                        s = cv.slot()
+                        cur["slot"] = s
+                        if wordAsSlot:
+                            cv.feature(s, str=ZWSP, empty=1)
+                        else:
+                            cv.feature(s, ch=ZWSP, empty=1)
+                        if cur["inHeader"]:
+                            cv.feature(s, is_meta=1)
+                        if cur["inNote"]:
+                            cv.feature(s, is_note=1)
 
-                cv.terminate(curNode)
+                if not mustEmpty:
+                    cv.terminate(curNode)
+
+            if sectionModel == "II":
+                if isChap:
+                    cv.terminate(cur["chapter"])
+                    finishWord(cv, cur, None, True)
+                elif isChnk:
+                    cv.terminate(cur["chunk"])
+                    finishWord(cv, cur, None, True)
+            else:
+                if isChnk:
+                    cv.terminate(cur["chunk"])
+                    finishWord(cv, cur, None, True)
 
         def afterTag(cv, cur, node, tag):
             """Node actions after dealing with the children and after the end tag.
@@ -1852,12 +1961,16 @@ class TEI:
                 cur["inNote"] = False
 
             if tag not in PASS_THROUGH:
-                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
-                if "rend" in atts:
-                    rValue = atts["rend"]
-                    r = makeNameLike(rValue)
-                    if r:
-                        cur["rend"][r].pop()
+                mustEmpty = tag in EMPTY_ELEMENTS
+                if not mustEmpty:
+                    atts = {
+                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
+                    }
+                    if "rend" in atts:
+                        rValue = atts["rend"]
+                        r = makeNameLike(rValue)
+                        if r:
+                            cur["rend"][r].pop()
 
             if node.tail:
                 tailMaterial = WHITE_TRIM_RE.sub(" ", node.tail)
@@ -1933,8 +2046,6 @@ class TEI:
 
                     cv.terminate(cur["folder"])
 
-                console("")
-
             elif sectionModel == "II":
                 xmlFile = self.getXML()
                 if xmlFile is None:
@@ -1950,6 +2061,7 @@ class TEI:
                     cur["inNote"] = False
                     cur["nest"] = []
                     cur["elems"] = []
+                    cur["chapterNum"] = 0
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
                     cur["word"] = None
@@ -1960,6 +2072,8 @@ class TEI:
                         walkNode(cv, cur, child)
 
                 addSlot(cv, cur, None)
+
+            console("")
 
             for fName in featureMeta:
                 if not cv.occurs(fName):
@@ -1974,6 +2088,22 @@ class TEI:
                             valueType="int",
                         )
                         intFeatures.add(fName)
+                    elif fName.startswith("empty_"):
+                        parts = fName.split("_", 2)
+                        tag = parts[1]
+                        if len(parts) == 2:
+                            description = f"empty TEI element {tag} follows"
+                            intFeatures.add(fName)
+                            valueType = "int"
+                        else:
+                            att = parts[2]
+                            description = f"TEI attribute {att} of empty element {tag}"
+                            valueType = "str"
+                        cv.meta(
+                            fName,
+                            description=description,
+                            valueType=valueType,
+                        )
                     else:
                         cv.meta(
                             fName,
@@ -2065,6 +2195,18 @@ class TEI:
 
             with open(itemTarget, "w") as fh:
                 fh.write(text)
+
+        def createApp(itemSource, itemTarget):
+            wordAsSlot = self.wordAsSlot
+            textFeature = "str" if wordAsSlot else "ch"
+
+            with open(itemSource) as fh:
+                code = fh.read()
+
+            code = code.replace("tèxtFeature", textFeature)
+
+            with open(itemTarget, "w") as fh:
+                fh.write(code)
 
         def createAbout():
             org = self.org
@@ -2161,7 +2303,13 @@ class TEI:
             if hasTemplate:
                 sourceDir = f"{myDir}/{parent}"
                 itemSource = f"{sourceDir}/{file}"
-                (createConfig if name == "config" else fileCopy)(itemSource, target)
+                (
+                    createConfig
+                    if name == "config"
+                    else createApp
+                    if name == "app"
+                    else fileCopy
+                )(itemSource, target)
 
             else:
                 with open(target, "w") as fh:
@@ -2189,9 +2337,20 @@ class TEI:
         org = self.org
         repo = self.repo
         backend = self.backend
+        tfVersion = self.tfVersion
 
         backendOpt = "" if backend == "github" else f"--backend={backend}"
-        run(f"text-fabric {org}/{repo}:clone --checkout=clone {backendOpt}", shell=True)
+        versionOpt = f"--version={tfVersion}"
+        try:
+            run(
+                (
+                    f"text-fabric {org}/{repo}:clone --checkout=clone "
+                    f"{versionOpt} {backendOpt}"
+                ),
+                shell=True,
+            )
+        except KeyboardInterrupt:
+            pass
         return True
 
     def task(
