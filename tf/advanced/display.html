@@ -1,0 +1,2466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.advanced.display API documentation</title>
+<meta name="description" content="Display …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.display</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="display">Display</h1>
+<p>Where the advanced API really shines is in displaying nodes.
+There are basically two ways of displaying a node:</p>
+<ul>
+<li><em>plain</em>: just the associated text of a node, or if that would be too much,
+an identifying label of that node (e.g. for books, chapters and lexemes).</li>
+<li><em>pretty</em>: a display of the internal structure of the textual object a node
+stands for. That structure is adorned with relevant feature values.</li>
+</ul>
+<p>These display methods are available for nodes, tuples of nodes, and iterables
+of tuples of nodes (think: query results).
+The names of these methods are</p>
+<ul>
+<li><code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a></code>, <code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple()</a></code>, and <code><a title="tf.advanced.display.table" href="#tf.advanced.display.table">table()</a></code>;</li>
+<li><code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code>, <code><a title="tf.advanced.display.prettyTuple" href="#tf.advanced.display.prettyTuple">prettyTuple()</a></code> and <code><a title="tf.advanced.display.show" href="#tf.advanced.display.show">show()</a></code>.</li>
+</ul>
+<p>In plain and pretty displays, certain parts can be <em>highlighted</em>, which is
+good for displaying query results where the parts that correspond directly to the
+search template are highlighted.</p>
+<h2 id="display-parameters">Display parameters</h2>
+<p>There is a bunch of parameters that govern how the display functions arrive at their
+results. You can pass them as optional arguments to these functions,
+or you can set up them in advance, and reset them to their original state
+when you are done.</p>
+<p>All calls to the display functions look for the values for these parameters in the
+following order:</p>
+<ul>
+<li>optional parameters passed directly to the function,</li>
+<li>values as set up by previous calls to <code><a title="tf.advanced.display.displaySetup" href="#tf.advanced.display.displaySetup">displaySetup()</a></code>,</li>
+<li>corpus dependent default values configured by the advanced API.</li>
+</ul>
+<p>See <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code> for a list of display parameters.</p>
+<h2 id="rendering">Rendering</h2>
+<p>Both <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code> and <code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a></code> are implemented as a call to the
+<code><a title="tf.advanced.render.render" href="render.html#tf.advanced.render.render">render()</a></code> function.</p>
+<h2 id="see-also">See also</h2>
+<p>All about the nature and implementation of the display algorithm is in
+<code><a title="tf.about.displaydesign" href="../about/displaydesign.html">tf.about.displaydesign</a></code>.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L1-L946" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Display
+
+Where the advanced API really shines is in displaying nodes.
+There are basically two ways of displaying a node:
+
+* *plain*: just the associated text of a node, or if that would be too much,
+  an identifying label of that node (e.g. for books, chapters and lexemes).
+* *pretty*: a display of the internal structure of the textual object a node
+  stands for. That structure is adorned with relevant feature values.
+
+These display methods are available for nodes, tuples of nodes, and iterables
+of tuples of nodes (think: query results).
+The names of these methods are
+
+* `plain`, `plainTuple`, and `table`;
+* `pretty`, `prettyTuple` and `show`.
+
+In plain and pretty displays, certain parts can be *highlighted*, which is
+good for displaying query results where the parts that correspond directly to the
+search template are highlighted.
+
+## Display parameters
+
+There is a bunch of parameters that govern how the display functions arrive at their
+results. You can pass them as optional arguments to these functions,
+or you can set up them in advance, and reset them to their original state
+when you are done.
+
+All calls to the display functions look for the values for these parameters in the
+following order:
+
+* optional parameters passed directly to the function,
+* values as set up by previous calls to `displaySetup()`,
+* corpus dependent default values configured by the advanced API.
+
+See `tf.advanced.options` for a list of display parameters.
+
+## Rendering
+
+Both `pretty` and `plain` are implemented as a call to the
+`tf.advanced.render.render` function.
+
+## See also
+
+All about the nature and implementation of the display algorithm is in
+`tf.about.displaydesign`.
+&#34;&#34;&#34;
+
+
+import os
+import types
+from textwrap import dedent
+
+from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
+from ..core.helpers import mdEsc, normpath, abspath, expanduser
+from ..core.timestamp import SILENT_D, silentConvert
+from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
+from .condense import condense, condenseSet
+from .highlight import getTupleHighlights
+from .options import Options
+from .render import render
+from .unravel import unravel
+
+LIMIT_SHOW = 100
+LIMIT_TABLE = 2000
+
+
+def displayApi(app, silent=SILENT_D):
+    &#34;&#34;&#34;Produce the display API.
+
+    The display API provides methods to generate styled representations
+    of pieces of corpus texts in their relevant structures.
+    The main end-user functions are `plain(node)` and `pretty(node)`.
+
+    `plain()` focuses on the plain text, `pretty()` focuses on structure
+    and feature display.
+
+    Related are `plainTuple()` and `prettyTuple()` that work for tuples
+    instead of nodes.
+
+    And further there are `show()` and `table()`, that work
+    with iterables of tuples of nodes (e.g. query results).
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    silent: string, optional tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally this parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    app.export = types.MethodType(export, app)
+    app.table = types.MethodType(table, app)
+    app.plainTuple = types.MethodType(plainTuple, app)
+    app.plain = types.MethodType(plain, app)
+    app.show = types.MethodType(show, app)
+    app.prettyTuple = types.MethodType(prettyTuple, app)
+    app.pretty = types.MethodType(pretty, app)
+    app.unravel = types.MethodType(unravel, app)
+    app.loadCss = types.MethodType(loadCss, app)
+    app.getCss = types.MethodType(getCss, app)
+    app.displayShow = types.MethodType(displayShow, app)
+    app.displaySetup = types.MethodType(displaySetup, app)
+    app.displayReset = types.MethodType(displayReset, app)
+
+    app.display = Options(app)
+    if not app._browse:
+        app.loadCss()
+
+
+def displayShow(app, *options):
+    &#34;&#34;&#34;Show display parameters.
+
+    Shows current values of all or selected display parameters.
+
+    Parameters
+    ----------
+    options: keys
+        Options of which the current value will be shown.
+        If no option is passes, all options will be shown.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    &#34;&#34;&#34;
+
+    inNb = app.inNb
+    display = app.display
+    display.setup()
+    data = display.current
+    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, inNb, *options)
+
+
+def displaySetup(app, **options):
+    &#34;&#34;&#34;Set up all display parameters.
+
+    Shows current values of display parameters and/or
+    assigns working values to display parameters.
+    All subsequent calls to display functions such as `plain` and `pretty`
+    will use these values, unless they themselves are passed overriding
+    values as arguments.
+
+    These working values remain in effect until a new call to `displaySetup()`
+    assigns new values, or a call to `displayReset()` resets the values to the
+    defaults.
+
+    !!! hint &#34;show current values&#34;
+        The defaults themselves come from the corpus settings, which are influenced
+        by its `config.yaml` file, if it exists. See `tf.advanced.settings`.
+        You can show the current values by means of `displayShow`.
+
+    Parameters
+    ----------
+    show: keys
+        Options of which the current value will be shown.
+    options: key-values
+        Explicit values for selected options that act as overrides of the defaults.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    tf.advanced.options: all available display options
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    display.setup(**options)
+
+
+def displayReset(app, *options):
+    &#34;&#34;&#34;Restore display parameters to their defaults.
+
+    Reset the given display parameters to their default value and let the others
+    retain their current value.
+
+    So you can reset the display parameters selectively.
+
+    Parameters
+    ----------
+    options: list, optional []
+        If present, only restore these options to their defaults.
+        Otherwise, restore all display settings.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    display.reset(*options)
+
+
+def loadCss(app):
+    &#34;&#34;&#34;Load the CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+    aContext = app.context
+    appCss = aContext.css
+
+    if _browse:
+        return appCss
+
+    if not app.inNb:
+        return
+
+    css = getCss(app)
+    dh(css)
+    dh(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;script&gt;
+            globalThis.copyChar = (el, c) =&gt; {
+                for (const el of document.getElementsByClassName(&#39;ccon&#39;)) {
+                    el.className = &#39;ccoff&#39;
+                }
+                el.className = &#39;ccon&#39;
+                navigator.clipboard.writeText(String.fromCharCode(c))
+            }
+            &lt;/script&gt;
+            &#34;&#34;&#34;
+        )
+    )
+
+
+def getCss(app):
+    &#34;&#34;&#34;Export the CSS for this app.
+
+    We collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `&lt;style&gt;` element.
+    &#34;&#34;&#34;
+
+    aContext = app.context
+    appCss = aContext.css
+
+    cssPath = (
+        f&#34;{os.path.dirname(os.path.dirname(abspath(__file__)))}&#34;
+        f&#34;{SERVER_DISPLAY_BASE}&#34;
+    )
+    cssPath = normpath(cssPath)
+    genericCss = &#34;&#34;
+    for cssFile in SERVER_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            genericCss += fh.read()
+
+    tableCss = (
+        &#34;tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n&#34;
+        &#34;tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n&#34;
+    )
+    return f&#34;&lt;style&gt;{tableCss}{genericCss}{appCss}&lt;/style&gt;&#34;
+
+
+def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
+    &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
+
+    !!! hint &#34;Examples&#34;
+        See for detailed examples the
+        [exportExcel (etcbc/bhsa)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        and
+        [exportExcel (Nino-cunei/oldbabylonian)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
+        notebooks.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+        The table maybe uniform or not uniform,
+        which matters to the output. See below.
+    toDir: string, optional None
+        The destination directory for the exported file.
+        By default it is your Downloads folder.
+
+        If the directory does not exist, it will be created.
+    toFile: boolean, optional results.tsv
+        The name of the exported file.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+        !!! note &#34;details&#34;
+            * `condensed`
+              Has no effect. Exports to Excel will not be condensed, because the
+              number of columns is variable per row in that case.
+              Excel itself has nice possibilities for grouping rows.
+              You can also filter your tuples by means of hand-coding
+              before exporting them.
+            * `condenseType`
+              The condense type influences for which nodes
+              the full text will be exported.
+              Only nodes that are &#34;smaller&#34; than the condense type will have
+              their full text exported.
+            * `fmt`
+              This display parameter specifies the text format for any nodes
+              that trigger a text value to be exported.
+            * `tupleFeatures`
+              This is a display parameter that steers which features are exported
+              with each member of the tuples in the list.
+
+              If the iterable of tuples are the results of a query you have just
+              run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+              has already been issued, so you can just say:
+
+                 results = A.search(query)`
+                 A.export(results)`
+
+    Results
+    -------
+    A file *toFile* in directory *toDir* with the following content:
+
+    There will be a row for each tuple.
+
+    If the input tuples are *uniform*, i.e. each tuple has the
+    same number of nodes, and nodes in the same column have the same node types,
+    then the result table has the following layout:
+
+    The columns are:
+
+    * **R** the sequence number of the result tuple in the result list
+    * **S1 S2 S3** the section as book, chapter, verse, in separate columns;
+      the section is the section of the first non book/chapter node in the tuple
+    * **NODEi TYPEi** the node and its type,
+      for each node **i** in the result tuple
+    * **TEXTi** the full text of node **i**,
+      if the node type admits a concise text representation;
+      the criterion is whether the node type has a type not bigger than the
+      default condense type, which is app specific.
+      If you pass an explicit `condenseType=`*xxx* as display parameter,
+      then this is the reference condenseType on which the decision is based.
+    * **XFi** the value of extra feature **XF** for node **i**,
+      where these features have been declared by a previous
+      displaySetup(tupleFeatures=...)`
+
+    If the input tuples are not uniform, the layout is more primitive.
+    There will be no header column, because the number of columns may vary per row.
+    A row contains the successive information of all nodes in a tuple.
+    Depending of the type of each node you get a number of columns of section information.
+    Then follow two columns with the node and the node type.
+    Depending on the type of the node, there follows a column with the text of the node.
+    No additional features are produced.
+
+    !!! caution &#34;Encoding&#34;
+        The exported file is written in the `utf_16_le` encoding.
+        This ensures that Excel can open it without hassle, even if there
+        are non-latin characters inside.
+
+        When you want to read the exported file programmatically,
+        open it with `encoding=utf_16`.
+
+    !!! caution &#34;Quotes&#34;
+        If the text of a field starts with a single or double quote,
+        we insert a backslash in front of it, otherwise programs like
+        Excel and Numbers will treat it in a special way.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+
+    dContext = display.distill(options)
+    fmt = dContext.fmt
+    condenseType = dContext.condenseType
+    tupleFeatures = dContext.tupleFeatures
+
+    if toDir is None:
+        toDir = expanduser(DOWNLOADS)
+    else:
+        toDir = expanduser(toDir)
+    if not os.path.exists(toDir):
+        os.makedirs(toDir, exist_ok=True)
+    toPath = f&#34;{toDir}/{toFile}&#34;
+
+    resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
+
+    def escq(x):
+        s = str(x)
+        return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s
+
+    with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
+        fh.write(
+            &#34;\ufeff&#34;
+            + &#34;&#34;.join(
+                (&#34;\t&#34;.join(&#34;&#34; if t is None else escq(t) for t in tup) + &#34;\n&#34;)
+                for tup in resultsX
+            )
+        )
+
+
+# PLAIN and FRIENDS
+
+
+def table(app, tuples, _asString=False, **options):
+    &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
+
+    The list is displayed as a compact markdown table.
+    Every row is prepended with the sequence number in the iterable,
+    and then displayed by `plainTuple`
+
+    !!! hint &#34;condense, condenseType&#34;
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType`.
+        See `tf.advanced.options`.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+
+    _browse = app._browse
+    inNb = app.inNb
+
+    api = app.api
+    F = api.F
+    fOtypev = F.otype.v
+
+    dContext = display.distill(options)
+    end = dContext.end
+    start = dContext.start
+    withPassage = dContext.withPassage
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+    skipCols = dContext.skipCols
+
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+
+    item = condenseType if condensed else RESULT
+
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+        skipCols = set()
+
+    passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+
+    html = []
+    one = True
+
+    newOptions = display.consume(options, &#34;skipCols&#34;)
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
+        if one:
+            heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
+            html.append(
+                f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&#39;
+                f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+                f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;{heads}&lt;/th&gt;&#39;
+                f&#34;&lt;/tr&gt;&#34;
+            )
+            one = False
+        html.append(
+            plainTuple(
+                app,
+                tup,
+                seq=i,
+                item=item,
+                position=None,
+                opened=False,
+                _asString=True,
+                skipCols=skipCols,
+                **newOptions,
+            )
+        )
+    html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    if _browse or _asString:
+        return html
+    dh(html, inNb=inNb)
+
+
+def plainTuple(
+    app,
+    tup,
+    seq=None,
+    item=RESULT,
+    position=None,
+    opened=False,
+    _asString=False,
+    **options,
+):
+    &#34;&#34;&#34;Display the plain text of a tuple of nodes.
+
+    Displays the material that corresponds to a tuple of nodes
+    as a row of cells,
+    each displaying a member of the tuple by means of `plain`.
+
+    Parameters
+    ----------
+    tup: iterable of integer
+        The members of the tuple can be arbitrary nodes.
+    seq: integer, optional None
+        an arbitrary number which will be displayed in the first cell.
+        This prepares the way for displaying query results, which come as
+        a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
+    item: string, optional result
+        A name for the tuple: it could be a result, or a chapter, or a line.
+    position: integer, optional None
+        Which position counts as the focus position.
+        If *seq* equals *position*, the tuple is in focus.
+        The effect is to add the CSS class *focus* to the output HTML
+        for the row of this tuple.
+    opened:  booolean, optional False
+        Whether this tuple should be expandable to a `pretty` display.
+        The normal output of this row will be wrapped in a
+
+           &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;`
+
+        pattern, so that the user can click a triangle to switch between plain
+        and pretty display.
+
+        !!! caution
+            This option has only effect when used in the TF browser.
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+
+    Result
+    ------
+    html string or `None`
+        Depending on *asString* above.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;plainTuple&#34;, options):
+        return &#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+    N = api.N
+    otypeRank = N.otypeRank
+    fOtypev = F.otype.v
+    _browse = app._browse
+    inNb = app.inNb
+
+    dContext = display.distill(options)
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    withPassage = dContext.withPassage
+    skipCols = dContext.skipCols
+    showMath = dContext.showMath
+
+    if condensed:
+        skipCols = set()
+
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+
+    if withPassage is True:
+        passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
+        passageRef = (
+            &#34;&#34;
+            if passageNode is None
+            else app._sectionLink(passageNode)
+            if _browse
+            else app.webLink(passageNode, _asString=True)
+        )
+        passageRef = (
+            f&#34;&#34;&#34;&lt;span class=&#34;tfsechead {ltr}&#34;&gt;&#34;&#34;&#34;
+            f&#34;&#34;&#34;&lt;span class=&#34;ltr&#34;&gt;{passageRef}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;
+        )
+    else:
+        passageRef = &#34;&#34;
+
+    newOptions = display.consume(options, &#34;withPassage&#34;)
+    newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
+
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+
+    if _browse:
+        prettyRep = (
+            prettyTuple(app, tup, seq=seq, withPassage=False, **newOptions)
+            if opened
+            else &#34;&#34;
+        )
+        current = &#34;focus&#34; if seq is not None and seq == position else &#34;&#34;
+        attOpen = &#34;open &#34; if opened else &#34;&#34;
+        tupSeq = &#34;,&#34;.join(str(n) for n in tup)
+        if withPassage is True:
+            sparts = T.sectionFromNode(passageNode, fillup=True)
+            passageAtt = &#34; &#34;.join(
+                f&#39;sec{i}=&#34;{sparts[i] if i &lt; len(sparts) else &#34;&#34;}&#34;&#39; for i in range(3)
+            )
+        else:
+            passageAtt = &#34;&#34;
+
+        plainRep = &#34;&#34;.join(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else (
+                &#39;&lt;span class=&#34;col&#34;&gt;&#39;
+                + mdEsc(
+                    app.plain(
+                        n,
+                        _inTuple=True,
+                        withPassage=_doPassage(dContext, i),
+                        highlights=highlights,
+                        **newOptionsH,
+                    ),
+                    math=showMath,
+                )
+                + &#34;&lt;/span&gt;&#34;
+            )
+            for (i, n) in enumerate(tup)
+        )
+        seqNo = -1 if seq is None else seq
+        seqRep = (
+            &#34;&#34; if seq is None else f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
+        )
+        html = (
+            f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seqNo}&#34; {attOpen}&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
+            f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
+            f&#34;{seqRep}&#34;
+            f&#34; {passageRef} {plainRep}&#34;
+            f&#34;&lt;/summary&gt;&#34;
+            f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
+            f&#34;&lt;/details&gt;&#34;
+        )
+        return html
+
+    html = [] if seq is None else [str(seq)]
+    if withPassage is True:
+        html.append(passageRef)
+    for (i, n) in enumerate(tup):
+        html.append(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else app.plain(
+                n,
+                _inTuple=True,
+                _asString=True,
+                withPassage=_doPassage(dContext, i),
+                highlights=highlights,
+                **newOptionsH,
+            )
+        )
+    html = (
+        f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&lt;td class=&#34;tf {ltr}&#34;&gt;&#39;
+        + f&#39;&lt;/td&gt;&lt;td class=&#34;tf {ltr}&#34;&gt;&#39;.join(html)
+        + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
+    )
+    if _asString:
+        return html
+
+    passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+    head = (
+        (
+            f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+            f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;
+        )
+        + f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    )
+    html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    dh(html, inNb=inNb)
+
+
+def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    &#34;&#34;&#34;Display the plain text of a node.
+
+    Displays the material that corresponds to a node in a compact way.
+    Nodes with little content will be represented by their text content,
+    nodes with large content will be represented by an identifying label.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _inTuple: boolean, optional False
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional False
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+
+    Result
+    ------
+    html string or `None`
+        Depending on `_asString` above.
+    &#34;&#34;&#34;
+
+    return render(app, False, n, _inTuple, _asString, explain, **options)
+
+
+# PRETTY and FRIENDS
+
+
+def show(app, tuples, _asString=False, **options):
+    &#34;&#34;&#34;Displays an iterable of tuples of nodes.
+
+    The elements of the list are displayed by `A.prettyTuple()`.
+
+    !!! hint &#34;condense, condenseType&#34;
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType`.
+        See `tf.advanced.options`.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;show&#34;, options):
+        return &#34;&#34;
+
+    _browse = app._browse
+    inNb = app.inNb
+    asString = _browse or _asString
+
+    dContext = display.distill(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+
+    api = app.api
+    F = api.F
+
+    item = condenseType if condensed else RESULT
+
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    html = []
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item, inNb):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
+        thisResult = prettyTuple(
+            app,
+            tup,
+            seq=i,
+            item=item,
+            _asString=asString,
+            **options,
+        )
+        if asString:
+            html.append(thisResult)
+
+    if asString:
+        return &#34;&#34;.join(html)
+
+
+def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
+    &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
+
+    The member nodes of the tuple will be collected into containers, which
+    will be displayed with `pretty()`, and the nodes of the tuple
+    will be highlighted in the containers.
+
+    Parameters
+    ----------
+    tup: iterable of integer
+        The members of the tuple can be arbitrary nodes.
+    seq: integer, optional None
+        an arbitrary number which will be displayed in the heading.
+        This prepares the way for displaying query results, which come as
+        a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
+    item: string, optional result
+        A name for the tuple: it could be a result, or a chapter, or a line.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;prettyTuple&#34;, options):
+        return &#34;&#34;
+
+    dContext = display.distill(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+
+    _browse = app._browse
+    inNb = app.inNb
+    asString = _browse or _asString
+
+    if len(tup) == 0:
+        if asString:
+            return &#34;&#34;
+        else:
+            return
+
+    api = app.api
+    N = api.N
+    sortKey = N.sortKey
+
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+    seqRep = &#34;&#34; if seq is None else f&#34; &lt;i&gt;{seq}&lt;/i&gt;&#34;
+
+    if not asString:
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt;{seqRep}&#34;, inNb=inNb)
+    if asString:
+        html = []
+    for t in sorted(containers, key=sortKey):
+        h = app.pretty(
+            t,
+            highlights=highlights,
+            **display.consume(options, &#34;highlights&#34;),
+        )
+        if asString:
+            html.append(h)
+    if asString:
+        return &#34;&#34;.join(html)
+
+
+def pretty(app, n, explain=False, _asString=False, **options):
+    &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
+
+    The internal structure of the nodes that are involved is also revealed.
+    In addition, extra features and their values are displayed with the nodes.
+
+    !!! hint &#34;Controlling pretty displays&#34;
+        The following `tf.advanced.options`
+        are particularly relevant to pretty displays:
+
+        * `condenseType`: the standard container to display nodes in;
+        * `full`: whether to display a reference to the material or the material itself;
+        * `extraFeatures`: additional features to  display
+        * `tupleFeatures`: additional features to  display (primarily for `export`.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.advanced.options`.
+    explain: boolean, optional False
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    asString: boolean, optional False
+        If True, the result is returned as string
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML.
+        Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    return render(app, True, n, False, _asString, explain, **options)
+
+
+def _getRefMember(otypeRank, fOtypev, tup, dContext):
+    minRank = None
+    minN = None
+    for n in tup:
+        nType = fOtypev(n)
+        rank = otypeRank[nType]
+        if minRank is None or rank &lt; minRank:
+            minRank = rank
+            minN = n
+            if minRank == 0:
+                break
+
+    return (tup[0] if tup else None) if minN is None else minN
+
+
+def _doPassage(dContext, i):
+    withPassage = dContext.withPassage
+    return withPassage is not True and withPassage and i + 1 in withPassage</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.advanced.display.displayApi"><code class="name flex">
+<span>def <span class="ident">displayApi</span></span>(<span>app, silent='auto')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produce the display API.</p>
+<p>The display API provides methods to generate styled representations
+of pieces of corpus texts in their relevant structures.
+The main end-user functions are <code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a>(node)</code> and <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a>(node)</code>.</p>
+<p><code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a></code> focuses on the plain text, <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code> focuses on structure
+and feature display.</p>
+<p>Related are <code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple()</a></code> and <code><a title="tf.advanced.display.prettyTuple" href="#tf.advanced.display.prettyTuple">prettyTuple()</a></code> that work for tuples
+instead of nodes.</p>
+<p>And further there are <code><a title="tf.advanced.display.show" href="#tf.advanced.display.show">show()</a></code> and <code><a title="tf.advanced.display.table" href="#tf.advanced.display.table">table()</a></code>, that work
+with iterables of tuples of nodes (e.g. query results).</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code>
+Normally this parameter is taken from the app,
+but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L69-L112" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def displayApi(app, silent=SILENT_D):
+    &#34;&#34;&#34;Produce the display API.
+
+    The display API provides methods to generate styled representations
+    of pieces of corpus texts in their relevant structures.
+    The main end-user functions are `plain(node)` and `pretty(node)`.
+
+    `plain()` focuses on the plain text, `pretty()` focuses on structure
+    and feature display.
+
+    Related are `plainTuple()` and `prettyTuple()` that work for tuples
+    instead of nodes.
+
+    And further there are `show()` and `table()`, that work
+    with iterables of tuples of nodes (e.g. query results).
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    silent: string, optional tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+        Normally this parameter is taken from the app,
+        but when we do an `A.reuse()` we force `silent=&#34;deep&#34;`.
+    &#34;&#34;&#34;
+
+    silent = silentConvert(silent)
+    app.export = types.MethodType(export, app)
+    app.table = types.MethodType(table, app)
+    app.plainTuple = types.MethodType(plainTuple, app)
+    app.plain = types.MethodType(plain, app)
+    app.show = types.MethodType(show, app)
+    app.prettyTuple = types.MethodType(prettyTuple, app)
+    app.pretty = types.MethodType(pretty, app)
+    app.unravel = types.MethodType(unravel, app)
+    app.loadCss = types.MethodType(loadCss, app)
+    app.getCss = types.MethodType(getCss, app)
+    app.displayShow = types.MethodType(displayShow, app)
+    app.displaySetup = types.MethodType(displaySetup, app)
+    app.displayReset = types.MethodType(displayReset, app)
+
+    app.display = Options(app)
+    if not app._browse:
+        app.loadCss()</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.displayReset"><code class="name flex">
+<span>def <span class="ident">displayReset</span></span>(<span>app, *options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Restore display parameters to their defaults.</p>
+<p>Reset the given display parameters to their default value and let the others
+retain their current value.</p>
+<p>So you can reset the display parameters selectively.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>options</code></strong> :&ensp;<code>list</code>, optional <code>[]</code></dt>
+<dd>If present, only restore these options to their defaults.
+Otherwise, restore all display settings.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L174-L191" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def displayReset(app, *options):
+    &#34;&#34;&#34;Restore display parameters to their defaults.
+
+    Reset the given display parameters to their default value and let the others
+    retain their current value.
+
+    So you can reset the display parameters selectively.
+
+    Parameters
+    ----------
+    options: list, optional []
+        If present, only restore these options to their defaults.
+        Otherwise, restore all display settings.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    display.reset(*options)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.displaySetup"><code class="name flex">
+<span>def <span class="ident">displaySetup</span></span>(<span>app, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up all display parameters.</p>
+<p>Shows current values of display parameters and/or
+assigns working values to display parameters.
+All subsequent calls to display functions such as <code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a></code> and <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code>
+will use these values, unless they themselves are passed overriding
+values as arguments.</p>
+<p>These working values remain in effect until a new call to <code><a title="tf.advanced.display.displaySetup" href="#tf.advanced.display.displaySetup">displaySetup()</a></code>
+assigns new values, or a call to <code><a title="tf.advanced.display.displayReset" href="#tf.advanced.display.displayReset">displayReset()</a></code> resets the values to the
+defaults.</p>
+<div class="admonition hint">
+<p class="admonition-title">show current values</p>
+<p>The defaults themselves come from the corpus settings, which are influenced
+by its <code>config.yaml</code> file, if it exists. See <code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code>.
+You can show the current values by means of <code><a title="tf.advanced.display.displayShow" href="#tf.advanced.display.displayShow">displayShow()</a></code>.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>show</code></strong> :&ensp;<code>keys</code></dt>
+<dd>Options of which the current value will be shown.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>key-values</code></dt>
+<dd>Explicit values for selected options that act as overrides of the defaults.</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
+<dt><code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code></dt>
+<dd>all available display options</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L138-L171" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def displaySetup(app, **options):
+    &#34;&#34;&#34;Set up all display parameters.
+
+    Shows current values of display parameters and/or
+    assigns working values to display parameters.
+    All subsequent calls to display functions such as `plain` and `pretty`
+    will use these values, unless they themselves are passed overriding
+    values as arguments.
+
+    These working values remain in effect until a new call to `displaySetup()`
+    assigns new values, or a call to `displayReset()` resets the values to the
+    defaults.
+
+    !!! hint &#34;show current values&#34;
+        The defaults themselves come from the corpus settings, which are influenced
+        by its `config.yaml` file, if it exists. See `tf.advanced.settings`.
+        You can show the current values by means of `displayShow`.
+
+    Parameters
+    ----------
+    show: keys
+        Options of which the current value will be shown.
+    options: key-values
+        Explicit values for selected options that act as overrides of the defaults.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    tf.advanced.options: all available display options
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    display.setup(**options)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.displayShow"><code class="name flex">
+<span>def <span class="ident">displayShow</span></span>(<span>app, *options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Show display parameters.</p>
+<p>Shows current values of all or selected display parameters.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>options</code></strong> :&ensp;<code>keys</code></dt>
+<dd>Options of which the current value will be shown.
+If no option is passes, all options will be shown.</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<dl>
+<dt><code><a title="tf.advanced.settings" href="settings.html">tf.advanced.settings</a></code></dt>
+<dd>options allowed in <code>config.yaml</code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L115-L135" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def displayShow(app, *options):
+    &#34;&#34;&#34;Show display parameters.
+
+    Shows current values of all or selected display parameters.
+
+    Parameters
+    ----------
+    options: keys
+        Options of which the current value will be shown.
+        If no option is passes, all options will be shown.
+
+    See Also
+    --------
+    tf.advanced.settings: options allowed in `config.yaml`
+    &#34;&#34;&#34;
+
+    inNb = app.inNb
+    display = app.display
+    display.setup()
+    data = display.current
+    showDict(&#34;&lt;b&gt;current display options&lt;/b&gt;&#34;, data, inNb, *options)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.export"><code class="name flex">
+<span>def <span class="ident">export</span></span>(<span>app, tuples, toDir=None, toFile='results.tsv', **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports an iterable of tuples of nodes to an Excel friendly <code>.tsv</code> file.</p>
+<div class="admonition hint">
+<p class="admonition-title">Examples</p>
+<p>See for detailed examples the
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb">exportExcel (etcbc/bhsa)</a>
+and
+<a href="https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb">exportExcel (Nino-cunei/oldbabylonian)</a>
+notebooks.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tuples</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>integer</code></dt>
+<dd>The integers are the nodes, together they form a table.
+The table maybe uniform or not uniform,
+which matters to the output. See below.</dd>
+<dt><strong><code>toDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>The destination directory for the exported file.
+By default it is your Downloads folder.</p>
+<p>If the directory does not exist, it will be created.</p>
+</dd>
+<dt><strong><code>toFile</code></strong> :&ensp;<code>boolean</code>, optional <code>results.tsv</code></dt>
+<dd>The name of the exported file.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">details</p>
+<ul>
+<li><code>condensed</code>
+Has no effect. Exports to Excel will not be condensed, because the
+number of columns is variable per row in that case.
+Excel itself has nice possibilities for grouping rows.
+You can also filter your tuples by means of hand-coding
+before exporting them.</li>
+<li><code>condenseType</code>
+The condense type influences for which nodes
+the full text will be exported.
+Only nodes that are "smaller" than the condense type will have
+their full text exported.</li>
+<li><code>fmt</code>
+This display parameter specifies the text format for any nodes
+that trigger a text value to be exported.</li>
+<li><code>tupleFeatures</code>
+This is a display parameter that steers which features are exported
+with each member of the tuples in the list.</li>
+</ul>
+<p>If the iterable of tuples are the results of a query you have just
+run, then an appropriate call to <code>displaySetup(tupleFeatures=...)</code>
+has already been issued, so you can just say:</p>
+<pre><code> results = A.search(query)`
+ A.export(results)`
+</code></pre>
+</div>
+</dd>
+</dl>
+<h2 id="results">Results</h2>
+<p>A file <em>toFile</em> in directory <em>toDir</em> with the following content:</p>
+<p>There will be a row for each tuple.</p>
+<p>If the input tuples are <em>uniform</em>, i.e. each tuple has the
+same number of nodes, and nodes in the same column have the same node types,
+then the result table has the following layout:</p>
+<p>The columns are:</p>
+<ul>
+<li><strong>R</strong> the sequence number of the result tuple in the result list</li>
+<li><strong>S1 S2 S3</strong> the section as book, chapter, verse, in separate columns;
+the section is the section of the first non book/chapter node in the tuple</li>
+<li><strong>NODEi TYPEi</strong> the node and its type,
+for each node <strong>i</strong> in the result tuple</li>
+<li><strong>TEXTi</strong> the full text of node <strong>i</strong>,
+if the node type admits a concise text representation;
+the criterion is whether the node type has a type not bigger than the
+default condense type, which is app specific.
+If you pass an explicit <code>condenseType=</code><em>xxx</em> as display parameter,
+then this is the reference condenseType on which the decision is based.</li>
+<li><strong>XFi</strong> the value of extra feature <strong>XF</strong> for node <strong>i</strong>,
+where these features have been declared by a previous
+displaySetup(tupleFeatures=&hellip;)`</li>
+</ul>
+<p>If the input tuples are not uniform, the layout is more primitive.
+There will be no header column, because the number of columns may vary per row.
+A row contains the successive information of all nodes in a tuple.
+Depending of the type of each node you get a number of columns of section information.
+Then follow two columns with the node and the node type.
+Depending on the type of the node, there follows a column with the text of the node.
+No additional features are produced.</p>
+<div class="admonition caution">
+<p class="admonition-title">Encoding</p>
+<p>The exported file is written in the <code>utf_16_le</code> encoding.
+This ensures that Excel can open it without hassle, even if there
+are non-latin characters inside.</p>
+<p>When you want to read the exported file programmatically,
+open it with <code>encoding=utf_16</code>.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Quotes</p>
+<p>If the text of a field starts with a single or double quote,
+we insert a backslash in front of it, otherwise programs like
+Excel and Numbers will treat it in a special way.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L279-L411" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def export(app, tuples, toDir=None, toFile=&#34;results.tsv&#34;, **options):
+    &#34;&#34;&#34;Exports an iterable of tuples of nodes to an Excel friendly `.tsv` file.
+
+    !!! hint &#34;Examples&#34;
+        See for detailed examples the
+        [exportExcel (etcbc/bhsa)](https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/exportExcel.ipynb)
+        and
+        [exportExcel (Nino-cunei/oldbabylonian)](https://nbviewer.jupyter.org/github/Nino-cunei/oldbabylonian/blob/master/tutorial/exportExcel.ipynb)
+        notebooks.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+        The table maybe uniform or not uniform,
+        which matters to the output. See below.
+    toDir: string, optional None
+        The destination directory for the exported file.
+        By default it is your Downloads folder.
+
+        If the directory does not exist, it will be created.
+    toFile: boolean, optional results.tsv
+        The name of the exported file.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+        !!! note &#34;details&#34;
+            * `condensed`
+              Has no effect. Exports to Excel will not be condensed, because the
+              number of columns is variable per row in that case.
+              Excel itself has nice possibilities for grouping rows.
+              You can also filter your tuples by means of hand-coding
+              before exporting them.
+            * `condenseType`
+              The condense type influences for which nodes
+              the full text will be exported.
+              Only nodes that are &#34;smaller&#34; than the condense type will have
+              their full text exported.
+            * `fmt`
+              This display parameter specifies the text format for any nodes
+              that trigger a text value to be exported.
+            * `tupleFeatures`
+              This is a display parameter that steers which features are exported
+              with each member of the tuples in the list.
+
+              If the iterable of tuples are the results of a query you have just
+              run, then an appropriate call to `displaySetup(tupleFeatures=...)`
+              has already been issued, so you can just say:
+
+                 results = A.search(query)`
+                 A.export(results)`
+
+    Results
+    -------
+    A file *toFile* in directory *toDir* with the following content:
+
+    There will be a row for each tuple.
+
+    If the input tuples are *uniform*, i.e. each tuple has the
+    same number of nodes, and nodes in the same column have the same node types,
+    then the result table has the following layout:
+
+    The columns are:
+
+    * **R** the sequence number of the result tuple in the result list
+    * **S1 S2 S3** the section as book, chapter, verse, in separate columns;
+      the section is the section of the first non book/chapter node in the tuple
+    * **NODEi TYPEi** the node and its type,
+      for each node **i** in the result tuple
+    * **TEXTi** the full text of node **i**,
+      if the node type admits a concise text representation;
+      the criterion is whether the node type has a type not bigger than the
+      default condense type, which is app specific.
+      If you pass an explicit `condenseType=`*xxx* as display parameter,
+      then this is the reference condenseType on which the decision is based.
+    * **XFi** the value of extra feature **XF** for node **i**,
+      where these features have been declared by a previous
+      displaySetup(tupleFeatures=...)`
+
+    If the input tuples are not uniform, the layout is more primitive.
+    There will be no header column, because the number of columns may vary per row.
+    A row contains the successive information of all nodes in a tuple.
+    Depending of the type of each node you get a number of columns of section information.
+    Then follow two columns with the node and the node type.
+    Depending on the type of the node, there follows a column with the text of the node.
+    No additional features are produced.
+
+    !!! caution &#34;Encoding&#34;
+        The exported file is written in the `utf_16_le` encoding.
+        This ensures that Excel can open it without hassle, even if there
+        are non-latin characters inside.
+
+        When you want to read the exported file programmatically,
+        open it with `encoding=utf_16`.
+
+    !!! caution &#34;Quotes&#34;
+        If the text of a field starts with a single or double quote,
+        we insert a backslash in front of it, otherwise programs like
+        Excel and Numbers will treat it in a special way.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+
+    dContext = display.distill(options)
+    fmt = dContext.fmt
+    condenseType = dContext.condenseType
+    tupleFeatures = dContext.tupleFeatures
+
+    if toDir is None:
+        toDir = expanduser(DOWNLOADS)
+    else:
+        toDir = expanduser(toDir)
+    if not os.path.exists(toDir):
+        os.makedirs(toDir, exist_ok=True)
+    toPath = f&#34;{toDir}/{toFile}&#34;
+
+    resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
+
+    def escq(x):
+        s = str(x)
+        return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s
+
+    with open(toPath, &#34;w&#34;, encoding=&#34;utf_16_le&#34;) as fh:
+        fh.write(
+            &#34;\ufeff&#34;
+            + &#34;&#34;.join(
+                (&#34;\t&#34;.join(&#34;&#34; if t is None else escq(t) for t in tup) + &#34;\n&#34;)
+                for tup in resultsX
+            )
+        )</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.getCss"><code class="name flex">
+<span>def <span class="ident">getCss</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export the CSS for this app.</p>
+<p>We collect the complete CSS code from Text-Fabric and the app,
+and we add a piece to override some of the notebook CSS for tables,
+which specify a table layout with right aligned cell contents by default.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None | string</code></dt>
+<dd>CSS code, including a surrounding <code>&lt;style&gt;</code> element.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L246-L276" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getCss(app):
+    &#34;&#34;&#34;Export the CSS for this app.
+
+    We collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    Returns
+    -------
+    None | string
+        CSS code, including a surrounding `&lt;style&gt;` element.
+    &#34;&#34;&#34;
+
+    aContext = app.context
+    appCss = aContext.css
+
+    cssPath = (
+        f&#34;{os.path.dirname(os.path.dirname(abspath(__file__)))}&#34;
+        f&#34;{SERVER_DISPLAY_BASE}&#34;
+    )
+    cssPath = normpath(cssPath)
+    genericCss = &#34;&#34;
+    for cssFile in SERVER_DISPLAY:
+        with open(f&#34;{cssPath}/{cssFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            genericCss += fh.read()
+
+    tableCss = (
+        &#34;tr.tf.ltr, td.tf.ltr, th.tf.ltr { text-align: left ! important;}\n&#34;
+        &#34;tr.tf.rtl, td.tf.rtl, th.tf.rtl { text-align: right ! important;}\n&#34;
+    )
+    return f&#34;&lt;style&gt;{tableCss}{genericCss}{appCss}&lt;/style&gt;&#34;</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.loadCss"><code class="name flex">
+<span>def <span class="ident">loadCss</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the CSS for this app.</p>
+<p>If we are in the TF-browser, the generic CSS is already provided, we only
+need to respond with the app-specific CSS: we return it as string.
+The flag <code>app._browse</code> is used to steer us into this case.</p>
+<p>Otherwise, if we are in a notebook,
+we collect the complete CSS code from Text-Fabric and the app,
+and we add a piece to override some of the notebook CSS for tables,
+which specify a table layout with right aligned cell contents by default.</p>
+<p>We then load the resulting CSS into the notebook.</p>
+<p>Otherwise, we do nothing.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None | string</code></dt>
+<dd>When in the TF browser, the app-dependent CSS is returned.
+Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L194-L243" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadCss(app):
+    &#34;&#34;&#34;Load the CSS for this app.
+
+    If we are in the TF-browser, the generic CSS is already provided, we only
+    need to respond with the app-specific CSS: we return it as string.
+    The flag `app._browse` is used to steer us into this case.
+
+    Otherwise, if we are in a notebook,
+    we collect the complete CSS code from Text-Fabric and the app,
+    and we add a piece to override some of the notebook CSS for tables,
+    which specify a table layout with right aligned cell contents by default.
+
+    We then load the resulting CSS into the notebook.
+
+    Otherwise, we do nothing.
+
+    Returns
+    -------
+    None | string
+        When in the TF browser, the app-dependent CSS is returned.
+        Otherwise, nothing is returned, but the complete CSS is displayed as HTML in the notebook.
+    &#34;&#34;&#34;
+
+    _browse = app._browse
+    aContext = app.context
+    appCss = aContext.css
+
+    if _browse:
+        return appCss
+
+    if not app.inNb:
+        return
+
+    css = getCss(app)
+    dh(css)
+    dh(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;script&gt;
+            globalThis.copyChar = (el, c) =&gt; {
+                for (const el of document.getElementsByClassName(&#39;ccon&#39;)) {
+                    el.className = &#39;ccoff&#39;
+                }
+                el.className = &#39;ccon&#39;
+                navigator.clipboard.writeText(String.fromCharCode(c))
+            }
+            &lt;/script&gt;
+            &#34;&#34;&#34;
+        )
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.plain"><code class="name flex">
+<span>def <span class="ident">plain</span></span>(<span>app, n, explain=False, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Display the plain text of a node.</p>
+<p>Displays the material that corresponds to a node in a compact way.
+Nodes with little content will be represented by their text content,
+nodes with large content will be represented by an identifying label.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>Node</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+<dt><strong><code>_inTuple</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether the result is meant too end up in a table cell produced by
+<code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple()</a></code>. In that case some extra node types count as big and will
+not be displayed in full.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to print a trace of which nodes have been visited and how these
+calls have contributed to the end result.</dd>
+</dl>
+<h2 id="result">Result</h2>
+<p>html string or <code>None</code>
+Depending on <code>_asString</code> above.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L703-L734" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def plain(app, n, _inTuple=False, _asString=False, explain=False, **options):
+    &#34;&#34;&#34;Display the plain text of a node.
+
+    Displays the material that corresponds to a node in a compact way.
+    Nodes with little content will be represented by their text content,
+    nodes with large content will be represented by an identifying label.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _inTuple: boolean, optional False
+        Whether the result is meant too end up in a table cell produced by
+        `plainTuple`. In that case some extra node types count as big and will
+        not be displayed in full.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    explain: boolean, optional False
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+
+    Result
+    ------
+    html string or `None`
+        Depending on `_asString` above.
+    &#34;&#34;&#34;
+
+    return render(app, False, n, _inTuple, _asString, explain, **options)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.plainTuple"><code class="name flex">
+<span>def <span class="ident">plainTuple</span></span>(<span>app, tup, seq=None, item='result', position=None, opened=False, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Display the plain text of a tuple of nodes.</p>
+<p>Displays the material that corresponds to a tuple of nodes
+as a row of cells,
+each displaying a member of the tuple by means of <code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain()</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tup</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>The members of the tuple can be arbitrary nodes.</dd>
+<dt><strong><code>seq</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>an arbitrary number which will be displayed in the first cell.
+This prepares the way for displaying query results, which come as
+a sequence of tuples of nodes.
+If None, no such number is displayed in the heading.</dd>
+<dt><strong><code>item</code></strong> :&ensp;<code>string</code>, optional <code>result</code></dt>
+<dd>A name for the tuple: it could be a result, or a chapter, or a line.</dd>
+<dt><strong><code>position</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>Which position counts as the focus position.
+If <em>seq</em> equals <em>position</em>, the tuple is in focus.
+The effect is to add the CSS class <em>focus</em> to the output HTML
+for the row of this tuple.</dd>
+<dt><strong><code>opened</code></strong> :&ensp;<code> booolean</code>, optional <code>False</code></dt>
+<dd>
+<p>Whether this tuple should be expandable to a <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code> display.
+The normal output of this row will be wrapped in a</p>
+<p><details><summary>plain</summary>pretty</details>`</p>
+<p>pattern, so that the user can click a triangle to switch between plain
+and pretty display.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This option has only effect when used in the TF browser.</p>
+</div>
+</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+</dl>
+<h2 id="result">Result</h2>
+<p>html string or <code>None</code>
+Depending on <em>asString</em> above.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L507-L700" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def plainTuple(
+    app,
+    tup,
+    seq=None,
+    item=RESULT,
+    position=None,
+    opened=False,
+    _asString=False,
+    **options,
+):
+    &#34;&#34;&#34;Display the plain text of a tuple of nodes.
+
+    Displays the material that corresponds to a tuple of nodes
+    as a row of cells,
+    each displaying a member of the tuple by means of `plain`.
+
+    Parameters
+    ----------
+    tup: iterable of integer
+        The members of the tuple can be arbitrary nodes.
+    seq: integer, optional None
+        an arbitrary number which will be displayed in the first cell.
+        This prepares the way for displaying query results, which come as
+        a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
+    item: string, optional result
+        A name for the tuple: it could be a result, or a chapter, or a line.
+    position: integer, optional None
+        Which position counts as the focus position.
+        If *seq* equals *position*, the tuple is in focus.
+        The effect is to add the CSS class *focus* to the output HTML
+        for the row of this tuple.
+    opened:  booolean, optional False
+        Whether this tuple should be expandable to a `pretty` display.
+        The normal output of this row will be wrapped in a
+
+           &lt;details&gt;&lt;summary&gt;plain&lt;/summary&gt;pretty&lt;/details&gt;`
+
+        pattern, so that the user can click a triangle to switch between plain
+        and pretty display.
+
+        !!! caution
+            This option has only effect when used in the TF browser.
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+
+    Result
+    ------
+    html string or `None`
+        Depending on *asString* above.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;plainTuple&#34;, options):
+        return &#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+    N = api.N
+    otypeRank = N.otypeRank
+    fOtypev = F.otype.v
+    _browse = app._browse
+    inNb = app.inNb
+
+    dContext = display.distill(options)
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    withPassage = dContext.withPassage
+    skipCols = dContext.skipCols
+    showMath = dContext.showMath
+
+    if condensed:
+        skipCols = set()
+
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+
+    if withPassage is True:
+        passageNode = _getRefMember(otypeRank, fOtypev, tup, dContext)
+        passageRef = (
+            &#34;&#34;
+            if passageNode is None
+            else app._sectionLink(passageNode)
+            if _browse
+            else app.webLink(passageNode, _asString=True)
+        )
+        passageRef = (
+            f&#34;&#34;&#34;&lt;span class=&#34;tfsechead {ltr}&#34;&gt;&#34;&#34;&#34;
+            f&#34;&#34;&#34;&lt;span class=&#34;ltr&#34;&gt;{passageRef}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;
+        )
+    else:
+        passageRef = &#34;&#34;
+
+    newOptions = display.consume(options, &#34;withPassage&#34;)
+    newOptionsH = display.consume(options, &#34;withPassage&#34;, &#34;highlights&#34;)
+
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+
+    if _browse:
+        prettyRep = (
+            prettyTuple(app, tup, seq=seq, withPassage=False, **newOptions)
+            if opened
+            else &#34;&#34;
+        )
+        current = &#34;focus&#34; if seq is not None and seq == position else &#34;&#34;
+        attOpen = &#34;open &#34; if opened else &#34;&#34;
+        tupSeq = &#34;,&#34;.join(str(n) for n in tup)
+        if withPassage is True:
+            sparts = T.sectionFromNode(passageNode, fillup=True)
+            passageAtt = &#34; &#34;.join(
+                f&#39;sec{i}=&#34;{sparts[i] if i &lt; len(sparts) else &#34;&#34;}&#34;&#39; for i in range(3)
+            )
+        else:
+            passageAtt = &#34;&#34;
+
+        plainRep = &#34;&#34;.join(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else (
+                &#39;&lt;span class=&#34;col&#34;&gt;&#39;
+                + mdEsc(
+                    app.plain(
+                        n,
+                        _inTuple=True,
+                        withPassage=_doPassage(dContext, i),
+                        highlights=highlights,
+                        **newOptionsH,
+                    ),
+                    math=showMath,
+                )
+                + &#34;&lt;/span&gt;&#34;
+            )
+            for (i, n) in enumerate(tup)
+        )
+        seqNo = -1 if seq is None else seq
+        seqRep = (
+            &#34;&#34; if seq is None else f&#39;&lt;a href=&#34;#&#34; class=&#34;sq&#34; tup=&#34;{tupSeq}&#34;&gt;{seq}&lt;/a&gt;&#39;
+        )
+        html = (
+            f&#39;&lt;details class=&#34;pretty dtrow {current}&#34; seq=&#34;{seqNo}&#34; {attOpen}&gt;&#39;
+            f&#34;&lt;summary&gt;&#34;
+            f&#39;&lt;a href=&#34;#&#34; class=&#34;pq fa fa-solar-panel fa-xs&#34;&#39;
+            f&#39; title=&#34;show in context&#34; {passageAtt}&gt;&lt;/a&gt;&#39;
+            f&#34;{seqRep}&#34;
+            f&#34; {passageRef} {plainRep}&#34;
+            f&#34;&lt;/summary&gt;&#34;
+            f&#39;&lt;div class=&#34;pretty&#34;&gt;{prettyRep}&lt;/div&gt;&#39;
+            f&#34;&lt;/details&gt;&#34;
+        )
+        return html
+
+    html = [] if seq is None else [str(seq)]
+    if withPassage is True:
+        html.append(passageRef)
+    for (i, n) in enumerate(tup):
+        html.append(
+            &#34;&#34;
+            if i + 1 in skipCols
+            else app.plain(
+                n,
+                _inTuple=True,
+                _asString=True,
+                withPassage=_doPassage(dContext, i),
+                highlights=highlights,
+                **newOptionsH,
+            )
+        )
+    html = (
+        f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&lt;td class=&#34;tf {ltr}&#34;&gt;&#39;
+        + f&#39;&lt;/td&gt;&lt;td class=&#34;tf {ltr}&#34;&gt;&#39;.join(html)
+        + &#34;&lt;/td&gt;&lt;/tr&gt;&#34;
+    )
+    if _asString:
+        return html
+
+    passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+    head = (
+        (
+            f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+            f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;
+        )
+        + f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
+        + &#34;&lt;/th&gt;&lt;/tr&gt;&#34;
+    )
+    html = &#34;&lt;table&gt;&#34; + head + &#34;&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    dh(html, inNb=inNb)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.pretty"><code class="name flex">
+<span>def <span class="ident">pretty</span></span>(<span>app, n, explain=False, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays the material that corresponds to a node in a graphical way.</p>
+<p>The internal structure of the nodes that are involved is also revealed.
+In addition, extra features and their values are displayed with the nodes.</p>
+<div class="admonition hint">
+<p class="admonition-title">Controlling pretty displays</p>
+<p>The following <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>
+are particularly relevant to pretty displays:</p>
+<ul>
+<li><code>condenseType</code>: the standard container to display nodes in;</li>
+<li><code>full</code>: whether to display a reference to the material or the material itself;</li>
+<li><code>extraFeatures</code>: additional features to
+display</li>
+<li><code>tupleFeatures</code>: additional features to
+display (primarily for <code><a title="tf.advanced.display.export" href="#tf.advanced.display.export">export()</a></code>.</li>
+</ul>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
+<dd>Node</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+<dt><strong><code>explain</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to print a trace of which nodes have been visited and how these
+calls have contributed to the end result.</dd>
+<dt><strong><code>asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the result is returned as string</dd>
+</dl>
+<h2 id="result">Result</h2>
+<p>html string or <code>None</code>
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
+as HTML.
+Otherwise the result is directly displayed in a notebook.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L890-L926" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pretty(app, n, explain=False, _asString=False, **options):
+    &#34;&#34;&#34;Displays the material that corresponds to a node in a graphical way.
+
+    The internal structure of the nodes that are involved is also revealed.
+    In addition, extra features and their values are displayed with the nodes.
+
+    !!! hint &#34;Controlling pretty displays&#34;
+        The following `tf.advanced.options`
+        are particularly relevant to pretty displays:
+
+        * `condenseType`: the standard container to display nodes in;
+        * `full`: whether to display a reference to the material or the material itself;
+        * `extraFeatures`: additional features to  display
+        * `tupleFeatures`: additional features to  display (primarily for `export`.
+
+    Parameters
+    ----------
+    n: integer
+        Node
+    options: dict
+        Display options, see `tf.advanced.options`.
+    explain: boolean, optional False
+        Whether to print a trace of which nodes have been visited and how these
+        calls have contributed to the end result.
+    asString: boolean, optional False
+        If True, the result is returned as string
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML.
+        Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    return render(app, True, n, False, _asString, explain, **options)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.prettyTuple"><code class="name flex">
+<span>def <span class="ident">prettyTuple</span></span>(<span>app, tup, seq=None, item='result', **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays the material that corresponds to a tuple of nodes in a graphical way.</p>
+<p>The member nodes of the tuple will be collected into containers, which
+will be displayed with <code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty()</a></code>, and the nodes of the tuple
+will be highlighted in the containers.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tup</code></strong> :&ensp;<code>iterable</code> of <code>integer</code></dt>
+<dd>The members of the tuple can be arbitrary nodes.</dd>
+<dt><strong><code>seq</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>an arbitrary number which will be displayed in the heading.
+This prepares the way for displaying query results, which come as
+a sequence of tuples of nodes.
+If None, no such number is displayed in the heading.</dd>
+<dt><strong><code>item</code></strong> :&ensp;<code>string</code>, optional <code>result</code></dt>
+<dd>A name for the tuple: it could be a result, or a chapter, or a line.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+</dl>
+<h2 id="result">Result</h2>
+<p>html string or <code>None</code>
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
+as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L812-L887" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def prettyTuple(app, tup, seq=None, _asString=False, item=RESULT, **options):
+    &#34;&#34;&#34;Displays the material that corresponds to a tuple of nodes in a graphical way.
+
+    The member nodes of the tuple will be collected into containers, which
+    will be displayed with `pretty()`, and the nodes of the tuple
+    will be highlighted in the containers.
+
+    Parameters
+    ----------
+    tup: iterable of integer
+        The members of the tuple can be arbitrary nodes.
+    seq: integer, optional None
+        an arbitrary number which will be displayed in the heading.
+        This prepares the way for displaying query results, which come as
+        a sequence of tuples of nodes.
+        If None, no such number is displayed in the heading.
+    item: string, optional result
+        A name for the tuple: it could be a result, or a chapter, or a line.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;prettyTuple&#34;, options):
+        return &#34;&#34;
+
+    dContext = display.distill(options)
+    colorMap = dContext.colorMap
+    highlights = dContext.highlights
+    condenseType = dContext.condenseType
+    condensed = dContext.condensed
+
+    _browse = app._browse
+    inNb = app.inNb
+    asString = _browse or _asString
+
+    if len(tup) == 0:
+        if asString:
+            return &#34;&#34;
+        else:
+            return
+
+    api = app.api
+    N = api.N
+    sortKey = N.sortKey
+
+    containers = {tup[0]} if condensed else condenseSet(api, tup, condenseType)
+    highlights = getTupleHighlights(api, tup, highlights, colorMap, condenseType)
+    seqRep = &#34;&#34; if seq is None else f&#34; &lt;i&gt;{seq}&lt;/i&gt;&#34;
+
+    if not asString:
+        dh(f&#34;&lt;p&gt;&lt;b&gt;{item}&lt;/b&gt;{seqRep}&#34;, inNb=inNb)
+    if asString:
+        html = []
+    for t in sorted(containers, key=sortKey):
+        h = app.pretty(
+            t,
+            highlights=highlights,
+            **display.consume(options, &#34;highlights&#34;),
+        )
+        if asString:
+            html.append(h)
+    if asString:
+        return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>app, tuples, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Displays an iterable of tuples of nodes.</p>
+<p>The elements of the list are displayed by <code>A.prettyTuple()</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">condense, condenseType</p>
+<p>You can condense the list first to containers of <code>condenseType</code>,
+before displaying the list.
+Pass the display parameters <code>condense</code> and <code>condenseType</code>.
+See <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tuples</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>integer</code></dt>
+<dd>The integers are the nodes, together they form a table.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+</dl>
+<h2 id="result">Result</h2>
+<p>html string or <code>None</code>
+When used for the TF browser (<code>app._browse</code> is true),
+or when <code>_asString</code> is True, the result is returned
+as HTML. Otherwise the result is directly displayed in a notebook.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L740-L809" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def show(app, tuples, _asString=False, **options):
+    &#34;&#34;&#34;Displays an iterable of tuples of nodes.
+
+    The elements of the list are displayed by `A.prettyTuple()`.
+
+    !!! hint &#34;condense, condenseType&#34;
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType`.
+        See `tf.advanced.options`.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    options: dict
+        Display options, see `tf.advanced.options`.
+
+    Result
+    ------
+    html string or `None`
+        When used for the TF browser (`app._browse` is true),
+        or when `_asString` is True, the result is returned
+        as HTML. Otherwise the result is directly displayed in a notebook.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;show&#34;, options):
+        return &#34;&#34;
+
+    _browse = app._browse
+    inNb = app.inNb
+    asString = _browse or _asString
+
+    dContext = display.distill(options)
+    end = dContext.end
+    start = dContext.start
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+
+    api = app.api
+    F = api.F
+
+    item = condenseType if condensed else RESULT
+
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+
+    html = []
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_SHOW, item, inNb):
+        item = F.otype.v(tup[0]) if condensed and condenseType else RESULT
+        thisResult = prettyTuple(
+            app,
+            tup,
+            seq=i,
+            item=item,
+            _asString=asString,
+            **options,
+        )
+        if asString:
+            html.append(thisResult)
+
+    if asString:
+        return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.display.table"><code class="name flex">
+<span>def <span class="ident">table</span></span>(<span>app, tuples, **options)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plain displays of an iterable of tuples of nodes in a table.</p>
+<p>The list is displayed as a compact markdown table.
+Every row is prepended with the sequence number in the iterable,
+and then displayed by <code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple()</a></code></p>
+<div class="admonition hint">
+<p class="admonition-title">condense, condenseType</p>
+<p>You can condense the list first to containers of <code>condenseType</code>,
+before displaying the list.
+Pass the display parameters <code>condense</code> and <code>condenseType</code>.
+See <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tuples</code></strong> :&ensp;<code>iterable</code> of <code>tuples</code> of <code>integer</code></dt>
+<dd>The integers are the nodes, together they form a table.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Display options, see <code><a title="tf.advanced.options" href="options.html">tf.advanced.options</a></code>.</dd>
+<dt><strong><code>_asString</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to deliver the result as a HTML string or to display it directly
+inside a notebook. When the TF-browser uses this function it needs the
+HTML string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b9fccdfcfc7d77ad766da7f99dc21c72325ba623/tf/advanced/display.py#L417-L504" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def table(app, tuples, _asString=False, **options):
+    &#34;&#34;&#34;Plain displays of an iterable of tuples of nodes in a table.
+
+    The list is displayed as a compact markdown table.
+    Every row is prepended with the sequence number in the iterable,
+    and then displayed by `plainTuple`
+
+    !!! hint &#34;condense, condenseType&#34;
+        You can condense the list first to containers of `condenseType`,
+        before displaying the list.
+        Pass the display parameters `condense` and `condenseType`.
+        See `tf.advanced.options`.
+
+    Parameters
+    ----------
+    tuples: iterable of tuples of integer
+        The integers are the nodes, together they form a table.
+    options: dict
+        Display options, see `tf.advanced.options`.
+    _asString: boolean, optional False
+        Whether to deliver the result as a HTML string or to display it directly
+        inside a notebook. When the TF-browser uses this function it needs the
+        HTML string.
+    &#34;&#34;&#34;
+
+    display = app.display
+
+    if not display.check(&#34;table&#34;, options):
+        return &#34;&#34;
+
+    _browse = app._browse
+    inNb = app.inNb
+
+    api = app.api
+    F = api.F
+    fOtypev = F.otype.v
+
+    dContext = display.distill(options)
+    end = dContext.end
+    start = dContext.start
+    withPassage = dContext.withPassage
+    condensed = dContext.condensed
+    condenseType = dContext.condenseType
+    skipCols = dContext.skipCols
+
+    ltr = _getLtr(app, dContext) or &#34;ltr&#34;
+
+    item = condenseType if condensed else RESULT
+
+    if condensed:
+        tuples = condense(api, tuples, condenseType, multiple=True)
+        skipCols = set()
+
+    passageHead = f&#39;&lt;/th&gt;&lt;th class=&#34;tf {ltr}&#34;&gt;p&#39; if withPassage is True else &#34;&#34;
+
+    html = []
+    one = True
+
+    newOptions = display.consume(options, &#34;skipCols&#34;)
+
+    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
+        if one:
+            heads = &#39;&lt;/th&gt;&lt;th class=&#34;tf&#34;&gt;&#39;.join(fOtypev(n) for n in tup)
+            html.append(
+                f&#39;&lt;tr class=&#34;tf {ltr}&#34;&gt;&#39;
+                f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;n{passageHead}&lt;/th&gt;&#39;
+                f&#39;&lt;th class=&#34;tf {ltr}&#34;&gt;{heads}&lt;/th&gt;&#39;
+                f&#34;&lt;/tr&gt;&#34;
+            )
+            one = False
+        html.append(
+            plainTuple(
+                app,
+                tup,
+                seq=i,
+                item=item,
+                position=None,
+                opened=False,
+                _asString=True,
+                skipCols=skipCols,
+                **newOptions,
+            )
+        )
+    html = &#34;&lt;table&gt;&#34; + &#34;\n&#34;.join(html) + &#34;&lt;/table&gt;&#34;
+
+    if _browse or _asString:
+        return html
+    dh(html, inNb=inNb)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#display">Display</a><ul>
+<li><a href="#display-parameters">Display parameters</a></li>
+<li><a href="#rendering">Rendering</a></li>
+<li><a href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.advanced.display.displayApi" href="#tf.advanced.display.displayApi">displayApi</a></code></li>
+<li><code><a title="tf.advanced.display.displayReset" href="#tf.advanced.display.displayReset">displayReset</a></code></li>
+<li><code><a title="tf.advanced.display.displaySetup" href="#tf.advanced.display.displaySetup">displaySetup</a></code></li>
+<li><code><a title="tf.advanced.display.displayShow" href="#tf.advanced.display.displayShow">displayShow</a></code></li>
+<li><code><a title="tf.advanced.display.export" href="#tf.advanced.display.export">export</a></code></li>
+<li><code><a title="tf.advanced.display.getCss" href="#tf.advanced.display.getCss">getCss</a></code></li>
+<li><code><a title="tf.advanced.display.loadCss" href="#tf.advanced.display.loadCss">loadCss</a></code></li>
+<li><code><a title="tf.advanced.display.plain" href="#tf.advanced.display.plain">plain</a></code></li>
+<li><code><a title="tf.advanced.display.plainTuple" href="#tf.advanced.display.plainTuple">plainTuple</a></code></li>
+<li><code><a title="tf.advanced.display.pretty" href="#tf.advanced.display.pretty">pretty</a></code></li>
+<li><code><a title="tf.advanced.display.prettyTuple" href="#tf.advanced.display.prettyTuple">prettyTuple</a></code></li>
+<li><code><a title="tf.advanced.display.show" href="#tf.advanced.display.show">show</a></code></li>
+<li><code><a title="tf.advanced.display.table" href="#tf.advanced.display.table">table</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
