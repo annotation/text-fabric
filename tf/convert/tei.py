@@ -59,87 +59,9 @@ conversion.
 Last, but not least, you can assemble all the input parameters needed to
 get the conversion off the ground.
 
-The resulting script will look like this:
-
-``` python
-
-import os
-from tf.convert.tei import TEI
-
-
-TEST_SET = set(
-    '''
-    18920227_HMKR_0001.xml
-    18920302_HMKR_0002.xml
-    18930711_PM_RANI_5003.xml
-    18980415y_PRIX_0007.xml
-    '''.strip().split()
-)
-
-AUTHOR = "Piet Mondriaan"
-TITLE = "Letters"
-INSTITUTE = "KNAW/Huygens Amsterdam"
-
-GENERIC = dict(
-    author=AUTHOR,
-    title=TITLE,
-    institute=INSTITUTE,
-    language="nl",
-    converters="Dirk Roorda (Text-Fabric)",
-    sourceFormat="TEI",
-    descriptionTf="Critical edition",
-)
-
-ABOUT_TEXT = '''
-# CONTRIBUTORS
-
-Researcher: Mariken Teeuwen
-
-Editors: Peter Boot et al.
-'''
-
-TRANSCRIPTION_TEXT = '''
-
-The TEI has been validated and polished
-before generating the TF data.
-'''
-
-DOC_MATERIAL = dict(
-    about=ABOUT_TEXT,
-    trans=TRANSCRIPTION_TEXT,
-)
-
-APP_CONFIG = dict(
-    provenanceSpec=dict(
-        corpus=f"{GENERIC['author']} - {GENERIC['title']}",
-        doi="10.5281/zenodo.nnnnnn",
-    )
-)
-
-
-HY = "\u2010"  # hyphen
-
-
-def transform(text):
-    return text.replace(",,", HY)
-
-
-T = TEI(
-    schema="MD",
-    sourceVersion="2023-01-31",
-    testSet=TEST_SET,
-    wordAsSlot=True,
-    sectionModel=dict(model="I"),
-    generic=GENERIC,
-    transform=transform,
-    tfVersion="0.1",
-    appConfig=APP_CONFIG,
-    docMaterial=DOC_MATERIAL,
-    force=True,
-)
-
-T.run(os.path.basename(__file__))
-```
+The resulting script will look like
+[tfFromTeiExample.py](https://github.com/annotation/text-fabric/blob/master/tf/convert/tfFromTeiExample.py)
+which you can use as a starting point.
 """
 
 import sys
@@ -167,347 +89,6 @@ from ..core.helpers import (
     unexpanduser as ux,
 )
 from ..tools.xmlschema import Analysis
-
-
-__pdoc__ = {}
-
-DOC_TRANS = """
-## Essentials
-
-*   Text-Fabric non-slot nodes correspond to TEI elements in the source.
-*   Text-Fabric node-features correspond to TEI attributes.
-*   Text-Fabric slot nodes correspond to characters or words in TEI element content.
-
-In order to understand the encoding, you need to know
-
-*   the [TEI elements](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ELEMENTS.html).
-*   the [TEI attributes](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ATTS.html).
-*   the [Text-Fabric datamodel](https://annotation.github.io/text-fabric/tf/about/datamodel.html)
-
-The TEI to TF conversion is an almost literal and very faithful transformation from
-the TEI source files to a Text-Fabric data set.
-
-But there are some peculiarities.
-
-## Sectioning
-
-The material is divided into three levels of sections, mainly for the purposes
-of text display.
-
-But how these levels relate to the source material is a different matter.
-
-The conversion supports a few sectioning models that specify this.
-This aspect is *work-in-progress*, because TEI sources differ wildly in how they
-are sectioned.
-The sectioning models that are currently supported correspond to cases we have
-encountered, we have not done exhaustive research into TEI sectioning in practice.
-
-### Model I: folders and files
-
-This model assumes that the source is a directory consisting of folders
-consisting of xml files, the TEI files.
-
-There are three section levels: folder - file - subdivision in file.
-
-1.  Subdirectories and files are sorted in the lexicographic ordering
-1.  The folder `__ignore__` is ignored.
-1.  For each folder, a section level 1 node will be created, with
-    feature `name` containing its name.
-1.  For each file in a folder, a section level 2 node will be created, with
-    feature `name` containing its name.
-1.  A third section level, named `chunk` will be made.
-    For each immediate child element of `<teiHeader>` and for each immediate child
-    element of `<body>`, a chunk node will be created, wit a feature `chunk`
-    containing the number of the chunk within the file, starting with 1.
-    Also the following elements will trigger a chunk node:
-    `<facsimile>`, `<fsdDecl>`, `<sourceDoc>`, and `<standOff>`.
-
-### Model II: single file and divs.
-
-This model assumes that the source is a single TEI file.
-
-There are two section levels: "chapter"like - "p"like.
-
-1.  The name of the source file is not recorded.
-1.  The first section level, named `chapter` will be made as follows:
-    *   `<teiHeader>` is a chapter;
-    *   immediate children of `<text>` are chapters,
-        except the *text structure* elements
-        `<front>`, `<body>`, `<back>` and `<group>`;
-    *   immediate children of the text structure elements are chapters;
-1.  The heading of a chapter is either the text in a heading-bearing element,
-    or, if no such element is found, a sequence number and the tag name;
-1.  The heading bearing element is searched by its element
-    name and a dictionary of attribute values.
-    For example:
-
-    ```
-    element = "head"
-    attributes = dict(rend="h3")
-    ```
-
-    Any element that follows the chapter element and satisfies these criteria,
-    defines the heading.
-
-1.  Heading bearing elements also occur in the text, and are treated in the same
-    way as all other elements. The only special thing is that their plain text
-    content is used as the value of a feature.
-1.  The second section level, named `chunk` consists of the top-level elements within
-    the chapters, except certain empty elements, such as breaks.
-1.  Section-2-level nodes get a feature `chunk` with a chunk number.
-1.  `cn` is positive for `<p>` elements, and it is the sequence number
-    of the `p` within the chapter.
-1.  `cn` is negative for all other elements of section-level-2. For those elements
-    it is the sequence number of the non-p immediate children of the chapter.
-
-### Specifying a sectioning model
-
-## Elements and attributes
-
-1.  All elements, except `<TEI>` and `<teiHeader>` result in nodes whose type is
-    exactly equal to the tag name.
-1.  These nodes are linked to the slots that are produced when converting the
-    content of the corresponding source elements.
-1.  Attributes translate into features of the same name; the feature assigns
-    the attribute value (as string) to the node that corresponds to the element
-    of the attribute.
-
-## Word detection
-
-Words will be detected. They are maximally long sequences of alphanumeric characters
-and hyphens.
-
-1.  What is alphanumeric is determined by the unicode class of the character,
-    see the Python documentation of the function
-    [`isalnum()`](https://docs.python.org/3/library/stdtypes.html#text-sequence-type-str)
-1.  Hyphens are Unicode characters 002D (ascii hyphen) and 2010 (unicode hyphen).
-1.  Words get the following features:
-    *   `str`: the alphanumeric string that is the word;
-    *   `after`: the non-alphanumeric string after the word unti the following word.
-
-## Slots
-
-Whether characters of words are taken as the basic unit (*slot*) is decided
-by the parameter `wordAsSlot`, passed to the conversion.
-
-### Characters as slots
-
-The basic unit is the unicode character.
-For each character in the input we make a slot, but the correspondence is not
-quite 1-1.
-
-1.  Spaces are stripped when they are between elements whose parent does not allow
-    mixed content; other whitespace is reduced to a single space.
-1.  All slots inside the teiHeader will get the feature `is_meta` set to 1;
-    for slots inside the body, `is_meta` has no value.
-1.  Necessarily empty elements will cause a feature `empty_`*tag*`=1` on the
-    last slot; *tag* is the name of the empty element. All attributes of such
-    an element go into features `empty_`*tag*`_`*att*`=`*value* on the same slot.
-1.  Empty elements that are not necessarily empty will receive one extra slot;
-    this will anchor the element to
-    a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
-    as character value.
-1.  Slots get the following features:
-    *   `ch`: the character of the slot
-    *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
-
-### Words as slots
-
-The basic unit is the word, as detected by the rules above.
-
-1. Instead of inserting empty characters for accidentally empty elements,
-   we insert empty words, with ZERO-WIDTH-SPACE (Unicode 200B) as value for
-   feature `str` and `empty=1`.
-2. Nodes that contain only part of the characters of a word, will contain the whole
-   word.
-3. Features that have different values for different characters in the word,
-   will have the most salient value for the whole word.
-   The concept of *salient* is rather coarse:
-
-   *    `None` values are the least salient
-   *    for integer values: bigger values are more salient than smaller values
-   *    for string values: linger strings are more salient than smaller strings,
-        for strings of equal length the lexicographic ordering holds.
-
-## Text kinds and text formatting
-
-We record in additional features whether text occurs in metadata elements and
-in note elements and what formatting specifiers influence the text.
-These features are provided for characters and words, and have only one value: 1.
-The absence of values means that the corresponding property does not hold.
-
-The following features are added:
-
-*   `is_meta`: 1 if the word occurs in inside the `<teiHeader>`, no value otherwise.
-*   `is_note`: 1 if the word occurs in inside the `<note>`, no value otherwise.
-*   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
-
-All these features are defined for `char` and `word` nodes.
-For word nodes, the value of these features is set equal to what these features
-are for their first character.
-
-Special formatting for the `rend_`*r* features is supported for some values of *r*.
-The conversion supports these out-of-the-box:
-
-`italic`
-`bold`
-`underline`
-`center`
-`large`
-`spaced`
-`margin`
-`above`
-`below`
-`sub`
-`sup`
-`super`
-
-It is possible for the corpus designer to add more formatting on a per-corpus
-basis by adding it to the `display.css` in the app directory of the corpus.
-Unsupported values get a generic kind of special format: an orange-like color.
-
-Special formatting becomes visible when material is rendered in a `layout` text
-format.
-
-## Text-formats
-
-Text-formats regulate how text is displayed, and they can also determine
-what text is displayed.
-
-There are two kind of text-formats: those that start with the word `layout` and
-those that start with `text`.
-
-The `text` formats do not apply any kind of special formating, the `layout` formats
-do.
-
-We have the following formats:
-
-*   `text-orig-full`: all text
-*   `layout-orig-full`: all text, formatted in HTML
-
-## Simplifications
-
-XML is complicated, the TEI guidelines use that complexity to the full.
-In particular, it is difficult to determine what the set of TEI elements is
-and what their properties are, just by looking at the schemas, because they are full
-of macros, indirections, and abstractions, which can be overridden in any particular
-TEI application.
-
-On the other hand, the resulting TF should consist of clearly demarcated node types
-and a simple list of features. In order to make that happen, we simplify matters
-a bit.
-
-1.  Processing instructions (`<!proc a="b">`) are ignored.
-1.  Comments (`<!-- this is a comment -->`) are ignored.
-1.  Declarations (`<?xml ...>` `<?xml-model ...>` `<?xml-stylesheet ...>`) are
-    read by the parser, but do not leave traces in the TF output.
-1.  The atrributes of the root-element (`<TEI>`) are ignored.
-1.  Namespaces (`xmlns="http://www.tei-c.org/ns/1.0"`) are read by the parser,
-    but only the unqualified names are distinguishable in the output as feature names.
-    So if the input has elements `tei:abb` and `ns:abb`, we'll see just the node
-    type `abb` in the output.
-
-## Validation
-
-We have used [lxml](https://lxml.de) for XML parsing. During `convert` it is not used
-in validating mode, but we can trigger a validation step during `check`.
-
-However, some information about the elements, in particular whether they allow
-mixed content or not, has been gleaned from the schemas, and has been used
-during conversion.
-
-Care has been taken that the names of these extra nodes and features do not collide
-with element/attribute names of the TEI.
-
-## TF noded and features
-
-(only in as far they are not in 1-1 correspondence with TEI elements and attributes)
-
-### node type `folder`
-
-*The type of subfolders of TEI documents.*
-
-**Section level 1, in model I**
-
-**Features**
-
-feature | description
---- | ---
-`folder` | name of the subfolder
-
-### node type `file`
-
-*The type of individual TEI documents.*
-
-**Section level 2, in model I**
-
-**Features**
-
-feature | description
---- | ---
-`file` | name of the file, without the `.xml` extension. Other extensions are included.
-
-### node type `chapter`
-
-*The type of chapters in a TEI document.*
-
-**Section level 1, in model II**
-
-**Features**
-
-feature | description
---- | ---
-`chapter` | heading of the chapter
-
-### node type `chunk`
-
-*Top-level division of material inside a document in model I,
-paragraph-like division in model II.*
-
-**Section level 3, in model I and level 2 in model II**
-
-**Features**
-
-feature | description
---- | ---
-`chunk` | sequence number of the chunk within the document, starting with 1.
-
-### node type `word`
-
-*Individual words, without punctuation.*
-
-**Features**
-
-feature | description
---- | ---
-`str` | the characters of the word, without soft hyphens.
-`after` | the non-word characters after the word, up till the next word.
-`is_meta` | whether a word is in the teiHeader element
-`is_note` | whether a word is in a note element
-`rend_`*r* | whether a word is under the influence of a `rend="`*r*`"` attribute.
-
-### node type `char`
-
-*Unicode characters.*
-
-**Slot type.**
-
-The characters of the text of the elements.
-Ignorable whitespace has been discarded, and is not present in the TF dataset.
-Meaningful whitespace has been condensed to single spaces.
-
-Some empty slots have been inserted to mark the place of empty elements.
-
-**Features**
-
-feature | description
---- | ---
-`ch` | the unicode character in that slot. There are also slots
-`empty` | whether a slot has been inserted in an empty element
-`is_meta` | whether a character is in the teiHeader element
-`is_note` | whether a character is in a note element
-`rend_`*r* | whether a character is under the influence of a `rend="`*r*`"` attribute.
-"""
 
 
 SECTION_MODELS = dict(I={}, II=dict(element=(str, "head"), attributes=(dict, {})))
@@ -576,6 +157,61 @@ def checkSectionModel(sectionModel):
     return dict(model=model, criteria=criteria)
 
 
+def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
+    if wordAsSlot:
+        slot = "word"
+        slotc = "Word"
+        slotf = "words"
+        xslot = "`word`"
+    else:
+        slotc = "Char"
+        slot = "char"
+        slotf = "characters"
+        xslot = "`char` and `word`"
+
+    if sectionModel == "II":
+        nLevels = "2"
+    else:
+        nLevels = "3"
+
+    head = sectionCriteria["element"]
+    attributes = sectionCriteria["attributes"]
+    criteriaRaw = repr(sectionCriteria)
+    criteria = (
+        "".join(
+            f"\t*\t`{att}` = `{val}`\n" for (att, val) in sorted(attributes.items())
+        )
+        if attributes
+        else "\t*\t*no attribute criteria*\n"
+    )
+    modelKeepRe = re.compile(rf"«(?:begin|end)Model{sectionModel}»")
+    modelRemoveRe = re.compile(r"«beginModel([^»]+)».*?«endModel\1»", re.S)
+    slotKeepRe = re.compile(rf"«(?:begin|end)Slot{slot}»")
+    slotRemoveRe = re.compile(r"«beginSlot([^»]+)».*?«endSlot\1»", re.S)
+
+    skipVars = re.compile(r"«[^»]+»")
+
+    text = (
+        template.replace("«slot»", slot)
+        .replace("«Slot»", slotc)
+        .replace("«slotf»", slotf)
+        .replace("«char and word»", xslot)
+        .replace("«nLevels»", nLevels)
+        .replace("«sectionModel»", sectionModel)
+        .replace("«head»", head)
+        .replace("«criteria»", criteria)
+        .replace("«criteriaRaw»", criteriaRaw)
+    )
+
+    text = modelKeepRe.sub("", text)
+    text = modelRemoveRe.sub("", text)
+    text = slotKeepRe.sub("", text)
+    text = slotRemoveRe.sub("", text)
+
+    text = skipVars.sub("", text)
+    return text
+
+
 class TEI:
     def __init__(
         self,
@@ -593,6 +229,11 @@ class TEI:
         force=False,
     ):
         """Converts TEI to TF.
+
+        For documentation of the resulting encoding, read the
+        [transcription template](https://github.com/annotation/text-fabric/blob/master/tf/convert/app/transcription.md).
+
+        Below we describe how to control the conversion machinery.
 
         We adopt a fair bit of "convention over configuration" here, in order to lessen
         the burden for the user of specifying so many details.
@@ -2168,10 +1809,13 @@ class TEI:
         myDir = self.myDir
         appConfig = self.appConfig
         force = self.force
+        wordAsSlot = self.wordAsSlot
+        sectionModel = self.sectionModel
+        sectionCriteria = self.sectionCriteria
 
         itemSpecs = (
             ("about", "docs", "about.md", False),
-            ("trans", "docs", "transcription.md", False),
+            ("trans", ("app", "docs"), "transcription.md", True),
             ("logo", "app/static", "logo.png", True),
             ("display", "app/static", "display.css", True),
             ("config", "app", "config.yaml", True),
@@ -2197,16 +1841,76 @@ class TEI:
                 fh.write(text)
 
         def createApp(itemSource, itemTarget):
-            wordAsSlot = self.wordAsSlot
-            textFeature = "str" if wordAsSlot else "ch"
+            """Copies and tweaks the app.py file of an TF app.
+
+            The template app.py provides text formatting functions.
+            It retrieves text from features, but that is dependent on
+            the settings of the conversion, in particular whether we have words as
+            slots or characters.
+
+            Depending on that we insert some code in the template.
+
+            The template contains the string `F.matérial`, and it will be replaced
+            by something like
+
+            ```
+            F.ch.v(n)
+            ```
+
+            or
+
+            ```
+            f"{F.str.v(n)}{F.after.v(n)}"
+            ```
+
+            That's why the variable `materialCode` in the body gets a rather
+            unusual value: it is interpreted later on as code.
+            """
+
+            materialCode = (
+                'f"{F.str.v(n)}{F.after.v(n)}"' if wordAsSlot else "F.ch.v(n)"
+            )
 
             with open(itemSource) as fh:
                 code = fh.read()
 
-            code = code.replace("tèxtFeature", textFeature)
+            code = code.replace("F.matérial", materialCode)
 
             with open(itemTarget, "w") as fh:
                 fh.write(code)
+
+        def createTranscription(itemSource, itemTarget):
+            """Copies and tweaks the transcription.md file for a TF corpus."""
+            org = self.org
+            repo = self.repo
+            generic = self.generic
+
+            generic = "\n\n".join(
+                f"## {key}\n\n{value}\n" for (key, value) in generic.items()
+            )
+
+            with open(itemSource) as fh:
+                template = fh.read()
+
+            result = (
+                dedent(
+                    f"""
+                # Corpus {org} - {repo}
+
+                """
+                )
+                + tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria)
+                + dedent(
+                    """
+
+                    ## See also
+
+                    *   [about](about.md)
+                    """
+                )
+            )
+            with open(itemTarget, "w") as fh:
+                fh.write(result)
 
         def createAbout():
             org = self.org
@@ -2239,41 +1943,17 @@ class TEI:
                 )
             )
 
-        def createTranscription():
-            org = self.org
-            repo = self.repo
-            generic = self.generic
-
-            generic = "\n\n".join(
-                f"## {key}\n\n{value}\n" for (key, value) in generic.items()
-            )
-
-            return (
-                dedent(
-                    f"""
-                # Corpus {org} - {repo}
-
-                """
-                )
-                + DOC_TRANS
-                + dedent(
-                    """
-
-                    ## See also
-
-                    *   [about](about.md)
-                    """
-                )
-            )
-
         console("App updating ...")
 
         for (name, info) in items.items():
             parent = info["parent"]
+            (sourceBit, targetBit) = (
+                parent if type(parent) is tuple else (parent, parent)
+            )
             file = info["file"]
             hasTemplate = info["hasTemplate"]
 
-            targetDir = f"{repoDir}/{parent}"
+            targetDir = f"{repoDir}/{targetBit}"
             itemTarget = f"{targetDir}/{file}"
             fileParts = file.rsplit(".", 1)
             if len(fileParts) == 1:
@@ -2301,21 +1981,21 @@ class TEI:
                 continue
 
             if hasTemplate:
-                sourceDir = f"{myDir}/{parent}"
+                sourceDir = f"{myDir}/{sourceBit}"
                 itemSource = f"{sourceDir}/{file}"
                 (
                     createConfig
                     if name == "config"
                     else createApp
                     if name == "app"
+                    else createTranscription
+                    if name == "trans"
                     else fileCopy
                 )(itemSource, target)
 
             else:
                 with open(target, "w") as fh:
-                    fh.write(
-                        (createAbout if name == "about" else createTranscription)()
-                    )
+                    fh.write(createAbout())
             console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
 
         return True
@@ -2469,6 +2149,3 @@ class TEI:
             sys.exit(0)
         else:
             sys.exit(1)
-
-
-__pdoc__["TEI"] = DOC_TRANS

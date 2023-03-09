@@ -22,7 +22,7 @@ class TfApp(App):
         api = app.api
         F = api.F
         Fs = api.Fs
-        material = F.tèxtFeature.v(n)
+        material = F.matérial
         rClses = " ".join(f"r_ r_{r}" for (fr, r) in rendFeatures if Fs(fr).v(n))
         iClses = " ".join(ic for ic in isFeatures if Fs(ic).v(n))
         if rClses or iClses:

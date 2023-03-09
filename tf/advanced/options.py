@@ -114,6 +114,11 @@ queryFeatures: boolean, optional True
     indicates whether pretty displays should show the features
     mentioned in the last query and their values.
 
+multiFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show all possible node features
+    provided they have a non-empty value.
+
 showGraphics: boolean, optional True
     **interface option**
     indicates whether plain and pretty displays should include associated
@@ -382,7 +387,7 @@ INTERFACE_OPTIONS = (
     (
         "standardFeatures",
         False,
-        "showf",
+        "shows",
         "show standard features",
         "Show the standard feature values for every node in the results.",
         False,
@@ -393,6 +398,14 @@ INTERFACE_OPTIONS = (
         "showf",
         "show query features",
         "Show the features mentioned in the last query for every node in the results.",
+        False,
+    ),
+    (
+        "multiFeatures",
+        True,
+        "showm",
+        "show all possible node features",
+        "Show all possible node features with non-empty values.",
         False,
     ),
     (
@@ -422,6 +435,18 @@ INTERFACE_OPTIONS = (
         False,
     ),
 )
+"""Options that can be set on the interface of the text-fabric browser.
+
+Every option is a tuple with members
+
+*   *option*: the name by which you can control this option in API functions;
+*   *default*: the value that is used if this option is nowhere explicitly given;
+*   *acro*: acronym for this option, used in the html as value for an id attribute;
+*   *desc*: short description;
+*   *long*: long description;
+*   *move*: whether to move this option into a separate box in the text-fabric
+    browser.
+"""
 
 
 # <p><b title="withTypes">Show types</b>{longDesc}</p>

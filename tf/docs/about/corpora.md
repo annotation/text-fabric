@@ -73,6 +73,13 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Erik-Jan Bos (ed, 2011); 
     Dirk Roorda (converter TEI, 2011 and TF 2023)
 
+[CLARIAH/wp6-ferdinandhuyck](https://github.com/CLARIAH/wp6-ferdinandhuyck)
+:   *Dutch* 
+    a novel by Jacob van Lennep, 1840,
+    **Jacob van Lennep - Ferdinand Huyck**;
+    From [DBNL](https://www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite;
+    Dirk Roorda (converter TEI to TF), see also `tf.convert.tei`
+
 [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
     General Missives, 1600 - 1800,

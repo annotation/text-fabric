@@ -40,12 +40,15 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     if isPretty:
         tupleFeatures = dContext.tupleFeatures
         extraFeatures = dContext.extraFeatures
+        multiFeatures = dContext.multiFeatures
 
         dContext.set(
             "features",
             sorted(flattenToSet(extraFeatures[0]) | flattenToSet(tupleFeatures)),
         )
         dContext.set("featuresIndirect", extraFeatures[1])
+        if multiFeatures:
+            dContext.set("featuresAll", tuple(app.api.Fall()))
 
     tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
     (chunk, info, subTrees) = tree
@@ -450,6 +453,9 @@ def _getFeatures(info, n, nType):
     options = info.options
     dFeatures = options.features
     dFeaturesIndirect = options.featuresIndirect
+    multiFeatures = options.multiFeatures
+    if multiFeatures:
+        featuresAll = options.featuresAll
     queryFeatures = options.queryFeatures
     standardFeatures = options.standardFeatures
     suppress = options.suppress
@@ -472,14 +478,20 @@ def _getFeatures(info, n, nType):
         f for f in dFeatures if not standardFeatures or f not in givenFeatureSet
     )
     featureList = tuple(featuresBare + features) + xFeatures
+    if multiFeatures:
+        featureList += featuresAll
     bFeatures = len(featuresBare)
     nbFeatures = len(featuresBare) + len(features)
 
     featurePart = ""
 
-    if standardFeatures or queryFeatures:
+    if standardFeatures or queryFeatures or multiFeatures:
+        seen = set()
+
         for (i, name) in enumerate(featureList):
-            if name not in suppress:
+            if name not in suppress and name not in seen:
+                seen.add(name)
+
                 fsName = lookupMethod(name)
                 if fsName is None:
                     continue
@@ -514,7 +526,7 @@ def _getFeatures(info, n, nType):
                         value = value[0:-1] + NBSP
                     isBare = i < bFeatures
                     isExtra = i >= nbFeatures
-                    if (
+                    if not multiFeatures and (
                         isExtra
                         and not queryFeatures
                         or not isExtra
