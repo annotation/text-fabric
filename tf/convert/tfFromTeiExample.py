@@ -65,18 +65,19 @@ def transform(text):
     return text.replace(",,", HY)
 
 
-T = TEI(
-    schema="MD",
-    sourceVersion="2023-01-31",
-    testSet=TEST_SET,
-    wordAsSlot=True,
-    sectionModel=dict(model="I"),
-    generic=GENERIC,
-    transform=transform,
-    tfVersion="0.1",
-    appConfig=APP_CONFIG,
-    docMaterial=DOC_MATERIAL,
-    force=True,
-)
+if __name__ == "__main__":
+    T = TEI(
+        schema="MD",
+        sourceVersion="2023-01-31",
+        testSet=TEST_SET,
+        wordAsSlot=True,
+        sectionModel=dict(model="I"),
+        generic=GENERIC,
+        transform=transform,
+        tfVersion="0.1",
+        appConfig=APP_CONFIG,
+        docMaterial=DOC_MATERIAL,
+        force=True,
+    )
 
-T.run(os.path.basename(__file__))
+    T.run(os.path.basename(__file__))
