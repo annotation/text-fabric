@@ -1,0 +1,1574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.advanced.options API documentation</title>
+<meta name="description" content="Display Settings …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.options</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="display-settings">Display Settings.</h1>
+<p>Display options are used by</p>
+<pre><code>tf.advanced.display.plain
+</code></pre>
+<p>and</p>
+<pre><code>tf.advanced.display.pretty
+</code></pre>
+<p>and other display functions.</p>
+<p>This class manages</p>
+<ul>
+<li>the provisining of options with defaults,</li>
+<li>the overriding options by passing options as arguments to display functions</li>
+<li>the retrieval of option values by the rest of the application.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">distinction between interface options and display options</p>
+<ul>
+<li>all interface options are also display options and can be passed as arguments
+to display functions</li>
+<li>interface options have a checkbox in the TF browser</li>
+</ul>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>baseTypes</code></strong> :&ensp;<code>string | iterable</code>, optional `None``</dt>
+<dd><strong>interface option</strong>
+Node types at the bottom of pretty displays.
+The default is app dependent, usually the slot type of the corpus.</dd>
+<dt><strong><code>condensed</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates one of two modes of displaying the result list:</p>
+<ul>
+<li><code>True</code>: instead of showing all results one by one,
+we show container nodes with all results in it highlighted.
+That way, we blur the distinction between the individual results,
+but it is easier to oversee where the results are.
+This is how SHEBANQ displays its query results.
+<strong>See also the parameter <code>condenseType</code></strong>.</li>
+<li><code>False</code>: make a separate display for each result tuple.
+This gives the best account of the exact result set.</li>
+</ul>
+<div class="admonition caution">
+<p class="admonition-title">mixing up highlights</p>
+<p>Condensing may mix-up the highlight coloring.
+If a node occurs in two results, at different positions
+in the tuple, the <code>colorMap</code> wants to assign it two colors!
+Yet one color will be chosen, and it is unpredictable which one.</p>
+</div>
+</dd>
+<dt><strong><code>condenseType</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd><strong>interface option</strong>
+The type of container to be used for condensing results.
+The default is app dependent, usually <code>verse</code> or <code>tablet</code>.</dd>
+<dt><strong><code>fmt</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p><strong>interface option</strong>
+<code>fmt</code> is the text format that will be used for the representation.
+E.g. <code>text-orig-full</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Text formats</p>
+<p>Use <code>T.formats</code> to inspect what text formats are available in your corpus.</p>
+</div>
+</dd>
+<dt><strong><code>hideTypes</code></strong> :&ensp;<code>boolean | optional True</code></dt>
+<dd><strong>interface option</strong>
+If <code>True</code>, hidden types are in fact hidden, otherwise the hiding of types
+has no effect.</dd>
+<dt><strong><code>hiddenTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
+<dd>
+<p><strong>interface option</strong>
+Node types that will not be shown in displays.
+All node types can be hidden, except the slot type and the section types.
+Structure types can be hidden.</p>
+<div class="admonition hint">
+<p class="admonition-title">Meaning</p>
+<p>Nodes of hidden types will not be skipped, but they do not add visible
+structure to the display. The material under those nodes will still
+be displayed. For example, if the corpus has verses divided into half verses,
+and you are not interested in the half verse division, you can make
+half verses hidden. The content of the half verses is still shown,
+but the half verse division is gone.</p>
+</div>
+<p>The default is app dependent, usually the empty set.</p>
+</dd>
+<dt><strong><code>lineNumbers</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether line numbers should be displayed.</p>
+<div class="admonition note">
+<p class="admonition-title">source data</p>
+<p>Line numbers are with respect to the source data file that is contains the
+origin material of the node in question, if a datasource provides
+a feature that contains line numbers.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">configuration</p>
+<p>Whether a corpus has line numbers, and in which feature they are stored
+for which node types is configured in a corpus dependent app.</p>
+<p>If the corpus has no line numbers, the default is <code>None</code>.</p>
+</div>
+</dd>
+<dt><strong><code>plainGaps</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether gaps types should be displayed in plain displays.
+In pretty displays gaps are marked by dotted left-right borders of the nodes
+around the gaps. In plain displays such borders are generally disruptive,
+but it is possible to show them.</dd>
+<dt><strong><code>prettyTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd><strong>interface option</strong>
+indicates whether node types should always be displayed in pretty displays.
+The node type of slot nodes is never displayed.</dd>
+<dt><strong><code>queryFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show the features
+mentioned in the last query and their values.</dd>
+<dt><strong><code>multiFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show all possible node features
+provided they have a non-empty value.</dd>
+<dt><strong><code>showGraphics</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether plain and pretty displays should include associated
+graphic elements.</p>
+<div class="admonition caution">
+<p class="admonition-title">configuration</p>
+<p>Whether a corpus has graphics for some nodetypes and how to get them is
+configured in a corpus dependent app.</p>
+<p>If the corpus has no graphics, the default is <code>None</code>.</p>
+</div>
+</dd>
+<dt><strong><code>showMath</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether plain and pretty displays should interpret the <code>$</code>
+to mark mathematical formulas in TeX notation.</p>
+<div class="admonition caution">
+<p class="admonition-title">real dollars</p>
+<p>If you have a corpus where the character <code>$</code> is used in an ordinary way,
+this option should be set to <code>False</code>.</p>
+</div>
+</dd>
+<dt><strong><code>standardFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show standard features and their values.</dd>
+<dt><strong><code>withLabels</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show labels.</dd>
+<dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether node numbers should be displayed.</p>
+<div class="admonition hint">
+<p class="admonition-title">zooming in</p>
+<p>If you are in a Jupyter notebook, you can inspect in a powerful way by
+setting <code>withNodes=True</code>. Then every part of a pretty display shows
+its node number, and you can use the following APIs
+to look up all information
+about each node that the corpus has to offer:</p>
+<ul>
+<li><strong>F</strong>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
+<li><strong>E</strong>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
+<li><strong>L</strong>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
+<li><strong>T</strong>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
+</ul>
+</div>
+</dd>
+<dt><strong><code>withTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd><strong>interface option</strong>
+indicates whether node types should be displayed.
+The node type of slot nodes is never displayed.</dd>
+<dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>Which nodes of a tuple (or list of tuples) will be highlighted.
+If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
+the default highlight color, which is yellow.</p>
+<p>But you can assign different colors to the members of the tuple:
+<code>colorMap</code> must be a dictionary that maps the positions in a tuple
+to a color.</p>
+<ul>
+<li>If a position is not mapped, it will not be highlighted.</li>
+<li>If it is mapped to the empty string, it gets the default highlight color.</li>
+<li>Otherwise, it should be mapped to a string that is a valid
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">color names</p>
+<p>The link above points to a series of handy color names and their previews.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">highlights takes precedence over colorMap</p>
+<p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p>
+<p>If you need to micro-manage, <code>highlights</code> is your thing.
+Whenever possible, use <code>colorMap</code>.</p>
+</div>
+</dd>
+<dt><strong><code>end</code></strong> :&ensp;<code>int</code>, optional <code>None</code></dt>
+<dd><code>end</code> is the end point in the iterable of results.
+If <code>None</code>, displaying will stop after the end of the iterable.</dd>
+<dt><strong><code>extraFeatures</code></strong> :&ensp;<code>string | iterable</code>, optional <code>()</code></dt>
+<dd>
+<p>A string or iterable of feature names.
+These features will be loaded automatically.
+In pretty displays these features will show up as <code>feature=value</code>,
+provided the value is not <code>None</code>, or something like None.</p>
+<div class="admonition hint">
+<p class="admonition-title">Automatic loading</p>
+<p>These features will load automatically, no explicit loading is
+necessary.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">values from other nodes</p>
+<p>Suppose you want to display a value from a related node, e.g. a <code>gloss</code>
+that is available on <code>lex</code> nodes but not on <code>word</code> nodes, and you
+want to show it on the word nodes.
+Then you may specifiy <code>lex:gloss</code>, meaning that Text-Fabric will
+look up a <code>lex</code> node from the current node (by means of <code>L.u(w, otype='lex')</code>,
+and if it finds one, it will read the <code>gloss</code> feature from it.</p>
+</div>
+</dd>
+<dt><strong><code>full</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>For pretty displays: indicates that the whole object should be
+displayed, even if it is big.</p>
+<div class="admonition hint">
+<p class="admonition-title">Big objects</p>
+<p>Big objects are objects of a type that is bigger than the default condense type.</p>
+</div>
+</dd>
+<dt><strong><code>highlights</code></strong> :&ensp;<code>dict | set</code>, optional <code>{}</code></dt>
+<dd>
+<p>When nodes such as verses and sentences and lines and cases are displayed
+by <code>plain()</code> or <code>pretty()</code>,
+their contents is also displayed. You can selectively highlight
+those parts.</p>
+<p><code>highlights={}</code> is a set or mapping of nodes that should be highlighted.
+Only nodes that are involved in the display will be highlighted.</p>
+<p>If <code>highlights</code> is a set, its nodes will be highlighted
+with a default color (yellow).</p>
+<p>If it is a dictionary, it should map nodes to colors.
+Any color that is a valid
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
+qualifies.</p>
+<p>If you map a node to the empty string, it will get the default highlight color.</p>
+<p>Highlights in plain display will be done, also for nodes deeply buried in the top node.
+Slots are higlighted by coloring the background,
+all other nodes by colored frames around their material.</p>
+<div class="admonition note">
+<p class="admonition-title">one big highlights dictionary</p>
+<p>It is OK to first compose a big highlights dictionary
+for many tuples of nodes,
+and then run <code>prettyTuple()</code> for many different tuples
+with the same <code>highlights</code>.
+It does not harm performance if <code>highlights</code> maps
+lots of nodes outside the tuple as well.</p>
+</div>
+</dd>
+<dt><strong><code>noneValues</code></strong> :&ensp;<code>set</code>, optional <code>None</code></dt>
+<dd>
+<p>A set of values for which no display should be generated.
+The default set is <code>None</code> and the strings <code>NA</code>, <code>none</code>, <code>unknown</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">None is useful</p>
+<p>Keep <code>None</code> in the set. If not, all custom features will be displayed
+for all kinds of nodes. So you will see clause types on words,
+and part of speech on clause atoms, al with value <code>None</code>.</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Suppress common values</p>
+<p>You can use <code>noneValues</code> also to suppress the normal values of a feature,
+in order to attract attention to the more special values, e.g.</p>
+<pre><code>noneValues={None, 'NA', 'unknown', 'm', 'sg', 'p3'}
+</code></pre>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">None values affect all features</p>
+<p>Beware of putting to much in <code>noneValues</code>.
+The contents of <code>noneValues</code> affect the display of
+all features, not only the custom features.</p>
+</div>
+</dd>
+<dt><strong><code>skipCols</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dd>
+<p>indicates columns to skip in <code>show()</code>, <code>table()</code>;
+no effect on <code>prettyTuple()</code> and <code>plainTuple()</code>.
+Also no effect if <code>condensed</code> is True.</p>
+<p>The columns are not really removed, but the cells in the columns
+become empty.</p>
+<p>So it will not disturb the highlighting of the tuples involved,
+and it does not disturb the working of <code>colorMap</code>.</p>
+<p>The value may be a space-separated string of numbers, or an iterable of integers.
+Columns start at 1.</p>
+</dd>
+<dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd><code>start</code> is the starting point for displaying the iterable of results.
+(1 is the first one).
+If <code>None</code>, displaying starts at the first element of the iterable.</dd>
+<dt><strong><code>suppress</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
+<dd>a set of names of features that should NOT be displayed.
+By default, quite a number of features is displayed for a node.
+If you find they clutter the display, you can turn them off
+selectively.</dd>
+<dt><strong><code>tupleFeatures</code></strong> :&ensp;<code>iterable</code> of <code>2-tuples</code>, optional <code>()</code></dt>
+<dd>
+<p>A bit like "extraFeatures" above, but more intricate.
+Only meant to steer the
+<code>A.export()</code> function below into outputting the
+features you choose.</p>
+<p>It should be a tuple of pairs</p>
+<pre><code>(i, features)
+</code></pre>
+<p>which means that to member <code>i</code> of a result tuple we assign extra <code>features</code>.</p>
+<p><code>features</code> may be given as an iterable or a space separated string of feature names.</p>
+</dd>
+<dt><strong><code>withPassage</code></strong> :&ensp;<code>boolean</code> or <code>set</code>, optional <code>True</code></dt>
+<dd>indicates whether a passage label should be put next to a displayed node
+or tuple of nodes.
+When passed with <code>table()</code>, or <code>plainTuple()</code>,
+the value may also be a set of integers, indicating the columns whose
+nodes will be linked with a web link
+(the first column is column 1).</dd>
+</dl>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L1-L648" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Display Settings.
+
+Display options are used by
+
+    tf.advanced.display.plain
+
+and
+
+    tf.advanced.display.pretty
+
+and other display functions.
+
+This class manages
+
+* the provisining of options with defaults,
+* the overriding options by passing options as arguments to display functions
+* the retrieval of option values by the rest of the application.
+
+!!! note &#34;distinction between interface options and display options&#34;
+    * all interface options are also display options and can be passed as arguments
+      to display functions
+    * interface options have a checkbox in the TF browser
+
+Parameters
+----------
+baseTypes: string | iterable, optional None`
+    **interface option**
+    Node types at the bottom of pretty displays.
+    The default is app dependent, usually the slot type of the corpus.
+
+condensed: boolean, optional False
+    **interface option**
+    indicates one of two modes of displaying the result list:
+
+    *   `True`: instead of showing all results one by one,
+        we show container nodes with all results in it highlighted.
+        That way, we blur the distinction between the individual results,
+        but it is easier to oversee where the results are.
+        This is how SHEBANQ displays its query results.
+        **See also the parameter `condenseType`**.
+    *   `False`: make a separate display for each result tuple.
+        This gives the best account of the exact result set.
+
+    !!! caution &#34;mixing up highlights&#34;
+        Condensing may mix-up the highlight coloring.
+        If a node occurs in two results, at different positions
+        in the tuple, the `colorMap` wants to assign it two colors!
+        Yet one color will be chosen, and it is unpredictable which one.
+
+condenseType: string, optional None
+    **interface option**
+    The type of container to be used for condensing results.
+    The default is app dependent, usually `verse` or `tablet`.
+
+fmt: string, optional None
+    **interface option**
+    `fmt` is the text format that will be used for the representation.
+    E.g. `text-orig-full`.
+
+    !!! hint &#34;Text formats&#34;
+        Use `T.formats` to inspect what text formats are available in your corpus.
+
+hideTypes: boolean | optional True
+    **interface option**
+    If `True`, hidden types are in fact hidden, otherwise the hiding of types
+    has no effect.
+
+hiddenTypes: string | iterable, optional None
+    **interface option**
+    Node types that will not be shown in displays.
+    All node types can be hidden, except the slot type and the section types.
+    Structure types can be hidden.
+
+    !!! hint &#34;Meaning&#34;
+        Nodes of hidden types will not be skipped, but they do not add visible
+        structure to the display. The material under those nodes will still
+        be displayed. For example, if the corpus has verses divided into half verses,
+        and you are not interested in the half verse division, you can make
+        half verses hidden. The content of the half verses is still shown,
+        but the half verse division is gone.
+
+    The default is app dependent, usually the empty set.
+
+lineNumbers: boolean, optional False
+    **interface option**
+    indicates whether line numbers should be displayed.
+
+    !!! note &#34;source data&#34;
+        Line numbers are with respect to the source data file that is contains the
+        origin material of the node in question, if a datasource provides
+        a feature that contains line numbers.
+
+    !!! caution &#34;configuration&#34;
+        Whether a corpus has line numbers, and in which feature they are stored
+        for which node types is configured in a corpus dependent app.
+
+        If the corpus has no line numbers, the default is `None`.
+
+plainGaps: boolean, optional True
+    **interface option**
+    indicates whether gaps types should be displayed in plain displays.
+    In pretty displays gaps are marked by dotted left-right borders of the nodes
+    around the gaps. In plain displays such borders are generally disruptive,
+    but it is possible to show them.
+
+prettyTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should always be displayed in pretty displays.
+    The node type of slot nodes is never displayed.
+
+queryFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show the features
+    mentioned in the last query and their values.
+
+multiFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show all possible node features
+    provided they have a non-empty value.
+
+showGraphics: boolean, optional True
+    **interface option**
+    indicates whether plain and pretty displays should include associated
+    graphic elements.
+
+    !!! caution &#34;configuration&#34;
+        Whether a corpus has graphics for some nodetypes and how to get them is
+        configured in a corpus dependent app.
+
+        If the corpus has no graphics, the default is `None`.
+
+showMath: boolean, optional False
+    **interface option**
+    indicates whether plain and pretty displays should interpret the `$`
+    to mark mathematical formulas in TeX notation.
+
+    !!! caution &#34;real dollars&#34;
+        If you have a corpus where the character `$` is used in an ordinary way,
+        this option should be set to `False`.
+
+standardFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show standard features and their values.
+
+withLabels: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show labels.
+
+withNodes: boolean, optional False
+    **interface option**
+    indicates whether node numbers should be displayed.
+
+    !!! hint &#34;zooming in&#34;
+        If you are in a Jupyter notebook, you can inspect in a powerful way by
+        setting `withNodes=True`. Then every part of a pretty display shows
+        its node number, and you can use the following APIs
+        to look up all information
+        about each node that the corpus has to offer:
+
+        * **F**: `tf.core.nodefeature.NodeFeature`
+        * **E**: `tf.core.edgefeature.EdgeFeature`
+        * **L**: `tf.core.locality.Locality`
+        * **T**: `tf.core.text.Text`
+
+withTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should be displayed.
+    The node type of slot nodes is never displayed.
+
+colorMap: dict, optional None
+    Which nodes of a tuple (or list of tuples) will be highlighted.
+    If `colorMap` is `None` or missing, all nodes will be highlighted with
+    the default highlight color, which is yellow.
+
+    But you can assign different colors to the members of the tuple:
+    `colorMap` must be a dictionary that maps the positions in a tuple
+    to a color.
+
+    *   If a position is not mapped, it will not be highlighted.
+    *   If it is mapped to the empty string, it gets the default highlight color.
+    *   Otherwise, it should be mapped to a string that is a valid
+        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+
+    !!! hint &#34;color names&#34;
+        The link above points to a series of handy color names and their previews.
+
+    !!! note &#34;highlights takes precedence over colorMap&#34;
+        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
+
+        If you need to micro-manage, `highlights` is your thing.
+        Whenever possible, use `colorMap`.
+
+end: int, optional None
+    `end` is the end point in the iterable of results.
+    If `None`, displaying will stop after the end of the iterable.
+
+extraFeatures: string | iterable, optional ()
+    A string or iterable of feature names.
+    These features will be loaded automatically.
+    In pretty displays these features will show up as `feature=value`,
+    provided the value is not `None`, or something like None.
+
+    !!! hint &#34;Automatic loading&#34;
+        These features will load automatically, no explicit loading is
+        necessary.
+
+    !!! hint &#34;values from other nodes&#34;
+        Suppose you want to display a value from a related node, e.g. a `gloss`
+        that is available on `lex` nodes but not on `word` nodes, and you
+        want to show it on the word nodes.
+        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+        look up a `lex` node from the current node (by means of `L.u(w, otype=&#39;lex&#39;)`,
+        and if it finds one, it will read the `gloss` feature from it.
+
+full: boolean, optional False
+    For pretty displays: indicates that the whole object should be
+    displayed, even if it is big.
+
+    !!! hint &#34;Big objects&#34;
+        Big objects are objects of a type that is bigger than the default condense type.
+
+highlights: dict | set, optional {}
+    When nodes such as verses and sentences and lines and cases are displayed
+    by `plain()` or `pretty()`,
+    their contents is also displayed. You can selectively highlight
+    those parts.
+
+    `highlights={}` is a set or mapping of nodes that should be highlighted.
+    Only nodes that are involved in the display will be highlighted.
+
+    If `highlights` is a set, its nodes will be highlighted
+    with a default color (yellow).
+
+    If it is a dictionary, it should map nodes to colors.
+    Any color that is a valid
+    [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+    qualifies.
+
+    If you map a node to the empty string, it will get the default highlight color.
+
+    Highlights in plain display will be done, also for nodes deeply buried in the top node.
+    Slots are higlighted by coloring the background,
+    all other nodes by colored frames around their material.
+
+    !!! note &#34;one big highlights dictionary&#34;
+        It is OK to first compose a big highlights dictionary
+        for many tuples of nodes,
+        and then run `prettyTuple()` for many different tuples
+        with the same `highlights`.
+        It does not harm performance if `highlights` maps
+        lots of nodes outside the tuple as well.
+
+noneValues: set, optional None
+    A set of values for which no display should be generated.
+    The default set is `None` and the strings `NA`, `none`, `unknown`.
+
+    !!! hint &#34;None is useful&#34;
+        Keep `None` in the set. If not, all custom features will be displayed
+        for all kinds of nodes. So you will see clause types on words,
+        and part of speech on clause atoms, al with value `None`.
+
+    !!! hint &#34;Suppress common values&#34;
+        You can use `noneValues` also to suppress the normal values of a feature,
+        in order to attract attention to the more special values, e.g.
+
+            noneValues={None, &#39;NA&#39;, &#39;unknown&#39;, &#39;m&#39;, &#39;sg&#39;, &#39;p3&#39;}
+
+    !!! caution &#34;None values affect all features&#34;
+        Beware of putting to much in `noneValues`.
+        The contents of `noneValues` affect the display of
+        all features, not only the custom features.
+
+skipCols: set, optional set()
+    indicates columns to skip in `show()`, `table()`;
+    no effect on `prettyTuple()` and `plainTuple()`.
+    Also no effect if `condensed` is True.
+
+    The columns are not really removed, but the cells in the columns
+    become empty.
+
+    So it will not disturb the highlighting of the tuples involved,
+    and it does not disturb the working of `colorMap`.
+
+    The value may be a space-separated string of numbers, or an iterable of integers.
+    Columns start at 1.
+
+start: integer, optional None
+    `start` is the starting point for displaying the iterable of results.
+    (1 is the first one).
+    If `None`, displaying starts at the first element of the iterable.
+
+suppress: set, optional set()
+    a set of names of features that should NOT be displayed.
+    By default, quite a number of features is displayed for a node.
+    If you find they clutter the display, you can turn them off
+    selectively.
+
+tupleFeatures: iterable of 2-tuples, optional ()
+    A bit like &#34;extraFeatures&#34; above, but more intricate.
+    Only meant to steer the
+    `A.export()` function below into outputting the
+    features you choose.
+
+    It should be a tuple of pairs
+
+        (i, features)
+
+    which means that to member `i` of a result tuple we assign extra `features`.
+
+    `features` may be given as an iterable or a space separated string of feature names.
+
+withPassage: boolean or set, optional True
+    indicates whether a passage label should be put next to a displayed node
+    or tuple of nodes.
+    When passed with `table()`, or `plainTuple()`,
+    the value may also be a set of integers, indicating the columns whose
+    nodes will be linked with a web link
+    (the first column is column 1).
+&#34;&#34;&#34;
+
+from ..core.helpers import setFromValue
+from .helpers import parseFeatures, SEQ_TYPES1, SEQ_TYPES2
+
+
+INTERFACE_OPTIONS = (
+    (
+        &#34;condensed&#34;,
+        False,
+        &#34;cond&#34;,
+        &#34;condense results&#34;,
+        &#34;Group query results into containers of the selected type.&#34;,
+        True,
+    ),
+    (
+        &#34;hideTypes&#34;,
+        True,
+        &#34;hidet&#34;,
+        &#34;hide types&#34;,
+        &#34;Do not show the outer structure of nodes of the selected types.&#34;
+        &#34;The contents of those nodes are still shown.&#34;,
+        True,
+    ),
+    (
+        &#34;withLabels&#34;,
+        True,
+        &#34;withl&#34;,
+        &#34;show labels&#34;,
+        &#34;Show additional labels in nodes.&#34;,
+        False,
+    ),
+    (
+        &#34;withNodes&#34;,
+        False,
+        &#34;withn&#34;,
+        &#34;show nodes&#34;,
+        &#34;Show the node number for every node in the results.&#34;
+        &#34; The node number is your access to all information about that node.&#34;
+        &#34; If you click on it, it will be copied to the &lt;i&gt;node pad&lt;/i&gt;.&#34;,
+        False,
+    ),
+    (
+        &#34;withTypes&#34;,
+        False,
+        &#34;witht&#34;,
+        &#34;show types&#34;,
+        &#34;Show the node type for every node in the results.&#34;,
+        False,
+    ),
+    (
+        &#34;prettyTypes&#34;,
+        True,
+        &#34;withtp&#34;,
+        &#34;always show types when expanded&#34;,
+        &#34;Show the node type for every node in the expanded view, &#34;
+        &#34;even if &lt;b&gt;show types&lt;/b&gt; is off.&#34;,
+        False,
+    ),
+    (
+        &#34;plainGaps&#34;,
+        True,
+        &#34;plaing&#34;,
+        &#34;show gaps&#34;,
+        &#34;In plain displays, show the gaps in nodes by means of dotted lines.&#34;,
+        False,
+    ),
+    (
+        &#34;standardFeatures&#34;,
+        False,
+        &#34;shows&#34;,
+        &#34;show standard features&#34;,
+        &#34;Show the standard feature values for every node in the results.&#34;,
+        False,
+    ),
+    (
+        &#34;queryFeatures&#34;,
+        True,
+        &#34;showf&#34;,
+        &#34;show query features&#34;,
+        &#34;Show the features mentioned in the last query for every node in the results.&#34;,
+        False,
+    ),
+    (
+        &#34;multiFeatures&#34;,
+        True,
+        &#34;showm&#34;,
+        &#34;show all possible node features&#34;,
+        &#34;Show all possible node features with non-empty values.&#34;,
+        False,
+    ),
+    (
+        &#34;lineNumbers&#34;,
+        False,
+        &#34;linen&#34;,
+        &#34;source lines&#34;,
+        &#34;Show source line numbers with the nodes.&#34;
+        &#34; Only if the TF data has a feature for line numbers.&#34;,
+        False,
+    ),
+    (
+        &#34;showGraphics&#34;,
+        True,
+        &#34;graphics&#34;,
+        &#34;graphic elements&#34;,
+        &#34;Show graphical companion elements with the nodes.&#34;
+        &#34; Only if the data set implements the logic for it.&#34;,
+        False,
+    ),
+    (
+        &#34;showMath&#34;,
+        False,
+        &#34;math&#34;,
+        &#34;mathematical formulas&#34;,
+        &#34;Interpret material within pairs of `$` as formulas in TeX notation.&#34;,
+        False,
+    ),
+)
+&#34;&#34;&#34;Options that can be set on the interface of the text-fabric browser.
+
+Every option is a tuple with members
+
+*   *option*: the name by which you can control this option in API functions;
+*   *default*: the value that is used if this option is nowhere explicitly given;
+*   *acro*: acronym for this option, used in the html as value for an id attribute;
+*   *desc*: short description;
+*   *long*: long description;
+*   *move*: whether to move this option into a separate box in the text-fabric
+    browser.
+&#34;&#34;&#34;
+
+
+# &lt;p&gt;&lt;b title=&#34;withTypes&#34;&gt;Show types&lt;/b&gt;{longDesc}&lt;/p&gt;
+
+DISPLAY_OPTIONS = dict(
+    baseTypes=None,
+    colorMap=None,
+    condensed=False,
+    condenseType=None,
+    end=None,
+    extraFeatures=((), {}),
+    full=False,
+    fmt=None,
+    hideTypes=True,
+    hiddenTypes=None,
+    highlights={},
+    noneValues={None},
+    skipCols=set(),
+    start=None,
+    suppress=set(),
+    tupleFeatures=(),
+    withPassage=True,
+)
+
+DISPLAY_OPTIONS.update({o[0]: o[1] for o in INTERFACE_OPTIONS})
+
+
+class OptionsCurrent:
+    def __init__(self, options):
+        self.allKeys = set(options)
+        for (k, v) in options.items():
+            setattr(self, k, v)
+
+    def get(self, k, v=None):
+        return getattr(self, k, v)
+
+    def set(self, k, v):
+        self.allKeys.add(k)
+        setattr(self, k, v)
+
+
+class Options:
+    def __init__(self, app):
+        self.app = app
+
+        aContext = app.context
+        interfaceDefaults = aContext.interfaceDefaults
+
+        self.defaults = {}
+        defaults = self.defaults
+
+        for (k, v) in DISPLAY_OPTIONS.items():
+            value = (
+                interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
+            )
+            defaults[k] = value
+
+        self.reset()
+
+    def reset(self, *options):
+        app = self.app
+        error = app.error
+        # info = app.info
+        defaults = self.defaults
+
+        if options:
+            current = self.current
+            for option in options:
+                if option not in defaults:
+                    # info(defaults)
+                    error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+                    continue
+                current[option] = defaults[option]
+        else:
+            self.current = {k: v for (k, v) in defaults.items()}
+
+    def setup(self, *options, **overrides):
+        current = self.current
+
+        for (option, value) in overrides.items():
+            normValue = self.normalize(option, value)
+            if not normValue:
+                continue
+            current[option] = normValue[1]
+
+    def normalize(self, option, value):
+        app = self.app
+        api = app.api
+        aContext = app.context
+        allowedValues = aContext.allowedValues
+        error = app.error
+        defaults = self.defaults
+
+        if option not in defaults:
+            error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+            return None
+
+        if option == &#34;extraFeatures&#34;:
+            (bare, indirect) = parseFeatures(value)
+            api.ensureLoaded(bare)
+            value = (bare, indirect)
+        elif option == &#34;tupleFeatures&#34;:
+            api.ensureLoaded(value)
+            if type(value) is str:
+                value = value.split() if value else []
+        elif option in {&#34;suppress&#34;}:
+            if type(value) is str:
+                value = set(value.split()) if value else set()
+        elif option in {&#34;skipCols&#34;}:
+            if not value:
+                value = set()
+            elif type(value) is str:
+                value = {int(v) for v in value.split()} if value else set()
+            elif type(value) not in {set, frozenset}:
+                value = set(value)
+        elif option in {&#34;withPassage&#34;}:
+            if not value:
+                value = False
+            elif type(value) is str:
+                value = {int(v) for v in value.split()} if value else set()
+            elif type(value) in {list, tuple, dict}:
+                value = set(value)
+            elif type(value) is not set:
+                value = True
+        elif option == &#34;highlights&#34;:
+            if value is not None and type(value) is not dict:
+                value = {m: &#34;&#34; for m in value}
+        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+            legalValues = set(allowedValues[option])
+            values = setFromValue(value)
+            value = {tp for tp in values if tp in legalValues}
+        return (True, value)
+
+    def check(self, msg, options):
+        app = self.app
+        api = app.api
+        Fotype = api.F.otype
+        aContext = app.context
+        allowedValues = aContext.allowedValues
+        error = app.error
+        current = self.current
+
+        good = True
+        for (option, value) in options.items():
+            if option not in current:
+                error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
+                good = False
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+                legalValues = set(allowedValues[option])
+                if value is not None:
+                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                        testVal = setFromValue(value)
+                        isLegal = all(v in legalValues for v in testVal)
+                    else:
+                        isLegal = value in legalValues
+                    if not isLegal:
+                        error(
+                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                        )
+                        legalRep = &#34;, &#34;.join(sorted(legalValues))
+                        error(f&#34;Legal values are: {legalRep}&#34;)
+                        good = False
+            elif option == &#34;extraFeatures&#34;:
+                if value is not None:
+                    if (
+                        type(value) in SEQ_TYPES1
+                        and len(value) == 2
+                        and type(value[0]) in SEQ_TYPES2
+                        and type(value[1]) is dict
+                    ):
+                        indirect = value[1]
+                        legalValues = set(Fotype.all)
+                        isLegal = all(v in legalValues for v in indirect)
+                        if not isLegal:
+                            error(
+                                f&#34;ERROR in {msg}(): illegal node type in&#34;
+                                f&#39; &#34;{option}={value}&#34;&#39;
+                            )
+                            good = False
+        return good
+
+    def distill(self, options):
+        defaults = self.defaults
+        current = self.current
+
+        normOptions = {}
+
+        for option in defaults:
+            value = options.get(
+                option, current.get(option, defaults[option])
+            )
+            normValue = self.normalize(option, value)
+            if normValue:
+                normOptions[option] = normValue[1]
+
+        return OptionsCurrent(normOptions)
+
+    def consume(self, options, *remove):
+        return {o: options[o] for o in options if o not in remove}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.advanced.options.INTERFACE_OPTIONS"><code class="name">var <span class="ident">INTERFACE_OPTIONS</span></code></dt>
+<dd>
+<div class="desc"><p>Options that can be set on the interface of the text-fabric browser.</p>
+<p>Every option is a tuple with members</p>
+<ul>
+<li><em>option</em>: the name by which you can control this option in API functions;</li>
+<li><em>default</em>: the value that is used if this option is nowhere explicitly given;</li>
+<li><em>acro</em>: acronym for this option, used in the html as value for an id attribute;</li>
+<li><em>desc</em>: short description;</li>
+<li><em>long</em>: long description;</li>
+<li><em>move</em>: whether to move this option into a separate box in the text-fabric
+browser.</li>
+</ul></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.advanced.options.Options"><code class="flex name class">
+<span>class <span class="ident">Options</span></span>
+<span>(</span><span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L491-L648" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Options:
+    def __init__(self, app):
+        self.app = app
+
+        aContext = app.context
+        interfaceDefaults = aContext.interfaceDefaults
+
+        self.defaults = {}
+        defaults = self.defaults
+
+        for (k, v) in DISPLAY_OPTIONS.items():
+            value = (
+                interfaceDefaults[k] if k in interfaceDefaults else aContext.get(k, v)
+            )
+            defaults[k] = value
+
+        self.reset()
+
+    def reset(self, *options):
+        app = self.app
+        error = app.error
+        # info = app.info
+        defaults = self.defaults
+
+        if options:
+            current = self.current
+            for option in options:
+                if option not in defaults:
+                    # info(defaults)
+                    error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+                    continue
+                current[option] = defaults[option]
+        else:
+            self.current = {k: v for (k, v) in defaults.items()}
+
+    def setup(self, *options, **overrides):
+        current = self.current
+
+        for (option, value) in overrides.items():
+            normValue = self.normalize(option, value)
+            if not normValue:
+                continue
+            current[option] = normValue[1]
+
+    def normalize(self, option, value):
+        app = self.app
+        api = app.api
+        aContext = app.context
+        allowedValues = aContext.allowedValues
+        error = app.error
+        defaults = self.defaults
+
+        if option not in defaults:
+            error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+            return None
+
+        if option == &#34;extraFeatures&#34;:
+            (bare, indirect) = parseFeatures(value)
+            api.ensureLoaded(bare)
+            value = (bare, indirect)
+        elif option == &#34;tupleFeatures&#34;:
+            api.ensureLoaded(value)
+            if type(value) is str:
+                value = value.split() if value else []
+        elif option in {&#34;suppress&#34;}:
+            if type(value) is str:
+                value = set(value.split()) if value else set()
+        elif option in {&#34;skipCols&#34;}:
+            if not value:
+                value = set()
+            elif type(value) is str:
+                value = {int(v) for v in value.split()} if value else set()
+            elif type(value) not in {set, frozenset}:
+                value = set(value)
+        elif option in {&#34;withPassage&#34;}:
+            if not value:
+                value = False
+            elif type(value) is str:
+                value = {int(v) for v in value.split()} if value else set()
+            elif type(value) in {list, tuple, dict}:
+                value = set(value)
+            elif type(value) is not set:
+                value = True
+        elif option == &#34;highlights&#34;:
+            if value is not None and type(value) is not dict:
+                value = {m: &#34;&#34; for m in value}
+        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+            legalValues = set(allowedValues[option])
+            values = setFromValue(value)
+            value = {tp for tp in values if tp in legalValues}
+        return (True, value)
+
+    def check(self, msg, options):
+        app = self.app
+        api = app.api
+        Fotype = api.F.otype
+        aContext = app.context
+        allowedValues = aContext.allowedValues
+        error = app.error
+        current = self.current
+
+        good = True
+        for (option, value) in options.items():
+            if option not in current:
+                error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
+                good = False
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+                legalValues = set(allowedValues[option])
+                if value is not None:
+                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                        testVal = setFromValue(value)
+                        isLegal = all(v in legalValues for v in testVal)
+                    else:
+                        isLegal = value in legalValues
+                    if not isLegal:
+                        error(
+                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                        )
+                        legalRep = &#34;, &#34;.join(sorted(legalValues))
+                        error(f&#34;Legal values are: {legalRep}&#34;)
+                        good = False
+            elif option == &#34;extraFeatures&#34;:
+                if value is not None:
+                    if (
+                        type(value) in SEQ_TYPES1
+                        and len(value) == 2
+                        and type(value[0]) in SEQ_TYPES2
+                        and type(value[1]) is dict
+                    ):
+                        indirect = value[1]
+                        legalValues = set(Fotype.all)
+                        isLegal = all(v in legalValues for v in indirect)
+                        if not isLegal:
+                            error(
+                                f&#34;ERROR in {msg}(): illegal node type in&#34;
+                                f&#39; &#34;{option}={value}&#34;&#39;
+                            )
+                            good = False
+        return good
+
+    def distill(self, options):
+        defaults = self.defaults
+        current = self.current
+
+        normOptions = {}
+
+        for option in defaults:
+            value = options.get(
+                option, current.get(option, defaults[option])
+            )
+            normValue = self.normalize(option, value)
+            if normValue:
+                normOptions[option] = normValue[1]
+
+        return OptionsCurrent(normOptions)
+
+    def consume(self, options, *remove):
+        return {o: options[o] for o in options if o not in remove}</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.advanced.options.Options.check"><code class="name flex">
+<span>def <span class="ident">check</span></span>(<span>self, msg, options)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L583-L629" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def check(self, msg, options):
+    app = self.app
+    api = app.api
+    Fotype = api.F.otype
+    aContext = app.context
+    allowedValues = aContext.allowedValues
+    error = app.error
+    current = self.current
+
+    good = True
+    for (option, value) in options.items():
+        if option not in current:
+            error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
+            good = False
+        if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+            legalValues = set(allowedValues[option])
+            if value is not None:
+                if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                    testVal = setFromValue(value)
+                    isLegal = all(v in legalValues for v in testVal)
+                else:
+                    isLegal = value in legalValues
+                if not isLegal:
+                    error(
+                        f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                    )
+                    legalRep = &#34;, &#34;.join(sorted(legalValues))
+                    error(f&#34;Legal values are: {legalRep}&#34;)
+                    good = False
+        elif option == &#34;extraFeatures&#34;:
+            if value is not None:
+                if (
+                    type(value) in SEQ_TYPES1
+                    and len(value) == 2
+                    and type(value[0]) in SEQ_TYPES2
+                    and type(value[1]) is dict
+                ):
+                    indirect = value[1]
+                    legalValues = set(Fotype.all)
+                    isLegal = all(v in legalValues for v in indirect)
+                    if not isLegal:
+                        error(
+                            f&#34;ERROR in {msg}(): illegal node type in&#34;
+                            f&#39; &#34;{option}={value}&#34;&#39;
+                        )
+                        good = False
+    return good</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.Options.consume"><code class="name flex">
+<span>def <span class="ident">consume</span></span>(<span>self, options, *remove)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L647-L648" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def consume(self, options, *remove):
+    return {o: options[o] for o in options if o not in remove}</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.Options.distill"><code class="name flex">
+<span>def <span class="ident">distill</span></span>(<span>self, options)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L631-L645" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def distill(self, options):
+    defaults = self.defaults
+    current = self.current
+
+    normOptions = {}
+
+    for option in defaults:
+        value = options.get(
+            option, current.get(option, defaults[option])
+        )
+        normValue = self.normalize(option, value)
+        if normValue:
+            normOptions[option] = normValue[1]
+
+    return OptionsCurrent(normOptions)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.Options.normalize"><code class="name flex">
+<span>def <span class="ident">normalize</span></span>(<span>self, option, value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L535-L581" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def normalize(self, option, value):
+    app = self.app
+    api = app.api
+    aContext = app.context
+    allowedValues = aContext.allowedValues
+    error = app.error
+    defaults = self.defaults
+
+    if option not in defaults:
+        error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+        return None
+
+    if option == &#34;extraFeatures&#34;:
+        (bare, indirect) = parseFeatures(value)
+        api.ensureLoaded(bare)
+        value = (bare, indirect)
+    elif option == &#34;tupleFeatures&#34;:
+        api.ensureLoaded(value)
+        if type(value) is str:
+            value = value.split() if value else []
+    elif option in {&#34;suppress&#34;}:
+        if type(value) is str:
+            value = set(value.split()) if value else set()
+    elif option in {&#34;skipCols&#34;}:
+        if not value:
+            value = set()
+        elif type(value) is str:
+            value = {int(v) for v in value.split()} if value else set()
+        elif type(value) not in {set, frozenset}:
+            value = set(value)
+    elif option in {&#34;withPassage&#34;}:
+        if not value:
+            value = False
+        elif type(value) is str:
+            value = {int(v) for v in value.split()} if value else set()
+        elif type(value) in {list, tuple, dict}:
+            value = set(value)
+        elif type(value) is not set:
+            value = True
+    elif option == &#34;highlights&#34;:
+        if value is not None and type(value) is not dict:
+            value = {m: &#34;&#34; for m in value}
+    elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+        legalValues = set(allowedValues[option])
+        values = setFromValue(value)
+        value = {tp for tp in values if tp in legalValues}
+    return (True, value)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.Options.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self, *options)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L509-L524" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def reset(self, *options):
+    app = self.app
+    error = app.error
+    # info = app.info
+    defaults = self.defaults
+
+    if options:
+        current = self.current
+        for option in options:
+            if option not in defaults:
+                # info(defaults)
+                error(f&#39;WARNING: unknown display option &#34;{option}&#34; will be ignored&#39;)
+                continue
+            current[option] = defaults[option]
+    else:
+        self.current = {k: v for (k, v) in defaults.items()}</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.Options.setup"><code class="name flex">
+<span>def <span class="ident">setup</span></span>(<span>self, *options, **overrides)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L526-L533" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setup(self, *options, **overrides):
+    current = self.current
+
+    for (option, value) in overrides.items():
+        normValue = self.normalize(option, value)
+        if not normValue:
+            continue
+        current[option] = normValue[1]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="tf.advanced.options.OptionsCurrent"><code class="flex name class">
+<span>class <span class="ident">OptionsCurrent</span></span>
+<span>(</span><span>options)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L477-L488" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class OptionsCurrent:
+    def __init__(self, options):
+        self.allKeys = set(options)
+        for (k, v) in options.items():
+            setattr(self, k, v)
+
+    def get(self, k, v=None):
+        return getattr(self, k, v)
+
+    def set(self, k, v):
+        self.allKeys.add(k)
+        setattr(self, k, v)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.advanced.options.OptionsCurrent.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, k, v=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L483-L484" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def get(self, k, v=None):
+    return getattr(self, k, v)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.options.OptionsCurrent.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self, k, v)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/options.py#L486-L488" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def set(self, k, v):
+    self.allKeys.add(k)
+    setattr(self, k, v)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#display-settings">Display Settings.</a><ul>
+<li><a href="#parameters">Parameters</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="tf.advanced.options.INTERFACE_OPTIONS" href="#tf.advanced.options.INTERFACE_OPTIONS">INTERFACE_OPTIONS</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.advanced.options.Options" href="#tf.advanced.options.Options">Options</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.advanced.options.Options.check" href="#tf.advanced.options.Options.check">check</a></code></li>
+<li><code><a title="tf.advanced.options.Options.consume" href="#tf.advanced.options.Options.consume">consume</a></code></li>
+<li><code><a title="tf.advanced.options.Options.distill" href="#tf.advanced.options.Options.distill">distill</a></code></li>
+<li><code><a title="tf.advanced.options.Options.normalize" href="#tf.advanced.options.Options.normalize">normalize</a></code></li>
+<li><code><a title="tf.advanced.options.Options.reset" href="#tf.advanced.options.Options.reset">reset</a></code></li>
+<li><code><a title="tf.advanced.options.Options.setup" href="#tf.advanced.options.Options.setup">setup</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="tf.advanced.options.OptionsCurrent" href="#tf.advanced.options.OptionsCurrent">OptionsCurrent</a></code></h4>
+<ul class="">
+<li><code><a title="tf.advanced.options.OptionsCurrent.get" href="#tf.advanced.options.OptionsCurrent.get">get</a></code></li>
+<li><code><a title="tf.advanced.options.OptionsCurrent.set" href="#tf.advanced.options.OptionsCurrent.set">set</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
