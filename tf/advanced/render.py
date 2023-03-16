@@ -48,7 +48,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
         )
         dContext.set("featuresIndirect", extraFeatures[1])
         if multiFeatures:
-            dContext.set("featuresAll", tuple(app.api.Fall()))
+            dContext.set("featuresAll", tuple(app.api.Fall(warp=False)))
 
     tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
     (chunk, info, subTrees) = tree

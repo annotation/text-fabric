@@ -10,7 +10,7 @@ from ..parameters import (
     API_VERSION as avTf,
 )
 from ..core.helpers import console, normpath
-from .helpers import getLocalDir
+from .helpers import getLocalDir, prefixSlash
 
 
 def findAppConfig(
@@ -23,6 +23,7 @@ def findAppConfig(
     org=None,
     repo=None,
     version=None,
+    relative=None,
     straight=False,
 ):
     """Find the config information of an app.
@@ -78,6 +79,11 @@ def findAppConfig(
         repo = cfg.get("provenanceSpec", {}).get("repo", None)
     else:
         cfg["provenanceSpec"]["repo"] = repo
+
+    if relative is None:
+        relative = prefixSlash(cfg.get("provenanceSpec", {}).get("relative", None))
+    else:
+        cfg["provenanceSpec"]["relative"] = prefixSlash(relative)
 
     if os.path.exists(cssPath):
         with open(cssPath, encoding="utf8") as fh:

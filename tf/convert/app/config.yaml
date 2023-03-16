@@ -3,12 +3,14 @@ dataDisplay:
   textFormats:
     layout-orig-full: 
       method: layout
+  textFormat: layout-orig-full
   excludedFeatures: []
   noneValues:
   - none
   - unknown
   - null
   - NA
+  sectionSep1: "@"
 docs:
   docPage: about
   featureBase: '{docBase}/transcription.md'
@@ -16,7 +18,7 @@ docs:
 interfaceDefaults: 
   fmt: layout-orig-full
 provenanceSpec:
-  corpus: '{org} - {repo}'
+  corpus: '{org} - {repo}{relative}'
   doi: 10.5281/zenodo.notyet
   moduleSpecs: []
   version: '«version»'

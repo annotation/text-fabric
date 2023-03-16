@@ -13,6 +13,7 @@ from .nodefeature import NodeFeatures
 from .edgefeature import EdgeFeatures
 from .computed import Computeds
 from .text import Text
+from ..parameters import OTYPE, OSLOTS
 from ..search.search import Search
 from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
@@ -136,14 +137,26 @@ class Api:
         return getattr(self.C, fName)
 
     def Fall(self, warp=True):
-        """Returns a sorted list of all usable, loaded node feature names."""
+        """Returns a sorted list of all usable, loaded node feature names.
 
-        return sorted(x[0] for x in self.F.__dict__.items())
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `otype`.
+        """
 
-    def Eall(self):
-        """Returns a sorted list of all usable, loaded edge feature names."""
+        return sorted(x[0] for x in self.F.__dict__.items() if warp or x[0] != OTYPE)
 
-        return sorted(x[0] for x in self.E.__dict__.items())
+    def Eall(self, warp=True):
+        """Returns a sorted list of all usable, loaded edge feature names.
+
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `oslots`.
+        """
+
+        return sorted(x[0] for x in self.E.__dict__.items() if warp or x[0] != OSLOTS)
 
     def Call(self):
         """Returns a sorted list of all usable, loaded computed data names."""

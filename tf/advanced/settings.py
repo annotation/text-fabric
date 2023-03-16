@@ -203,7 +203,7 @@ Default:
 Base url page for the corpus documentation
 
 Default:
-:   string `{docRoot}/{org}/{repo}/blob/{branch}/docs`
+:   string `{docRoot}/{org}/{repo}/blob/{branch}{relative}/docs`
 
 ---
 
@@ -976,7 +976,14 @@ import types
 from ..parameters import BACKEND_REP, URL_TFDOC, BRANCH_DEFAULT
 from ..core.helpers import console, mergeDictOfSets
 from .options import INTERFACE_OPTIONS
-from .helpers import parseFeatures, transitiveClosure, showDict, ORIG, NORMAL
+from .helpers import (
+    parseFeatures,
+    transitiveClosure,
+    showDict,
+    ORIG,
+    NORMAL,
+    prefixSlash,
+)
 
 
 VAR_PATTERN = re.compile(r"\{([^}]+)\}")
@@ -1066,7 +1073,7 @@ MSPEC_KEYS = set(
 PROVENANCE_DEFAULTS = (
     ("org", None),
     ("repo", None),
-    ("relative", RELATIVE_DEFAULT),
+    ("relative", prefixSlash(RELATIVE_DEFAULT)),
     ("graphicsRelative", None),
     ("version", None),
     ("branch", BRANCH_DEFAULT),
@@ -1093,7 +1100,7 @@ def DOC_DEFAULTS(backend):
     return (
         ("docRoot", f"{BACKEND_REP(backend, 'url')}"),
         ("docExt", ".md"),
-        ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}/docs"),
+        ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}{relative}/docs"),
         ("docPage", "home"),
         ("docUrl", "{docBase}/{docPage}{docExt}"),
         ("featureBase", "{docBase}/features/<feature>{docExt}"),
@@ -1109,6 +1116,7 @@ DATA_DISPLAY_DEFAULTS = (
     ("sectionSep1", " ", False),
     ("sectionSep2", ":", False),
     ("textFormats", {}, True),
+    ("textFormat", None, True),
     ("browseNavLevel", None, True),
     ("browseContentPretty", False, False),
     ("showVerseInTuple", False, False),
@@ -1424,7 +1432,7 @@ def setAppSpecs(app, cfg, reset=False):
                         moduleSpec[k] = (
                             specs.get(k, None)
                             if k in {"backend", "org", "repo"}
-                            else RELATIVE_DEFAULT
+                            else prefixSlash(RELATIVE_DEFAULT)
                             if k == "relative"
                             else None
                         )
@@ -1438,7 +1446,10 @@ def setAppSpecs(app, cfg, reset=False):
         graphicsModule = [(org, repo, graphicsRelative)] if graphicsRelative else []
         specs["zip"] = (
             [repo]
-            + [(m["backend"], m["org"], m["repo"], m["relative"]) for m in moduleSpecs]
+            + [
+                (m["backend"], m["org"], m["repo"], prefixSlash(m["relative"]))
+                for m in moduleSpecs
+            ]
             + graphicsModule
         )
 
@@ -1463,7 +1474,8 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    specs["textFormat"] = T.defaultFormat
+    if "textFormat" not in specs:
+        specs["textFormat"] = T.defaultFormat
 
     dKey = "interfaceDefaults"
     interfaceDefaults = {inf[0]: inf[1] for inf in INTERFACE_OPTIONS}
@@ -1493,6 +1505,7 @@ def setAppSpecsApi(app, cfg):
     checker.checkGroup(cfg, interfaceDefaults, dKey, extra=allowed)
     checker.report()
     specs[dKey] = interfaceDefaults
+    specs["fmt"] = specs["textFormat"]
 
     app.context.update(specs)
     app.showContext = types.MethodType(showContext, app)

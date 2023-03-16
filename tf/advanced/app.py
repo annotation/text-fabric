@@ -2,11 +2,19 @@ import os
 import types
 import traceback
 
-from ..parameters import ORG, APP_CODE, APP_APP, OMAP
+from ..parameters import ORG, RELATIVE, APP_CODE, APP_APP, OMAP
 from ..fabric import Fabric
 from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
-from ..core.helpers import console, setDir, mergeDict, normpath, abspath, expanduser
+from ..core.helpers import (
+    console,
+    setDir,
+    mergeDict,
+    normpath,
+    abspath,
+    expanduser,
+    prefixSlash,
+)
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
 from .helpers import getText, runsInNotebook, dm, dh
@@ -303,6 +311,7 @@ The app "{appName}" will not work!
             backend,
             org=aContext.org,
             repo=aContext.repo,
+            relative=prefixSlash(aContext.relative),
             version=version,
         )
         findAppClass(appName, appPath)
@@ -347,7 +356,7 @@ def findApp(
         * None, but then dataLoc should have a value
         * `app:`*path/to/tf/app*
         * *org*/*repo*
-        * *org*/*repo*/*relative*
+        * *org*/*repo* *relative*
         * *app*, i.e. the plain name of an official TF app
           (e.g. `bhsa`, `oldbabylonian`)
 
@@ -359,7 +368,7 @@ def findApp(
         * None, but then appName should have a value
         * path to a local directory
         * *org*/*repo*
-        * *org*/*repo*/*relative*
+        * *org*/*repo* *relative*
 
         Except for the first two cases, a trailing checkout specifier
         is allowed, like `:clone`, `:local`, `:latest`, `:hot`
@@ -405,6 +414,7 @@ def findApp(
 
     dataOrg = None
     dataRepo = None
+    dataFolder = None
     inNb = runsInNotebook()
 
     dm("**Locating corpus resources ...**", inNb=inNb)
@@ -429,16 +439,25 @@ def findApp(
             appPath = appDir
         elif "/" in appName:
             (dataOrg, rest) = appName.split("/", maxsplit=1)
-            parts = rest.split("/", maxsplit=1)
-            if len(parts) == 1:
-                parts.append(APP_APP)
-            (dataRepo, folder) = parts
+            (dataRepo, *rest) = rest.split("/")
+            if len(rest) > 0 and rest[-1] == APP_APP:
+                appParts = rest
+                dataParts = rest[0:-1] + [RELATIVE]
+            elif len(rest) > 0 and rest[-1] == RELATIVE:
+                appParts = rest[0:-1] + [APP_APP]
+                dataParts = rest
+            else:
+                dataParts = rest + [RELATIVE]
+                appParts = rest + [APP_APP]
+            appFolder = prefixSlash("/".join(appParts))
+            dataFolder = prefixSlash("/".join(dataParts))
+
             (commit, release, local, appBase, appDir) = checkoutRepo(
                 backend,
                 _browse=_browse,
                 org=dataOrg,
                 repo=dataRepo,
-                folder=folder,
+                folder=appFolder,
                 checkout=checkoutApp,
                 withPaths=True,
                 keep=False,
@@ -468,6 +487,8 @@ def findApp(
                 for k in ("org", "repo", "relative"):
                     value = provenanceSpec.get(k, None)
                     if value:
+                        if k == "relative":
+                            value = prefixSlash(value)
                         cfg[k] = value
 
             dataOrg = cfg.get("provenanceSpec", {}).get("org", None)
@@ -528,6 +549,7 @@ def findApp(
         backend,
         org=dataOrg,
         repo=dataRepo,
+        relative=dataFolder,
         version=version,
     )
     version = cfg["provenanceSpec"].get("version", None)

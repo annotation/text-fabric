@@ -91,6 +91,109 @@ from ..core.helpers import (
 from ..tools.xmlschema import Analysis
 
 
+CSS_REND = dict(
+    italic=dedent(
+        """
+        font-style: italic;
+        color: #000000;
+        """
+    ),
+    bold=dedent(
+        """
+        """
+    ),
+    underline=dedent(
+        """
+        text-decoration: underline;
+        color: #000000;
+        """
+    ),
+    center=dedent(
+        """
+        text-align: center;
+        color: #000000;
+        """
+    ),
+    large=dedent(
+        """
+        font-size: large;
+        color: #000000;
+        """
+    ),
+    spaced=dedent(
+        """
+        letter-spacing: .2rem;
+        color: #000000;
+        """
+    ),
+    margin=dedent(
+        """
+        position: relative;
+        top: -0.3em;
+        font-weight: bold;
+        color: #0000ee;
+        """
+    ),
+    above=dedent(
+        """
+        position: relative;
+        top: -0.3em;
+        color: #000000;
+        """
+    ),
+    below=dedent(
+        """
+        position: relative;
+        top: 0.3em;
+        color: #000000;
+        """
+    ),
+    small_caps=dedent(
+        """
+        font-variant: small-caps;
+        """
+    ),
+    sub=dedent(
+        """
+        vertical-align: sub;
+        font-size: small;
+        color: #000000;
+        """
+    ),
+    super=dedent(
+        """
+        vertical-align: super;
+        font-size: small;
+        color: #000000;
+        """
+    ),
+)
+CSS_REND_ALIAS = dict(
+    italic="italics i",
+    underline="ul",
+    spaced="spat",
+    small_caps="smallcaps sc",
+    super="sup",
+)
+
+
+def makeCssInfo():
+    rends = ""
+
+    for (rend, css) in sorted(CSS_REND.items()):
+        aliases = CSS_REND.get(rend, rend)
+        aliases = sorted(set(aliases.split()))
+        selector = ",".join(f".r_.r_{alias}" for alias in aliases)
+        contribution = dedent(
+            f"""
+            {selector} {{{css}}}
+            """
+        )
+        rends += contribution
+
+    return rends
+
+
 SECTION_MODELS = dict(I={}, II=dict(element=(str, "head"), attributes=(dict, {})))
 SECTION_MODEL_DEFAULT = "I"
 
@@ -171,19 +274,19 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
 
     if sectionModel == "II":
         nLevels = "2"
+        head = sectionCriteria["element"]
+        attributes = sectionCriteria["attributes"]
+        criteriaRaw = repr(sectionCriteria)
+        criteria = (
+            "".join(
+                f"\t*\t`{att}` = `{val}`\n" for (att, val) in sorted(attributes.items())
+            )
+            if attributes
+            else "\t*\t*no attribute criteria*\n"
+        )
     else:
         nLevels = "3"
 
-    head = sectionCriteria["element"]
-    attributes = sectionCriteria["attributes"]
-    criteriaRaw = repr(sectionCriteria)
-    criteria = (
-        "".join(
-            f"\t*\t`{att}` = `{val}`\n" for (att, val) in sorted(attributes.items())
-        )
-        if attributes
-        else "\t*\t*no attribute criteria*\n"
-    )
     modelKeepRe = re.compile(rf"«(?:begin|end)Model{sectionModel}»")
     modelRemoveRe = re.compile(r"«beginModel([^»]+)».*?«endModel\1»", re.S)
     slotKeepRe = re.compile(rf"«(?:begin|end)Slot{slot}»")
@@ -198,10 +301,13 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
         .replace("«char and word»", xslot)
         .replace("«nLevels»", nLevels)
         .replace("«sectionModel»", sectionModel)
-        .replace("«head»", head)
-        .replace("«criteria»", criteria)
-        .replace("«criteriaRaw»", criteriaRaw)
     )
+    if sectionModel == "II":
+        text = (
+            text.replace("«head»", head)
+            .replace("«criteria»", criteria)
+            .replace("«criteriaRaw»", criteriaRaw)
+        )
 
     text = modelKeepRe.sub("", text)
     text = modelRemoveRe.sub("", text)
@@ -215,7 +321,6 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
 class TEI:
     def __init__(
         self,
-        repoDir=".",
         sourceVersion="0.1",
         schema=None,
         testSet=set(),
@@ -238,7 +343,7 @@ class TEI:
         We adopt a fair bit of "convention over configuration" here, in order to lessen
         the burden for the user of specifying so many details.
 
-        Based on current direcotry from where the script is called,
+        Based on current directory from where the script is called,
         it defines all the ingredients to carry out
         a `tf.convert.walker` conversion of the TEI input.
 
@@ -246,10 +351,10 @@ class TEI:
         i.e. a directory on your computer relative to which the input directory exists,
         and various output directories: `tf`, `app`, `docs`.
 
-        Your current directory must be somewhere inside
+        Your current directory must be at
 
         ```
-        ~/backend/org/repo
+        ~/backend/org/repo/relative
         ```
 
         where
@@ -259,6 +364,7 @@ class TEI:
             like `github`, `gitlab`, `git.huc.knaw.nl`;
         *   `org` is an organisation, person, or group in the backend;
         *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
 
         This is only about the directory structure on your local computer;
         it is not required that you have online incarnations of your repository
@@ -266,9 +372,9 @@ class TEI:
         Even your local repository does not have to be a git repository.
 
         The only thing that matters is that the full path to your repo can be parsed
-        as a sequence of *home*/*backend*/*org*/*repo*.
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
 
-        Relative to the repo directory the program expects and creates
+        Relative to this directory the program expects and creates
         input/output directories.
 
         ## Input directories
@@ -427,22 +533,26 @@ class TEI:
             files, and remove any files with `_generated` in the name.
             Except for the logo, which will not be overwritten.
         """
-        (backend, org, repo) = getLocation(repoDir)
-        if any(s is None for s in (backend, org, repo)):
-            console("Not working in a repo: backend={backend} org={org} repo={repo}")
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                "Not working in a repo: "
+                f"backend={backend} org={org} repo={repo} relative={relative}"
+            )
             quit()
 
-        console(f"Working in repository {org}/{repo} in backend {backend}")
+        console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
 
         base = os.path.expanduser(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
-        sourceDir = f"{repoDir}/tei/{sourceVersion}"
-        reportDir = f"{repoDir}/report"
-        tfDir = f"{repoDir}/tf"
-        appDir = f"{repoDir}/app"
-        docsDir = f"{repoDir}/docs"
+        refDir = f"{repoDir}{relative}"
+        sourceDir = f"{refDir}/tei/{sourceVersion}"
+        reportDir = f"{refDir}/report"
+        tfDir = f"{refDir}/tf"
+        appDir = f"{refDir}/app"
+        docsDir = f"{refDir}/docs"
 
-        self.repoDir = repoDir
+        self.refDir = refDir
         self.sourceDir = sourceDir
         self.reportDir = reportDir
         self.tfDir = tfDir
@@ -451,20 +561,26 @@ class TEI:
         self.backend = backend
         self.org = org
         self.repo = repo
+        self.relative = relative
+
+        self.good = True
 
         if sourceDir is None or not dirExists(sourceDir):
             console(f"Source location does not exist: {sourceDir}")
-            quit()
+            self.good = False
+            return
 
         self.schema = schema
-        self.schemaFile = None if schema is None else f"{repoDir}/schema/{schema}.xsd"
+        self.schemaFile = None if schema is None else f"{refDir}/schema/{schema}.xsd"
         self.sourceVersion = sourceVersion
         self.testMode = False
         self.testSet = testSet
         self.wordAsSlot = wordAsSlot
         sectionModel = checkSectionModel(sectionModel)
         if not sectionModel:
-            quit()
+            self.good = False
+            return
+
         self.sectionModel = sectionModel["model"]
         self.sectionCriteria = sectionModel.get("criteria", None)
         self.generic = generic
@@ -580,13 +696,15 @@ class TEI:
         """
         schemaFile = self.schemaFile
 
+        self.elementDefs = {}
+
         A = Analysis()
         A.configure(override=schemaFile)
         A.interpret()
         if not A.good:
             quit()
 
-        return {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
+        self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
     def getXML(self):
         """Make an inventory of the TEI source files.
@@ -671,14 +789,20 @@ class TEI:
         *   `errors.txt`: validation errors
         *   `elements.txt`: element/attribute inventory.
         """
+        if not self.good:
+            return
+
         sourceDir = self.sourceDir
         reportDir = self.reportDir
+        docsDir = self.docsDir
         sectionModel = self.sectionModel
 
+        console(f"TEI to TF checking: {ux(sourceDir)} => {ux(reportDir)}")
+
         kindLabels = dict(
-            format="FORMATTING ATTRIBUTES",
-            keyword="KEYWORD ATTRIBUTES",
-            rest="REMAINING ATTRIBUTES and ELEMENTS",
+            format="Formatting Attributes",
+            keyword="Keyword Attributes",
+            rest="Remaining Attributes and Elements",
         )
         getStore = lambda: collections.defaultdict(  # noqa: E731
             lambda: collections.defaultdict(collections.Counter)
@@ -690,6 +814,7 @@ class TEI:
         validator = self.getValidator()
 
         initTree(reportDir)
+        initTree(docsDir)
 
         def analyse(root, analysis):
             FORMAT_ATTS = set(
@@ -816,6 +941,59 @@ class TEI:
 
             console(f"{infoLines} info line(s) written to {reportFile}")
 
+        def writeDoc():
+            teiUrl = "https://tei-c.org/release/doc/tei-p5-doc/en/html"
+            elUrlPrefix = f"{teiUrl}/ref-"
+            attUrlPrefix = f"{teiUrl}/REF-ATTS.html#"
+            docFile = f"{docsDir}/elements.md"
+            with open(docFile, "w") as fh:
+                fh.write(
+                    dedent(
+                        """
+                        # Element and attribute inventory
+
+                        Table of contents
+
+                        """
+                    )
+                )
+                for label in kindLabels.values():
+                    labelAnchor = label.replace(" ", "-")
+                    fh.write(f"*\t[{label}](#{labelAnchor})\n")
+
+                fh.write("\n")
+
+                tableHeader = dedent(
+                    """
+                    element | attribute | value | amount
+                    --- | --- | --- | ---
+                    """
+                )
+
+                def writeAttInfo(tag, att, attInfo):
+                    tagRep = " " if tag == "" else f"[{tag}]({elUrlPrefix}{tag}.html)"
+                    attRep = " " if att == "" else f"[{att}]({attUrlPrefix}{att})"
+                    atts = sorted(attInfo.items())
+                    (val, amount) = atts[0]
+                    valRep = f"`{val}`" if val else ""
+                    fh.write(f"{tagRep} | {attRep} | {valRep} | {amount}\n")
+                    for (val, amount) in atts[1:]:
+                        valRep = f"`{val}`" if val else ""
+                        fh.write(f"""\u00a0| | {valRep} | {amount}\n""")
+
+                def writeTagInfo(tag, tagInfo):
+                    tags = sorted(tagInfo.items())
+                    (att, attInfo) = tags[0]
+                    writeAttInfo(tag, att, attInfo)
+                    for (att, attInfo) in tags[1:]:
+                        writeAttInfo("", att, attInfo)
+
+                for (kind, label) in kindLabels.items():
+                    fh.write(f"## {label}\n{tableHeader}")
+                    for (tag, tagInfo) in sorted(analysis[kind].items()):
+                        writeTagInfo(tag, tagInfo)
+                    fh.write("\n")
+
         def filterError(msg):
             return msg == (
                 "Element 'graphic', attribute 'url': [facet 'pattern'] "
@@ -869,9 +1047,8 @@ class TEI:
 
         console("")
         writeReport()
+        writeDoc()
         writeErrors()
-
-        return True
 
     # SET UP CONVERSION
 
@@ -887,80 +1064,6 @@ class TEI:
 
         TF = Fabric(locations=tfPath)
         return CV(TF)
-
-    def convertTask(self):
-        """Implementation of the "convert" task.
-
-        It sets up the `tf.convert.walker` machinery and runs it.
-
-        Returns
-        -------
-        boolean
-            Whether the conversion was successful.
-        """
-        wordAsSlot = self.wordAsSlot
-        sectionModel = self.sectionModel
-
-        slotType = "word" if wordAsSlot else "char"
-
-        sectionFeatures = "folder,file,chunk"
-        sectionTypes = "folder,file,chunk"
-        if sectionModel == "II":
-            sectionFeatures = "chapter,chunk"
-            sectionTypes = "chapter,chunk"
-
-        textFeatures = "{str}{after}" if wordAsSlot else "{ch}"
-        otext = {
-            "fmt:text-orig-full": textFeatures,
-            "sectionFeatures": sectionFeatures,
-            "sectionTypes": sectionTypes,
-        }
-        intFeatures = {"empty", "chunk"}
-        featureMeta = dict(
-            chunk=dict(description="number of a chunk within a file"),
-            str=dict(description="the text of a word"),
-            after=dict(description="the text after a word till the next word"),
-            empty=dict(
-                description="whether a slot has been inserted in an empty element"
-            ),
-            is_meta=dict(
-                description="whether a slot or word is in the teiHeader element"
-            ),
-            is_note=dict(description="whether a slot or word is in the note element"),
-        )
-        if not wordAsSlot:
-            featureMeta["ch"] = dict(description="the unicode character of a slot")
-        if sectionModel == "II":
-            featureMeta["chapter"] = dict(description="name of chapter")
-        else:
-            featureMeta["folder"] = dict(description="name of source folder")
-            featureMeta["file"] = dict(description="name of source file")
-
-        self.intFeatures = intFeatures
-        self.featureMeta = featureMeta
-
-        schema = self.schema
-        tfVersion = self.tfVersion
-        tfPath = self.tfPath
-        generic = self.generic
-        generic["sourceFormat"] = "TEI"
-        generic["version"] = tfVersion
-        if schema:
-            generic["schema"] = schema
-
-        initTree(tfPath, fresh=True, gentle=True)
-
-        cv = self.getConverter()
-
-        return cv.walk(
-            self.getDirector(),
-            slotType,
-            otext=otext,
-            generic=generic,
-            intFeatures=intFeatures,
-            featureMeta=featureMeta,
-            generateTf=True,
-        )
 
     # DIRECTOR
 
@@ -1036,7 +1139,7 @@ class TEI:
         )
 
         parser = self.getParser()
-        elemDefs = self.getElementInfo()
+        self.getElementInfo()
 
         # WALKERS
 
@@ -1645,10 +1748,11 @@ class TEI:
                 The convertor object, needed to issue actions.
             """
             sectionModel = self.sectionModel
+            elementDefs = self.elementDefs
 
             cur = {}
             cur["pureElems"] = {
-                x for (x, (typ, mixed)) in elemDefs.items() if not mixed
+                x for (x, (typ, mixed)) in elementDefs.items() if not mixed
             }
 
             if sectionModel == "I":
@@ -1756,6 +1860,86 @@ class TEI:
 
         return director
 
+    def convertTask(self):
+        """Implementation of the "convert" task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        """
+        if not self.good:
+            return
+
+        wordAsSlot = self.wordAsSlot
+        sectionModel = self.sectionModel
+        tfPath = self.tfPath
+        sourceDir = self.sourceDir
+
+        console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
+
+        slotType = "word" if wordAsSlot else "char"
+
+        sectionFeatures = "folder,file,chunk"
+        sectionTypes = "folder,file,chunk"
+        if sectionModel == "II":
+            sectionFeatures = "chapter,chunk"
+            sectionTypes = "chapter,chunk"
+
+        textFeatures = "{str}{after}" if wordAsSlot else "{ch}"
+        otext = {
+            "fmt:text-orig-full": textFeatures,
+            "sectionFeatures": sectionFeatures,
+            "sectionTypes": sectionTypes,
+        }
+        intFeatures = {"empty", "chunk"}
+        featureMeta = dict(
+            chunk=dict(description="number of a chunk within a file"),
+            str=dict(description="the text of a word"),
+            after=dict(description="the text after a word till the next word"),
+            empty=dict(
+                description="whether a slot has been inserted in an empty element"
+            ),
+            is_meta=dict(
+                description="whether a slot or word is in the teiHeader element"
+            ),
+            is_note=dict(description="whether a slot or word is in the note element"),
+        )
+        if not wordAsSlot:
+            featureMeta["ch"] = dict(description="the unicode character of a slot")
+        if sectionModel == "II":
+            featureMeta["chapter"] = dict(description="name of chapter")
+        else:
+            featureMeta["folder"] = dict(description="name of source folder")
+            featureMeta["file"] = dict(description="name of source file")
+
+        self.intFeatures = intFeatures
+        self.featureMeta = featureMeta
+
+        schema = self.schema
+        tfVersion = self.tfVersion
+        generic = self.generic
+        generic["sourceFormat"] = "TEI"
+        generic["version"] = tfVersion
+        if schema:
+            generic["schema"] = schema
+
+        initTree(tfPath, fresh=True, gentle=True)
+
+        cv = self.getConverter()
+
+        self.good = cv.walk(
+            self.getDirector(),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        )
+
     def loadTask(self):
         """Implementation of the "load" task.
 
@@ -1775,12 +1959,16 @@ class TEI:
         boolean
             Whether the loading was successful.
         """
+        if not self.good:
+            return
+
         tfPath = self.tfPath
 
         if not os.path.exists(tfPath):
             console(f"Directory {ux(tfPath)} does not exist.")
             console("No tf found, nothing to load")
-            return False
+            self.good = False
+            return
 
         TF = Fabric(locations=[tfPath])
         allFeatures = TF.explore(silent=True, show=True)
@@ -1788,8 +1976,10 @@ class TEI:
         api = TF.load(loadableFeatures, silent=False)
         if api:
             console(f"max node = {api.F.otype.maxNode}")
-            return True
-        return False
+            self.good = True
+            return
+
+        self.good = False
 
     # APP CREATION/UPDATING
 
@@ -1805,13 +1995,19 @@ class TEI:
         boolean
             Whether the operation was successful.
         """
-        repoDir = self.repoDir
+        if not self.good:
+            return
+
+        refDir = self.refDir
         myDir = self.myDir
         appConfig = self.appConfig
         force = self.force
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         sectionCriteria = self.sectionCriteria
+        docsDir = self.docsDir
+
+        initTree(docsDir)
 
         itemSpecs = (
             ("about", "docs", "about.md", False),
@@ -1829,16 +2025,33 @@ class TEI:
             tfVersion = self.tfVersion
 
             with open(itemSource) as fh:
-                settings = yaml.load(fh, Loader=yaml.FullLoader)
-
-            mergeDict(settings, appConfig)
-
-            text = yaml.dump(settings, allow_unicode=True)
+                text = fh.read()
 
             text = text.replace("«version»", f'"{tfVersion}"')
 
+            settings = yaml.load(text, Loader=yaml.FullLoader)
+            mergeDict(settings, appConfig)
+            text = yaml.dump(settings, allow_unicode=True)
+
             with open(itemTarget, "w") as fh:
                 fh.write(text)
+
+        def createDisplay(itemSource, itemTarget):
+            """Copies and tweaks the display.css file of an TF app.
+
+            We generate css code for a certain text formatting styles,
+            triggered by `rend` attributes in the source.
+            """
+
+            cssInfo = makeCssInfo()
+
+            with open(itemSource) as fh:
+                css = fh.read()
+
+            css = css.replace("«rends»", cssInfo)
+
+            with open(itemTarget, "w") as fh:
+                fh.write(css)
 
         def createApp(itemSource, itemTarget):
             """Copies and tweaks the app.py file of an TF app.
@@ -1868,7 +2081,9 @@ class TEI:
             """
 
             materialCode = (
-                'f"{F.str.v(n)}{F.after.v(n)}"' if wordAsSlot else "F.ch.v(n)"
+                """f'{F.str.v(n) or ""}{F.after.v(n) or ""}'"""
+                if wordAsSlot
+                else '''F.ch.v(n) or ""'''
             )
 
             with open(itemSource) as fh:
@@ -1883,6 +2098,7 @@ class TEI:
             """Copies and tweaks the transcription.md file for a TF corpus."""
             org = self.org
             repo = self.repo
+            relative = self.relative
             generic = self.generic
 
             generic = "\n\n".join(
@@ -1895,7 +2111,7 @@ class TEI:
             result = (
                 dedent(
                     f"""
-                # Corpus {org} - {repo}
+                # Corpus {org} - {repo}{relative}
 
                 """
                 )
@@ -1915,6 +2131,7 @@ class TEI:
         def createAbout():
             org = self.org
             repo = self.repo
+            relative = self.relative
             generic = self.generic
 
             generic = "\n\n".join(
@@ -1924,7 +2141,7 @@ class TEI:
             return (
                 dedent(
                     f"""
-                # Corpus {org} - {repo}
+                # Corpus {org} - {repo}{relative}
 
                 """
                 )
@@ -1953,7 +2170,7 @@ class TEI:
             file = info["file"]
             hasTemplate = info["hasTemplate"]
 
-            targetDir = f"{repoDir}/{targetBit}"
+            targetDir = f"{refDir}/{targetBit}"
             itemTarget = f"{targetDir}/{file}"
             fileParts = file.rsplit(".", 1)
             if len(fileParts) == 1:
@@ -1988,6 +2205,8 @@ class TEI:
                     if name == "config"
                     else createApp
                     if name == "app"
+                    else createDisplay
+                    if name == "display"
                     else createTranscription
                     if name == "trans"
                     else fileCopy
@@ -1997,8 +2216,6 @@ class TEI:
                 with open(target, "w") as fh:
                     fh.write(createAbout())
             console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
-
-        return True
 
     # START the TEXT-FABRIC BROWSER on this CORPUS
 
@@ -2014,8 +2231,12 @@ class TEI:
         boolean
             Whether the operation was successful.
         """
+        if not self.good:
+            return
+
         org = self.org
         repo = self.repo
+        relative = self.relative
         backend = self.backend
         tfVersion = self.tfVersion
 
@@ -2024,14 +2245,13 @@ class TEI:
         try:
             run(
                 (
-                    f"text-fabric {org}/{repo}:clone --checkout=clone "
+                    f"text-fabric {org}/{repo}{relative}:clone --checkout=clone "
                     f"{versionOpt} {backendOpt}"
                 ),
                 shell=True,
             )
         except KeyboardInterrupt:
             pass
-        return True
 
     def task(
         self, check=False, convert=False, load=False, app=False, browse=False, test=None
@@ -2070,33 +2290,21 @@ class TEI:
         boolean
             Whether all tasks have executed successfully.
         """
-        sourceDir = self.sourceDir
-        reportDir = self.reportDir
-        tfPath = self.tfPath
-
         if test is not None:
             self.testMode = test
 
-        good = True
+        if not self.good:
+            return
 
-        if check:
-            console(f"TEI to TF checking: {ux(sourceDir)} => {ux(reportDir)}")
-            good = self.checkTask()
-
-        if good and convert:
-            console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
-            good = self.convertTask()
-
-        if good and load:
-            good = self.loadTask()
-
-        if good and app:
-            good = self.appTask()
-
-        if good and browse:
-            good = self.browseTask()
-
-        return good
+        for (condition, method) in (
+            (check, self.checkTask),
+            (convert, self.convertTask),
+            (load, self.loadTask),
+            (app, self.appTask),
+            (browse, self.browseTask),
+        ):
+            if condition:
+                method()
 
     def run(self, program=None):
         """Carry out tasks specified by arguments on the command line.
@@ -2128,7 +2336,7 @@ class TEI:
 
         args = sys.argv[1:]
 
-        if not len(args):
+        if not len(args) or "--help" in args or "-h" in args:
             self.help(programRep)
             console("No task specified")
             sys.exit(-1)
@@ -2144,8 +2352,8 @@ class TEI:
         tasks = {arg: True for arg in args if arg in possibleTasks}
         flags = {arg: True for arg in args if arg in possibleFlags}
 
-        good = self.task(**tasks, **flags)
-        if good:
+        self.task(**tasks, **flags)
+        if self.good:
             sys.exit(0)
         else:
             sys.exit(1)

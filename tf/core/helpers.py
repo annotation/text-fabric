@@ -45,8 +45,14 @@ def expandDir(obj, dirName):
     return dirName
 
 
+def prefixSlash(path):
+    """Prefix a / before a path if it is non-empty and not already starts with it.
+    """
+    return f"/{path}" if path and not path.startswith("/") else path
+
+
 def getLocation(targetDir=None):
-    """Get backend, org, repo of directory.
+    """Get backend, org, repo, relative of directory.
 
     Parameters
     ----------
@@ -57,14 +63,21 @@ def getLocation(targetDir=None):
         Otherwise, we append it to the absolute path of the current directory,
         with a `/` in between.
 
-    We assume the target directory is inside
+    We assume the target directory is somewhere inside
 
     `~/backend/org/repo`
+
+    If it is immediately inside this, we set `relative` to `""`.
+
+    If it is deeper down, we assume the reference directory is the parent of the
+    current directory, and the path of this parent, relative to the repo directory
+    goes into the `relative` component, preceded with a backslash if it is non-empty.
 
     Returns
     -------
     tuple
-        backend, org, repo
+        backend, org, repo, relative.
+        Relative is either empty or it starts with a "/" plus a non-empty path.
     """
     curDir = normpath(os.getcwd())
     if targetDir is not None:
@@ -80,14 +93,20 @@ def getLocation(targetDir=None):
     destDir = unexpanduser(destDir)
 
     if not destDir.startswith("~/"):
-        return (None, None, None)
+        return (None, None, None, None)
+
     destDir = destDir.removeprefix("~/")
     parts = destDir.split("/")
+
     if len(parts) == 1:
-        return (parts[0], None, None)
+        return (parts[0], None, None, None)
     if len(parts) == 1:
-        return (parts[0], parts[1], None)
-    return (parts[0], parts[1], parts[2])
+        return (parts[0], parts[1], None, None)
+    if len(parts) in {2, 3}:
+        return (parts[0], parts[1], parts[2], "")
+
+    relative = prefixSlash("/".join(parts[3:-1]))
+    return (parts[0], parts[1], parts[2], relative)
 
 
 def dirEmpty(target):

@@ -2,9 +2,6 @@ import types
 from tf.advanced.app import App
 
 
-REND = "italic script intl unc cor rem rec alt vac".strip().split()
-
-
 def fmt_layout(app, n, **kwargs):
     return app._wrapHtml(n)
 
@@ -14,7 +11,7 @@ class TfApp(App):
         app.fmt_layout = types.MethodType(fmt_layout, app)
         super().__init__(*args, **kwargs)
         app.rendFeatures = tuple((f, f[5:]) for f in app.api.Fall() if f.startswith("rend_"))
-        app.isFeatures = tuple(("is_meta", "is_note"))
+        app.isFeatures = tuple(f for f in app.api.Fall() if f.startswith("is_"))
 
     def _wrapHtml(app, n):
         rendFeatures = app.rendFeatures

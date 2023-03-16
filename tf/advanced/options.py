@@ -114,10 +114,10 @@ queryFeatures: boolean, optional True
     indicates whether pretty displays should show the features
     mentioned in the last query and their values.
 
-multiFeatures: boolean, optional True
+multiFeatures: boolean, optional False
     **interface option**
     indicates whether pretty displays should show all possible node features
-    provided they have a non-empty value.
+    provided they have a non-empty value. The feature `otype` is excluded from this.
 
 showGraphics: boolean, optional True
     **interface option**
@@ -402,10 +402,10 @@ INTERFACE_OPTIONS = (
     ),
     (
         "multiFeatures",
-        True,
+        False,
         "showm",
-        "show all possible node features",
-        "Show all possible node features with non-empty values.",
+        "show all possible node features (except otype)",
+        "Show all possible node features with non-empty values, except otype.",
         False,
     ),
     (
@@ -448,8 +448,6 @@ Every option is a tuple with members
     browser.
 """
 
-
-# <p><b title="withTypes">Show types</b>{longDesc}</p>
 
 DISPLAY_OPTIONS = dict(
     baseTypes=None,

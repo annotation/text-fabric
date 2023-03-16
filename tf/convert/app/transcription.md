@@ -22,12 +22,8 @@ In this dataset, **«slot»s** fullfill the role of slots.
 *   Text-Fabric «slot» nodes correspond to **«slotf»** in TEI element content;
 *   Text-Fabric node types correspond to TEI element names (tags);
 *   Text-Fabric non-«slot» nodes correspond to TEI elements in the source;
-*   Text-Fabric *features* correspond to TEI *attributes*.
-
-In order to understand the encoding, you need to know
-
-*   the [TEI elements](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ELEMENTS.html).
-*   the [TEI attributes](https://tei-c.org/release/doc/tei-p5-doc/en/html/REF-ATTS.html).
+*   Text-Fabric *features* correspond to TEI *attributes*;
+*   Here are the [TEI elements and attributes](elements.md) used in this corpus.
 
 The TEI to TF conversion is an almost literal and very faithful transformation from
 the TEI source files to a Text-Fabric data set.
@@ -379,18 +375,20 @@ are for their first character.
 Special formatting for the `rend_`*r* features is supported for some values of *r*.
 The conversion supports these out-of-the-box:
 
-`italic`
-`bold`
-`underline`
-`center`
-`large`
-`spaced`
-`margin`
-`above`
-`below`
-`sub`
-`sup`
-`super`
+value | description
+--- | ---
+`italic` or `italics` or `i` | cursive font style
+`bold` or `b` | bold font weight
+`underline` | underlined
+`center` | horizontally centered
+`large` | large font size
+`spaced` or `spat` | widely spaced between characters
+`margin` | in the margin
+`above` | above the line
+`below` | below the line
+`sc` | small-caps font variation
+`sub` | as subscript
+`super` or `sup` | as superscript
 
 It is possible for the corpus designer to add more formatting on a per-corpus
 basis by adding it to the `display.css` in the app directory of the corpus.

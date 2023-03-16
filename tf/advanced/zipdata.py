@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 from .helpers import splitModRef
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, BACKEND_REP, DOWNLOADS
-from ..core.helpers import console, normpath, expanduser, initTree
+from ..core.helpers import console, normpath, expanduser, initTree, prefixSlash
 
 DW = expanduser(DOWNLOADS)
 
@@ -16,9 +16,9 @@ HELP = """
 ``` sh
 text-fabric-zip --help
 
-text-fabric-zip {org}/{repo}/{relative}
+text-fabric-zip {org}/{repo}{relative}
 
-text-fabric-zip {org}/{repo}/{relative} --backend=gitlab.huc.knaw.nl
+text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 ```
 
 ### EFFECT
@@ -89,16 +89,16 @@ def zipData(
         source = BACKEND_REP(backend, "clone")
     if dest is None:
         dest = f"{DW}/{BACKEND_REP(backend, 'norm')}"
-    relative = normpath(relative)
-    console(f"Create release data for {org}/{repo}/{relative}")
+    relative = prefixSlash(normpath(relative))
+    console(f"Create release data for {org}/{repo}{relative}")
     sourceBase = normpath(f"{source}/{org}")
     destBase = normpath(f"{dest}/{org}-release")
-    sourceDir = f"{sourceBase}/{repo}/{relative}"
+    sourceDir = f"{sourceBase}/{repo}{relative}"
     destDir = f"{destBase}/{repo}"
     dataFiles = {}
 
     initTree(destDir, fresh=not keep)
-    relativeDest = relative.replace("/", "-")
+    relativeDest = relative.removeprefix("/").replace("/", "-")
 
     if tf:
         if not os.path.exists(sourceDir):
@@ -174,7 +174,7 @@ def zipData(
         if not relativeDest:
             relativeDest = "-"
         console(
-            f"zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files"
+            f"zipping {org}/{repo}{relative}{versionRep} with {len(results)} files"
         )
         console(f"zip file is {destDir}/{relativeDest}.zip")
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
@@ -210,13 +210,13 @@ def main(cargs=sys.argv):
         return
 
     (org, repo, relative, checkout, theBackend) = parts
-    relative = normpath(relative)
+    relative = prefixSlash(normpath(relative))
 
     tf = (
-        relative == "tf"
-        or relative.endswith("tf")
-        or relative.startswith("tf/")
-        or "/tf/" in relative
+        relative.removeprefix("/") == RELATIVE
+        or relative.endswith(RELATIVE)
+        or relative.startswith(f"{RELATIVE}/")
+        or f"/{RELATIVE}/" in relative
     )
     tfMsg = "This is a TF dataset" if tf else "These are additional files"
     sys.stdout.write(f"{tfMsg}\n")

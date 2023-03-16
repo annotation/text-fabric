@@ -399,11 +399,12 @@ from ..parameters import (
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
     DOWNLOADS,
+    RELATIVE,
 )
 from ..core.helpers import console, htmlEsc, expanduser, initTree, unexpanduser
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from ..capable import Capable
-from .helpers import dh, runsInNotebook
+from .helpers import dh, runsInNotebook, prefixSlash
 from .zipdata import zipData
 
 Cap = Capable("github", "gitlab")
@@ -506,7 +507,7 @@ class Repo:
             org,
             repo,
             version=version,
-            relative=folder,
+            relative=prefixSlash(folder),
             source=source,
             dest=dest,
         )
@@ -877,22 +878,22 @@ class Checkout:
         clone = self.isClone()
         offline = self.isOffline()
 
+        relative = prefixSlash(relative)
         self.relative = relative
         self.version = version
         versionRep = f"/{version}" if version else ""
         self.versionRep = versionRep
-        relativeRep = f"/{relative}" if relative else ""
         self.dataDir = f"{relative}{versionRep}"
 
         self.baseLocal = expanduser(self.dest)
-        self.dataRelLocal = f"{org}/{repo}{relativeRep}"
+        self.dataRelLocal = f"{org}/{repo}{relative}"
         self.dirPathSaveLocal = f"{self.baseLocal}/{org}/{repo}"
         self.dirPathLocal = f"{self.baseLocal}/{self.dataRelLocal}{versionRep}"
         self.dataPathLocal = f"{self.dataRelLocal}{versionRep}"
         self.filePathLocal = f"{self.dirPathLocal}/{EXPRESS_SYNC}"
 
         self.baseClone = expanduser(self.source)
-        self.dataRelClone = f"{org}/{repo}{relativeRep}"
+        self.dataRelClone = f"{org}/{repo}{relative}"
         self.dirPathClone = f"{self.baseClone}/{self.dataRelClone}{versionRep}"
         self.dataPathClone = f"{self.dataRelClone}{versionRep}"
 
@@ -1283,7 +1284,7 @@ class Checkout:
                 pass
             assetUrl = None
             versionRep3 = f"-{version}" if version else ""
-            relativeFlat = self.relative.replace("/", "-")
+            relativeFlat = self.relative.removeprefix("/").replace("/", "-")
             dataFile = f"{relativeFlat}{versionRep3}.zip"
             if assets and assets.totalCount > 0:
                 for asset in assets:
@@ -1705,7 +1706,7 @@ def checkoutRepo(
     _browse=False,
     org="annotation",
     repo="banks",
-    folder="tf",
+    folder=f"/{RELATIVE}",
     version="",
     checkout="",
     source=None,
@@ -1735,7 +1736,7 @@ def checkoutRepo(
     repo: string, optional "banks"
         The *repo* on GitHub or the project on GitLab
 
-    folder: string, optional tf
+    folder: string, optional /tf
         The subfolder in the repo that contains the text-fabric files.
         If the tf files are versioned, it is the directory that
         contains the version directories.

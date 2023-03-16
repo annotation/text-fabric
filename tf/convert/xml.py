@@ -266,7 +266,6 @@ feature | description
 class XML:
     def __init__(
         self,
-        repoDir=".",
         sourceVersion="0.1",
         testSet=set(),
         generic={},
@@ -278,7 +277,7 @@ class XML:
         We adopt a fair bit of "convention over configuration" here, in order to lessen
         the burden for the user of specifying so many details.
 
-        Based on current direcotry from where the script is called,
+        Based on current directory from where the script is called,
         it defines all the ingredients to carry out
         a `tf.convert.walker` conversion of the XML input.
 
@@ -289,7 +288,7 @@ class XML:
         Your current directory must be somewhere inside
 
         ```
-        ~/backend/org/repo
+        ~/backend/org/repo/relative
         ```
 
         where
@@ -299,6 +298,7 @@ class XML:
             like `github`, `gitlab`, `git.huc.knaw.nl`;
         *   `org` is an organisation, person, or group in the backend;
         *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
 
         This is only about the directory structure on your local computer;
         it is not required that you have online incarnations of your repository
@@ -306,9 +306,9 @@ class XML:
         Even your local repository does not have to be a git repository.
 
         The only thing that matters is that the full path to your repo can be parsed
-        as a sequence of *home*/*backend*/*org*/*repo*.
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
 
-        Relative to the repo directory the program expects and creates
+        Relative to this directory the program expects and creates
         input/output directories.
 
         ## Input directory
@@ -366,20 +366,24 @@ class XML:
             Version of the generated tf files. This is the name of a top-level
             subfolder of the `tf` output folder.
         """
-        (backend, org, repo) = getLocation(repoDir)
-        if any(s is None for s in (backend, org, repo)):
-            console("Not working in a repo: backend={backend} org={org} repo={repo}")
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                "Not working in a repo: "
+                f"backend={backend} org={org} repo={repo} relative={relative}"
+            )
             quit()
 
-        console(f"Working in repository {org}/{repo} in backend {backend}")
+        console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
 
         base = os.path.expanduser(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
-        sourceDir = f"{repoDir}/xml/{sourceVersion}"
-        reportDir = f"{repoDir}/report"
-        tfDir = f"{repoDir}/tf"
+        refDir = f"{repoDir}{relative}"
+        sourceDir = f"{refDir}/xml/{sourceVersion}"
+        reportDir = f"{refDir}/report"
+        tfDir = f"{refDir}/tf"
 
-        self.repoDir = repoDir
+        self.refDir = refDir
         self.sourceDir = sourceDir
         self.reportDir = reportDir
         self.tfDir = tfDir

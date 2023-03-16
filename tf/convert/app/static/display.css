@@ -1,8 +1,8 @@
-.r_.r_italic,.r_.r_italics {
+.r_.r_italic,.r_.r_italics,.r_.r_i {
   font-style: italic;
   color: #000000;
 }
-.r_.r_bold {
+.r_.r_bold,.r_.r_b {
   font-weight: bold;
   color: #000000;
 }
@@ -18,7 +18,7 @@
   font-size: large;
   color: #000000;
 }
-.r_.r_spaced {
+.r_.r_spaced,.r_.r_spaced {
   letter-spacing: .2rem;
   color: #000000;
 }
@@ -37,6 +37,9 @@
   position: relative;
   top: 0.3em;
   color: #000000;
+}
+.r_.r_sc {
+  font-variant: small-caps;
 }
 .r_.r_sub {
   vertical-align: sub;

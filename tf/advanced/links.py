@@ -17,7 +17,7 @@ from ..parameters import (
     GH,
     GL,
 )
-from ..core.helpers import console, htmlEsc, unexpanduser as ux
+from ..core.helpers import prefixSlash, console, htmlEsc, unexpanduser as ux
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
@@ -61,7 +61,7 @@ def linksApi(app, silent=SILENT_D):
 
     aContext = app.context
     appName = aContext.appName
-    appRelative = aContext.relative
+    appRelative = aContext.relative.removeprefix("/")
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
@@ -86,12 +86,14 @@ def linksApi(app, silent=SILENT_D):
         if volumeInfo:
             dataName += f" volume {volumeInfo}"
 
+    components = [appPath.rsplit("/", 1)[0]]
+    if appRelative:
+        components.append(appRelative)
+    components.append(version)
     dataLink = (
         outLink(dataName, docUrl, f"provenance of {corpus}", asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
-        else "/".join(
-            (x or "") for x in (appPath.rsplit("/", 1)[0], appRelative, version)
-        )
+        else "/".join(components)
         if appName.startswith("app:")
         else "/".join((x or "") for x in (appPath, appName, version))
     )
@@ -482,17 +484,17 @@ PATH_RE2 = re.compile(
 def _parseFeaturePath(path, backend):
     match1 = PATH_RE1.fullmatch(path)
     if not match1:
-        return (False, backend, "??", "??", "??")
+        return (False, backend, "??", "??", "/??")
 
     (lead, exDir, theBackend, rest) = match1.groups()
     theBackend = theBackend.lower()
 
     match2 = PATH_RE2.fullmatch(rest)
     if not match2:
-        return (False, theBackend, "??", "??", "??")
+        return (False, theBackend, "??", "??", "/??")
 
     (org, repo, relative) = match2.groups()
-    return (True, theBackend, org, repo, relative)
+    return (True, theBackend, org, repo, prefixSlash(relative))
 
 
 def outLink(
@@ -623,7 +625,7 @@ def _featuresPerModule(app, allMeta=False):
     aContext = app.context
     mOrg = aContext.org
     mRepo = aContext.repo
-    mRelative = aContext.relative
+    mRelative = prefixSlash(aContext.relative)
     version = aContext.version
     branch = aContext.provenanceSpec["branch"]
     moduleSpecs = aContext.moduleSpecs
@@ -663,8 +665,8 @@ def _featuresPerModule(app, allMeta=False):
                 else fixedModuleIndex[mId]
                 if mId in fixedModuleIndex
                 else (
-                    f"{BACKEND_REP(backend, 'rep')}{org}/{repo}/{relative}",
-                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/{branch}/{relative}",
+                    f"{BACKEND_REP(backend, 'rep')}{org}/{repo}{relative}",
+                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/{branch}{relative}",
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -681,7 +683,7 @@ def _featuresPerModule(app, allMeta=False):
         )
 
         if parsedOK:
-            fRelative = relative.rsplit("/", 1)[0]
+            fRelative = prefixSlash(relative.rsplit("/", 1)[0])
             mId = (fBackend, fOrg, fRepo, fRelative)
         else:
             mId = featurePath.rsplit("/", 1)[0]
@@ -696,6 +698,7 @@ def _featuresPerModule(app, allMeta=False):
             for mIId in moduleIndex:
                 if type(mIId) is not str:
                     (mBackend, mOrg, mRepo, mRelative) = mIId
+                    mRelative = prefixSlash(mRelative)
                     if (
                         fBackend == mBackend
                         and fOrg == mOrg
@@ -725,6 +728,7 @@ def _featuresPerModule(app, allMeta=False):
         modInfo = moduleIndex.get(mId, None)
         if modInfo:
             (mBackend, org, repo, relative, corpus, docUrl) = modInfo
+            relative = prefixSlash(relative)
         else:
             corpus = mId if type(mId) is str else "/".join(mId)
             docUrl = (
@@ -882,20 +886,21 @@ def provenanceLink(
         The release tag of the repository
     """
 
+    relative = prefixSlash(relative)
     text = (
         f"data on local machine {relative}"
         if org is None or repo is None
         else (
-            f"{org}/{repo} v:{version}"
+            f"{org}/{repo}{relative} v:{version}"
             f"({Checkout.toString(commit, release, local, backend)})"
         )
     )
-    relativeFlat = relative.replace("/", "-")
+    relativeFlat = relative.removeprefix("/").replace("/", "-")
     bUrl = BACKEND_REP(backend, "url")
     url = (
         None
         if org is None or repo is None
-        else f"{bUrl}/{org}/{repo}/tree/{branch}/{relative}"
+        else f"{bUrl}/{org}/{repo}/tree/{branch}{relative}"
         if local
         else (
             (
@@ -909,7 +914,7 @@ def provenanceLink(
                 )
             )
             if release
-            else f"{bUrl}/{org}/{repo}/tree/{commit}/{relative}"
+            else f"{bUrl}/{org}/{repo}/tree/{commit}{relative}"
         )
     )
     return (text, url)

@@ -1,6 +1,6 @@
 from ..parameters import BACKEND_REP
 from ..core.helpers import itemize, normpath, expandDir
-from .helpers import splitModRef
+from .helpers import splitModRef, prefixSlash
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -72,19 +72,19 @@ class AppData:
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
-        relative = aContext.relative
+        relative = prefixSlash(aContext.relative)
         appPath = aContext.appPath
         appName = aContext.appName
 
         if appName.startswith("app:"):
             appParent = appPath.rsplit("/", 1)[0]
-            relative = f"{appParent}/{relative}"
+            relative = f"{appParent}{relative}"
         elif org is None or repo is None:
             appPathRep = f"{appPath}/" if appPath else ""
             relative = f"{appPathRep}{appName}"
             self.checkout = "local"
 
-        if not self.getModule(org, repo, relative, checkout, isBase=True):
+        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -123,7 +123,7 @@ class AppData:
             theBackend = m.get("backend", backend)
             bRep = BACKEND_REP(theBackend, "spec", default=backend)
 
-            ref = f"{bRep}{org}/{repo}/{relative}"
+            ref = f"{bRep}{org}/{repo}{relative}"
             if ref in seen:
                 continue
 
@@ -157,7 +157,7 @@ class AppData:
                 self.good = False
                 continue
 
-            parts[2] = normpath(parts[2])  # the relative bit
+            parts[2] = prefixSlash(normpath(parts[2]))  # the relative bit
             theBackend = (
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
@@ -262,15 +262,16 @@ class AppData:
         aContext = app.context
         branch = aContext.provenanceSpec["branch"]
 
-        relative = normpath(relative)
+        relative = prefixSlash(normpath(relative))
 
-        moduleRef = f"{bRep}{org}/{repo}/{relative}"
+        moduleRef = f"{bRep}{org}/{repo}{relative}"
         if moduleRef in self.seen:
             return True
 
         if org is None or repo is None:
-            repoLocation = relative
-            mLocations.append(relative)
+            relativeBare = relative.removeprefix("/")
+            repoLocation = relativeBare
+            mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -298,7 +299,7 @@ class AppData:
         info = {}
         for item in (
             ("doi", None),
-            ("corpus", f"{org}/{repo}/{relative}"),
+            ("corpus", f"{org}/{repo}{relative}"),
         ):
             (key, default) = item
             info[key] = (
