@@ -814,7 +814,7 @@ class CV:
     def link(self, node, slots):
         """Link the given, existing slots to a node.
 
-            cv.link(n)
+            cv.link(n, [s1, s2])
 
         Sometimes the automatic linking of slots to nodes is not sufficient.
 
@@ -1561,6 +1561,7 @@ class CV:
 
             aMin = min(aWithoutB)
             bMin = min(bWithoutA)
+            print(f"{aMin=} <? {bMin=}")
             return -1 if aMin < bMin else 1
 
         return functools.cmp_to_key(before)

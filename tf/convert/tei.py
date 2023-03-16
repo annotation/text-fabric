@@ -92,38 +92,84 @@ from ..tools.xmlschema import Analysis
 
 
 CSS_REND = dict(
+    h1=dedent(
+        """
+        font-size: xx-large;
+        font-weight: bold;
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+        """
+    ),
+    h2=dedent(
+        """
+        font-size: x-large;
+        font-weight: bold;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        """
+    ),
+    h3=dedent(
+        """
+        font-size: large;
+        font-weight: bold;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        """
+    ),
+    h4=dedent(
+        """
+        font-size: large;
+        font-style: italic;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        """
+    ),
+    h5=dedent(
+        """
+        font-size: medium;
+        font-weight: bold;
+        font-variant: small-caps;
+        margin-top: 0.5rem;
+        margin-bottom: 0.25rem;
+        """
+    ),
+    h6=dedent(
+        """
+        font-size: medium;
+        font-weight: normal;
+        font-variant: small-caps;
+        margin-top: 0.25rem;
+        margin-bottom: 0.125rem;
+        """
+    ),
     italic=dedent(
         """
         font-style: italic;
-        color: #000000;
         """
     ),
     bold=dedent(
         """
+        font-weight: bold;
         """
     ),
     underline=dedent(
         """
         text-decoration: underline;
-        color: #000000;
         """
     ),
     center=dedent(
         """
         text-align: center;
-        color: #000000;
         """
     ),
     large=dedent(
         """
         font-size: large;
-        color: #000000;
         """
     ),
     spaced=dedent(
         """
         letter-spacing: .2rem;
-        color: #000000;
         """
     ),
     margin=dedent(
@@ -138,14 +184,12 @@ CSS_REND = dict(
         """
         position: relative;
         top: -0.3em;
-        color: #000000;
         """
     ),
     below=dedent(
         """
         position: relative;
         top: 0.3em;
-        color: #000000;
         """
     ),
     small_caps=dedent(
@@ -157,19 +201,18 @@ CSS_REND = dict(
         """
         vertical-align: sub;
         font-size: small;
-        color: #000000;
         """
     ),
     super=dedent(
         """
         vertical-align: super;
         font-size: small;
-        color: #000000;
         """
     ),
 )
 CSS_REND_ALIAS = dict(
     italic="italics i",
+    bold="b",
     underline="ul",
     spaced="spat",
     small_caps="smallcaps sc",
@@ -177,18 +220,20 @@ CSS_REND_ALIAS = dict(
 )
 
 
+KNOWN_RENDS = set()
+
+
 def makeCssInfo():
     rends = ""
 
     for (rend, css) in sorted(CSS_REND.items()):
-        aliases = CSS_REND.get(rend, rend)
-        aliases = sorted(set(aliases.split()))
-        selector = ",".join(f".r_.r_{alias}" for alias in aliases)
-        contribution = dedent(
-            f"""
-            {selector} {{{css}}}
-            """
-        )
+        aliases = CSS_REND_ALIAS.get(rend, "")
+        aliases = sorted(set(aliases.split()) | {rend})
+        KNOWN_RENDS.add(rend)
+        for alias in aliases:
+            KNOWN_RENDS.add(alias)
+        selector = ",".join(f".r_{alias}" for alias in aliases)
+        contribution = f"\n{selector} {{{css}}}\n"
         rends += contribution
 
     return rends
@@ -1599,6 +1644,9 @@ class TEI:
                         cv.feature(curNode, **emptyAtts)
                 else:
                     curNode = cv.node(tag)
+                    if wordAsSlot:
+                        if cur["word"]:
+                            cv.link(curNode, [cur["word"][1]])
                     cur["elems"].append(curNode)
                     if len(atts):
                         cv.feature(curNode, **atts)
@@ -2085,11 +2133,13 @@ class TEI:
                 if wordAsSlot
                 else '''F.ch.v(n) or ""'''
             )
+            rendValues = repr(KNOWN_RENDS)
 
             with open(itemSource) as fh:
                 code = fh.read()
 
             code = code.replace("F.matérial", materialCode)
+            code = code.replace('"rèndValues"', rendValues)
 
             with open(itemTarget, "w") as fh:
                 fh.write(code)
