@@ -293,20 +293,6 @@ Whether characters of words are taken as the basic unit (*slot*) is decided
 by the parameter `wordAsSlot`, passed to the conversion
 (for this corpus the slot type is **«slot»**).
 
-### «Slot»s in general
-
-1.  Spaces are stripped when they are between elements whose parent does not allow
-    mixed content; other whitespace is reduced to a single space.
-1.  All «slot»s inside the teiHeader will get the feature `is_meta` set to 1;
-    for «slot»s inside the body, `is_meta` has no value.
-1.  Necessarily empty elements will cause a feature `empty_`*tag*`=1` on the
-    last «slot»; *tag* is the name of the empty element. All attributes of such
-    an element go into features `empty_`*tag*`_`*att*`=`*value* on the same «slot».
-1.  Empty elements that are not necessarily empty will receive one extra «slot»;
-    this will anchor the element to
-    a textual position; the empty «slot» gets the ZERO-WIDTH-SPACE (Unicode 200B)
-    as character value.
-
 ### «Slot»s and empty elements
 
 When empty elements occur, something must be done to anchor them to the text stream.
@@ -314,10 +300,21 @@ When empty elements occur, something must be done to anchor them to the text str
 *   *accidentally empty*:
     When the element is empty, but could have had content, we add an empty «slot», with
     features derived from the attributes of the element.
+    This empty «slot» also gets the ZERO-WIDTH-SPACE (Unicode 200B) as character value.
 *   *necessarily empty*:
-    When the element can never have content (as defined by the TEI guidelines), we add its
-    attributes as features to the previous «slot» (if there is no such «slot», we make an
-    empty «slot»).
+    When the element can never have content (as defined by the TEI guidelines), we add
+    its attributes as features to the previous «slot» (if there is no such «slot»,
+    we make an empty «slot»).
+    We also add a feature `empty_`*tag*`=1` on that «slot»; *tag* is the name of the
+    empty element. All attributes of such an element go into features
+    `empty_`*tag*`_`*att*`=`*value* on the same «slot».
+
+### «Slot»s in general
+
+1.  Spaces are stripped when they are between elements whose parent does not allow
+    mixed content; other whitespace is reduced to a single space.
+1.  All «slot»s inside the teiHeader will get the feature `is_meta` set to 1;
+    for «slot»s inside the body, `is_meta` has no value.
 
 «beginSlotchar»
 
@@ -345,13 +342,13 @@ The basic unit is the word, as detected by the rules above.
 1. Nodes that contain only part of the characters of a word, will contain the whole
    word.
 1. Features that have different values for different characters in the word,
-   will have the most salient value for the whole word.
-   The concept of *salient* is rather coarse:
-
-   *    `None` values are the least salient
-   *    for integer values: bigger values are more salient than smaller values
-   *    for string values: longer strings are more salient than smaller strings,
-        for strings of equal length the lexicographic ordering holds.
+   will have the last value encountered for the whole word.
+1. Formatting attributes, such as `rend=italic` (see below) will give rise
+   to features `r_italic`. If a word is embedded in severel elements with
+   `rend` attributes and different values for them, the word will get
+   features `r_`*value* for all those values. But if different parts of the
+   word are in the scope of different `rend` values, that information will be lost,
+   the `r_`*value* features all apply the whole word.
 
 «endSlotword»
 
@@ -377,18 +374,7 @@ The conversion supports these out-of-the-box:
 
 value | description
 --- | ---
-`italic` or `italics` or `i` | cursive font style
-`bold` or `b` | bold font weight
-`underline` | underlined
-`center` | horizontally centered
-`large` | large font size
-`spaced` or `spat` | widely spaced between characters
-`margin` | in the margin
-`above` | above the line
-`below` | below the line
-`sc` | small-caps font variation
-`sub` | as subscript
-`super` or `sup` | as superscript
+«rendDesc»
 
 It is possible for the corpus designer to add more formatting on a per-corpus
 basis by adding it to the `display.css` in the app directory of the corpus.

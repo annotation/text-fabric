@@ -92,122 +92,176 @@ from ..tools.xmlschema import Analysis
 
 
 CSS_REND = dict(
-    h1=dedent(
-        """
+    h1=(
+        "heading of level 1",
+        dedent(
+            """
         font-size: xx-large;
         font-weight: bold;
         margin-top: 3rem;
         margin-bottom: 1rem;
         """
+        ),
     ),
-    h2=dedent(
-        """
+    h2=(
+        "heading of level 2",
+        dedent(
+            """
         font-size: x-large;
         font-weight: bold;
         margin-top: 2rem;
         margin-bottom: 1rem;
         """
+        ),
     ),
-    h3=dedent(
-        """
+    h3=(
+        "heading of level 3",
+        dedent(
+            """
         font-size: large;
         font-weight: bold;
         margin-top: 1rem;
         margin-bottom: 0.5rem;
         """
+        ),
     ),
-    h4=dedent(
-        """
+    h4=(
+        "heading of level 4",
+        dedent(
+            """
         font-size: large;
         font-style: italic;
         margin-top: 1rem;
         margin-bottom: 0.5rem;
         """
+        ),
     ),
-    h5=dedent(
-        """
+    h5=(
+        "heading of level 5",
+        dedent(
+            """
         font-size: medium;
         font-weight: bold;
         font-variant: small-caps;
         margin-top: 0.5rem;
         margin-bottom: 0.25rem;
         """
+        ),
     ),
-    h6=dedent(
-        """
+    h6=(
+        "heading of level 6",
+        dedent(
+            """
         font-size: medium;
         font-weight: normal;
         font-variant: small-caps;
         margin-top: 0.25rem;
         margin-bottom: 0.125rem;
         """
+        ),
     ),
-    italic=dedent(
-        """
+    italic=(
+        "cursive font style",
+        dedent(
+            """
         font-style: italic;
         """
+        ),
     ),
-    bold=dedent(
-        """
+    bold=(
+        "bold font weight",
+        dedent(
+            """
         font-weight: bold;
         """
+        ),
     ),
-    underline=dedent(
-        """
+    underline=(
+        "underlined text",
+        dedent(
+            """
         text-decoration: underline;
         """
+        ),
     ),
-    center=dedent(
-        """
+    center=(
+        "horizontally centered text",
+        dedent(
+            """
         text-align: center;
         """
+        ),
     ),
-    large=dedent(
-        """
+    large=(
+        "large font size",
+        dedent(
+            """
         font-size: large;
         """
+        ),
     ),
-    spaced=dedent(
-        """
+    spaced=(
+        "widely spaced between characters",
+        dedent(
+            """
         letter-spacing: .2rem;
         """
+        ),
     ),
-    margin=dedent(
-        """
+    margin=(
+        "in the margin",
+        dedent(
+            """
         position: relative;
         top: -0.3em;
         font-weight: bold;
         color: #0000ee;
         """
+        ),
     ),
-    above=dedent(
-        """
+    above=(
+        "above the line",
+        dedent(
+            """
         position: relative;
         top: -0.3em;
         """
+        ),
     ),
-    below=dedent(
-        """
+    below=(
+        "below the line",
+        dedent(
+            """
         position: relative;
         top: 0.3em;
         """
+        ),
     ),
-    small_caps=dedent(
-        """
+    small_caps=(
+        "small-caps font variation",
+        dedent(
+            """
         font-variant: small-caps;
         """
+        ),
     ),
-    sub=dedent(
-        """
+    sub=(
+        "as subscript",
+        dedent(
+            """
         vertical-align: sub;
         font-size: small;
         """
+        ),
     ),
-    super=dedent(
-        """
+    super=(
+        "as superscript",
+        dedent(
+            """
         vertical-align: super;
         font-size: small;
         """
+        ),
     ),
 )
 CSS_REND_ALIAS = dict(
@@ -221,17 +275,18 @@ CSS_REND_ALIAS = dict(
 
 
 KNOWN_RENDS = set()
+REND_DESC = {}
 
 
 def makeCssInfo():
     rends = ""
 
-    for (rend, css) in sorted(CSS_REND.items()):
+    for (rend, (description, css)) in sorted(CSS_REND.items()):
         aliases = CSS_REND_ALIAS.get(rend, "")
         aliases = sorted(set(aliases.split()) | {rend})
-        KNOWN_RENDS.add(rend)
         for alias in aliases:
             KNOWN_RENDS.add(alias)
+            REND_DESC[alias] = description
         selector = ",".join(f".r_{alias}" for alias in aliases)
         contribution = f"\n{selector} {{{css}}}\n"
         rends += contribution
@@ -332,10 +387,12 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
     else:
         nLevels = "3"
 
+    rendDesc = "\n".join(f"`{val}` | {desc}" for (val, desc) in sorted(REND_DESC.items()))
     modelKeepRe = re.compile(rf"«(?:begin|end)Model{sectionModel}»")
     modelRemoveRe = re.compile(r"«beginModel([^»]+)».*?«endModel\1»", re.S)
     slotKeepRe = re.compile(rf"«(?:begin|end)Slot{slot}»")
     slotRemoveRe = re.compile(r"«beginSlot([^»]+)».*?«endSlot\1»", re.S)
+    print(rendDesc)
 
     skipVars = re.compile(r"«[^»]+»")
 
@@ -346,6 +403,7 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
         .replace("«char and word»", xslot)
         .replace("«nLevels»", nLevels)
         .replace("«sectionModel»", sectionModel)
+        .replace("«rendDesc»", rendDesc)
     )
     if sectionModel == "II":
         text = (
@@ -2068,6 +2126,7 @@ class TEI:
         items = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
         }
+        cssInfo = makeCssInfo()
 
         def createConfig(itemSource, itemTarget):
             tfVersion = self.tfVersion
@@ -2090,8 +2149,6 @@ class TEI:
             We generate css code for a certain text formatting styles,
             triggered by `rend` attributes in the source.
             """
-
-            cssInfo = makeCssInfo()
 
             with open(itemSource) as fh:
                 css = fh.read()
