@@ -562,7 +562,7 @@ def _nodeTypeInfo(app):
                     <th># of nodes</th>
                     <th># slots/node</th>
                     <th>% coverage</th>
-                <tr>
+                </tr>
             """
             )
             if doHtml

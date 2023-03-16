@@ -543,4 +543,4 @@ def _getFeatures(info, n, nType):
     if not featurePart:
         return ""
 
-    return f"<div class='features'>{featurePart}</div>"
+    return f"""<div class="features">{featurePart}</div>"""
