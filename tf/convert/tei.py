@@ -392,7 +392,6 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
     modelRemoveRe = re.compile(r"«beginModel([^»]+)».*?«endModel\1»", re.S)
     slotKeepRe = re.compile(rf"«(?:begin|end)Slot{slot}»")
     slotRemoveRe = re.compile(r"«beginSlot([^»]+)».*?«endSlot\1»", re.S)
-    print(rendDesc)
 
     skipVars = re.compile(r"«[^»]+»")
 

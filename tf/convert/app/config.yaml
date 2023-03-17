@@ -21,7 +21,7 @@ provenanceSpec:
   corpus: '{org} - {repo}{relative}'
   doi: 10.5281/zenodo.notyet
   moduleSpecs: []
-  version: '«version»'
+  version: «version»
   webBase: 'https://public.{org}.org/{repo}'
   webHint: Show this on the website
   webLang: en

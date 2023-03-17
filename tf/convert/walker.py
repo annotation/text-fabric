@@ -1561,7 +1561,6 @@ class CV:
 
             aMin = min(aWithoutB)
             bMin = min(bWithoutA)
-            print(f"{aMin=} <? {bMin=}")
             return -1 if aMin < bMin else 1
 
         return functools.cmp_to_key(before)

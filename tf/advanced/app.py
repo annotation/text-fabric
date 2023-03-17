@@ -20,6 +20,7 @@ from .find import findAppConfig, findAppClass
 from .helpers import getText, runsInNotebook, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .volumes import volumesApi
+from .export import exportApi
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -195,6 +196,8 @@ Most of the Text-Fabric API has not been loaded.
         if self.api:
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
+
+            exportApi(self)
 
             featuresOnly = self.featuresOnly
 

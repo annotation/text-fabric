@@ -127,8 +127,19 @@ Default:
 
 ### `textFormats`
 
+The default text format.
+
+Default:
+:   string `None`
+
+A `None` value will be interpreted later as the default text format `text-orig-full`.
+
+---
+
+### `textFormat`
+
 ```
-textFormats:
+textFormat:
     layout-orig-full: layoutRich
 ```
 
