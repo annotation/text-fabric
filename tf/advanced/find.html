@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/find.py#L1-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/find.py#L1-L206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import os
@@ -40,7 +40,7 @@ from ..parameters import (
     API_VERSION as avTf,
 )
 from ..core.helpers import console, normpath
-from .helpers import getLocalDir
+from .helpers import getLocalDir, prefixSlash
 
 
 def findAppConfig(
@@ -53,6 +53,7 @@ def findAppConfig(
     org=None,
     repo=None,
     version=None,
+    relative=None,
     straight=False,
 ):
     &#34;&#34;&#34;Find the config information of an app.
@@ -108,6 +109,11 @@ def findAppConfig(
         repo = cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;repo&#34;, None)
     else:
         cfg[&#34;provenanceSpec&#34;][&#34;repo&#34;] = repo
+
+    if relative is None:
+        relative = prefixSlash(cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;relative&#34;, None))
+    else:
+        cfg[&#34;provenanceSpec&#34;][&#34;relative&#34;] = prefixSlash(relative)
 
     if os.path.exists(cssPath):
         with open(cssPath, encoding=&#34;utf8&#34;) as fh:
@@ -254,7 +260,7 @@ Otherwise we return <code>None</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/find.py#L141-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/find.py#L147-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
     &#34;&#34;&#34;Find the class definition of an app.
@@ -292,7 +298,7 @@ Otherwise we return <code>None</code>.</dd>
 </details>
 </dd>
 <dt id="tf.advanced.find.findAppConfig"><code class="name flex">
-<span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, backend, org=None, repo=None, version=None, straight=False)</span>
+<span>def <span class="ident">findAppConfig</span></span>(<span>appName, appPath, commit, release, local, backend, org=None, repo=None, version=None, relative=None, straight=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Find the config information of an app.</p>
@@ -309,7 +315,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/find.py#L16-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/find.py#L16-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(
     appName,
@@ -321,6 +327,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
     org=None,
     repo=None,
     version=None,
+    relative=None,
     straight=False,
 ):
     &#34;&#34;&#34;Find the config information of an app.
@@ -376,6 +383,11 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
         repo = cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;repo&#34;, None)
     else:
         cfg[&#34;provenanceSpec&#34;][&#34;repo&#34;] = repo
+
+    if relative is None:
+        relative = prefixSlash(cfg.get(&#34;provenanceSpec&#34;, {}).get(&#34;relative&#34;, None))
+    else:
+        cfg[&#34;provenanceSpec&#34;][&#34;relative&#34;] = prefixSlash(relative)
 
     if os.path.exists(cssPath):
         with open(cssPath, encoding=&#34;utf8&#34;) as fh:
@@ -452,7 +464,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/find.py#L176-L200" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/find.py#L182-L206" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
     &#34;&#34;&#34;Load a module dynamically, by name.

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L1-L969" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L1-L974" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Produce links to Text-Fabric data and links from nodes to web resources.
@@ -48,7 +48,7 @@ from ..parameters import (
     GH,
     GL,
 )
-from ..core.helpers import console, htmlEsc, unexpanduser as ux
+from ..core.helpers import prefixSlash, console, htmlEsc, unexpanduser as ux
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
@@ -92,7 +92,7 @@ def linksApi(app, silent=SILENT_D):
 
     aContext = app.context
     appName = aContext.appName
-    appRelative = aContext.relative
+    appRelative = aContext.relative.removeprefix(&#34;/&#34;)
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
@@ -117,12 +117,14 @@ def linksApi(app, silent=SILENT_D):
         if volumeInfo:
             dataName += f&#34; volume {volumeInfo}&#34;
 
+    components = [appPath.rsplit(&#34;/&#34;, 1)[0]]
+    if appRelative:
+        components.append(appRelative)
+    components.append(version)
     dataLink = (
         outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
-        else &#34;/&#34;.join(
-            (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
-        )
+        else &#34;/&#34;.join(components)
         if appName.startswith(&#34;app:&#34;)
         else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath, appName, version))
     )
@@ -513,17 +515,17 @@ PATH_RE2 = re.compile(
 def _parseFeaturePath(path, backend):
     match1 = PATH_RE1.fullmatch(path)
     if not match1:
-        return (False, backend, &#34;??&#34;, &#34;??&#34;, &#34;??&#34;)
+        return (False, backend, &#34;??&#34;, &#34;??&#34;, &#34;/??&#34;)
 
     (lead, exDir, theBackend, rest) = match1.groups()
     theBackend = theBackend.lower()
 
     match2 = PATH_RE2.fullmatch(rest)
     if not match2:
-        return (False, theBackend, &#34;??&#34;, &#34;??&#34;, &#34;??&#34;)
+        return (False, theBackend, &#34;??&#34;, &#34;??&#34;, &#34;/??&#34;)
 
     (org, repo, relative) = match2.groups()
-    return (True, theBackend, org, repo, relative)
+    return (True, theBackend, org, repo, prefixSlash(relative))
 
 
 def outLink(
@@ -591,7 +593,7 @@ def _nodeTypeInfo(app):
                     &lt;th&gt;# of nodes&lt;/th&gt;
                     &lt;th&gt;# slots/node&lt;/th&gt;
                     &lt;th&gt;% coverage&lt;/th&gt;
-                &lt;tr&gt;
+                &lt;/tr&gt;
             &#34;&#34;&#34;
             )
             if doHtml
@@ -654,7 +656,7 @@ def _featuresPerModule(app, allMeta=False):
     aContext = app.context
     mOrg = aContext.org
     mRepo = aContext.repo
-    mRelative = aContext.relative
+    mRelative = prefixSlash(aContext.relative)
     version = aContext.version
     branch = aContext.provenanceSpec[&#34;branch&#34;]
     moduleSpecs = aContext.moduleSpecs
@@ -694,8 +696,8 @@ def _featuresPerModule(app, allMeta=False):
                 else fixedModuleIndex[mId]
                 if mId in fixedModuleIndex
                 else (
-                    f&#34;{BACKEND_REP(backend, &#39;rep&#39;)}{org}/{repo}/{relative}&#34;,
-                    f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/tree/{branch}/{relative}&#34;,
+                    f&#34;{BACKEND_REP(backend, &#39;rep&#39;)}{org}/{repo}{relative}&#34;,
+                    f&#34;{BACKEND_REP(backend, &#39;url&#39;)}/{org}/{repo}/tree/{branch}{relative}&#34;,
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -712,7 +714,7 @@ def _featuresPerModule(app, allMeta=False):
         )
 
         if parsedOK:
-            fRelative = relative.rsplit(&#34;/&#34;, 1)[0]
+            fRelative = prefixSlash(relative.rsplit(&#34;/&#34;, 1)[0])
             mId = (fBackend, fOrg, fRepo, fRelative)
         else:
             mId = featurePath.rsplit(&#34;/&#34;, 1)[0]
@@ -727,6 +729,7 @@ def _featuresPerModule(app, allMeta=False):
             for mIId in moduleIndex:
                 if type(mIId) is not str:
                     (mBackend, mOrg, mRepo, mRelative) = mIId
+                    mRelative = prefixSlash(mRelative)
                     if (
                         fBackend == mBackend
                         and fOrg == mOrg
@@ -756,6 +759,7 @@ def _featuresPerModule(app, allMeta=False):
         modInfo = moduleIndex.get(mId, None)
         if modInfo:
             (mBackend, org, repo, relative, corpus, docUrl) = modInfo
+            relative = prefixSlash(relative)
         else:
             corpus = mId if type(mId) is str else &#34;/&#34;.join(mId)
             docUrl = (
@@ -913,20 +917,21 @@ def provenanceLink(
         The release tag of the repository
     &#34;&#34;&#34;
 
+    relative = prefixSlash(relative)
     text = (
         f&#34;data on local machine {relative}&#34;
         if org is None or repo is None
         else (
-            f&#34;{org}/{repo} v:{version}&#34;
+            f&#34;{org}/{repo}{relative} v:{version}&#34;
             f&#34;({Checkout.toString(commit, release, local, backend)})&#34;
         )
     )
-    relativeFlat = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    relativeFlat = relative.removeprefix(&#34;/&#34;).replace(&#34;/&#34;, &#34;-&#34;)
     bUrl = BACKEND_REP(backend, &#34;url&#34;)
     url = (
         None
         if org is None or repo is None
-        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}/{relative}&#34;
+        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}{relative}&#34;
         if local
         else (
             (
@@ -940,7 +945,7 @@ def provenanceLink(
                 )
             )
             if release
-            else f&#34;{bUrl}/{org}/{repo}/tree/{commit}/{relative}&#34;
+            else f&#34;{bUrl}/{org}/{repo}/tree/{commit}{relative}&#34;
         )
     )
     return (text, url)
@@ -1043,7 +1048,7 @@ service of the backend.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L918-L969" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L923-L974" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flexLink(app, kind):
     &#34;&#34;&#34;Produce documentation links that are heavily dependent on the backend.
@@ -1118,7 +1123,7 @@ all that metadata except the description keys.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L177-L254" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L179-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def header(app, allMeta=False):
     &#34;&#34;&#34;Generate a colofon of the app.
@@ -1224,7 +1229,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L30-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L30-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linksApi(app, silent=SILENT_D):
     &#34;&#34;&#34;Produce the link API.
@@ -1260,7 +1265,7 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
 
     aContext = app.context
     appName = aContext.appName
-    appRelative = aContext.relative
+    appRelative = aContext.relative.removeprefix(&#34;/&#34;)
     appPath = aContext.appPath
     apiVersion = aContext.apiVersion
     docUrl = aContext.docUrl
@@ -1285,12 +1290,14 @@ but when we do an <code>A.reuse()</code> we force <code>silent="deep"</code>.</d
         if volumeInfo:
             dataName += f&#34; volume {volumeInfo}&#34;
 
+    components = [appPath.rsplit(&#34;/&#34;, 1)[0]]
+    if appRelative:
+        components.append(appRelative)
+    components.append(version)
     dataLink = (
         outLink(dataName, docUrl, f&#34;provenance of {corpus}&#34;, asHtml=inNb or _browse)
         if isCompatible and repo is not None and docUrl
-        else &#34;/&#34;.join(
-            (x or &#34;&#34;) for x in (appPath.rsplit(&#34;/&#34;, 1)[0], appRelative, version)
-        )
+        else &#34;/&#34;.join(components)
         if appName.startswith(&#34;app:&#34;)
         else &#34;/&#34;.join((x or &#34;&#34;) for x in (appPath, appName, version))
     )
@@ -1400,7 +1407,7 @@ If not, a plain text representation of the link will be made.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L498-L534" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L500-L536" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def outLink(
     text, href, title=None, passage=None, clsName=None, target=&#34;_blank&#34;, asHtml=True
@@ -1472,7 +1479,7 @@ by a backend repository</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L855-L915" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L859-L920" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def provenanceLink(
     backend, org, repo, version, branch, commit, local, release, relative
@@ -1504,20 +1511,21 @@ by a backend repository</dd>
         The release tag of the repository
     &#34;&#34;&#34;
 
+    relative = prefixSlash(relative)
     text = (
         f&#34;data on local machine {relative}&#34;
         if org is None or repo is None
         else (
-            f&#34;{org}/{repo} v:{version}&#34;
+            f&#34;{org}/{repo}{relative} v:{version}&#34;
             f&#34;({Checkout.toString(commit, release, local, backend)})&#34;
         )
     )
-    relativeFlat = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    relativeFlat = relative.removeprefix(&#34;/&#34;).replace(&#34;/&#34;, &#34;-&#34;)
     bUrl = BACKEND_REP(backend, &#34;url&#34;)
     url = (
         None
         if org is None or repo is None
-        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}/{relative}&#34;
+        else f&#34;{bUrl}/{org}/{repo}/tree/{branch}{relative}&#34;
         if local
         else (
             (
@@ -1531,7 +1539,7 @@ by a backend repository</dd>
                 )
             )
             if release
-            else f&#34;{bUrl}/{org}/{repo}/tree/{commit}/{relative}&#34;
+            else f&#34;{bUrl}/{org}/{repo}/tree/{commit}{relative}&#34;
         )
     )
     return (text, url)</code></pre>
@@ -1558,7 +1566,7 @@ This item will be displayed together with the rest of the provenance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L398-L433" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L400-L435" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showProvenance(app, jobName=&#34;program code&#34;, author=&#34;program author&#34;):
     &#34;&#34;&#34;Shows the provenance that is normally displayed during data loading.
@@ -1641,7 +1649,7 @@ other attributes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/links.py#L257-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/links.py#L259-L397" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def webLink(
     app, n, text=None, clsName=None, urlOnly=False, _asString=False, _noUrl=False

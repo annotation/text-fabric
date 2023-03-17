@@ -129,7 +129,7 @@ X.run(os.path.basename(__file__))
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L1-L1038" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L1-L1042" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -399,7 +399,6 @@ feature | description
 class XML:
     def __init__(
         self,
-        repoDir=&#34;.&#34;,
         sourceVersion=&#34;0.1&#34;,
         testSet=set(),
         generic={},
@@ -411,7 +410,7 @@ class XML:
         We adopt a fair bit of &#34;convention over configuration&#34; here, in order to lessen
         the burden for the user of specifying so many details.
 
-        Based on current direcotry from where the script is called,
+        Based on current directory from where the script is called,
         it defines all the ingredients to carry out
         a `tf.convert.walker` conversion of the XML input.
 
@@ -422,7 +421,7 @@ class XML:
         Your current directory must be somewhere inside
 
         ```
-        ~/backend/org/repo
+        ~/backend/org/repo/relative
         ```
 
         where
@@ -432,6 +431,7 @@ class XML:
             like `github`, `gitlab`, `git.huc.knaw.nl`;
         *   `org` is an organisation, person, or group in the backend;
         *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
 
         This is only about the directory structure on your local computer;
         it is not required that you have online incarnations of your repository
@@ -439,9 +439,9 @@ class XML:
         Even your local repository does not have to be a git repository.
 
         The only thing that matters is that the full path to your repo can be parsed
-        as a sequence of *home*/*backend*/*org*/*repo*.
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
 
-        Relative to the repo directory the program expects and creates
+        Relative to this directory the program expects and creates
         input/output directories.
 
         ## Input directory
@@ -499,20 +499,24 @@ class XML:
             Version of the generated tf files. This is the name of a top-level
             subfolder of the `tf` output folder.
         &#34;&#34;&#34;
-        (backend, org, repo) = getLocation(repoDir)
-        if any(s is None for s in (backend, org, repo)):
-            console(&#34;Not working in a repo: backend={backend} org={org} repo={repo}&#34;)
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
             quit()
 
-        console(f&#34;Working in repository {org}/{repo} in backend {backend}&#34;)
+        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
 
         base = os.path.expanduser(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
-        sourceDir = f&#34;{repoDir}/xml/{sourceVersion}&#34;
-        reportDir = f&#34;{repoDir}/report&#34;
-        tfDir = f&#34;{repoDir}/tf&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        sourceDir = f&#34;{refDir}/xml/{sourceVersion}&#34;
+        reportDir = f&#34;{refDir}/report&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
 
-        self.repoDir = repoDir
+        self.refDir = refDir
         self.sourceDir = sourceDir
         self.reportDir = reportDir
         self.tfDir = tfDir
@@ -1182,7 +1186,7 @@ __pdoc__[&#34;XML&#34;] = DOC_TRANS</code></pre>
 <dl>
 <dt id="tf.convert.xml.XML"><code class="flex name class">
 <span>class <span class="ident">XML</span></span>
-<span>(</span><span>repoDir='.', sourceVersion='0.1', testSet=set(), generic={}, transform=None, tfVersion='0.1')</span>
+<span>(</span><span>sourceVersion='0.1', testSet=set(), generic={}, transform=None, tfVersion='0.1')</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="essentials">Essentials</h2>
@@ -1319,12 +1323,11 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L266-L1035" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L266-L1039" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML:
     def __init__(
         self,
-        repoDir=&#34;.&#34;,
         sourceVersion=&#34;0.1&#34;,
         testSet=set(),
         generic={},
@@ -1336,7 +1339,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         We adopt a fair bit of &#34;convention over configuration&#34; here, in order to lessen
         the burden for the user of specifying so many details.
 
-        Based on current direcotry from where the script is called,
+        Based on current directory from where the script is called,
         it defines all the ingredients to carry out
         a `tf.convert.walker` conversion of the XML input.
 
@@ -1347,7 +1350,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
         Your current directory must be somewhere inside
 
         ```
-        ~/backend/org/repo
+        ~/backend/org/repo/relative
         ```
 
         where
@@ -1357,6 +1360,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
             like `github`, `gitlab`, `git.huc.knaw.nl`;
         *   `org` is an organisation, person, or group in the backend;
         *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
 
         This is only about the directory structure on your local computer;
         it is not required that you have online incarnations of your repository
@@ -1364,9 +1368,9 @@ Meaningful whitespace has been condensed to single spaces.</p>
         Even your local repository does not have to be a git repository.
 
         The only thing that matters is that the full path to your repo can be parsed
-        as a sequence of *home*/*backend*/*org*/*repo*.
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
 
-        Relative to the repo directory the program expects and creates
+        Relative to this directory the program expects and creates
         input/output directories.
 
         ## Input directory
@@ -1424,20 +1428,24 @@ Meaningful whitespace has been condensed to single spaces.</p>
             Version of the generated tf files. This is the name of a top-level
             subfolder of the `tf` output folder.
         &#34;&#34;&#34;
-        (backend, org, repo) = getLocation(repoDir)
-        if any(s is None for s in (backend, org, repo)):
-            console(&#34;Not working in a repo: backend={backend} org={org} repo={repo}&#34;)
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
             quit()
 
-        console(f&#34;Working in repository {org}/{repo} in backend {backend}&#34;)
+        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
 
         base = os.path.expanduser(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
-        sourceDir = f&#34;{repoDir}/xml/{sourceVersion}&#34;
-        reportDir = f&#34;{repoDir}/report&#34;
-        tfDir = f&#34;{repoDir}/tf&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        sourceDir = f&#34;{refDir}/xml/{sourceVersion}&#34;
+        reportDir = f&#34;{refDir}/report&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
 
-        self.repoDir = repoDir
+        self.refDir = refDir
         self.sourceDir = sourceDir
         self.reportDir = reportDir
         self.tfDir = tfDir
@@ -2108,7 +2116,7 @@ Meaningful whitespace has been condensed to single spaces.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L444-L461" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L448-L465" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -2148,7 +2156,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L403-L442" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L407-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -2215,7 +2223,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L504-L607" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L508-L611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -2337,7 +2345,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L624-L670" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L628-L674" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -2401,7 +2409,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L611-L622" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L615-L626" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -2435,7 +2443,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L674-L895" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L678-L899" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -2677,7 +2685,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L463-L502" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L467-L506" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the XML source files.
@@ -2741,7 +2749,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L897-L930" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L901-L934" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -2805,7 +2813,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L985-L1035" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L989-L1039" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -2894,7 +2902,7 @@ In test mode only the files in the test set are converted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/convert/xml.py#L932-L983" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/xml.py#L936-L987" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, check=False, convert=False, load=False, test=None):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.

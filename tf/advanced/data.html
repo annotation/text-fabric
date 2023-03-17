@@ -26,11 +26,11 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L1-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L1-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..parameters import BACKEND_REP
 from ..core.helpers import itemize, normpath, expandDir
-from .helpers import splitModRef
+from .helpers import splitModRef, prefixSlash
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -102,19 +102,19 @@ class AppData:
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
-        relative = aContext.relative
+        relative = prefixSlash(aContext.relative)
         appPath = aContext.appPath
         appName = aContext.appName
 
         if appName.startswith(&#34;app:&#34;):
             appParent = appPath.rsplit(&#34;/&#34;, 1)[0]
-            relative = f&#34;{appParent}/{relative}&#34;
+            relative = f&#34;{appParent}{relative}&#34;
         elif org is None or repo is None:
             appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, relative, checkout, isBase=True):
+        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -153,7 +153,7 @@ class AppData:
             theBackend = m.get(&#34;backend&#34;, backend)
             bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
-            ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+            ref = f&#34;{bRep}{org}/{repo}{relative}&#34;
             if ref in seen:
                 continue
 
@@ -187,7 +187,7 @@ class AppData:
                 self.good = False
                 continue
 
-            parts[2] = normpath(parts[2])  # the relative bit
+            parts[2] = prefixSlash(normpath(parts[2]))  # the relative bit
             theBackend = (
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
@@ -292,15 +292,16 @@ class AppData:
         aContext = app.context
         branch = aContext.provenanceSpec[&#34;branch&#34;]
 
-        relative = normpath(relative)
+        relative = prefixSlash(normpath(relative))
 
-        moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+        moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
         if moduleRef in self.seen:
             return True
 
         if org is None or repo is None:
-            repoLocation = relative
-            mLocations.append(relative)
+            relativeBare = relative.removeprefix(&#34;/&#34;)
+            repoLocation = relativeBare
+            mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -328,7 +329,7 @@ class AppData:
         info = {}
         for item in (
             (&#34;doi&#34;, None),
-            (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
+            (&#34;corpus&#34;, f&#34;{org}/{repo}{relative}&#34;),
         ):
             (key, default) = item
             info[key] = (
@@ -396,7 +397,7 @@ They are the same as are needed to construct an <code><a title="tf.advanced.data
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L329-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L330-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModulesData(*args):
     &#34;&#34;&#34;Retrieve all data for a corpus.
@@ -456,7 +457,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L11-L326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L11-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class AppData:
     def __init__(
@@ -522,19 +523,19 @@ level just below the search locations.</dd>
         aContext = app.context
         org = aContext.org
         repo = aContext.repo
-        relative = aContext.relative
+        relative = prefixSlash(aContext.relative)
         appPath = aContext.appPath
         appName = aContext.appName
 
         if appName.startswith(&#34;app:&#34;):
             appParent = appPath.rsplit(&#34;/&#34;, 1)[0]
-            relative = f&#34;{appParent}/{relative}&#34;
+            relative = f&#34;{appParent}{relative}&#34;
         elif org is None or repo is None:
             appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
             relative = f&#34;{appPathRep}{appName}&#34;
             self.checkout = &#34;local&#34;
 
-        if not self.getModule(org, repo, relative, checkout, isBase=True):
+        if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
             self.good = False
 
     def getStandard(self):
@@ -573,7 +574,7 @@ level just below the search locations.</dd>
             theBackend = m.get(&#34;backend&#34;, backend)
             bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
-            ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+            ref = f&#34;{bRep}{org}/{repo}{relative}&#34;
             if ref in seen:
                 continue
 
@@ -607,7 +608,7 @@ level just below the search locations.</dd>
                 self.good = False
                 continue
 
-            parts[2] = normpath(parts[2])  # the relative bit
+            parts[2] = prefixSlash(normpath(parts[2]))  # the relative bit
             theBackend = (
                 None if parts[-1] is None or parts[-1] == backend else parts[-1]
             )
@@ -712,15 +713,16 @@ level just below the search locations.</dd>
         aContext = app.context
         branch = aContext.provenanceSpec[&#34;branch&#34;]
 
-        relative = normpath(relative)
+        relative = prefixSlash(normpath(relative))
 
-        moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+        moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
         if moduleRef in self.seen:
             return True
 
         if org is None or repo is None:
-            repoLocation = relative
-            mLocations.append(relative)
+            relativeBare = relative.removeprefix(&#34;/&#34;)
+            repoLocation = relativeBare
+            mLocations.append(relativeBare)
             (commit, local, release) = (None, None, None)
         else:
             (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -748,7 +750,7 @@ level just below the search locations.</dd>
         info = {}
         for item in (
             (&#34;doi&#34;, None),
-            (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
+            (&#34;corpus&#34;, f&#34;{org}/{repo}{relative}&#34;),
         ):
             (key, default) = item
             info[key] = (
@@ -792,7 +794,7 @@ level just below the search locations.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L59-L88" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getMain(self):
     &#34;&#34;&#34;Get the main data of the corpus.
@@ -810,19 +812,19 @@ level just below the search locations.</dd>
     aContext = app.context
     org = aContext.org
     repo = aContext.repo
-    relative = aContext.relative
+    relative = prefixSlash(aContext.relative)
     appPath = aContext.appPath
     appName = aContext.appName
 
     if appName.startswith(&#34;app:&#34;):
         appParent = appPath.rsplit(&#34;/&#34;, 1)[0]
-        relative = f&#34;{appParent}/{relative}&#34;
+        relative = f&#34;{appParent}{relative}&#34;
     elif org is None or repo is None:
         appPathRep = f&#34;{appPath}/&#34; if appPath else &#34;&#34;
         relative = f&#34;{appPathRep}{appName}&#34;
         self.checkout = &#34;local&#34;
 
-    if not self.getModule(org, repo, relative, checkout, isBase=True):
+    if not self.getModule(org, repo, prefixSlash(relative), checkout, isBase=True):
         self.good = False</code></pre>
 </details>
 </dd>
@@ -855,7 +857,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L224-L326" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L224-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModule(
     self, org, repo, relative, checkout, backend=None, isBase=False, specs=None
@@ -898,15 +900,16 @@ location paths and the module paths.</p>
     aContext = app.context
     branch = aContext.provenanceSpec[&#34;branch&#34;]
 
-    relative = normpath(relative)
+    relative = prefixSlash(normpath(relative))
 
-    moduleRef = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+    moduleRef = f&#34;{bRep}{org}/{repo}{relative}&#34;
     if moduleRef in self.seen:
         return True
 
     if org is None or repo is None:
-        repoLocation = relative
-        mLocations.append(relative)
+        relativeBare = relative.removeprefix(&#34;/&#34;)
+        repoLocation = relativeBare
+        mLocations.append(relativeBare)
         (commit, local, release) = (None, None, None)
     else:
         (commit, release, local, localBase, localDir) = checkoutRepo(
@@ -934,7 +937,7 @@ location paths and the module paths.</p>
     info = {}
     for item in (
         (&#34;doi&#34;, None),
-        (&#34;corpus&#34;, f&#34;{org}/{repo}/{relative}&#34;),
+        (&#34;corpus&#34;, f&#34;{org}/{repo}{relative}&#34;),
     ):
         (key, default) = item
         info[key] = (
@@ -971,7 +974,7 @@ location paths and the module paths.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L168-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L168-L222" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getModules(self):
     &#34;&#34;&#34;Get data from additional local directories.
@@ -1041,7 +1044,7 @@ later when we are loading the standard modules.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L140-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L140-L166" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(self):
     &#34;&#34;&#34;Get data from additional modules.
@@ -1063,7 +1066,7 @@ later when we are loading the standard modules.</p></div>
             self.good = False
             continue
 
-        parts[2] = normpath(parts[2])  # the relative bit
+        parts[2] = prefixSlash(normpath(parts[2]))  # the relative bit
         theBackend = (
             None if parts[-1] is None or parts[-1] == backend else parts[-1]
         )
@@ -1091,7 +1094,7 @@ checkout specifiers to the standard modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/data.py#L90-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/data.py#L90-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getStandard(self):
     &#34;&#34;&#34;Get the data of the standard modules specified by the settings of the corpus.
@@ -1129,7 +1132,7 @@ checkout specifiers to the standard modules.</p>
         theBackend = m.get(&#34;backend&#34;, backend)
         bRep = BACKEND_REP(theBackend, &#34;spec&#34;, default=backend)
 
-        ref = f&#34;{bRep}{org}/{repo}/{relative}&#34;
+        ref = f&#34;{bRep}{org}/{repo}{relative}&#34;
         if ref in seen:
             continue
 

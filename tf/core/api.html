@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L1-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L1-L477" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # The core API of TF.
@@ -45,6 +45,7 @@ from .nodefeature import NodeFeatures
 from .edgefeature import EdgeFeatures
 from .computed import Computeds
 from .text import Text
+from ..parameters import OTYPE, OSLOTS
 from ..search.search import Search
 from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
@@ -168,14 +169,26 @@ class Api:
         return getattr(self.C, fName)
 
     def Fall(self, warp=True):
-        &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
 
-        return sorted(x[0] for x in self.F.__dict__.items())
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `otype`.
+        &#34;&#34;&#34;
 
-    def Eall(self):
-        &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.&#34;&#34;&#34;
+        return sorted(x[0] for x in self.F.__dict__.items() if warp or x[0] != OTYPE)
 
-        return sorted(x[0] for x in self.E.__dict__.items())
+    def Eall(self, warp=True):
+        &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
+
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `oslots`.
+        &#34;&#34;&#34;
+
+        return sorted(x[0] for x in self.E.__dict__.items() if warp or x[0] != OSLOTS)
 
     def Call(self):
         &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -511,7 +524,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L446-L448" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L459-L461" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addLocality(api):
     api.L = Locality(api)
@@ -526,7 +539,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L451-L453" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L464-L466" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addNodes(api):
     api.N = Nodes(api)
@@ -541,7 +554,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L439-L443" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L452-L456" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addOtype(api):
     setattr(api.F.otype, &#34;all&#34;, tuple(o[0] for o in api.C.levels.data))
@@ -558,7 +571,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L461-L464" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L474-L477" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addSearch(api, silent=SILENT_D):
     silent = silentConvert(silent)
@@ -574,7 +587,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L456-L458" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L469-L471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addText(api):
     api.T = Text(api)
@@ -595,7 +608,7 @@ def addSearch(api, silent=SILENT_D):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L50-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L51-L449" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Api:
     def __init__(self, TF):
@@ -686,14 +699,26 @@ def addSearch(api, silent=SILENT_D):
         return getattr(self.C, fName)
 
     def Fall(self, warp=True):
-        &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.&#34;&#34;&#34;
+        &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
 
-        return sorted(x[0] for x in self.F.__dict__.items())
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `otype`.
+        &#34;&#34;&#34;
 
-    def Eall(self):
-        &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.&#34;&#34;&#34;
+        return sorted(x[0] for x in self.F.__dict__.items() if warp or x[0] != OTYPE)
 
-        return sorted(x[0] for x in self.E.__dict__.items())
+    def Eall(self, warp=True):
+        &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
+
+        Parameters
+        ----------
+        warp: boolean, optional True
+            Whether to include the warp features, i.e. `oslots`.
+        &#34;&#34;&#34;
+
+        return sorted(x[0] for x in self.E.__dict__.items() if warp or x[0] != OSLOTS)
 
     def Call(self):
         &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -1004,7 +1029,7 @@ that is loaded later.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L148-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L161-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Call(self):
     &#34;&#34;&#34;Returns a sorted list of all usable, loaded computed data names.&#34;&#34;&#34;
@@ -1024,7 +1049,7 @@ you can not use <code>C.component</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L124-L136" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L125-L137" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Cs(self, fName):
     &#34;&#34;&#34;Get the computed data sub API.
@@ -1042,19 +1067,30 @@ you can not use <code>C.component</code>, but you should use
 </details>
 </dd>
 <dt id="tf.core.api.Api.Eall"><code class="name flex">
-<span>def <span class="ident">Eall</span></span>(<span>self)</span>
+<span>def <span class="ident">Eall</span></span>(<span>self, warp=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns a sorted list of all usable, loaded edge feature names.</p></div>
+<div class="desc"><p>Returns a sorted list of all usable, loaded edge feature names.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>warp</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether to include the warp features, i.e. <code>oslots</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L143-L146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L150-L159" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def Eall(self):
-    &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.&#34;&#34;&#34;
+<pre><code class="python">def Eall(self, warp=True):
+    &#34;&#34;&#34;Returns a sorted list of all usable, loaded edge feature names.
 
-    return sorted(x[0] for x in self.E.__dict__.items())</code></pre>
+    Parameters
+    ----------
+    warp: boolean, optional True
+        Whether to include the warp features, i.e. `oslots`.
+    &#34;&#34;&#34;
+
+    return sorted(x[0] for x in self.E.__dict__.items() if warp or x[0] != OSLOTS)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.Api.Es"><code class="name flex">
@@ -1069,7 +1105,7 @@ you can not use <code>E.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L110-L122" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L111-L123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Es(self, fName):
     &#34;&#34;&#34;Get the edge feature sub API.
@@ -1090,16 +1126,27 @@ you can not use <code>E.feature</code>, but you should use
 <span>def <span class="ident">Fall</span></span>(<span>self, warp=True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns a sorted list of all usable, loaded node feature names.</p></div>
+<div class="desc"><p>Returns a sorted list of all usable, loaded node feature names.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>warp</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>Whether to include the warp features, i.e. <code>otype</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L138-L141" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L139-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fall(self, warp=True):
-    &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.&#34;&#34;&#34;
+    &#34;&#34;&#34;Returns a sorted list of all usable, loaded node feature names.
 
-    return sorted(x[0] for x in self.F.__dict__.items())</code></pre>
+    Parameters
+    ----------
+    warp: boolean, optional True
+        Whether to include the warp features, i.e. `otype`.
+    &#34;&#34;&#34;
+
+    return sorted(x[0] for x in self.F.__dict__.items() if warp or x[0] != OTYPE)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.api.Api.Fs"><code class="name flex">
@@ -1114,7 +1161,7 @@ you can not use <code>F.feature</code>, but you should use
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L96-L108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L97-L109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def Fs(self, fName):
     &#34;&#34;&#34;Get the node feature sub API.
@@ -1153,7 +1200,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L393-L436" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L406-L449" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ensureLoaded(self, features):
     &#34;&#34;&#34;Checks if features are loaded and if not loads them.
@@ -1258,7 +1305,7 @@ the edges have values. Otherwise <code>None</code>.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L153-L317" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L166-L330" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isLoaded(
     self, features=None, pretty=True, valueType=True, path=False, meta=&#34;description&#34;
@@ -1528,7 +1575,7 @@ So we have to pass it on.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/core/api.py#L319-L388" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/core/api.py#L332-L401" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeAvailableIn(self, scope):
     &#34;&#34;&#34;Exports members of the API to the global namespace.

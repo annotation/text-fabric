@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/zipdata.py#L1-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/zipdata.py#L1-L231" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -34,7 +34,7 @@ from zipfile import ZipFile
 
 from .helpers import splitModRef
 from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, BACKEND_REP, DOWNLOADS
-from ..core.helpers import console, normpath, expanduser, initTree
+from ..core.helpers import console, normpath, expanduser, initTree, prefixSlash
 
 DW = expanduser(DOWNLOADS)
 
@@ -46,9 +46,9 @@ HELP = &#34;&#34;&#34;
 ``` sh
 text-fabric-zip --help
 
-text-fabric-zip {org}/{repo}/{relative}
+text-fabric-zip {org}/{repo}{relative}
 
-text-fabric-zip {org}/{repo}/{relative} --backend=gitlab.huc.knaw.nl
+text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 ```
 
 ### EFFECT
@@ -119,16 +119,16 @@ def zipData(
         source = BACKEND_REP(backend, &#34;clone&#34;)
     if dest is None:
         dest = f&#34;{DW}/{BACKEND_REP(backend, &#39;norm&#39;)}&#34;
-    relative = normpath(relative)
-    console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
+    relative = prefixSlash(normpath(relative))
+    console(f&#34;Create release data for {org}/{repo}{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
     destBase = normpath(f&#34;{dest}/{org}-release&#34;)
-    sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
+    sourceDir = f&#34;{sourceBase}/{repo}{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}
 
     initTree(destDir, fresh=not keep)
-    relativeDest = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    relativeDest = relative.removeprefix(&#34;/&#34;).replace(&#34;/&#34;, &#34;-&#34;)
 
     if tf:
         if not os.path.exists(sourceDir):
@@ -204,7 +204,7 @@ def zipData(
         if not relativeDest:
             relativeDest = &#34;-&#34;
         console(
-            f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;
+            f&#34;zipping {org}/{repo}{relative}{versionRep} with {len(results)} files&#34;
         )
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
@@ -240,13 +240,13 @@ def main(cargs=sys.argv):
         return
 
     (org, repo, relative, checkout, theBackend) = parts
-    relative = normpath(relative)
+    relative = prefixSlash(normpath(relative))
 
     tf = (
-        relative == &#34;tf&#34;
-        or relative.endswith(&#34;tf&#34;)
-        or relative.startswith(&#34;tf/&#34;)
-        or &#34;/tf/&#34; in relative
+        relative.removeprefix(&#34;/&#34;) == RELATIVE
+        or relative.endswith(RELATIVE)
+        or relative.startswith(f&#34;{RELATIVE}/&#34;)
+        or f&#34;/{RELATIVE}/&#34; in relative
     )
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
@@ -275,9 +275,9 @@ if __name__ == &#34;__main__&#34;:
 <div class="desc"><h3 id="usage">USAGE</h3>
 <pre><code class="language-sh">text-fabric-zip --help
 
-text-fabric-zip {org}/{repo}/{relative}
+text-fabric-zip {org}/{repo}{relative}
 
-text-fabric-zip {org}/{repo}/{relative} --backend=gitlab.huc.knaw.nl
+text-fabric-zip {org}/{repo}{relative} --backend=gitlab.huc.knaw.nl
 </code></pre>
 <h3 id="effect">EFFECT</h3>
 <p>Zips text-fabric data from your local github/gitlab repository into
@@ -296,7 +296,7 @@ and the are named <em>relative</em>-<em>version</em>.zip
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/zipdata.py#L188-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/zipdata.py#L188-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -323,13 +323,13 @@ and the are named <em>relative</em>-<em>version</em>.zip
         return
 
     (org, repo, relative, checkout, theBackend) = parts
-    relative = normpath(relative)
+    relative = prefixSlash(normpath(relative))
 
     tf = (
-        relative == &#34;tf&#34;
-        or relative.endswith(&#34;tf&#34;)
-        or relative.startswith(&#34;tf/&#34;)
-        or &#34;/tf/&#34; in relative
+        relative.removeprefix(&#34;/&#34;) == RELATIVE
+        or relative.endswith(RELATIVE)
+        or relative.startswith(f&#34;{RELATIVE}/&#34;)
+        or f&#34;/{RELATIVE}/&#34; in relative
     )
     tfMsg = &#34;This is a TF dataset&#34; if tf else &#34;These are additional files&#34;
     sys.stdout.write(f&#34;{tfMsg}\n&#34;)
@@ -369,7 +369,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/72d1de3c98bc15153813a916fc5de8fdac4b79c2/tf/advanced/zipdata.py#L50-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/advanced/zipdata.py#L50-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -413,16 +413,16 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
         source = BACKEND_REP(backend, &#34;clone&#34;)
     if dest is None:
         dest = f&#34;{DW}/{BACKEND_REP(backend, &#39;norm&#39;)}&#34;
-    relative = normpath(relative)
-    console(f&#34;Create release data for {org}/{repo}/{relative}&#34;)
+    relative = prefixSlash(normpath(relative))
+    console(f&#34;Create release data for {org}/{repo}{relative}&#34;)
     sourceBase = normpath(f&#34;{source}/{org}&#34;)
     destBase = normpath(f&#34;{dest}/{org}-release&#34;)
-    sourceDir = f&#34;{sourceBase}/{repo}/{relative}&#34;
+    sourceDir = f&#34;{sourceBase}/{repo}{relative}&#34;
     destDir = f&#34;{destBase}/{repo}&#34;
     dataFiles = {}
 
     initTree(destDir, fresh=not keep)
-    relativeDest = relative.replace(&#34;/&#34;, &#34;-&#34;)
+    relativeDest = relative.removeprefix(&#34;/&#34;).replace(&#34;/&#34;, &#34;-&#34;)
 
     if tf:
         if not os.path.exists(sourceDir):
@@ -498,7 +498,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
         if not relativeDest:
             relativeDest = &#34;-&#34;
         console(
-            f&#34;zipping {org}/{repo}/{relative}{versionRep} with {len(results)} files&#34;
+            f&#34;zipping {org}/{repo}{relative}{versionRep} with {len(results)} files&#34;
         )
         console(f&#34;zip file is {destDir}/{relativeDest}.zip&#34;)
         with ZipFile(f&#34;{destDir}/{relativeDest}.zip&#34;, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
