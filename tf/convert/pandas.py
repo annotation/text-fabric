@@ -1,7 +1,8 @@
 import os
+import math
 import pandas as pd
 
-from ..parameters import TEMP_DIR
+from ..parameters import TEMP_DIR, OTYPE, OSLOTS
 from ..core.helpers import unexpanduser as ux
 
 
@@ -12,25 +13,39 @@ Transforms TF dataset into Pandas
 INT = "Int64"
 STR = "str"
 NA = [""]
-CHAPTER = "chapter"
-CHUNK = "chunk"
 
 
-def makeTable(
-    app,
-    textFeatures=("str", "after"),
-    levelTypes=(CHAPTER, CHUNK),
-    levelFeatures=(CHAPTER, CHUNK),
-):
+def exportPandas(app):
     api = app.api
     Fall = api.Fall
     Fs = api.Fs
     F = api.F
     N = api.N
     L = api.L
+    T = api.T
+    TF = api.TF
 
-    (levelType1, levelType2) = levelTypes
-    (levelFeat1, levelFeat2) = levelFeatures
+    sectionTypes = T.sectionTypes
+    sectionFeats = T.sectionFeats
+
+    sectionTypeSet = set(sectionTypes)
+    sectionFeatIndex = {}
+
+    for (i, f) in enumerate(sectionFeats):
+        sectionFeatIndex[f] = i
+
+    textFeatures = [x[0][0] for x in TF.cformats[T.defaultFormat][2]]
+    features = sorted(set(Fall()) - {OTYPE, OSLOTS} - set(textFeatures))
+
+    dtype = dict(nd=INT, element=STR)
+
+    for f in sectionTypes:
+        dtype[f"in.{f}"] = INT
+
+    for f in features:
+        dtype[f] = INT if Fs(f).meta["valueType"] == "int" else STR
+
+    naValues = dict((x, set() if dtype[x] == STR else {""}) for x in dtype)
 
     baseDir = f"{app.repoLocation}"
     tempDir = f"{baseDir}/{TEMP_DIR}"
@@ -44,27 +59,7 @@ def makeTable(
     tableFile = f"{tempDir}/data-{app.version}.tsv"
     tableFilePd = f"{resultDir}/data-{app.version}.pd"
 
-    features = sorted(set(Fall()) - {"otype", "oslots"} - set(textFeatures))
-
-    dtype = dict(nd=INT, element=STR)
-
-    for f in textFeatures:
-        dtype[f] = STR
-
-    for f in levelTypes:
-        dtype[f"in.{f}"] = INT
-
-    for f in features:
-        if f.startswith("empty_"):
-            parts = f.split("_", 2)
-            tp = INT if len(parts) == 2 else STR
-            dtype[f] = tp
-        elif f.startswith("is_") or f.startswith("rend_") or f == levelFeat2:
-            dtype[f] = INT
-        else:
-            dtype[f] = STR
-
-    naValues = dict((x, set() if dtype[x] == STR else {""}) for x in dtype)
+    chunkSize = max((10, 10 ** int(round(math.log(F.otype.maxNode / 100, 10)))))
 
     with open(tableFile, "w") as hr:
         hr.write(
@@ -72,7 +67,7 @@ def makeTable(
                 "nd",
                 "element",
                 "\t".join(textFeatures),
-                "\t".join(f"in.{x}" for x in levelTypes),
+                "\t".join(f"in.{x}" for x in sectionTypes),
                 "\t".join(features),
             )
         )
@@ -81,13 +76,17 @@ def makeTable(
         s = 0
 
         for n in N.walk():
+            nType = F.otype.v(n)
             textValues = [str(Fs(f).v(n) or "") for f in textFeatures]
-            levelValues = [(L.u(n, otype=level) or NA)[0] for level in levelTypes]
+            sectionValues = [
+                n if nType == section else (L.u(n, otype=section) or NA)[0]
+                for section in sectionTypes
+            ]
             nodeValues = [
-                (
-                    Fs(levelFeat1).v(L.u(n, otype=levelType1)[0])
-                    if f == levelFeat1 and F.otype.v(n) == levelType2
-                    else str(Fs(f).v(n) or "")
+                str(
+                    (Fs(f).v(sectionValues[sectionFeatIndex[f]]) or "")
+                    if f in sectionFeatIndex and nType in sectionTypeSet
+                    else Fs(f).v(n) or ""
                 )
                 for f in features
             ]
@@ -96,7 +95,7 @@ def makeTable(
                     n,
                     F.otype.v(n),
                     ("\t".join(textValues)).replace("\n", "\\n"),
-                    ("\t".join(str(x) for x in levelValues)),
+                    ("\t".join(str(x) for x in sectionValues)),
                     ("\t".join(nodeValues)),
                 )
             )

@@ -448,7 +448,7 @@ class Text:
         self.good = good
 
     def sectionTuple(self, n, lastSlot=False, fillup=False):
-        """Gives a tuple of nodes that correspond to a sections
+        """Gives a tuple of nodes that correspond to a section.
 
         More precisely, we retrieve the sections that contain a
         reference node, which is either the first slot or the last slot of the node

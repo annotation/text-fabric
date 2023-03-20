@@ -10,7 +10,7 @@ although there is also an export to MQL elsewere:
 
 import types
 
-from ..convert.pandas import makeTable
+from ..convert.pandas import exportPandas
 
 
 def exportApi(app):
@@ -22,4 +22,4 @@ def exportApi(app):
         The high-level API object
     """
 
-    app.exportPandas = types.MethodType(makeTable, app)
+    app.exportPandas = types.MethodType(exportPandas, app)

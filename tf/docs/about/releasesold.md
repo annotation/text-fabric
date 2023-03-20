@@ -27,8 +27,8 @@ There is a new function `tf.core.helpers.xmlEsc()`.
 
 2022-09-13
 
-* fix of a bug in the TF-browser caused by the previous change: the headings of section-3 levels
-  came out wrong
+* fix of a bug in the TF-browser caused by the previous change: the headings of
+  section-3 levels came out wrong
 
 * the second parameter of `plainTuple()` and `prettyTuple()` is now optional.
   It passes the sequence number of the tuple to display.
@@ -603,8 +603,8 @@ but returned as HTML.
 
 **Fixes**
 
-* Bug reported by Gyusang Jin: when a string specification of features that must be loaded
-  contains newlines, an error will occur.
+* Bug reported by Gyusang Jin: when a string specification of features that must be
+  loaded contains newlines, an error will occur.
 * TF.loadLog() did not provide useful information anymore. Instead, there is now
   TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`). For compatibility,
   loadLog still can be called, but is identical to isLoaded.
@@ -735,10 +735,12 @@ Small fixes in the the layered search app and its documentation.
 
 2021-05-03
 
-There is a new piece of functionality in Text-Fabric: making search interfaces for existing corpus apps.
+There is a new piece of functionality in Text-Fabric: making search interfaces for
+existing corpus apps.
 These are static HTML+CSS+Javascript pages, that provide *layered search*.
-Text-Fabric has a new command `text-fabric-make dataset interfacename` which generates such an app
-from a bit of configuration and code, which you have to provide in the `app-`*dataset* repo.
+Text-Fabric has a new command `text-fabric-make dataset interfacename` which generates
+such an app from a bit of configuration and code, which you have to provide in
+the `app-`*dataset* repo.
 
 See `tf.client`.
 
@@ -759,8 +761,9 @@ See `advanced.display.getCss`.
 A few minor improvements:
 
 * the `tf.convert.recorder` is improved. It can now save postion files per node type.
-* the `tf.core.timestamp.Timestamp.indent` method now accepts a boolean for its `level` parameter.
-  By this you can increase and decrease the current indentation level of messages.
+* the `tf.core.timestamp.Timestamp.indent` method now accepts a boolean
+  for its `level` parameter.  By this you can increase and decrease the
+  current indentation level of messages.
 
 #### 8.4.12
 
@@ -809,8 +812,8 @@ The documentation has now a working search interface.
 Added logic to map nodes between versions of TF datasets.
 This logic existed in a notebook that explores versions of the Hebrew Bible:
 [versionMappings](https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb).
-Whereas the code to map slots between versions is highly dependent on the dataset in question,
-the code to extend a slot mapping to a node mapping is generic.
+Whereas the code to map slots between versions is highly dependent on the dataset in
+question, the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in `tf.dataset.nodemaps`).
 It is used in the 
 [missieven](https://nbviewer.jupyter.org/github/clariah/wp6-missieven/blob/master/programs/map.ipynb)
@@ -868,13 +871,16 @@ Minor fix in the display:
 
 Minor fixes in the display:
 
-* **The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.**
-  Fixed by using CSS mechanisms such as `display: inline-block` and `unicode-bidi: embed`.
-* **Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible**.
-  Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
-  zoom level, the dots become better visible.
-  It seems that using the `rem` unit for specifying border-sizes contributes to this behaviour.
-  So I specified all border widths in `px`, assuming 20px = 1rem.
+* **The Text-Fabric browser showed the chunks around a gap in the wrong order
+  for right to left scripts.**
+  Fixed by using CSS mechanisms such as `display: inline-block` and
+  `unicode-bidi: embed`.
+* **Chrome did not display dotted borders good enough: in some circumstances the dots
+  were hardly visible**.
+  Sadly one of those circumstances is the default zoom level of the browser:
+  if the user enlarges or decreases the zoom level, the dots become better visible.
+  It seems that using the `rem` unit for specifying border-sizes contributes to this
+  behaviour.  So I specified all border widths in `px`, assuming 20px = 1rem.
 
 #### 8.4.1
 
@@ -984,8 +990,8 @@ Various fixes:
 *   Starting in v8, the ports through which the TF-browser communicates are no longer
     hardwired in the app config, but are determined at run time: the first
     available ports are choses.
-    This had the negative consequence that different corpora could use the same port in turn,
-    thereby wreaking havoc with the sessions for those corpora.
+    This had the negative consequence that different corpora could use the same
+    port in turn, thereby wreaking havoc with the sessions for those corpora.
     Now the ports are determined as a function of the arguments to `text-fabric`.
 *   Text alignment and line wrapping has improved, especially in plain displays.
 
@@ -996,8 +1002,8 @@ Various fixes:
 
 2020-06-02
 
-When you load a corpus by means of `use`, you can now also override the config settings of the
-app on the fly. See `tf.advanced.app.App`
+When you load a corpus by means of `use`, you can now also override the config
+settings of the app on the fly. See `tf.advanced.app.App`
 
 #### 8.2.1
 
@@ -1010,10 +1016,10 @@ download of data to complete.
 
 2020-05-29
 
-Improved display algorithm: corpora need less configuration for TF
-to generate good displays.
-In particular, the atom types of the BHSA are now handled without
-tricky branches in the code.
+Improved display algorithm: corpora need less configuration for TF to generate good
+displays.
+In particular, the atom types of the BHSA are now handled without tricky branches in
+the code.
 
 See `tf.advanced.display`.
 
@@ -1090,11 +1096,11 @@ See `tf`.
   `L`-API (`tf.core.locality.Locality.i`): `L.i(node, otype=nodeTypes)`.
   It delivers the *intersectors* of a node, i.e. the nodes that share slots
   with the given `node`.
-* Fixed a subtle bug in the `A.pretty()` which manifested itself in the Old Babylonian corpus.
-  A line with clusters in it displayed the clusters twice if `baseTypes` has a non slot type.
-  When doing a `plain` within a `pretty`,
-  the displayer "forgot" the nodes encountered in `plain`, so they could not be skipped by the
-  rest of `pretty`.
+* Fixed a subtle bug in the `A.pretty()` which manifested itself in the Old Babylonian
+  corpus. A line with clusters in it displayed the clusters twice if `baseTypes` has a
+  non slot type.  When doing a `plain` within a `pretty`,
+  the displayer "forgot" the nodes encountered in `plain`, so they could not be skipped
+  by the rest of `pretty`.
 * More improvements in the display logic where things refuse to be hierarchical.
 * To the display option `extraFeatures` you may also pass values like `type:feature`,
   see options (`tf.advanced.options`) under list of display parameters.
@@ -1110,15 +1116,15 @@ See `tf`.
   Now it can be used in a Jupyter Notebook to produce the overview of features used,
   normally displayed after the incantantation.
 * There is a new `A.showProvenance()` that can be used to show detailed provenance of
-  the corpus data and all its modules. When you exported from the TF-browser, this data was
-  included (and still is), but now you can invoke it from a program as well (typically in
-  a Jupter notebook)
-* **Provenance** When exporting data from the TF-browser, a provenance sheet is generated
-  with entries for the data modules. Now you can generate this sheet in a Jupyter notebook
-  as well, by means of `A.showProvenance()`.
+  the corpus data and all its modules. When you exported from the TF-browser, this data
+  was included (and still is), but now you can invoke it from a program as well
+  (typically in a Jupter notebook)
+* **Provenance** When exporting data from the TF-browser, a provenance sheet is
+  generated with entries for the data modules. Now you can generate this sheet in a
+  Jupyter notebook as well, by means of `A.showProvenance()`.
 * Online data fetching/checking does not happen by default anymore if there is already
-  local data. This reduces the number of GitHub API requests greatly, and users are less prone
-  to hit the limit.
+  local data. This reduces the number of GitHub API requests greatly, and users are
+  less prone to hit the limit.
 
 #### 8.0.2
 
@@ -1168,18 +1174,20 @@ As a consequence, if you have not upgraded Text-Fabric, it will fail.**
     in the BHSA. The other one is support for graphics inclusion as in the Uruk corpus.
 *   Improvements in `plain()` and `pretty()`: they deliver better results and
     they make it easier for tf-app developers.
-    *   Pretty displays can be tamed by cutting of the unfolding of structure at some level
-        and replacing it by plain displays (`baseTypes` display option).
-    *   Highlights in plain display will be done, also for nodes deeply buried in the top node.
-        This is determined by `baseTypes`: a node of type in `baseTypes` will get full 
-        highlighting, all other nodes will get highlighting by boxes around the material.
+    *   Pretty displays can be tamed by cutting of the unfolding of structure at some
+        level and replacing it by plain displays (`baseTypes` display option).
+    *   Highlights in plain display will be done, also for nodes deeply buried in the
+        top node.  This is determined by `baseTypes`: a node of type in `baseTypes`
+        will get full highlighting, all other nodes will get highlighting by boxes
+        around the material.
 *   Core API improvement:
     The `Locality` (`L`) functions `d()`, `u()`, `l()`, `r()` take an optional
     parameter `otype` holding the node type of the related nodes that will be delivered.
     This can now also be an iterable of types (preferably a set of frozenset).
-*   Text-Fabric will detect when apps have a version mismatch with the general framework.
-    If so, it will issue warnings and it will gracefully fall back to the core API.
-    Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.
+*   Text-Fabric will detect when apps have a version mismatch with the general
+    framework.  If so, it will issue warnings and it will gracefully fall back to the
+    core API.  Note that if you use Text-Fabric prior version 8, there will be no
+    graceful fallback.
 
 
 ---
@@ -1235,8 +1243,8 @@ is a section node.
     to compute whether the node type counts as big. It is done for you in the TF-generic
     method `prettyPre()`. But you can still use another definition of `bigTyoe` if
     your corpus requires is. See e.g. the Quran app.
-*   For tf-app developers: the `_plain()` function tended to add a link under the material
-    also in cases where there was already a hyperlinked passage indicator.
+*   For tf-app developers: the `_plain()` function tended to add a link under the
+    material also in cases where there was already a hyperlinked passage indicator.
     This is now suppressed.
 
     **All known corpus apps (the ones in under the `annotation` org on GitHub) have been
@@ -1246,8 +1254,9 @@ is a section node.
 
 #### 7.10.2
 
-Fix: in some `open()` statements, the encoding parameter `encoding="utf8"` was not passed.
-On some system that causes problems. The parameter has been added in all appropriate cases.
+Fix: in some `open()` statements, the encoding parameter `encoding="utf8"` was not
+passed. On some system that causes problems. The parameter has been added in all
+appropriate cases.
 
 #### 7.10.0, 7.10.1
 
@@ -2348,8 +2357,8 @@ I leave this behaviour as it is.
 
 * Character tables for Hebrew abd Syriac, with links to them from the TF browser
 * Better font handling
-* In the `pretty` and `plain` functions you can pass a `fmt` parameter, to control the text representation
-  (original script, transcription, phonetics)
+* In the `pretty` and `plain` functions you can pass a `fmt` parameter, to control the
+  text representation (original script, transcription, phonetics)
 * You can also control the text representation in the Text-Fabric browser.
 
 ### 6.2

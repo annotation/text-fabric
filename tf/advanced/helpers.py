@@ -342,10 +342,17 @@ def getText(
     suppress = set() if options is None else options.suppress
 
     (tpl, feats) = templates[nType]
-    x = "" if isPretty else " "
 
     if not (tpl is True or withLabels):
         return ""
+
+    # now there is a coarse fix for something in the Hermans corpus:
+    # in plain display we add a space when we fill in a template.
+    # But that leads to unwanted results.
+    # The problem in the Hermans corpus can be solved in other ways.
+    # We remove the fix again.
+
+    # x = "" if isPretty else " "
 
     tplFilled = (
         (
@@ -380,7 +387,7 @@ def getText(
                         for feat in feats
                     }
                 )
-                + x
+                #  + x
             )
         )
     )
