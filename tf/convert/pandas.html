@@ -26,12 +26,13 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/pandas.py#L1-L142" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/032a9079f5468bfcac04aa9be26a85c125f09dfd/tf/convert/pandas.py#L1-L141" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
+import math
 import pandas as pd
 
-from ..parameters import TEMP_DIR
+from ..parameters import TEMP_DIR, OTYPE, OSLOTS
 from ..core.helpers import unexpanduser as ux
 
 
@@ -42,25 +43,39 @@ Transforms TF dataset into Pandas
 INT = &#34;Int64&#34;
 STR = &#34;str&#34;
 NA = [&#34;&#34;]
-CHAPTER = &#34;chapter&#34;
-CHUNK = &#34;chunk&#34;
 
 
-def makeTable(
-    app,
-    textFeatures=(&#34;str&#34;, &#34;after&#34;),
-    levelTypes=(CHAPTER, CHUNK),
-    levelFeatures=(CHAPTER, CHUNK),
-):
+def exportPandas(app):
     api = app.api
     Fall = api.Fall
     Fs = api.Fs
     F = api.F
     N = api.N
     L = api.L
+    T = api.T
+    TF = api.TF
 
-    (levelType1, levelType2) = levelTypes
-    (levelFeat1, levelFeat2) = levelFeatures
+    sectionTypes = T.sectionTypes
+    sectionFeats = T.sectionFeats
+
+    sectionTypeSet = set(sectionTypes)
+    sectionFeatIndex = {}
+
+    for (i, f) in enumerate(sectionFeats):
+        sectionFeatIndex[f] = i
+
+    textFeatures = [x[0][0] for x in TF.cformats[T.defaultFormat][2]]
+    features = sorted(set(Fall()) - {OTYPE, OSLOTS} - set(textFeatures))
+
+    dtype = dict(nd=INT, element=STR)
+
+    for f in sectionTypes:
+        dtype[f&#34;in.{f}&#34;] = INT
+
+    for f in features:
+        dtype[f] = INT if Fs(f).meta[&#34;valueType&#34;] == &#34;int&#34; else STR
+
+    naValues = dict((x, set() if dtype[x] == STR else {&#34;&#34;}) for x in dtype)
 
     baseDir = f&#34;{app.repoLocation}&#34;
     tempDir = f&#34;{baseDir}/{TEMP_DIR}&#34;
@@ -74,27 +89,7 @@ def makeTable(
     tableFile = f&#34;{tempDir}/data-{app.version}.tsv&#34;
     tableFilePd = f&#34;{resultDir}/data-{app.version}.pd&#34;
 
-    features = sorted(set(Fall()) - {&#34;otype&#34;, &#34;oslots&#34;} - set(textFeatures))
-
-    dtype = dict(nd=INT, element=STR)
-
-    for f in textFeatures:
-        dtype[f] = STR
-
-    for f in levelTypes:
-        dtype[f&#34;in.{f}&#34;] = INT
-
-    for f in features:
-        if f.startswith(&#34;empty_&#34;):
-            parts = f.split(&#34;_&#34;, 2)
-            tp = INT if len(parts) == 2 else STR
-            dtype[f] = tp
-        elif f.startswith(&#34;is_&#34;) or f.startswith(&#34;rend_&#34;) or f == levelFeat2:
-            dtype[f] = INT
-        else:
-            dtype[f] = STR
-
-    naValues = dict((x, set() if dtype[x] == STR else {&#34;&#34;}) for x in dtype)
+    chunkSize = max((10, 10 ** int(round(math.log(F.otype.maxNode / 100, 10)))))
 
     with open(tableFile, &#34;w&#34;) as hr:
         hr.write(
@@ -102,7 +97,7 @@ def makeTable(
                 &#34;nd&#34;,
                 &#34;element&#34;,
                 &#34;\t&#34;.join(textFeatures),
-                &#34;\t&#34;.join(f&#34;in.{x}&#34; for x in levelTypes),
+                &#34;\t&#34;.join(f&#34;in.{x}&#34; for x in sectionTypes),
                 &#34;\t&#34;.join(features),
             )
         )
@@ -111,13 +106,17 @@ def makeTable(
         s = 0
 
         for n in N.walk():
+            nType = F.otype.v(n)
             textValues = [str(Fs(f).v(n) or &#34;&#34;) for f in textFeatures]
-            levelValues = [(L.u(n, otype=level) or NA)[0] for level in levelTypes]
+            sectionValues = [
+                n if nType == section else (L.u(n, otype=section) or NA)[0]
+                for section in sectionTypes
+            ]
             nodeValues = [
-                (
-                    Fs(levelFeat1).v(L.u(n, otype=levelType1)[0])
-                    if f == levelFeat1 and F.otype.v(n) == levelType2
-                    else str(Fs(f).v(n) or &#34;&#34;)
+                str(
+                    (Fs(f).v(sectionValues[sectionFeatIndex[f]]) or &#34;&#34;)
+                    if f in sectionFeatIndex and nType in sectionTypeSet
+                    else Fs(f).v(n) or &#34;&#34;
                 )
                 for f in features
             ]
@@ -126,7 +125,7 @@ def makeTable(
                     n,
                     F.otype.v(n),
                     (&#34;\t&#34;.join(textValues)).replace(&#34;\n&#34;, &#34;\\n&#34;),
-                    (&#34;\t&#34;.join(str(x) for x in levelValues)),
+                    (&#34;\t&#34;.join(str(x) for x in sectionValues)),
                     (&#34;\t&#34;.join(nodeValues)),
                 )
             )
@@ -179,31 +178,47 @@ def makeTable(
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.convert.pandas.makeTable"><code class="name flex">
-<span>def <span class="ident">makeTable</span></span>(<span>app, textFeatures=('str', 'after'), levelTypes=('chapter', 'chunk'), levelFeatures=('chapter', 'chunk'))</span>
+<dt id="tf.convert.pandas.exportPandas"><code class="name flex">
+<span>def <span class="ident">exportPandas</span></span>(<span>app)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/convert/pandas.py#L19-L142" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/032a9079f5468bfcac04aa9be26a85c125f09dfd/tf/convert/pandas.py#L18-L141" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def makeTable(
-    app,
-    textFeatures=(&#34;str&#34;, &#34;after&#34;),
-    levelTypes=(CHAPTER, CHUNK),
-    levelFeatures=(CHAPTER, CHUNK),
-):
+<pre><code class="python">def exportPandas(app):
     api = app.api
     Fall = api.Fall
     Fs = api.Fs
     F = api.F
     N = api.N
     L = api.L
+    T = api.T
+    TF = api.TF
 
-    (levelType1, levelType2) = levelTypes
-    (levelFeat1, levelFeat2) = levelFeatures
+    sectionTypes = T.sectionTypes
+    sectionFeats = T.sectionFeats
+
+    sectionTypeSet = set(sectionTypes)
+    sectionFeatIndex = {}
+
+    for (i, f) in enumerate(sectionFeats):
+        sectionFeatIndex[f] = i
+
+    textFeatures = [x[0][0] for x in TF.cformats[T.defaultFormat][2]]
+    features = sorted(set(Fall()) - {OTYPE, OSLOTS} - set(textFeatures))
+
+    dtype = dict(nd=INT, element=STR)
+
+    for f in sectionTypes:
+        dtype[f&#34;in.{f}&#34;] = INT
+
+    for f in features:
+        dtype[f] = INT if Fs(f).meta[&#34;valueType&#34;] == &#34;int&#34; else STR
+
+    naValues = dict((x, set() if dtype[x] == STR else {&#34;&#34;}) for x in dtype)
 
     baseDir = f&#34;{app.repoLocation}&#34;
     tempDir = f&#34;{baseDir}/{TEMP_DIR}&#34;
@@ -217,27 +232,7 @@ def makeTable(
     tableFile = f&#34;{tempDir}/data-{app.version}.tsv&#34;
     tableFilePd = f&#34;{resultDir}/data-{app.version}.pd&#34;
 
-    features = sorted(set(Fall()) - {&#34;otype&#34;, &#34;oslots&#34;} - set(textFeatures))
-
-    dtype = dict(nd=INT, element=STR)
-
-    for f in textFeatures:
-        dtype[f] = STR
-
-    for f in levelTypes:
-        dtype[f&#34;in.{f}&#34;] = INT
-
-    for f in features:
-        if f.startswith(&#34;empty_&#34;):
-            parts = f.split(&#34;_&#34;, 2)
-            tp = INT if len(parts) == 2 else STR
-            dtype[f] = tp
-        elif f.startswith(&#34;is_&#34;) or f.startswith(&#34;rend_&#34;) or f == levelFeat2:
-            dtype[f] = INT
-        else:
-            dtype[f] = STR
-
-    naValues = dict((x, set() if dtype[x] == STR else {&#34;&#34;}) for x in dtype)
+    chunkSize = max((10, 10 ** int(round(math.log(F.otype.maxNode / 100, 10)))))
 
     with open(tableFile, &#34;w&#34;) as hr:
         hr.write(
@@ -245,7 +240,7 @@ def makeTable(
                 &#34;nd&#34;,
                 &#34;element&#34;,
                 &#34;\t&#34;.join(textFeatures),
-                &#34;\t&#34;.join(f&#34;in.{x}&#34; for x in levelTypes),
+                &#34;\t&#34;.join(f&#34;in.{x}&#34; for x in sectionTypes),
                 &#34;\t&#34;.join(features),
             )
         )
@@ -254,13 +249,17 @@ def makeTable(
         s = 0
 
         for n in N.walk():
+            nType = F.otype.v(n)
             textValues = [str(Fs(f).v(n) or &#34;&#34;) for f in textFeatures]
-            levelValues = [(L.u(n, otype=level) or NA)[0] for level in levelTypes]
+            sectionValues = [
+                n if nType == section else (L.u(n, otype=section) or NA)[0]
+                for section in sectionTypes
+            ]
             nodeValues = [
-                (
-                    Fs(levelFeat1).v(L.u(n, otype=levelType1)[0])
-                    if f == levelFeat1 and F.otype.v(n) == levelType2
-                    else str(Fs(f).v(n) or &#34;&#34;)
+                str(
+                    (Fs(f).v(sectionValues[sectionFeatIndex[f]]) or &#34;&#34;)
+                    if f in sectionFeatIndex and nType in sectionTypeSet
+                    else Fs(f).v(n) or &#34;&#34;
                 )
                 for f in features
             ]
@@ -269,7 +268,7 @@ def makeTable(
                     n,
                     F.otype.v(n),
                     (&#34;\t&#34;.join(textValues)).replace(&#34;\n&#34;, &#34;\\n&#34;),
-                    (&#34;\t&#34;.join(str(x) for x in levelValues)),
+                    (&#34;\t&#34;.join(str(x) for x in sectionValues)),
                     (&#34;\t&#34;.join(nodeValues)),
                 )
             )
@@ -384,7 +383,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.convert.pandas.makeTable" href="#tf.convert.pandas.makeTable">makeTable</a></code></li>
+<li><code><a title="tf.convert.pandas.exportPandas" href="#tf.convert.pandas.exportPandas">exportPandas</a></code></li>
 </ul>
 </li>
 </ul>

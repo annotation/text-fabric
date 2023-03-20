@@ -41,8 +41,8 @@ through arbitrary nodesets. Always in canonical order.</p>
 <p>2022-09-13</p>
 <ul>
 <li>
-<p>fix of a bug in the TF-browser caused by the previous change: the headings of section-3 levels
-came out wrong</p>
+<p>fix of a bug in the TF-browser caused by the previous change: the headings of
+section-3 levels came out wrong</p>
 </li>
 <li>
 <p>the second parameter of <code>plainTuple()</code> and <code>prettyTuple()</code> is now optional.
@@ -460,8 +460,8 @@ but returned as HTML.</p>
 <p>2021-08-24</p>
 <p><strong>Fixes</strong></p>
 <ul>
-<li>Bug reported by Gyusang Jin: when a string specification of features that must be loaded
-contains newlines, an error will occur.</li>
+<li>Bug reported by Gyusang Jin: when a string specification of features that must be
+loaded contains newlines, an error will occur.</li>
 <li>TF.loadLog() did not provide useful information anymore. Instead, there is now
 TF.isLoaded and A.isLoaded (<code><a title="tf.core.api.Api.isLoaded" href="../core/api.html#tf.core.api.Api.isLoaded">Api.isLoaded()</a></code>). For compatibility,
 loadLog still can be called, but is identical to isLoaded.</li>
@@ -557,10 +557,12 @@ The Recorder API has some additions <code><a title="tf.convert.recorder" href=".
 <p>Small fixes in the the layered search app and its documentation.</p>
 <h4 id="850">8.5.0</h4>
 <p>2021-05-03</p>
-<p>There is a new piece of functionality in Text-Fabric: making search interfaces for existing corpus apps.
+<p>There is a new piece of functionality in Text-Fabric: making search interfaces for
+existing corpus apps.
 These are static HTML+CSS+Javascript pages, that provide <em>layered search</em>.
-Text-Fabric has a new command <code>text-fabric-make dataset interfacename</code> which generates such an app
-from a bit of configuration and code, which you have to provide in the <code>app-</code><em>dataset</em> repo.</p>
+Text-Fabric has a new command <code>text-fabric-make dataset interfacename</code> which generates
+such an app from a bit of configuration and code, which you have to provide in
+the <code>app-</code><em>dataset</em> repo.</p>
 <p>See <code><a title="tf.client" href="../client/index.html">tf.client</a></code>.</p>
 <h3 id="84">8.4</h3>
 <h4 id="8414">8.4.14</h4>
@@ -573,8 +575,10 @@ See <code>advanced.display.getCss</code>.</p>
 <p>A few minor improvements:</p>
 <ul>
 <li>the <code><a title="tf.convert.recorder" href="../convert/recorder.html">tf.convert.recorder</a></code> is improved. It can now save postion files per node type.</li>
-<li>the <code><a title="tf.core.timestamp.Timestamp.indent" href="../core/timestamp.html#tf.core.timestamp.Timestamp.indent">Timestamp.indent()</a></code> method now accepts a boolean for its <code>level</code> parameter.
-By this you can increase and decrease the current indentation level of messages.</li>
+<li>the <code><a title="tf.core.timestamp.Timestamp.indent" href="../core/timestamp.html#tf.core.timestamp.Timestamp.indent">Timestamp.indent()</a></code> method now accepts a boolean
+for its <code>level</code> parameter.
+By this you can increase and decrease the
+current indentation level of messages.</li>
 </ul>
 <h4 id="8412">8.4.12</h4>
 <p>2021-02-11</p>
@@ -607,8 +611,8 @@ The documentation has now a working search interface.</p>
 <p>Added logic to map nodes between versions of TF datasets.
 This logic existed in a notebook that explores versions of the Hebrew Bible:
 <a href="https://nbviewer.jupyter.org/github/ETCBC/bhsa/blob/master/programs/versionMappings.ipynb">versionMappings</a>.
-Whereas the code to map slots between versions is highly dependent on the dataset in question,
-the code to extend a slot mapping to a node mapping is generic.
+Whereas the code to map slots between versions is highly dependent on the dataset in
+question, the code to extend a slot mapping to a node mapping is generic.
 That code is now in "tf.compose.nodemaps" (as of version 9 in <code><a title="tf.dataset.nodemaps" href="../dataset/nodemaps.html">tf.dataset.nodemaps</a></code>).
 It is used in the
 <a href="https://nbviewer.jupyter.org/github/clariah/wp6-missieven/blob/master/programs/map.ipynb">missieven</a>
@@ -647,12 +651,16 @@ Fixed by using the CSS mechanism <code>unicode-bidi: embed</code> more consisten
 <p>2020-09-20</p>
 <p>Minor fixes in the display:</p>
 <ul>
-<li><strong>The Text-Fabric browser showed the chunks around a gap in the wrong order for right to left scripts.</strong>
-Fixed by using CSS mechanisms such as <code>display: inline-block</code> and <code>unicode-bidi: embed</code>.</li>
-<li><strong>Chrome did not display dotted borders good enough: in some circumstances the dots were hardly visible</strong>.
-Sadly one of those circumstances is the default zoom level of the browser: if the user enlarges or decreases the
-zoom level, the dots become better visible.
-It seems that using the <code>rem</code> unit for specifying border-sizes contributes to this behaviour.
+<li><strong>The Text-Fabric browser showed the chunks around a gap in the wrong order
+for right to left scripts.</strong>
+Fixed by using CSS mechanisms such as <code>display: inline-block</code> and
+<code>unicode-bidi: embed</code>.</li>
+<li><strong>Chrome did not display dotted borders good enough: in some circumstances the dots
+were hardly visible</strong>.
+Sadly one of those circumstances is the default zoom level of the browser:
+if the user enlarges or decreases the zoom level, the dots become better visible.
+It seems that using the <code>rem</code> unit for specifying border-sizes contributes to this
+behaviour.
 So I specified all border widths in <code>px</code>, assuming 20px = 1rem.</li>
 </ul>
 <h4 id="841">8.4.1</h4>
@@ -733,26 +741,26 @@ combinations of node types.</p>
 <li>Starting in v8, the ports through which the TF-browser communicates are no longer
 hardwired in the app config, but are determined at run time: the first
 available ports are choses.
-This had the negative consequence that different corpora could use the same port in turn,
-thereby wreaking havoc with the sessions for those corpora.
+This had the negative consequence that different corpora could use the same
+port in turn, thereby wreaking havoc with the sessions for those corpora.
 Now the ports are determined as a function of the arguments to <code>text-fabric</code>.</li>
 <li>Text alignment and line wrapping has improved, especially in plain displays.</li>
 </ul>
 <h3 id="82">8.2</h3>
 <h4 id="822">8.2.2</h4>
 <p>2020-06-02</p>
-<p>When you load a corpus by means of <code>use</code>, you can now also override the config settings of the
-app on the fly. See <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code></p>
+<p>When you load a corpus by means of <code>use</code>, you can now also override the config
+settings of the app on the fly. See <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code></p>
 <h4 id="821">8.2.1</h4>
 <p>2020-05-30</p>
 <p>Fixed two silly bugs, one of which a show stopper, preventing precomputation after
 download of data to complete.</p>
 <h4 id="820">8.2.0</h4>
 <p>2020-05-29</p>
-<p>Improved display algorithm: corpora need less configuration for TF
-to generate good displays.
-In particular, the atom types of the BHSA are now handled without
-tricky branches in the code.</p>
+<p>Improved display algorithm: corpora need less configuration for TF to generate good
+displays.
+In particular, the atom types of the BHSA are now handled without tricky branches in
+the code.</p>
 <p>See <code><a title="tf.advanced.display" href="../advanced/display.html">tf.advanced.display</a></code>.</p>
 <p>Core API: a bit of streamlining:
 all exposed methods now fall under one of <code>A TF N F E L T S</code>.</p>
@@ -815,11 +823,12 @@ See <code><a title="tf" href="../index.html">tf</a></code>.</p>
 <code>L</code>-API (<code><a title="tf.core.locality.Locality.i" href="../core/locality.html#tf.core.locality.Locality.i">Locality.i()</a></code>): <code>L.i(node, otype=nodeTypes)</code>.
 It delivers the <em>intersectors</em> of a node, i.e. the nodes that share slots
 with the given <code>node</code>.</li>
-<li>Fixed a subtle bug in the <code>A.pretty()</code> which manifested itself in the Old Babylonian corpus.
-A line with clusters in it displayed the clusters twice if <code>baseTypes</code> has a non slot type.
+<li>Fixed a subtle bug in the <code>A.pretty()</code> which manifested itself in the Old Babylonian
+corpus. A line with clusters in it displayed the clusters twice if <code>baseTypes</code> has a
+non slot type.
 When doing a <code>plain</code> within a <code>pretty</code>,
-the displayer "forgot" the nodes encountered in <code>plain</code>, so they could not be skipped by the
-rest of <code>pretty</code>.</li>
+the displayer "forgot" the nodes encountered in <code>plain</code>, so they could not be skipped
+by the rest of <code>pretty</code>.</li>
 <li>More improvements in the display logic where things refuse to be hierarchical.</li>
 <li>To the display option <code>extraFeatures</code> you may also pass values like <code>type:feature</code>,
 see options (<code><a title="tf.advanced.options" href="../advanced/options.html">tf.advanced.options</a></code>) under list of display parameters.</li>
@@ -832,15 +841,15 @@ see options (<code><a title="tf.advanced.options" href="../advanced/options.html
 Now it can be used in a Jupyter Notebook to produce the overview of features used,
 normally displayed after the incantantation.</li>
 <li>There is a new <code>A.showProvenance()</code> that can be used to show detailed provenance of
-the corpus data and all its modules. When you exported from the TF-browser, this data was
-included (and still is), but now you can invoke it from a program as well (typically in
-a Jupter notebook)</li>
-<li><strong>Provenance</strong> When exporting data from the TF-browser, a provenance sheet is generated
-with entries for the data modules. Now you can generate this sheet in a Jupyter notebook
-as well, by means of <code>A.showProvenance()</code>.</li>
+the corpus data and all its modules. When you exported from the TF-browser, this data
+was included (and still is), but now you can invoke it from a program as well
+(typically in a Jupter notebook)</li>
+<li><strong>Provenance</strong> When exporting data from the TF-browser, a provenance sheet is
+generated with entries for the data modules. Now you can generate this sheet in a
+Jupyter notebook as well, by means of <code>A.showProvenance()</code>.</li>
 <li>Online data fetching/checking does not happen by default anymore if there is already
-local data. This reduces the number of GitHub API requests greatly, and users are less prone
-to hit the limit.</li>
+local data. This reduces the number of GitHub API requests greatly, and users are
+less prone to hit the limit.</li>
 </ul>
 <h4 id="802">8.0.2</h4>
 <p>2020-05-11</p>
@@ -878,20 +887,25 @@ The most intricate it support for displaying discontinuous types piece by piece,
 in the BHSA. The other one is support for graphics inclusion as in the Uruk corpus.</li>
 <li>Improvements in <code>plain()</code> and <code>pretty()</code>: they deliver better results and
 they make it easier for tf-app developers.<ul>
-<li>Pretty displays can be tamed by cutting of the unfolding of structure at some level
-and replacing it by plain displays (<code>baseTypes</code> display option).</li>
-<li>Highlights in plain display will be done, also for nodes deeply buried in the top node.
-This is determined by <code>baseTypes</code>: a node of type in <code>baseTypes</code> will get full
-highlighting, all other nodes will get highlighting by boxes around the material.</li>
+<li>Pretty displays can be tamed by cutting of the unfolding of structure at some
+level and replacing it by plain displays (<code>baseTypes</code> display option).</li>
+<li>Highlights in plain display will be done, also for nodes deeply buried in the
+top node.
+This is determined by <code>baseTypes</code>: a node of type in <code>baseTypes</code>
+will get full highlighting, all other nodes will get highlighting by boxes
+around the material.</li>
 </ul>
 </li>
 <li>Core API improvement:
 The <code>Locality</code> (<code>L</code>) functions <code>d()</code>, <code>u()</code>, <code>l()</code>, <code>r()</code> take an optional
 parameter <code>otype</code> holding the node type of the related nodes that will be delivered.
 This can now also be an iterable of types (preferably a set of frozenset).</li>
-<li>Text-Fabric will detect when apps have a version mismatch with the general framework.
-If so, it will issue warnings and it will gracefully fall back to the core API.
-Note that if you use Text-Fabric prior version 8, there will be no graceful fallback.</li>
+<li>Text-Fabric will detect when apps have a version mismatch with the general
+framework.
+If so, it will issue warnings and it will gracefully fall back to the
+core API.
+Note that if you use Text-Fabric prior version 8, there will be no
+graceful fallback.</li>
 </ul>
 <hr>
 <h2 id="7">7</h2>
@@ -938,8 +952,8 @@ to compute whether the node type counts as big. It is done for you in the TF-gen
 method <code>prettyPre()</code>. But you can still use another definition of <code>bigTyoe</code> if
 your corpus requires is. See e.g. the Quran app.</li>
 <li>
-<p>For tf-app developers: the <code>_plain()</code> function tended to add a link under the material
-also in cases where there was already a hyperlinked passage indicator.
+<p>For tf-app developers: the <code>_plain()</code> function tended to add a link under the
+material also in cases where there was already a hyperlinked passage indicator.
 This is now suppressed.</p>
 <p><strong>All known corpus apps (the ones in under the <code>annotation</code> org on GitHub) have been
 adapted to this change.</strong></p>
@@ -947,8 +961,9 @@ adapted to this change.</strong></p>
 </ul>
 <h3 id="710">7.10</h3>
 <h4 id="7102">7.10.2</h4>
-<p>Fix: in some <code>open()</code> statements, the encoding parameter <code>encoding="utf8"</code> was not passed.
-On some system that causes problems. The parameter has been added in all appropriate cases.</p>
+<p>Fix: in some <code>open()</code> statements, the encoding parameter <code>encoding="utf8"</code> was not
+passed. On some system that causes problems. The parameter has been added in all
+appropriate cases.</p>
 <h4 id="7100-7101">7.10.0, 7.10.1</h4>
 <p>2020-02-13</p>
 <p>GitHub is deprecating its token system for authentication when using the GitHub API.
@@ -1719,8 +1734,8 @@ I leave this behaviour as it is.</p>
 <ul>
 <li>Character tables for Hebrew abd Syriac, with links to them from the TF browser</li>
 <li>Better font handling</li>
-<li>In the <code>pretty</code> and <code>plain</code> functions you can pass a <code>fmt</code> parameter, to control the text representation
-(original script, transcription, phonetics)</li>
+<li>In the <code>pretty</code> and <code>plain</code> functions you can pass a <code>fmt</code> parameter, to control the
+text representation (original script, transcription, phonetics)</li>
 <li>You can also control the text representation in the Text-Fabric browser.</li>
 </ul>
 <h3 id="62">6.2</h3>
@@ -2670,7 +2685,7 @@ see in TF if they want to use it in MQL and vice versa.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/cd8f61c5f4f0c7de4a391ba931dbc87a89e03e2e/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/032a9079f5468bfcac04aa9be26a85c125f09dfd/tf/about/releasesold.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releasesold.md
