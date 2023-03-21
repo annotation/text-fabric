@@ -48,14 +48,12 @@ See  also:
 """
 
 import sys
-import os
 import re
 import types
 import yaml
 import json
 import webbrowser
 
-from shutil import copy
 from datetime import datetime as dt
 from subprocess import Popen, PIPE
 from time import sleep
@@ -66,14 +64,25 @@ from importlib import util
 from tf.app import use
 from tf.fabric import Fabric
 from tf.server.command import getPort
-from tf.core.helpers import specFromRanges, rangesFromSet, normpath, abspath
+from tf.core.helpers import specFromRanges, rangesFromSet
+from tf.core.files import (
+    normpath,
+    abspath,
+    backendRep,
+    URL_TFDOC,
+    APP_CONFIG,
+    fileExists,
+    dirExists,
+    dirNm,
+    dirMake,
+    fileCopy,
+    chDir,
+    scanDir,
+)
 from tf.parameters import (
     REPO,
     LS,
     ZIP_OPTIONS,
-    BACKEND_REP,
-    URL_TFDOC,
-    APP_CONFIG,
 )
 
 from .gh import deploy
@@ -82,8 +91,8 @@ from .help import HELP
 TEMP = "_temp"
 ZIP_OPTIONS = {"compresslevel": 6, **ZIP_OPTIONS}
 
-CONFIG_FILE = normpath(f"{os.path.dirname(abspath(__file__))}/{APP_CONFIG}")
-STATIC_DIR = normpath(f"{os.path.dirname(os.path.dirname(abspath(__file__)))}/static")
+CONFIG_FILE = normpath(f"{dirNm(abspath(__file__))}/{APP_CONFIG}")
+STATIC_DIR = normpath(f"{dirNm(dirNm(abspath(__file__)))}/static")
 
 
 def console(*args, error=False):
@@ -276,7 +285,7 @@ class Make:
         versionFile = f"{STATIC_DIR}/version.yaml"
         self.versionFile = versionFile
 
-        bUrl = BACKEND_REP(backend, "rep")
+        bUrl = backendRep(backend, "rep")
 
         with open(versionFile) as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
@@ -285,7 +294,7 @@ class Make:
         with open(CONFIG_FILE) as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
-        cloneBase = BACKEND_REP(backend, "clone")
+        cloneBase = backendRep(backend, "clone")
 
         c = dict(
             backend=backend,
@@ -370,7 +379,7 @@ class Make:
             fillin(c, k, v)
 
         lsConfig = c["lsConfig"]
-        if not os.path.exists(lsConfig):
+        if not fileExists(lsConfig):
             console(f"No {APP_CONFIG} found for {org}/{repo}: {lsConfig}")
             return None
 
@@ -382,7 +391,7 @@ class Make:
 
         if client is not None:
             clientConfigFile = c["clientConfigFile"]
-            if not os.path.exists(clientConfigFile):
+            if not dirExists(clientConfigFile):
                 console(
                     f"No {APP_CONFIG} found for {org}/{repo}:{client}: {clientConfigFile}"
                 )
@@ -748,8 +757,7 @@ class Make:
         clientConfig = self.clientConfig
 
         destData = C.jsCorpusDir
-        if not os.path.exists(destData):
-            os.makedirs(destData, exist_ok=True)
+        dirMake(destData)
 
         fileNameConfig = f"{destData}/config.js"
 
@@ -833,13 +841,11 @@ class Make:
         A.info("Dumping data to compact json files")
 
         destData = C.jsCorpusDir
-        if not os.path.exists(destData):
-            os.makedirs(destData, exist_ok=True)
+        dirMake(destData)
 
         if debug:
             textLoc = C.textClientDir
-            if not os.path.exists(textLoc):
-                os.makedirs(textLoc, exist_ok=True)
+            dirMake(textLoc)
 
         def writeDataFile(name, address, thisData, asString=False):
             parent = textLoc if debug and asString else destData
@@ -915,7 +921,7 @@ class Make:
 
         modules = []
 
-        with os.scandir(C.jsOutDir) as it:
+        with scanDir(C.jsOutDir) as it:
             for entry in it:
                 name = entry.name
                 if (
@@ -961,7 +967,7 @@ class Make:
 
         for thisClient in self.getAllClients():
             thisConfig = f"{C.configDir}/{thisClient}/{APP_CONFIG}"
-            if os.path.exists(thisConfig):
+            if fileExists(thisConfig):
                 with open(thisConfig) as fh:
                     desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
             else:
@@ -990,7 +996,7 @@ class Make:
 
         # client and client-local
 
-        with os.scandir(C.jsCorpusDir) as it:
+        with scanDir(C.jsCorpusDir) as it:
             scripts = []
             for entry in it:
                 file = entry.name
@@ -1064,18 +1070,17 @@ class Make:
             (C.jslibInDir, C.jslibOutDir),
             (C.htmlInDir, C.htmlOutDir),
         ):
-            if not os.path.exists(dstDir):
-                os.makedirs(dstDir, exist_ok=True)
+            dirMake(dstDir)
 
-            with os.scandir(srcDir) as it:
+            with scanDir(srcDir) as it:
                 for entry in it:
                     name = entry.name
                     if not entry.is_file() or name.startswith("."):
                         continue
                     srcFile = f"{srcDir}/{name}"
                     if srcFile != C.template:
-                        copy(srcFile, f"{dstDir}/{name}")
-        copy(f"{C.staticDir}/{C.favicon}", f"{C.siteDir}/{C.favicon}")
+                        fileCopy(srcFile, f"{dstDir}/{name}")
+        fileCopy(f"{C.staticDir}/{C.favicon}", f"{C.siteDir}/{C.favicon}")
 
         # move the custom files in place
 
@@ -1083,7 +1088,7 @@ class Make:
             (C.clientCss, f"{C.cssOutDir}/{C.client}.css"),
             (C.clientLogo, f"{C.pngOutDir}/{C.client}.png"),
         ):
-            copy(srcFile, dstFile)
+            fileCopy(srcFile, dstFile)
 
         console("Copied static files")
 
@@ -1114,7 +1119,7 @@ class Make:
         zipped = f"{C.siteDir}/{C.client}.zip"
 
         with ZipFile(zipped, "w", **ZIP_OPTIONS) as zipFile:
-            with os.scandir(C.appClientDir) as it:
+            with scanDir(C.appClientDir) as it:
                 for entry in it:
                     file = entry.name
                     if file not in items:
@@ -1123,7 +1128,7 @@ class Make:
                         zipFile.write(f"{C.appClientDir}/{file}", arcname=file)
                         console(f"adding {file}")
                     else:
-                        with os.scandir(f"{C.appClientDir}/{file}") as sit:
+                        with scanDir(f"{C.appClientDir}/{file}") as sit:
                             for sentry in sit:
                                 sfile = sentry.name
                                 if sentry.is_file and not sfile.startswith("."):
@@ -1143,12 +1148,12 @@ class Make:
         repo = self.repo
         client = self.client
         clients = self.getAllClients() if allClients or client is None else [client]
-        domain = BACKEND_REP(backend, "pages")
+        domain = backendRep(backend, "pages")
         console(
             f"Publishing on {domain} "
             f"{org}/{repo}:{','.join(clients)} from {siteDir} ..."
         )
-        os.chdir(appDir)
+        chDir(appDir)
         if backend is None:
             deploy(C.org, C.searchRepo)
         else:
@@ -1175,7 +1180,7 @@ class Make:
 
     def serve(self):
         C = self.C
-        os.chdir(C.siteDir)
+        chDir(C.siteDir)
         port = getPort(portBase=8000)
         if port is None:
             print("Cannot find a free port between 8000 and 8100")
@@ -1295,7 +1300,7 @@ class Make:
 
         clients = []
 
-        with os.scandir(configDir) as it:
+        with scanDir(configDir) as it:
             for entry in it:
                 client = entry.name
                 if not entry.is_dir() or client.startswith("."):

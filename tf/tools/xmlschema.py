@@ -110,13 +110,13 @@ defs = A.getDefs()}
 """
 
 import sys
-import os
 import collections
 from subprocess import run
 
 from lxml import etree
 
-from ..core.helpers import console, fileExists
+from ..core.helpers import console
+from ..core.files import fileExists, baseNm, dirNm, abspath
 
 
 class Analysis:
@@ -163,7 +163,7 @@ class Analysis:
         """
 
         self.debug = debug
-        self.myDir = os.path.dirname(os.path.abspath(__file__))
+        self.myDir = dirNm(abspath(__file__))
 
     def configure(self, baseSchema=None, override=None):
         """Configure for an XML schema and overrides
@@ -185,9 +185,9 @@ class Analysis:
             baseSchema = f"{myDir}/tei/tei_all.xsd"
 
         self.baseSchema = baseSchema
-        self.baseSchemaDir = os.path.dirname(baseSchema)
+        self.baseSchemaDir = dirNm(baseSchema)
         self.override = override
-        self.overrideDir = None if override is None else os.path.dirname(override)
+        self.overrideDir = None if override is None else dirNm(override)
 
         def findImports(node):
             """Inner function to walk through the xsd and get the import statements.
@@ -593,7 +593,7 @@ class Analysis:
                 baseSchema = args[0]
                 override = None
             outputFile = (
-                os.path.basename(
+                baseNm(
                     override if override is not None else baseSchema
                 ).removesuffix(".xsd")
                 + ".tsv"

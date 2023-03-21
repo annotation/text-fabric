@@ -1,8 +1,8 @@
 import sys
-import os
 from itertools import zip_longest
 from glob import glob
 from tf.core.helpers import console
+from tf.core.files import baseNm, splitExt
 
 
 def checkDiffs(path1, path2):
@@ -49,8 +49,8 @@ def checkDiffs(path1, path2):
     console(f"Check differences between TF files in {path1} and {path2}")
     files1 = glob(f"{path1}/*.tf")
     files2 = glob(f"{path2}/*.tf")
-    features1 = {os.path.basename(os.path.splitext(f)[0]) for f in files1}
-    features2 = {os.path.basename(os.path.splitext(f)[0]) for f in files2}
+    features1 = {baseNm(splitExt(f)[0]) for f in files1}
+    features2 = {baseNm(splitExt(f)[0]) for f in files2}
 
     addedOnes = features2 - features1
     deletedOnes = features1 - features2

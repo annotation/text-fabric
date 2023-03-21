@@ -29,14 +29,13 @@ collect(
 ```
 """
 
-import os
 import collections
-from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OVOLUME, OWORK, OINTERF, OINTERT, OMAP
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
+from ..core.helpers import getAllRealFeatures
+from ..core.files import unexpanduser as ux, dirEmpty, dirRemove, baseNm, dirNm
 
 DEBUG = False
 
@@ -311,8 +310,8 @@ def collect(
 
     """
 
-    collection = os.path.basename(workLocation)
-    loc = ux(os.path.dirname(workLocation))
+    collection = baseNm(workLocation)
+    loc = ux(dirNm(workLocation))
 
     if not dirEmpty(workLocation):
         proceed = True
@@ -326,7 +325,7 @@ def collect(
             proceed = False
         else:
             if overwrite:
-                rmtree(workLocation)
+                dirRemove(workLocation)
                 info(f"Collection {collection} exists and will be recreated", tm=False)
             else:
                 good = False
@@ -371,7 +370,7 @@ def collect(
         volNames = set()
         for loc in volumes:
             if type(loc) is str:
-                name = os.path.basename(loc)
+                name = baseNm(loc)
             else:
                 (name, loc) = loc
             if name in volNames:

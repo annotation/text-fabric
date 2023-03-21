@@ -1,232 +1,31 @@
 import os
 import sys
 import re
-from shutil import rmtree, copytree, copy
 
-from ..parameters import normpath, OMAP, HOME_DIR
+from ..parameters import OMAP
+from .files import unexpanduser as ux
 
 
 NBSP = "\u00a0"  # non-breaking space
 
 
-def abspath(path):
-    return normpath(os.path.abspath(path))
-
-
-def expanduser(path):
-    nPath = normpath(path)
-    if nPath.startswith("~"):
-        return f"{HOME_DIR}{nPath[1:]}"
-
-    return nPath
-
-
-def unexpanduser(path):
-    nPath = normpath(path)
-    if nPath.startswith(HOME_DIR):
-        return f"~{nPath[len(HOME_DIR):]}"
-
-    return nPath
-
-
-def setDir(obj):
-    obj.homeDir = expanduser("~")
-    obj.curDir = normpath(os.getcwd())
-    (obj.parentDir, x) = os.path.split(obj.curDir)
-
-
-def expandDir(obj, dirName):
-    if dirName.startswith("~"):
-        dirName = dirName.replace("~", obj.homeDir, 1)
-    elif dirName.startswith(".."):
-        dirName = dirName.replace("..", obj.parentDir, 1)
-    elif dirName.startswith("."):
-        dirName = dirName.replace(".", obj.curDir, 1)
-    return dirName
-
-
-def prefixSlash(path):
-    """Prefix a / before a path if it is non-empty and not already starts with it.
-    """
-    return f"/{path}" if path and not path.startswith("/") else path
-
-
-def getLocation(targetDir=None):
-    """Get backend, org, repo, relative of directory.
-
-    Parameters
-    ----------
-    targetDir: string, optional None
-        If None, we take the current directory.
-        Otherwise, if it starts with a `/` we take it as the absolute
-        target directory.
-        Otherwise, we append it to the absolute path of the current directory,
-        with a `/` in between.
-
-    We assume the target directory is somewhere inside
-
-    `~/backend/org/repo`
-
-    If it is immediately inside this, we set `relative` to `""`.
-
-    If it is deeper down, we assume the reference directory is the parent of the
-    current directory, and the path of this parent, relative to the repo directory
-    goes into the `relative` component, preceded with a backslash if it is non-empty.
-
-    Returns
-    -------
-    tuple
-        backend, org, repo, relative.
-        Relative is either empty or it starts with a "/" plus a non-empty path.
-    """
-    curDir = normpath(os.getcwd())
-    if targetDir is not None:
-        targetDir = normpath(targetDir)
-
-    destDir = (
-        curDir
-        if targetDir is None
-        else targetDir
-        if targetDir.startswith("/")
-        else f"{curDir}/{targetDir}"
-    )
-    destDir = unexpanduser(destDir)
-
-    if not destDir.startswith("~/"):
-        return (None, None, None, None)
-
-    destDir = destDir.removeprefix("~/")
-    parts = destDir.split("/")
-
-    if len(parts) == 1:
-        return (parts[0], None, None, None)
-    if len(parts) == 1:
-        return (parts[0], parts[1], None, None)
-    if len(parts) in {2, 3}:
-        return (parts[0], parts[1], parts[2], "")
-
-    relative = prefixSlash("/".join(parts[3:-1]))
-    return (parts[0], parts[1], parts[2], relative)
-
-
-def dirEmpty(target):
-    target = normpath(target)
-    return not os.path.exists(target) or not os.listdir(target)
-
-
-def clearTree(path):
-    """Remove all files from a directory, recursively, but leave subdirs.
-
-    Reason: we want to inspect output in an editor.
-    But if we remove the directories, the editor looses its current directory
-    all the time.
-
-    Parameters
-    ----------
-    path:
-        The directory in question. A leading `~` will be expanded to the user's
-        home directory.
-    """
-
-    subdirs = []
-    path = expanduser(path)
-
-    with os.scandir(path) as dh:
-        for (i, entry) in enumerate(dh):
-            name = entry.name
-            if name.startswith("."):
-                continue
-            if entry.is_file():
-                os.remove(f"{path}/{name}")
-            elif entry.is_dir():
-                subdirs.append(name)
-
-    for subdir in subdirs:
-        clearTree(f"{path}/{subdir}")
-
-
-def initTree(path, fresh=False, gentle=False):
-    """Make sure a directory exists, optionally clean it.
-
-    Parameters
-    ----------
-    path:
-        The directory in question. A leading `~` will be expanded to the user's
-        home directory.
-
-        If the directory does not exist, it will be created.
-
-    fresh: boolean, optional False
-        If True, existing contents will be removed, more or less gently.
-
-    gentle: boolean, optional False
-        When existing content is removed, only files are recursively removed, not
-        subdirectories.
-    """
-
-    path = expanduser(path)
-    exists = os.path.exists(path)
-    if fresh:
-        if exists:
-            if gentle:
-                clearTree(path)
-            else:
-                rmtree(path)
-
-    if not exists or fresh:
-        os.makedirs(path, exist_ok=True)
-
-
-def fileExists(path):
-    """Whether a path exists as file on the file system."""
-    return os.path.isfile(path)
-
-
-def fileRemove(path):
-    """Removes a file if it exists as file."""
-    if fileExists(path):
-        os.remove(path)
-
-
-def fileCopy(pathSrc, pathDst):
-    """Copies a file if it exists as file.
-
-    Wipes the destination file, if it exists.
-    """
-    if fileExists(pathSrc):
-        fileRemove(pathDst)
-        copy(pathSrc, pathDst)
-
-
-def dirExists(path):
-    """Whether a path exists as directory on the file system."""
-    return os.path.isdir(path)
-
-
-def dirRemove(path):
-    """Removes a directory if it exists as directory."""
-    if dirExists(path):
-        rmtree(path)
-
-
-def dirCopy(pathSrc, pathDst):
-    """Copies a directory if it exists as directory.
-
-    Wipes the destination directory, if it exists.
-    """
-    if dirExists(pathSrc):
-        dirRemove(pathDst)
-        copytree(pathSrc, pathDst)
-
-
-def dirMake(path):
-    """Creates a directory if it does not already exist as directory."""
-    if not dirExists(path):
-        os.makedirs(path, exist_ok=True)
-
-
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 VALID = set("_0123456789") | LETTER
+MQL_KEYWORDS = dict(
+    database="dbase",
+    default="dfault",
+    first="frst",
+    focus="fcus",
+    gap="gp",
+    last="lst",
+    notexist="notexst",
+    object="objct",
+    retrieve="retriev",
+    noretrieve="noretriev",
+    type="typ",
+)
+MQL_KEYWORDS["as"] = "as_"
+MQL_KEYWORDS["or"] = "or_"
 
 WARN32 = """WARNING: you are not running a 64-bit implementation of Python.
 You may run into memory problems if you load a big data set.
@@ -241,6 +40,22 @@ VAR_RE = re.compile(r"\{([^}]+?)(:[^}]*)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
 
 QUAD = "  "
+
+
+def var(envVar):
+    """Retrieves the value of an environment variable.
+
+    Parameters
+    ----------
+    envVar: string
+        The name of the environment variable.
+
+    Returns
+    -------
+    string or void
+        The value of the environment variable if it exists, otherwise `None`.
+    """
+    return os.environ.get(envVar, None)
 
 
 def isInt(val):
@@ -383,7 +198,7 @@ def check32():
 
 def console(*msg, error=False, newline=True):
     msg = " ".join(m if type(m) is str else repr(m) for m in msg)
-    msg = unexpanduser(msg)
+    msg = ux(msg)
     msg = msg[1:] if msg.startswith("\n") else msg
     msg = msg[0:-1] if msg.endswith("\n") else msg
     target = sys.stderr if error else sys.stdout
@@ -396,7 +211,7 @@ def cleanName(name):
     clean = "".join(c if c in VALID else "_" for c in name)
     if clean == "" or not clean[0] in LETTER:
         clean = "x" + clean
-    return clean
+    return MQL_KEYWORDS.get(clean, clean)
 
 
 def isClean(name):

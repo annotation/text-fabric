@@ -984,8 +984,9 @@ Default:
 import re
 import types
 
-from ..parameters import BACKEND_REP, URL_TFDOC, BRANCH_DEFAULT
+from ..parameters import BRANCH_DEFAULT
 from ..core.helpers import console, mergeDictOfSets
+from ..core.files import backendRep, URL_TFDOC, prefixSlash
 from .options import INTERFACE_OPTIONS
 from .helpers import (
     parseFeatures,
@@ -993,7 +994,6 @@ from .helpers import (
     showDict,
     ORIG,
     NORMAL,
-    prefixSlash,
 )
 
 
@@ -1109,7 +1109,7 @@ PROVENANCE_DEFAULTS = (
 
 def DOC_DEFAULTS(backend):
     return (
-        ("docRoot", f"{BACKEND_REP(backend, 'url')}"),
+        ("docRoot", f"{backendRep(backend, 'url')}"),
         ("docExt", ".md"),
         ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}{relative}/docs"),
         ("docPage", "home"),
@@ -1387,8 +1387,8 @@ def setAppSpecs(app, cfg, reset=False):
     if not reset:
         app.customMethods = AppCurrent({hook: {} for hook in HOOKS})
     specs = dict(
-        urlGh=BACKEND_REP(backend, "rep"),
-        urlNb=BACKEND_REP(backend, "urlnb"),
+        urlGh=backendRep(backend, "rep"),
+        urlNb=backendRep(backend, "urlnb"),
         tfDoc=URL_TFDOC,
     )
     app.specs = specs

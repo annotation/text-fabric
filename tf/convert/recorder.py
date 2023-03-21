@@ -107,15 +107,14 @@ To see it in action, see this
 """
 
 
-import os
 from itertools import chain
 
 from ..core.helpers import (
     specFromRangesLogical,
     specFromRanges,
     rangesFromSet,
-    expanduser,
 )
+from ..core.files import expanduser as ex, splitExt
 
 ZWJ = "\u200d"  # zero width joiner
 
@@ -545,9 +544,9 @@ where `api` is the result of
             are associated with these *nodes*.
         """
 
-        textPath = expanduser(textPath)
+        textPath = ex(textPath)
         posExt = ".ipos" if inverted else ".pos"
-        posPath = expanduser(posPath or f"{textPath}{posExt}")
+        posPath = ex(posPath or f"{textPath}{posExt}")
 
         with open(textPath, "w", encoding="utf8") as fh:
             fh.write(self.text())
@@ -581,7 +580,7 @@ where `api` is the result of
             print("No position files written")
             return
 
-        (base, ext) = os.path.splitext(posPath)
+        (base, ext) = splitExt(posPath)
 
         # if we reach this, there is a TF api
 
@@ -644,8 +643,8 @@ where `api` is the result of
             on each line a tab-separated list of active nodes.
         """
 
-        textPath = expanduser(textPath)
-        posPath = expanduser(posPath or f"{textPath}.pos")
+        textPath = ex(textPath)
+        posPath = ex(posPath or f"{textPath}.pos")
         self.context = {}
 
         with open(textPath, encoding="utf8") as fh:
@@ -687,7 +686,7 @@ where `api` is the result of
             be used as headers.
         """
 
-        featurePath = expanduser(featurePath)
+        featurePath = ex(featurePath)
         nodesByPos = self.nodesByPos
 
         features = {}

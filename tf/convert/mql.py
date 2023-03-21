@@ -117,10 +117,10 @@ rm dataset ; mql -b 3 < dataset.mql
 ```
 """
 
-import os
 import re
 from itertools import chain
 from ..parameters import WARP, OTYPE, OSLOTS
+from ..fabric import Fabric
 from ..core.helpers import (
     cleanName,
     isClean,
@@ -129,8 +129,8 @@ from ..core.helpers import (
     setFromSpec,
     nbytes,
     console,
-    expanduser,
 )
+from ..core.files import expanduser as ex, unexpanduser as ux, expandDir, dirMake
 from ..core.timestamp import SILENT_D, silentConvert
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -142,44 +142,150 @@ ENUM_LIMIT = 1000
 ONE_ENUM_TYPE = True
 
 
-class MQL:
-    def __init__(self, mqlDir, mqlName, tfFeatures, tmObj, silent=SILENT_D):
-        self.silent = silentConvert(silent)
-        tmObj.setSilent(silent)
-        error = tmObj.error
+def exportMQL(app, mqlName, exportDir=None):
+    """Exports the complete TF dataset into single MQL database.
 
-        mqlDir = expanduser(mqlDir)
-        self.mqlDir = mqlDir
+    Parameters
+    ----------
+    mqlName: string
+        Name of the mql database
+    exportDir: string, optional None
+        Directory where the MQL dir will be saved.
+        If None is given, it will end up in the same repo as the dataset, in a new
+        top-level subdirectory called `mql`.
+        The exported data will be written to file *exportDir*`/`*mqlName.mql*.
+        If `exportDir` starts with `~`, the `~` will be expanded to your
+        home directory.
+        Likewise, `..` will be expanded to the parent of the current directory,
+        and `.` to the current directory, both only at the start of `exportDir`.
+
+    Returns
+    -------
+    None
+
+    See Also
+    --------
+    tf.convert.mql
+    """
+    indent = app.indent
+    indent(level=0, reset=True)
+
+    if exportDir is None:
+        baseDir = f"{app.repoLocation}"
+        exportDir = f"{baseDir}/mql"
+    else:
+        exportDir = expandDir(app, exportDir)
+
+    mqlNameClean = cleanName(mqlName)
+    mql = MQL(app, mqlNameClean, exportDir)
+    mql.write()
+
+
+def importMQL(mqlPath, targetDir, slotType=None, otext=None, meta=None):
+    """Converts an MQL database dump to a Text-Fabric dataset.
+
+    Parameters
+    ----------
+    mqlPath: string
+        Path to the file which contains the MQL code.
+    targetDir: string
+        Path to where a new TF app will be created.
+
+    slotType: string
+        You have to tell which object type in the MQL file acts as the slot type,
+        because TF cannot see that on its own.
+
+    otext: dict
+        You can pass the information about sections and text formats as
+        the parameter `otext`. This info will end up in the `otext.tf` feature.
+        Pass it as a dictionary of keys and values, like so:
+
+            otext = {
+                'fmt:text-trans-plain': '{glyphs}{trailer}',
+                'sectionFeatures': 'book,chapter,verse',
+            }
+
+    meta: dict
+        Likewise, you can add a dictionary keyed by features
+        that will added to the metadata of the corresponding features.
+
+        You may also add metadata for the empty feature `""`,
+        this will be added to the metadata of all features.
+        Handy to add provenance data there.
+
+        Example:
+
+            meta = {
+                "": dict(
+                    dataset='DLC',
+                    datasetName='Digital Language Corpus',
+                    author="That 's me",
+                ),
+                "sp": dict(
+                    description: "part-of-speech",
+                ),
+            }
+
+        !!! note "description"
+            Text-Fabric will display all metadata information under the
+            key `description` in a more prominent place than the other
+            metadata.
+
+        !!! caution "valueType"
+            Do not pass the value types of the features here.
+    """
+
+    TF = Fabric(locations=targetDir)
+    tmObj = app.tmObj
+    indent = tmObj.indent
+
+    indent(level=0, reset=True)
+    (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
+        mqlPath, app.tmObj, slotType=slotType, otext=otext, meta=meta
+    )
+    if good:
+        app.save(
+            nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData
+        )
+
+
+class MQL:
+    def __init__(self, app, mqlName, exportDir, silent=SILENT_D):
+        self.app = app
+        self.silent = silentConvert(silent)
+        app.setSilent(silent)
+        warning = app.warning
+
+        self.mqlNameOrig = mqlName
+        exportDir = ex(exportDir)
+        self.exportDir = exportDir
+
         cleanDb = cleanName(mqlName)
         if cleanDb != mqlName:
-            error(f'db name "{mqlName}" => "{cleanDb}"')
+            warning(f'db name "{mqlName}" => "{cleanDb}"')
         self.mqlName = cleanDb
-        self.tfFeatures = tfFeatures
-        self.tmObj = tmObj
+
         self.enums = {}
         self._check()
 
     def write(self):
         silent = self.silent
-        tmObj = self.tmObj
-        error = tmObj.error
-        info = tmObj.info
-        indent = tmObj.indent
+        app = self.app
+        error = app.error
+        info = app.info
+        indent = app.indent
+        exportDir = self.exportDir
 
         if not self.good:
             return
-        if not os.path.exists(self.mqlDir):
-            try:
-                os.makedirs(self.mqlDir, exist_ok=True)
-            except Exception:
-                error(f'Cannot create directory "{self.mqlDir}"')
-                self.good = False
-                return
-        mqlPath = f"{self.mqlDir}/{self.mqlName}.mql"
+
+        dirMake(self.exportDir)
+
+        mqlPath = f"{self.exportDir}/{self.mqlName}.mql"
         try:
             fm = open(mqlPath, "w", encoding="utf8")
         except Exception:
-            error(f"Could not write to {mqlPath}")
+            error(f"Could not write to {ux(mqlPath)}")
             self.good = False
             return
 
@@ -195,21 +301,23 @@ class MQL:
         self._writeDataAll()
         self._writeEndDb()
         indent(level=0)
+        info(f"MQL in {ux(exportDir)}")
         info("Done")
 
     def _check(self):
         silent = self.silent
-        tmObj = self.tmObj
-        error = tmObj.error
-        info = tmObj.info
-        indent = tmObj.indent
+        app = self.app
+        error = app.error
+        info = app.info
+        indent = app.indent
+        tfFeatures = app.api.TF.features
 
         info(f"Checking features of dataset {self.mqlName}")
 
         self.features = {}
         self.featureList = []
         indent(level=1)
-        for (f, fo) in sorted(self.tfFeatures.items()):
+        for (f, fo) in sorted(tfFeatures.items()):
             if fo.method is not None or f in WARP:
                 continue
             fo.load(metaOnly=True, silent=silent)
@@ -222,7 +330,7 @@ class MQL:
             self.features[cleanF] = fo
         good = True
         for feat in (OTYPE, OSLOTS, "__levels__"):
-            if feat not in self.tfFeatures:
+            if feat not in tfFeatures:
                 error(
                     "{} feature {} is missing from data set".format(
                         "Warp"
@@ -235,7 +343,7 @@ class MQL:
                 )
                 good = False
             else:
-                fObj = self.tfFeatures[feat]
+                fObj = tfFeatures[feat]
                 if not fObj.load(silent=silent):
                     good = False
         indent(level=0)
@@ -267,14 +375,15 @@ GO
         self.fm.close()
 
     def _writeEnums(self):
-        tmObj = self.tmObj
-        info = tmObj.info
-        indent = tmObj.indent
+        app = self.app
+        info = app.info
+        indent = app.indent
 
         indent(level=0)
         info("Writing enumerations")
         indent(level=1)
         for ft in self.featureList:
+            ftClean = cleanName(ft)
             fObj = self.features[ft]
             if fObj.isEdge or fObj.dataType == "int":
                 continue
@@ -287,14 +396,14 @@ GO
                 unclean = [fVal for fVal in fValues if not isClean(fVal)]
                 console(
                     "\t{:<15}: {:>4} values, {} not a name, e.g. «{}»".format(
-                        ft,
+                        ftClean,
                         len(fValues),
                         len(unclean),
                         unclean[0],
                     )
                 )
                 continue
-            self.enums[ft] = fValues
+            self.enums[ftClean] = fValues
 
         if ONE_ENUM_TYPE:
             self._writeEnumsAsOne()
@@ -305,8 +414,8 @@ GO
             info(f"Written {len(self.enums)} enumerations")
 
     def _writeEnumsAsOne(self):
-        tmObj = self.tmObj
-        info = tmObj.info
+        app = self.app
+        info = app.info
 
         fValues = sorted(
             set(chain.from_iterable((set(fV) for fV in self.enums.values())))
@@ -326,8 +435,8 @@ GO
             )
 
     def _writeEnum(self, ft):
-        tmObj = self.tmObj
-        info = tmObj.info
+        app = self.app
+        info = app.info
 
         fValues = self.enums[ft]
         if len(fValues):
@@ -357,12 +466,13 @@ GO
         def valIds(ids):
             return "({})".format(",".join(str(i) for i in ids))
 
-        tmObj = self.tmObj
-        error = tmObj.error
-        info = tmObj.info
-        indent = tmObj.indent
+        app = self.app
+        warning = app.warning
+        info = app.info
+        indent = app.indent
+        tfFeatures = app.api.TF.features
 
-        self.levels = self.tfFeatures["__levels__"].data[::-1]
+        self.levels = tfFeatures["__levels__"].data[::-1]
         indent(level=0)
         info(
             "Mapping {} features onto {} object types".format(
@@ -374,13 +484,15 @@ GO
         for (otype, av, start, end) in self.levels:
             cleanOtype = cleanName(otype)
             if cleanOtype != otype:
-                error(f'otype "{otype}" => "{cleanOtype}"')
+                warning(f'otype "{otype}" => "{cleanOtype}"')
             otypeSupport[cleanOtype] = set(range(start, end + 1))
 
         self.otypes = {}
         self.featureTypes = {}
         self.featureMethods = {}
+
         for ft in self.featureList:
+            ftClean = cleanName(ft)
             fObj = self.features[ft]
             if fObj.isEdge:
                 dataType = "LIST OF id_d"
@@ -401,7 +513,7 @@ GO
             support = set(fObj.data.keys())
             for otype in otypeSupport:
                 if len(support & otypeSupport[otype]):
-                    self.otypes.setdefault(otype, []).append(ft)
+                    self.otypes.setdefault(otype, []).append(ftClean)
 
         for otype in (cleanName(x[0]) for x in self.levels):
             self._writeType(otype)
@@ -413,7 +525,7 @@ CREATE OBJECT TYPE
 [{otype}
 """
         )
-        for ft in self.otypes[otype]:
+        for ft in self.otypes.get(otype, []):
             fType = (
                 "{}_enum".format("all" if ONE_ENUM_TYPE else ft)
                 if ft in self.enums
@@ -428,8 +540,9 @@ GO
         )
 
     def _writeDataAll(self):
-        tmObj = self.tmObj
-        info = tmObj.info
+        app = self.app
+        info = app.info
+        tfFeatures = app.api.TF.features
 
         info(
             "Writing {} features as data in {} object types".format(
@@ -437,16 +550,16 @@ GO
                 len(self.levels),
             )
         )
-        oslotsData = self.tfFeatures[OSLOTS].data
+        oslotsData = tfFeatures[OSLOTS].data
         self.oslots = oslotsData[0]
         self.maxSlot = oslotsData[1]
         for (otype, av, start, end) in self.levels:
             self._writeData(otype, start, end)
 
     def _writeData(self, otype, start, end):
-        tmObj = self.tmObj
-        info = tmObj.info
-        indent = tmObj.indent
+        app = self.app
+        info = app.info
+        indent = app.indent
 
         fm = self.fm
 
@@ -454,7 +567,7 @@ GO
         info(f"{otype} data ...")
         oslots = self.oslots
         maxSlot = self.maxSlot
-        oFeats = self.otypes[otype]
+        oFeats = self.otypes.get(otype, [])
         features = self.features
         featureMethods = self.featureMethods
         fm.write(
@@ -543,34 +656,34 @@ def uni(line):
     return uniscan.sub(makeuni, line)
 
 
-def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
+def tfFromMql(mqlPath, app, slotType=None, otext=None, meta=None):
     """Generate TF from MQL
 
     Parameters
     ----------
-    tmObj: object
+    app: object
         A `tf.core.timestamp.Timestamp` object
-    mqlFile, slotType, otype, meta: various
+    mqlPath, slotType, otype, meta: various
         See `tf.core.fabric.Fabric.importMQL
     """
-    mqlFile = expanduser(mqlFile)
-    error = tmObj.error
+    mqlPath = ex(mqlPath)
+    error = app.error
 
     if slotType is None:
         error("ERROR: no slotType specified")
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlPath, app)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
+    return tfFromData(app, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
 
 
-def parseMql(mqlFile, tmObj):
-    info = tmObj.info
-    error = tmObj.error
+def parseMql(mqlPath, app):
+    info = app.info
+    error = app.error
 
     info("Parsing mql source ...")
-    fh = open(mqlFile, encoding="utf8")
+    fh = open(mqlPath, encoding="utf8")
 
     objectTypes = dict()
     tables = dict()
@@ -769,8 +882,8 @@ def parseMql(mqlFile, tmObj):
     return (good, objectTypes, tables, nodeF, edgeF)
 
 
-def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = tmObj.info
+def tfFromData(app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = app.info
 
     info("Making TF data ...")
 

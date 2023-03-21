@@ -1,10 +1,8 @@
-import os
 import math
 import pandas as pd
 
-from ..parameters import TEMP_DIR, OTYPE, OSLOTS
-from ..core.helpers import unexpanduser as ux
-
+from ..parameters import OTYPE, OSLOTS
+from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 
 HELP = """
 Transforms TF dataset into Pandas
@@ -15,7 +13,7 @@ STR = "str"
 NA = [""]
 
 
-def exportPandas(app):
+def exportPandas(app, exportDir=None):
     api = app.api
     Fall = api.Fall
     Fs = api.Fs
@@ -49,15 +47,17 @@ def exportPandas(app):
 
     baseDir = f"{app.repoLocation}"
     tempDir = f"{baseDir}/{TEMP_DIR}"
-    resultDir = f"{baseDir}/pandas"
+    if exportDir is None:
+        exportDir = f"{baseDir}/pandas"
+    else:
+        exportDir = exportDir
+        exportDir = expandDir(app, exportDir)
 
-    if not os.path.exists(tempDir):
-        os.makedirs(tempDir)
-    if not os.path.exists(resultDir):
-        os.makedirs(resultDir)
+    dirMake(tempDir)
+    dirMake(exportDir)
 
     tableFile = f"{tempDir}/data-{app.version}.tsv"
-    tableFilePd = f"{resultDir}/data-{app.version}.pd"
+    tableFilePd = f"{exportDir}/data-{app.version}.pd"
 
     chunkSize = max((10, 10 ** int(round(math.log(F.otype.maxNode / 100, 10)))))
 

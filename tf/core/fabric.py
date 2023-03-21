@@ -14,25 +14,28 @@ Hence a Fabric with volume support would lead to circular imports.
 By leaving out volume support, volume support can use FabricCore instead of Fabric.
 """
 
-import os
-
 import collections
 from itertools import chain
 
-from ..parameters import BANNER, VERSION, LOCATIONS, OTYPE, OSLOTS, OTEXT
+from ..parameters import BANNER, VERSION, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
 from .helpers import (
     itemize,
     fitemize,
-    setDir,
-    expandDir,
     collectFormats,
-    cleanName,
     check32,
     console,
     makeExamples,
+)
+from .files import (
+    expanduser as ex,
+    LOCATIONS,
+    setDir,
+    expandDir,
+    dirExists,
     normpath,
-    expanduser,
+    splitExt,
+    scanDir,
 )
 from .timestamp import Timestamp, SILENT_D, silentConvert
 from .prepare import (
@@ -59,8 +62,6 @@ from .api import (
     addText,
     addSearch,
 )
-from ..convert.mql import MQL, tfFromMql
-
 
 OTEXT_DEFAULT = dict(sectionFeatures="", sectionTypes="")
 
@@ -775,109 +776,6 @@ class FabricCore:
         setSilent(wasSilent)
         return good
 
-    def exportMQL(self, mqlName, mqlDir):
-        """Exports the complete TF dataset into single MQL database.
-
-        Parameters
-        ----------
-        dirName: string
-        dbName: string
-
-        Returns
-        -------
-        None
-            The exported data will be written to file *dirName*`/`*dbName.mql*.
-            If `dirName` starts with `~`, the `~` will be expanded to your
-            home directory.
-            Likewise, `..` will be expanded to the parent of the current directory,
-            and `.` to the current directory, both only at the start of `dirName`.
-
-        See Also
-        --------
-        tf.convert.mql
-        """
-
-        tmObj = self.tmObj
-        indent = tmObj.indent
-
-        indent(level=0, reset=True)
-        mqlDir = expandDir(self, mqlDir)
-
-        mqlNameClean = cleanName(mqlName)
-        mql = MQL(mqlDir, mqlNameClean, self.features, self.tmObj)
-        mql.write()
-
-    def importMQL(self, mqlFile, slotType=None, otext=None, meta=None):
-        """Converts an MQL database dump to a Text-Fabric dataset.
-
-        !!! hint "Destination directory"
-            It is recommended to call this `importMQL` on a TF instance called with
-
-                TF = Fabric(locations=targetDir)
-
-            Then the resulting features will be written in the targetDir.
-            In fact, the rules are exactly the same as for `save()`.
-
-        Parameters
-        ----------
-        mqlFile: string
-            Path to the file which contains the MQL code.
-        slotType: string
-            You have to tell which object type in the MQL file acts as the slot type,
-            because TF cannot see that on its own.
-
-        otext: dict
-            You can pass the information about sections and text formats as
-            the parameter `otext`. This info will end up in the `otext.tf` feature.
-            Pass it as a dictionary of keys and values, like so:
-
-                otext = {
-                    'fmt:text-trans-plain': '{glyphs}{trailer}',
-                    'sectionFeatures': 'book,chapter,verse',
-                }
-
-        meta: dict
-            Likewise, you can add a dictionary keyed by features
-            that will added to the metadata of the corresponding features.
-
-            You may also add metadata for the empty feature `""`,
-            this will be added to the metadata of all features.
-            Handy to add provenance data there.
-
-            Example:
-
-                meta = {
-                    "": dict(
-                        dataset='DLC',
-                        datasetName='Digital Language Corpus',
-                        author="That 's me",
-                    ),
-                    "sp": dict(
-                        description: "part-of-speech",
-                    ),
-                }
-
-            !!! note "description"
-                Text-Fabric will display all metadata information under the
-                key `description` in a more prominent place than the other
-                metadata.
-
-            !!! caution "valueType"
-                Do not pass the value types of the features here.
-        """
-
-        tmObj = self.tmObj
-        indent = tmObj.indent
-
-        indent(level=0, reset=True)
-        (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-            mqlFile, self.tmObj, slotType=slotType, otext=otext, meta=meta
-        )
-        if good:
-            self.save(
-                nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData
-            )
-
     def _loadFeature(self, fName, optional=False):
         if not self.good:
             return False
@@ -906,15 +804,15 @@ class FabricCore:
         tfFiles = {}
         for loc in self.locations:
             for mod in self.modules:
-                dirF = f"{loc}/{mod}"
-                if not os.path.exists(dirF):
+                dirF = normpath(f"{loc}/{mod}")
+                if not dirExists(dirF):
                     continue
-                with os.scandir(dirF) as sd:
+                with scanDir(dirF) as sd:
                     files = tuple(
                         e.name for e in sd if e.is_file() and e.name.endswith(".tf")
                     )
                 for fileF in files:
-                    (fName, ext) = os.path.splitext(fileF)
+                    (fName, ext) = splitExt(fileF)
                     tfFiles.setdefault(fName, []).append(f"{dirF}/{fileF}")
         for (fName, featurePaths) in sorted(tfFiles.items()):
             chosenFPath = featurePaths[-1]
@@ -988,7 +886,7 @@ class FabricCore:
 
     def _getWriteLoc(self, location=None, module=None):
         writeLoc = (
-            expanduser(location)
+            ex(location)
             if location is not None
             else ""
             if len(self.locations) == 0

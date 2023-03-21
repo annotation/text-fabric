@@ -14,14 +14,13 @@ extract(
 
 """
 
-import os
 import collections
-from shutil import rmtree
 
 from ..parameters import OTYPE, OSLOTS, OWORK, OINTERF, OINTERT
 from ..core.fabric import FabricCore
 from ..core.timestamp import Timestamp, SILENT_D, DEEP, silentConvert
-from ..core.helpers import dirEmpty, unexpanduser as ux, getAllRealFeatures
+from ..core.helpers import getAllRealFeatures
+from ..core.files import unexpanduser as ux, dirEmpty, isFile, isDir, dirRemove, scanDir
 
 DEBUG = False
 OWORKI = "oworki"
@@ -54,18 +53,18 @@ def getVolumes(volumesLocation):
         is returned. Otherwise a list of subdirectories that are modules.
     """
 
-    if not os.path.isdir(volumesLocation):
+    if not isDir(volumesLocation):
         return None
 
     volumes = []
 
-    with os.scandir(volumesLocation) as dh:
+    with scanDir(volumesLocation) as dh:
         for entry in dh:
             vol = entry.name
             if entry.is_dir() and not vol.startswith("."):
                 triggerFile = f"{volumesLocation}/{vol}/{OTYPE}.tf"
                 triggerLine = f"@volume={vol}\n"
-                if os.path.isfile(triggerFile):
+                if isFile(triggerFile):
                     with open(triggerFile) as fh:
                         triggered = False
                         for line in fh:
@@ -296,7 +295,7 @@ def extract(
                     removable.add(name)
                 else:
                     if overwrite:
-                        rmtree(loc)
+                        dirRemove(loc)
                         info(f"Volume {name} exists and will be recreated", tm=False)
                     else:
                         good = False
@@ -323,9 +322,7 @@ def extract(
             else:
                 for heads in volumes:
                     headRep = "-".join(str(head) for head in heads)
-                    volumeData[headRep] = dict(
-                        heads=heads
-                    )
+                    volumeData[headRep] = dict(heads=heads)
                     givenVolumes.add(headRep)
 
             headIndex = {}
@@ -341,7 +338,8 @@ def extract(
                     if seenName:
                         error(
                             f"Section {head} of volume {seenName}"
-                            f" reoccurs in volume {name}")
+                            f" reoccurs in volume {name}"
+                        )
                         good = False
                     headIndex[head] = name
 
@@ -686,7 +684,7 @@ def extract(
             if volumeData:
                 if show:
                     for (name, v) in volumeData.items():
-                        location = ux(v['location'])
+                        location = ux(v["location"])
                         print(f"{name:<20} @ {location}")
                 else:
                     return volumeData
@@ -702,7 +700,7 @@ def extract(
         if checkOnly:
             if show:
                 for (name, v) in volumeData.items():
-                    location = ux(v['location'])
+                    location = ux(v["location"])
                     print(f"{name:<20} @ {location}")
             else:
                 return volumeData
@@ -720,7 +718,7 @@ def extract(
         if show:
             for (name, v) in result.items():
                 new = " (new)" if v["new"] else " " * 6
-                location = ux(v['location'])
+                location = ux(v["location"])
                 print(f"{name:<20}{new} @ {location}")
         else:
             return result

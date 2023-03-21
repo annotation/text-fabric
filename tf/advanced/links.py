@@ -2,22 +2,26 @@
 Produce links to Text-Fabric data and links from nodes to web resources.
 """
 
-import os
 import re
 import types
 from textwrap import dedent
 
 from ..parameters import (
-    BACKEND_REP,
-    URL_TFDOC,
     URL_NB,
-    SEARCHREF,
-    APIREF,
-    APP_APP,
     GH,
     GL,
 )
-from ..core.helpers import prefixSlash, console, htmlEsc, unexpanduser as ux
+from ..core.helpers import console, htmlEsc
+from ..core.files import (
+    backendRep,
+    URL_TFDOC,
+    APIREF,
+    SEARCHREF,
+    APP_APP,
+    unexpanduser as ux,
+    prefixSlash,
+    dirNm,
+)
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh
@@ -125,7 +129,7 @@ def linksApi(app, silent=SILENT_D):
         if isCompatible
         else UNSUPPORTED
     )
-    extraUrl = f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/blob/{branch}/{APP_APP}"
+    extraUrl = f"{backendRep(backend, 'url')}/{org}/{repo}/blob/{branch}/{APP_APP}"
     appLink = (
         outLink(
             f"{org}/{repo}/app {apiVersionRep}",
@@ -665,8 +669,8 @@ def _featuresPerModule(app, allMeta=False):
                 else fixedModuleIndex[mId]
                 if mId in fixedModuleIndex
                 else (
-                    f"{BACKEND_REP(backend, 'rep')}{org}/{repo}{relative}",
-                    f"{BACKEND_REP(backend, 'url')}/{org}/{repo}/tree/{branch}{relative}",
+                    f"{backendRep(backend, 'rep')}{org}/{repo}{relative}",
+                    f"{backendRep(backend, 'url')}/{org}/{repo}/tree/{branch}{relative}",
                 )
             )
             moduleIndex[mId] = (theBackend, org, repo, relative, corpus, docUrl)
@@ -679,7 +683,7 @@ def _featuresPerModule(app, allMeta=False):
         featurePath = featureInfo.path
 
         (parsedOK, fBackend, fOrg, fRepo, relative) = _parseFeaturePath(
-            os.path.dirname(featurePath), backend
+            dirNm(featurePath), backend
         )
 
         if parsedOK:
@@ -735,7 +739,7 @@ def _featuresPerModule(app, allMeta=False):
                 ""
                 if type(mId) is str
                 else (
-                    f"{BACKEND_REP(backend, 'url')}/"
+                    f"{backendRep(backend, 'url')}/"
                     f"{mId[0]}/{mId[1]}/tree/{branch}/{mId[2]}"
                 )
             )
@@ -896,7 +900,7 @@ def provenanceLink(
         )
     )
     relativeFlat = relative.removeprefix("/").replace("/", "-")
-    bUrl = BACKEND_REP(backend, "url")
+    bUrl = backendRep(backend, "url")
     url = (
         None
         if org is None or repo is None
@@ -960,15 +964,15 @@ def flexLink(app, kind):
     pages = aContext.provenanceSpec["pages"]
 
     if kind == "pages":
-        pages = pages or BACKEND_REP(backend, kind)
+        pages = pages or backendRep(backend, kind)
         return f"https://{org}.{pages}/{repo}"
 
     if kind == "tut":
-        be = BACKEND_REP(backend, "norm")
+        be = backendRep(backend, "norm")
         onPremise = be not in {GL, GH}
 
         if onPremise:
-            pages = pages or BACKEND_REP(backend, "pages")
+            pages = pages or backendRep(backend, "pages")
             return f"https://{org}.{pages}/{repo}/tutorial/start.html"
 
         return f"{URL_NB}/{be}/{org}/{repo}/blob/{branch}/tutorial/start.ipynb"

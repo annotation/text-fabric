@@ -1,13 +1,12 @@
 import sys
-import os
 
 from github import Github, GithubException
 
-from tf.core.helpers import console
+from tf.core.helpers import console, var
 
 
 def makeRelease(org, repo, tag, name, msg, silent=True):
-    ghPerson = os.environ.get("GHPERS", None)
+    ghPerson = var("GHPERS")
     if ghPerson:
         ghConn = Github(ghPerson)
     rate = ghConn.get_rate_limit().core

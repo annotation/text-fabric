@@ -1,10 +1,10 @@
 import sys
-import os
 import re
 from subprocess import run
 from textwrap import dedent
 
-from ..core.helpers import initTree, fileCopy, console, unexpanduser as ux
+from ..core.helpers import initTree, console
+from ..core.files import unexpanduser as ux, isDir, fileCopy, scanDir
 
 
 __pdoc__ = {}
@@ -48,7 +48,7 @@ INDEX = "index.html"
 
 def task(*args):
     inputDir = args[0]
-    if not os.path.isdir(inputDir):
+    if not isDir(inputDir):
         console(f"Input directory does not exist: {inputDir}")
         return 1
 
@@ -86,7 +86,7 @@ def makeIndex(inputDir):
 
         theseLinks = []
 
-        with os.scandir(subInputDir) as dh:
+        with scanDir(subInputDir) as dh:
             for entry in dh:
                 name = entry.name
                 if name.startswith("."):
@@ -148,7 +148,7 @@ def convertDir(inputDir, outputDir):
 
         theseNotebooks = []
 
-        with os.scandir(subInputDir) as dh:
+        with scanDir(subInputDir) as dh:
             for entry in dh:
                 name = entry.name
                 if name.startswith("."):

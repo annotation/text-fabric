@@ -25,11 +25,18 @@ collect volumes into a new work.
 Fabric is an extension of `tf.core.fabric` where volume support is added.
 """
 
-import os
-
-from .parameters import LOCATIONS, LOCAL, OTYPE
-from .core.helpers import itemize, setDir, expandDir, normpath, unexpanduser as ux
+from .parameters import OTYPE
+from .core.helpers import itemize
 from .core.fabric import FabricCore
+from .core.files import (
+    LOCATIONS,
+    LOCAL,
+    normpath,
+    unexpanduser as ux,
+    setDir,
+    expandDir,
+    dirExists,
+)
 from .core.timestamp import Timestamp, SILENT_D, silentConvert
 from .volumes import extract, collect, getVolumes
 
@@ -110,17 +117,15 @@ class Fabric(FabricCore):
             self.collectionLoc = collectionLoc
             locations = collectionLoc
             modules = [""]
-            if not os.path.exists(locations):
+            if not dirExists(locations):
                 TM = Timestamp(silent=silent)
-                TM.error(
-                    f"Collection {collection} not found under {ux(collectionLoc)}"
-                )
+                TM.error(f"Collection {collection} not found under {ux(collectionLoc)}")
         elif volume:
             volumeLoc = f"{volumeBase}/{volume}"
             self.volumeLoc = volumeLoc
             locations = volumeLoc
             modules = [""]
-            if not os.path.exists(locations):
+            if not dirExists(locations):
                 TM.error(f"Volume {volume} not found under {ux(volumeLoc)}")
 
         if collection and volume:
@@ -162,7 +167,9 @@ class Fabric(FabricCore):
         volumeBase = self.volumeBase
         return getVolumes(volumeBase)
 
-    def extract(self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False):
+    def extract(
+        self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False
+    ):
         """Extract volumes from the currently loaded work.
 
         This function is only provided if the dataset is a work,

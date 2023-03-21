@@ -1,16 +1,20 @@
 import sys
-import os
 from importlib import util
 import yaml
 
 from ..parameters import (
+    API_VERSION as avTf,
+)
+from ..core.helpers import console
+from ..core.files import (
     APP_CONFIG,
     APP_CONFIG_OLD,
     APP_DISPLAY,
-    API_VERSION as avTf,
+    prefixSlash,
+    fileExists,
+    normpath,
 )
-from ..core.helpers import console, normpath
-from .helpers import getLocalDir, prefixSlash
+from .helpers import getLocalDir
 
 
 def findAppConfig(
@@ -50,13 +54,13 @@ def findAppConfig(
 
     isCompatible = None
 
-    if os.path.exists(configPath):
+    if fileExists(configPath):
         with open(configPath) as fh:
             cfg = yaml.load(fh, Loader=yaml.FullLoader)
     else:
         cfg = {}
         checkApiVersion = False
-        if os.path.exists(configPathOld):
+        if fileExists(configPathOld):
             isCompatible = False
     if straight:
         return cfg
@@ -85,7 +89,7 @@ def findAppConfig(
     else:
         cfg["provenanceSpec"]["relative"] = prefixSlash(relative)
 
-    if os.path.exists(cssPath):
+    if fileExists(cssPath):
         with open(cssPath, encoding="utf8") as fh:
             cfg["css"] = fh.read()
     else:
@@ -162,7 +166,7 @@ def findAppClass(appName, appPath):
     appClass = None
     moduleName = f"tf.apps.{appName}.app"
     filePath = f"{appPath}/app.py"
-    if not os.path.exists(filePath):
+    if not fileExists(filePath):
         return None
 
     try:

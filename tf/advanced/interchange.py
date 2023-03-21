@@ -10,11 +10,12 @@ although there is also an export to MQL elsewere:
 
 import types
 
+from ..convert.mql import exportMQL
 from ..convert.pandas import exportPandas
 
 
-def exportApi(app):
-    """Produce the export functions API.
+def interchangeApi(app):
+    """Produce the interchange functions API.
 
     Parameters
     ----------
@@ -22,4 +23,5 @@ def exportApi(app):
         The high-level API object
     """
 
+    app.exportMQL = types.MethodType(exportMQL, app)
     app.exportPandas = types.MethodType(exportPandas, app)

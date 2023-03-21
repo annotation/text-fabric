@@ -1019,6 +1019,16 @@ T = TEI(...)
 
 ---
 
+## Pandas export
+
+``` python
+A.exportPandas()
+```
+:   export dataset as Pandas dataframe
+:   tf.convert.pandas
+
+---
+
 ## MQL interchange
 
 ``` python

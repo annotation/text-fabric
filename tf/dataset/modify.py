@@ -27,7 +27,8 @@ import collections
 from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.timestamp import Timestamp, SILENT_D, DEEP
-from ..core.helpers import itemize, fitemize, isInt, collectFormats, dirEmpty
+from ..core.helpers import itemize, fitemize, isInt, collectFormats
+from ..core.files import dirEmpty
 
 VALTP = "valueType"
 

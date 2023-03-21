@@ -6,7 +6,8 @@ It provides methods to navigate nodes and edges and lookup features.
 
 from textwrap import wrap
 
-from .helpers import flattenToSet, console, fitemize, unexpanduser as ux
+from .helpers import flattenToSet, console, fitemize
+from .files import unexpanduser as ux
 from .nodes import Nodes
 from .locality import Locality
 from .nodefeature import NodeFeatures

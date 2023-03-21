@@ -1,12 +1,22 @@
-import os
 import sys
 from zipfile import ZipFile
 
 from .helpers import splitModRef
-from ..parameters import ZIP_OPTIONS, TEMP_DIR, RELATIVE, BACKEND_REP, DOWNLOADS
-from ..core.helpers import console, normpath, expanduser, initTree, prefixSlash
+from ..parameters import ZIP_OPTIONS, RELATIVE
+from ..core.helpers import console
+from ..core.files import (
+    normpath,
+    expanduser as ex,
+    backendRep,
+    DOWNLOADS,
+    TEMP_DIR,
+    prefixSlash,
+    dirExists,
+    scanDir,
+    initTree,
+)
 
-DW = expanduser(DOWNLOADS)
+DW = ex(DOWNLOADS)
 
 __pdoc__ = {}
 
@@ -86,9 +96,9 @@ def zipData(
     """
 
     if source is None:
-        source = BACKEND_REP(backend, "clone")
+        source = backendRep(backend, "clone")
     if dest is None:
-        dest = f"{DW}/{BACKEND_REP(backend, 'norm')}"
+        dest = f"{DW}/{backendRep(backend, 'norm')}"
     relative = prefixSlash(normpath(relative))
     console(f"Create release data for {org}/{repo}{relative}")
     sourceBase = normpath(f"{source}/{org}")
@@ -101,9 +111,9 @@ def zipData(
     relativeDest = relative.removeprefix("/").replace("/", "-")
 
     if tf:
-        if not os.path.exists(sourceDir):
+        if not dirExists(sourceDir):
             return
-        with os.scandir(sourceDir) as sd:
+        with scanDir(sourceDir) as sd:
             versionEntries = [(sourceDir, e.name) for e in sd if e.is_dir()]
         if versionEntries:
             console(f"Found {len(versionEntries)} versions")
@@ -119,7 +129,7 @@ def zipData(
             versionRep2 = f"{ver}/" if ver else ""
             versionRep3 = f"-{ver}" if ver else ""
             tfDir = f"{versionDir}{versionRep}"
-            with os.scandir(tfDir) as sd:
+            with scanDir(tfDir) as sd:
                 for e in sd:
                     if not e.is_file():
                         continue
@@ -155,7 +165,7 @@ def zipData(
             thisPath = f"{base}/{path}" if path else base
             # internalBase = f"{relative}/{path}" if path else relative
             internalBase = path
-            with os.scandir(thisPath) as sd:
+            with scanDir(thisPath) as sd:
                 for e in sd:
                     name = e.name
                     if name in EXCLUDE:
@@ -173,9 +183,7 @@ def zipData(
         collectFiles(sourceDir, "", results)
         if not relativeDest:
             relativeDest = "-"
-        console(
-            f"zipping {org}/{repo}{relative}{versionRep} with {len(results)} files"
-        )
+        console(f"zipping {org}/{repo}{relative}{versionRep} with {len(results)} files")
         console(f"zip file is {destDir}/{relativeDest}.zip")
         with ZipFile(f"{destDir}/{relativeDest}.zip", "w", **ZIP_OPTIONS) as zipFile:
             for (internalPath, path) in sorted(results):

@@ -48,12 +48,20 @@ All about the nature and implementation of the display algorithm is in
 """
 
 
-import os
 import types
 from textwrap import dedent
 
-from ..parameters import DOWNLOADS, SERVER_DISPLAY, SERVER_DISPLAY_BASE
-from ..core.helpers import mdEsc, normpath, abspath, expanduser
+from ..core.helpers import mdEsc
+from ..core.files import (
+    normpath,
+    abspath,
+    dirMake,
+    dirNm,
+    expanduser as ex,
+    DOWNLOADS,
+    SERVER_DISPLAY_BASE,
+    SERVER_DISPLAY,
+)
 from ..core.timestamp import SILENT_D, silentConvert
 from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
@@ -259,10 +267,7 @@ def getCss(app):
     aContext = app.context
     appCss = aContext.css
 
-    cssPath = (
-        f"{os.path.dirname(os.path.dirname(abspath(__file__)))}"
-        f"{SERVER_DISPLAY_BASE}"
-    )
+    cssPath = f"{dirNm(dirNm(abspath(__file__)))}" f"{SERVER_DISPLAY_BASE}"
     cssPath = normpath(cssPath)
     genericCss = ""
     for cssFile in SERVER_DISPLAY:
@@ -387,12 +392,8 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
     condenseType = dContext.condenseType
     tupleFeatures = dContext.tupleFeatures
 
-    if toDir is None:
-        toDir = expanduser(DOWNLOADS)
-    else:
-        toDir = expanduser(toDir)
-    if not os.path.exists(toDir):
-        os.makedirs(toDir, exist_ok=True)
+    toDir = ex(DOWNLOADS) if toDir is None else ex(toDir)
+    dirMake(toDir)
     toPath = f"{toDir}/{toFile}"
 
     resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)

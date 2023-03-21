@@ -3,9 +3,19 @@
 """
 
 import sys
-import os
 
-from ..core.helpers import normpath, expanduser, unexpanduser
+from ..core.files import (
+    expanduser as ex,
+    unexpanduser as ux,
+    normpath,
+    dirExists,
+    dirMake,
+    baseNm,
+    dirNm,
+    isDir,
+    isFile,
+    scanDir,
+)
 
 
 DATA_TYPES = ("str", "int")
@@ -69,19 +79,19 @@ def explode(inPath, outPath):
 
     inPath = normpath(inPath)
     outPath = normpath(outPath)
-    inLoc = expanduser(inPath)
-    outLoc = expanduser(outPath)
-    if not os.path.exists(inLoc):
-        return f"No such file or directory: `{inPath}`"
+    inLoc = ex(inPath)
+    outLoc = ex(outPath)
+    if not dirExists(inLoc):
+        return f"No such directory: `{inPath}`"
 
-    isInDir = os.path.isdir(inLoc)
-    outExists = os.path.exists(outLoc)
-    isOutDir = os.path.isdir(outLoc) if outExists else None
+    isInDir = isDir(inLoc)
+    outExists = dirExists(outLoc)
+    isOutDir = isDir(outLoc) if outExists else None
 
     tasks = []
 
     if isInDir:
-        with os.scandir(inLoc) as sd:
+        with scanDir(inLoc) as sd:
             tasks = [
                 (f"{inLoc}/{e.name}", f"{outLoc}/{e.name}")
                 for e in sd
@@ -92,19 +102,18 @@ def explode(inPath, outPath):
         if outExists and not isOutDir:
             return "Not a directory: `{outPath}`"
         if not outExists:
-            os.makedirs(outLoc, exist_ok=True)
+            dirMake(outLoc)
     else:
-        if not os.path.isfile(inLoc):
+        if not isFile(inLoc):
             return "Not a file: `{inPath}"
         if outExists:
             if isOutDir:
-                outFile = f"{outLoc}/{os.path.basename(inLoc)}"
+                outFile = f"{outLoc}/{baseNm(inLoc)}"
             else:
                 outFile = outLoc
         else:
-            outDir = os.path.dirname(outLoc)
-            if not os.path.exists(outDir):
-                os.makedirs(outDir, exist_ok=True)
+            outDir = dirNm(outLoc)
+            dirMake(outDir)
             outFile = outLoc
 
         tasks = [(inLoc, outFile)]
@@ -114,9 +123,7 @@ def explode(inPath, outPath):
     for (inFile, outFile) in sorted(tasks):
         result = _readTf(inFile)
         if type(result) is str:
-            msgs.append(
-                f"{unexpanduser(inFile)} => {unexpanduser(outFile)}:\n\t{result}"
-            )
+            msgs.append(f"{ux(inFile)} => {ux(outFile)}:\n\t{result}")
             continue
         (data, valueType, isEdge) = result
         _writeTf(outFile, *result)
@@ -270,11 +277,11 @@ def _writeTf(outFile, data, valueType, isEdge):
         if isEdge:
             if isInt:
                 for ((n, m), v) in sorted(data.items()):
-                    vTf = '' if v is None else f"\t{v}"
+                    vTf = "" if v is None else f"\t{v}"
                     fh.write(f"{n}\t{m}{vTf}\n")
             else:
                 for ((n, m), v) in sorted(data.items()):
-                    vTf = '' if v is None else f"\t{_valueFromTf(v)}"
+                    vTf = "" if v is None else f"\t{_valueFromTf(v)}"
                     fh.write(f"{n}\t{m}{vTf}\n")
         else:
             if isInt:

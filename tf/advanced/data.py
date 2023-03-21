@@ -1,6 +1,6 @@
-from ..parameters import BACKEND_REP
-from ..core.helpers import itemize, normpath, expandDir
-from .helpers import splitModRef, prefixSlash
+from ..core.helpers import itemize
+from ..core.files import backendRep, expandDir, prefixSlash, normpath
+from .helpers import splitModRef
 from .repo import checkoutRepo
 from .links import provenanceLink
 
@@ -121,7 +121,7 @@ class AppData:
             relative = m["relative"]
             theCheckout = m.get("checkout", checkout)
             theBackend = m.get("backend", backend)
-            bRep = BACKEND_REP(theBackend, "spec", default=backend)
+            bRep = backendRep(theBackend, "spec", default=backend)
 
             ref = f"{bRep}{org}/{repo}{relative}"
             if ref in seen:
@@ -250,8 +250,8 @@ class AppData:
             Additional informational attributes of the module, e.g. a DOI
         """
 
-        backend = self.backend if backend is None else BACKEND_REP(backend, "norm")
-        bRep = BACKEND_REP(backend, "spec", default=self.backend)
+        backend = self.backend if backend is None else backendRep(backend, "norm")
+        bRep = backendRep(backend, "spec", default=self.backend)
         version = self.version
         silent = self.silent
         mLocations = self.mLocations

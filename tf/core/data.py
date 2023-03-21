@@ -1,4 +1,3 @@
-import os
 from array import array
 import gc
 import pickle
@@ -16,7 +15,15 @@ from .helpers import (
     rangesFromSet,
     check32,
     console,
-    unexpanduser,
+)
+from .files import (
+    unexpanduser as ux,
+    fileExists,
+    dirMake,
+    dirRemove,
+    splitExt,
+    splitPath,
+    mTime,
 )
 from .timestamp import SILENT_D, silentConvert
 
@@ -45,8 +52,8 @@ class Data:
         method=None,
         dependencies=None,
     ):
-        (dirName, baseName) = os.path.split(path)
-        (fileName, extension) = os.path.splitext(baseName)
+        (dirName, baseName) = splitPath(path)
+        (fileName, extension) = splitExt(baseName)
         self.path = path
         self.tmObj = tmObj
         self.dirName = dirName
@@ -93,7 +100,7 @@ class Data:
             if self.method
             else self.dirName
         )
-        sourceRep = unexpanduser(sourceRep)
+        sourceRep = ux(sourceRep)
         msgFormat = "{:<1} {:<20} from {}"
         actionRep = ""
         good = True
@@ -217,7 +224,7 @@ class Data:
         fileName = self.fileName
 
         path = self.path
-        if not os.path.exists(path):
+        if not fileExists(path):
             error(f'TF reading: feature file "{path}" does not exist')
             return False
         fh = open(path, encoding="utf8")
@@ -484,15 +491,12 @@ class Data:
         dirName = dirName or self.dirName
         fileName = fileName or self.fileName
         extension = extension or self.extension
-        if not os.path.exists(dirName):
-            try:
-                os.makedirs(dirName, exist_ok=True)
-            except Exception:
-                error(f'Cannot create directory "{dirName}"')
-                return False
+
+        dirMake(dirName)
+
         fpath = f"{dirName}/{fileName}{extension}"
         if fpath == self.path:
-            if os.path.exists(fpath):
+            if fileExists(fpath):
                 if not overwrite:
                     error(
                         f'Feature file "{fpath}" already exists, feature will not be written'
@@ -642,7 +646,7 @@ class Data:
         tmObj = self.tmObj
         error = tmObj.error
 
-        if not os.path.exists(self.binPath):
+        if not fileExists(self.binPath):
             error(f'TF reading: feature file "{self.binPath}" does not exist')
             return False
         if not _withGc:
@@ -663,22 +667,15 @@ class Data:
         return good
 
     def cleanDataBin(self):
-        if os.path.exists(self.binPath):
-            os.unlink(self.binPath)
+        dirRemove(self.binPath)
 
     def _writeDataBin(self):
         tmObj = self.tmObj
         error = tmObj.error
 
         good = True
-        if not os.path.exists(self.binDir):
-            try:
-                os.makedirs(self.binDir, exist_ok=True)
-            except Exception:
-                error(f'Cannot create directory "{self.binDir}"')
-                good = False
-        if not good:
-            return False
+        dirMake(self.binDir)
+
         try:
             with gzip.open(self.binPath, "wb", compresslevel=GZIP_LEVEL) as f:
                 # pickle.dump(self.data, f, protocol=PICKLE_PROTOCOL)
@@ -688,13 +685,11 @@ class Data:
             self.cleanDataBin()
             good = False
         self.dataLoaded = time.time()
-        return True
+        return good
 
     def _getModified(self, bin=False):
         if bin:
-            return (
-                os.path.getmtime(self.binPath) if os.path.exists(self.binPath) else None
-            )
+            return mTime(self.binPath) if fileExists(self.binPath) else None
         else:
             if self.method:
                 depsInfo = [
@@ -706,14 +701,14 @@ class Data:
                 depsModified = None if len(depsModifieds) == 0 else max(depsModifieds)
                 if depsModified is not None:
                     return depsModified
-                elif os.path.exists(self.binPath):
-                    return os.path.getmtime(self.binPath)
+                elif fileExists(self.binPath):
+                    return mTime(self.binPath)
                 else:
                     return None
             else:
-                if os.path.exists(self.path):
-                    return os.path.getmtime(self.path)
-                elif os.path.exists(self.binPath):
-                    return os.path.getmtime(self.binPath)
+                if fileExists(self.path):
+                    return mTime(self.path)
+                elif fileExists(self.binPath):
+                    return mTime(self.binPath)
                 else:
                     return None

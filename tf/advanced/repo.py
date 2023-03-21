@@ -385,26 +385,40 @@ And after that, you can omit `latest` or `hot` again, until you need new data ag
 See further under `checkoutRepo`.
 """
 
-import os
 import io
 import re
-from shutil import rmtree
 import base64
 from zipfile import ZipFile
 
 from ..parameters import (
     GH,
-    URL_TFDOC,
-    BACKEND_REP,
-    EXPRESS_SYNC,
-    EXPRESS_SYNC_LEGACY,
-    DOWNLOADS,
     RELATIVE,
 )
-from ..core.helpers import console, htmlEsc, expanduser, initTree, unexpanduser
+from ..core.helpers import console, htmlEsc, var
+from ..core.files import (
+    expanduser as ex,
+    unexpanduser as ux,
+    backendRep,
+    URL_TFDOC,
+    DOWNLOADS,
+    EXPRESS_SYNC,
+    EXPRESS_SYNC_LEGACY,
+    prefixSlash,
+    baseNm,
+    dirNm,
+    initTree,
+    fileExists,
+    dirExists,
+    dirMake,
+    dirRemove,
+    fileRemove,
+    fileMove,
+    getCwd,
+    chDir,
+)
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from ..capable import Capable
-from .helpers import dh, runsInNotebook, prefixSlash
+from .helpers import dh, runsInNotebook
 from .zipdata import zipData
 
 Cap = Capable("github", "gitlab")
@@ -445,7 +459,7 @@ class Repo:
         folder,
         version,
         increase,
-        source=BACKEND_REP(GH, "clone"),
+        source=backendRep(GH, "clone"),
         dest=DOWNLOADS,
     ):
         self.org = org
@@ -453,8 +467,8 @@ class Repo:
         self.folder = folder
         self.version = version
         self.increase = increase
-        self.source = expanduser(source)
-        self.dest = expanduser(dest)
+        self.source = ex(source)
+        self.dest = ex(dest)
 
         self.repoOnline = None
 
@@ -498,7 +512,7 @@ class Repo:
 
         dataIn = f"{source}/{org}/{repo}/{folder}/{version}"
 
-        if not os.path.exists(dataIn):
+        if not dirExists(dataIn):
             console(f"No data found in {dataIn}", error=True)
             return False
 
@@ -524,19 +538,19 @@ class Repo:
             )
             return None
 
-        backendTech = BACKEND_REP(backend, "tech")
+        backendTech = backendRep(backend, "tech")
 
         if not Cap.can(backendTech):
             self.conn = None
             return
 
         if not conn:
-            ghPerson = os.environ.get("GHPERS", None)
+            ghPerson = var("GHPERS")
             if ghPerson:
                 conn = Github(ghPerson)
             else:
-                ghClient = os.environ.get("GHCLIENT", None)
-                ghSecret = os.environ.get("GHSECRET", None)
+                ghClient = var("GHCLIENT")
+                ghSecret = var("GHSECRET")
                 if ghClient and ghSecret:
                     conn = Github(client_id=ghClient, client_secret=ghSecret)
                 else:
@@ -652,7 +666,7 @@ class Repo:
         dataDir = f"{dest}/{org}-release/{repo}"
         dataPath = f"{dataDir}/{dataFile}"
 
-        if not os.path.exists(dataPath):
+        if not fileExists(dataPath):
             console(f"No release data found: {dataPath}", error=True)
             return False
 
@@ -774,7 +788,7 @@ def releaseData(
     """
 
     if source is None or not source:
-        source = (BACKEND_REP(GH, "clone"),)
+        source = (backendRep(GH, "clone"),)
 
     R = Repo(GH, org, repo, folder, version, increase, source=source, dest=dest)
     return R.newRelease()
@@ -814,9 +828,9 @@ class Checkout:
         extra = ""
         if local:
             if source is None:
-                source = BACKEND_REP(backend, "clone")
+                source = backendRep(backend, "clone")
             if dest is None:
-                dest = BACKEND_REP(backend, "cache")
+                dest = backendRep(backend, "cache")
 
             baseRep = source if local == "clone" else dest
             extra = f" offline under {baseRep}"
@@ -885,14 +899,14 @@ class Checkout:
         self.versionRep = versionRep
         self.dataDir = f"{relative}{versionRep}"
 
-        self.baseLocal = expanduser(self.dest)
+        self.baseLocal = ex(self.dest)
         self.dataRelLocal = f"{org}/{repo}{relative}"
         self.dirPathSaveLocal = f"{self.baseLocal}/{org}/{repo}"
         self.dirPathLocal = f"{self.baseLocal}/{self.dataRelLocal}{versionRep}"
         self.dataPathLocal = f"{self.dataRelLocal}{versionRep}"
         self.filePathLocal = f"{self.dirPathLocal}/{EXPRESS_SYNC}"
 
-        self.baseClone = expanduser(self.source)
+        self.baseClone = ex(self.source)
         self.dataRelClone = f"{org}/{repo}{relative}"
         self.dirPathClone = f"{self.baseClone}/{self.dataRelClone}{versionRep}"
         self.dataPathClone = f"{self.dataRelClone}{versionRep}"
@@ -930,7 +944,7 @@ class Checkout:
         conn = self.conn
         backend = self.backend
 
-        backendTech = BACKEND_REP(backend, "tech")
+        backendTech = backendRep(backend, "tech")
 
         if not Cap.can(backendTech):
             self.conn = None
@@ -939,7 +953,7 @@ class Checkout:
         self.canDownloadSubfolders = False
 
         if onGithub:
-            person = os.environ.get("GHPERS", None)
+            person = var("GHPERS")
             if person:
                 try:
                     conn = Github(person)
@@ -949,17 +963,17 @@ class Checkout:
                     catchRemaining(e)
                     return None
             else:
-                client = os.environ.get("GHCLIENT", None)
-                secret = os.environ.get("GHSECRET", None)
+                client = var("GHCLIENT")
+                secret = var("GHSECRET")
                 if client and secret:
                     conn = Github(client_id=client, client_secret=secret)
                 else:
                     conn = Github()
         else:
-            bUrl = BACKEND_REP(backend, "url")
-            bMachine = BACKEND_REP(backend, "machine")
+            bUrl = backendRep(backend, "url")
+            bMachine = backendRep(backend, "machine")
 
-            person = os.environ.get(GLPERS(bMachine), None)
+            person = var(GLPERS(bMachine))
             if person:
                 conn = Gitlab(bUrl, private_token=person)
             else:
@@ -1003,7 +1017,7 @@ class Checkout:
         org = self.org
         repo = self.repo
 
-        bName = BACKEND_REP(backend, "name")
+        bName = backendRep(backend, "name")
 
         if not conn:
             conn = self.login()
@@ -1153,7 +1167,7 @@ class Checkout:
         if offline:
             if clone:
                 dirPath = self.dirPathClone
-                self.localBase = self.baseClone if os.path.exists(dirPath) else False
+                self.localBase = self.baseClone if dirExists(dirPath) else False
             else:
                 self.localBase = (
                     self.baseLocal
@@ -1231,7 +1245,7 @@ class Checkout:
             stateEsc = htmlEsc(state)
             offEsc = htmlEsc(offString)
             loc = f"{self.localBase}/{self.localDir}{self.versionRep}"
-            locRep = unexpanduser(loc)
+            locRep = ux(loc)
             locEsc = htmlEsc(locRep)
             if _browse:
                 self.info(
@@ -1337,7 +1351,7 @@ class Checkout:
             again = True
         else:
             g = where
-            notice = BACKEND_REP(backend, "name")
+            notice = backendRep(backend, "name")
             again = False
 
         self.info(f"\tdownloading from {notice} ... ")
@@ -1374,10 +1388,8 @@ class Checkout:
 
         self.info(f"\tsaving {label}")
 
-        cwd = os.getcwd()
-        destZip = (
-            os.path.dirname(dirPathLocal) if shiftUp and withPaths else dirPathLocal
-        )
+        cwd = getCwd()
+        destZip = dirNm(dirPathLocal) if shiftUp and withPaths else dirPathLocal
         good = True
 
         if g:
@@ -1385,7 +1397,7 @@ class Checkout:
         try:
             z = ZipFile(zf)
             initTree(destZip, fresh=not self.keep)
-            os.chdir(destZip)
+            chDir(destZip)
 
             if withPaths:
                 if g:
@@ -1410,8 +1422,7 @@ class Checkout:
                         good = False
                 else:
                     z.extractall()
-                    if os.path.exists("__MACOSX"):
-                        rmtree("__MACOSX")
+                    dirRemove("__MACOSX")
             else:
                 nItems = 0
                 for zInfo in z.infolist():
@@ -1427,7 +1438,7 @@ class Checkout:
                         and not zInfo.filename.startswith(dataDir)
                     ):
                         continue
-                    zInfo.filename = os.path.basename(zInfo.filename)
+                    zInfo.filename = baseNm(zInfo.filename)
                     z.extract(zInfo)
                     nItems += 1
                 if nItems == 0:
@@ -1444,9 +1455,9 @@ class Checkout:
             msg = f"\tcould not save {label} to {destZip}"
             console(str(e), error=True)
             self.possibleError(msg, showErrors=showErrors, again=True)
-            os.chdir(cwd)
+            chDir(cwd)
             return False
-        os.chdir(cwd)
+        chDir(cwd)
         return good
 
     def downloadDir(self, commit, exclude=None, showErrors=False):
@@ -1496,7 +1507,7 @@ class Checkout:
                         continue
                     if content.type == "dir":
                         self.info("directory")
-                        os.makedirs(f"{destSave}/{thisPath}", exist_ok=True)
+                        dirMake(f"{destSave}/{thisPath}")
                         _downloadDir(thisPath, level + 1)
                     else:
                         try:
@@ -1669,19 +1680,19 @@ class Checkout:
 
     def fixInfo(self):
         sDir = self.dirPathLocal
-        if not os.path.exists(sDir):
+        if not dirExists(sDir):
             return
         for sFile in EXPRESS_SYNC_LEGACY:
             sPath = f"{sDir}/{sFile}"
-            if os.path.exists(sPath):
+            if fileExists(sPath):
                 goodPath = f"{sDir}/{EXPRESS_SYNC}"
-                if os.path.exists(goodPath):
-                    os.remove(sPath)
+                if fileExists(goodPath):
+                    fileRemove(sPath)
                 else:
-                    os.rename(sPath, goodPath)
+                    fileMove(sPath, goodPath)
 
     def readInfo(self):
-        if os.path.exists(self.filePathLocal):
+        if fileExists(self.filePathLocal):
             with open(self.filePathLocal, encoding="utf8") as f:
                 for line in f:
                     string = line.strip()
@@ -1692,8 +1703,7 @@ class Checkout:
                         self.releaseOff = release
 
     def writeInfo(self):
-        if not os.path.exists(self.dirPathLocal):
-            os.makedirs(self.dirPathLocal, exist_ok=True)
+        dirMake(self.dirPathLocal)
         with open(self.filePathLocal, "w", encoding="utf8") as f:
             if self.releaseOff:
                 f.write(f"{self.releaseOff}\n")
@@ -1826,10 +1836,10 @@ def checkoutRepo(
     silent = silentConvert(silent)
 
     if source is None:
-        source = BACKEND_REP(backend, "clone")
+        source = backendRep(backend, "clone")
 
     if dest is None:
-        dest = BACKEND_REP(backend, "cache")
+        dest = backendRep(backend, "cache")
 
     def resolve(chkout, attempt=False):
         rData = Checkout(

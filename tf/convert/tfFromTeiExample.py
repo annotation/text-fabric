@@ -4,8 +4,8 @@ Put this in the `programs` directory of your corpus, tweak it and
 run it.
 """
 
-import os
 from tf.convert.tei import TEI
+from tf.core.files import baseNm
 
 
 TEST_SET = set(
@@ -50,7 +50,7 @@ DOC_MATERIAL = dict(
     trans=TRANSCRIPTION_TEXT,
 )
 
-APP_CONFIG = dict(
+CONFIG = dict(
     provenanceSpec=dict(
         corpus=f"{GENERIC['author']} - {GENERIC['title']}",
         doi="10.5281/zenodo.nnnnnn",
@@ -75,9 +75,9 @@ if __name__ == "__main__":
         generic=GENERIC,
         transform=transform,
         tfVersion="0.1",
-        appConfig=APP_CONFIG,
+        appConfig=CONFIG,
         docMaterial=DOC_MATERIAL,
         force=True,
     )
 
-    T.run(os.path.basename(__file__))
+    T.run(baseNm(__file__))

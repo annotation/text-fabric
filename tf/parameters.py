@@ -9,10 +9,6 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-def normpath(path):
-    return None if path is None else path.replace("\\", "/")
-
-
 VERSION = '11.2.3'
 """Program version.
 
@@ -134,8 +130,6 @@ RELATIVE = "tf"
 """
 
 ON_IPAD = sys.platform == "darwin" and os.uname().machine.startswith("iP")
-TILDE_DIR = normpath(os.path.expanduser("~"))
-HOME_DIR = f"{TILDE_DIR}/Documents" if ON_IPAD else TILDE_DIR
 
 GH = "github"
 """Name of GitHub backend."""
@@ -153,131 +147,10 @@ URL_NB = "https://nbviewer.jupyter.org"
 """Base url of NB-viewer."""
 
 
-def BACKEND_REP(be, kind, default=None):
-    """Various backend dependent values.
-
-    First of all, the backend value is
-    normalized. Then related values are computed.
-
-    Parameters
-    ----------
-    be: string or None
-        The raw backend value.
-        It will be normalized first, where missing, undefined, empty values are
-        converted to the string `github`, and other values will be lower-cased.
-        Also, `github.com` and `gitlab.com` will be shortened to `github` and `gitlab`.
-
-    kind: string
-        Indicates what kind of related value should be returned:
-
-        * `norm`: the normalized value as described above
-        * `tech`: technology of the backend: either `github` or `gitlab` or None;
-          we assume that there is only one GitHub; that there are many Gitlabs;
-          any backend that is not `github` is an instance of `gitlab`.
-        * `name`: lowercase shortest name of the backend: `github` or `gitlab`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `machine`: lowercase machine name of the backend: `github.com` or `gitlab.com`
-          or a server name like `gitlab.huc.knaw.nl`
-        * `spec`: enclosed in `<` and `>`. Depending on the parameter `default`
-          the empty string is returned instead.
-        * `clone`: base directory where clones of repos in this backend are stored
-          `~/github`, etc.
-        * `cache`: base directory where data downloads from this backend are stored:
-          `~/text-fabric-data/github`, etc.
-        * `url`: url of the online backend
-        * `urlnb`: url of notebooks from the online backend, rendered on NB-Viewer
-        * `pages`: base url of the Pages service of the backend
-
-    default: boolean, optional False
-        Only relevant for `kind` = `rep`.
-        If `default` is passed and not None and `be` is equal to `default`,
-        then the empty string is returned.
-
-        Explanation: this is used to supply a backend specifier to a module
-        but only if that module has a different backend than the main module.
-
-    Returns
-    -------
-        string
-    """
-
-    be = (be or "").lower()
-    be = (
-        GH
-        if be in {None, "", GH, f"{GH}.com"}
-        else GL
-        if be in {GL, f"{GL}.com"}
-        else be
-    )
-    beTail = ".".join(be.split(".")[1:])
-
-    if kind == "norm":
-        return be
-
-    if kind == "tech":
-        return be if be in {GH, GL} else GL
-
-    if kind == "name":
-        return "GitHub" if be == GH else "GitLab" if be == GL else be
-
-    if kind == "machine":
-        return "github.com" if be == GH else "gitlab.com" if be == GL else be
-
-    if kind == "rep":
-        if default is not None:
-            default = BACKEND_REP(default, "norm")
-            if be == default:
-                return ""
-        return f"<{be}>"
-
-    if kind == "clone":
-        return f"{HOME_DIR}/{be}"
-
-    if kind == "cache":
-        return f"{HOME_DIR}/text-fabric-data/{be}"
-
-    if kind == "url":
-        return URL_GH if be == GH else URL_GL if be == GL else f"https://{be}"
-
-    if kind == "urlnb":
-        return f"{URL_NB}/{be}"
-
-    if kind == "pages":
-        return (
-            f"{GH}.io"
-            if be == GH
-            else f"{GL}.io"
-            if be == GL
-            else f"pages.{beTail}"
-        )
-    return None
-
-
-DOWNLOADS = f"{HOME_DIR}/Downloads"
-"""Local Downloads directory."""
-
-
-EXPRESS_SYNC = "__checkout__.txt"
-"""Name of cache indicator file.
-
-When a dataset is stored in the cache,
-information about the release/commit is stored in a file
-with this name.
-"""
-
-EXPRESS_SYNC_LEGACY = [
-    "__release.txt",
-    "__commit.txt",
-]
-"""Legacy names of cache indicator files."""
-
 PROTOCOL = "http://"
 HOST = "localhost"
 PORT_BASE = 10000
 
-
-URL_TFDOC = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf"
-"""Base url of the online Text-Fabric documentation."""
 
 DOI_DEFAULT = "no DOI"
 DOI_URL_PREFIX = "https://doi.org"
@@ -285,67 +158,11 @@ DOI_URL_PREFIX = "https://doi.org"
 DOI_TF = "10.5281/zenodo.592193"
 """DOI of an archived copy of this repo at Zenodo."""
 
-APIREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/cheatsheet.html"
-"""Link to the Api docs of Text-Fabric."""
-
-SEARCHREF = f"https://{ORG}.{BACKEND_REP(GH, 'pages')}/{REPO}/tf/about/searchusage.html"
-"""Link to the Search docs of Text-Fabric."""
-
 BRANCH_DEFAULT = "master"
 """Default branch in repositories, older value."""
 
 BRANCH_DEFAULT_NEW = "main"
 """Default branch in repositories, modern value."""
-
-APP_CONFIG = "config.yaml"
-"""Name of the config file of a TF app."""
-
-APP_CONFIG_OLD = "config.py"
-"""Name of the config file of a an older, incompatible TF app."""
-
-APP_CODE = "code"
-"""Name of the top-level directory of a legacy TF app."""
-
-APP_APP = "app"
-"""Name of the top-level directory of a TF app."""
-
-APP_DISPLAY = "static/display.css"
-"""Relative path of the css file of a TF app."""
-
-SERVER_DISPLAY_BASE = "/server/static"
-"""Base of server css files."""
-
-SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")
-"""Bunch of TF-generic css files."""
-
-TEMP_DIR = "_temp"
-"""Name of temporary directories.
-
-!!! hint ".gitignore"
-    Take care that these directories are ignored by git operations.
-    Put a line
-
-        _temp/
-
-    in the `.gitignore` file.
-"""
-
-LOCATIONS = ["~/text-fabric-data"]
-"""Default locations for tf data files.
-
-If the `locations` parameter for the `tf.fabric.Fabric` call is omitted,
-this is the default.
-Text-Fabric will search all these directories as for `.tf` modules of files.
-"""
-
-LOCAL = "_local"
-"""Name of auxiliary directories.
-
-Examples where this is used:
-
-*   volume support: inside a TF dataset, the directory `_local` contains
-    volumes of that dataset
-"""
 
 ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
 """Options for zip when packing tf files.
@@ -358,7 +175,7 @@ to be attached to releases on GitHub/GitLab.
     pickled and compressed to .tfx files.
 """
 
-if sys.version_info[1] >= 7:
+if sys.version_info[0] > 3 or sys.version_info[0] == 3 and sys.version_info[1] >= 7:
     ZIP_OPTIONS["compresslevel"] = 6
 
 YARN_RATIO = 1.25
@@ -372,11 +189,3 @@ TRY_LIMIT_TO = 40
 
 SEARCH_FAIL_FACTOR = 4
 """Limits fetching of search results to this times maxNode (corpus dependent)"""
-
-LS = "layeredsearch"
-"""Directory where layered search code is stored.
-
-Layered search is client-side search, generated in a dedicated search repo.
-If the main data resides in org/repo, then the layered search code resides
-in org/repo-search/layeredsearch.
-"""

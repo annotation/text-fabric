@@ -1,26 +1,29 @@
-import os
 import types
 import traceback
 
-from ..parameters import ORG, RELATIVE, APP_CODE, APP_APP, OMAP
+from ..parameters import ORG, RELATIVE, OMAP
 from ..fabric import Fabric
-from ..parameters import APIREF, TEMP_DIR
 from ..lib import readSets
-from ..core.helpers import (
-    console,
-    setDir,
-    mergeDict,
+from ..core.helpers import console, mergeDict
+from ..core.files import (
     normpath,
     abspath,
-    expanduser,
+    APIREF,
+    APP_CODE,
+    APP_APP,
+    TEMP_DIR,
+    expanduser as ex,
+    setDir,
     prefixSlash,
+    splitPath,
+    isDir,
 )
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
 from .helpers import getText, runsInNotebook, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
 from .volumes import volumesApi
-from .export import exportApi
+from .interchange import interchangeApi
 from .links import linksApi, outLink
 from .text import textApi
 from .sections import sectionsApi
@@ -197,7 +200,7 @@ Most of the Text-Fabric API has not been loaded.
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
 
-            exportApi(self)
+            interchangeApi(self)
 
             featuresOnly = self.featuresOnly
 
@@ -429,10 +432,10 @@ def findApp(
                     "When passing an app by `app:fullpath` you cannot use :-specifiers"
                 )
                 return None
-            appPath = expanduser(appLoc) if appLoc else ""
+            appPath = ex(appLoc) if appLoc else ""
             absPath = abspath(appPath)
 
-            if os.path.isdir(absPath):
+            if isDir(absPath):
                 appDir = absPath
                 appBase = ""
             else:
@@ -526,11 +529,11 @@ def findApp(
             parts.append("")
         (dataLoc, checkoutData) = parts
         if checkoutData == "":
-            appPath = expanduser(dataLoc) if dataLoc else ""
+            appPath = ex(dataLoc) if dataLoc else ""
             absPath = abspath(appPath)
 
-            if os.path.isdir(absPath):
-                (appDir, appName) = os.path.split(absPath)
+            if isDir(absPath):
+                (appDir, appName) = splitPath(absPath)
                 appBase = ""
             else:
                 console(f"{absPath} is not an existing directory", error=True)

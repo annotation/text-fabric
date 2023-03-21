@@ -10,7 +10,7 @@ Many checks will be performed.
 !!! hint "to and from MQL"
     If your source is MQL, you are even better off: Text-Fabric has a
     module to import from MQL and to export to MQL.
-    See `tf.fabric.Fabric.importMQL` and `tf.fabric.Fabric.exportMQL`.
+    See `tf.convert.mql.importMQL` and `tf.convert.mql.exportMQL`.
 
 ## Set up
 

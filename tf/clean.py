@@ -13,12 +13,17 @@ that you no longer need.
 """
 
 import sys
-import os
 import re
-from shutil import rmtree
 
-from .parameters import PACK_VERSION, BACKEND_REP
-from .core.helpers import expanduser, unexpanduser as ux
+from .parameters import PACK_VERSION
+from .core.files import (
+    expanduser as ex,
+    unexpanduser as ux,
+    backendRep,
+    dirRemove,
+    fileRemove,
+    walkDir,
+)
 
 
 binRe = re.compile(r"/\.tf$")
@@ -74,14 +79,14 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
     """
 
     if specific is not None:
-        bases = [expanduser(specific)]
+        bases = [ex(specific)]
     else:
         if backend is not None:
-            backend = BACKEND_REP(backend, "norm")
-            bases = [BACKEND_REP(backend, kind) for kind in ("cache", "clone")]
+            backend = backendRep(backend, "norm")
+            bases = [backendRep(backend, kind) for kind in ("cache", "clone")]
 
     for base in bases:
-        for triple in os.walk(base):
+        for triple in walkDir(base):
             d = triple[0]
             if binRe.search(d):
                 files = triple[2]
@@ -91,7 +96,7 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
                         err("dry\n")
                     else:
                         for f in files:
-                            os.unlink(f"{d}/{f}")
+                            fileRemove(f"{d}/{f}")
                         err("done\n")
                     continue
             match = binvRe.search(d)
@@ -105,7 +110,7 @@ def clean(tfd=True, backend=None, dry=True, specific=None, current=False):
                     if dry:
                         err("dry\n")
                     else:
-                        rmtree(d)
+                        dirRemove(d)
                         err("done\n")
     if dry:
         sys.stdout.write("\n")

@@ -65,7 +65,6 @@ which you can use as a starting point.
 """
 
 import sys
-import os
 import collections
 import re
 from textwrap import dedent
@@ -78,16 +77,21 @@ from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..core.helpers import console
 from ..convert.walker import CV
-from ..core.helpers import (
+from ..core.helpers import mergeDict
+from ..core.files import (
+    abspath,
+    expanduser as ex,
+    unexpanduser as ux,
+    getLocation,
     initTree,
+    dirNm,
     dirExists,
     fileExists,
     fileCopy,
     fileRemove,
-    mergeDict,
-    getLocation,
-    unexpanduser as ux,
+    scanDir,
 )
+
 from ..tools.xmlschema import Analysis
 
 
@@ -387,7 +391,9 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
     else:
         nLevels = "3"
 
-    rendDesc = "\n".join(f"`{val}` | {desc}" for (val, desc) in sorted(REND_DESC.items()))
+    rendDesc = "\n".join(
+        f"`{val}` | {desc}" for (val, desc) in sorted(REND_DESC.items())
+    )
     modelKeepRe = re.compile(rf"«(?:begin|end)Model{sectionModel}»")
     modelRemoveRe = re.compile(r"«beginModel([^»]+)».*?«endModel\1»", re.S)
     slotKeepRe = re.compile(rf"«(?:begin|end)Slot{slot}»")
@@ -645,7 +651,7 @@ class TEI:
 
         console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
 
-        base = os.path.expanduser(f"~/{backend}")
+        base = ex(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         sourceDir = f"{refDir}/tei/{sourceVersion}"
@@ -697,7 +703,7 @@ class TEI:
         self.appConfig = appConfig
         self.docMaterial = docMaterial
         self.force = force
-        myDir = os.path.dirname(os.path.abspath(__file__))
+        myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
     @staticmethod
@@ -837,14 +843,14 @@ class TEI:
 
             xmlFilesRaw = collections.defaultdict(list)
 
-            with os.scandir(sourceDir) as dh:
+            with scanDir(sourceDir) as dh:
                 for folder in dh:
                     folderName = folder.name
                     if folderName == IGNORE:
                         continue
                     if not folder.is_dir():
                         continue
-                    with os.scandir(f"{sourceDir}/{folderName}") as fh:
+                    with scanDir(f"{sourceDir}/{folderName}") as fh:
                         for file in fh:
                             fileName = file.name
                             if not (
@@ -863,7 +869,7 @@ class TEI:
 
         if sectionModel == "II":
             xmlFile = None
-            with os.scandir(sourceDir) as fh:
+            with scanDir(sourceDir) as fh:
                 for file in fh:
                     fileName = file.name
                     if not (fileName.lower().endswith(".xml") and file.is_file()):
@@ -2069,7 +2075,7 @@ class TEI:
 
         tfPath = self.tfPath
 
-        if not os.path.exists(tfPath):
+        if not dirExists(tfPath):
             console(f"Directory {ux(tfPath)} does not exist.")
             console("No tf found, nothing to load")
             self.good = False

@@ -69,8 +69,8 @@ The resulting script will look like this:
 
 ``` python
 
-import os
 from tf.convert.xml import XML
+from tf.core.files import baseNm
 
 
 TEST_SET = set(
@@ -120,12 +120,11 @@ X = XML(
     tfVersion="0.1",
 )
 
-X.run(os.path.basename(__file__))
+X.run(baseNm(__file__))
 ```
 """
 
 import sys
-import os
 import collections
 import re
 from io import BytesIO
@@ -134,7 +133,16 @@ from lxml import etree
 from ..fabric import Fabric
 from ..core.helpers import console
 from ..convert.walker import CV
-from ..core.helpers import initTree, dirExists, getLocation, unexpanduser as ux
+from ..core.files import (
+    abspath,
+    expanduser as ex,
+    unexpanduser as ux,
+    getLocation,
+    initTree,
+    dirNm,
+    dirExists,
+    scanDir,
+)
 
 
 __pdoc__ = {}
@@ -376,7 +384,7 @@ class XML:
 
         console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
 
-        base = os.path.expanduser(f"~/{backend}")
+        base = ex(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         sourceDir = f"{refDir}/xml/{sourceVersion}"
@@ -401,7 +409,7 @@ class XML:
         self.transform = transform
         self.tfVersion = tfVersion
         self.tfPath = f"{tfDir}/{tfVersion}"
-        myDir = os.path.dirname(os.path.abspath(__file__))
+        myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
     @staticmethod
@@ -483,14 +491,14 @@ class XML:
 
         xmlFilesRaw = collections.defaultdict(list)
 
-        with os.scandir(sourceDir) as dh:
+        with scanDir(sourceDir) as dh:
             for folder in dh:
                 folderName = folder.name
                 if folderName == IGNORE:
                     continue
                 if not folder.is_dir():
                     continue
-                with os.scandir(f"{sourceDir}/{folderName}") as fh:
+                with scanDir(f"{sourceDir}/{folderName}") as fh:
                     for file in fh:
                         fileName = file.name
                         if not (fileName.lower().endswith(".xml") and file.is_file()):
@@ -919,7 +927,7 @@ class XML:
         """
         tfPath = self.tfPath
 
-        if not os.path.exists(tfPath):
+        if not dirExists(tfPath):
             console(f"Directory {ux(tfPath)} does not exist.")
             console("No tf found, nothing to load")
             return False

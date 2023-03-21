@@ -78,13 +78,13 @@ browsers, not even Edge.
     Windows users should install Chrome of Firefox.
 """
 
-import os
 import sys
 import pickle
 
 from ..capable import Capable
 from ..parameters import HOST
-from ..core.helpers import console, abspath
+from ..core.helpers import console
+from ..core.files import abspath, fileExists, dirNm
 from ..server.kernel import makeTfConnection
 from .command import argWeb
 from .serve import (
@@ -98,7 +98,7 @@ from .serve import (
 )
 
 
-MY_DIR = os.path.dirname(abspath(__file__))
+MY_DIR = dirNm(abspath(__file__))
 
 Cap = Capable("browser")
 (Flask, send_file) = Cap.loadFrom("flask", "Flask", "send_file")
@@ -130,17 +130,17 @@ def factory(web):
     @app.route("/server/static/<path:filepath>")
     def serveStatic(filepath):
         theFile = f"{MY_DIR}/static/{filepath}"
-        return send_file(theFile) if os.path.exists(theFile) else ""
+        return send_file(theFile) if fileExists(theFile) else ""
 
     @app.route("/data/static/<path:filepath>")
     def serveData(filepath):
         theFile = f"{appPath}/static/{filepath}"
-        return send_file(theFile) if appPath and os.path.exists(theFile) else ""
+        return send_file(theFile) if appPath and fileExists(theFile) else ""
 
     @app.route("/local/<path:filepath>")
     def serveLocal(filepath):
         theFile = f"{localDir}/{filepath}"
-        return send_file(theFile) if os.path.exists(theFile) else ""
+        return send_file(theFile) if fileExists(theFile) else ""
 
     @app.route("/sections", methods=["GET", "POST"])
     def serveSectionsBare():
