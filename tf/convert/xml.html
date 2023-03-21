@@ -1,0 +1,3072 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.convert.xml API documentation</title>
+<meta name="description" content="XML import …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.convert.xml</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="xml-import">XML import</h1>
+<p>You can convert any XML source into TF by specifying a few details about the source.</p>
+<p>Text-Fabric then invokes the <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> machinery to produce a Text-Fabric
+dataset out of the source.</p>
+<div class="admonition caution">
+<p class="admonition-title">As an example</p>
+<p>This is more intended as an example of how to tackle the conversion
+of XML to TF than as a production engine.
+Most XML corpora use elements for special things, and a good conversion
+to TF should deal with the intention behind the elements.</p>
+<p>See <code><a title="tf.convert.tei" href="tei.html">tf.convert.tei</a></code> for a production converter of TEI XML to TF.</p>
+</div>
+<p>This converter does not read schemas and has no extra knowledge about the elements.</p>
+<h2 id="whitespace">Whitespace</h2>
+<p>Becasue of the lack of schema information we do not know exactly which white-space
+is significant. The only thing we do to whitespace is to condense each stretch
+of whitespace to a single space.</p>
+<p>Whether some of these spaces around tags must be ignored is a matter of further
+customization.</p>
+<p>This converter limits itself to generating the TF, it does not generated docs and
+also the creation of a TF app is out of scope.</p>
+<h2 id="tasks">Tasks</h2>
+<p>We have the following conversion tasks:</p>
+<ol>
+<li><code>check</code>: makes and inventory of all XML elements and attributes used.</li>
+<li><code>convert</code>: produces actual TF files by converting XML files.</li>
+<li><code>load</code>: loads the generated TF for the first time, by which the precomputation
+step is triggered. During precomputation some checks are performed. Once this
+has succeeded, we have a workable Text-Fabric dataset.</li>
+</ol>
+<p>Tasks can be run by passing any choice of task keywords to the
+<code><a title="tf.convert.xml.XML.task" href="#tf.convert.xml.XML.task">XML.task()</a></code> method.</p>
+<h2 id="flags">Flags</h2>
+<p>We have one flag:</p>
+<ol>
+<li><code>test</code>: only converts those files in the input that are named in a test set.</li>
+</ol>
+<p>The test set is passed as argument to the <code><a title="tf.convert.xml.XML" href="#tf.convert.xml.XML">XML</a></code> constructur.</p>
+<p>The <code>test</code> flag is passed to the <code><a title="tf.convert.xml.XML.task" href="#tf.convert.xml.XML.task">XML.task()</a></code> method.</p>
+<h2 id="usage">Usage</h2>
+<p>It is intended that you call this converter in a script.</p>
+<p>In that script you can define auxiliary Python functions and pass them
+to the converter. The <code><a title="tf.convert.xml.XML" href="#tf.convert.xml.XML">XML</a></code> class has some hooks where such functions
+can be plugged in.</p>
+<p>Here you can also define a test set, in case you want to experiment with the
+conversion.</p>
+<p>Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.</p>
+<p>The resulting script will look like this:</p>
+<pre><code class="language-python">
+from tf.convert.xml import XML
+from tf.core.files import baseNm
+
+
+TEST_SET = set(
+    '''
+    aa00.xml
+    bb11.xml
+    '''.strip().split()
+)
+
+AUTHOR = &quot;Corpus Author&quot;
+TITLE = &quot;Corpus&quot;
+INSTITUTE = &quot;Corpus Maintainer&quot;
+
+GENERIC = dict(
+    author=AUTHOR,
+    title=TITLE,
+    institute=INSTITUTE,
+    language=&quot;en&quot;,
+    converters=&quot;Corpus Convertor (Text-Fabric)&quot;,
+    sourceFormat=&quot;XML&quot;,
+    descriptionTf=&quot;Edition&quot;,
+)
+
+ABOUT_TEXT = '''
+# CONTRIBUTORS
+
+Researcher: S. Scholar.
+
+Editors: E. Editor et al.
+'''
+
+TRANSCRIPTION_TEXT = '''
+
+The XML has not been validated or polished
+before generating the TF data.
+'''
+
+def transform(text):
+    return text.replace(&quot;,,&quot;, &quot;,&quot;)
+
+
+X = XML(
+    sourceVersion=&quot;2023-01-31&quot;,
+    testSet=TEST_SET,
+    generic=GENERIC,
+    transform=transform,
+    tfVersion=&quot;0.1&quot;,
+)
+
+X.run(baseNm(__file__))
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L1-L1050" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# XML import
+
+You can convert any XML source into TF by specifying a few details about the source.
+
+Text-Fabric then invokes the `tf.convert.walker` machinery to produce a Text-Fabric
+dataset out of the source.
+
+!!! caution &#34;As an example&#34;
+    This is more intended as an example of how to tackle the conversion
+    of XML to TF than as a production engine.
+    Most XML corpora use elements for special things, and a good conversion
+    to TF should deal with the intention behind the elements.
+
+    See `tf.convert.tei` for a production converter of TEI XML to TF.
+
+This converter does not read schemas and has no extra knowledge about the elements.
+
+## Whitespace
+
+Becasue of the lack of schema information we do not know exactly which white-space
+is significant. The only thing we do to whitespace is to condense each stretch
+of whitespace to a single space.
+
+Whether some of these spaces around tags must be ignored is a matter of further
+customization.
+
+This converter limits itself to generating the TF, it does not generated docs and
+also the creation of a TF app is out of scope.
+
+## Tasks
+
+We have the following conversion tasks:
+
+1.  `check`: makes and inventory of all XML elements and attributes used.
+2.  `convert`: produces actual TF files by converting XML files.
+3.  `load`: loads the generated TF for the first time, by which the precomputation
+    step is triggered. During precomputation some checks are performed. Once this
+    has succeeded, we have a workable Text-Fabric dataset.
+
+Tasks can be run by passing any choice of task keywords to the
+`XML.task()` method.
+
+## Flags
+
+We have one flag:
+
+1. `test`: only converts those files in the input that are named in a test set.
+
+The test set is passed as argument to the `XML` constructur.
+
+The `test` flag is passed to the `XML.task()` method.
+
+## Usage
+
+It is intended that you call this converter in a script.
+
+In that script you can define auxiliary Python functions and pass them
+to the converter. The `XML` class has some hooks where such functions
+can be plugged in.
+
+Here you can also define a test set, in case you want to experiment with the
+conversion.
+
+Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.
+
+The resulting script will look like this:
+
+``` python
+
+from tf.convert.xml import XML
+from tf.core.files import baseNm
+
+
+TEST_SET = set(
+    &#39;&#39;&#39;
+    aa00.xml
+    bb11.xml
+    &#39;&#39;&#39;.strip().split()
+)
+
+AUTHOR = &#34;Corpus Author&#34;
+TITLE = &#34;Corpus&#34;
+INSTITUTE = &#34;Corpus Maintainer&#34;
+
+GENERIC = dict(
+    author=AUTHOR,
+    title=TITLE,
+    institute=INSTITUTE,
+    language=&#34;en&#34;,
+    converters=&#34;Corpus Convertor (Text-Fabric)&#34;,
+    sourceFormat=&#34;XML&#34;,
+    descriptionTf=&#34;Edition&#34;,
+)
+
+ABOUT_TEXT = &#39;&#39;&#39;
+# CONTRIBUTORS
+
+Researcher: S. Scholar.
+
+Editors: E. Editor et al.
+&#39;&#39;&#39;
+
+TRANSCRIPTION_TEXT = &#39;&#39;&#39;
+
+The XML has not been validated or polished
+before generating the TF data.
+&#39;&#39;&#39;
+
+def transform(text):
+    return text.replace(&#34;,,&#34;, &#34;,&#34;)
+
+
+X = XML(
+    sourceVersion=&#34;2023-01-31&#34;,
+    testSet=TEST_SET,
+    generic=GENERIC,
+    transform=transform,
+    tfVersion=&#34;0.1&#34;,
+)
+
+X.run(baseNm(__file__))
+```
+&#34;&#34;&#34;
+
+import sys
+import collections
+import re
+from io import BytesIO
+
+from lxml import etree
+from ..fabric import Fabric
+from ..core.helpers import console
+from ..convert.walker import CV
+from ..core.files import (
+    abspath,
+    expanduser as ex,
+    unexpanduser as ux,
+    getLocation,
+    initTree,
+    dirNm,
+    dirExists,
+    scanDir,
+)
+
+
+__pdoc__ = {}
+
+DOC_TRANS = &#34;&#34;&#34;
+## Essentials
+
+*   Text-Fabric non-slot nodes correspond to XML elements in the source.
+*   Text-Fabric node-features correspond to XML attributes.
+*   Text-Fabric slot nodes correspond to characters in XML element content.
+
+## Sectioning
+
+The material is divided into two levels of sections, mainly for the purposes
+of text display.
+
+It is assumed that the source is a directory consisting of subdirectories
+consisting of xml files, the XML files.
+
+1.  Subdirectories and files are sorted in the lexicographic ordering
+1.  The subdirectory `__ignore__` is ignored.
+1.  For each subdirectory, a section level 1 node will be created, with
+    feature `name` containing its name.
+1.  For each file in a subdirecotry, a section level 2 node will be created, with
+    feature `name` containing its name.
+
+
+## Elements and attributes
+
+1.  All elements result in nodes whose type is
+    exactly equal to the tag name.
+1.  These nodes are linked to the slots that are produced when converting the
+    content of the corresponding source elements.
+1.  Attributes translate into features of the same name; the feature assigns
+    the attribute value (as string) to the node that corresponds to the element
+    of the attribute.
+
+## Slots
+
+The basic unit is the unicode character.
+For each character in the input we make a slot, but the correspondence is not
+quite 1-1.
+
+1.  Whitespace is reduced to a single space.
+1.  Empty elements will receive one extra slot; this will anchor the element to
+    a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
+    as character value.
+1.  Slots get the following features:
+    *   `ch`: the character of the slot
+    *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
+
+
+## Text-formats
+
+Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.
+
+We have the following formats:
+
+*   `text-orig-full`: all text
+
+## Simplifications
+
+XML is complicated.
+
+On the other hand, the resulting TF should consist of clearly demarcated node types
+and a simple list of features. In order to make that happen, we simplify matters
+a bit.
+
+1.  Processing instructions (`&lt;!proc a=&#34;b&#34;&gt;`) are ignored.
+1.  Comments (`&lt;!-- this is a comment --&gt;`) are ignored.
+1.  Declarations (`&lt;?xml ...&gt;` `&lt;?xml-model ...&gt;` `&lt;?xml-stylesheet ...&gt;`) are
+    read by the parser, but do not leave traces in the TF output.
+1.  The atrributes of the root-element are ignored.
+1.  Namespaces are read by the parser,
+    but only the unqualified names are distinguishable in the output as feature names.
+    So if the input has elements `ns1:abb` and `ns2:abb`, we&#39;ll see just the node
+    type `abb` in the output.
+
+## TF noded and features
+
+(only in as far they are not in 1-1 correspondence with XML elements and attributes)
+
+### node type `folder`
+
+*The type of subfolders of XML documents.*
+
+**Section level 1.**
+
+**Features**
+
+feature | description
+--- | ---
+`folder` | name of the subfolder
+
+### node type `file`
+
+*The type of individual XML documents.*
+
+**Section level 2.**
+
+**Features**
+
+feature | description
+--- | ---
+`file` | name of the file, without the `.xml` extension. Other extensions are included.
+
+### node type `char`
+
+*Unicode characters.*
+
+**Slot type.**
+
+The characters of the text of the elements.
+Ignorable whitespace has been discarded, and is not present in the TF dataset.
+Meaningful whitespace has been condensed to single spaces.
+
+Some empty slots have been inserted to mark the place of empty elements.
+
+**Features**
+
+feature | description
+--- | ---
+`ch` | the unicode character in that slot. There are also slots
+`empty` | whether a slot has been inserted in an empty element
+&#34;&#34;&#34;
+
+
+class XML:
+    def __init__(
+        self,
+        sourceVersion=&#34;0.1&#34;,
+        testSet=set(),
+        generic={},
+        transform=None,
+        tfVersion=&#34;0.1&#34;,
+    ):
+        &#34;&#34;&#34;Converts XML to TF.
+
+        We adopt a fair bit of &#34;convention over configuration&#34; here, in order to lessen
+        the burden for the user of specifying so many details.
+
+        Based on current directory from where the script is called,
+        it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the XML input.
+
+        This function is assumed to work in the context of a repository,
+        i.e. a directory on your computer relative to which the input directory
+        `xml` and the output directory `tf` exist.
+
+        Your current directory must be somewhere inside
+
+        ```
+        ~/backend/org/repo/relative
+        ```
+
+        where
+
+        *   `~` is your home directory;
+        *   `backend` is an online *backend* name,
+            like `github`, `gitlab`, `git.huc.knaw.nl`;
+        *   `org` is an organisation, person, or group in the backend;
+        *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
+
+        This is only about the directory structure on your local computer;
+        it is not required that you have online incarnations of your repository
+        in that backend.
+        Even your local repository does not have to be a git repository.
+
+        The only thing that matters is that the full path to your repo can be parsed
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
+
+        Relative to this directory the program expects and creates
+        input/output directories.
+
+        ## Input directory
+
+        ### `xml`
+
+        *Location of the XML sources.*
+
+        **If it does not exist, the program aborts with an error.**
+
+        Several levels of subfolders are assumed:
+
+        1.  the version of the source (this could be a date string).
+        2.  volumes/collections of documents. The subfolder `__ignore__` is ignored.
+        3.  the XML documents themselves
+
+        ## Output directories
+
+        ### `report`
+
+        Directory to write the results of the `check` task to: an inventory
+        of elements/attributes encountered, and possible validation errors.
+        If the directory does not exist, it will be created.
+        The default value is `.` (i.e. the current directory in which
+        the script is invoked).
+
+        ### `tf`
+
+        The directory under which the text-fabric output file (with extension `.tf`)
+        are placed.
+        If it does not exist, it will be created.
+        The tf files will be generated in a subdirectory named by a version number,
+        passed as `tfVersion`.
+
+        Parameters
+        ----------
+
+        sourceVersion: string, optional &#34;0.1&#34;
+            Version of the source files. This is the name of a top-level
+            subfolder of the `xml` input folder.
+
+        testSet: set, optional empty
+            A set of file names. If you run the conversion in test mode
+            (pass `test` as argument to the `XML.task()` method),
+            only the files in the test set are converted.
+
+        generic: dict, optional {}
+            Metadata for all generated TF feature.
+
+        transform: function, optional None
+            If not None, a function that transforms text to text, used
+            as a preprocessing step for each input xml file.
+
+        tfVersion: string, optional &#34;0.1&#34;
+            Version of the generated tf files. This is the name of a top-level
+            subfolder of the `tf` output folder.
+        &#34;&#34;&#34;
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
+            quit()
+
+        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
+
+        base = ex(f&#34;~/{backend}&#34;)
+        repoDir = f&#34;{base}/{org}/{repo}&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        sourceDir = f&#34;{refDir}/xml/{sourceVersion}&#34;
+        reportDir = f&#34;{refDir}/report&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+
+        self.refDir = refDir
+        self.sourceDir = sourceDir
+        self.reportDir = reportDir
+        self.tfDir = tfDir
+        self.org = org
+        self.repo = repo
+
+        if sourceDir is None or not dirExists(sourceDir):
+            console(f&#34;Source location does not exist: {sourceDir}&#34;)
+            quit()
+
+        self.sourceVersion = sourceVersion
+        self.testMode = False
+        self.testSet = testSet
+        self.generic = generic
+        self.transform = transform
+        self.tfVersion = tfVersion
+        self.tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+        myDir = dirNm(abspath(__file__))
+        self.myDir = myDir
+
+    @staticmethod
+    def help(program):
+        &#34;&#34;&#34;Print a help text to the console.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        In order to give help on the command line, here is a pre-baked help text.
+        Only the name of the conversion script needs to be merged in.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string.
+        &#34;&#34;&#34;
+
+        console(
+            f&#34;&#34;&#34;
+
+        Convert XML to TF.
+        There are also commands to check the XML and to load the TF.
+
+        python3 {program} [tasks/flags] [--help]
+
+        --help: show this text and exit
+
+        tasks:
+            a sequence of tasks:
+            check:
+                just reports on the elements in the source.
+            convert:
+                just converts XML to TF
+            load:
+                just loads the generated TF;
+
+        flags:
+            test:
+                run in test mode
+        &#34;&#34;&#34;
+        )
+
+    @staticmethod
+    def getParser():
+        &#34;&#34;&#34;Configure the lxml parser.
+
+        See [parser options](https://lxml.de/parsing.html#parser-options).
+
+        Returns
+        -------
+        object
+            A configured lxml parse object.
+        &#34;&#34;&#34;
+        return etree.XMLParser(
+            remove_blank_text=False,
+            collect_ids=False,
+            remove_comments=True,
+            remove_pis=True,
+            huge_tree=True,
+        )
+
+    def getXML(self):
+        &#34;&#34;&#34;Make an inventory of the XML source files.
+
+        Returns
+        -------
+        tuple of tuple
+            The outer tuple has sorted entries corresponding to folders under the
+            XML input directory.
+            Each such entry consists of the folder name and an inner tuple
+            that contains the file names in that folder, sorted.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        testMode = self.testMode
+        testSet = self.testSet
+
+        IGNORE = &#34;__ignore__&#34;
+
+        xmlFilesRaw = collections.defaultdict(list)
+
+        with scanDir(sourceDir) as dh:
+            for folder in dh:
+                folderName = folder.name
+                if folderName == IGNORE:
+                    continue
+                if not folder.is_dir():
+                    continue
+                with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                    for file in fh:
+                        fileName = file.name
+                        if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                            continue
+                        if testMode and fileName not in testSet:
+                            continue
+                        xmlFilesRaw[folderName].append(fileName)
+
+        xmlFiles = tuple(
+            (folderName, tuple(sorted(fileNames)))
+            for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+        )
+        return xmlFiles
+
+    def checkTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
+
+        It validates the XML, but only if a schema file has been passed explicitly
+        when constructing the `XML()` object.
+
+        Then it makes an inventory of all elements and attributes in the XML files.
+
+        The inventory lists all elements and attributes, and many attribute values.
+        But is represents any digit with `n`, and some attributes that contain
+        ids or keywords, are reduced to the value `x`.
+
+        This information reduction helps to get a clear overview.
+
+        It writes reports to the `reportDir`:
+
+        *   `errors.txt`: validation errors
+        *   `elements.txt`: element/attribute inventory.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        reportDir = self.reportDir
+
+        getStore = lambda: collections.defaultdict(  # noqa: E731
+            lambda: collections.defaultdict(collections.Counter)
+        )
+        analysis = getStore()
+
+        parser = self.getParser()
+
+        initTree(reportDir)
+
+        def analyse(root, analysis):
+            NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
+
+            def nodeInfo(node):
+                tag = etree.QName(node.tag).localname
+                atts = node.attrib
+
+                if len(atts) == 0:
+                    analysis[tag][&#34;&#34;][&#34;&#34;] += 1
+                else:
+                    for (kOrig, v) in atts.items():
+                        k = etree.QName(kOrig).localname
+
+                        vTrim = NUM_RE.sub(&#34;N&#34;, v)
+                        analysis[tag][k][vTrim] += 1
+
+                for child in node.iterchildren(tag=etree.Element):
+                    nodeInfo(child)
+
+            nodeInfo(root)
+
+        def writeReport():
+            reportFile = f&#34;{reportDir}/elements.txt&#34;
+            with open(reportFile, &#34;w&#34;) as fh:
+                fh.write(
+                    &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
+                )
+                fh.write(&#34;\n\n&#34;)
+
+                infoLines = 0
+
+                def writeAttInfo(tag, att, attInfo):
+                    nonlocal infoLines
+                    nl = &#34;&#34; if tag == &#34;&#34; else &#34;\n&#34;
+                    tagRep = &#34;&#34; if tag == &#34;&#34; else f&#34;&lt;{tag}&gt;&#34;
+                    attRep = &#34;&#34; if att == &#34;&#34; else f&#34;{att}=&#34;
+                    atts = sorted(attInfo.items())
+                    (val, amount) = atts[0]
+                    fh.write(f&#34;{nl}\t{tagRep:&lt;12} {attRep:&lt;12} {amount:&gt;5}x {val}\n&#34;)
+                    infoLines += 1
+                    for (val, amount) in atts[1:]:
+                        fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;12} {&#39;&#34;&#39;:&lt;12} {amount:&gt;5}x {val}\n&#34;&#34;&#34;)
+                        infoLines += 1
+
+                def writeTagInfo(tag, tagInfo):
+                    nonlocal infoLines
+                    tags = sorted(tagInfo.items())
+                    (att, attInfo) = tags[0]
+                    writeAttInfo(tag, att, attInfo)
+                    infoLines += 1
+                    for (att, attInfo) in tags[1:]:
+                        writeAttInfo(&#34;&#34;, att, attInfo)
+
+                for (tag, tagInfo) in sorted(analysis.items()):
+                    writeTagInfo(tag, tagInfo)
+
+            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+
+        i = 0
+        for (xmlFolder, xmlFiles) in self.getXML():
+            console(xmlFolder)
+            for xmlFile in xmlFiles:
+                i += 1
+                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                tree = etree.parse(xmlPath, parser)
+                root = tree.getroot()
+                analyse(root, analysis)
+
+        console(&#34;&#34;)
+        writeReport()
+
+        return True
+
+    # SET UP CONVERSION
+
+    def getConverter(self):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        tfPath = self.tfPath
+
+        TF = Fabric(locations=tfPath)
+        return CV(TF)
+
+    def convertTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        &#34;&#34;&#34;
+        slotType = &#34;char&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+            &#34;sectionFeatures&#34;: &#34;folder,file&#34;,
+            &#34;sectionTypes&#34;: &#34;folder,file&#34;,
+        }
+        intFeatures = {&#34;empty&#34;}
+        featureMeta = dict(
+            folder=dict(description=&#34;name of source folder&#34;),
+            file=dict(description=&#34;name of source file&#34;),
+            ch=dict(description=&#34;the unicode character of a slot&#34;),
+            empty=dict(
+                description=&#34;whether a slot has been inserted in an empty element&#34;
+            ),
+        )
+        self.intFeatures = intFeatures
+        self.featureMeta = featureMeta
+
+        tfVersion = self.tfVersion
+        tfPath = self.tfPath
+        generic = self.generic
+        generic[&#34;sourceFormat&#34;] = &#34;XML&#34;
+        generic[&#34;version&#34;] = tfVersion
+
+        initTree(tfPath, fresh=True, gentle=True)
+
+        cv = self.getConverter()
+
+        return cv.walk(
+            self.getDirector(),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        )
+
+    # DIRECTOR
+
+    def getDirector(self):
+        &#34;&#34;&#34;Factory for the director function.
+
+        The `tf.convert.walker` relies on a corpus dependent `director` function
+        that walks through the source data and spits out actions that
+        produces the TF dataset.
+
+        We collect all needed data, store it, and define a local director function
+        that has access to this data.
+
+        Returns
+        -------
+        function
+            The local director function that has been constructed.
+        &#34;&#34;&#34;
+        PASS_THROUGH = set(
+            &#34;&#34;&#34;
+            xml
+            &#34;&#34;&#34;.strip().split()
+        )
+
+        # CHECKING
+
+        ZWSP = &#34;\u200b&#34;  # zero-width space
+
+        sourceDir = self.sourceDir
+        featureMeta = self.featureMeta
+        transform = self.transform
+
+        transformFunc = (
+            (lambda x: x)
+            if transform is None
+            else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+        )
+
+        parser = self.getParser()
+
+        # WALKERS
+
+        WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
+
+        def walkNode(cv, cur, node):
+            &#34;&#34;&#34;Internal function to deal with a single element.
+
+            Will be called recursively.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            cur[&#34;nest&#34;].append(tag)
+
+            beforeChildren(cv, cur, node, tag)
+
+            for child in node.iterchildren(tag=etree.Element):
+                walkNode(cv, cur, child)
+
+            afterChildren(cv, cur, node, tag)
+            cur[&#34;nest&#34;].pop()
+            afterTag(cv, cur, node, tag)
+
+        def addSlot(cv, cur, ch):
+            &#34;&#34;&#34;Add a slot.
+
+            Whenever we encounter a character, we add it as a new slot.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            ch: string
+                A single character, the next slot in the result data.
+            &#34;&#34;&#34;
+            s = cv.slot()
+            cv.feature(s, ch=ch)
+
+        def beforeChildren(cv, cur, node, tag):
+            &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if tag not in PASS_THROUGH:
+                curNode = cv.node(tag)
+                cur[&#34;elems&#34;].append(curNode)
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if len(atts):
+                    cv.feature(curNode, **atts)
+
+            if node.text:
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+                for ch in textMaterial:
+                    addSlot(cv, cur, ch)
+
+        def afterChildren(cv, cur, node, tag):
+            &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if tag not in PASS_THROUGH:
+                curNode = cur[&#34;elems&#34;].pop()
+
+                if not cv.linked(curNode):
+                    s = cv.slot()
+                    cv.feature(s, ch=ZWSP, empty=1)
+
+                cv.terminate(curNode)
+
+        def afterTag(cv, cur, node, tag):
+            &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
+
+            This is the place where we proces the `tail` of an lxml node: the
+            text material after the element and before the next open/close
+            tag of any element.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if node.tail:
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+                for ch in tailMaterial:
+                    addSlot(cv, cur, ch)
+
+        def director(cv):
+            &#34;&#34;&#34;Director function.
+
+            Here we program a walk through the XML sources.
+            At every step of the walk we fire some actions that build TF nodes
+            and assign features for them.
+
+            Because everything is rather dynamic, we generate fairly standard
+            metadata for the features.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            &#34;&#34;&#34;
+            cur = {}
+
+            i = 0
+            for (xmlFolder, xmlFiles) in self.getXML():
+                console(xmlFolder)
+
+                cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+                cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+
+                for xmlFile in xmlFiles:
+                    i += 1
+                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+
+                    cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                    cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+
+                    with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                        text = fh.read()
+                        text = transformFunc(text)
+                        tree = etree.parse(text, parser)
+                        root = tree.getroot()
+                        cur[&#34;nest&#34;] = []
+                        cur[&#34;elems&#34;] = []
+                        walkNode(cv, cur, root)
+
+                    addSlot(cv, cur, None)
+                    cv.terminate(cur[&#34;file&#34;])
+
+                cv.terminate(cur[&#34;folder&#34;])
+
+            console(&#34;&#34;)
+
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+            for fName in cv.features():
+                if fName not in featureMeta:
+                    cv.meta(
+                        fName,
+                        description=f&#34;this is XML attribute {fName}&#34;,
+                        valueType=&#34;str&#34;,
+                    )
+            console(&#34;source reading done&#34;)
+            return True
+
+        return director
+
+    def loadTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+        It loads the tf data that resides in the directory where the &#34;convert&#34; task
+        deliver its results.
+
+        During loading there are additional checks. If they succeed, we have evidence
+        that we have a valid TF dataset.
+
+        Also, during the first load intensive precomputation of TF data takes place,
+        the results of which will be cached in the invisible `.tf` directory there.
+
+        That makes the TF data ready to be loaded fast, next time it is needed.
+
+        Returns
+        -------
+        boolean
+            Whether the loading was successful.
+        &#34;&#34;&#34;
+        tfPath = self.tfPath
+
+        if not dirExists(tfPath):
+            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+            console(&#34;No tf found, nothing to load&#34;)
+            return False
+
+        TF = Fabric(locations=[tfPath])
+        allFeatures = TF.explore(silent=True, show=True)
+        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        api = TF.load(loadableFeatures, silent=False)
+        if api:
+            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+            return True
+        return False
+
+    def task(self, check=False, convert=False, load=False, test=None):
+        &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+        This is a higher level function that can execute a selection of tasks.
+
+        The tasks will be executed in a fixed order: check, convert load.
+        But you can select which one(s) must be executed.
+
+        If multiple tasks must be executed and one fails, the subsequent tasks
+        will not be executed.
+
+        Parameters
+        ----------
+        check: boolean, optional False
+            Whether to carry out the &#34;check&#34; task.
+        convert: boolean, optional False
+            Whether to carry out the &#34;convert&#34; task.
+        load: boolean, optional False
+            Whether to carry out the &#34;load&#34; task.
+        test: boolean, optional None
+            Whether to run in test mode.
+            In test mode only the files in the test set are converted.
+
+            If None, it will read its value from the attribute `testMode` of the
+            `XML` object.
+
+        Returns
+        -------
+        boolean
+            Whether all tasks have executed successfully.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        reportDir = self.reportDir
+        tfPath = self.tfPath
+
+        if test is not None:
+            self.testMode = test
+
+        good = True
+
+        if check:
+            console(f&#34;XML to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+            good = self.checkTask()
+
+        if good and convert:
+            console(f&#34;XML to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+            good = self.convertTask()
+
+        if good and load:
+            good = self.loadTask()
+
+        return good
+
+    def run(self, program=None):
+        &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        When that script is invoked, you can pass arguments to specify tasks
+        and flags.
+
+        This function inspects those arguments, and runs the specified tasks,
+        with the specified flags enabled.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string, in case a help text must be displayed.
+
+        Returns
+        -------
+        integer
+            In fact, this function will terminate the conversion program
+            an return a status code: 0 for succes, 1 for failure.
+        &#34;&#34;&#34;
+        programRep = &#34;XML-converter&#34; if program is None else program
+        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;}
+        possibleFlags = {&#34;test&#34;}
+        possibleArgs = possibleTasks | possibleFlags
+
+        args = sys.argv[1:]
+
+        if not len(args):
+            self.help(programRep)
+            console(&#34;No task specified&#34;)
+            sys.exit(-1)
+
+        illegalArgs = {arg for arg in args if arg not in possibleArgs}
+
+        if len(illegalArgs):
+            self.help(programRep)
+            for arg in illegalArgs:
+                console(f&#34;Illegal argument `{arg}`&#34;)
+            sys.exit(-1)
+
+        tasks = {arg: True for arg in args if arg in possibleTasks}
+        flags = {arg: True for arg in args if arg in possibleFlags}
+
+        good = self.task(**tasks, **flags)
+        if good:
+            sys.exit(0)
+        else:
+            sys.exit(1)
+
+
+__pdoc__[&#34;XML&#34;] = DOC_TRANS</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.convert.xml.XML"><code class="flex name class">
+<span>class <span class="ident">XML</span></span>
+<span>(</span><span>sourceVersion='0.1', testSet=set(), generic={}, transform=None, tfVersion='0.1')</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="essentials">Essentials</h2>
+<ul>
+<li>Text-Fabric non-slot nodes correspond to XML elements in the source.</li>
+<li>Text-Fabric node-features correspond to XML attributes.</li>
+<li>Text-Fabric slot nodes correspond to characters in XML element content.</li>
+</ul>
+<h2 id="sectioning">Sectioning</h2>
+<p>The material is divided into two levels of sections, mainly for the purposes
+of text display.</p>
+<p>It is assumed that the source is a directory consisting of subdirectories
+consisting of xml files, the XML files.</p>
+<ol>
+<li>Subdirectories and files are sorted in the lexicographic ordering</li>
+<li>The subdirectory <code>__ignore__</code> is ignored.</li>
+<li>For each subdirectory, a section level 1 node will be created, with
+feature <code>name</code> containing its name.</li>
+<li>For each file in a subdirecotry, a section level 2 node will be created, with
+feature <code>name</code> containing its name.</li>
+</ol>
+<h2 id="elements-and-attributes">Elements and attributes</h2>
+<ol>
+<li>All elements result in nodes whose type is
+exactly equal to the tag name.</li>
+<li>These nodes are linked to the slots that are produced when converting the
+content of the corresponding source elements.</li>
+<li>Attributes translate into features of the same name; the feature assigns
+the attribute value (as string) to the node that corresponds to the element
+of the attribute.</li>
+</ol>
+<h2 id="slots">Slots</h2>
+<p>The basic unit is the unicode character.
+For each character in the input we make a slot, but the correspondence is not
+quite 1-1.</p>
+<ol>
+<li>Whitespace is reduced to a single space.</li>
+<li>Empty elements will receive one extra slot; this will anchor the element to
+a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
+as character value.</li>
+<li>Slots get the following features:<ul>
+<li><code>ch</code>: the character of the slot</li>
+<li><code>empty</code>: 1 if the slot has been inserted as an empty slot, no value otherwise.</li>
+</ul>
+</li>
+</ol>
+<h2 id="text-formats">Text-formats</h2>
+<p>Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.</p>
+<p>We have the following formats:</p>
+<ul>
+<li><code>text-orig-full</code>: all text</li>
+</ul>
+<h2 id="simplifications">Simplifications</h2>
+<p>XML is complicated.</p>
+<p>On the other hand, the resulting TF should consist of clearly demarcated node types
+and a simple list of features. In order to make that happen, we simplify matters
+a bit.</p>
+<ol>
+<li>Processing instructions (<code>&lt;!proc a="b"&gt;</code>) are ignored.</li>
+<li>Comments (<code>&lt;!-- this is a comment --&gt;</code>) are ignored.</li>
+<li>Declarations (<code>&lt;?xml ...&gt;</code> <code>&lt;?xml-model ...&gt;</code> <code>&lt;?xml-stylesheet ...&gt;</code>) are
+read by the parser, but do not leave traces in the TF output.</li>
+<li>The atrributes of the root-element are ignored.</li>
+<li>Namespaces are read by the parser,
+but only the unqualified names are distinguishable in the output as feature names.
+So if the input has elements <code>ns1:abb</code> and <code>ns2:abb</code>, we'll see just the node
+type <code>abb</code> in the output.</li>
+</ol>
+<h2 id="tf-noded-and-features">TF noded and features</h2>
+<p>(only in as far they are not in 1-1 correspondence with XML elements and attributes)</p>
+<h3 id="node-type-folder">node type <code>folder</code></h3>
+<p><em>The type of subfolders of XML documents.</em></p>
+<p><strong>Section level 1.</strong></p>
+<p><strong>Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>feature</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>folder</code></td>
+<td>name of the subfolder</td>
+</tr>
+</tbody>
+</table>
+<h3 id="node-type-file">node type <code>file</code></h3>
+<p><em>The type of individual XML documents.</em></p>
+<p><strong>Section level 2.</strong></p>
+<p><strong>Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>feature</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>file</code></td>
+<td>name of the file, without the <code>.xml</code> extension. Other extensions are included.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="node-type-char">node type <code>char</code></h3>
+<p><em>Unicode characters.</em></p>
+<p><strong>Slot type.</strong></p>
+<p>The characters of the text of the elements.
+Ignorable whitespace has been discarded, and is not present in the TF dataset.
+Meaningful whitespace has been condensed to single spaces.</p>
+<p>Some empty slots have been inserted to mark the place of empty elements.</p>
+<p><strong>Features</strong></p>
+<table>
+<thead>
+<tr>
+<th>feature</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ch</code></td>
+<td>the unicode character in that slot. There are also slots</td>
+</tr>
+<tr>
+<td><code>empty</code></td>
+<td>whether a slot has been inserted in an empty element</td>
+</tr>
+</tbody>
+</table></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L274-L1047" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class XML:
+    def __init__(
+        self,
+        sourceVersion=&#34;0.1&#34;,
+        testSet=set(),
+        generic={},
+        transform=None,
+        tfVersion=&#34;0.1&#34;,
+    ):
+        &#34;&#34;&#34;Converts XML to TF.
+
+        We adopt a fair bit of &#34;convention over configuration&#34; here, in order to lessen
+        the burden for the user of specifying so many details.
+
+        Based on current directory from where the script is called,
+        it defines all the ingredients to carry out
+        a `tf.convert.walker` conversion of the XML input.
+
+        This function is assumed to work in the context of a repository,
+        i.e. a directory on your computer relative to which the input directory
+        `xml` and the output directory `tf` exist.
+
+        Your current directory must be somewhere inside
+
+        ```
+        ~/backend/org/repo/relative
+        ```
+
+        where
+
+        *   `~` is your home directory;
+        *   `backend` is an online *backend* name,
+            like `github`, `gitlab`, `git.huc.knaw.nl`;
+        *   `org` is an organisation, person, or group in the backend;
+        *   `repo` is a repository in the `org`.
+        *   `relative` is a directory path within the repo (0 or more components)
+
+        This is only about the directory structure on your local computer;
+        it is not required that you have online incarnations of your repository
+        in that backend.
+        Even your local repository does not have to be a git repository.
+
+        The only thing that matters is that the full path to your repo can be parsed
+        as a sequence of *home*/*backend*/*org*/*repo*/*relative*.
+
+        Relative to this directory the program expects and creates
+        input/output directories.
+
+        ## Input directory
+
+        ### `xml`
+
+        *Location of the XML sources.*
+
+        **If it does not exist, the program aborts with an error.**
+
+        Several levels of subfolders are assumed:
+
+        1.  the version of the source (this could be a date string).
+        2.  volumes/collections of documents. The subfolder `__ignore__` is ignored.
+        3.  the XML documents themselves
+
+        ## Output directories
+
+        ### `report`
+
+        Directory to write the results of the `check` task to: an inventory
+        of elements/attributes encountered, and possible validation errors.
+        If the directory does not exist, it will be created.
+        The default value is `.` (i.e. the current directory in which
+        the script is invoked).
+
+        ### `tf`
+
+        The directory under which the text-fabric output file (with extension `.tf`)
+        are placed.
+        If it does not exist, it will be created.
+        The tf files will be generated in a subdirectory named by a version number,
+        passed as `tfVersion`.
+
+        Parameters
+        ----------
+
+        sourceVersion: string, optional &#34;0.1&#34;
+            Version of the source files. This is the name of a top-level
+            subfolder of the `xml` input folder.
+
+        testSet: set, optional empty
+            A set of file names. If you run the conversion in test mode
+            (pass `test` as argument to the `XML.task()` method),
+            only the files in the test set are converted.
+
+        generic: dict, optional {}
+            Metadata for all generated TF feature.
+
+        transform: function, optional None
+            If not None, a function that transforms text to text, used
+            as a preprocessing step for each input xml file.
+
+        tfVersion: string, optional &#34;0.1&#34;
+            Version of the generated tf files. This is the name of a top-level
+            subfolder of the `tf` output folder.
+        &#34;&#34;&#34;
+        (backend, org, repo, relative) = getLocation()
+        if any(s is None for s in (backend, org, repo, relative)):
+            console(
+                &#34;Not working in a repo: &#34;
+                f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+            )
+            quit()
+
+        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
+
+        base = ex(f&#34;~/{backend}&#34;)
+        repoDir = f&#34;{base}/{org}/{repo}&#34;
+        refDir = f&#34;{repoDir}{relative}&#34;
+        sourceDir = f&#34;{refDir}/xml/{sourceVersion}&#34;
+        reportDir = f&#34;{refDir}/report&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+
+        self.refDir = refDir
+        self.sourceDir = sourceDir
+        self.reportDir = reportDir
+        self.tfDir = tfDir
+        self.org = org
+        self.repo = repo
+
+        if sourceDir is None or not dirExists(sourceDir):
+            console(f&#34;Source location does not exist: {sourceDir}&#34;)
+            quit()
+
+        self.sourceVersion = sourceVersion
+        self.testMode = False
+        self.testSet = testSet
+        self.generic = generic
+        self.transform = transform
+        self.tfVersion = tfVersion
+        self.tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+        myDir = dirNm(abspath(__file__))
+        self.myDir = myDir
+
+    @staticmethod
+    def help(program):
+        &#34;&#34;&#34;Print a help text to the console.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        In order to give help on the command line, here is a pre-baked help text.
+        Only the name of the conversion script needs to be merged in.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string.
+        &#34;&#34;&#34;
+
+        console(
+            f&#34;&#34;&#34;
+
+        Convert XML to TF.
+        There are also commands to check the XML and to load the TF.
+
+        python3 {program} [tasks/flags] [--help]
+
+        --help: show this text and exit
+
+        tasks:
+            a sequence of tasks:
+            check:
+                just reports on the elements in the source.
+            convert:
+                just converts XML to TF
+            load:
+                just loads the generated TF;
+
+        flags:
+            test:
+                run in test mode
+        &#34;&#34;&#34;
+        )
+
+    @staticmethod
+    def getParser():
+        &#34;&#34;&#34;Configure the lxml parser.
+
+        See [parser options](https://lxml.de/parsing.html#parser-options).
+
+        Returns
+        -------
+        object
+            A configured lxml parse object.
+        &#34;&#34;&#34;
+        return etree.XMLParser(
+            remove_blank_text=False,
+            collect_ids=False,
+            remove_comments=True,
+            remove_pis=True,
+            huge_tree=True,
+        )
+
+    def getXML(self):
+        &#34;&#34;&#34;Make an inventory of the XML source files.
+
+        Returns
+        -------
+        tuple of tuple
+            The outer tuple has sorted entries corresponding to folders under the
+            XML input directory.
+            Each such entry consists of the folder name and an inner tuple
+            that contains the file names in that folder, sorted.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        testMode = self.testMode
+        testSet = self.testSet
+
+        IGNORE = &#34;__ignore__&#34;
+
+        xmlFilesRaw = collections.defaultdict(list)
+
+        with scanDir(sourceDir) as dh:
+            for folder in dh:
+                folderName = folder.name
+                if folderName == IGNORE:
+                    continue
+                if not folder.is_dir():
+                    continue
+                with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                    for file in fh:
+                        fileName = file.name
+                        if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                            continue
+                        if testMode and fileName not in testSet:
+                            continue
+                        xmlFilesRaw[folderName].append(fileName)
+
+        xmlFiles = tuple(
+            (folderName, tuple(sorted(fileNames)))
+            for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+        )
+        return xmlFiles
+
+    def checkTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
+
+        It validates the XML, but only if a schema file has been passed explicitly
+        when constructing the `XML()` object.
+
+        Then it makes an inventory of all elements and attributes in the XML files.
+
+        The inventory lists all elements and attributes, and many attribute values.
+        But is represents any digit with `n`, and some attributes that contain
+        ids or keywords, are reduced to the value `x`.
+
+        This information reduction helps to get a clear overview.
+
+        It writes reports to the `reportDir`:
+
+        *   `errors.txt`: validation errors
+        *   `elements.txt`: element/attribute inventory.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        reportDir = self.reportDir
+
+        getStore = lambda: collections.defaultdict(  # noqa: E731
+            lambda: collections.defaultdict(collections.Counter)
+        )
+        analysis = getStore()
+
+        parser = self.getParser()
+
+        initTree(reportDir)
+
+        def analyse(root, analysis):
+            NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
+
+            def nodeInfo(node):
+                tag = etree.QName(node.tag).localname
+                atts = node.attrib
+
+                if len(atts) == 0:
+                    analysis[tag][&#34;&#34;][&#34;&#34;] += 1
+                else:
+                    for (kOrig, v) in atts.items():
+                        k = etree.QName(kOrig).localname
+
+                        vTrim = NUM_RE.sub(&#34;N&#34;, v)
+                        analysis[tag][k][vTrim] += 1
+
+                for child in node.iterchildren(tag=etree.Element):
+                    nodeInfo(child)
+
+            nodeInfo(root)
+
+        def writeReport():
+            reportFile = f&#34;{reportDir}/elements.txt&#34;
+            with open(reportFile, &#34;w&#34;) as fh:
+                fh.write(
+                    &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
+                )
+                fh.write(&#34;\n\n&#34;)
+
+                infoLines = 0
+
+                def writeAttInfo(tag, att, attInfo):
+                    nonlocal infoLines
+                    nl = &#34;&#34; if tag == &#34;&#34; else &#34;\n&#34;
+                    tagRep = &#34;&#34; if tag == &#34;&#34; else f&#34;&lt;{tag}&gt;&#34;
+                    attRep = &#34;&#34; if att == &#34;&#34; else f&#34;{att}=&#34;
+                    atts = sorted(attInfo.items())
+                    (val, amount) = atts[0]
+                    fh.write(f&#34;{nl}\t{tagRep:&lt;12} {attRep:&lt;12} {amount:&gt;5}x {val}\n&#34;)
+                    infoLines += 1
+                    for (val, amount) in atts[1:]:
+                        fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;12} {&#39;&#34;&#39;:&lt;12} {amount:&gt;5}x {val}\n&#34;&#34;&#34;)
+                        infoLines += 1
+
+                def writeTagInfo(tag, tagInfo):
+                    nonlocal infoLines
+                    tags = sorted(tagInfo.items())
+                    (att, attInfo) = tags[0]
+                    writeAttInfo(tag, att, attInfo)
+                    infoLines += 1
+                    for (att, attInfo) in tags[1:]:
+                        writeAttInfo(&#34;&#34;, att, attInfo)
+
+                for (tag, tagInfo) in sorted(analysis.items()):
+                    writeTagInfo(tag, tagInfo)
+
+            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+
+        i = 0
+        for (xmlFolder, xmlFiles) in self.getXML():
+            console(xmlFolder)
+            for xmlFile in xmlFiles:
+                i += 1
+                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                tree = etree.parse(xmlPath, parser)
+                root = tree.getroot()
+                analyse(root, analysis)
+
+        console(&#34;&#34;)
+        writeReport()
+
+        return True
+
+    # SET UP CONVERSION
+
+    def getConverter(self):
+        &#34;&#34;&#34;Initializes a converter.
+
+        Returns
+        -------
+        object
+            The `tf.convert.walker.CV` converter object, initialized.
+        &#34;&#34;&#34;
+        tfPath = self.tfPath
+
+        TF = Fabric(locations=tfPath)
+        return CV(TF)
+
+    def convertTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+        It sets up the `tf.convert.walker` machinery and runs it.
+
+        Returns
+        -------
+        boolean
+            Whether the conversion was successful.
+        &#34;&#34;&#34;
+        slotType = &#34;char&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+            &#34;sectionFeatures&#34;: &#34;folder,file&#34;,
+            &#34;sectionTypes&#34;: &#34;folder,file&#34;,
+        }
+        intFeatures = {&#34;empty&#34;}
+        featureMeta = dict(
+            folder=dict(description=&#34;name of source folder&#34;),
+            file=dict(description=&#34;name of source file&#34;),
+            ch=dict(description=&#34;the unicode character of a slot&#34;),
+            empty=dict(
+                description=&#34;whether a slot has been inserted in an empty element&#34;
+            ),
+        )
+        self.intFeatures = intFeatures
+        self.featureMeta = featureMeta
+
+        tfVersion = self.tfVersion
+        tfPath = self.tfPath
+        generic = self.generic
+        generic[&#34;sourceFormat&#34;] = &#34;XML&#34;
+        generic[&#34;version&#34;] = tfVersion
+
+        initTree(tfPath, fresh=True, gentle=True)
+
+        cv = self.getConverter()
+
+        return cv.walk(
+            self.getDirector(),
+            slotType,
+            otext=otext,
+            generic=generic,
+            intFeatures=intFeatures,
+            featureMeta=featureMeta,
+            generateTf=True,
+        )
+
+    # DIRECTOR
+
+    def getDirector(self):
+        &#34;&#34;&#34;Factory for the director function.
+
+        The `tf.convert.walker` relies on a corpus dependent `director` function
+        that walks through the source data and spits out actions that
+        produces the TF dataset.
+
+        We collect all needed data, store it, and define a local director function
+        that has access to this data.
+
+        Returns
+        -------
+        function
+            The local director function that has been constructed.
+        &#34;&#34;&#34;
+        PASS_THROUGH = set(
+            &#34;&#34;&#34;
+            xml
+            &#34;&#34;&#34;.strip().split()
+        )
+
+        # CHECKING
+
+        ZWSP = &#34;\u200b&#34;  # zero-width space
+
+        sourceDir = self.sourceDir
+        featureMeta = self.featureMeta
+        transform = self.transform
+
+        transformFunc = (
+            (lambda x: x)
+            if transform is None
+            else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+        )
+
+        parser = self.getParser()
+
+        # WALKERS
+
+        WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
+
+        def walkNode(cv, cur, node):
+            &#34;&#34;&#34;Internal function to deal with a single element.
+
+            Will be called recursively.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            cur[&#34;nest&#34;].append(tag)
+
+            beforeChildren(cv, cur, node, tag)
+
+            for child in node.iterchildren(tag=etree.Element):
+                walkNode(cv, cur, child)
+
+            afterChildren(cv, cur, node, tag)
+            cur[&#34;nest&#34;].pop()
+            afterTag(cv, cur, node, tag)
+
+        def addSlot(cv, cur, ch):
+            &#34;&#34;&#34;Add a slot.
+
+            Whenever we encounter a character, we add it as a new slot.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            ch: string
+                A single character, the next slot in the result data.
+            &#34;&#34;&#34;
+            s = cv.slot()
+            cv.feature(s, ch=ch)
+
+        def beforeChildren(cv, cur, node, tag):
+            &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if tag not in PASS_THROUGH:
+                curNode = cv.node(tag)
+                cur[&#34;elems&#34;].append(curNode)
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if len(atts):
+                    cv.feature(curNode, **atts)
+
+            if node.text:
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+                for ch in textMaterial:
+                    addSlot(cv, cur, ch)
+
+        def afterChildren(cv, cur, node, tag):
+            &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if tag not in PASS_THROUGH:
+                curNode = cur[&#34;elems&#34;].pop()
+
+                if not cv.linked(curNode):
+                    s = cv.slot()
+                    cv.feature(s, ch=ZWSP, empty=1)
+
+                cv.terminate(curNode)
+
+        def afterTag(cv, cur, node, tag):
+            &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
+
+            This is the place where we proces the `tail` of an lxml node: the
+            text material after the element and before the next open/close
+            tag of any element.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            node: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            &#34;&#34;&#34;
+            if node.tail:
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+                for ch in tailMaterial:
+                    addSlot(cv, cur, ch)
+
+        def director(cv):
+            &#34;&#34;&#34;Director function.
+
+            Here we program a walk through the XML sources.
+            At every step of the walk we fire some actions that build TF nodes
+            and assign features for them.
+
+            Because everything is rather dynamic, we generate fairly standard
+            metadata for the features.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            &#34;&#34;&#34;
+            cur = {}
+
+            i = 0
+            for (xmlFolder, xmlFiles) in self.getXML():
+                console(xmlFolder)
+
+                cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+                cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+
+                for xmlFile in xmlFiles:
+                    i += 1
+                    console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+
+                    cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                    cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+
+                    with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                        text = fh.read()
+                        text = transformFunc(text)
+                        tree = etree.parse(text, parser)
+                        root = tree.getroot()
+                        cur[&#34;nest&#34;] = []
+                        cur[&#34;elems&#34;] = []
+                        walkNode(cv, cur, root)
+
+                    addSlot(cv, cur, None)
+                    cv.terminate(cur[&#34;file&#34;])
+
+                cv.terminate(cur[&#34;folder&#34;])
+
+            console(&#34;&#34;)
+
+            for fName in featureMeta:
+                if not cv.occurs(fName):
+                    cv.meta(fName)
+            for fName in cv.features():
+                if fName not in featureMeta:
+                    cv.meta(
+                        fName,
+                        description=f&#34;this is XML attribute {fName}&#34;,
+                        valueType=&#34;str&#34;,
+                    )
+            console(&#34;source reading done&#34;)
+            return True
+
+        return director
+
+    def loadTask(self):
+        &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+        It loads the tf data that resides in the directory where the &#34;convert&#34; task
+        deliver its results.
+
+        During loading there are additional checks. If they succeed, we have evidence
+        that we have a valid TF dataset.
+
+        Also, during the first load intensive precomputation of TF data takes place,
+        the results of which will be cached in the invisible `.tf` directory there.
+
+        That makes the TF data ready to be loaded fast, next time it is needed.
+
+        Returns
+        -------
+        boolean
+            Whether the loading was successful.
+        &#34;&#34;&#34;
+        tfPath = self.tfPath
+
+        if not dirExists(tfPath):
+            console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+            console(&#34;No tf found, nothing to load&#34;)
+            return False
+
+        TF = Fabric(locations=[tfPath])
+        allFeatures = TF.explore(silent=True, show=True)
+        loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+        api = TF.load(loadableFeatures, silent=False)
+        if api:
+            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+            return True
+        return False
+
+    def task(self, check=False, convert=False, load=False, test=None):
+        &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+        This is a higher level function that can execute a selection of tasks.
+
+        The tasks will be executed in a fixed order: check, convert load.
+        But you can select which one(s) must be executed.
+
+        If multiple tasks must be executed and one fails, the subsequent tasks
+        will not be executed.
+
+        Parameters
+        ----------
+        check: boolean, optional False
+            Whether to carry out the &#34;check&#34; task.
+        convert: boolean, optional False
+            Whether to carry out the &#34;convert&#34; task.
+        load: boolean, optional False
+            Whether to carry out the &#34;load&#34; task.
+        test: boolean, optional None
+            Whether to run in test mode.
+            In test mode only the files in the test set are converted.
+
+            If None, it will read its value from the attribute `testMode` of the
+            `XML` object.
+
+        Returns
+        -------
+        boolean
+            Whether all tasks have executed successfully.
+        &#34;&#34;&#34;
+        sourceDir = self.sourceDir
+        reportDir = self.reportDir
+        tfPath = self.tfPath
+
+        if test is not None:
+            self.testMode = test
+
+        good = True
+
+        if check:
+            console(f&#34;XML to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+            good = self.checkTask()
+
+        if good and convert:
+            console(f&#34;XML to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+            good = self.convertTask()
+
+        if good and load:
+            good = self.loadTask()
+
+        return good
+
+    def run(self, program=None):
+        &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
+
+        The intended use of this module is that it is included by a conversion
+        script.
+        When that script is invoked, you can pass arguments to specify tasks
+        and flags.
+
+        This function inspects those arguments, and runs the specified tasks,
+        with the specified flags enabled.
+
+        Parameters
+        ----------
+        program: string
+            The name of the program that you want to display
+            in the help string, in case a help text must be displayed.
+
+        Returns
+        -------
+        integer
+            In fact, this function will terminate the conversion program
+            an return a status code: 0 for succes, 1 for failure.
+        &#34;&#34;&#34;
+        programRep = &#34;XML-converter&#34; if program is None else program
+        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;}
+        possibleFlags = {&#34;test&#34;}
+        possibleArgs = possibleTasks | possibleFlags
+
+        args = sys.argv[1:]
+
+        if not len(args):
+            self.help(programRep)
+            console(&#34;No task specified&#34;)
+            sys.exit(-1)
+
+        illegalArgs = {arg for arg in args if arg not in possibleArgs}
+
+        if len(illegalArgs):
+            self.help(programRep)
+            for arg in illegalArgs:
+                console(f&#34;Illegal argument `{arg}`&#34;)
+            sys.exit(-1)
+
+        tasks = {arg: True for arg in args if arg in possibleTasks}
+        flags = {arg: True for arg in args if arg in possibleFlags}
+
+        good = self.task(**tasks, **flags)
+        if good:
+            sys.exit(0)
+        else:
+            sys.exit(1)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="tf.convert.xml.XML.getParser"><code class="name flex">
+<span>def <span class="ident">getParser</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configure the lxml parser.</p>
+<p>See <a href="https://lxml.de/parsing.html#parser-options">parser options</a>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>A configured lxml parse object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L456-L473" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def getParser():
+    &#34;&#34;&#34;Configure the lxml parser.
+
+    See [parser options](https://lxml.de/parsing.html#parser-options).
+
+    Returns
+    -------
+    object
+        A configured lxml parse object.
+    &#34;&#34;&#34;
+    return etree.XMLParser(
+        remove_blank_text=False,
+        collect_ids=False,
+        remove_comments=True,
+        remove_pis=True,
+        huge_tree=True,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.help"><code class="name flex">
+<span>def <span class="ident">help</span></span>(<span>program)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print a help text to the console.</p>
+<p>The intended use of this module is that it is included by a conversion
+script.
+In order to give help on the command line, here is a pre-baked help text.
+Only the name of the conversion script needs to be merged in.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>program</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the program that you want to display
+in the help string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L415-L454" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def help(program):
+    &#34;&#34;&#34;Print a help text to the console.
+
+    The intended use of this module is that it is included by a conversion
+    script.
+    In order to give help on the command line, here is a pre-baked help text.
+    Only the name of the conversion script needs to be merged in.
+
+    Parameters
+    ----------
+    program: string
+        The name of the program that you want to display
+        in the help string.
+    &#34;&#34;&#34;
+
+    console(
+        f&#34;&#34;&#34;
+
+    Convert XML to TF.
+    There are also commands to check the XML and to load the TF.
+
+    python3 {program} [tasks/flags] [--help]
+
+    --help: show this text and exit
+
+    tasks:
+        a sequence of tasks:
+        check:
+            just reports on the elements in the source.
+        convert:
+            just converts XML to TF
+        load:
+            just loads the generated TF;
+
+    flags:
+        test:
+            run in test mode
+    &#34;&#34;&#34;
+    )</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.convert.xml.XML.checkTask"><code class="name flex">
+<span>def <span class="ident">checkTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "check" task.</p>
+<p>It validates the XML, but only if a schema file has been passed explicitly
+when constructing the <code><a title="tf.convert.xml.XML" href="#tf.convert.xml.XML">XML</a></code> object.</p>
+<p>Then it makes an inventory of all elements and attributes in the XML files.</p>
+<p>The inventory lists all elements and attributes, and many attribute values.
+But is represents any digit with <code>n</code>, and some attributes that contain
+ids or keywords, are reduced to the value <code>x</code>.</p>
+<p>This information reduction helps to get a clear overview.</p>
+<p>It writes reports to the <code>reportDir</code>:</p>
+<ul>
+<li><code>errors.txt</code>: validation errors</li>
+<li><code>elements.txt</code>: element/attribute inventory.</li>
+</ul></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L516-L619" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def checkTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
+
+    It validates the XML, but only if a schema file has been passed explicitly
+    when constructing the `XML()` object.
+
+    Then it makes an inventory of all elements and attributes in the XML files.
+
+    The inventory lists all elements and attributes, and many attribute values.
+    But is represents any digit with `n`, and some attributes that contain
+    ids or keywords, are reduced to the value `x`.
+
+    This information reduction helps to get a clear overview.
+
+    It writes reports to the `reportDir`:
+
+    *   `errors.txt`: validation errors
+    *   `elements.txt`: element/attribute inventory.
+    &#34;&#34;&#34;
+    sourceDir = self.sourceDir
+    reportDir = self.reportDir
+
+    getStore = lambda: collections.defaultdict(  # noqa: E731
+        lambda: collections.defaultdict(collections.Counter)
+    )
+    analysis = getStore()
+
+    parser = self.getParser()
+
+    initTree(reportDir)
+
+    def analyse(root, analysis):
+        NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
+
+        def nodeInfo(node):
+            tag = etree.QName(node.tag).localname
+            atts = node.attrib
+
+            if len(atts) == 0:
+                analysis[tag][&#34;&#34;][&#34;&#34;] += 1
+            else:
+                for (kOrig, v) in atts.items():
+                    k = etree.QName(kOrig).localname
+
+                    vTrim = NUM_RE.sub(&#34;N&#34;, v)
+                    analysis[tag][k][vTrim] += 1
+
+            for child in node.iterchildren(tag=etree.Element):
+                nodeInfo(child)
+
+        nodeInfo(root)
+
+    def writeReport():
+        reportFile = f&#34;{reportDir}/elements.txt&#34;
+        with open(reportFile, &#34;w&#34;) as fh:
+            fh.write(
+                &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
+            )
+            fh.write(&#34;\n\n&#34;)
+
+            infoLines = 0
+
+            def writeAttInfo(tag, att, attInfo):
+                nonlocal infoLines
+                nl = &#34;&#34; if tag == &#34;&#34; else &#34;\n&#34;
+                tagRep = &#34;&#34; if tag == &#34;&#34; else f&#34;&lt;{tag}&gt;&#34;
+                attRep = &#34;&#34; if att == &#34;&#34; else f&#34;{att}=&#34;
+                atts = sorted(attInfo.items())
+                (val, amount) = atts[0]
+                fh.write(f&#34;{nl}\t{tagRep:&lt;12} {attRep:&lt;12} {amount:&gt;5}x {val}\n&#34;)
+                infoLines += 1
+                for (val, amount) in atts[1:]:
+                    fh.write(f&#34;&#34;&#34;\t{&#39;&#39;:&lt;12} {&#39;&#34;&#39;:&lt;12} {amount:&gt;5}x {val}\n&#34;&#34;&#34;)
+                    infoLines += 1
+
+            def writeTagInfo(tag, tagInfo):
+                nonlocal infoLines
+                tags = sorted(tagInfo.items())
+                (att, attInfo) = tags[0]
+                writeAttInfo(tag, att, attInfo)
+                infoLines += 1
+                for (att, attInfo) in tags[1:]:
+                    writeAttInfo(&#34;&#34;, att, attInfo)
+
+            for (tag, tagInfo) in sorted(analysis.items()):
+                writeTagInfo(tag, tagInfo)
+
+        console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+
+    i = 0
+    for (xmlFolder, xmlFiles) in self.getXML():
+        console(xmlFolder)
+        for xmlFile in xmlFiles:
+            i += 1
+            console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+            xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+            tree = etree.parse(xmlPath, parser)
+            root = tree.getroot()
+            analyse(root, analysis)
+
+    console(&#34;&#34;)
+    writeReport()
+
+    return True</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.convertTask"><code class="name flex">
+<span>def <span class="ident">convertTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "convert" task.</p>
+<p>It sets up the <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> machinery and runs it.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the conversion was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L636-L682" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def convertTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
+
+    It sets up the `tf.convert.walker` machinery and runs it.
+
+    Returns
+    -------
+    boolean
+        Whether the conversion was successful.
+    &#34;&#34;&#34;
+    slotType = &#34;char&#34;
+    otext = {
+        &#34;fmt:text-orig-full&#34;: &#34;{ch}&#34;,
+        &#34;sectionFeatures&#34;: &#34;folder,file&#34;,
+        &#34;sectionTypes&#34;: &#34;folder,file&#34;,
+    }
+    intFeatures = {&#34;empty&#34;}
+    featureMeta = dict(
+        folder=dict(description=&#34;name of source folder&#34;),
+        file=dict(description=&#34;name of source file&#34;),
+        ch=dict(description=&#34;the unicode character of a slot&#34;),
+        empty=dict(
+            description=&#34;whether a slot has been inserted in an empty element&#34;
+        ),
+    )
+    self.intFeatures = intFeatures
+    self.featureMeta = featureMeta
+
+    tfVersion = self.tfVersion
+    tfPath = self.tfPath
+    generic = self.generic
+    generic[&#34;sourceFormat&#34;] = &#34;XML&#34;
+    generic[&#34;version&#34;] = tfVersion
+
+    initTree(tfPath, fresh=True, gentle=True)
+
+    cv = self.getConverter()
+
+    return cv.walk(
+        self.getDirector(),
+        slotType,
+        otext=otext,
+        generic=generic,
+        intFeatures=intFeatures,
+        featureMeta=featureMeta,
+        generateTf=True,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.getConverter"><code class="name flex">
+<span>def <span class="ident">getConverter</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initializes a converter.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>The <code><a title="tf.convert.walker.CV" href="walker.html#tf.convert.walker.CV">CV</a></code> converter object, initialized.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L623-L634" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getConverter(self):
+    &#34;&#34;&#34;Initializes a converter.
+
+    Returns
+    -------
+    object
+        The `tf.convert.walker.CV` converter object, initialized.
+    &#34;&#34;&#34;
+    tfPath = self.tfPath
+
+    TF = Fabric(locations=tfPath)
+    return CV(TF)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.getDirector"><code class="name flex">
+<span>def <span class="ident">getDirector</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Factory for the director function.</p>
+<p>The <code><a title="tf.convert.walker" href="walker.html">tf.convert.walker</a></code> relies on a corpus dependent <code>director</code> function
+that walks through the source data and spits out actions that
+produces the TF dataset.</p>
+<p>We collect all needed data, store it, and define a local director function
+that has access to this data.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>function</code></dt>
+<dd>The local director function that has been constructed.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L686-L907" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getDirector(self):
+    &#34;&#34;&#34;Factory for the director function.
+
+    The `tf.convert.walker` relies on a corpus dependent `director` function
+    that walks through the source data and spits out actions that
+    produces the TF dataset.
+
+    We collect all needed data, store it, and define a local director function
+    that has access to this data.
+
+    Returns
+    -------
+    function
+        The local director function that has been constructed.
+    &#34;&#34;&#34;
+    PASS_THROUGH = set(
+        &#34;&#34;&#34;
+        xml
+        &#34;&#34;&#34;.strip().split()
+    )
+
+    # CHECKING
+
+    ZWSP = &#34;\u200b&#34;  # zero-width space
+
+    sourceDir = self.sourceDir
+    featureMeta = self.featureMeta
+    transform = self.transform
+
+    transformFunc = (
+        (lambda x: x)
+        if transform is None
+        else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+    )
+
+    parser = self.getParser()
+
+    # WALKERS
+
+    WHITE_TRIM_RE = re.compile(r&#34;\s+&#34;, re.S)
+
+    def walkNode(cv, cur, node):
+        &#34;&#34;&#34;Internal function to deal with a single element.
+
+        Will be called recursively.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        node: object
+            An lxml element node.
+        &#34;&#34;&#34;
+        tag = etree.QName(node.tag).localname
+        cur[&#34;nest&#34;].append(tag)
+
+        beforeChildren(cv, cur, node, tag)
+
+        for child in node.iterchildren(tag=etree.Element):
+            walkNode(cv, cur, child)
+
+        afterChildren(cv, cur, node, tag)
+        cur[&#34;nest&#34;].pop()
+        afterTag(cv, cur, node, tag)
+
+    def addSlot(cv, cur, ch):
+        &#34;&#34;&#34;Add a slot.
+
+        Whenever we encounter a character, we add it as a new slot.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        ch: string
+            A single character, the next slot in the result data.
+        &#34;&#34;&#34;
+        s = cv.slot()
+        cv.feature(s, ch=ch)
+
+    def beforeChildren(cv, cur, node, tag):
+        &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        node: object
+            An lxml element node.
+        tag: string
+            The tag of the lxml node.
+        &#34;&#34;&#34;
+        if tag not in PASS_THROUGH:
+            curNode = cv.node(tag)
+            cur[&#34;elems&#34;].append(curNode)
+            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            if len(atts):
+                cv.feature(curNode, **atts)
+
+        if node.text:
+            textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+            for ch in textMaterial:
+                addSlot(cv, cur, ch)
+
+    def afterChildren(cv, cur, node, tag):
+        &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        node: object
+            An lxml element node.
+        tag: string
+            The tag of the lxml node.
+        &#34;&#34;&#34;
+        if tag not in PASS_THROUGH:
+            curNode = cur[&#34;elems&#34;].pop()
+
+            if not cv.linked(curNode):
+                s = cv.slot()
+                cv.feature(s, ch=ZWSP, empty=1)
+
+            cv.terminate(curNode)
+
+    def afterTag(cv, cur, node, tag):
+        &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
+
+        This is the place where we proces the `tail` of an lxml node: the
+        text material after the element and before the next open/close
+        tag of any element.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        node: object
+            An lxml element node.
+        tag: string
+            The tag of the lxml node.
+        &#34;&#34;&#34;
+        if node.tail:
+            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+            for ch in tailMaterial:
+                addSlot(cv, cur, ch)
+
+    def director(cv):
+        &#34;&#34;&#34;Director function.
+
+        Here we program a walk through the XML sources.
+        At every step of the walk we fire some actions that build TF nodes
+        and assign features for them.
+
+        Because everything is rather dynamic, we generate fairly standard
+        metadata for the features.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        &#34;&#34;&#34;
+        cur = {}
+
+        i = 0
+        for (xmlFolder, xmlFiles) in self.getXML():
+            console(xmlFolder)
+
+            cur[&#34;folder&#34;] = cv.node(&#34;folder&#34;)
+            cv.feature(cur[&#34;folder&#34;], folder=xmlFolder)
+
+            for xmlFile in xmlFiles:
+                i += 1
+                console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
+
+                cur[&#34;file&#34;] = cv.node(&#34;file&#34;)
+                cv.feature(cur[&#34;file&#34;], file=xmlFile.removesuffix(&#34;.xml&#34;))
+
+                with open(f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;) as fh:
+                    text = fh.read()
+                    text = transformFunc(text)
+                    tree = etree.parse(text, parser)
+                    root = tree.getroot()
+                    cur[&#34;nest&#34;] = []
+                    cur[&#34;elems&#34;] = []
+                    walkNode(cv, cur, root)
+
+                addSlot(cv, cur, None)
+                cv.terminate(cur[&#34;file&#34;])
+
+            cv.terminate(cur[&#34;folder&#34;])
+
+        console(&#34;&#34;)
+
+        for fName in featureMeta:
+            if not cv.occurs(fName):
+                cv.meta(fName)
+        for fName in cv.features():
+            if fName not in featureMeta:
+                cv.meta(
+                    fName,
+                    description=f&#34;this is XML attribute {fName}&#34;,
+                    valueType=&#34;str&#34;,
+                )
+        console(&#34;source reading done&#34;)
+        return True
+
+    return director</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.getXML"><code class="name flex">
+<span>def <span class="ident">getXML</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make an inventory of the XML source files.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>tuple</code></dt>
+<dd>The outer tuple has sorted entries corresponding to folders under the
+XML input directory.
+Each such entry consists of the folder name and an inner tuple
+that contains the file names in that folder, sorted.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L475-L514" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getXML(self):
+    &#34;&#34;&#34;Make an inventory of the XML source files.
+
+    Returns
+    -------
+    tuple of tuple
+        The outer tuple has sorted entries corresponding to folders under the
+        XML input directory.
+        Each such entry consists of the folder name and an inner tuple
+        that contains the file names in that folder, sorted.
+    &#34;&#34;&#34;
+    sourceDir = self.sourceDir
+    testMode = self.testMode
+    testSet = self.testSet
+
+    IGNORE = &#34;__ignore__&#34;
+
+    xmlFilesRaw = collections.defaultdict(list)
+
+    with scanDir(sourceDir) as dh:
+        for folder in dh:
+            folderName = folder.name
+            if folderName == IGNORE:
+                continue
+            if not folder.is_dir():
+                continue
+            with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                for file in fh:
+                    fileName = file.name
+                    if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
+                        continue
+                    if testMode and fileName not in testSet:
+                        continue
+                    xmlFilesRaw[folderName].append(fileName)
+
+    xmlFiles = tuple(
+        (folderName, tuple(sorted(fileNames)))
+        for (folderName, fileNames) in sorted(xmlFilesRaw.items())
+    )
+    return xmlFiles</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.loadTask"><code class="name flex">
+<span>def <span class="ident">loadTask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the "load" task.</p>
+<p>It loads the tf data that resides in the directory where the "convert" task
+deliver its results.</p>
+<p>During loading there are additional checks. If they succeed, we have evidence
+that we have a valid TF dataset.</p>
+<p>Also, during the first load intensive precomputation of TF data takes place,
+the results of which will be cached in the invisible <code>.<a title="tf" href="../index.html">tf</a></code> directory there.</p>
+<p>That makes the TF data ready to be loaded fast, next time it is needed.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether the loading was successful.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L909-L942" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadTask(self):
+    &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
+
+    It loads the tf data that resides in the directory where the &#34;convert&#34; task
+    deliver its results.
+
+    During loading there are additional checks. If they succeed, we have evidence
+    that we have a valid TF dataset.
+
+    Also, during the first load intensive precomputation of TF data takes place,
+    the results of which will be cached in the invisible `.tf` directory there.
+
+    That makes the TF data ready to be loaded fast, next time it is needed.
+
+    Returns
+    -------
+    boolean
+        Whether the loading was successful.
+    &#34;&#34;&#34;
+    tfPath = self.tfPath
+
+    if not dirExists(tfPath):
+        console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
+        console(&#34;No tf found, nothing to load&#34;)
+        return False
+
+    TF = Fabric(locations=[tfPath])
+    allFeatures = TF.explore(silent=True, show=True)
+    loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
+    api = TF.load(loadableFeatures, silent=False)
+    if api:
+        console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+        return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, program=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Carry out tasks specified by arguments on the command line.</p>
+<p>The intended use of this module is that it is included by a conversion
+script.
+When that script is invoked, you can pass arguments to specify tasks
+and flags.</p>
+<p>This function inspects those arguments, and runs the specified tasks,
+with the specified flags enabled.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>program</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the program that you want to display
+in the help string, in case a help text must be displayed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>integer</code></dt>
+<dd>In fact, this function will terminate the conversion program
+an return a status code: 0 for succes, 1 for failure.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L997-L1047" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def run(self, program=None):
+    &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
+
+    The intended use of this module is that it is included by a conversion
+    script.
+    When that script is invoked, you can pass arguments to specify tasks
+    and flags.
+
+    This function inspects those arguments, and runs the specified tasks,
+    with the specified flags enabled.
+
+    Parameters
+    ----------
+    program: string
+        The name of the program that you want to display
+        in the help string, in case a help text must be displayed.
+
+    Returns
+    -------
+    integer
+        In fact, this function will terminate the conversion program
+        an return a status code: 0 for succes, 1 for failure.
+    &#34;&#34;&#34;
+    programRep = &#34;XML-converter&#34; if program is None else program
+    possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;}
+    possibleFlags = {&#34;test&#34;}
+    possibleArgs = possibleTasks | possibleFlags
+
+    args = sys.argv[1:]
+
+    if not len(args):
+        self.help(programRep)
+        console(&#34;No task specified&#34;)
+        sys.exit(-1)
+
+    illegalArgs = {arg for arg in args if arg not in possibleArgs}
+
+    if len(illegalArgs):
+        self.help(programRep)
+        for arg in illegalArgs:
+            console(f&#34;Illegal argument `{arg}`&#34;)
+        sys.exit(-1)
+
+    tasks = {arg: True for arg in args if arg in possibleTasks}
+    flags = {arg: True for arg in args if arg in possibleFlags}
+
+    good = self.task(**tasks, **flags)
+    if good:
+        sys.exit(0)
+    else:
+        sys.exit(1)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.task"><code class="name flex">
+<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, test=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
+<p>This is a higher level function that can execute a selection of tasks.</p>
+<p>The tasks will be executed in a fixed order: check, convert load.
+But you can select which one(s) must be executed.</p>
+<p>If multiple tasks must be executed and one fails, the subsequent tasks
+will not be executed.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>check</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the "check" task.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the "convert" task.</dd>
+<dt><strong><code>load</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to carry out the "load" task.</dd>
+<dt><strong><code>test</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>
+<p>Whether to run in test mode.
+In test mode only the files in the test set are converted.</p>
+<p>If None, it will read its value from the attribute <code>testMode</code> of the
+<code><a title="tf.convert.xml.XML" href="#tf.convert.xml.XML">XML</a></code> object.</p>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>Whether all tasks have executed successfully.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/xml.py#L944-L995" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def task(self, check=False, convert=False, load=False, test=None):
+    &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
+
+    This is a higher level function that can execute a selection of tasks.
+
+    The tasks will be executed in a fixed order: check, convert load.
+    But you can select which one(s) must be executed.
+
+    If multiple tasks must be executed and one fails, the subsequent tasks
+    will not be executed.
+
+    Parameters
+    ----------
+    check: boolean, optional False
+        Whether to carry out the &#34;check&#34; task.
+    convert: boolean, optional False
+        Whether to carry out the &#34;convert&#34; task.
+    load: boolean, optional False
+        Whether to carry out the &#34;load&#34; task.
+    test: boolean, optional None
+        Whether to run in test mode.
+        In test mode only the files in the test set are converted.
+
+        If None, it will read its value from the attribute `testMode` of the
+        `XML` object.
+
+    Returns
+    -------
+    boolean
+        Whether all tasks have executed successfully.
+    &#34;&#34;&#34;
+    sourceDir = self.sourceDir
+    reportDir = self.reportDir
+    tfPath = self.tfPath
+
+    if test is not None:
+        self.testMode = test
+
+    good = True
+
+    if check:
+        console(f&#34;XML to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+        good = self.checkTask()
+
+    if good and convert:
+        console(f&#34;XML to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+        good = self.convertTask()
+
+    if good and load:
+        good = self.loadTask()
+
+    return good</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#xml-import">XML import</a><ul>
+<li><a href="#whitespace">Whitespace</a></li>
+<li><a href="#tasks">Tasks</a></li>
+<li><a href="#flags">Flags</a></li>
+<li><a href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.convert.xml.XML" href="#tf.convert.xml.XML">XML</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.convert.xml.XML.checkTask" href="#tf.convert.xml.XML.checkTask">checkTask</a></code></li>
+<li><code><a title="tf.convert.xml.XML.convertTask" href="#tf.convert.xml.XML.convertTask">convertTask</a></code></li>
+<li><code><a title="tf.convert.xml.XML.getConverter" href="#tf.convert.xml.XML.getConverter">getConverter</a></code></li>
+<li><code><a title="tf.convert.xml.XML.getDirector" href="#tf.convert.xml.XML.getDirector">getDirector</a></code></li>
+<li><code><a title="tf.convert.xml.XML.getParser" href="#tf.convert.xml.XML.getParser">getParser</a></code></li>
+<li><code><a title="tf.convert.xml.XML.getXML" href="#tf.convert.xml.XML.getXML">getXML</a></code></li>
+<li><code><a title="tf.convert.xml.XML.help" href="#tf.convert.xml.XML.help">help</a></code></li>
+<li><code><a title="tf.convert.xml.XML.loadTask" href="#tf.convert.xml.XML.loadTask">loadTask</a></code></li>
+<li><code><a title="tf.convert.xml.XML.run" href="#tf.convert.xml.XML.run">run</a></code></li>
+<li><code><a title="tf.convert.xml.XML.task" href="#tf.convert.xml.XML.task">task</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

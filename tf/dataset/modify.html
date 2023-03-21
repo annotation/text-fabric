@@ -1,0 +1,2544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.dataset.modify API documentation</title>
+<meta name="description" content="Modify …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.dataset.modify</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="modify">Modify</h1>
+<h2 id="usage">Usage</h2>
+<pre><code class="language-python">from tf.dataset import modify
+modify(
+    location,
+    targetLocation,
+    mergeFeatures=None,
+    deleteFeatures=None,
+    addFeatures=None,
+    mergeTypes=None,
+    deleteTypes=None,
+    addTypes=None,
+    featureMeta=None,
+    silent=&quot;auto&quot;,
+)
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/dataset/modify.py#L1-L1095" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Modify
+
+## Usage
+
+```python
+from tf.dataset import modify
+modify(
+    location,
+    targetLocation,
+    mergeFeatures=None,
+    deleteFeatures=None,
+    addFeatures=None,
+    mergeTypes=None,
+    deleteTypes=None,
+    addTypes=None,
+    featureMeta=None,
+    silent=&#34;auto&#34;,
+)
+```
+
+
+&#34;&#34;&#34;
+
+import collections
+
+from ..fabric import Fabric
+from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
+from ..core.timestamp import Timestamp, SILENT_D, DEEP
+from ..core.helpers import itemize, fitemize, isInt, collectFormats
+from ..core.files import dirEmpty
+
+VALTP = &#34;valueType&#34;
+
+GENERATED = set(
+    &#34;&#34;&#34;
+    writtenBy
+    dateWritten
+    version
+&#34;&#34;&#34;.strip().split()
+)
+
+NODE = &#34;node&#34;
+NODES = &#34;nodes&#34;
+EDGE = &#34;edge&#34;
+EDGES = &#34;edges&#34;
+
+NFS = &#34;nodeFeatures&#34;
+EFS = &#34;edgeFeatures&#34;
+
+ADD_F_KEYS = {NFS, EFS}
+
+NF = &#34;nodeFrom&#34;
+NT = &#34;nodeTo&#34;
+NS = &#34;nodeSlots&#34;
+
+ADD_T_KEYS = {NF, NT, NS, NFS, EFS}
+
+SE_TP = &#34;sectionTypes&#34;
+SE_FT = &#34;sectionFeatures&#34;
+ST_TP = &#34;structureTypes&#34;
+ST_FT = &#34;structureFeatures&#34;
+
+TM = Timestamp()
+indent = TM.indent
+info = TM.info
+error = TM.error
+isSilent = TM.isSilent
+setSilent = TM.setSilent
+
+
+def _rep(iterable):
+    return &#34;, &#34;.join(sorted(iterable))
+
+
+def modify(
+    location,
+    targetLocation,
+    mergeFeatures=None,
+    deleteFeatures=None,
+    addFeatures=None,
+    mergeTypes=None,
+    deleteTypes=None,
+    addTypes=None,
+    featureMeta=None,
+    silent=SILENT_D,
+):
+    &#34;&#34;&#34;Modifies the supply of node types and features in a single data set.
+
+    Dependent on the presence of the parameters, the following steps will be
+    executed before the result is written out as a new TF dataset:
+
+    *   merge existing features into an other feature, removing the features
+        that went in;
+    *   delete any number of existing features;
+    *   add any number of features and their data;
+    *   merge existing node types into a new one, removing the
+        types that went in, without loss of nodes;
+
+    So far, no new nodes have been added or removed. But then:
+
+    *   delete any number of node types with their nodes;
+    *   add any number of new node types, with nodes and features.
+
+    The last two actions lead to a shifting of nodes, and all features that map
+    them, will be shifted accordingly.
+
+    You can also pass meta data to be merged in.
+
+    Finally, the resulting features will be written to disk.
+
+    !!! hint &#34;Only added/merged features&#34;
+        It is possible to output only the added and merged features instead
+        of a complete dataset. Just pass the boolean value `True` to `deleteFeatures`
+        below.
+
+    Parameters
+    ----------
+
+    location: string
+        You can pass just the location of the original dataset in the file system,
+        i.e. the directory that contains the .tf files.
+
+    targetLocation: string
+        The directory into which the result dataset will be written.
+
+    mergeFeatures: dict, optional None
+        You can merge several features into one. This is especially useful if there
+        are many features each operating on different node types, and you want to
+        unify them into one feature.
+        The situation may occur that several of the features to be merged supply
+        conflicting values for a node. Then the last feature in the merge list wins.
+
+        The result feature may exist already. Also then there is a risk of conflict.
+        Again, the merge result wins.
+
+        Example
+        -------
+            mergeFeatures=dict(
+                resultFeature1=[feat1, feat2],
+                resultFeature2=&#34;feat3, feat4&#34;,
+            ),
+
+        If the resulting feature is new, or needs a new description, you can
+        provide metadata in the `featureMeta` argument.
+        For new features you may want to set the `valueType`, although we try
+        hard to deduce it from the data available.
+
+    deleteFeatures: boolean | string | iterable, optional None
+        This should be either a boolean value `True` or an iterable or space/comma
+        separated string of features that you want to delete from the result.
+
+        `True` means: all features will be deleted that are not the result of merging
+        or adding features (see `mergeFeatures` above and `addFeatures` below.
+
+    addFeatures: dict, optional None
+        You can add as many features as you want, assigning values to all types,
+        including new nodes of new types that have been generated in the steps before.
+
+        You can also use this parameter to override existing features:
+        if a feature that you are adding already exists, the new data will be merged
+        in, overriding assignments of the existing feature if there is a conflict.
+        The meta data of the old and new feature will also be merged.
+
+        This parameter must have this shape:
+
+        Example
+        -------
+            addFeatures=dict(
+                nodeFeatures=dict(
+                  feat1=data1,
+                  feat2=data2,
+                ),
+                edgeFeatures=dict(
+                  feat3=data3,
+                  feat4=data4,
+                ),
+
+        If the resulting features are new, or need a new description, you can
+        provide metadata in the `featureMeta` argument.
+        For new features you may want to set the `valueType`, although we try
+        hard to deduce it from the data available.
+
+    mergeTypes: dict, optional None
+        You can merge several node types into one.
+        The merged node type will have the union of nodes of the types that are merged.
+        All relevant features will stay the same, except the `otype` feature of course.
+
+        You can pass additional information to be added as features to nodes
+        of the new node type.
+        These features can be used to discriminate between the merged types.
+
+        This parameter must have this shape:
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=(
+                    &#39;inType1&#39;,
+                    &#39;inType2&#39;,
+                ),
+                outTypeB=&#34;inType3, inType4&#34;,
+            )
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=dict(
+                    inType1=dict(
+                        featureI=valueI,
+                        featureK=valueK,
+                    ),
+                    inType2=dict(
+                        featureL=valueL,
+                        featureM=valueM,
+                    ),
+                ),
+                outTypeB=dict(
+                    inType3=dict(
+                        featureN=valueN,
+                        featureO=valueO,
+                    ),
+                    inType4=dict(
+                        featureP=valueP,
+                        featureQ=valueQ,
+                    ),
+                ),
+            )
+
+        It does not matter if these types and features already occur.
+        The outTypes may be existing types of really new types.
+        The new features may be existing or new features.
+
+        Do not forget to provide meta data for new features in the `featureMeta` argument.
+
+        This will migrate nodes of type `inType1` or `inType2` to nodes of `outTypeA`.
+
+        In the extended form, when there are feature specifications associated
+        with the old types, after merging the following assignments will be made:
+
+        `featureI = valueI` to nodes coming from `inType1`
+
+        and
+
+        `featureK = valueK` to nodes coming from `inType2`.
+
+        No nodes will be removed!
+
+        !!! caution &#34;slot types&#34;
+            Merging is all about non-slot types.
+            It is an error if a new type or an old type is a slot type.
+
+    deleteTypes: string | iterable, optional None
+        You can delete node types from the result altogether.
+        You can specify a list of node types as an iterable or as a space
+        separated string.
+
+        If a node type has to be deleted, all nodes in that type
+        will be removed, and features that assign values to these nodes will have
+        those assignments removed.
+
+        Example
+        -------
+            deleteTypes=(&#39;line&#39;, &#39;sentence&#39;)
+
+        Example
+        -------
+            deleteTypes=&#34;line sentence&#34;
+
+        !!! caution &#34;slot types&#34;
+            Deleting is all about non-slot types.
+            It is an error to attempt to delete slot type.
+
+    addTypes: dict, optional None
+        You may add as many node types as you want.
+
+        Per node type that you add, you need to specify the current boundaries of
+        that type and how all those nodes map to slots.
+        You can also add features that assign values to those nodes:
+
+        Example
+        -------
+            dict(
+                nodeType1=dict(
+                    nodeFrom=from1,
+                    nodeTo=to1,
+                    nodeSlots=slots1,
+                    nodeFeatures=nFeatures1,
+                    edgeFeatures=eFeatures1,
+                ),
+                nodeType2=dict(
+                    nodeFrom=from2,
+                    nodeTo=to2,
+                    nodeSlots=slots2,
+                    nodeFeatures=nFeatures2,
+                    edgeFeatures=eFeatures2,
+                ),
+            ),
+
+        The boundaries may be completely arbitrary, so if you get your nodes from another
+        TF data source, you do not need to align their values.
+
+        If you also add features about those nodes, the only thing that matters is
+        that the features assign the right values to the nodes within the boundaries.
+        Assignments to nodes outside the boundaries will be ignored.
+
+        The slots that you link the new nodes to, must exist in the original.
+        You cannot use this function to add slots to your data set.
+
+        !!! caution &#34;existing node types&#34;
+            It is an error if a new node type already exists in the original.
+
+        !!! info &#34;nodeFeatures, edgeFeatures&#34;
+            You can add any number of features.
+            Per feature you have to provide the mapping that defines the feature.
+
+            These features may be new,
+            or they may already be present in the original data.
+
+            If these features have values to nodes that are not within the boundaries
+            of the new node type,
+            those values will not be assigned but silently discarded.
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                    feat2=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                ),
+
+            Edge features without values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1, m2},
+                        n2={m3, m4},
+                    ),
+                    feat2=dict(
+                        n1={m5, m6},
+                        n2={m7, m8},
+                    ),
+                ),
+
+            Edge features with values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1: v1, m2: v2},
+                        n2={m3: v3, m4: v4},
+                    ),
+                    feat2=dict(
+                        n1={m5: v5, m6: v6},
+                        n2={m7: v7, m8: v8},
+                    ),
+                ),
+
+    featureMeta: dict, optional None
+        If the features you have specified in one of the paramers above are new,
+        do not forget to pass metadata for them in this  parameter
+        It is especially important to state the value type:
+
+        Example
+        -------
+            featureMeta=dict(
+                featureI=dict(
+                  valueType=&#39;int&#39;,
+                  description=&#39;level of node&#39;
+                ),
+                featureK=dict(
+                  valueType=&#39;str&#39;,
+                  description=&#39;subtype of node&#39;
+                ),
+            ),
+
+        You can also tweak the section/structure configuration and the
+        text-formats that are specified in the `otext` feature.
+        Just specify them as keys and values to the `otext` feature.
+
+        The logic of tweaking meta data is this: what you provide in this
+        parameter will be merged into existing meta data.
+
+        If you want to remove a key from a feature, give it the value None.
+
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    &#34;&#34;&#34;
+
+    addFeatures = addFeatures or {}
+    onlyDeliverUpdatedFeatures = False
+    if type(deleteFeatures) is bool and deleteFeatures:
+        deleteFeatures = set()
+        onlyDeliverUpdatedFeatures = True
+    deleteFeatures = set(fitemize(deleteFeatures))
+    mergeFeatures = mergeFeatures or {}
+
+    addTypes = addTypes or {}
+    deleteTypes = set(fitemize(deleteTypes))
+    mergeTypes = mergeTypes or {}
+
+    featureMeta = featureMeta or {}
+
+    origMaxNode = None
+    origNodeTypes = None
+    origNodeFeatures = None
+    origEdgeFeatures = None
+    origFeatures = None
+
+    shift = {}
+    shiftNeeded = False
+
+    slotType = None
+    maxNode = None
+    nodeFeatures = {}
+    edgeFeatures = {}
+    deletedTypes = set()
+    deletedFeatures = set()
+    nodeTypes = {}
+
+    nodeFeaturesOut = {}
+    edgeFeaturesOut = {}
+    metaDataOut = {}
+
+    api = None
+
+    good = True
+    ePrefix = &#34;&#34;
+    eItem = &#34;&#34;
+
+    def err(msg):
+        nonlocal good
+        error(f&#34;{ePrefix}{eItem}{msg}&#34;, tm=False)
+        good = False
+
+    def inf(msg):
+        info(f&#34;{ePrefix}{eItem}{msg}&#34;, tm=False)
+
+    def meta(feat):
+        return api.TF.features[feat].metaData
+
+    def valTp(feat):
+        return meta(feat).get(VALTP, None)
+
+    def otextInfo():
+        orig = meta(OTEXT)
+        custom = featureMeta.get(OTEXT, {})
+        combi = {}
+        for key in set(custom) | set(orig):
+            origVal = orig.get(key, &#34;&#34;)
+            customVal = custom.get(key, &#34;&#34;)
+            combi[key] = customVal or origVal
+
+        ensureTypes = set()
+        ensureFeatures = set()
+        for kind in (SE_TP, ST_TP):
+            ensureTypes |= set(itemize(combi.get(kind, &#34;&#34;), sep=&#34;,&#34;))
+        for kind in (SE_FT, ST_FT):
+            ensureFeatures |= set(itemize(combi.get(kind, &#34;&#34;), sep=&#34;,&#34;))
+        ensureFeatures |= set(collectFormats(combi)[-1])
+        return (ensureTypes, ensureFeatures)
+
+    def allInt(values):
+        return all(isInt(v) for v in values)
+
+    def prepare():
+        nonlocal api
+        nonlocal origNodeTypes
+        nonlocal origFeatures
+        nonlocal origNodeFeatures
+        nonlocal origEdgeFeatures
+        nonlocal origMaxNode
+        nonlocal maxNode
+        nonlocal shift
+        nonlocal ePrefix
+        nonlocal eItem
+
+        indent(level=0, reset=True)
+        info(&#34;preparing and checking ...&#34;)
+        indent(level=1, reset=True)
+
+        TF = Fabric(locations=location, silent=silent)
+        origAllFeatures = TF.explore(silent=DEEP, show=True)
+        origNodeFeatures = set(origAllFeatures[NODES])
+        origEdgeFeatures = set(origAllFeatures[EDGES])
+        origFeatures = origNodeFeatures | origEdgeFeatures
+
+        api = TF.load(&#34;&#34;, silent=silent)
+        if not api:
+            return False
+
+        F = api.F
+        C = api.C
+        origNodeTypes = {x[0]: (x[2], x[3]) for x in C.levels.data}
+        origMaxSlot = F.otype.maxSlot
+        origMaxNode = F.otype.maxNode
+        maxNode = origMaxNode
+
+        addedTp = set()
+        addedFt = set()
+        deletedTp = set()
+        deletedFt = set()
+
+        # check mergeFeatures
+
+        ePrefix = &#34;Merge features: &#34;
+
+        for (outFeat, inFeats) in mergeFeatures.items():
+            eItem = f&#34;{outFeat}: &#34;
+
+            inFeats = fitemize(inFeats)
+            if outFeat in WARP:
+                err(&#34;Can not merge into standard features&#34;)
+                continue
+
+            if not inFeats:
+                err(&#34;Nothing to merge from&#34;)
+                continue
+
+            addedFt.add(outFeat)
+
+            for inFeat in inFeats:
+                if inFeat in WARP:
+                    err(f&#34;Can not merge from standard features: {inFeat}&#34;)
+                    continue
+                deletedFt.add(inFeat)
+
+            missingIn = {f for f in inFeats if f not in origFeatures}
+
+            if missingIn:
+                err(f&#34;Missing features {_rep(missingIn)}&#34;)
+
+            allInIsNode = all(f in origNodeFeatures for f in inFeats)
+            allInIsEdge = all(f in origEdgeFeatures for f in inFeats)
+            outExists = outFeat in origFeatures
+            outIsNode = outExists and outFeat in origNodeFeatures
+            outIsEdge = outExists and outFeat in origEdgeFeatures
+
+            if outIsNode and not allInIsNode:
+                err(&#34;Node Feature can not be merged from an edge feature&#34;)
+
+            if outIsEdge and not allInIsEdge:
+                err(&#34;Edge Feature can not be merged from a node feature&#34;)
+
+            if not allInIsNode and not allInIsEdge:
+                err(&#34;Feature can not be merged from both node and edge features&#34;)
+
+            allInIsInt = all(valTp(f) == &#34;int&#34; for f in inFeats)
+            correctTp = &#34;int&#34; if allInIsInt else &#34;str&#34;
+            checkValType(outFeat, correctTp=correctTp)
+
+        # check deleteFeatures
+
+        ePrefix = &#34;Delete features: &#34;
+
+        for feat in deleteFeatures:
+            eItem = f&#34;{feat}: &#34;
+
+            if feat in WARP:
+                err(&#34;Can not delete standard features&#34;)
+                continue
+            if feat not in origFeatures:
+                err(&#34;Not in data set&#34;)
+
+            deletedFt.add(feat)
+
+        # check addFeatures
+
+        ePrefix = &#34;Add features: &#34;
+        eItem = &#34;&#34;
+
+        illegalKeys = set(addFeatures) - ADD_F_KEYS
+        if illegalKeys:
+            err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_F_KEYS)}&#34;)
+
+        bothFeatures = set(addFeatures.get(NFS, {})) &amp; set(addFeatures.get(EFS, {}))
+        if bothFeatures:
+            err(f&#34;{_rep(bothFeatures)}: Both node and edge features&#34;)
+
+        for (kind, otherKind, origSet, origSetOther) in (
+            (NODE, EDGE, origNodeFeatures, origEdgeFeatures),
+            (EDGE, NODE, origEdgeFeatures, origNodeFeatures),
+        ):
+            for (feat, data) in addFeatures.get(f&#34;{kind}Features&#34;, {}).items():
+                eItem = f&#34;{feat}: &#34;
+
+                if feat in WARP:
+                    err(&#34;Cannot add standard features&#34;)
+                    continue
+                if feat in origSetOther:
+                    err(f&#34;{kind} feature already exists as {otherKind} feature&#34;)
+
+                checkValType(feat, vals=data.values())
+
+                addedFt.add(feat)
+
+        # check mergeTypes
+
+        ePrefix = &#34;Merge types: &#34;
+
+        mData = {}
+
+        for (outType, inTypes) in mergeTypes.items():
+            eItem = f&#34;{outType}: &#34;
+
+            if outType == slotType:
+                err(&#34;Result cannot be the slot type&#34;)
+
+            withFeatures = type(inTypes) is dict
+
+            addedTp.add(outType)
+
+            for inType in inTypes:
+                if inType == slotType:
+                    err(f&#34;Slot type {inType} is not mergeable&#34;)
+                    continue
+
+                if inType not in origNodeTypes:
+                    err(f&#34;Cannot merge non-existing node type {inType}&#34;)
+                    continue
+
+                deletedTp.add(inType)
+
+                mFeatures = inTypes[inType] if withFeatures else {}
+                for (feat, val) in mFeatures.items():
+                    mData.setdefault(feat, set()).add(val)
+                    addedFt.add(feat)
+
+        for (feat, vals) in mData.items():
+            eItem = f&#34;{feat}: &#34;
+            checkValType(feat, vals=vals)
+
+        # check deleteTypes
+
+        ePrefix = &#34;Delete types: &#34;
+
+        for nodeType in deleteTypes:
+            eItem = f&#34;{nodeType}: &#34;
+
+            if nodeType not in origNodeTypes:
+                err(&#34;Not in data set&#34;)
+                continue
+
+            deletedTp.add(nodeType)
+
+        # check addTypes
+
+        ePrefix = &#34;Add types: &#34;
+
+        for (nodeType, typeInfo) in sorted(addTypes.items()):
+            eItem = f&#34;{nodeType}: &#34;
+
+            illegalKeys = set(typeInfo) - ADD_T_KEYS
+            if illegalKeys:
+                err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_T_KEYS)}&#34;)
+                continue
+
+            if nodeType in origNodeTypes:
+                err(&#34;Already occurs&#34;)
+                continue
+
+            addedTp.add(nodeType)
+
+            nodeSlots = typeInfo.get(NS, {})
+            if not nodeSlots:
+                err(&#34;No slot information given&#34;)
+            nF = typeInfo.get(NF, None)
+            if not nF:
+                err(&#34;No lower bound given&#34;)
+            nT = typeInfo.get(NT, None)
+            if not nT:
+                err(&#34;No upper bound given&#34;)
+            if nF is not None and nT is not None:
+                unlinked = 0
+                badlinked = 0
+                for n in range(nF, nT + 1):
+                    slots = nodeSlots.get(n, ())
+                    if not slots:
+                        unlinked += 1
+                    else:
+                        slotGood = True
+                        for slot in slots:
+                            if slot &lt; 1 or slot &gt; origMaxSlot:
+                                slotGood = False
+                        if not slotGood:
+                            badlinked += 1
+                if unlinked:
+                    err(f&#34;{unlinked} nodes not linked to slots&#34;)
+                if badlinked:
+                    err(f&#34;{badlinked} nodes linked to non-slot nodes&#34;)
+
+            for kind in (NODE, EDGE):
+                for (feat, data) in typeInfo.get(f&#34;{kind}Features&#34;, {}).items():
+                    eItem = f&#34;{feat}: &#34;
+                    checkValType(feat, vals=data.values())
+
+                    addedFt.add(feat)
+
+        (otextTypes, otextFeatures) = otextInfo()
+
+        problemTypes = addedTp &amp; deletedTp
+
+        if problemTypes:
+            ePrefix = &#34;Add and then delete: &#34;
+            eItem = &#34;types: &#34;
+            err(f&#34;{_rep(problemTypes)}&#34;)
+
+        problemTypes = otextTypes - ((set(origNodeTypes) | addedTp) - deletedTp)
+        if problemTypes:
+            ePrefix = &#34;Missing for text API: &#34;
+            eItem = &#34;types: &#34;
+            err(f&#34;{_rep(problemTypes)}&#34;)
+
+        problemFeats = addedFt &amp; deletedFt
+
+        if problemFeats:
+            ePrefix = &#34;Add and then delete: &#34;
+            eItem = &#34;features: &#34;
+            err(f&#34;{_rep(problemFeats)}&#34;)
+
+        problemFeats = otextFeatures - ((origFeatures | addedFt) - deletedFt)
+        if problemFeats:
+            ePrefix = &#34;Missing for text API: &#34;
+            eItem = &#34;features: &#34;
+            err(f&#34;{_rep(problemFeats)}&#34;)
+
+        if not dirEmpty(targetLocation):
+            ePrefix = &#34;Output directory: &#34;
+            eItem = &#34;not empty: &#34;
+            err(&#34;Clean it or remove it or choose another location&#34;)
+
+        if not good:
+            return False
+
+        api = TF.loadAll()
+
+        info(&#34;done&#34;)
+        return True
+
+    def checkValType(feat, vals=None, correctTp=None):
+        origTp = valTp(feat) if feat in origFeatures else None
+        customTp = featureMeta.get(feat, {}).get(VALTP, None)
+        assignedTp = origTp or customTp
+
+        if correctTp is None:
+            correctTp = &#34;int&#34; if allInt(vals) else &#34;str&#34;
+        newTp = customTp or correctTp
+
+        if newTp != assignedTp:
+            featureMeta.setdefault(feat, {})[VALTP] = newTp
+
+        if customTp and customTp != correctTp and customTp == &#34;int&#34;:
+            err(&#34;feature values are declared to be int but some values are not int&#34;)
+
+        if assignedTp != newTp:
+            rep1 = f&#34;feature of type {newTp}&#34;
+            rep2 = f&#34; (was {assignedTp})&#34; if assignedTp else &#34;&#34;
+            inf(f&#34;{rep1}{rep2}&#34;)
+
+    def shiftx(vs, offset=None, nF=None, nT=None):
+        if offset is None:
+            return (
+                {shift[m]: v for (m, v) in vs.items()}
+                if type(vs) is dict
+                else {shift[m] for m in vs}
+            )
+        else:
+            return (
+                {m + offset: v for (m, v) in vs.items() if nF &lt;= m &lt;= nT}
+                if type(vs) is dict
+                else {m + offset for m in vs if nF &lt;= m &lt;= nT}
+            )
+
+    def shiftFeature(kind, feat, data):
+        return (
+            {shift[n]: v for (n, v) in data.items() if n in shift}
+            if kind == NODE
+            else {shift[n]: shiftx(v) for (n, v) in data.items() if n in shift}
+        )
+
+    def mergeF():
+        nonlocal deletedFeatures
+        Fs = api.Fs
+        Es = api.Es
+
+        indent(level=0)
+        if mergeFeatures:
+            info(&#34;merge features ...&#34;)
+        indent(level=1, reset=True)
+
+        inF = set()
+
+        for (outFeat, inFeats) in mergeFeatures.items():
+            data = {}
+            inFeats = fitemize(inFeats)
+            if all(f in origNodeFeatures for f in inFeats):
+                featSrc = Fs
+                featDst = nodeFeatures
+            else:
+                featSrc = Es
+                featDst = edgeFeatures
+
+            for inFeat in inFeats:
+                for (n, val) in featSrc(inFeat).data.items():
+                    data[n] = val
+            featDst.setdefault(outFeat, {}).update(data)
+
+            for inFeat in inFeats:
+                inF.add(inFeat)
+                if inFeat in featDst:
+                    del featDst[inFeat]
+        deletedFeatures |= inF
+
+        if mergeFeatures:
+            info(f&#34;done (deleted {len(inF)} and added {len(mergeFeatures)} features)&#34;)
+            indent(level=2)
+            info(f&#34;deleted {_rep(inF)}&#34;, tm=False)
+            info(f&#34;added   {_rep(mergeFeatures)}&#34;, tm=False)
+        return True
+
+    def deleteF():
+        indent(level=0)
+        if deleteFeatures:
+            info(&#34;delete features ...&#34;)
+        indent(level=1, reset=True)
+        for feat in deleteFeatures:
+            dest = (
+                nodeFeatures
+                if feat in origNodeFeatures
+                else edgeFeatures
+                if feat in origEdgeFeatures
+                else None
+            )
+            if dest and feat in dest:
+                del dest[feat]
+            deletedFeatures.add(feat)
+
+        if deleteFeatures:
+            info(f&#34;done ({len(deleteFeatures)} features)&#34;)
+            indent(level=2)
+            info(_rep(deleteFeatures), tm=False)
+        return True
+
+    def addF():
+        indent(level=0)
+        if addFeatures:
+            info(&#34;add features ...&#34;)
+        indent(level=1, reset=True)
+        added = collections.defaultdict(set)
+        for (kind, dest) in (
+            (NODE, nodeFeatures),
+            (EDGE, edgeFeatures),
+        ):
+            for (feat, data) in addFeatures.get(f&#34;{kind}Features&#34;, {}).items():
+                dest.setdefault(feat, {}).update(data)
+                added[kind].add(feat)
+        if addFeatures:
+            info(
+                f&#39;done (added {len(added[&#34;node&#34;])} node + {len(added[&#34;edge&#34;])} edge features)&#39;
+            )
+            indent(level=2)
+            for (kind, feats) in sorted(added.items()):
+                info(f&#34;{kind} features: {_rep(feats)}&#34;)
+
+        return True
+
+    def mergeT():
+        nonlocal deletedTypes
+
+        indent(level=0)
+        if mergeTypes:
+            info(&#34;merge types ...&#34;)
+        indent(level=1, reset=True)
+
+        inT = set()
+
+        for (outType, inTypes) in mergeTypes.items():
+            info(f&#34;Merging {outType}&#34;)
+            withFeatures = type(inTypes) is dict
+
+            for inType in inTypes:
+                addFeatures = inTypes[inType] if withFeatures else {}
+                addFeatures[OTYPE] = outType
+                (nF, nT) = origNodeTypes[inType]
+                for (feat, val) in addFeatures.items():
+                    for n in range(nF, nT + 1):
+                        nodeFeatures.setdefault(feat, {})[n] = val
+                inT.add(inType)
+
+        deletedTypes |= inT
+
+        if mergeTypes:
+            info(f&#34;done (merged {len(mergeTypes)} node types)&#34;)
+            indent(level=2)
+            info(f&#34;deleted {_rep(inT)}&#34;, tm=False)
+            info(f&#34;added   {_rep(mergeTypes)}&#34;, tm=False)
+        return True
+
+    def deleteT():
+        nonlocal maxNode
+        nonlocal shiftNeeded
+
+        indent(level=0)
+        if deleteTypes:
+            info(&#34;delete types ...&#34;)
+        indent(level=1, reset=True)
+
+        curShift = 0
+        for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
+            if nType in deleteTypes:
+                curShift -= nT - nF + 1
+                deletedTypes.add(nType)
+            else:
+                nodeTypes[nType] = (nF + curShift, nT + curShift)
+                for n in range(nF, nT + 1):
+                    shift[n] = n - curShift
+
+        for (kind, upd) in (
+            (NODE, nodeFeatures),
+            (EDGE, edgeFeatures),
+        ):
+            for (feat, uData) in upd.items():
+                upd[feat] = shiftFeature(kind, feat, uData)
+
+        maxNode = origMaxNode - curShift
+        shiftNeeded = curShift != 0
+
+        if deleteTypes:
+            info(f&#34;done ({len(deleteTypes)} types)&#34;)
+            indent(level=2)
+            info(_rep(deleteTypes), tm=False)
+        return True
+
+    def addT():
+        nonlocal maxNode
+
+        indent(level=0)
+        if addTypes:
+            info(&#34;add types ...&#34;)
+        indent(level=1, reset=True)
+
+        for (nodeType, typeInfo) in sorted(addTypes.items()):
+            nF = typeInfo[NF]
+            nT = typeInfo[NT]
+            offset = maxNode - nF + 1
+            nodeSlots = typeInfo[NS]
+
+            data = {}
+            for n in range(nF, nT + 1):
+                data[offset + n] = nodeType
+            nodeFeatures.setdefault(OTYPE, {}).update(data)
+
+            data = {}
+            for n in range(nF, nT + 1):
+                data[offset + n] = set(nodeSlots[n])
+            edgeFeatures.setdefault(OSLOTS, {}).update(data)
+
+            for (feat, addData) in typeInfo.get(NFS, {}).items():
+                data = {}
+                for n in range(nF, nT + 1):
+                    value = addData.get(n, None)
+                    if value is not None:
+                        data[offset + n] = value
+                nodeFeatures.setdefault(feat, {}).update(data)
+
+            for (feat, addData) in typeInfo.get(EFS, {}).items():
+                data = {}
+                for n in range(nF, nT + 1):
+                    value = addData.get(n, None)
+                    if value:
+                        newValue = shiftx(value, offset=offset, nF=nF, nT=nT)
+                        if newValue:
+                            data[offset + n] = newValue
+                edgeFeatures.setdefault(feat, {}).update(data)
+            maxNode += nT - nF + 1
+
+        if addTypes:
+            info(f&#34;done ({len(addTypes)} types)&#34;)
+            indent(level=2)
+            info(_rep(addTypes), tm=False)
+        return True
+
+    def applyUpdates():
+        Fs = api.Fs
+        Es = api.Es
+
+        indent(level=0)
+        info(&#34;applying updates ...&#34;)
+        indent(level=1, reset=True)
+
+        mFeat = 0
+
+        for (kind, featSet, featSrc, featUpd, featOut) in (
+            (NODE, origNodeFeatures, Fs, nodeFeatures, nodeFeaturesOut),
+            (EDGE, origEdgeFeatures, Es, edgeFeatures, edgeFeaturesOut),
+        ):
+            allFeatSet = set() if onlyDeliverUpdatedFeatures else set(featSet)
+            for feat in (allFeatSet | set(featUpd)) - deletedFeatures:
+                outData = {}
+                outMeta = {}
+                if feat in featSet:
+                    featObj = featSrc(feat)
+                    outMeta.update(featObj.meta)
+                    if shiftNeeded:
+                        outData.update(shiftFeature(kind, feat, featObj))
+                        mFeat += 1
+                    else:
+                        outData.update(featObj.items())
+                if feat in featUpd:
+                    outData.update(featUpd[feat])
+                    if kind == EDGE:
+                        aVal = next(iter(featUpd[feat].values()))
+                        hasValues = type(aVal) is dict
+                        if outMeta.get(&#34;edgeValues&#34;, False) != hasValues:
+                            outMeta[&#34;edgeValues&#34;] = hasValues
+                if feat in featureMeta:
+                    for (k, v) in featureMeta[feat].items():
+                        if v is None:
+                            if k in outMeta:
+                                del outMeta[k]
+                        else:
+                            outMeta[k] = v
+
+                featOut[feat] = outData
+                metaDataOut[feat] = outMeta
+
+        otextMeta = {}
+        otextMeta.update(meta(OTEXT))
+        mK = 0
+        if OTEXT in featureMeta:
+            for (k, v) in featureMeta[OTEXT].items():
+                if v is None:
+                    if k in otextMeta:
+                        del otextMeta[k]
+                        mK += 1
+                else:
+                    if k not in otextMeta or otextMeta[k] != v:
+                        otextMeta[k] = v
+                        mK += 1
+        metaDataOut[OTEXT] = otextMeta
+
+        if mFeat or mK:
+            fRep = f&#34; (shifted {mFeat} features)&#34; if mFeat else &#34;&#34;
+            kRep = f&#34; (adapted {mK} keys in otext)&#34; if mK else &#34;&#34;
+            info(f&#34;done{fRep}{kRep}&#34;)
+
+        return True
+
+    def writeTf():
+        indent(level=0)
+        info(&#34;write TF data ...&#34;)
+        indent(level=1, reset=True)
+        TF = Fabric(locations=targetLocation, silent=silent)
+        TF.save(
+            metaData=metaDataOut,
+            nodeFeatures=nodeFeaturesOut,
+            edgeFeatures=edgeFeaturesOut,
+        )
+        return True
+
+    def finalize():
+        indent(level=0)
+        info(&#34;all done&#34;)
+        return True
+
+    def process():
+        for step in (
+            prepare,
+            mergeF,
+            deleteF,
+            addF,
+            mergeT,
+            deleteT,
+            addT,
+            applyUpdates,
+            writeTf,
+            finalize,
+        ):
+            if not step():
+                return False
+        return True
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    result = process()
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.dataset.modify.modify"><code class="name flex">
+<span>def <span class="ident">modify</span></span>(<span>location, targetLocation, mergeFeatures=None, deleteFeatures=None, addFeatures=None, mergeTypes=None, deleteTypes=None, addTypes=None, featureMeta=None, silent='auto')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Modifies the supply of node types and features in a single data set.</p>
+<p>Dependent on the presence of the parameters, the following steps will be
+executed before the result is written out as a new TF dataset:</p>
+<ul>
+<li>merge existing features into an other feature, removing the features
+that went in;</li>
+<li>delete any number of existing features;</li>
+<li>add any number of features and their data;</li>
+<li>merge existing node types into a new one, removing the
+types that went in, without loss of nodes;</li>
+</ul>
+<p>So far, no new nodes have been added or removed. But then:</p>
+<ul>
+<li>delete any number of node types with their nodes;</li>
+<li>add any number of new node types, with nodes and features.</li>
+</ul>
+<p>The last two actions lead to a shifting of nodes, and all features that map
+them, will be shifted accordingly.</p>
+<p>You can also pass meta data to be merged in.</p>
+<p>Finally, the resulting features will be written to disk.</p>
+<div class="admonition hint">
+<p class="admonition-title">Only added/merged features</p>
+<p>It is possible to output only the added and merged features instead
+of a complete dataset. Just pass the boolean value <code>True</code> to <code>deleteFeatures</code>
+below.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>location</code></strong> :&ensp;<code>string</code></dt>
+<dd>You can pass just the location of the original dataset in the file system,
+i.e. the directory that contains the .tf files.</dd>
+<dt><strong><code>targetLocation</code></strong> :&ensp;<code>string</code></dt>
+<dd>The directory into which the result dataset will be written.</dd>
+<dt><strong><code>mergeFeatures</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>You can merge several features into one. This is especially useful if there
+are many features each operating on different node types, and you want to
+unify them into one feature.
+The situation may occur that several of the features to be merged supply
+conflicting values for a node. Then the last feature in the merge list wins.</p>
+<p>The result feature may exist already. Also then there is a risk of conflict.
+Again, the merge result wins.</p>
+<h2 id="example">Example</h2>
+<pre><code>mergeFeatures=dict(
+    resultFeature1=[feat1, feat2],
+    resultFeature2="feat3, feat4",
+),
+</code></pre>
+<p>If the resulting feature is new, or needs a new description, you can
+provide metadata in the <code>featureMeta</code> argument.
+For new features you may want to set the <code>valueType</code>, although we try
+hard to deduce it from the data available.</p>
+</dd>
+<dt><strong><code>deleteFeatures</code></strong> :&ensp;<code>boolean | string | iterable</code>, optional <code>None</code></dt>
+<dd>
+<p>This should be either a boolean value <code>True</code> or an iterable or space/comma
+separated string of features that you want to delete from the result.</p>
+<p><code>True</code> means: all features will be deleted that are not the result of merging
+or adding features (see <code>mergeFeatures</code> above and <code>addFeatures</code> below.</p>
+</dd>
+<dt><strong><code>addFeatures</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>You can add as many features as you want, assigning values to all types,
+including new nodes of new types that have been generated in the steps before.</p>
+<p>You can also use this parameter to override existing features:
+if a feature that you are adding already exists, the new data will be merged
+in, overriding assignments of the existing feature if there is a conflict.
+The meta data of the old and new feature will also be merged.</p>
+<p>This parameter must have this shape:</p>
+<h2 id="example_1">Example</h2>
+<pre><code>addFeatures=dict(
+    nodeFeatures=dict(
+      feat1=data1,
+      feat2=data2,
+    ),
+    edgeFeatures=dict(
+      feat3=data3,
+      feat4=data4,
+    ),
+</code></pre>
+<p>If the resulting features are new, or need a new description, you can
+provide metadata in the <code>featureMeta</code> argument.
+For new features you may want to set the <code>valueType</code>, although we try
+hard to deduce it from the data available.</p>
+</dd>
+<dt><strong><code>mergeTypes</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>You can merge several node types into one.
+The merged node type will have the union of nodes of the types that are merged.
+All relevant features will stay the same, except the <code>otype</code> feature of course.</p>
+<p>You can pass additional information to be added as features to nodes
+of the new node type.
+These features can be used to discriminate between the merged types.</p>
+<p>This parameter must have this shape:</p>
+<h2 id="example_2">Example</h2>
+<pre><code>mergeTypes=dict(
+    outTypeA=(
+        'inType1',
+        'inType2',
+    ),
+    outTypeB="inType3, inType4",
+)
+</code></pre>
+<h2 id="example_3">Example</h2>
+<pre><code>mergeTypes=dict(
+    outTypeA=dict(
+        inType1=dict(
+            featureI=valueI,
+            featureK=valueK,
+        ),
+        inType2=dict(
+            featureL=valueL,
+            featureM=valueM,
+        ),
+    ),
+    outTypeB=dict(
+        inType3=dict(
+            featureN=valueN,
+            featureO=valueO,
+        ),
+        inType4=dict(
+            featureP=valueP,
+            featureQ=valueQ,
+        ),
+    ),
+)
+</code></pre>
+<p>It does not matter if these types and features already occur.
+The outTypes may be existing types of really new types.
+The new features may be existing or new features.</p>
+<p>Do not forget to provide meta data for new features in the <code>featureMeta</code> argument.</p>
+<p>This will migrate nodes of type <code>inType1</code> or <code>inType2</code> to nodes of <code>outTypeA</code>.</p>
+<p>In the extended form, when there are feature specifications associated
+with the old types, after merging the following assignments will be made:</p>
+<p><code>featureI = valueI</code> to nodes coming from <code>inType1</code></p>
+<p>and</p>
+<p><code>featureK = valueK</code> to nodes coming from <code>inType2</code>.</p>
+<p>No nodes will be removed!</p>
+<div class="admonition caution">
+<p class="admonition-title">slot types</p>
+<p>Merging is all about non-slot types.
+It is an error if a new type or an old type is a slot type.</p>
+</div>
+</dd>
+<dt><strong><code>deleteTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
+<dd>
+<p>You can delete node types from the result altogether.
+You can specify a list of node types as an iterable or as a space
+separated string.</p>
+<p>If a node type has to be deleted, all nodes in that type
+will be removed, and features that assign values to these nodes will have
+those assignments removed.</p>
+<h2 id="example_4">Example</h2>
+<pre><code>deleteTypes=('line', 'sentence')
+</code></pre>
+<h2 id="example_5">Example</h2>
+<pre><code>deleteTypes="line sentence"
+</code></pre>
+<div class="admonition caution">
+<p class="admonition-title">slot types</p>
+<p>Deleting is all about non-slot types.
+It is an error to attempt to delete slot type.</p>
+</div>
+</dd>
+<dt><strong><code>addTypes</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>You may add as many node types as you want.</p>
+<p>Per node type that you add, you need to specify the current boundaries of
+that type and how all those nodes map to slots.
+You can also add features that assign values to those nodes:</p>
+<h2 id="example_6">Example</h2>
+<pre><code>dict(
+    nodeType1=dict(
+        nodeFrom=from1,
+        nodeTo=to1,
+        nodeSlots=slots1,
+        nodeFeatures=nFeatures1,
+        edgeFeatures=eFeatures1,
+    ),
+    nodeType2=dict(
+        nodeFrom=from2,
+        nodeTo=to2,
+        nodeSlots=slots2,
+        nodeFeatures=nFeatures2,
+        edgeFeatures=eFeatures2,
+    ),
+),
+</code></pre>
+<p>The boundaries may be completely arbitrary, so if you get your nodes from another
+TF data source, you do not need to align their values.</p>
+<p>If you also add features about those nodes, the only thing that matters is
+that the features assign the right values to the nodes within the boundaries.
+Assignments to nodes outside the boundaries will be ignored.</p>
+<p>The slots that you link the new nodes to, must exist in the original.
+You cannot use this function to add slots to your data set.</p>
+<div class="admonition caution">
+<p class="admonition-title">existing node types</p>
+<p>It is an error if a new node type already exists in the original.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">nodeFeatures, edgeFeatures</p>
+<p>You can add any number of features.
+Per feature you have to provide the mapping that defines the feature.</p>
+<p>These features may be new,
+or they may already be present in the original data.</p>
+<p>If these features have values to nodes that are not within the boundaries
+of the new node type,
+those values will not be assigned but silently discarded.</p>
+<h2 id="example_7">Example</h2>
+<pre><code>dict(
+    feat1=dict(
+        n1=val1,
+        n2=val2,
+    ),
+    feat2=dict(
+        n1=val1,
+        n2=val2,
+    ),
+),
+</code></pre>
+<p>Edge features without values are specified like this:</p>
+<h2 id="example_8">Example</h2>
+<pre><code>dict(
+    feat1=dict(
+        n1={m1, m2},
+        n2={m3, m4},
+    ),
+    feat2=dict(
+        n1={m5, m6},
+        n2={m7, m8},
+    ),
+),
+</code></pre>
+<p>Edge features with values are specified like this:</p>
+<h2 id="example_9">Example</h2>
+<pre><code>dict(
+    feat1=dict(
+        n1={m1: v1, m2: v2},
+        n2={m3: v3, m4: v4},
+    ),
+    feat2=dict(
+        n1={m5: v5, m6: v6},
+        n2={m7: v7, m8: v8},
+    ),
+),
+</code></pre>
+</div>
+</dd>
+<dt><strong><code>featureMeta</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>If the features you have specified in one of the paramers above are new,
+do not forget to pass metadata for them in this
+parameter
+It is especially important to state the value type:</p>
+<h2 id="example_10">Example</h2>
+<pre><code>featureMeta=dict(
+    featureI=dict(
+      valueType='int',
+      description='level of node'
+    ),
+    featureK=dict(
+      valueType='str',
+      description='subtype of node'
+    ),
+),
+</code></pre>
+<p>You can also tweak the section/structure configuration and the
+text-formats that are specified in the <code>otext</code> feature.
+Just specify them as keys and values to the <code>otext</code> feature.</p>
+<p>The logic of tweaking meta data is this: what you provide in this
+parameter will be merged into existing meta data.</p>
+<p>If you want to remove a key from a feature, give it the value None.</p>
+</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code><a title="tf.core.timestamp.SILENT_D" href="../core/timestamp.html#tf.core.timestamp.SILENT_D">SILENT_D</a></code></dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/dataset/modify.py#L76-L1095" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def modify(
+    location,
+    targetLocation,
+    mergeFeatures=None,
+    deleteFeatures=None,
+    addFeatures=None,
+    mergeTypes=None,
+    deleteTypes=None,
+    addTypes=None,
+    featureMeta=None,
+    silent=SILENT_D,
+):
+    &#34;&#34;&#34;Modifies the supply of node types and features in a single data set.
+
+    Dependent on the presence of the parameters, the following steps will be
+    executed before the result is written out as a new TF dataset:
+
+    *   merge existing features into an other feature, removing the features
+        that went in;
+    *   delete any number of existing features;
+    *   add any number of features and their data;
+    *   merge existing node types into a new one, removing the
+        types that went in, without loss of nodes;
+
+    So far, no new nodes have been added or removed. But then:
+
+    *   delete any number of node types with their nodes;
+    *   add any number of new node types, with nodes and features.
+
+    The last two actions lead to a shifting of nodes, and all features that map
+    them, will be shifted accordingly.
+
+    You can also pass meta data to be merged in.
+
+    Finally, the resulting features will be written to disk.
+
+    !!! hint &#34;Only added/merged features&#34;
+        It is possible to output only the added and merged features instead
+        of a complete dataset. Just pass the boolean value `True` to `deleteFeatures`
+        below.
+
+    Parameters
+    ----------
+
+    location: string
+        You can pass just the location of the original dataset in the file system,
+        i.e. the directory that contains the .tf files.
+
+    targetLocation: string
+        The directory into which the result dataset will be written.
+
+    mergeFeatures: dict, optional None
+        You can merge several features into one. This is especially useful if there
+        are many features each operating on different node types, and you want to
+        unify them into one feature.
+        The situation may occur that several of the features to be merged supply
+        conflicting values for a node. Then the last feature in the merge list wins.
+
+        The result feature may exist already. Also then there is a risk of conflict.
+        Again, the merge result wins.
+
+        Example
+        -------
+            mergeFeatures=dict(
+                resultFeature1=[feat1, feat2],
+                resultFeature2=&#34;feat3, feat4&#34;,
+            ),
+
+        If the resulting feature is new, or needs a new description, you can
+        provide metadata in the `featureMeta` argument.
+        For new features you may want to set the `valueType`, although we try
+        hard to deduce it from the data available.
+
+    deleteFeatures: boolean | string | iterable, optional None
+        This should be either a boolean value `True` or an iterable or space/comma
+        separated string of features that you want to delete from the result.
+
+        `True` means: all features will be deleted that are not the result of merging
+        or adding features (see `mergeFeatures` above and `addFeatures` below.
+
+    addFeatures: dict, optional None
+        You can add as many features as you want, assigning values to all types,
+        including new nodes of new types that have been generated in the steps before.
+
+        You can also use this parameter to override existing features:
+        if a feature that you are adding already exists, the new data will be merged
+        in, overriding assignments of the existing feature if there is a conflict.
+        The meta data of the old and new feature will also be merged.
+
+        This parameter must have this shape:
+
+        Example
+        -------
+            addFeatures=dict(
+                nodeFeatures=dict(
+                  feat1=data1,
+                  feat2=data2,
+                ),
+                edgeFeatures=dict(
+                  feat3=data3,
+                  feat4=data4,
+                ),
+
+        If the resulting features are new, or need a new description, you can
+        provide metadata in the `featureMeta` argument.
+        For new features you may want to set the `valueType`, although we try
+        hard to deduce it from the data available.
+
+    mergeTypes: dict, optional None
+        You can merge several node types into one.
+        The merged node type will have the union of nodes of the types that are merged.
+        All relevant features will stay the same, except the `otype` feature of course.
+
+        You can pass additional information to be added as features to nodes
+        of the new node type.
+        These features can be used to discriminate between the merged types.
+
+        This parameter must have this shape:
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=(
+                    &#39;inType1&#39;,
+                    &#39;inType2&#39;,
+                ),
+                outTypeB=&#34;inType3, inType4&#34;,
+            )
+
+        Example
+        -------
+            mergeTypes=dict(
+                outTypeA=dict(
+                    inType1=dict(
+                        featureI=valueI,
+                        featureK=valueK,
+                    ),
+                    inType2=dict(
+                        featureL=valueL,
+                        featureM=valueM,
+                    ),
+                ),
+                outTypeB=dict(
+                    inType3=dict(
+                        featureN=valueN,
+                        featureO=valueO,
+                    ),
+                    inType4=dict(
+                        featureP=valueP,
+                        featureQ=valueQ,
+                    ),
+                ),
+            )
+
+        It does not matter if these types and features already occur.
+        The outTypes may be existing types of really new types.
+        The new features may be existing or new features.
+
+        Do not forget to provide meta data for new features in the `featureMeta` argument.
+
+        This will migrate nodes of type `inType1` or `inType2` to nodes of `outTypeA`.
+
+        In the extended form, when there are feature specifications associated
+        with the old types, after merging the following assignments will be made:
+
+        `featureI = valueI` to nodes coming from `inType1`
+
+        and
+
+        `featureK = valueK` to nodes coming from `inType2`.
+
+        No nodes will be removed!
+
+        !!! caution &#34;slot types&#34;
+            Merging is all about non-slot types.
+            It is an error if a new type or an old type is a slot type.
+
+    deleteTypes: string | iterable, optional None
+        You can delete node types from the result altogether.
+        You can specify a list of node types as an iterable or as a space
+        separated string.
+
+        If a node type has to be deleted, all nodes in that type
+        will be removed, and features that assign values to these nodes will have
+        those assignments removed.
+
+        Example
+        -------
+            deleteTypes=(&#39;line&#39;, &#39;sentence&#39;)
+
+        Example
+        -------
+            deleteTypes=&#34;line sentence&#34;
+
+        !!! caution &#34;slot types&#34;
+            Deleting is all about non-slot types.
+            It is an error to attempt to delete slot type.
+
+    addTypes: dict, optional None
+        You may add as many node types as you want.
+
+        Per node type that you add, you need to specify the current boundaries of
+        that type and how all those nodes map to slots.
+        You can also add features that assign values to those nodes:
+
+        Example
+        -------
+            dict(
+                nodeType1=dict(
+                    nodeFrom=from1,
+                    nodeTo=to1,
+                    nodeSlots=slots1,
+                    nodeFeatures=nFeatures1,
+                    edgeFeatures=eFeatures1,
+                ),
+                nodeType2=dict(
+                    nodeFrom=from2,
+                    nodeTo=to2,
+                    nodeSlots=slots2,
+                    nodeFeatures=nFeatures2,
+                    edgeFeatures=eFeatures2,
+                ),
+            ),
+
+        The boundaries may be completely arbitrary, so if you get your nodes from another
+        TF data source, you do not need to align their values.
+
+        If you also add features about those nodes, the only thing that matters is
+        that the features assign the right values to the nodes within the boundaries.
+        Assignments to nodes outside the boundaries will be ignored.
+
+        The slots that you link the new nodes to, must exist in the original.
+        You cannot use this function to add slots to your data set.
+
+        !!! caution &#34;existing node types&#34;
+            It is an error if a new node type already exists in the original.
+
+        !!! info &#34;nodeFeatures, edgeFeatures&#34;
+            You can add any number of features.
+            Per feature you have to provide the mapping that defines the feature.
+
+            These features may be new,
+            or they may already be present in the original data.
+
+            If these features have values to nodes that are not within the boundaries
+            of the new node type,
+            those values will not be assigned but silently discarded.
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                    feat2=dict(
+                        n1=val1,
+                        n2=val2,
+                    ),
+                ),
+
+            Edge features without values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1, m2},
+                        n2={m3, m4},
+                    ),
+                    feat2=dict(
+                        n1={m5, m6},
+                        n2={m7, m8},
+                    ),
+                ),
+
+            Edge features with values are specified like this:
+
+            Example
+            -------
+                dict(
+                    feat1=dict(
+                        n1={m1: v1, m2: v2},
+                        n2={m3: v3, m4: v4},
+                    ),
+                    feat2=dict(
+                        n1={m5: v5, m6: v6},
+                        n2={m7: v7, m8: v8},
+                    ),
+                ),
+
+    featureMeta: dict, optional None
+        If the features you have specified in one of the paramers above are new,
+        do not forget to pass metadata for them in this  parameter
+        It is especially important to state the value type:
+
+        Example
+        -------
+            featureMeta=dict(
+                featureI=dict(
+                  valueType=&#39;int&#39;,
+                  description=&#39;level of node&#39;
+                ),
+                featureK=dict(
+                  valueType=&#39;str&#39;,
+                  description=&#39;subtype of node&#39;
+                ),
+            ),
+
+        You can also tweak the section/structure configuration and the
+        text-formats that are specified in the `otext` feature.
+        Just specify them as keys and values to the `otext` feature.
+
+        The logic of tweaking meta data is this: what you provide in this
+        parameter will be merged into existing meta data.
+
+        If you want to remove a key from a feature, give it the value None.
+
+    silent: string, optional tf.core.timestamp.SILENT_D
+        See `tf.core.timestamp.Timestamp`
+    &#34;&#34;&#34;
+
+    addFeatures = addFeatures or {}
+    onlyDeliverUpdatedFeatures = False
+    if type(deleteFeatures) is bool and deleteFeatures:
+        deleteFeatures = set()
+        onlyDeliverUpdatedFeatures = True
+    deleteFeatures = set(fitemize(deleteFeatures))
+    mergeFeatures = mergeFeatures or {}
+
+    addTypes = addTypes or {}
+    deleteTypes = set(fitemize(deleteTypes))
+    mergeTypes = mergeTypes or {}
+
+    featureMeta = featureMeta or {}
+
+    origMaxNode = None
+    origNodeTypes = None
+    origNodeFeatures = None
+    origEdgeFeatures = None
+    origFeatures = None
+
+    shift = {}
+    shiftNeeded = False
+
+    slotType = None
+    maxNode = None
+    nodeFeatures = {}
+    edgeFeatures = {}
+    deletedTypes = set()
+    deletedFeatures = set()
+    nodeTypes = {}
+
+    nodeFeaturesOut = {}
+    edgeFeaturesOut = {}
+    metaDataOut = {}
+
+    api = None
+
+    good = True
+    ePrefix = &#34;&#34;
+    eItem = &#34;&#34;
+
+    def err(msg):
+        nonlocal good
+        error(f&#34;{ePrefix}{eItem}{msg}&#34;, tm=False)
+        good = False
+
+    def inf(msg):
+        info(f&#34;{ePrefix}{eItem}{msg}&#34;, tm=False)
+
+    def meta(feat):
+        return api.TF.features[feat].metaData
+
+    def valTp(feat):
+        return meta(feat).get(VALTP, None)
+
+    def otextInfo():
+        orig = meta(OTEXT)
+        custom = featureMeta.get(OTEXT, {})
+        combi = {}
+        for key in set(custom) | set(orig):
+            origVal = orig.get(key, &#34;&#34;)
+            customVal = custom.get(key, &#34;&#34;)
+            combi[key] = customVal or origVal
+
+        ensureTypes = set()
+        ensureFeatures = set()
+        for kind in (SE_TP, ST_TP):
+            ensureTypes |= set(itemize(combi.get(kind, &#34;&#34;), sep=&#34;,&#34;))
+        for kind in (SE_FT, ST_FT):
+            ensureFeatures |= set(itemize(combi.get(kind, &#34;&#34;), sep=&#34;,&#34;))
+        ensureFeatures |= set(collectFormats(combi)[-1])
+        return (ensureTypes, ensureFeatures)
+
+    def allInt(values):
+        return all(isInt(v) for v in values)
+
+    def prepare():
+        nonlocal api
+        nonlocal origNodeTypes
+        nonlocal origFeatures
+        nonlocal origNodeFeatures
+        nonlocal origEdgeFeatures
+        nonlocal origMaxNode
+        nonlocal maxNode
+        nonlocal shift
+        nonlocal ePrefix
+        nonlocal eItem
+
+        indent(level=0, reset=True)
+        info(&#34;preparing and checking ...&#34;)
+        indent(level=1, reset=True)
+
+        TF = Fabric(locations=location, silent=silent)
+        origAllFeatures = TF.explore(silent=DEEP, show=True)
+        origNodeFeatures = set(origAllFeatures[NODES])
+        origEdgeFeatures = set(origAllFeatures[EDGES])
+        origFeatures = origNodeFeatures | origEdgeFeatures
+
+        api = TF.load(&#34;&#34;, silent=silent)
+        if not api:
+            return False
+
+        F = api.F
+        C = api.C
+        origNodeTypes = {x[0]: (x[2], x[3]) for x in C.levels.data}
+        origMaxSlot = F.otype.maxSlot
+        origMaxNode = F.otype.maxNode
+        maxNode = origMaxNode
+
+        addedTp = set()
+        addedFt = set()
+        deletedTp = set()
+        deletedFt = set()
+
+        # check mergeFeatures
+
+        ePrefix = &#34;Merge features: &#34;
+
+        for (outFeat, inFeats) in mergeFeatures.items():
+            eItem = f&#34;{outFeat}: &#34;
+
+            inFeats = fitemize(inFeats)
+            if outFeat in WARP:
+                err(&#34;Can not merge into standard features&#34;)
+                continue
+
+            if not inFeats:
+                err(&#34;Nothing to merge from&#34;)
+                continue
+
+            addedFt.add(outFeat)
+
+            for inFeat in inFeats:
+                if inFeat in WARP:
+                    err(f&#34;Can not merge from standard features: {inFeat}&#34;)
+                    continue
+                deletedFt.add(inFeat)
+
+            missingIn = {f for f in inFeats if f not in origFeatures}
+
+            if missingIn:
+                err(f&#34;Missing features {_rep(missingIn)}&#34;)
+
+            allInIsNode = all(f in origNodeFeatures for f in inFeats)
+            allInIsEdge = all(f in origEdgeFeatures for f in inFeats)
+            outExists = outFeat in origFeatures
+            outIsNode = outExists and outFeat in origNodeFeatures
+            outIsEdge = outExists and outFeat in origEdgeFeatures
+
+            if outIsNode and not allInIsNode:
+                err(&#34;Node Feature can not be merged from an edge feature&#34;)
+
+            if outIsEdge and not allInIsEdge:
+                err(&#34;Edge Feature can not be merged from a node feature&#34;)
+
+            if not allInIsNode and not allInIsEdge:
+                err(&#34;Feature can not be merged from both node and edge features&#34;)
+
+            allInIsInt = all(valTp(f) == &#34;int&#34; for f in inFeats)
+            correctTp = &#34;int&#34; if allInIsInt else &#34;str&#34;
+            checkValType(outFeat, correctTp=correctTp)
+
+        # check deleteFeatures
+
+        ePrefix = &#34;Delete features: &#34;
+
+        for feat in deleteFeatures:
+            eItem = f&#34;{feat}: &#34;
+
+            if feat in WARP:
+                err(&#34;Can not delete standard features&#34;)
+                continue
+            if feat not in origFeatures:
+                err(&#34;Not in data set&#34;)
+
+            deletedFt.add(feat)
+
+        # check addFeatures
+
+        ePrefix = &#34;Add features: &#34;
+        eItem = &#34;&#34;
+
+        illegalKeys = set(addFeatures) - ADD_F_KEYS
+        if illegalKeys:
+            err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_F_KEYS)}&#34;)
+
+        bothFeatures = set(addFeatures.get(NFS, {})) &amp; set(addFeatures.get(EFS, {}))
+        if bothFeatures:
+            err(f&#34;{_rep(bothFeatures)}: Both node and edge features&#34;)
+
+        for (kind, otherKind, origSet, origSetOther) in (
+            (NODE, EDGE, origNodeFeatures, origEdgeFeatures),
+            (EDGE, NODE, origEdgeFeatures, origNodeFeatures),
+        ):
+            for (feat, data) in addFeatures.get(f&#34;{kind}Features&#34;, {}).items():
+                eItem = f&#34;{feat}: &#34;
+
+                if feat in WARP:
+                    err(&#34;Cannot add standard features&#34;)
+                    continue
+                if feat in origSetOther:
+                    err(f&#34;{kind} feature already exists as {otherKind} feature&#34;)
+
+                checkValType(feat, vals=data.values())
+
+                addedFt.add(feat)
+
+        # check mergeTypes
+
+        ePrefix = &#34;Merge types: &#34;
+
+        mData = {}
+
+        for (outType, inTypes) in mergeTypes.items():
+            eItem = f&#34;{outType}: &#34;
+
+            if outType == slotType:
+                err(&#34;Result cannot be the slot type&#34;)
+
+            withFeatures = type(inTypes) is dict
+
+            addedTp.add(outType)
+
+            for inType in inTypes:
+                if inType == slotType:
+                    err(f&#34;Slot type {inType} is not mergeable&#34;)
+                    continue
+
+                if inType not in origNodeTypes:
+                    err(f&#34;Cannot merge non-existing node type {inType}&#34;)
+                    continue
+
+                deletedTp.add(inType)
+
+                mFeatures = inTypes[inType] if withFeatures else {}
+                for (feat, val) in mFeatures.items():
+                    mData.setdefault(feat, set()).add(val)
+                    addedFt.add(feat)
+
+        for (feat, vals) in mData.items():
+            eItem = f&#34;{feat}: &#34;
+            checkValType(feat, vals=vals)
+
+        # check deleteTypes
+
+        ePrefix = &#34;Delete types: &#34;
+
+        for nodeType in deleteTypes:
+            eItem = f&#34;{nodeType}: &#34;
+
+            if nodeType not in origNodeTypes:
+                err(&#34;Not in data set&#34;)
+                continue
+
+            deletedTp.add(nodeType)
+
+        # check addTypes
+
+        ePrefix = &#34;Add types: &#34;
+
+        for (nodeType, typeInfo) in sorted(addTypes.items()):
+            eItem = f&#34;{nodeType}: &#34;
+
+            illegalKeys = set(typeInfo) - ADD_T_KEYS
+            if illegalKeys:
+                err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_T_KEYS)}&#34;)
+                continue
+
+            if nodeType in origNodeTypes:
+                err(&#34;Already occurs&#34;)
+                continue
+
+            addedTp.add(nodeType)
+
+            nodeSlots = typeInfo.get(NS, {})
+            if not nodeSlots:
+                err(&#34;No slot information given&#34;)
+            nF = typeInfo.get(NF, None)
+            if not nF:
+                err(&#34;No lower bound given&#34;)
+            nT = typeInfo.get(NT, None)
+            if not nT:
+                err(&#34;No upper bound given&#34;)
+            if nF is not None and nT is not None:
+                unlinked = 0
+                badlinked = 0
+                for n in range(nF, nT + 1):
+                    slots = nodeSlots.get(n, ())
+                    if not slots:
+                        unlinked += 1
+                    else:
+                        slotGood = True
+                        for slot in slots:
+                            if slot &lt; 1 or slot &gt; origMaxSlot:
+                                slotGood = False
+                        if not slotGood:
+                            badlinked += 1
+                if unlinked:
+                    err(f&#34;{unlinked} nodes not linked to slots&#34;)
+                if badlinked:
+                    err(f&#34;{badlinked} nodes linked to non-slot nodes&#34;)
+
+            for kind in (NODE, EDGE):
+                for (feat, data) in typeInfo.get(f&#34;{kind}Features&#34;, {}).items():
+                    eItem = f&#34;{feat}: &#34;
+                    checkValType(feat, vals=data.values())
+
+                    addedFt.add(feat)
+
+        (otextTypes, otextFeatures) = otextInfo()
+
+        problemTypes = addedTp &amp; deletedTp
+
+        if problemTypes:
+            ePrefix = &#34;Add and then delete: &#34;
+            eItem = &#34;types: &#34;
+            err(f&#34;{_rep(problemTypes)}&#34;)
+
+        problemTypes = otextTypes - ((set(origNodeTypes) | addedTp) - deletedTp)
+        if problemTypes:
+            ePrefix = &#34;Missing for text API: &#34;
+            eItem = &#34;types: &#34;
+            err(f&#34;{_rep(problemTypes)}&#34;)
+
+        problemFeats = addedFt &amp; deletedFt
+
+        if problemFeats:
+            ePrefix = &#34;Add and then delete: &#34;
+            eItem = &#34;features: &#34;
+            err(f&#34;{_rep(problemFeats)}&#34;)
+
+        problemFeats = otextFeatures - ((origFeatures | addedFt) - deletedFt)
+        if problemFeats:
+            ePrefix = &#34;Missing for text API: &#34;
+            eItem = &#34;features: &#34;
+            err(f&#34;{_rep(problemFeats)}&#34;)
+
+        if not dirEmpty(targetLocation):
+            ePrefix = &#34;Output directory: &#34;
+            eItem = &#34;not empty: &#34;
+            err(&#34;Clean it or remove it or choose another location&#34;)
+
+        if not good:
+            return False
+
+        api = TF.loadAll()
+
+        info(&#34;done&#34;)
+        return True
+
+    def checkValType(feat, vals=None, correctTp=None):
+        origTp = valTp(feat) if feat in origFeatures else None
+        customTp = featureMeta.get(feat, {}).get(VALTP, None)
+        assignedTp = origTp or customTp
+
+        if correctTp is None:
+            correctTp = &#34;int&#34; if allInt(vals) else &#34;str&#34;
+        newTp = customTp or correctTp
+
+        if newTp != assignedTp:
+            featureMeta.setdefault(feat, {})[VALTP] = newTp
+
+        if customTp and customTp != correctTp and customTp == &#34;int&#34;:
+            err(&#34;feature values are declared to be int but some values are not int&#34;)
+
+        if assignedTp != newTp:
+            rep1 = f&#34;feature of type {newTp}&#34;
+            rep2 = f&#34; (was {assignedTp})&#34; if assignedTp else &#34;&#34;
+            inf(f&#34;{rep1}{rep2}&#34;)
+
+    def shiftx(vs, offset=None, nF=None, nT=None):
+        if offset is None:
+            return (
+                {shift[m]: v for (m, v) in vs.items()}
+                if type(vs) is dict
+                else {shift[m] for m in vs}
+            )
+        else:
+            return (
+                {m + offset: v for (m, v) in vs.items() if nF &lt;= m &lt;= nT}
+                if type(vs) is dict
+                else {m + offset for m in vs if nF &lt;= m &lt;= nT}
+            )
+
+    def shiftFeature(kind, feat, data):
+        return (
+            {shift[n]: v for (n, v) in data.items() if n in shift}
+            if kind == NODE
+            else {shift[n]: shiftx(v) for (n, v) in data.items() if n in shift}
+        )
+
+    def mergeF():
+        nonlocal deletedFeatures
+        Fs = api.Fs
+        Es = api.Es
+
+        indent(level=0)
+        if mergeFeatures:
+            info(&#34;merge features ...&#34;)
+        indent(level=1, reset=True)
+
+        inF = set()
+
+        for (outFeat, inFeats) in mergeFeatures.items():
+            data = {}
+            inFeats = fitemize(inFeats)
+            if all(f in origNodeFeatures for f in inFeats):
+                featSrc = Fs
+                featDst = nodeFeatures
+            else:
+                featSrc = Es
+                featDst = edgeFeatures
+
+            for inFeat in inFeats:
+                for (n, val) in featSrc(inFeat).data.items():
+                    data[n] = val
+            featDst.setdefault(outFeat, {}).update(data)
+
+            for inFeat in inFeats:
+                inF.add(inFeat)
+                if inFeat in featDst:
+                    del featDst[inFeat]
+        deletedFeatures |= inF
+
+        if mergeFeatures:
+            info(f&#34;done (deleted {len(inF)} and added {len(mergeFeatures)} features)&#34;)
+            indent(level=2)
+            info(f&#34;deleted {_rep(inF)}&#34;, tm=False)
+            info(f&#34;added   {_rep(mergeFeatures)}&#34;, tm=False)
+        return True
+
+    def deleteF():
+        indent(level=0)
+        if deleteFeatures:
+            info(&#34;delete features ...&#34;)
+        indent(level=1, reset=True)
+        for feat in deleteFeatures:
+            dest = (
+                nodeFeatures
+                if feat in origNodeFeatures
+                else edgeFeatures
+                if feat in origEdgeFeatures
+                else None
+            )
+            if dest and feat in dest:
+                del dest[feat]
+            deletedFeatures.add(feat)
+
+        if deleteFeatures:
+            info(f&#34;done ({len(deleteFeatures)} features)&#34;)
+            indent(level=2)
+            info(_rep(deleteFeatures), tm=False)
+        return True
+
+    def addF():
+        indent(level=0)
+        if addFeatures:
+            info(&#34;add features ...&#34;)
+        indent(level=1, reset=True)
+        added = collections.defaultdict(set)
+        for (kind, dest) in (
+            (NODE, nodeFeatures),
+            (EDGE, edgeFeatures),
+        ):
+            for (feat, data) in addFeatures.get(f&#34;{kind}Features&#34;, {}).items():
+                dest.setdefault(feat, {}).update(data)
+                added[kind].add(feat)
+        if addFeatures:
+            info(
+                f&#39;done (added {len(added[&#34;node&#34;])} node + {len(added[&#34;edge&#34;])} edge features)&#39;
+            )
+            indent(level=2)
+            for (kind, feats) in sorted(added.items()):
+                info(f&#34;{kind} features: {_rep(feats)}&#34;)
+
+        return True
+
+    def mergeT():
+        nonlocal deletedTypes
+
+        indent(level=0)
+        if mergeTypes:
+            info(&#34;merge types ...&#34;)
+        indent(level=1, reset=True)
+
+        inT = set()
+
+        for (outType, inTypes) in mergeTypes.items():
+            info(f&#34;Merging {outType}&#34;)
+            withFeatures = type(inTypes) is dict
+
+            for inType in inTypes:
+                addFeatures = inTypes[inType] if withFeatures else {}
+                addFeatures[OTYPE] = outType
+                (nF, nT) = origNodeTypes[inType]
+                for (feat, val) in addFeatures.items():
+                    for n in range(nF, nT + 1):
+                        nodeFeatures.setdefault(feat, {})[n] = val
+                inT.add(inType)
+
+        deletedTypes |= inT
+
+        if mergeTypes:
+            info(f&#34;done (merged {len(mergeTypes)} node types)&#34;)
+            indent(level=2)
+            info(f&#34;deleted {_rep(inT)}&#34;, tm=False)
+            info(f&#34;added   {_rep(mergeTypes)}&#34;, tm=False)
+        return True
+
+    def deleteT():
+        nonlocal maxNode
+        nonlocal shiftNeeded
+
+        indent(level=0)
+        if deleteTypes:
+            info(&#34;delete types ...&#34;)
+        indent(level=1, reset=True)
+
+        curShift = 0
+        for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
+            if nType in deleteTypes:
+                curShift -= nT - nF + 1
+                deletedTypes.add(nType)
+            else:
+                nodeTypes[nType] = (nF + curShift, nT + curShift)
+                for n in range(nF, nT + 1):
+                    shift[n] = n - curShift
+
+        for (kind, upd) in (
+            (NODE, nodeFeatures),
+            (EDGE, edgeFeatures),
+        ):
+            for (feat, uData) in upd.items():
+                upd[feat] = shiftFeature(kind, feat, uData)
+
+        maxNode = origMaxNode - curShift
+        shiftNeeded = curShift != 0
+
+        if deleteTypes:
+            info(f&#34;done ({len(deleteTypes)} types)&#34;)
+            indent(level=2)
+            info(_rep(deleteTypes), tm=False)
+        return True
+
+    def addT():
+        nonlocal maxNode
+
+        indent(level=0)
+        if addTypes:
+            info(&#34;add types ...&#34;)
+        indent(level=1, reset=True)
+
+        for (nodeType, typeInfo) in sorted(addTypes.items()):
+            nF = typeInfo[NF]
+            nT = typeInfo[NT]
+            offset = maxNode - nF + 1
+            nodeSlots = typeInfo[NS]
+
+            data = {}
+            for n in range(nF, nT + 1):
+                data[offset + n] = nodeType
+            nodeFeatures.setdefault(OTYPE, {}).update(data)
+
+            data = {}
+            for n in range(nF, nT + 1):
+                data[offset + n] = set(nodeSlots[n])
+            edgeFeatures.setdefault(OSLOTS, {}).update(data)
+
+            for (feat, addData) in typeInfo.get(NFS, {}).items():
+                data = {}
+                for n in range(nF, nT + 1):
+                    value = addData.get(n, None)
+                    if value is not None:
+                        data[offset + n] = value
+                nodeFeatures.setdefault(feat, {}).update(data)
+
+            for (feat, addData) in typeInfo.get(EFS, {}).items():
+                data = {}
+                for n in range(nF, nT + 1):
+                    value = addData.get(n, None)
+                    if value:
+                        newValue = shiftx(value, offset=offset, nF=nF, nT=nT)
+                        if newValue:
+                            data[offset + n] = newValue
+                edgeFeatures.setdefault(feat, {}).update(data)
+            maxNode += nT - nF + 1
+
+        if addTypes:
+            info(f&#34;done ({len(addTypes)} types)&#34;)
+            indent(level=2)
+            info(_rep(addTypes), tm=False)
+        return True
+
+    def applyUpdates():
+        Fs = api.Fs
+        Es = api.Es
+
+        indent(level=0)
+        info(&#34;applying updates ...&#34;)
+        indent(level=1, reset=True)
+
+        mFeat = 0
+
+        for (kind, featSet, featSrc, featUpd, featOut) in (
+            (NODE, origNodeFeatures, Fs, nodeFeatures, nodeFeaturesOut),
+            (EDGE, origEdgeFeatures, Es, edgeFeatures, edgeFeaturesOut),
+        ):
+            allFeatSet = set() if onlyDeliverUpdatedFeatures else set(featSet)
+            for feat in (allFeatSet | set(featUpd)) - deletedFeatures:
+                outData = {}
+                outMeta = {}
+                if feat in featSet:
+                    featObj = featSrc(feat)
+                    outMeta.update(featObj.meta)
+                    if shiftNeeded:
+                        outData.update(shiftFeature(kind, feat, featObj))
+                        mFeat += 1
+                    else:
+                        outData.update(featObj.items())
+                if feat in featUpd:
+                    outData.update(featUpd[feat])
+                    if kind == EDGE:
+                        aVal = next(iter(featUpd[feat].values()))
+                        hasValues = type(aVal) is dict
+                        if outMeta.get(&#34;edgeValues&#34;, False) != hasValues:
+                            outMeta[&#34;edgeValues&#34;] = hasValues
+                if feat in featureMeta:
+                    for (k, v) in featureMeta[feat].items():
+                        if v is None:
+                            if k in outMeta:
+                                del outMeta[k]
+                        else:
+                            outMeta[k] = v
+
+                featOut[feat] = outData
+                metaDataOut[feat] = outMeta
+
+        otextMeta = {}
+        otextMeta.update(meta(OTEXT))
+        mK = 0
+        if OTEXT in featureMeta:
+            for (k, v) in featureMeta[OTEXT].items():
+                if v is None:
+                    if k in otextMeta:
+                        del otextMeta[k]
+                        mK += 1
+                else:
+                    if k not in otextMeta or otextMeta[k] != v:
+                        otextMeta[k] = v
+                        mK += 1
+        metaDataOut[OTEXT] = otextMeta
+
+        if mFeat or mK:
+            fRep = f&#34; (shifted {mFeat} features)&#34; if mFeat else &#34;&#34;
+            kRep = f&#34; (adapted {mK} keys in otext)&#34; if mK else &#34;&#34;
+            info(f&#34;done{fRep}{kRep}&#34;)
+
+        return True
+
+    def writeTf():
+        indent(level=0)
+        info(&#34;write TF data ...&#34;)
+        indent(level=1, reset=True)
+        TF = Fabric(locations=targetLocation, silent=silent)
+        TF.save(
+            metaData=metaDataOut,
+            nodeFeatures=nodeFeaturesOut,
+            edgeFeatures=edgeFeaturesOut,
+        )
+        return True
+
+    def finalize():
+        indent(level=0)
+        info(&#34;all done&#34;)
+        return True
+
+    def process():
+        for step in (
+            prepare,
+            mergeF,
+            deleteF,
+            addF,
+            mergeT,
+            deleteT,
+            addT,
+            applyUpdates,
+            writeTf,
+            finalize,
+        ):
+            if not step():
+                return False
+        return True
+
+    wasSilent = isSilent()
+    setSilent(silent)
+    result = process()
+    setSilent(wasSilent)
+    return result</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#modify">Modify</a><ul>
+<li><a href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.dataset" href="index.html">tf.dataset</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.dataset.modify.modify" href="#tf.dataset.modify.modify">modify</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

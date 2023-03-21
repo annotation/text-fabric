@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.parameters API documentation</title>
+<meta name="description" content="Parameters …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.parameters</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="parameters">Parameters</h1>
+<p>Fixed values for the whole program.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/parameters.py#L1-L191" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+# Parameters
+
+Fixed values for the whole program.
+&#34;&#34;&#34;
+
+import os
+import sys
+from zipfile import ZIP_DEFLATED
+
+
+VERSION = &#39;11.2.3&#39;
+&#34;&#34;&#34;Program version.
+
+This value is under control of the update process, as run by
+`build.py` in the top-level directory of the repo.
+&#34;&#34;&#34;
+
+NAME = &#34;Text-Fabric&#34;
+&#34;&#34;&#34;The name of the game: this program.
+&#34;&#34;&#34;
+
+BANNER = f&#34;This is {NAME} {VERSION}&#34;
+
+PACK_VERSION = &#34;3&#34;
+&#34;&#34;&#34;Data serialization version.
+
+Plain text feature files will be compressed to zipped, pickled datastructures
+that load must faster.
+
+These methods evolve, sometimes in incompatible ways.
+In those cases we bump this version number.
+That will cause TF not to use compressed files that have been compressed by
+older, incompatible methods.
+Instead, TF will produce freshly compressed data files.
+
+The compressed data files are stored in a directory `.tf/{PVN}/` next
+to the original `tf`  files, where `{PVN}` is the package version number.
+
+See Also
+--------
+tf.clean
+&#34;&#34;&#34;
+
+API_VERSION = 3
+&#34;&#34;&#34;TF API version.
+
+Text-Fabric offers and API to TF apps.
+This is the version that the current Text-Fabric offers to its apps.
+
+Apps require a version. The provided version and the required version must
+match exactly in order to get a working system.
+
+We do not aim for backward compatibility, since it is very easy to obtain a new version
+of an app.
+
+When Text-Fabric loads a TF app, it will check the api version that the app requires
+against this version.
+
+App requirement higher than TF API version
+:   The user is advised to upgrade Text-Fabric, or, alternatively,
+    select an older version of the app
+
+App requirement lower than TF API version
+:   The user is advised to obtain a newer version of the app, or alternatively,
+    downgrade Text-Fabric
+&#34;&#34;&#34;
+
+OTYPE = &#34;otype&#34;
+&#34;&#34;&#34;Name of a central feature in a TF data set:
+`otype` maps nodes to their types.&#34;&#34;&#34;
+
+OSLOTS = &#34;oslots&#34;
+&#34;&#34;&#34;Name of a central feature in a TF data set:
+`oslots` maps non-slot nodes to the sets of slots they occupy.&#34;&#34;&#34;
+
+OTEXT = &#34;otext&#34;
+&#34;&#34;&#34;Name of a central (but optional) feature in a TF data set:
+`otext` has configuration settings for sections, structure, and text formats.&#34;&#34;&#34;
+
+OVOLUME = &#34;ovolume&#34;
+&#34;&#34;&#34;Name of the feature that maps nodes of a work dataset
+to nodes in individual volumes in that work.&#34;&#34;&#34;
+
+OWORK = &#34;owork&#34;
+&#34;&#34;&#34;Name of the feature that maps nodes in an individual volume of a work
+to nodes in that work.&#34;&#34;&#34;
+
+OINTERF = &#34;ointerfrom&#34;
+&#34;&#34;&#34;Name of the feature that stores the outgoing inter-volume edges
+of a volume.&#34;&#34;&#34;
+
+OINTERT = &#34;ointerto&#34;
+&#34;&#34;&#34;Name of the feature that stores the incoming inter-volume edges
+of a volume.&#34;&#34;&#34;
+
+OMAP = &#34;omap&#34;
+&#34;&#34;&#34;Name prefix of features with a node map from an older version to a newer version.
+
+The full name of such a feature is `omap@`*oldversion*`-`*newversion*
+&#34;&#34;&#34;
+
+WARP = (OTYPE, OSLOTS, OTEXT)
+&#34;&#34;&#34;The names of the central features of TF data sets.
+
+The features `otype` and `oslots` are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.
+&#34;&#34;&#34;
+
+GZIP_LEVEL = 2
+&#34;&#34;&#34;Compression level when compressing tf files.&#34;&#34;&#34;
+
+PICKLE_PROTOCOL = 4
+&#34;&#34;&#34;Pickle protocol level when pickling tf files.&#34;&#34;&#34;
+
+ORG = &#34;annotation&#34;
+&#34;&#34;&#34;GitHub organization or GitLab group.
+
+This is where the repo that contains Text-Fabric resides.
+&#34;&#34;&#34;
+REPO = &#34;text-fabric&#34;
+&#34;&#34;&#34;GitHub repo or GitLab project.
+
+This is the name of the repo that contains Text-Fabric.
+&#34;&#34;&#34;
+
+RELATIVE = &#34;tf&#34;
+&#34;&#34;&#34;Default relative path with a repo to the directory with tf files.
+&#34;&#34;&#34;
+
+ON_IPAD = sys.platform == &#34;darwin&#34; and os.uname().machine.startswith(&#34;iP&#34;)
+
+GH = &#34;github&#34;
+&#34;&#34;&#34;Name of GitHub backend.&#34;&#34;&#34;
+
+GL = &#34;gitlab&#34;
+&#34;&#34;&#34;Name of GitLab backend.&#34;&#34;&#34;
+
+URL_GH = &#34;https://github.com&#34;
+&#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
+
+URL_GL = &#34;https://gitlab.com&#34;
+&#34;&#34;&#34;Base url of GitLab.&#34;&#34;&#34;
+
+URL_NB = &#34;https://nbviewer.jupyter.org&#34;
+&#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
+
+
+PROTOCOL = &#34;http://&#34;
+HOST = &#34;localhost&#34;
+PORT_BASE = 10000
+
+
+DOI_DEFAULT = &#34;no DOI&#34;
+DOI_URL_PREFIX = &#34;https://doi.org&#34;
+
+DOI_TF = &#34;10.5281/zenodo.592193&#34;
+&#34;&#34;&#34;DOI of an archived copy of this repo at Zenodo.&#34;&#34;&#34;
+
+BRANCH_DEFAULT = &#34;master&#34;
+&#34;&#34;&#34;Default branch in repositories, older value.&#34;&#34;&#34;
+
+BRANCH_DEFAULT_NEW = &#34;main&#34;
+&#34;&#34;&#34;Default branch in repositories, modern value.&#34;&#34;&#34;
+
+ZIP_OPTIONS = dict(compression=ZIP_DEFLATED)
+&#34;&#34;&#34;Options for zip when packing tf files.
+
+This is for packaging collections of plain tf files into zip files
+to be attached to releases on GitHub/GitLab.
+
+!!! caution &#34;Not for .tfx files&#34;
+    This is not the zipping as done when .tf files are
+    pickled and compressed to .tfx files.
+&#34;&#34;&#34;
+
+if sys.version_info[0] &gt; 3 or sys.version_info[0] == 3 and sys.version_info[1] &gt;= 7:
+    ZIP_OPTIONS[&#34;compresslevel&#34;] = 6
+
+YARN_RATIO = 1.25
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
+
+TRY_LIMIT_FROM = 40
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
+
+TRY_LIMIT_TO = 40
+&#34;&#34;&#34;Performance parameter in the `tf.search.search` module.&#34;&#34;&#34;
+
+SEARCH_FAIL_FACTOR = 4
+&#34;&#34;&#34;Limits fetching of search results to this times maxNode (corpus dependent)&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.parameters.API_VERSION"><code class="name">var <span class="ident">API_VERSION</span></code></dt>
+<dd>
+<div class="desc"><p>TF API version.</p>
+<p>Text-Fabric offers and API to TF apps.
+This is the version that the current Text-Fabric offers to its apps.</p>
+<p>Apps require a version. The provided version and the required version must
+match exactly in order to get a working system.</p>
+<p>We do not aim for backward compatibility, since it is very easy to obtain a new version
+of an app.</p>
+<p>When Text-Fabric loads a TF app, it will check the api version that the app requires
+against this version.</p>
+<dl>
+<dt>App requirement higher than TF API version</dt>
+<dd>The user is advised to upgrade Text-Fabric, or, alternatively,
+select an older version of the app</dd>
+<dt>App requirement lower than TF API version</dt>
+<dd>The user is advised to obtain a newer version of the app, or alternatively,
+downgrade Text-Fabric</dd>
+</dl></div>
+</dd>
+<dt id="tf.parameters.BRANCH_DEFAULT"><code class="name">var <span class="ident">BRANCH_DEFAULT</span></code></dt>
+<dd>
+<div class="desc"><p>Default branch in repositories, older value.</p></div>
+</dd>
+<dt id="tf.parameters.BRANCH_DEFAULT_NEW"><code class="name">var <span class="ident">BRANCH_DEFAULT_NEW</span></code></dt>
+<dd>
+<div class="desc"><p>Default branch in repositories, modern value.</p></div>
+</dd>
+<dt id="tf.parameters.DOI_TF"><code class="name">var <span class="ident">DOI_TF</span></code></dt>
+<dd>
+<div class="desc"><p>DOI of an archived copy of this repo at Zenodo.</p></div>
+</dd>
+<dt id="tf.parameters.GH"><code class="name">var <span class="ident">GH</span></code></dt>
+<dd>
+<div class="desc"><p>Name of GitHub backend.</p></div>
+</dd>
+<dt id="tf.parameters.GL"><code class="name">var <span class="ident">GL</span></code></dt>
+<dd>
+<div class="desc"><p>Name of GitLab backend.</p></div>
+</dd>
+<dt id="tf.parameters.GZIP_LEVEL"><code class="name">var <span class="ident">GZIP_LEVEL</span></code></dt>
+<dd>
+<div class="desc"><p>Compression level when compressing tf files.</p></div>
+</dd>
+<dt id="tf.parameters.NAME"><code class="name">var <span class="ident">NAME</span></code></dt>
+<dd>
+<div class="desc"><p>The name of the game: this program.</p></div>
+</dd>
+<dt id="tf.parameters.OINTERF"><code class="name">var <span class="ident">OINTERF</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that stores the outgoing inter-volume edges
+of a volume.</p></div>
+</dd>
+<dt id="tf.parameters.OINTERT"><code class="name">var <span class="ident">OINTERT</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that stores the incoming inter-volume edges
+of a volume.</p></div>
+</dd>
+<dt id="tf.parameters.OMAP"><code class="name">var <span class="ident">OMAP</span></code></dt>
+<dd>
+<div class="desc"><p>Name prefix of features with a node map from an older version to a newer version.</p>
+<p>The full name of such a feature is <code>omap@</code><em>oldversion</em><code>-</code><em>newversion</em></p></div>
+</dd>
+<dt id="tf.parameters.ORG"><code class="name">var <span class="ident">ORG</span></code></dt>
+<dd>
+<div class="desc"><p>GitHub organization or GitLab group.</p>
+<p>This is where the repo that contains Text-Fabric resides.</p></div>
+</dd>
+<dt id="tf.parameters.OSLOTS"><code class="name">var <span class="ident">OSLOTS</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central feature in a TF data set:
+<code>oslots</code> maps non-slot nodes to the sets of slots they occupy.</p></div>
+</dd>
+<dt id="tf.parameters.OTEXT"><code class="name">var <span class="ident">OTEXT</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central (but optional) feature in a TF data set:
+<code>otext</code> has configuration settings for sections, structure, and text formats.</p></div>
+</dd>
+<dt id="tf.parameters.OTYPE"><code class="name">var <span class="ident">OTYPE</span></code></dt>
+<dd>
+<div class="desc"><p>Name of a central feature in a TF data set:
+<code>otype</code> maps nodes to their types.</p></div>
+</dd>
+<dt id="tf.parameters.OVOLUME"><code class="name">var <span class="ident">OVOLUME</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that maps nodes of a work dataset
+to nodes in individual volumes in that work.</p></div>
+</dd>
+<dt id="tf.parameters.OWORK"><code class="name">var <span class="ident">OWORK</span></code></dt>
+<dd>
+<div class="desc"><p>Name of the feature that maps nodes in an individual volume of a work
+to nodes in that work.</p></div>
+</dd>
+<dt id="tf.parameters.PACK_VERSION"><code class="name">var <span class="ident">PACK_VERSION</span></code></dt>
+<dd>
+<div class="desc"><p>Data serialization version.</p>
+<p>Plain text feature files will be compressed to zipped, pickled datastructures
+that load must faster.</p>
+<p>These methods evolve, sometimes in incompatible ways.
+In those cases we bump this version number.
+That will cause TF not to use compressed files that have been compressed by
+older, incompatible methods.
+Instead, TF will produce freshly compressed data files.</p>
+<p>The compressed data files are stored in a directory <code>.tf/{PVN}/</code> next
+to the original <code><a title="tf" href="index.html">tf</a></code>
+files, where <code>{PVN}</code> is the package version number.</p>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="tf.clean" href="clean.html">tf.clean</a></code></p></div>
+</dd>
+<dt id="tf.parameters.PICKLE_PROTOCOL"><code class="name">var <span class="ident">PICKLE_PROTOCOL</span></code></dt>
+<dd>
+<div class="desc"><p>Pickle protocol level when pickling tf files.</p></div>
+</dd>
+<dt id="tf.parameters.RELATIVE"><code class="name">var <span class="ident">RELATIVE</span></code></dt>
+<dd>
+<div class="desc"><p>Default relative path with a repo to the directory with tf files.</p></div>
+</dd>
+<dt id="tf.parameters.REPO"><code class="name">var <span class="ident">REPO</span></code></dt>
+<dd>
+<div class="desc"><p>GitHub repo or GitLab project.</p>
+<p>This is the name of the repo that contains Text-Fabric.</p></div>
+</dd>
+<dt id="tf.parameters.SEARCH_FAIL_FACTOR"><code class="name">var <span class="ident">SEARCH_FAIL_FACTOR</span></code></dt>
+<dd>
+<div class="desc"><p>Limits fetching of search results to this times maxNode (corpus dependent)</p></div>
+</dd>
+<dt id="tf.parameters.TRY_LIMIT_FROM"><code class="name">var <span class="ident">TRY_LIMIT_FROM</span></code></dt>
+<dd>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
+</dd>
+<dt id="tf.parameters.TRY_LIMIT_TO"><code class="name">var <span class="ident">TRY_LIMIT_TO</span></code></dt>
+<dd>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GH"><code class="name">var <span class="ident">URL_GH</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitHub.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GL"><code class="name">var <span class="ident">URL_GL</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitLab.</p></div>
+</dd>
+<dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of NB-viewer.</p></div>
+</dd>
+<dt id="tf.parameters.VERSION"><code class="name">var <span class="ident">VERSION</span></code></dt>
+<dd>
+<div class="desc"><p>Program version.</p>
+<p>This value is under control of the update process, as run by
+<code>build.py</code> in the top-level directory of the repo.</p></div>
+</dd>
+<dt id="tf.parameters.WARP"><code class="name">var <span class="ident">WARP</span></code></dt>
+<dd>
+<div class="desc"><p>The names of the central features of TF data sets.</p>
+<p>The features <code>otype</code> and <code>oslots</code> are crucial to every TF dataset.
+Without them, a dataset is not a TF dataset, although it could still be a
+TF data module.</p></div>
+</dd>
+<dt id="tf.parameters.YARN_RATIO"><code class="name">var <span class="ident">YARN_RATIO</span></code></dt>
+<dd>
+<div class="desc"><p>Performance parameter in the <code><a title="tf.search.search" href="search/search.html">tf.search.search</a></code> module.</p></div>
+</dd>
+<dt id="tf.parameters.ZIP_OPTIONS"><code class="name">var <span class="ident">ZIP_OPTIONS</span></code></dt>
+<dd>
+<div class="desc"><p>Options for zip when packing tf files.</p>
+<p>This is for packaging collections of plain tf files into zip files
+to be attached to releases on GitHub/GitLab.</p>
+<div class="admonition caution">
+<p class="admonition-title">Not for .tfx files</p>
+<p>This is not the zipping as done when .tf files are
+pickled and compressed to .tfx files.</p>
+</div></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../tf/index.html">tf home</a> -
+<a href="../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#parameters">Parameters</a></li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf" href="index.html">tf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.parameters.API_VERSION" href="#tf.parameters.API_VERSION">API_VERSION</a></code></li>
+<li><code><a title="tf.parameters.BRANCH_DEFAULT" href="#tf.parameters.BRANCH_DEFAULT">BRANCH_DEFAULT</a></code></li>
+<li><code><a title="tf.parameters.BRANCH_DEFAULT_NEW" href="#tf.parameters.BRANCH_DEFAULT_NEW">BRANCH_DEFAULT_NEW</a></code></li>
+<li><code><a title="tf.parameters.DOI_TF" href="#tf.parameters.DOI_TF">DOI_TF</a></code></li>
+<li><code><a title="tf.parameters.GH" href="#tf.parameters.GH">GH</a></code></li>
+<li><code><a title="tf.parameters.GL" href="#tf.parameters.GL">GL</a></code></li>
+<li><code><a title="tf.parameters.GZIP_LEVEL" href="#tf.parameters.GZIP_LEVEL">GZIP_LEVEL</a></code></li>
+<li><code><a title="tf.parameters.NAME" href="#tf.parameters.NAME">NAME</a></code></li>
+<li><code><a title="tf.parameters.OINTERF" href="#tf.parameters.OINTERF">OINTERF</a></code></li>
+<li><code><a title="tf.parameters.OINTERT" href="#tf.parameters.OINTERT">OINTERT</a></code></li>
+<li><code><a title="tf.parameters.OMAP" href="#tf.parameters.OMAP">OMAP</a></code></li>
+<li><code><a title="tf.parameters.ORG" href="#tf.parameters.ORG">ORG</a></code></li>
+<li><code><a title="tf.parameters.OSLOTS" href="#tf.parameters.OSLOTS">OSLOTS</a></code></li>
+<li><code><a title="tf.parameters.OTEXT" href="#tf.parameters.OTEXT">OTEXT</a></code></li>
+<li><code><a title="tf.parameters.OTYPE" href="#tf.parameters.OTYPE">OTYPE</a></code></li>
+<li><code><a title="tf.parameters.OVOLUME" href="#tf.parameters.OVOLUME">OVOLUME</a></code></li>
+<li><code><a title="tf.parameters.OWORK" href="#tf.parameters.OWORK">OWORK</a></code></li>
+<li><code><a title="tf.parameters.PACK_VERSION" href="#tf.parameters.PACK_VERSION">PACK_VERSION</a></code></li>
+<li><code><a title="tf.parameters.PICKLE_PROTOCOL" href="#tf.parameters.PICKLE_PROTOCOL">PICKLE_PROTOCOL</a></code></li>
+<li><code><a title="tf.parameters.RELATIVE" href="#tf.parameters.RELATIVE">RELATIVE</a></code></li>
+<li><code><a title="tf.parameters.REPO" href="#tf.parameters.REPO">REPO</a></code></li>
+<li><code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code></li>
+<li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
+<li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>
+<li><code><a title="tf.parameters.URL_GH" href="#tf.parameters.URL_GH">URL_GH</a></code></li>
+<li><code><a title="tf.parameters.URL_GL" href="#tf.parameters.URL_GL">URL_GL</a></code></li>
+<li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
+<li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
+<li><code><a title="tf.parameters.WARP" href="#tf.parameters.WARP">WARP</a></code></li>
+<li><code><a title="tf.parameters.YARN_RATIO" href="#tf.parameters.YARN_RATIO">YARN_RATIO</a></code></li>
+<li><code><a title="tf.parameters.ZIP_OPTIONS" href="#tf.parameters.ZIP_OPTIONS">ZIP_OPTIONS</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
