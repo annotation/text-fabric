@@ -3,8 +3,8 @@ import re
 from subprocess import run
 from textwrap import dedent
 
-from ..core.helpers import initTree, console
-from ..core.files import unexpanduser as ux, isDir, fileCopy, scanDir
+from ..core.helpers import console
+from ..core.files import unexpanduser as ux, isDir, fileCopy, scanDir, initTree
 
 
 __pdoc__ = {}

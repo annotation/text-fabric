@@ -664,7 +664,7 @@ def tfFromMql(mqlPath, app, slotType=None, otext=None, meta=None):
     app: object
         A `tf.core.timestamp.Timestamp` object
     mqlPath, slotType, otype, meta: various
-        See `tf.core.fabric.Fabric.importMQL
+        See `tf.convert.mql.importMQL
     """
     mqlPath = ex(mqlPath)
     error = app.error

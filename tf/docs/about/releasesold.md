@@ -216,7 +216,7 @@ to the shielded notebooks.
 
 2022-06-14
 
-* Small fix in `tf.core.helpers.initTree`.
+* Small fix in `tf.core.files.initTree`.
 * New function `tf.advanced.text.showFormats`; call as `A.showFormats()`
   that gives a nicely formatted list of all text-formats and the templates
   by which they are defined.
@@ -263,7 +263,7 @@ New behaviour in walking nodes: `tf.core.nodes.Nodes.walk`: with `events=True`
 it generates open/close events for nodes, so that you can do something
 when the node starts and something else when the node ends.
 
-New utility functions `tf.core.helpers.clearTree` and `tf.core.helpers.initTree`.
+New utility functions `tf.core.files.clearTree` and `tf.core.files.initTree`.
 
 Various friction reducing changes:
 
@@ -500,7 +500,7 @@ More information on the metadata of features on the interface.
 *   TF.isLoaded and A.isLoaded (`tf.core.api.Api.isLoaded`) can show/hide more information,
     such as the file path to a feature, its data type, its description, and all of its
     metadata.
-*   importMQL (`tf.core.fabric.FabricCore.importMQL`) accepts a parameter `meta` which
+*   importMQL (`tf.convert.mql.importMQL`) accepts a parameter `meta` which
     one can use to specify metadata that is common to all features.
     Now you can use it to pass feature-specific metadata as well.
 *   Several datasources have been converted by means of importMQL:
@@ -3377,7 +3377,7 @@ Edges with edge values did not allow for the absence of values. Now they do.
 
 2017-10-05
 
-A major tweak in the `tf.fabric.Fabric.importMQL` function so that it can
+A major tweak in the `tf.convert.mql.importMQL` function so that it can
 handle gaps in the monad sequence. The issue arose when converting MQL for
 version 3 of the [BHSA](https://github.com/etcbc/bhsa). In that version there
 are somewhat arbitrary gaps in the monad sequence between the books of the
@@ -3388,7 +3388,7 @@ of slots.
 
 2017-10-05
 
-Another little tweak in the `tf.fabric.Fabric.importMQL` function so that it
+Another little tweak in the `tf.convert.mql.importMQL` function so that it
 can handle more patterns in the MQL dump file. The issue arose when converting
 MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
 
@@ -3396,7 +3396,7 @@ MQL for version 3 of the [BHSA](https://github.com/etcbc/bhsa).
 
 2017-10-04
 
-Little tweak in the `tf.fabric.Fabric.importMQL` function so that it can handle
+Little tweak in the `tf.convert.mql.importMQL` function so that it can handle
 more patterns in the MQL dump file. The issue arose when converting MQL for
 [extrabiblical](https://github.com/etcbc/extrabiblical) material.
 
@@ -3419,7 +3419,7 @@ Bug fix in reading edge features with values.
 2017-10-02
 
 MQL! You can now convert MQL data into a TF dataset:
-`tf.fabric.Fabric.importMQL`. We had already `tf.fabric.Fabric.exportMQL`.
+`tf.convert.mql.importMQL`. We had already `tf.convert.mql.exportMQL`.
 
 The consequence is that we can operate with much agility between the worlds of
 MQL and TF.

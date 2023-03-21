@@ -1035,13 +1035,13 @@ A.exportPandas()
 TF.exportMQL()
 ```
 :   export loaded dataset to MQL
-: `tf.fabric.Fabric.exportMQL`
+: `tf.convert.mql.exportMQL`
 
 ``` python
 TF.importMQL()
 ```
 :   convert MQL file to TF dataset
-:   `tf.fabric.Fabric.importMQL`
+:   `tf.convert.mql.importMQL`
 
 ---
 

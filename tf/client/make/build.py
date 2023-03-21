@@ -66,6 +66,7 @@ from tf.fabric import Fabric
 from tf.server.command import getPort
 from tf.core.helpers import specFromRanges, rangesFromSet
 from tf.core.files import (
+    LS,
     normpath,
     abspath,
     backendRep,
@@ -79,11 +80,7 @@ from tf.core.files import (
     chDir,
     scanDir,
 )
-from tf.parameters import (
-    REPO,
-    LS,
-    ZIP_OPTIONS,
-)
+from tf.parameters import REPO, ZIP_OPTIONS
 
 from .gh import deploy
 from .help import HELP
