@@ -1,8 +1,8 @@
-import math
 import pandas as pd
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
+from ..core.helpers import fitemize
 
 HELP = """
 Transforms TF dataset into Pandas
@@ -13,15 +13,19 @@ STR = "str"
 NA = [""]
 
 
-def exportPandas(app, exportDir=None):
+def exportPandas(app, inTypes=None, exportDir=None):
     api = app.api
+    Eall = api.Eall
     Fall = api.Fall
+    Es = api.Es
     Fs = api.Fs
     F = api.F
     N = api.N
     L = api.L
     T = api.T
     TF = api.TF
+
+    app.indent(reset=True)
 
     sectionTypes = T.sectionTypes
     sectionFeats = T.sectionFeats
@@ -32,15 +36,29 @@ def exportPandas(app, exportDir=None):
     for (i, f) in enumerate(sectionFeats):
         sectionFeatIndex[f] = i
 
-    textFeatures = [x[0][0] for x in TF.cformats[T.defaultFormat][2]]
-    features = sorted(set(Fall()) - {OTYPE, OSLOTS} - set(textFeatures))
+    skipFeatures = {f for f in Fall() + Eall() if "@" in f}
+
+    textFeatures = set()
+    for textFormatSpec in TF.cformats.values():
+        for featGroup in textFormatSpec[2]:
+            for feat in featGroup[0]:
+                textFeatures.add(feat)
+    textFeatures = sorted(textFeatures)
+
+    inTypes = [
+        t
+        for t in (F.otype.all if inTypes is None else fitemize(inTypes))
+        if t not in sectionTypes
+    ]
+    edgeFeatures = sorted(set(Eall()) - {OSLOTS} - skipFeatures)
+    nodeFeatures = sorted(set(Fall()) - {OTYPE} - set(textFeatures) - skipFeatures)
 
     dtype = dict(nd=INT, element=STR)
 
     for f in sectionTypes:
         dtype[f"in.{f}"] = INT
 
-    for f in features:
+    for f in nodeFeatures:
         dtype[f] = INT if Fs(f).meta["valueType"] == "int" else STR
 
     naValues = dict((x, set() if dtype[x] == STR else {""}) for x in dtype)
@@ -59,53 +77,69 @@ def exportPandas(app, exportDir=None):
     tableFile = f"{tempDir}/data-{app.version}.tsv"
     tableFilePd = f"{exportDir}/data-{app.version}.pd"
 
-    chunkSize = max((10, 10 ** int(round(math.log(F.otype.maxNode / 100, 10)))))
+    chunkSize = max((100, int(round(F.otype.maxNode / 20))))
+
+    app.info("Create tsv file ...")
+    app.indent(level=True, reset=True)
 
     with open(tableFile, "w") as hr:
         hr.write(
-            "{}\t{}\t{}\t{}\t{}\n".format(
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
                 "nd",
                 "element",
                 "\t".join(textFeatures),
                 "\t".join(f"in.{x}" for x in sectionTypes),
-                "\t".join(features),
+                "\t".join(f"in.{x}" for x in inTypes),
+                "\t".join(edgeFeatures),
+                "\t".join(nodeFeatures),
             )
         )
-        chunkSize = 10000
         i = 0
         s = 0
+        perc = 0
 
         for n in N.walk():
             nType = F.otype.v(n)
-            textValues = [str(Fs(f).v(n) or "") for f in textFeatures]
-            sectionValues = [
+            textValues = [
+                str(Fs(f).v(n) or "").replace("\t", "\\t") for f in textFeatures
+            ]
+            sectionNodes = [
                 n if nType == section else (L.u(n, otype=section) or NA)[0]
                 for section in sectionTypes
             ]
+            inValues = [(L.u(n, otype=inType) or NA)[0] for inType in inTypes]
+            edgeValues = [
+                str((Es(f).f(n) or NA)[0]).replace("\t", "\\t") for f in edgeFeatures
+            ]
             nodeValues = [
                 str(
-                    (Fs(f).v(sectionValues[sectionFeatIndex[f]]) or "")
+                    (Fs(f).v(sectionNodes[sectionFeatIndex[f]]) or NA[0])
                     if f in sectionFeatIndex and nType in sectionTypeSet
                     else Fs(f).v(n) or ""
-                )
-                for f in features
+                ).replace("\t", "\\t")
+                for f in nodeFeatures
             ]
             hr.write(
-                "{}\t{}\t{}\t{}\t{}\n".format(
+                "{}\t{}\t{}\t{}\t{}\t{}\t{}".format(
                     n,
                     F.otype.v(n),
-                    ("\t".join(textValues)).replace("\n", "\\n"),
-                    ("\t".join(str(x) for x in sectionValues)),
+                    ("\t".join(textValues)),
+                    ("\t".join(str(x) for x in sectionNodes)),
+                    ("\t".join(str(x) for x in inValues)),
+                    ("\t".join(edgeValues)),
                     ("\t".join(nodeValues)),
-                )
+                ).replace("\n", "\\n")
+                + "\n"
             )
             i += 1
             s += 1
             if s == chunkSize:
                 s = 0
-                app.info("{:>7} nodes written".format(i))
+                perc = int(round(i * 100 / F.otype.maxNode))
+                app.info(f"{perc:>3}% {i:>7} nodes written")
 
-    app.info("{:>7} nodes written and done".format(i))
+    app.info(f"{perc:>3}% {i:>7} nodes written and done")
+    app.indent(level=False)
 
     app.info(f"TSV file is {ux(tableFile)}")
 
@@ -125,6 +159,8 @@ def exportPandas(app, exportDir=None):
     app.info(f"\t{chars} characters")
 
     app.info("Importing into Pandas ...")
+    app.indent(level=True, reset=True)
+    app.info("Reading tsv file ...")
 
     dataFrame = pd.read_table(
         tableFile,
@@ -138,4 +174,6 @@ def exportPandas(app, exportDir=None):
     app.info("Done. Size = {}".format(dataFrame.size))
     app.info("Saving as Parquet file ...")
     dataFrame.to_parquet(tableFilePd, engine="pyarrow")
+    app.info("Saved")
+    app.indent(level=False)
     app.info(f"PD  in {ux(tableFilePd)}")

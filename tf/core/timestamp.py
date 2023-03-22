@@ -252,6 +252,8 @@ class Timestamp:
         The reported time is with respect to a starting point, which can be reset.
         The starting points at different levels are independent of each other.
 
+        Parameters
+        ----------
         level: integer|boolean, optional None
             The indentation level.
             If an integer, it sets the indentation level.
