@@ -1313,7 +1313,8 @@ from tf.lib import writeSets
 <hr>
 <h2 id="mql-interchange">MQL interchange</h2>
 <dl>
-<dt><pre><code class="language-python">TF.exportMQL()
+<dt><pre><code class="language-python">TF.exportMQL(mqlDb, exportDir=None)
+A.exportMQL(mqlDb, exportDir=None)
 </code></pre></dt>
 <dd>
 <p>export loaded dataset to MQL</p>
@@ -1321,7 +1322,9 @@ from tf.lib import writeSets
 <dd>
 <p><code><a title="tf.convert.mql.exportMQL" href="convert/mql.html#tf.convert.mql.exportMQL">exportMQL()</a></code></p>
 </dd>
-<dt><pre><code class="language-python">TF.importMQL()
+<dt><pre><code class="language-python">from tf.convert.mql import importMQL
+
+TF = importMQL(mqlFile, saveDir)
 </code></pre></dt>
 <dd>
 <p>convert MQL file to TF dataset</p>
@@ -1458,7 +1461,7 @@ the XML that adheres to that schema.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md

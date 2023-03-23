@@ -33,8 +33,8 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="113">11.3</h3>
-<h3 id="1130-upcoming">11.3.0 (Upcoming)</h3>
-<p>2023-03-??</p>
+<h3 id="1130">11.3.0</h3>
+<p>2023-03-23</p>
 <ul>
 <li>
 <p>New interface option in pretty displays: show all features, except <code>otype</code>.
@@ -48,13 +48,20 @@ converted literally from an intricate TEI nest of files.</p>
 </li>
 <li>
 <p>New conversion from TF to Pandas <code><a title="tf.convert.pandas" href="../convert/pandas.html">tf.convert.pandas</a></code>, callable as
-<code>A.exportPandas()</code>.</p>
+<code>A.exportPandas()</code>. For examples see:
+<a href="https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb">BHSA</a>
+<a href="https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/master/tutorial/export.ipynb">Moby Dick</a>
+<a href="https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/master/tutorial/export.ipynb">Ferdinand Huyck</a></p>
+</li>
+<li>
+<p>The function <code>importMQL()</code> must be called in a different way. The function
+<code>exportMQL()</code> can be called from a <code>TF</code> or <code>A</code> object.</p>
 </li>
 <li>
 <p>Removed a clumsy fix that produces a spurious space in unwanted places.
 The fix was introduced earlier to provide extra spaces in the Hermans corpus,
 and it worked quite nicely there. But now is Martijn complaining because he sees
-too many spaces in the Samaritan Pentateuch.</p>
+too many spaces in the Samaritan Pentateuch. This has been fixed.</p>
 </li>
 </ul>
 <h3 id="112">11.2</h3>
@@ -245,7 +252,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -319,7 +326,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#113">11.3</a></li>
-<li><a href="#1130-upcoming">11.3.0 (Upcoming)</a></li>
+<li><a href="#1130">11.3.0</a></li>
 <li><a href="#112">11.2</a></li>
 <li><a href="#1123">11.2.3</a></li>
 <li><a href="#1122">11.2.2</a></li>

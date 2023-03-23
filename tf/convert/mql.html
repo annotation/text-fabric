@@ -123,7 +123,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L1-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L1-L1018" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # MQL
@@ -247,7 +247,7 @@ rm dataset ; mql -b 3 &lt; dataset.mql
 import re
 from itertools import chain
 from ..parameters import WARP, OTYPE, OSLOTS
-from ..fabric import Fabric
+from ..core.fabric import FabricCore
 from ..core.helpers import (
     cleanName,
     isClean,
@@ -257,7 +257,13 @@ from ..core.helpers import (
     nbytes,
     console,
 )
-from ..core.files import expanduser as ex, unexpanduser as ux, expandDir, dirMake
+from ..core.files import (
+    expanduser as ex,
+    unexpanduser as ux,
+    expandDir,
+    dirMake,
+    DOWNLOADS,
+)
 from ..core.timestamp import SILENT_D, silentConvert
 
 # If a feature, with type string, has less than ENUM_LIMIT values,
@@ -269,18 +275,21 @@ ENUM_LIMIT = 1000
 ONE_ENUM_TYPE = True
 
 
-def exportMQL(app, mqlName, exportDir=None):
+def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
 
     Parameters
     ----------
-    mqlName: string
+    app: object
+        A `tf.advanced.app.App` object, which holds the corpus data
+        that will be exported to MQL.
+    mqlDb: string
         Name of the mql database
     exportDir: string, optional None
         Directory where the MQL dir will be saved.
         If None is given, it will end up in the same repo as the dataset, in a new
         top-level subdirectory called `mql`.
-        The exported data will be written to file *exportDir*`/`*mqlName.mql*.
+        The exported data will be written to file *exportDir*`/`*mqlDb.mql*.
         If `exportDir` starts with `~`, the `~` will be expanded to your
         home directory.
         Likewise, `..` will be expanded to the parent of the current directory,
@@ -298,25 +307,35 @@ def exportMQL(app, mqlName, exportDir=None):
     indent(level=0, reset=True)
 
     if exportDir is None:
-        baseDir = f&#34;{app.repoLocation}&#34;
+        repoLocation = getattr(app, &#34;repoLocation&#34;, None)
+        if repoLocation is None:
+            locations = getattr(app, &#34;locations&#34;, None)
+            if locations is None or len(locations) == 0:
+                baseDir = DOWNLOADS
+            else:
+                baseDir = expandDir(app, f&#34;{locations[0]}/..&#34;)
+        else:
+            baseDir = repoLocation
         exportDir = f&#34;{baseDir}/mql&#34;
     else:
         exportDir = expandDir(app, exportDir)
 
-    mqlNameClean = cleanName(mqlName)
+    mqlNameClean = cleanName(mqlDb)
     mql = MQL(app, mqlNameClean, exportDir)
     mql.write()
 
 
-def importMQL(mqlPath, targetDir, slotType=None, otext=None, meta=None):
+def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
 
     Parameters
     ----------
-    mqlPath: string
+    mqlFile: string
         Path to the file which contains the MQL code.
-    targetDir: string
+    saveDir: string
         Path to where a new TF app will be created.
+    silent: string
+        How silent the newly created TF object must be.
 
     slotType: string
         You have to tell which object type in the MQL file acts as the slot type,
@@ -360,37 +379,42 @@ def importMQL(mqlPath, targetDir, slotType=None, otext=None, meta=None):
 
         !!! caution &#34;valueType&#34;
             Do not pass the value types of the features here.
+
+    Returns
+    -------
+    object
+        A `tf.core.fabric.Fabric` object holding the conversion result of the
+        MQL data into TF.
     &#34;&#34;&#34;
 
-    TF = Fabric(locations=targetDir)
-    tmObj = app.tmObj
+    TF = FabricCore(locations=saveDir, silent=silent)
+    tmObj = TF.tmObj
     indent = tmObj.indent
 
     indent(level=0, reset=True)
     (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-        mqlPath, app.tmObj, slotType=slotType, otext=otext, meta=meta
+        mqlFile, tmObj, slotType=slotType, otext=otext, meta=meta
     )
     if good:
-        app.save(
-            nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData
-        )
+        TF.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
+    return TF
 
 
 class MQL:
-    def __init__(self, app, mqlName, exportDir, silent=SILENT_D):
+    def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
         self.app = app
         self.silent = silentConvert(silent)
         app.setSilent(silent)
         warning = app.warning
 
-        self.mqlNameOrig = mqlName
+        self.mqlNameOrig = mqlDb
         exportDir = ex(exportDir)
         self.exportDir = exportDir
 
-        cleanDb = cleanName(mqlName)
-        if cleanDb != mqlName:
-            warning(f&#39;db name &#34;{mqlName}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
-        self.mqlName = cleanDb
+        cleanDb = cleanName(mqlDb)
+        if cleanDb != mqlDb:
+            warning(f&#39;db name &#34;{mqlDb}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
+        self.mqlDb = cleanDb
 
         self.enums = {}
         self._check()
@@ -408,11 +432,11 @@ class MQL:
 
         dirMake(self.exportDir)
 
-        mqlPath = f&#34;{self.exportDir}/{self.mqlName}.mql&#34;
+        mqlFile = f&#34;{self.exportDir}/{self.mqlDb}.mql&#34;
         try:
-            fm = open(mqlPath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            fm = open(mqlFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
         except Exception:
-            error(f&#34;Could not write to {ux(mqlPath)}&#34;)
+            error(f&#34;Could not write to {ux(mqlFile)}&#34;)
             self.good = False
             return
 
@@ -439,7 +463,7 @@ class MQL:
         indent = app.indent
         tfFeatures = app.api.TF.features
 
-        info(f&#34;Checking features of dataset {self.mqlName}&#34;)
+        info(f&#34;Checking features of dataset {self.mqlDb}&#34;)
 
         self.features = {}
         self.featureList = []
@@ -488,7 +512,7 @@ GO
 USE DATABASE &#39;{name}&#39;
 GO
 &#34;&#34;&#34;.format(
-                name=self.mqlName
+                name=self.mqlDb
             )
         )
 
@@ -783,34 +807,34 @@ def uni(line):
     return uniscan.sub(makeuni, line)
 
 
-def tfFromMql(mqlPath, app, slotType=None, otext=None, meta=None):
+def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
 
     Parameters
     ----------
-    app: object
+    tmObj: object
         A `tf.core.timestamp.Timestamp` object
-    mqlPath, slotType, otype, meta: various
+    mqlFile, slotType, otype, meta: various
         See `tf.convert.mql.importMQL
     &#34;&#34;&#34;
-    mqlPath = ex(mqlPath)
-    error = app.error
+    mqlFile = ex(mqlFile)
+    error = tmObj.error
 
     if slotType is None:
         error(&#34;ERROR: no slotType specified&#34;)
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlPath, app)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(app, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
+    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)
 
 
-def parseMql(mqlPath, app):
-    info = app.info
-    error = app.error
+def parseMql(mqlFile, tmObj):
+    info = tmObj.info
+    error = tmObj.error
 
     info(&#34;Parsing mql source ...&#34;)
-    fh = open(mqlPath, encoding=&#34;utf8&#34;)
+    fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
     tables = dict()
@@ -1009,8 +1033,8 @@ def parseMql(mqlPath, app):
     return (good, objectTypes, tables, nodeF, edgeF)
 
 
-def tfFromData(app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = app.info
+def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = tmObj.info
 
     info(&#34;Making TF data ...&#34;)
 
@@ -1030,7 +1054,9 @@ def tfFromData(app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 
     # metadata that ends up in every feature
     metaData[&#34;&#34;] = meta.get(&#34;&#34;, {})
-    distinctFeatures = chain(chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values()))
+    distinctFeatures = chain(
+        chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values())
+    )
     for f in distinctFeatures:
         metaInfo = meta.get(f, None)
         if metaInfo is not None:
@@ -1127,19 +1153,22 @@ def tfFromData(app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.convert.mql.exportMQL"><code class="name flex">
-<span>def <span class="ident">exportMQL</span></span>(<span>app, mqlName, exportDir=None)</span>
+<span>def <span class="ident">exportMQL</span></span>(<span>app, mqlDb, exportDir=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Exports the complete TF dataset into single MQL database.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>mqlName</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>A <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code> object, which holds the corpus data
+that will be exported to MQL.</dd>
+<dt><strong><code>mqlDb</code></strong> :&ensp;<code>string</code></dt>
 <dd>Name of the mql database</dd>
 <dt><strong><code>exportDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>Directory where the MQL dir will be saved.
 If None is given, it will end up in the same repo as the dataset, in a new
 top-level subdirectory called <code>mql</code>.
-The exported data will be written to file <em>exportDir</em><code>/</code><em>mqlName.mql</em>.
+The exported data will be written to file <em>exportDir</em><code>/</code><em>mqlDb.mql</em>.
 If <code>exportDir</code> starts with <code>~</code>, the <code>~</code> will be expanded to your
 home directory.
 Likewise, <code>..</code> will be expanded to the parent of the current directory,
@@ -1155,20 +1184,23 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L145-L181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L151-L198" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def exportMQL(app, mqlName, exportDir=None):
+<pre><code class="python">def exportMQL(app, mqlDb, exportDir=None):
     &#34;&#34;&#34;Exports the complete TF dataset into single MQL database.
 
     Parameters
     ----------
-    mqlName: string
+    app: object
+        A `tf.advanced.app.App` object, which holds the corpus data
+        that will be exported to MQL.
+    mqlDb: string
         Name of the mql database
     exportDir: string, optional None
         Directory where the MQL dir will be saved.
         If None is given, it will end up in the same repo as the dataset, in a new
         top-level subdirectory called `mql`.
-        The exported data will be written to file *exportDir*`/`*mqlName.mql*.
+        The exported data will be written to file *exportDir*`/`*mqlDb.mql*.
         If `exportDir` starts with `~`, the `~` will be expanded to your
         home directory.
         Likewise, `..` will be expanded to the parent of the current directory,
@@ -1186,27 +1218,37 @@ and <code>.</code> to the current directory, both only at the start of <code>exp
     indent(level=0, reset=True)
 
     if exportDir is None:
-        baseDir = f&#34;{app.repoLocation}&#34;
+        repoLocation = getattr(app, &#34;repoLocation&#34;, None)
+        if repoLocation is None:
+            locations = getattr(app, &#34;locations&#34;, None)
+            if locations is None or len(locations) == 0:
+                baseDir = DOWNLOADS
+            else:
+                baseDir = expandDir(app, f&#34;{locations[0]}/..&#34;)
+        else:
+            baseDir = repoLocation
         exportDir = f&#34;{baseDir}/mql&#34;
     else:
         exportDir = expandDir(app, exportDir)
 
-    mqlNameClean = cleanName(mqlName)
+    mqlNameClean = cleanName(mqlDb)
     mql = MQL(app, mqlNameClean, exportDir)
     mql.write()</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.mql.importMQL"><code class="name flex">
-<span>def <span class="ident">importMQL</span></span>(<span>mqlPath, targetDir, slotType=None, otext=None, meta=None)</span>
+<span>def <span class="ident">importMQL</span></span>(<span>mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts an MQL database dump to a Text-Fabric dataset.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>mqlPath</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>mqlFile</code></strong> :&ensp;<code>string</code></dt>
 <dd>Path to the file which contains the MQL code.</dd>
-<dt><strong><code>targetDir</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>saveDir</code></strong> :&ensp;<code>string</code></dt>
 <dd>Path to where a new TF app will be created.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code></dt>
+<dd>How silent the newly created TF object must be.</dd>
 <dt><strong><code>slotType</code></strong> :&ensp;<code>string</code></dt>
 <dd>You have to tell which object type in the MQL file acts as the slot type,
 because TF cannot see that on its own.</dd>
@@ -1249,21 +1291,29 @@ metadata.</p>
 <p>Do not pass the value types of the features here.</p>
 </div>
 </dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>A <code>tf.core.fabric.Fabric</code> object holding the conversion result of the
+MQL data into TF.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L184-L249" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L201-L273" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def importMQL(mqlPath, targetDir, slotType=None, otext=None, meta=None):
+<pre><code class="python">def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Converts an MQL database dump to a Text-Fabric dataset.
 
     Parameters
     ----------
-    mqlPath: string
+    mqlFile: string
         Path to the file which contains the MQL code.
-    targetDir: string
+    saveDir: string
         Path to where a new TF app will be created.
+    silent: string
+        How silent the newly created TF object must be.
 
     slotType: string
         You have to tell which object type in the MQL file acts as the slot type,
@@ -1307,20 +1357,25 @@ metadata.</p>
 
         !!! caution &#34;valueType&#34;
             Do not pass the value types of the features here.
+
+    Returns
+    -------
+    object
+        A `tf.core.fabric.Fabric` object holding the conversion result of the
+        MQL data into TF.
     &#34;&#34;&#34;
 
-    TF = Fabric(locations=targetDir)
-    tmObj = app.tmObj
+    TF = FabricCore(locations=saveDir, silent=silent)
+    tmObj = TF.tmObj
     indent = tmObj.indent
 
     indent(level=0, reset=True)
     (good, nodeFeatures, edgeFeatures, metaData) = tfFromMql(
-        mqlPath, app.tmObj, slotType=slotType, otext=otext, meta=meta
+        mqlFile, tmObj, slotType=slotType, otext=otext, meta=meta
     )
     if good:
-        app.save(
-            nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData
-        )</code></pre>
+        TF.save(nodeFeatures=nodeFeatures, edgeFeatures=edgeFeatures, metaData=metaData)
+    return TF</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.mql.makeuni"><code class="name flex">
@@ -1332,7 +1387,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L647-L652" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L671-L676" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeuni(match):
     &#34;&#34;&#34;Make proper unicode of a text that contains byte escape codes
@@ -1343,21 +1398,21 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.parseMql"><code class="name flex">
-<span>def <span class="ident">parseMql</span></span>(<span>mqlPath, app)</span>
+<span>def <span class="ident">parseMql</span></span>(<span>mqlFile, tmObj)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L681-L882" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L705-L906" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def parseMql(mqlPath, app):
-    info = app.info
-    error = app.error
+<pre><code class="python">def parseMql(mqlFile, tmObj):
+    info = tmObj.info
+    error = tmObj.error
 
     info(&#34;Parsing mql source ...&#34;)
-    fh = open(mqlPath, encoding=&#34;utf8&#34;)
+    fh = open(mqlFile, encoding=&#34;utf8&#34;)
 
     objectTypes = dict()
     tables = dict()
@@ -1557,17 +1612,17 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.tfFromData"><code class="name flex">
-<span>def <span class="ident">tfFromData</span></span>(<span>app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta)</span>
+<span>def <span class="ident">tfFromData</span></span>(<span>tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L885-L992" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L909-L1018" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tfFromData(app, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
-    info = app.info
+<pre><code class="python">def tfFromData(tmObj, objectTypes, tables, nodeF, edgeF, slotType, otext, meta):
+    info = tmObj.info
 
     info(&#34;Making TF data ...&#34;)
 
@@ -1587,7 +1642,9 @@ such as backslash xb6</p></div>
 
     # metadata that ends up in every feature
     metaData[&#34;&#34;] = meta.get(&#34;&#34;, {})
-    distinctFeatures = chain(chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values()))
+    distinctFeatures = chain(
+        chain.from_iterable(nodeF.values()), chain.from_iterable(edgeF.values())
+    )
     for f in distinctFeatures:
         metaInfo = meta.get(f, None)
         if metaInfo is not None:
@@ -1677,42 +1734,42 @@ such as backslash xb6</p></div>
 </details>
 </dd>
 <dt id="tf.convert.mql.tfFromMql"><code class="name flex">
-<span>def <span class="ident">tfFromMql</span></span>(<span>mqlPath, app, slotType=None, otext=None, meta=None)</span>
+<span>def <span class="ident">tfFromMql</span></span>(<span>mqlFile, tmObj, slotType=None, otext=None, meta=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generate TF from MQL</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dt><strong><code>tmObj</code></strong> :&ensp;<code>object</code></dt>
 <dd>A <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code> object</dd>
-<dt><strong><code>mqlPath</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>various</code></dt>
+<dt><strong><code>mqlFile</code></strong>, <strong><code>slotType</code></strong>, <strong><code>otype</code></strong>, <strong><code>meta</code></strong> :&ensp;<code>various</code></dt>
 <dd>See `tf.convert.mql.importMQL</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L659-L678" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L683-L702" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tfFromMql(mqlPath, app, slotType=None, otext=None, meta=None):
+<pre><code class="python">def tfFromMql(mqlFile, tmObj, slotType=None, otext=None, meta=None):
     &#34;&#34;&#34;Generate TF from MQL
 
     Parameters
     ----------
-    app: object
+    tmObj: object
         A `tf.core.timestamp.Timestamp` object
-    mqlPath, slotType, otype, meta: various
+    mqlFile, slotType, otype, meta: various
         See `tf.convert.mql.importMQL
     &#34;&#34;&#34;
-    mqlPath = ex(mqlPath)
-    error = app.error
+    mqlFile = ex(mqlFile)
+    error = tmObj.error
 
     if slotType is None:
         error(&#34;ERROR: no slotType specified&#34;)
         return (False, {}, {}, {})
-    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlPath, app)
+    (good, objectTypes, tables, edgeF, nodeF) = parseMql(mqlFile, tmObj)
     if not good:
         return (False, {}, {}, {})
-    return tfFromData(app, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)</code></pre>
+    return tfFromData(tmObj, objectTypes, tables, edgeF, nodeF, slotType, otext, meta)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.mql.uni"><code class="name flex">
@@ -1723,7 +1780,7 @@ such as backslash xb6</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L655-L656" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L679-L680" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def uni(line):
     return uniscan.sub(makeuni, line)</code></pre>
@@ -1736,30 +1793,30 @@ such as backslash xb6</p></div>
 <dl>
 <dt id="tf.convert.mql.MQL"><code class="flex name class">
 <span>class <span class="ident">MQL</span></span>
-<span>(</span><span>app, mqlName, exportDir, silent='auto')</span>
+<span>(</span><span>app, mqlDb, exportDir, silent='auto')</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L252-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L276-L663" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class MQL:
-    def __init__(self, app, mqlName, exportDir, silent=SILENT_D):
+    def __init__(self, app, mqlDb, exportDir, silent=SILENT_D):
         self.app = app
         self.silent = silentConvert(silent)
         app.setSilent(silent)
         warning = app.warning
 
-        self.mqlNameOrig = mqlName
+        self.mqlNameOrig = mqlDb
         exportDir = ex(exportDir)
         self.exportDir = exportDir
 
-        cleanDb = cleanName(mqlName)
-        if cleanDb != mqlName:
-            warning(f&#39;db name &#34;{mqlName}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
-        self.mqlName = cleanDb
+        cleanDb = cleanName(mqlDb)
+        if cleanDb != mqlDb:
+            warning(f&#39;db name &#34;{mqlDb}&#34; =&gt; &#34;{cleanDb}&#34;&#39;)
+        self.mqlDb = cleanDb
 
         self.enums = {}
         self._check()
@@ -1777,11 +1834,11 @@ such as backslash xb6</p></div>
 
         dirMake(self.exportDir)
 
-        mqlPath = f&#34;{self.exportDir}/{self.mqlName}.mql&#34;
+        mqlFile = f&#34;{self.exportDir}/{self.mqlDb}.mql&#34;
         try:
-            fm = open(mqlPath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+            fm = open(mqlFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
         except Exception:
-            error(f&#34;Could not write to {ux(mqlPath)}&#34;)
+            error(f&#34;Could not write to {ux(mqlFile)}&#34;)
             self.good = False
             return
 
@@ -1808,7 +1865,7 @@ such as backslash xb6</p></div>
         indent = app.indent
         tfFeatures = app.api.TF.features
 
-        info(f&#34;Checking features of dataset {self.mqlName}&#34;)
+        info(f&#34;Checking features of dataset {self.mqlDb}&#34;)
 
         self.features = {}
         self.featureList = []
@@ -1857,7 +1914,7 @@ GO
 USE DATABASE &#39;{name}&#39;
 GO
 &#34;&#34;&#34;.format(
-                name=self.mqlName
+                name=self.mqlDb
             )
         )
 
@@ -2144,7 +2201,7 @@ GO
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/convert/mql.py#L271-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/convert/mql.py#L295-L329" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(self):
     silent = self.silent
@@ -2159,11 +2216,11 @@ GO
 
     dirMake(self.exportDir)
 
-    mqlPath = f&#34;{self.exportDir}/{self.mqlName}.mql&#34;
+    mqlFile = f&#34;{self.exportDir}/{self.mqlDb}.mql&#34;
     try:
-        fm = open(mqlPath, &#34;w&#34;, encoding=&#34;utf8&#34;)
+        fm = open(mqlFile, &#34;w&#34;, encoding=&#34;utf8&#34;)
     except Exception:
-        error(f&#34;Could not write to {ux(mqlPath)}&#34;)
+        error(f&#34;Could not write to {ux(mqlFile)}&#34;)
         self.good = False
         return
 

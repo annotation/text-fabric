@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L1-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L1-L573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -205,6 +205,35 @@ def mdhtmlEsc(val, math=False):
             .replace(&#34;|&#34;, &#34;&amp;#124;&#34;)
             .replace(&#34;$&#34;, &#34;&lt;span&gt;$&lt;/span&gt;&#34;)
         )
+    )
+
+
+def tsvEsc(x):
+    &#34;&#34;&#34;Escapes a double quote for strings to be included in TSV data.
+
+    Only `&#34;` and `&#39;` at the beginning of the string are escaped.
+    The escaping is realized by putting a backslash at the beginning.
+    &#34;&#34;&#34;
+    s = str(x)
+    return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s
+
+
+PANDAS_QUOTE = &#39;&#34;&#39;
+PANDAS_ESCAPE = &#34;\u0001&#34;
+
+
+def pandasEsc(x):
+    &#34;&#34;&#34;Escapes the character that will be used as the Pandas quote char.
+
+    The escaping is realized by prepending a special char the quote char.
+    Also: all tab characters will be replaced by single spaces.
+    &#34;&#34;&#34;
+    return (
+        x
+        if x == &#34;&#34;
+        else str(x)
+        .replace(&#34;\t&#34;, &#34; &#34;)
+        .replace(PANDAS_QUOTE, PANDAS_ESCAPE + PANDAS_QUOTE)
     )
 
 
@@ -589,7 +618,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L181-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L210-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel(name):
     if not name:
@@ -606,7 +635,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L188-L196" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L217-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check32():
     warn = &#34;&#34;
@@ -627,7 +656,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L210-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L239-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanName(name):
     clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
@@ -644,7 +673,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L353-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L382-L406" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFormats(config):
     featureSet = set()
@@ -681,7 +710,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L199-L207" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L228-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*msg, error=False, newline=True):
     msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
@@ -702,7 +731,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L388-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L417-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fitemize(value):
     if not value:
@@ -722,7 +751,7 @@ def formatMeta(featureMeta):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L223-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L252-L263" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flattenToSet(features):
     theseFeatures = set()
@@ -759,7 +788,7 @@ and the keys <code>desc</code> and <code>eg</code> deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L513-L544" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L542-L573" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def formatMeta(featureMeta):
     &#34;&#34;&#34;Reorder meta data.
@@ -808,7 +837,7 @@ that are not loaded by default.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L488-L510" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L517-L539" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllRealFeatures(api):
     &#34;&#34;&#34;Get all config features and all loaded node and edge features.
@@ -853,7 +882,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L99-L125" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L99-L125" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlEsc(val, math=False):
     &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
@@ -892,7 +921,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L217-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L246-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClean(name):
     if name is None or len(name) == 0 or name[0] not in LETTER:
@@ -908,7 +937,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L61-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L61-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isInt(val):
     try:
@@ -926,7 +955,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L380-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L409-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def itemize(string, sep=None):
     if not string:
@@ -944,7 +973,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L427-L437" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L456-L466" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeExamples(nodeList):
     lN = len(nodeList)
@@ -967,7 +996,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L321-L325" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L350-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(data):
     inv = {}
@@ -984,7 +1013,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L328-L333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L357-L362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverse(data):
     inverse = {}
@@ -1002,7 +1031,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L336-L341" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L365-L370" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverseVal(data):
     inverse = {}
@@ -1022,7 +1051,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L69-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L69-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mathEsc(val):
     &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
@@ -1050,7 +1079,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L79-L96" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L79-L96" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdEsc(val, math=False):
     &#34;&#34;&#34;Escape certain markdown characters.
@@ -1090,7 +1119,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L149-L178" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L149-L178" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val, math=False):
     &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
@@ -1139,7 +1168,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L470-L485" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L499-L514" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDict(source, overrides):
     &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
@@ -1167,7 +1196,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L462-L467" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L491-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDictOfSets(d1, d2):
     for (n, ms) in d2.items():
@@ -1185,7 +1214,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L344-L350" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L373-L379" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nbytes(by):
     units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
@@ -1196,6 +1225,33 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
         by /= 1024</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.pandasEsc"><code class="name flex">
+<span>def <span class="ident">pandasEsc</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escapes the character that will be used as the Pandas quote char.</p>
+<p>The escaping is realized by prepending a special char the quote char.
+Also: all tab characters will be replaced by single spaces.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L195-L207" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def pandasEsc(x):
+    &#34;&#34;&#34;Escapes the character that will be used as the Pandas quote char.
+
+    The escaping is realized by prepending a special char the quote char.
+    Also: all tab characters will be replaced by single spaces.
+    &#34;&#34;&#34;
+    return (
+        x
+        if x == &#34;&#34;
+        else str(x)
+        .replace(&#34;\t&#34;, &#34; &#34;)
+        .replace(PANDAS_QUOTE, PANDAS_ESCAPE + PANDAS_QUOTE)
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.project"><code class="name flex">
 <span>def <span class="ident">project</span></span>(<span>iterableOfTuples, maxDimension)</span>
 </code></dt>
@@ -1204,7 +1260,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L398-L401" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L427-L430" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
@@ -1220,7 +1276,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L274-L288" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L303-L317" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
     curstart = None
@@ -1247,7 +1303,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L253-L271" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L282-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromSet(nodeSet):
     # ranges = []
@@ -1278,7 +1334,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L237-L250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L266-L279" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromSpec(spec):
     covered = set()
@@ -1304,7 +1360,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L455-L459" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L484-L488" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromStr(x):
     if x is None:
@@ -1321,7 +1377,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L440-L452" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L469-L481" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromValue(x, asInt=False):
     if x is None:
@@ -1346,7 +1402,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L291-L294" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L320-L323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
     return &#34;,&#34;.join(
@@ -1362,7 +1418,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L297-L298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L326-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRangesLogical(ranges):  # ranges must be normalized
     return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]</code></pre>
@@ -1376,7 +1432,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L307-L318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L336-L347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromValue(val):
     valTp = type(val)
@@ -1392,6 +1448,28 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
     )</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.tsvEsc"><code class="name flex">
+<span>def <span class="ident">tsvEsc</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Escapes a double quote for strings to be included in TSV data.</p>
+<p>Only <code>"</code> and <code>'</code> at the beginning of the string are escaped.
+The escaping is realized by putting a backslash at the beginning.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L181-L188" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tsvEsc(x):
+    &#34;&#34;&#34;Escapes a double quote for strings to be included in TSV data.
+
+    Only `&#34;` and `&#39;` at the beginning of the string are escaped.
+    The escaping is realized by putting a backslash at the beginning.
+    &#34;&#34;&#34;
+    s = str(x)
+    return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.valueFromTf"><code class="name flex">
 <span>def <span class="ident">valueFromTf</span></span>(<span>tf)</span>
 </code></dt>
@@ -1400,7 +1478,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L301-L304" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L330-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valueFromTf(tf):
     return &#34;\\&#34;.join(
@@ -1426,7 +1504,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L45-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L45-L58" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def var(envVar):
     &#34;&#34;&#34;Retrieves the value of an environment variable.
@@ -1452,7 +1530,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L404-L424" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L433-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     if type(messages) is str:
@@ -1487,7 +1565,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/core/helpers.py#L128-L146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/core/helpers.py#L128-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def xmlEsc(val):
     &#34;&#34;&#34;Escape certain HTML characters by XML entities.
@@ -1602,6 +1680,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.mergeDict" href="#tf.core.helpers.mergeDict">mergeDict</a></code></li>
 <li><code><a title="tf.core.helpers.mergeDictOfSets" href="#tf.core.helpers.mergeDictOfSets">mergeDictOfSets</a></code></li>
 <li><code><a title="tf.core.helpers.nbytes" href="#tf.core.helpers.nbytes">nbytes</a></code></li>
+<li><code><a title="tf.core.helpers.pandasEsc" href="#tf.core.helpers.pandasEsc">pandasEsc</a></code></li>
 <li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromList" href="#tf.core.helpers.rangesFromList">rangesFromList</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
@@ -1611,6 +1690,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.specFromRanges" href="#tf.core.helpers.specFromRanges">specFromRanges</a></code></li>
 <li><code><a title="tf.core.helpers.specFromRangesLogical" href="#tf.core.helpers.specFromRangesLogical">specFromRangesLogical</a></code></li>
 <li><code><a title="tf.core.helpers.tfFromValue" href="#tf.core.helpers.tfFromValue">tfFromValue</a></code></li>
+<li><code><a title="tf.core.helpers.tsvEsc" href="#tf.core.helpers.tsvEsc">tsvEsc</a></code></li>
 <li><code><a title="tf.core.helpers.valueFromTf" href="#tf.core.helpers.valueFromTf">valueFromTf</a></code></li>
 <li><code><a title="tf.core.helpers.var" href="#tf.core.helpers.var">var</a></code></li>
 <li><code><a title="tf.core.helpers.wrapMessages" href="#tf.core.helpers.wrapMessages">wrapMessages</a></code></li>

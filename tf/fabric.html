@@ -47,7 +47,7 @@ collect volumes into a new work.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/fabric.py#L1-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/fabric.py#L1-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Fabric
@@ -76,6 +76,8 @@ collect volumes into a new work.
 Fabric is an extension of `tf.core.fabric` where volume support is added.
 &#34;&#34;&#34;
 
+import types
+
 from .parameters import OTYPE
 from .core.helpers import itemize
 from .core.fabric import FabricCore
@@ -90,6 +92,7 @@ from .core.files import (
 )
 from .core.timestamp import Timestamp, SILENT_D, silentConvert
 from .volumes import extract, collect, getVolumes
+from .convert.mql import exportMQL
 
 
 class Fabric(FabricCore):
@@ -190,6 +193,7 @@ class Fabric(FabricCore):
         self.collectionBase = collectionBase
         self.collection = collection
         self.volume = None if collection else volume
+        self.exportMQL = types.MethodType(exportMQL, self)
 
     def _makeApi(self):
         api = super()._makeApi()
@@ -337,7 +341,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/fabric.py#L44-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/fabric.py#L47-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Fabric(FabricCore):
     &#34;&#34;&#34;Initialize the core API for a corpus.
@@ -437,6 +441,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
         self.collectionBase = collectionBase
         self.collection = collection
         self.volume = None if collection else volume
+        self.exportMQL = types.MethodType(exportMQL, self)
 
     def _makeApi(self):
         api = super()._makeApi()
@@ -562,7 +567,7 @@ The collection takes precedence, and the volume is ignored in that case.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/fabric.py#L205-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/fabric.py#L209-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collect(
     self,
@@ -618,7 +623,7 @@ will be supplied automatically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/fabric.py#L170-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/fabric.py#L174-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     self, volumes=True, byTitle=True, silent=SILENT_D, overwrite=None, show=False
@@ -665,7 +670,7 @@ will be supplied automatically.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8b0ae8e3b582a0695d7ad71ac4c4e29a4b31f52/tf/fabric.py#L161-L168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3b34951026c2795847bad4cf1bfb0b5f2324bc58/tf/fabric.py#L165-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(self):
     &#34;&#34;&#34;Lists available volumes within the dataset.
