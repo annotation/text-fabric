@@ -29,8 +29,8 @@ programs, such as Text-Fabric, to process the same data.
 # Examples
 
 * [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-* [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/master/tutorial/export.ipynb)
-* [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/master/tutorial/export.ipynb)
+* [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+* [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 
 import pandas as pd

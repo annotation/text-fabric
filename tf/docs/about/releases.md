@@ -28,8 +28,8 @@ See the app-specific tutorials via `tf.about.corpora`.
 *   New conversion from TF to Pandas `tf.convert.pandas`, callable as
     `A.exportPandas()`. For examples see:
     [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
-    [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/master/tutorial/export.ipynb)
-    [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/master/tutorial/export.ipynb)
+    [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/main/tutorial/export.ipynb)
+    [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 
 *   The function `importMQL()` must be called in a different way. The function
     `exportMQL()` can be called from a `TF` or `A` object.
