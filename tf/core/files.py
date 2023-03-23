@@ -54,7 +54,7 @@ def expandDir(obj, dirName):
         dirName = dirName.replace("..", obj.parentDir, 1)
     elif dirName.startswith("."):
         dirName = dirName.replace(".", obj.curDir, 1)
-    return dirName
+    return normpath(dirName)
 
 
 def prefixSlash(path):

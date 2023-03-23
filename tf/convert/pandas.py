@@ -1,8 +1,43 @@
+"""
+# Export a TF dataset to a Pandas dataframe.
+
+There is a natural mapping of a TF dataset with its nodes, edges and features to a
+rectangular dataframe with rows and columns:
+
+*   the *nodes* correspond to *rows*;
+*   the node *features* correspond to *columns*;
+*   the *value* of a feature for a node is in the row that corresponds with the node
+    and the column that corresponds with the feature.
+*   the *edge* features correspond to columns, in that column you find for each row
+    the nodes where edges arrive, i.e. the edges from the node that correspond with
+    the row.
+
+We also write the data that says which nodes are contained in which other nodes.
+To each row we add the following columns:
+
+*   for each node type, except the slot type, there is a column with named
+    `in_`*nodeType*, that contains the node of the smallest object that
+    contains the node of the row;
+
+We compose the big table and save it as a tab delimited file.
+This temporary result can be processed by R and Pandas.
+
+It turns out that for this size of the data Pandas is a bit
+quicker than R. It is also more Pythonic, which is a pro if you use other Python
+programs, such as Text-Fabric, to process the same data.
+
+# Examples
+
+* [BHSA](https://nbviewer.org/github/ETCBC/bhsa/blob/master/tutorial/export.ipynb)
+* [Moby Dick](https://nbviewer.org/github/CLARIAH/wp6-mobydick/blob/master/tutorial/export.ipynb)
+* [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/master/tutorial/export.ipynb)
+"""
+
 import pandas as pd
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
-from ..core.helpers import fitemize
+from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
 
 HELP = """
 Transforms TF dataset into Pandas
@@ -14,6 +49,82 @@ NA = [""]
 
 
 def exportPandas(app, inTypes=None, exportDir=None):
+    """Export a currently loaded TF dataset to Pandas.
+
+    The function proceeds by first producing a TSV file as an intermediate result.
+    This is usually too big for GitHub, to it is produced in a `/_temp` directory
+    that is usually in the `.gitignore` of the repo.
+
+    This file serves as the basis for the export to a Pandas dataframe.
+
+    !!! hint "R"
+        You can import this file in other programs as well, e.g.
+        [R](https://www.r-project.org)
+
+    !!! note "Quotation, newlines, tabs, backslashes and escaping"
+        If the data as it comes from text-fabric contains newlines or tabs or
+        double quotes, we put them escaped into the TSV, as follows:
+
+        * *newline* becomes *backslash* plus *n*;
+        * *tab* becomes a single space;
+        * *double quote* becomes *Control-A* plus *double quote*;
+        * *backslash* remains *backslash*.
+
+        In this way, the TSV file is not disturbed by non-delimiting tabs, i.e.
+        tabs that are part of the content of a field. No field will contain a tab!
+
+        Also, no field will contain a newline, so the lines are not disturbed by
+        newlines that are part of the content of a field. No field will contain a
+        newline!
+
+        Double quotes in a TSV file might pose a problem. Several programs interpret
+        double quotes as a way to include tabs and newlines in the content of a field,
+        especially if the quote occurs at the beginning of a field.
+        That's why we escape it by putting a character in front of it that is very
+        unlikely to occur in the text of a corpus: Ctrl A, which is ASCII character 1.
+
+        Backslashes are no problem, but programs might interpret them in a special
+        way in combination with specific following characters.
+
+        Now what happens to these characters when Pandas reads the file?
+
+        We instruct the Pandas table reading function to use the Control-A as
+        escape char and the double quote as quote char.
+
+        **Backslash**
+
+        Pandas has two special behaviours:
+
+        * *backslash* *n* becomes a *newline*;
+        * *backslash* *blackslash* becomes a single *backslash*.
+
+        This is almost what we want: the newline behaviour is desired; the
+        reducing of backslashes not, but we leave it as it is.
+
+        **Double quote**
+
+        *Ctrl-A* plus *double quote* becomes *double quote*.
+
+        That is exactly what we want.
+
+    Parameters
+    ----------
+    app: object
+        A `tf.advanced.app.App` object that represent a loaded corpus, together with
+        all its loaded data modules.
+    inTypes: string | iterable, optional None
+        A bunch of node types for which columns should be made that contain nodes
+        in which the row node is contained.
+        If `None`, all node types will have such columns. But for certain TEI corpora
+        this might lead to overly many columns.
+        So, if you specify `""` or `{}`, there will only be columns for sectional
+        node types.
+        But you can also specify the list of such node types explicitly.
+        In all cases, there will be columns for sectional node types.
+    exportDir: string, optional None
+        The directory to which the Pandas file will be exported.
+        If `None`, it is the `/pandas` directory in the repo of the app.
+    """
     api = app.api
     Eall = api.Eall
     Fall = api.Fall
@@ -53,10 +164,10 @@ def exportPandas(app, inTypes=None, exportDir=None):
     edgeFeatures = sorted(set(Eall()) - {OSLOTS} - skipFeatures)
     nodeFeatures = sorted(set(Fall()) - {OTYPE} - set(textFeatures) - skipFeatures)
 
-    dtype = dict(nd=INT, element=STR)
+    dtype = dict(nd=INT, otype=STR)
 
     for f in sectionTypes:
-        dtype[f"in.{f}"] = INT
+        dtype[f"in_{f}"] = INT
 
     for f in nodeFeatures:
         dtype[f] = INT if Fs(f).meta["valueType"] == "int" else STR
@@ -83,17 +194,16 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.indent(level=True, reset=True)
 
     with open(tableFile, "w") as hr:
-        hr.write(
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                "nd",
-                "element",
-                "\t".join(textFeatures),
-                "\t".join(f"in.{x}" for x in sectionTypes),
-                "\t".join(f"in.{x}" for x in inTypes),
-                "\t".join(edgeFeatures),
-                "\t".join(nodeFeatures),
-            )
+        cells = (
+            "nd",
+            "otype",
+            *textFeatures,
+            *[f"in_{x}" for x in sectionTypes],
+            *[f"in_{x}" for x in inTypes],
+            *edgeFeatures,
+            *nodeFeatures,
         )
+        hr.write("\t".join(cells) + "\n")
         i = 0
         s = 0
         perc = 0
@@ -101,7 +211,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
         for n in N.walk():
             nType = F.otype.v(n)
             textValues = [
-                str(Fs(f).v(n) or "").replace("\t", "\\t") for f in textFeatures
+                pandasEsc(str(Fs(f).v(n) or "")) for f in textFeatures
             ]
             sectionNodes = [
                 n if nType == section else (L.u(n, otype=section) or NA)[0]
@@ -109,28 +219,29 @@ def exportPandas(app, inTypes=None, exportDir=None):
             ]
             inValues = [(L.u(n, otype=inType) or NA)[0] for inType in inTypes]
             edgeValues = [
-                str((Es(f).f(n) or NA)[0]).replace("\t", "\\t") for f in edgeFeatures
+                pandasEsc(str((Es(f).f(n) or NA)[0]))
+                for f in edgeFeatures
             ]
             nodeValues = [
-                str(
-                    (Fs(f).v(sectionNodes[sectionFeatIndex[f]]) or NA[0])
-                    if f in sectionFeatIndex and nType in sectionTypeSet
-                    else Fs(f).v(n) or ""
-                ).replace("\t", "\\t")
+                pandasEsc(
+                    str(
+                        (Fs(f).v(sectionNodes[sectionFeatIndex[f]]) or NA[0])
+                        if f in sectionFeatIndex and nType in sectionTypeSet
+                        else Fs(f).v(n) or ""
+                    )
+                )
                 for f in nodeFeatures
             ]
-            hr.write(
-                "{}\t{}\t{}\t{}\t{}\t{}\t{}".format(
-                    n,
-                    F.otype.v(n),
-                    ("\t".join(textValues)),
-                    ("\t".join(str(x) for x in sectionNodes)),
-                    ("\t".join(str(x) for x in inValues)),
-                    ("\t".join(edgeValues)),
-                    ("\t".join(nodeValues)),
-                ).replace("\n", "\\n")
-                + "\n"
+            cells = (
+                str(n),
+                F.otype.v(n),
+                *textValues,
+                *[str(x) for x in sectionNodes],
+                *[str(x) for x in inValues],
+                *edgeValues,
+                *nodeValues,
             )
+            hr.write("\t".join(cells).replace("\n", "\\n") + "\n")
             i += 1
             s += 1
             if s == chunkSize:
@@ -165,6 +276,9 @@ def exportPandas(app, inTypes=None, exportDir=None):
     dataFrame = pd.read_table(
         tableFile,
         delimiter="\t",
+        quotechar=PANDAS_QUOTE.encode("utf-8"),
+        escapechar=PANDAS_ESCAPE.encode("utf-8"),
+        doublequote=False,
         low_memory=False,
         encoding="utf8",
         keep_default_na=False,

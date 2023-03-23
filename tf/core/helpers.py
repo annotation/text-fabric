@@ -178,6 +178,35 @@ def mdhtmlEsc(val, math=False):
     )
 
 
+def tsvEsc(x):
+    """Escapes a double quote for strings to be included in TSV data.
+
+    Only `"` and `'` at the beginning of the string are escaped.
+    The escaping is realized by putting a backslash at the beginning.
+    """
+    s = str(x)
+    return s if s == "" else f"\\{s}" if s[0] in {"'", '"'} else s
+
+
+PANDAS_QUOTE = '"'
+PANDAS_ESCAPE = "\u0001"
+
+
+def pandasEsc(x):
+    """Escapes the character that will be used as the Pandas quote char.
+
+    The escaping is realized by prepending a special char the quote char.
+    Also: all tab characters will be replaced by single spaces.
+    """
+    return (
+        x
+        if x == ""
+        else str(x)
+        .replace("\t", " ")
+        .replace(PANDAS_QUOTE, PANDAS_ESCAPE + PANDAS_QUOTE)
+    )
+
+
 def camel(name):
     if not name:
         return name

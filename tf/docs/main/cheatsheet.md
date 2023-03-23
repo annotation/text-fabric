@@ -1032,13 +1032,16 @@ A.exportPandas()
 ## MQL interchange
 
 ``` python
-TF.exportMQL()
+TF.exportMQL(mqlDb, exportDir=None)
+A.exportMQL(mqlDb, exportDir=None)
 ```
 :   export loaded dataset to MQL
 : `tf.convert.mql.exportMQL`
 
 ``` python
-TF.importMQL()
+from tf.convert.mql import importMQL
+
+TF = importMQL(mqlFile, saveDir)
 ```
 :   convert MQL file to TF dataset
 :   `tf.convert.mql.importMQL`

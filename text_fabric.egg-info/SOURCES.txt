@@ -324,6 +324,7 @@ tf/advanced/display.py
 tf/advanced/find.py
 tf/advanced/helpers.py
 tf/advanced/highlight.py
+tf/advanced/interchange.py
 tf/advanced/links.py
 tf/advanced/options.py
 tf/advanced/render.py
@@ -371,9 +372,11 @@ tf/client/static/png/maker.png
 tf/client/static/png/tf.png
 tf/convert/__init__.py
 tf/convert/mql.py
+tf/convert/pandas.py
 tf/convert/recorder.py
 tf/convert/tei.py
 tf/convert/tf.py
+tf/convert/tfFromTeiExample.py
 tf/convert/variants.py
 tf/convert/walker.py
 tf/convert/xml.py
@@ -383,6 +386,7 @@ tf/core/computed.py
 tf/core/data.py
 tf/core/edgefeature.py
 tf/core/fabric.py
+tf/core/files.py
 tf/core/helpers.py
 tf/core/locality.py
 tf/core/nodefeature.py

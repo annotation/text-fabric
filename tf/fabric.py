@@ -25,6 +25,8 @@ collect volumes into a new work.
 Fabric is an extension of `tf.core.fabric` where volume support is added.
 """
 
+import types
+
 from .parameters import OTYPE
 from .core.helpers import itemize
 from .core.fabric import FabricCore
@@ -39,6 +41,7 @@ from .core.files import (
 )
 from .core.timestamp import Timestamp, SILENT_D, silentConvert
 from .volumes import extract, collect, getVolumes
+from .convert.mql import exportMQL
 
 
 class Fabric(FabricCore):
@@ -139,6 +142,7 @@ class Fabric(FabricCore):
         self.collectionBase = collectionBase
         self.collection = collection
         self.volume = None if collection else volume
+        self.exportMQL = types.MethodType(exportMQL, self)
 
     def _makeApi(self):
         api = super()._makeApi()

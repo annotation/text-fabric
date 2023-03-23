@@ -51,7 +51,7 @@ All about the nature and implementation of the display algorithm is in
 import types
 from textwrap import dedent
 
-from ..core.helpers import mdEsc
+from ..core.helpers import mdEsc, tsvEsc
 from ..core.files import (
     normpath,
     abspath,
@@ -398,15 +398,11 @@ def export(app, tuples, toDir=None, toFile="results.tsv", **options):
 
     resultsX = getRowsX(app, tuples, tupleFeatures, condenseType, fmt=fmt)
 
-    def escq(x):
-        s = str(x)
-        return s if s == "" else f"\\{s}" if s[0] in {"'", '"'} else s
-
     with open(toPath, "w", encoding="utf_16_le") as fh:
         fh.write(
             "\ufeff"
             + "".join(
-                ("\t".join("" if t is None else escq(t) for t in tup) + "\n")
+                ("\t".join("" if t is None else tsvEsc(t) for t in tup) + "\n")
                 for tup in resultsX
             )
         )
