@@ -180,7 +180,7 @@ recorder.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L1-L719" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L1-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Recorder
@@ -321,16 +321,14 @@ class Recorder:
         &#34;&#34;&#34;Accumulated text.
 
         It is a list of chunks of text.
-        The text is just the concatenation of all chunks.
+        The text is just the concatenation of all these chunks.
         &#34;&#34;&#34;
 
         self.nodesByPos = []
         &#34;&#34;&#34;Mapping from textual positions to nodes.
 
-        It is a list. Entry `p` in this list stores node information
+        It is a list. Entry `p` in this list stores the set of active nodes
         for character position `p`.
-        That node information consists of the set of active nodes
-        at that position.
         &#34;&#34;&#34;
 
         self.context = set()
@@ -357,7 +355,7 @@ class Recorder:
         Parameters
         ----------
         n: integer
-            A node. The node can be any node type.
+            A node. The node can be of any node type.
         &#34;&#34;&#34;
         self.context.discard(n)
 
@@ -412,7 +410,7 @@ class Recorder:
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping of textual positions to nodes of that type.
+            valued by mappings of textual positions to nodes of that type.
             This mapping takes the shape of a list where entry `i`
             contains the frozen set of all nodes of that type
             that were active at character position `i` in the text.
@@ -489,7 +487,7 @@ where `api` is the result of
             or as a single point.
             Points are integers.
             If False, ranges are represented by strings: `,` separated ranges,
-            a ranges is b-e or p.
+            a range is *b*`-`*e* or *p*.
         asEntries: boolean, optional False
             If True, do not return the dict, but rather its entries.
 
@@ -497,7 +495,7 @@ where `api` is the result of
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping for nodes of that type.
+            valued by mappings for nodes of that type.
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
@@ -555,23 +553,58 @@ where `api` is the result of
 
         Strong assumptions:
 
-        1.  every textual position is covered by **exactly one node**
+        1.  every textual position is covered by **exactly one node**;
         2.  the nodes are consecutive:
-            every next node is equal to the previous node plus 1
+            every next node is equal to the previous node plus 1;
         3.  the positions of the nodes are monotonous in the nodes, i.e.
-            if node n &lt; m, then the position of n is before the position of m.
+            if node *n* &lt; *m*, then the position of *n* is before the position of *m*.
 
         Imagine the text partitioned in consecutive non-overlapping chunks, where
         each node corresponds to exactly one chunk, and the order of the nodes
         is the same as the order of the corresponding chunks.
+
+        We compute a list of positions that encode the mapping from nodes to textual
+        positions as follows:
+
+        Suppose we need map nodes *n*, *n+1*, ..., *n+m* to textual positions;
+        say
+
+        *   node *n* starts at position *t0*,
+        *   node *n+1* at position *t1*,
+        *   node *n+m* at position *tm*.
+
+        Say position *te* is the position just after the whole text covered by these
+        nodes.
+
+        Then we deliver the mapping as a sequence of these numbers:
+
+        *   *n - 1*
+        *   *t0*
+        *   *t1*
+        *   ...
+        *   *tm*
+        *   *te*
+
+        So the first element of the list is used to specify the offset to be
+        applied for all subsequent nodes.
+        The *te* value is added as a sentinel, to facilitate the determination
+        of the last position of each node.
+
+        Users of this list can find the start and end positions of node *m*
+        as follows
+
+        ```
+        start = posList[m - posList[0]]
+        end   = posList[m - posList[0] + 1] - 1
+        ```
 
         Parameters
         ----------
         acceptMaterialOutsideNodes: boolean, optional False
             If this is True, we accept that the text contains extra material that is not
             covered by any node.
-            So condition 1 above is relaxed in that we accept no nodes for a textual
-            position.
+            That means that condition 1 above is relaxed to that we accept that
+            some textual positions do not correspond to any node.
 
             Applications that make use of the positions must realize that in this case
             the material associated with a node also includes the subsequent material
@@ -580,37 +613,10 @@ where `api` is the result of
         Returns
         -------
         list | str
-            The result is a list `posList`.
-            Suppose we map nodes n, n+1, ..., n+m.
-            Suppose node n starts at position t0, n+1 at position t1,
-            n+m at position tm.
-            Suppose te is the position just after the whole text.
+            The result is a list of numbers as described above.
 
-            Then we deliver as a result:
+            We only return the *posList* if the assunptions hold.
 
-            ```
-            n - 1
-            t0
-            t1
-            ...
-            tm
-            te
-            ```
-
-            So the first element of the list is used to specify the offset to be
-            applied for all subsequent nodes.
-            The `te` value is added as a sentinel, to facilitate the determination
-            of the last position of each node.
-
-            Users of `posList` can find the start and end positions of node m
-            as follows
-
-            ```
-            start = posList[m - posList[0]]
-            end   = posList[m - posList[0] + 1] - 1
-            ```
-
-            We return not only the posList if the assumptions hold.
             If not, we return a string with diagnostic information.
         &#34;&#34;&#34;
 
@@ -686,9 +692,9 @@ where `api` is the result of
         &#34;&#34;&#34;Write the recorder information to disk.
 
         The recorded text is written as a plain text file,
-        and the remembered node positions are written as a tsv file.
+        and the remembered node positions are written as a TSV file.
 
-        You can also let the node positions be written out by node type.
+        You can also have the node positions be written out by node type.
         In that case you can also optimize the file size.
 
         Optimization means that consecutive equal values are prepended
@@ -704,7 +710,7 @@ where `api` is the result of
             character positions.
         posPath: string, optional None
             The file path to which the mapped positions are written.
-            If absent, it equals `textPath` with `.pos` appended, or
+            If absent, it equals `textPath` with a `.pos` extension, or
             `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
@@ -822,7 +828,7 @@ where `api` is the result of
             The file path from which the accumulated text is read.
         posPath: string, optional None
             The file path from which the mapped positions are read.
-            If absent, it equals `textPath` with `.pos` appended.
+            If absent, it equals `textPath` with the extension `.pos` .
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
@@ -929,7 +935,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L122-L719" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L122-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Recorder:
     def __init__(self, api=None):
@@ -949,16 +955,14 @@ If you do not pass an api, such methods are unavailable later on.</dd>
         &#34;&#34;&#34;Accumulated text.
 
         It is a list of chunks of text.
-        The text is just the concatenation of all chunks.
+        The text is just the concatenation of all these chunks.
         &#34;&#34;&#34;
 
         self.nodesByPos = []
         &#34;&#34;&#34;Mapping from textual positions to nodes.
 
-        It is a list. Entry `p` in this list stores node information
+        It is a list. Entry `p` in this list stores the set of active nodes
         for character position `p`.
-        That node information consists of the set of active nodes
-        at that position.
         &#34;&#34;&#34;
 
         self.context = set()
@@ -985,7 +989,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
         Parameters
         ----------
         n: integer
-            A node. The node can be any node type.
+            A node. The node can be of any node type.
         &#34;&#34;&#34;
         self.context.discard(n)
 
@@ -1040,7 +1044,7 @@ If you do not pass an api, such methods are unavailable later on.</dd>
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping of textual positions to nodes of that type.
+            valued by mappings of textual positions to nodes of that type.
             This mapping takes the shape of a list where entry `i`
             contains the frozen set of all nodes of that type
             that were active at character position `i` in the text.
@@ -1117,7 +1121,7 @@ where `api` is the result of
             or as a single point.
             Points are integers.
             If False, ranges are represented by strings: `,` separated ranges,
-            a ranges is b-e or p.
+            a range is *b*`-`*e* or *p*.
         asEntries: boolean, optional False
             If True, do not return the dict, but rather its entries.
 
@@ -1125,7 +1129,7 @@ where `api` is the result of
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping for nodes of that type.
+            valued by mappings for nodes of that type.
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
@@ -1183,23 +1187,58 @@ where `api` is the result of
 
         Strong assumptions:
 
-        1.  every textual position is covered by **exactly one node**
+        1.  every textual position is covered by **exactly one node**;
         2.  the nodes are consecutive:
-            every next node is equal to the previous node plus 1
+            every next node is equal to the previous node plus 1;
         3.  the positions of the nodes are monotonous in the nodes, i.e.
-            if node n &lt; m, then the position of n is before the position of m.
+            if node *n* &lt; *m*, then the position of *n* is before the position of *m*.
 
         Imagine the text partitioned in consecutive non-overlapping chunks, where
         each node corresponds to exactly one chunk, and the order of the nodes
         is the same as the order of the corresponding chunks.
+
+        We compute a list of positions that encode the mapping from nodes to textual
+        positions as follows:
+
+        Suppose we need map nodes *n*, *n+1*, ..., *n+m* to textual positions;
+        say
+
+        *   node *n* starts at position *t0*,
+        *   node *n+1* at position *t1*,
+        *   node *n+m* at position *tm*.
+
+        Say position *te* is the position just after the whole text covered by these
+        nodes.
+
+        Then we deliver the mapping as a sequence of these numbers:
+
+        *   *n - 1*
+        *   *t0*
+        *   *t1*
+        *   ...
+        *   *tm*
+        *   *te*
+
+        So the first element of the list is used to specify the offset to be
+        applied for all subsequent nodes.
+        The *te* value is added as a sentinel, to facilitate the determination
+        of the last position of each node.
+
+        Users of this list can find the start and end positions of node *m*
+        as follows
+
+        ```
+        start = posList[m - posList[0]]
+        end   = posList[m - posList[0] + 1] - 1
+        ```
 
         Parameters
         ----------
         acceptMaterialOutsideNodes: boolean, optional False
             If this is True, we accept that the text contains extra material that is not
             covered by any node.
-            So condition 1 above is relaxed in that we accept no nodes for a textual
-            position.
+            That means that condition 1 above is relaxed to that we accept that
+            some textual positions do not correspond to any node.
 
             Applications that make use of the positions must realize that in this case
             the material associated with a node also includes the subsequent material
@@ -1208,37 +1247,10 @@ where `api` is the result of
         Returns
         -------
         list | str
-            The result is a list `posList`.
-            Suppose we map nodes n, n+1, ..., n+m.
-            Suppose node n starts at position t0, n+1 at position t1,
-            n+m at position tm.
-            Suppose te is the position just after the whole text.
+            The result is a list of numbers as described above.
 
-            Then we deliver as a result:
+            We only return the *posList* if the assunptions hold.
 
-            ```
-            n - 1
-            t0
-            t1
-            ...
-            tm
-            te
-            ```
-
-            So the first element of the list is used to specify the offset to be
-            applied for all subsequent nodes.
-            The `te` value is added as a sentinel, to facilitate the determination
-            of the last position of each node.
-
-            Users of `posList` can find the start and end positions of node m
-            as follows
-
-            ```
-            start = posList[m - posList[0]]
-            end   = posList[m - posList[0] + 1] - 1
-            ```
-
-            We return not only the posList if the assumptions hold.
             If not, we return a string with diagnostic information.
         &#34;&#34;&#34;
 
@@ -1314,9 +1326,9 @@ where `api` is the result of
         &#34;&#34;&#34;Write the recorder information to disk.
 
         The recorded text is written as a plain text file,
-        and the remembered node positions are written as a tsv file.
+        and the remembered node positions are written as a TSV file.
 
-        You can also let the node positions be written out by node type.
+        You can also have the node positions be written out by node type.
         In that case you can also optimize the file size.
 
         Optimization means that consecutive equal values are prepended
@@ -1332,7 +1344,7 @@ where `api` is the result of
             character positions.
         posPath: string, optional None
             The file path to which the mapped positions are written.
-            If absent, it equals `textPath` with `.pos` appended, or
+            If absent, it equals `textPath` with a `.pos` extension, or
             `.ipos` if `inverted` is True.
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
@@ -1450,7 +1462,7 @@ where `api` is the result of
             The file path from which the accumulated text is read.
         posPath: string, optional None
             The file path from which the mapped positions are read.
-            If absent, it equals `textPath` with `.pos` appended.
+            If absent, it equals `textPath` with the extension `.pos` .
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
         &#34;&#34;&#34;
@@ -1540,15 +1552,13 @@ where `api` is the result of
 <dd>
 <div class="desc"><p>Accumulated text.</p>
 <p>It is a list of chunks of text.
-The text is just the concatenation of all chunks.</p></div>
+The text is just the concatenation of all these chunks.</p></div>
 </dd>
 <dt id="tf.convert.recorder.Recorder.nodesByPos"><code class="name">var <span class="ident">nodesByPos</span></code></dt>
 <dd>
 <div class="desc"><p>Mapping from textual positions to nodes.</p>
-<p>It is a list. Entry <code>p</code> in this list stores node information
-for character position <code>p</code>.
-That node information consists of the set of active nodes
-at that position.</p></div>
+<p>It is a list. Entry <code>p</code> in this list stores the set of active nodes
+for character position <code>p</code>.</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -1573,7 +1583,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L180-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L178-L197" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add(self, string, empty=ZWJ):
     &#34;&#34;&#34;Add text to the accumulator.
@@ -1606,12 +1616,12 @@ If this parameter is absent, the zero-width joiner is used.</dd>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>n</code></strong> :&ensp;<code>integer</code></dt>
-<dd>A node. The node can be any node type.</dd>
+<dd>A node. The node can be of any node type.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L168-L178" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L166-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def end(self, n):
     &#34;&#34;&#34;End a node.
@@ -1621,7 +1631,7 @@ If this parameter is absent, the zero-width joiner is used.</dd>
     Parameters
     ----------
     n: integer
-        A node. The node can be any node type.
+        A node. The node can be of any node type.
     &#34;&#34;&#34;
     self.context.discard(n)</code></pre>
 </details>
@@ -1643,7 +1653,7 @@ and a range is represented as a tuple of a begin and end point,
 or as a single point.
 Points are integers.
 If False, ranges are represented by strings: <code>,</code> separated ranges,
-a ranges is b-e or p.</dd>
+a range is <em>b</em><code>-</code><em>e</em> or <em>p</em>.</dd>
 <dt><strong><code>asEntries</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>If True, do not return the dict, but rather its entries.</dd>
 </dl>
@@ -1652,7 +1662,7 @@ a ranges is b-e or p.</dd>
 <dt><code>list|dict|None</code></dt>
 <dd>
 <p>If <code>byType</code>, the result is a dictionary, keyed by node type,
-with values the mapping for nodes of that type.
+valued by mappings for nodes of that type.
 Entry <code>n</code> in this mapping contains the intervals of all
 character positions in the text where node <code>n</code> is active.</p>
 <p>If not <code>byType</code> then a single mapping is returned, where each node
@@ -1662,7 +1672,7 @@ is mapped to the intervals where that node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L293-L364" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L291-L362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def iPositions(self, byType=False, logical=True, asEntries=False):
         &#34;&#34;&#34;Get the character positions as mapping from nodes.
@@ -1679,7 +1689,7 @@ is mapped to the intervals where that node is active.</p>
             or as a single point.
             Points are integers.
             If False, ranges are represented by strings: `,` separated ranges,
-            a ranges is b-e or p.
+            a range is *b*`-`*e* or *p*.
         asEntries: boolean, optional False
             If True, do not return the dict, but rather its entries.
 
@@ -1687,7 +1697,7 @@ is mapped to the intervals where that node is active.</p>
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping for nodes of that type.
+            valued by mappings for nodes of that type.
             Entry `n` in this mapping contains the intervals of all
             character positions in the text where node `n` is active.
 
@@ -1768,7 +1778,7 @@ be used as headers.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L658-L719" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L664-L725" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeFeatures(self, featurePath, headers=True):
     &#34;&#34;&#34;Read a tab-separated file of annotation data and convert it to features.
@@ -1857,7 +1867,7 @@ If this parameter is True, we pick the first node from the set.</dd>
 <dt><code>list|dict|None</code></dt>
 <dd>
 <p>If <code>byType</code>, the result is a dictionary, keyed by node type,
-with values the mapping of textual positions to nodes of that type.
+valued by mappings of textual positions to nodes of that type.
 This mapping takes the shape of a list where entry <code>i</code>
 contains the frozen set of all nodes of that type
 that were active at character position <code>i</code> in the text.</p>
@@ -1870,7 +1880,7 @@ that were active at character position <code>i</code> in the text.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L211-L291" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L209-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def positions(self, byType=False, simple=False):
         &#34;&#34;&#34;Get the node positions as mapping from character positions.
@@ -1892,7 +1902,7 @@ that were active at character position <code>i</code> in the text.</p>
         -------
         list|dict|None
             If `byType`, the result is a dictionary, keyed by node type,
-            with values the mapping of textual positions to nodes of that type.
+            valued by mappings of textual positions to nodes of that type.
             This mapping takes the shape of a list where entry `i`
             contains the frozen set of all nodes of that type
             that were active at character position `i` in the text.
@@ -1964,23 +1974,52 @@ where `api` is the result of
 Under certain assumptions we can economize on this data usage.</p>
 <p>Strong assumptions:</p>
 <ol>
-<li>every textual position is covered by <strong>exactly one node</strong></li>
+<li>every textual position is covered by <strong>exactly one node</strong>;</li>
 <li>the nodes are consecutive:
-every next node is equal to the previous node plus 1</li>
+every next node is equal to the previous node plus 1;</li>
 <li>the positions of the nodes are monotonous in the nodes, i.e.
-if node n &lt; m, then the position of n is before the position of m.</li>
+if node <em>n</em> &lt; <em>m</em>, then the position of <em>n</em> is before the position of <em>m</em>.</li>
 </ol>
 <p>Imagine the text partitioned in consecutive non-overlapping chunks, where
 each node corresponds to exactly one chunk, and the order of the nodes
 is the same as the order of the corresponding chunks.</p>
+<p>We compute a list of positions that encode the mapping from nodes to textual
+positions as follows:</p>
+<p>Suppose we need map nodes <em>n</em>, <em>n+1</em>, &hellip;, <em>n+m</em> to textual positions;
+say</p>
+<ul>
+<li>node <em>n</em> starts at position <em>t0</em>,</li>
+<li>node <em>n+1</em> at position <em>t1</em>,</li>
+<li>node <em>n+m</em> at position <em>tm</em>.</li>
+</ul>
+<p>Say position <em>te</em> is the position just after the whole text covered by these
+nodes.</p>
+<p>Then we deliver the mapping as a sequence of these numbers:</p>
+<ul>
+<li><em>n - 1</em></li>
+<li><em>t0</em></li>
+<li><em>t1</em></li>
+<li>&hellip;</li>
+<li><em>tm</em></li>
+<li><em>te</em></li>
+</ul>
+<p>So the first element of the list is used to specify the offset to be
+applied for all subsequent nodes.
+The <em>te</em> value is added as a sentinel, to facilitate the determination
+of the last position of each node.</p>
+<p>Users of this list can find the start and end positions of node <em>m</em>
+as follows</p>
+<pre><code>start = posList[m - posList[0]]
+end   = posList[m - posList[0] + 1] - 1
+</code></pre>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>acceptMaterialOutsideNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p>If this is True, we accept that the text contains extra material that is not
 covered by any node.
-So condition 1 above is relaxed in that we accept no nodes for a textual
-position.</p>
+That means that condition 1 above is relaxed to that we accept that
+some textual positions do not correspond to any node.</p>
 <p>Applications that make use of the positions must realize that in this case
 the material associated with a node also includes the subsequent material
 outside any node.</p>
@@ -1990,35 +2029,15 @@ outside any node.</p>
 <dl>
 <dt><code>list | str</code></dt>
 <dd>
-<p>The result is a list <code>posList</code>.
-Suppose we map nodes n, n+1, &hellip;, n+m.
-Suppose node n starts at position t0, n+1 at position t1,
-n+m at position tm.
-Suppose te is the position just after the whole text.</p>
-<p>Then we deliver as a result:</p>
-<p><code>n - 1
-t0
-t1
-...
-tm
-te</code></p>
-<p>So the first element of the list is used to specify the offset to be
-applied for all subsequent nodes.
-The <code>te</code> value is added as a sentinel, to facilitate the determination
-of the last position of each node.</p>
-<p>Users of <code>posList</code> can find the start and end positions of node m
-as follows</p>
-<p><code>start = posList[m - posList[0]]
-end
-= posList[m - posList[0] + 1] - 1</code></p>
-<p>We return not only the posList if the assumptions hold.
-If not, we return a string with diagnostic information.</p>
+<p>The result is a list of numbers as described above.</p>
+<p>We only return the <em>posList</em> if the assunptions hold.</p>
+<p>If not, we return a string with diagnostic information.</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L366-L497" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L364-L503" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rPositions(self, acceptMaterialOutsideNodes=False):
     &#34;&#34;&#34;Get the first textual position for each node
@@ -2028,23 +2047,58 @@ If not, we return a string with diagnostic information.</p>
 
     Strong assumptions:
 
-    1.  every textual position is covered by **exactly one node**
+    1.  every textual position is covered by **exactly one node**;
     2.  the nodes are consecutive:
-        every next node is equal to the previous node plus 1
+        every next node is equal to the previous node plus 1;
     3.  the positions of the nodes are monotonous in the nodes, i.e.
-        if node n &lt; m, then the position of n is before the position of m.
+        if node *n* &lt; *m*, then the position of *n* is before the position of *m*.
 
     Imagine the text partitioned in consecutive non-overlapping chunks, where
     each node corresponds to exactly one chunk, and the order of the nodes
     is the same as the order of the corresponding chunks.
+
+    We compute a list of positions that encode the mapping from nodes to textual
+    positions as follows:
+
+    Suppose we need map nodes *n*, *n+1*, ..., *n+m* to textual positions;
+    say
+
+    *   node *n* starts at position *t0*,
+    *   node *n+1* at position *t1*,
+    *   node *n+m* at position *tm*.
+
+    Say position *te* is the position just after the whole text covered by these
+    nodes.
+
+    Then we deliver the mapping as a sequence of these numbers:
+
+    *   *n - 1*
+    *   *t0*
+    *   *t1*
+    *   ...
+    *   *tm*
+    *   *te*
+
+    So the first element of the list is used to specify the offset to be
+    applied for all subsequent nodes.
+    The *te* value is added as a sentinel, to facilitate the determination
+    of the last position of each node.
+
+    Users of this list can find the start and end positions of node *m*
+    as follows
+
+    ```
+    start = posList[m - posList[0]]
+    end   = posList[m - posList[0] + 1] - 1
+    ```
 
     Parameters
     ----------
     acceptMaterialOutsideNodes: boolean, optional False
         If this is True, we accept that the text contains extra material that is not
         covered by any node.
-        So condition 1 above is relaxed in that we accept no nodes for a textual
-        position.
+        That means that condition 1 above is relaxed to that we accept that
+        some textual positions do not correspond to any node.
 
         Applications that make use of the positions must realize that in this case
         the material associated with a node also includes the subsequent material
@@ -2053,37 +2107,10 @@ If not, we return a string with diagnostic information.</p>
     Returns
     -------
     list | str
-        The result is a list `posList`.
-        Suppose we map nodes n, n+1, ..., n+m.
-        Suppose node n starts at position t0, n+1 at position t1,
-        n+m at position tm.
-        Suppose te is the position just after the whole text.
+        The result is a list of numbers as described above.
 
-        Then we deliver as a result:
+        We only return the *posList* if the assunptions hold.
 
-        ```
-        n - 1
-        t0
-        t1
-        ...
-        tm
-        te
-        ```
-
-        So the first element of the list is used to specify the offset to be
-        applied for all subsequent nodes.
-        The `te` value is added as a sentinel, to facilitate the determination
-        of the last position of each node.
-
-        Users of `posList` can find the start and end positions of node m
-        as follows
-
-        ```
-        start = posList[m - posList[0]]
-        end   = posList[m - posList[0] + 1] - 1
-        ```
-
-        We return not only the posList if the assumptions hold.
         If not, we return a string with diagnostic information.
     &#34;&#34;&#34;
 
@@ -2165,14 +2192,14 @@ If not, we return a string with diagnostic information.</p>
 <dd>The file path from which the accumulated text is read.</dd>
 <dt><strong><code>posPath</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>The file path from which the mapped positions are read.
-If absent, it equals <code>textPath</code> with <code>.pos</code> appended.
+If absent, it equals <code>textPath</code> with the extension <code>.pos</code> .
 The file format is: one line for each character position,
 on each line a tab-separated list of active nodes.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L632-L656" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L638-L662" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, textPath, posPath=None):
     &#34;&#34;&#34;Read recorder information from disk.
@@ -2183,7 +2210,7 @@ on each line a tab-separated list of active nodes.</dd>
         The file path from which the accumulated text is read.
     posPath: string, optional None
         The file path from which the mapped positions are read.
-        If absent, it equals `textPath` with `.pos` appended.
+        If absent, it equals `textPath` with the extension `.pos` .
         The file format is: one line for each character position,
         on each line a tab-separated list of active nodes.
     &#34;&#34;&#34;
@@ -2215,7 +2242,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L156-L166" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L154-L164" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def start(self, n):
     &#34;&#34;&#34;Start a node.
@@ -2243,7 +2270,7 @@ on each line a tab-separated list of active nodes.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L201-L209" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L199-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def text(self):
     &#34;&#34;&#34;Get the accumulated text.
@@ -2262,8 +2289,8 @@ on each line a tab-separated list of active nodes.</dd>
 <dd>
 <div class="desc"><p>Write the recorder information to disk.</p>
 <p>The recorded text is written as a plain text file,
-and the remembered node positions are written as a tsv file.</p>
-<p>You can also let the node positions be written out by node type.
+and the remembered node positions are written as a TSV file.</p>
+<p>You can also have the node positions be written out by node type.
 In that case you can also optimize the file size.</p>
 <p>Optimization means that consecutive equal values are prepended
 by the number of repetitions and a <code>*</code>.</p>
@@ -2277,7 +2304,7 @@ positions to nodes. If True, they are a mapping from nodes to
 character positions.</dd>
 <dt><strong><code>posPath</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
 <dd>The file path to which the mapped positions are written.
-If absent, it equals <code>textPath</code> with <code>.pos</code> appended, or
+If absent, it equals <code>textPath</code> with a <code>.pos</code> extension, or
 <code>.ipos</code> if <code>inverted</code> is True.
 The file format is: one line for each character position,
 on each line a tab-separated list of active nodes.</dd>
@@ -2302,7 +2329,7 @@ are associated with these <em>nodes</em>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/4036050b41ca7fcf55fc337b1e7506276a662e0d/tf/convert/recorder.py#L499-L630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/recorder.py#L505-L636" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def write(
     self, textPath, inverted=False, posPath=None, byType=False, optimize=True
@@ -2310,9 +2337,9 @@ are associated with these <em>nodes</em>.</p>
     &#34;&#34;&#34;Write the recorder information to disk.
 
     The recorded text is written as a plain text file,
-    and the remembered node positions are written as a tsv file.
+    and the remembered node positions are written as a TSV file.
 
-    You can also let the node positions be written out by node type.
+    You can also have the node positions be written out by node type.
     In that case you can also optimize the file size.
 
     Optimization means that consecutive equal values are prepended
@@ -2328,7 +2355,7 @@ are associated with these <em>nodes</em>.</p>
         character positions.
     posPath: string, optional None
         The file path to which the mapped positions are written.
-        If absent, it equals `textPath` with `.pos` appended, or
+        If absent, it equals `textPath` with a `.pos` extension, or
         `.ipos` if `inverted` is True.
         The file format is: one line for each character position,
         on each line a tab-separated list of active nodes.
