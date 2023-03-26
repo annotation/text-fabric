@@ -127,7 +127,7 @@ def makeIndex(inputDir):
     html = f"{htmlStart}{html}{htmlEnd}"
     filePath = INDEX if inputDir == "" else f"{inputDir}/{INDEX}"
 
-    with open(filePath, "w") as fh:
+    with open(filePath, "w", encoding="utf8") as fh:
         fh.write(html)
 
     console(f"Created {ux(filePath)}")
@@ -209,10 +209,10 @@ def convertDir(inputDir, outputDir):
     for (path, name) in convertedNotebooks:
         pathName = f"{path}/{name}.html"
         console(pathName)
-        with open(pathName) as fh:
+        with open(pathName, encoding="utf8") as fh:
             text = fh.read()
         text = processLinks(text)
-        with open(pathName, "w") as fh:
+        with open(pathName, "w", encoding="utf8") as fh:
             fh.write(text)
 
 

@@ -273,7 +273,7 @@ def _readDataTf(fh, firstI, valueType, isEdge, edgeValues):
 
 def _writeTf(outFile, data, valueType, isEdge):
     isInt = valueType == "int"
-    with open(outFile, "w") as fh:
+    with open(outFile, "w", encoding="utf8") as fh:
         if isEdge:
             if isInt:
                 for ((n, m), v) in sorted(data.items()):

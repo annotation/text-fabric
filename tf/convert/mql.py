@@ -256,7 +256,7 @@ def importMQL(mqlFile, saveDir, silent=None, slotType=None, otext=None, meta=Non
     Returns
     -------
     object
-        A `tf.core.fabric.Fabric` object holding the conversion result of the
+        A `tf.core.fabric.FabricCore` object holding the conversion result of the
         MQL data into TF.
     """
 

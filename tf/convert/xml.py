@@ -567,7 +567,7 @@ class XML:
 
         def writeReport():
             reportFile = f"{reportDir}/elements.txt"
-            with open(reportFile, "w") as fh:
+            with open(reportFile, "w", encoding="utf8") as fh:
                 fh.write(
                     "Inventory of tags and attributes in the source XML file(s).\n"
                 )
@@ -875,7 +875,9 @@ class XML:
                     cur["file"] = cv.node("file")
                     cv.feature(cur["file"], file=xmlFile.removesuffix(".xml"))
 
-                    with open(f"{sourceDir}/{xmlFolder}/{xmlFile}") as fh:
+                    with open(
+                        f"{sourceDir}/{xmlFolder}/{xmlFile}", encoding="utf8"
+                    ) as fh:
                         text = fh.read()
                         text = transformFunc(text)
                         tree = etree.parse(text, parser)

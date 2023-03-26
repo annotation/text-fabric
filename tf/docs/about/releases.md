@@ -12,6 +12,17 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.3
 
+### 11.3.1 (upcoming)
+
+2023-03-??
+
+*   Fix: `open()` statements should specify the `encoding="utf8"`, otherwise
+    a non utf8 encoding may be used on Windows.
+    I
+    [knew}(https://annotation.github.io/text-fabric/tf/about/releasesold.html#7102)
+    this, but in later code I have forgotten this.
+    Thanks to Saulo de Oliveira Cantanhêde for reporting this.
+
 ### 11.3.0
 
 2023-03-23

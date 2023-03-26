@@ -193,7 +193,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.info("Create tsv file ...")
     app.indent(level=True, reset=True)
 
-    with open(tableFile, "w") as hr:
+    with open(tableFile, "w", encoding="utf8") as hr:
         cells = (
             "nd",
             "otype",
@@ -254,7 +254,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
     app.info(f"TSV file is {ux(tableFile)}")
 
-    with open(tableFile, "r") as hr:
+    with open(tableFile, "r", encoding="utf8") as hr:
         rows = 0
         chars = 0
         columns = 0

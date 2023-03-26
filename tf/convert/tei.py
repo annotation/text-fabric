@@ -995,7 +995,7 @@ class TEI:
 
             nErrors = 0
 
-            with open(errorFile, "w") as fh:
+            with open(errorFile, "w", encoding="utf8") as fh:
                 for (xmlFile, lines) in errors:
                     fh.write(f"{xmlFile}\n")
                     for line in lines:
@@ -1009,7 +1009,7 @@ class TEI:
 
         def writeReport():
             reportFile = f"{reportDir}/elements.txt"
-            with open(reportFile, "w") as fh:
+            with open(reportFile, "w", encoding="utf8") as fh:
                 fh.write(
                     "Inventory of tags and attributes in the source XML file(s).\n"
                     "Contains the following sections:\n"
@@ -1054,7 +1054,7 @@ class TEI:
             elUrlPrefix = f"{teiUrl}/ref-"
             attUrlPrefix = f"{teiUrl}/REF-ATTS.html#"
             docFile = f"{docsDir}/elements.md"
-            with open(docFile, "w") as fh:
+            with open(docFile, "w", encoding="utf8") as fh:
                 fh.write(
                     dedent(
                         """
@@ -1881,7 +1881,9 @@ class TEI:
                         cur["file"] = cv.node("file")
                         cv.feature(cur["file"], file=xmlFile.removesuffix(".xml"))
 
-                        with open(f"{sourceDir}/{xmlFolder}/{xmlFile}") as fh:
+                        with open(
+                            f"{sourceDir}/{xmlFolder}/{xmlFile}", encoding="utf8"
+                        ) as fh:
                             text = fh.read()
                             text = transformFunc(text)
                             tree = etree.parse(text, parser)
@@ -1908,7 +1910,7 @@ class TEI:
                     console("No XML files found!")
                     return False
 
-                with open(f"{sourceDir}/{xmlFile}") as fh:
+                with open(f"{sourceDir}/{xmlFile}", encoding="utf8") as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
@@ -2136,7 +2138,7 @@ class TEI:
         def createConfig(itemSource, itemTarget):
             tfVersion = self.tfVersion
 
-            with open(itemSource) as fh:
+            with open(itemSource, encoding="utf8") as fh:
                 text = fh.read()
 
             text = text.replace("«version»", f'"{tfVersion}"')
@@ -2145,7 +2147,7 @@ class TEI:
             mergeDict(settings, appConfig)
             text = yaml.dump(settings, allow_unicode=True)
 
-            with open(itemTarget, "w") as fh:
+            with open(itemTarget, "w", encoding="utf8") as fh:
                 fh.write(text)
 
         def createDisplay(itemSource, itemTarget):
@@ -2155,12 +2157,12 @@ class TEI:
             triggered by `rend` attributes in the source.
             """
 
-            with open(itemSource) as fh:
+            with open(itemSource, encoding="utf8") as fh:
                 css = fh.read()
 
             css = css.replace("«rends»", cssInfo)
 
-            with open(itemTarget, "w") as fh:
+            with open(itemTarget, "w", encoding="utf8") as fh:
                 fh.write(css)
 
         def createApp(itemSource, itemTarget):
@@ -2197,13 +2199,13 @@ class TEI:
             )
             rendValues = repr(KNOWN_RENDS)
 
-            with open(itemSource) as fh:
+            with open(itemSource, encoding="utf8") as fh:
                 code = fh.read()
 
             code = code.replace("F.matérial", materialCode)
             code = code.replace('"rèndValues"', rendValues)
 
-            with open(itemTarget, "w") as fh:
+            with open(itemTarget, "w", encoding="utf8") as fh:
                 fh.write(code)
 
         def createTranscription(itemSource, itemTarget):
@@ -2217,7 +2219,7 @@ class TEI:
                 f"## {key}\n\n{value}\n" for (key, value) in generic.items()
             )
 
-            with open(itemSource) as fh:
+            with open(itemSource, encoding="utf8") as fh:
                 template = fh.read()
 
             result = (
@@ -2237,7 +2239,7 @@ class TEI:
                     """
                 )
             )
-            with open(itemTarget, "w") as fh:
+            with open(itemTarget, "w", encoding="utf8") as fh:
                 fh.write(result)
 
         def createAbout():
@@ -2325,7 +2327,7 @@ class TEI:
                 )(itemSource, target)
 
             else:
-                with open(target, "w") as fh:
+                with open(target, "w", encoding="utf8") as fh:
                     fh.write(createAbout())
             console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
 

@@ -55,7 +55,7 @@ def findAppConfig(
     isCompatible = None
 
     if fileExists(configPath):
-        with open(configPath) as fh:
+        with open(configPath, encoding="utf8") as fh:
             cfg = yaml.load(fh, Loader=yaml.FullLoader)
     else:
         cfg = {}

@@ -284,11 +284,11 @@ class Make:
 
         bUrl = backendRep(backend, "rep")
 
-        with open(versionFile) as fh:
+        with open(versionFile, encoding="utf8") as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             lsVersion = settings["lsVersion"]
 
-        with open(CONFIG_FILE) as fh:
+        with open(CONFIG_FILE, encoding="utf8") as fh:
             mainConfig = yaml.load(fh, Loader=yaml.FullLoader)
 
         cloneBase = backendRep(backend, "clone")
@@ -380,7 +380,7 @@ class Make:
             console(f"No {APP_CONFIG} found for {org}/{repo}: {lsConfig}")
             return None
 
-        with open(lsConfig) as fh:
+        with open(lsConfig, encoding="utf8") as fh:
             settings = yaml.load(fh, Loader=yaml.FullLoader)
             for (k, v) in settings.items():
                 c[k] = v
@@ -394,7 +394,7 @@ class Make:
                 )
                 return None
 
-            with open(clientConfigFile) as fh:
+            with open(clientConfigFile, encoding="utf8") as fh:
                 settings = yaml.load(fh, Loader=yaml.FullLoader)
                 for (k, v) in settings.items():
                     c[k] = v
@@ -758,7 +758,7 @@ class Make:
 
         fileNameConfig = f"{destData}/config.js"
 
-        with open(fileNameConfig, "w") as fh:
+        with open(fileNameConfig, "w", encoding="utf8") as fh:
             fh.write("const configData = ")
             json.dump(clientConfig, fh, ensure_ascii=False, indent=1)
         A.info(f"Config written to file {fileNameConfig}")
@@ -849,7 +849,7 @@ class Make:
             file = name.lower() + (".txt" if debug and asString else ".js")
             path = f"{parent}/{file}"
             heading = f"corpusData[{address}] = "
-            with open(path, "w") as fh:
+            with open(path, "w", encoding="utf8") as fh:
                 fh.write(heading)
                 if asString:
                     fh.write("`")
@@ -892,7 +892,7 @@ class Make:
                             )
             else:
                 writeDataFile(partName, f'"{partName}"', partData)
-        with open(C.jsInit, "w") as fh:
+        with open(C.jsInit, "w", encoding="utf8") as fh:
             fh.write("".join(init))
 
         return good
@@ -907,7 +907,7 @@ class Make:
         nlRe = re.compile(r"""\n\n+""")
 
         def getJSModule(module):
-            with open(f"{C.jsOutDir}/{module}") as fh:
+            with open(f"{C.jsOutDir}/{module}", encoding="utf8") as fh:
                 text = fh.read()
             text = importRe.sub("", text)
             text = exportRe.sub("", text)
@@ -950,7 +950,7 @@ class Make:
             + "\n\n"
             + content[C.jsApp]
         )
-        with open(C.jsAllPath, "w") as fh:
+        with open(C.jsAllPath, "w", encoding="utf8") as fh:
             fh.write(combined)
         console(f"Combined js file written to {C.jsAllPath}")
 
@@ -965,13 +965,13 @@ class Make:
         for thisClient in self.getAllClients():
             thisConfig = f"{C.configDir}/{thisClient}/{APP_CONFIG}"
             if fileExists(thisConfig):
-                with open(thisConfig) as fh:
+                with open(thisConfig, encoding="utf8") as fh:
                     desc = yaml.load(fh, Loader=yaml.FullLoader).get("short", "")
             else:
                 desc = ""
             clients[thisClient] = desc
 
-        with open(C.index) as fh:
+        with open(C.index, encoding="utf8") as fh:
             template = fh.read()
             htmlIndex = template.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlIndex = htmlIndex.replace("«client»", C.client)
@@ -987,7 +987,7 @@ class Make:
 
             htmlIndex = htmlIndex.replace("«clients»", "".join(html))
 
-        with open(C.htmlIndex, "w") as fh:
+        with open(C.htmlIndex, "w", encoding="utf8") as fh:
             fh.write(htmlIndex)
         console(f"html file written to {C.htmlIndex}")
 
@@ -1003,7 +1003,7 @@ class Make:
                     scripts.append(f'<script defer src="corpus/{file}«v»"></script>')
             corpusScripts = "\n".join(scripts)
 
-        with open(C.template) as fh:
+        with open(C.template, encoding="utf8") as fh:
             template = fh.read()
             htmlNormal = template.replace(
                 "«js»", '''type="module" src="js/app.js«v»"'''
@@ -1018,11 +1018,11 @@ class Make:
             htmlLocal = htmlLocal.replace("«org»", C.org).replace("«repo»", C.repo)
             htmlLocal = htmlLocal.replace("«client»", C.client)
 
-        with open(C.htmlClient, "w") as fh:
+        with open(C.htmlClient, "w", encoding="utf8") as fh:
             fh.write(htmlNormal)
         console(f"html file written to {C.htmlClient}")
 
-        with open(C.htmlLocal, "w") as fh:
+        with open(C.htmlLocal, "w", encoding="utf8") as fh:
             fh.write(htmlLocal)
         console(f"html file (for use with file://) written to {C.htmlLocal}")
 
@@ -1228,7 +1228,7 @@ class Make:
         self.incVersion()
         newVersion = C.lsVersion
 
-        with open(versionFile, "w") as fh:
+        with open(versionFile, "w", encoding="utf8") as fh:
             yaml.dump(dict(lsVersion=newVersion), fh)
 
         console(f"Version went from `{currentVersion}` to `{newVersion}`")
@@ -1247,7 +1247,7 @@ class Make:
 
         for (key, c) in C.debugConfig.items():
             cfile = c["file"]
-            with open(cfile) as fh:
+            with open(cfile, encoding="utf8") as fh:
                 text = fh.read()
             match = c["re"].search(text)
             if not match:
@@ -1281,10 +1281,10 @@ class Make:
 
         for (key, c) in C.debugConfig.items():
             console(f'Adjusting debug in {c["file"]}')
-            with open(c["file"]) as fh:
+            with open(c["file"], encoding="utf8") as fh:
                 text = fh.read()
             text = c["re"].sub(self.replaceDebug(c["mask"], newValue), text)
-            with open(c["file"], "w") as fh:
+            with open(c["file"], "w", encoding="utf8") as fh:
                 fh.write(text)
 
         console(f"Debug set to {newValue}")

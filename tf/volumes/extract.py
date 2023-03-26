@@ -65,7 +65,7 @@ def getVolumes(volumesLocation):
                 triggerFile = f"{volumesLocation}/{vol}/{OTYPE}.tf"
                 triggerLine = f"@volume={vol}\n"
                 if isFile(triggerFile):
-                    with open(triggerFile) as fh:
+                    with open(triggerFile, encoding="utf8") as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:

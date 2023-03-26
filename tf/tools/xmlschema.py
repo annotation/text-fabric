@@ -221,7 +221,7 @@ class Analysis:
         self.oroots = oroots
 
         try:
-            with open(baseSchema) as fh:
+            with open(baseSchema, encoding="utf8") as fh:
                 tree = etree.parse(fh)
 
             root = tree.getroot()
@@ -232,13 +232,13 @@ class Analysis:
             findImports(root)
 
             for dependent in dependents:
-                with open(dependent) as fh:
+                with open(dependent, encoding="utf8") as fh:
                     dTree = etree.parse(fh)
                     dRoot = dTree.getroot()
                     roots.append(dRoot)
 
             if override is not None:
-                with open(override) as fh:
+                with open(override, encoding="utf8") as fh:
                     tree = etree.parse(fh)
 
                 root = tree.getroot()
@@ -249,7 +249,7 @@ class Analysis:
                 findImports(root)
 
                 for dependent in dependents:
-                    with open(dependent) as fh:
+                    with open(dependent, encoding="utf8") as fh:
                         dTree = etree.parse(fh)
                         dRoot = dTree.getroot()
                         oroots.append(dRoot)
@@ -608,7 +608,7 @@ class Analysis:
             defs = self.getDefs(asTsv=True)
 
             console(f"{len(defs):>3} elements defined")
-            with open(outputFile, "w") as fh:
+            with open(outputFile, "w", encoding="utf8") as fh:
                 fh.write(defs)
             console(f"Analysis written to {outputFile}\n")
             return True
