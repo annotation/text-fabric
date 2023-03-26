@@ -56,7 +56,7 @@ programs, such as Text-Fabric, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/pandas.py#L1-L293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/convert/pandas.py#L1-L293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Export a TF dataset to a Pandas dataframe.
@@ -253,7 +253,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.info(&#34;Create tsv file ...&#34;)
     app.indent(level=True, reset=True)
 
-    with open(tableFile, &#34;w&#34;) as hr:
+    with open(tableFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as hr:
         cells = (
             &#34;nd&#34;,
             &#34;otype&#34;,
@@ -314,7 +314,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
     app.info(f&#34;TSV file is {ux(tableFile)}&#34;)
 
-    with open(tableFile, &#34;r&#34;) as hr:
+    with open(tableFile, &#34;r&#34;, encoding=&#34;utf8&#34;) as hr:
         rows = 0
         chars = 0
         columns = 0
@@ -432,7 +432,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/pandas.py#L51-L293" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/convert/pandas.py#L51-L293" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
     &#34;&#34;&#34;Export a currently loaded TF dataset to Pandas.
@@ -579,7 +579,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
     app.info(&#34;Create tsv file ...&#34;)
     app.indent(level=True, reset=True)
 
-    with open(tableFile, &#34;w&#34;) as hr:
+    with open(tableFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as hr:
         cells = (
             &#34;nd&#34;,
             &#34;otype&#34;,
@@ -640,7 +640,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 
     app.info(f&#34;TSV file is {ux(tableFile)}&#34;)
 
-    with open(tableFile, &#34;r&#34;) as hr:
+    with open(tableFile, &#34;r&#34;, encoding=&#34;utf8&#34;) as hr:
         rows = 0
         chars = 0
         columns = 0

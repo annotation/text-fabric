@@ -33,6 +33,16 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="113">11.3</h3>
+<h3 id="1131-upcoming">11.3.1 (upcoming)</h3>
+<p>2023-03-??</p>
+<ul>
+<li>Fix: <code>open()</code> statements should specify the <code>encoding="utf8"</code>, otherwise
+a non utf8 encoding may be used on Windows.
+I
+[knew}(<a href="https://annotation.github.io/text-fabric/tf/about/releasesold.html#7102">https://annotation.github.io/text-fabric/tf/about/releasesold.html#7102</a>)
+this, but in later code I have forgotten this.
+Thanks to Saulo de Oliveira Cantanhêde for reporting this.</li>
+</ul>
 <h3 id="1130">11.3.0</h3>
 <p>2023-03-23</p>
 <ul>
@@ -252,7 +262,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -326,6 +336,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#113">11.3</a></li>
+<li><a href="#1131-upcoming">11.3.1 (upcoming)</a></li>
 <li><a href="#1130">11.3.0</a></li>
 <li><a href="#112">11.2</a></li>
 <li><a href="#1123">11.2.3</a></li>

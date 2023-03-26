@@ -35,7 +35,7 @@ extract(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/volumes/extract.py#L1-L730" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/volumes/extract.py#L1-L730" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Extract
@@ -104,7 +104,7 @@ def getVolumes(volumesLocation):
                 triggerFile = f&#34;{volumesLocation}/{vol}/{OTYPE}.tf&#34;
                 triggerLine = f&#34;@volume={vol}\n&#34;
                 if isFile(triggerFile):
-                    with open(triggerFile) as fh:
+                    with open(triggerFile, encoding=&#34;utf8&#34;) as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:
@@ -936,7 +936,7 @@ Top-level section 13 will not be extracted into a volume.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/volumes/extract.py#L80-L730" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/volumes/extract.py#L80-L730" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def extract(
     workLocation,
@@ -1612,7 +1612,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/volumes/extract.py#L38-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getVolumes(volumesLocation):
     &#34;&#34;&#34;Lists volumes of a work that exist in a given directory.
@@ -1644,7 +1644,7 @@ is returned. Otherwise a list of subdirectories that are modules.</dd>
                 triggerFile = f&#34;{volumesLocation}/{vol}/{OTYPE}.tf&#34;
                 triggerLine = f&#34;@volume={vol}\n&#34;
                 if isFile(triggerFile):
-                    with open(triggerFile) as fh:
+                    with open(triggerFile, encoding=&#34;utf8&#34;) as fh:
                         triggered = False
                         for line in fh:
                             if line == triggerLine:

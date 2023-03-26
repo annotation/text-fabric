@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/tools/checkdiffs.py#L1-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/checkdiffs.py#L1-L80" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from itertools import zip_longest
@@ -39,13 +39,13 @@ def checkDiffs(path1, path2):
     &#34;&#34;&#34;Check differences between runs of tf generations.
     &#34;&#34;&#34;
     def diffFeature(f):
-        with open(f&#34;{path1}/{f}.tf&#34;) as h:
+        with open(f&#34;{path1}/{f}.tf&#34;, encoding=&#34;utf8&#34;) as h:
             eLines = (
                 h.readlines()
                 if f == &#34;otext&#34;
                 else (d for d in h.readlines() if not d.startswith(&#34;@&#34;))
             )
-        with open(f&#34;{path2}/{f}.tf&#34;) as h:
+        with open(f&#34;{path2}/{f}.tf&#34;, encoding=&#34;utf8&#34;) as h:
             nLines = (
                 h.readlines()
                 if f == &#34;otext&#34;
@@ -125,19 +125,19 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/tools/checkdiffs.py#L8-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/checkdiffs.py#L8-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkDiffs(path1, path2):
     &#34;&#34;&#34;Check differences between runs of tf generations.
     &#34;&#34;&#34;
     def diffFeature(f):
-        with open(f&#34;{path1}/{f}.tf&#34;) as h:
+        with open(f&#34;{path1}/{f}.tf&#34;, encoding=&#34;utf8&#34;) as h:
             eLines = (
                 h.readlines()
                 if f == &#34;otext&#34;
                 else (d for d in h.readlines() if not d.startswith(&#34;@&#34;))
             )
-        with open(f&#34;{path2}/{f}.tf&#34;) as h:
+        with open(f&#34;{path2}/{f}.tf&#34;, encoding=&#34;utf8&#34;) as h:
             nLines = (
                 h.readlines()
                 if f == &#34;otext&#34;

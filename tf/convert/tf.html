@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/tf.py#L1-L324" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/convert/tf.py#L1-L324" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Raw, unoptimized data from TF files
@@ -304,7 +304,7 @@ def _readDataTf(fh, firstI, valueType, isEdge, edgeValues):
 
 def _writeTf(outFile, data, valueType, isEdge):
     isInt = valueType == &#34;int&#34;
-    with open(outFile, &#34;w&#34;) as fh:
+    with open(outFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
         if isEdge:
             if isInt:
                 for ((n, m), v) in sorted(data.items()):
@@ -413,7 +413,7 @@ If pointing to an existing directory, exploded file(s) will be put there.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/c1d27b7186be4894706d85b975367c4b3502e3d4/tf/convert/tf.py#L25-L138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/convert/tf.py#L25-L138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def explode(inPath, outPath):
     &#34;&#34;&#34;Explodes .tf files into non-optimized .tf files without metadata.
