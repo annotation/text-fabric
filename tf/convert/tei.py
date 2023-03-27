@@ -1127,7 +1127,7 @@ class TEI:
                     address = f"{line}:{col}"
                     theseErrors.append(f"{address:<6} {level:} {msg}\n")
                 if len(theseErrors):
-                    console("ERROR")
+                    console("ERROR\n")
                     errors.append((xmlFile, theseErrors))
                 return
 
@@ -1137,12 +1137,14 @@ class TEI:
         if sectionModel == "I":
             i = 0
             for (xmlFolder, xmlFiles) in self.getXML():
-                console(xmlFolder)
+                console(f"Start folder {xmlFolder}:")
                 for xmlFile in xmlFiles:
                     i += 1
                     console(f"\r{i:>4} {xmlFile:<50}", newline=False)
                     xmlPath = f"{sourceDir}/{xmlFolder}/{xmlFile}"
                     doXMLFile(xmlPath)
+                console("")
+                console(f"End   folder {xmlFolder}")
 
         elif sectionModel == "II":
             xmlFile = self.getXML()
@@ -1869,7 +1871,7 @@ class TEI:
             if sectionModel == "I":
                 i = 0
                 for (xmlFolder, xmlFiles) in self.getXML():
-                    console(xmlFolder)
+                    console(f"Start folder {xmlFolder}:")
 
                     cur["folder"] = cv.node("folder")
                     cv.feature(cur["folder"], folder=xmlFolder)
@@ -1902,6 +1904,8 @@ class TEI:
                         addSlot(cv, cur, None)
                         cv.terminate(cur["file"])
 
+                    console("")
+                    console(f"End   folder {xmlFolder}")
                     cv.terminate(cur["folder"])
 
             elif sectionModel == "II":

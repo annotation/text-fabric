@@ -23,6 +23,8 @@ See the app-specific tutorials via `tf.about.corpora`.
     this, but in later code I have forgotten this.
     Thanks to Saulo de Oliveira Cantanhêde for reporting this.
 
+*   Fix: better console output when running the TEI => TF converter, the check task.
+
 ### 11.3.0
 
 2023-03-23

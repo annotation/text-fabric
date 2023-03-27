@@ -1,6 +1,6 @@
-Newer releases: `tf.about.releases`
+## Newer releases
 
-# Older releases
+See `tf.about.releases`.
 
 ## 10
 
