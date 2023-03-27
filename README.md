@@ -22,7 +22,12 @@ All about Text-Fabric is in the
 [docs](https://annotation.github.io/text-fabric/tf).
 
 Want to contribute?
-Start with the [contribution notes](codestyle/contributing.md).
+
+We are giving the docs a big overhaul, by writing a
+[handbook on Text-Fabric](https://annotation.github.io/text-fabric-book/).
+You're invite to write along!
+
+Or start with the [contribution notes](codestyle/contributing.md).
 
 Found a vulnerability? Please read the [security note](SECURITY.md).
 
