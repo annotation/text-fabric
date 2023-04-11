@@ -867,11 +867,11 @@ class CV:
         -------
         tuple of integer
 
-        The slots are returned as a tuple of integers.
+        The slots are returned as a tuple of integers, sorted.
         """
 
         oslots = self.oslots
-        return tuple(oslots.get(node, []))
+        return tuple(sorted(oslots.get(node, [])))
 
     def feature(self, node, **features):
         """Add **node features**.

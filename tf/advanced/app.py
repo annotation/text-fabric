@@ -22,6 +22,7 @@ from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
 from .helpers import getText, runsInNotebook, dm, dh
 from .settings import setAppSpecs, setAppSpecsApi
+from .zipdata import zipApi
 from .volumes import volumesApi
 from .interchange import interchangeApi
 from .links import linksApi, outLink
@@ -200,6 +201,7 @@ Most of the Text-Fabric API has not been loaded.
             for m in FROM_TF_METHODS:
                 setattr(self, m, getattr(self.TF, m))
 
+            zipApi(self)
             interchangeApi(self)
 
             featuresOnly = self.featuresOnly

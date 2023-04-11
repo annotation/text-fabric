@@ -1001,8 +1001,8 @@ h1.chars {
 
 ## See also
 
-* [Arabic script in Unicode](https://en.wikipedia.org/wiki/Arabic_script_in_Unicode)<br/>
-* [Arabic diacritics](https://en.wikipedia.org/wiki/Arabic_diacritics#harakat)<br/>
+* [Arabic script in Unicode](https://en.wikipedia.org/wiki/Arabic_script_in_Unicode)<br>
+* [Arabic diacritics](https://en.wikipedia.org/wiki/Arabic_diacritics#harakat)<br>
 * [Beta code](https://pverkind.github.io/betacodeTranscriber/js/betacode.js)
 * [Library of Congress](https://www.loc.gov/catdir/cpso/romanization/arabic.pdf)
 

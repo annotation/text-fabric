@@ -35,10 +35,10 @@ def expanduser(path):
 
 def unexpanduser(path):
     nPath = normpath(path)
-    if nPath.startswith(_homeDir):
-        return f"~{nPath[len(_homeDir):]}"
+    # if nPath.startswith(_homeDir):
+    #    return f"~{nPath[len(_homeDir):]}"
 
-    return nPath
+    return nPath.replace(_homeDir, '~')
 
 
 def setDir(obj):
@@ -250,6 +250,13 @@ EXPRESS_SYNC_LEGACY = [
 ]
 """Legacy names of cache indicator files."""
 
+
+APP_EXPRESS_ZIP = "complete.zip"
+"""Name of the zip file with the complete corpus data as attached to a release.
+
+This zip file is retrieved when using a corpus without checkout specifiers
+and a part of the corpus is not locally available.
+"""
 
 APP_CONFIG = "config.yaml"
 """Name of the config file of a TF app."""

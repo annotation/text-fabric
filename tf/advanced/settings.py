@@ -125,7 +125,7 @@ Default:
 
 ---
 
-### `textFormats`
+### `textFormat`
 
 The default text format.
 
@@ -136,10 +136,10 @@ A `None` value will be interpreted later as the default text format `text-orig-f
 
 ---
 
-### `textFormat`
+### `textFormats`
 
 ```
-textFormat:
+textFormats:
     layout-orig-full: layoutRich
 ```
 
@@ -1485,7 +1485,7 @@ def setAppSpecsApi(app, cfg):
     ):
         method(app, cfg, dKey, True)
 
-    if "textFormat" not in specs:
+    if specs.get("textFormat", None) is None:
         specs["textFormat"] = T.defaultFormat
 
     dKey = "interfaceDefaults"

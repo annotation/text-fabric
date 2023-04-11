@@ -1,21 +1,28 @@
 import sys
+import types
 from zipfile import ZipFile
 
-from .helpers import splitModRef
+from .helpers import splitModRef, run
 from ..parameters import ZIP_OPTIONS, RELATIVE
 from ..core.helpers import console
 from ..core.files import (
     normpath,
     expanduser as ex,
+    unexpanduser as ux,
     backendRep,
     DOWNLOADS,
     TEMP_DIR,
+    APP_APP,
+    APP_EXPRESS_ZIP,
+    EXPRESS_SYNC,
     prefixSlash,
     dirExists,
+    dirMake,
     scanDir,
     initTree,
 )
 
+HOME = ex("~")
 DW = ex(DOWNLOADS)
 
 __pdoc__ = {}
@@ -54,7 +61,195 @@ and the are named *relative*-*version*.zip
 
 """
 
-EXCLUDE = {".DS_Store"}
+EXCLUDE = {".DS_Store", ".tf", "__pycache__", "_local", "_temp", ".ipynb_checkpoints"}
+
+
+def zipApi(app):
+    """Produce the zip creation API.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    """
+
+    app.zipAll = types.MethodType(zipAll, app)
+
+
+def zipAll(app):
+    """Gathers all data for a TF resource and zips it into one file.
+
+    The data gathered is:
+
+    *   the app
+    *   the main data module
+    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
+    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+
+    The data will be zipped in a file complete.zip which can be unpacked
+    in the ~/text-fabric-data directory.
+
+    !!! Hint
+        You can attach this file straight to the latest release of of dataset
+        on GitHub. This makes that users can download the dataset from GitHub
+        without problems such as bumping against the GitHub API rate limit.
+
+    !!! Caution
+        All data should reside on the same backend.
+
+    !!! Note "checkout files"
+        There will be `__checkout__.txt` files included in the zip file,
+        so that after unpacking Text-Fabric detects from which release the data is
+        coming.
+
+    Parameters
+    ----------
+    app: object
+        A loaded text-fabric datasource
+    """
+    context = app.context
+
+    backend = app.backend
+    base = backendRep(backend, "clone")
+    org = context.org
+    repo = context.repo
+    relative = context.relative
+    relative = prefixSlash(normpath(relative))
+    version = context.version
+
+    graphics = context.graphicsRelative
+    graphics = prefixSlash(normpath(graphics))
+
+    prov = context.provenanceSpec
+    mods = prov.get("moduleSpecs", [])
+
+    repoDir = f"{base}/{org}/{repo}"
+
+    dataItems = [
+        ("app", f"{repoDir}/{APP_APP}"),
+        ("main data", f"{repoDir}{relative}/{version}"),
+    ]
+    if graphics:
+        dataItems.append(("graphics", f"{repoDir}{graphics}"))
+
+    good = True
+
+    for mod in mods:
+        mbackend = mod["backend"]
+        if mbackend is None:
+            mbackend = app.backend
+        mbase = backendRep(mbackend, "clone")
+        morg = mod["org"]
+        mrepo = mod["repo"]
+        mrelative = mod["relative"]
+        mrelative = prefixSlash(normpath(mrelative))
+        mrepoDir = f"{mbase}/{morg}/{mrepo}"
+        labelItems = []
+        if mbase != base:
+            labelItems.append(mbase)
+        if morg != org:
+            labelItems.append(morg)
+        if mrepo != repo:
+            labelItems.append(mrepo)
+        if mrelative != relative:
+            labelItems.append(mrelative)
+        label = "-".join(labelItems)
+        if mbase != base:
+            good = False
+            console(f"ERROR: module {label} not on expected backend {backend}")
+        dataItems.append((f"module {label}", f"{mrepoDir}{mrelative}/{version}"))
+
+    if not good:
+        return
+
+    destBase = f"{DW}/{backendRep(backend, 'norm')}"
+    dest = normpath(f"{destBase}/{org}/{repo}")
+    destFile = f"{dest}/{APP_EXPRESS_ZIP}"
+
+    console("Data to be zipped:")
+    results = []
+
+    for (label, path) in dataItems:
+        if dirExists(path):
+            (release, commit) = addCheckout(path)
+            checkout = f"({release or 'v??'} {commit[-6:] if commit else '??'})"
+            zipBase = path.removeprefix(f"{base}/")
+            collectFiles(path, "", results, zipBase=zipBase)
+            status = "OK"
+        else:
+            good = False
+            status = "missing"
+            checkout = "(??)"
+        console(f"\t{status:<8} {label:<24} {checkout:<20}: {path}")
+
+    if not good:
+        return
+
+    if not dirExists(dest):
+        dirMake(dest)
+    console("Writing zip file ...")
+    with ZipFile(destFile, "w", **ZIP_OPTIONS) as zipFile:
+        for (internalPath, path) in sorted(results):
+            zipFile.write(
+                path,
+                arcname=internalPath,
+            )
+    console(f"Result: {ux(destFile)}")
+
+
+def addCheckout(path):
+    release = None
+    commit = None
+
+    (good, gitInfo, stdErr) = run("git describe --tags --abbrev=1000 --long", workDir=path)
+    if good:
+        (release, n, commit) = [x.strip() for x in gitInfo.split("-", 2)]
+    else:
+        if "cannot describe" in stdErr.lower():
+            console("WARNING: no local release info found.", error=True)
+            console("Maybe you have to do go to this repo and do `git pull --tags`")
+            console("We'll fetch the local commit info anyway.")
+            (good, gitInfo, stdErr) = run("git rev-parse HEAD", workDir=path)
+            if good:
+                commit = gitInfo
+            else:
+                console(stdErr, error=True)
+        else:
+            console(stdErr, error=True)
+
+    if release is not None or commit is not None:
+        with open(f"{path}/{EXPRESS_SYNC}", "w", encoding="utf8") as fh:
+            if release is not None:
+                fh.write(f"{release}\n")
+            if commit is not None:
+                fh.write(f"{commit}\n")
+    return (release, commit)
+
+
+def collectFiles(base, path, results, zipBase=None):
+    if zipBase is None:
+        zipBase = base
+
+    sep = "/" if path else ""
+    thisPath = f"{base}{sep}{path}" if path else base
+    internalBase = f"{zipBase}{sep}{path}"
+    with scanDir(thisPath) as sd:
+        for e in sd:
+            name = e.name
+            if name in EXCLUDE:
+                continue
+            if e.is_file():
+                results.append((f"{internalBase}/{name}", f"{thisPath}/{name}"))
+            elif e.is_dir():
+                collectFiles(base, f"{path}{sep}{name}", results, zipBase=zipBase)
+
+
+def zipDataPart(source, results):
+    if not dirExists(source):
+        return (False, "missing")
+    zipBase = source.removeprefix(f"{HOME}/")
+    collectFiles(source, "", results, zipBase=zipBase)
+    return (True, "OK")
 
 
 def zipData(
@@ -160,23 +355,6 @@ def zipData(
                         arcname=featureFile,
                     )
     else:
-
-        def collectFiles(base, path, results):
-            thisPath = f"{base}/{path}" if path else base
-            # internalBase = f"{relative}/{path}" if path else relative
-            internalBase = path
-            with scanDir(thisPath) as sd:
-                for e in sd:
-                    name = e.name
-                    if name in EXCLUDE:
-                        continue
-                    if e.is_file():
-                        results.append(
-                            (f"{internalBase}/{name}", f"{base}/{path}/{name}")
-                        )
-                    elif e.is_dir():
-                        collectFiles(base, f"{path}/{name}", results)
-
         results = []
         versionRep = f"/{version}" if version else ""
         sourceDir = f"{sourceDir}{versionRep}"

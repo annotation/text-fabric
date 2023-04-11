@@ -12,9 +12,41 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.3
 
-### 11.3.1 (upcoming)
+### 11.3.1
 
-2023-03-??
+2023-04-11
+
+*   GitHub API Rate Limit avoidance
+    *   TF first tries to download requested data without using the GitHub API.
+        This happens when you request the latest release of a corpus.
+        All data specified in the corpus app (the app itself, the main data,
+        the standard module data for that corpus, the graphics files if the corpus
+        needs them) are expected in the file `complete.zip` which should be
+        attached to the latest release on Github.
+        TF can find that file and download it without any API access.
+    *   There is a new function `A.zipAll()` that zips all corpus data into
+        a file `complete.zip`, which you can attach to a release.
+    *   This file can also be unzipped in your text-fabric-data directory.
+        
+*   TEI to TF converter:
+    *   Fix: better console output when running the the check task.
+    *   Improvement: detect when tags are being used in multiple namespaces.
+    *   Improvement: you can configure the names of the section levels and features.
+    *   Change: more straightforward dealing with empty elements: all empty elements
+        get an empty slot, and care is being taken that these slots end up within
+        the section structure and not strangely outside it.
+
+*   Walker converter
+    *   Fix in cv.linked(): the slots are returned sorted. If during the walk you linked
+        slots to nodes by cv.link(), the order of linking the slots might not be the
+        order of the slots in the text. So, cv.linked() has to sort the slots before
+        returning.
+
+*   Display in TF browser and in Notebooks:
+    *   Fix: a deliberate newline in feature values is translated to a `<br>` element,
+        so that you see a line-break.
+    *   Fix: in the TF-browser, if not default text format is configured, the default
+        `text-orig-full` will be taken.
 
 *   Fix: `open()` statements should specify the `encoding="utf8"`, otherwise
     a non utf8 encoding may be used on Windows.
@@ -23,7 +55,10 @@ See the app-specific tutorials via `tf.about.corpora`.
     this, but in later code I have forgotten this.
     Thanks to Saulo de Oliveira Cantanhêde for reporting this.
 
-*   Fix: better console output when running the TEI => TF converter, the check task.
+*   Fix: bumped the version requirement for Python to 3.9.
+*   Fix: Text-Fabric should not print the full-path to your home directory,
+    but replace it with a `~`. There were some cases where this escaping was
+    not successfully applied, e.g. in `tf.advanced.repo`.
 
 ### 11.3.0
 

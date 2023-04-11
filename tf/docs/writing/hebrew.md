@@ -110,8 +110,8 @@ h1.chars {
   <td class="t">B</td>
   <td class="t">b</td>
   <td class="g">ב</td>
-  <td class="p">bb<br/>b<br/>v</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">bb<br>b<br>v</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> bet</td>
   <td class="u">05D1</td>
 </tr>
@@ -119,8 +119,8 @@ h1.chars {
   <td class="t">G</td>
   <td class="t">g</td>
   <td class="g">ג</td>
-  <td class="p">gg<br/>g<br/>ḡ</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">gg<br>g<br>ḡ</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> gimel</td>
   <td class="u">05D2</td>
 </tr>
@@ -128,8 +128,8 @@ h1.chars {
   <td class="t">D</td>
   <td class="t">d</td>
   <td class="g">ד</td>
-  <td class="p">dd<br/>d<br/>ḏ</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">dd<br>d<br>ḏ</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> dalet</td>
   <td class="u">05D3</td>
 </tr>
@@ -146,8 +146,8 @@ h1.chars {
   <td class="t">W</td>
   <td class="t">w</td>
   <td class="g">ו</td>
-  <td class="p">ww<br/>w<br/>û</td>
-  <td class="r">forte<br/>when not part of a long vowel<br/>with dagesh as vowel</td>
+  <td class="p">ww<br>w<br>û</td>
+  <td class="r">forte<br>when not part of a long vowel<br>with dagesh as vowel</td>
   <td class="n"><i>letter</i> vav</td>
   <td class="u">05D5</td>
 </tr>
@@ -155,8 +155,8 @@ h1.chars {
   <td class="t">Z</td>
   <td class="t">z</td>
   <td class="g">ז</td>
-  <td class="p">zz<br/>z</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">zz<br>z</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> zayin</td>
   <td class="u">05D6</td>
 </tr>
@@ -182,8 +182,8 @@ h1.chars {
   <td class="t">J</td>
   <td class="t">y</td>
   <td class="g">י</td>
-  <td class="p">yy<br/>y<br/>ʸ</td>
-  <td class="r">forte<br/>when not part of long vowel<br/>in front of final <span class="g">ו</span></td>
+  <td class="p">yy<br>y<br>ʸ</td>
+  <td class="r">forte<br>when not part of long vowel<br>in front of final <span class="g">ו</span></td>
   <td class="n"><i>letter</i> yod</td>
   <td class="u">05D9</td>
 </tr>
@@ -191,8 +191,8 @@ h1.chars {
   <td class="t">K</td>
   <td class="t">k</td>
   <td class="g">כ</td>
-  <td class="p">kk<br/>k<br/>ḵ</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">kk<br>k<br>ḵ</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> kaf</td>
   <td class="u">05DB</td>
 </tr>
@@ -200,8 +200,8 @@ h1.chars {
   <td class="t">k</td>
   <td class="t">K</td>
   <td class="g">ך</td>
-  <td class="p">k<br/>ḵ</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">k<br>ḵ</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> final kaf</td>
   <td class="u">05DA</td>
 </tr>
@@ -209,8 +209,8 @@ h1.chars {
   <td class="t">L</td>
   <td class="t">l</td>
   <td class="g">ל</td>
-  <td class="p">ll<br/>l</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">ll<br>l</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> lamed</td>
   <td class="u">05DC</td>
 </tr>
@@ -218,8 +218,8 @@ h1.chars {
   <td class="t">M</td>
   <td class="t">m</td>
   <td class="g">מ</td>
-  <td class="p">mm<br/>m</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">mm<br>m</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> mem</td>
   <td class="u">05DE</td>
 </tr>
@@ -236,8 +236,8 @@ h1.chars {
   <td class="t">N</td>
   <td class="t">n</td>
   <td class="g">נ</td>
-  <td class="p">nn<br/>n</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">nn<br>n</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> nun</td>
   <td class="u">05E0</td>
 </tr>
@@ -254,8 +254,8 @@ h1.chars {
   <td class="t">S</td>
   <td class="t">s</td>
   <td class="g">ס</td>
-  <td class="p">ss<br/>s</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">ss<br>s</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> samekh</td>
   <td class="u">05E1</td>
 </tr>
@@ -272,8 +272,8 @@ h1.chars {
   <td class="t">P</td>
   <td class="t">p</td>
   <td class="g">פ</td>
-  <td class="p">pp<br/>p<br/>f</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">pp<br>p<br>f</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> pe</td>
   <td class="u">05E4</td>
 </tr>
@@ -281,8 +281,8 @@ h1.chars {
   <td class="t">p</td>
   <td class="t">P</td>
   <td class="g">ף</td>
-  <td class="p">p<br/>f</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">p<br>f</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> final pe</td>
   <td class="u">05E3</td>
 </tr>
@@ -290,8 +290,8 @@ h1.chars {
   <td class="t">Y</td>
   <td class="t">x</td>
   <td class="g">צ</td>
-  <td class="p">ṣṣ<br/>ṣ</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">ṣṣ<br>ṣ</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> tsadi</td>
   <td class="u">05E6</td>
 </tr>
@@ -308,8 +308,8 @@ h1.chars {
   <td class="t">Q</td>
   <td class="t">q</td>
   <td class="g">ק</td>
-  <td class="p">qq<br/>q</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">qq<br>q</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> qof</td>
   <td class="u">05E7</td>
 </tr>
@@ -317,8 +317,8 @@ h1.chars {
   <td class="t">R</td>
   <td class="t">r</td>
   <td class="g">ר</td>
-  <td class="p">rr<br/>r</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">rr<br>r</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> resh</td>
   <td class="u">05E8</td>
 </tr>
@@ -335,8 +335,8 @@ h1.chars {
   <td class="t">C</td>
   <td class="t">v</td>
   <td class="g">שׁ</td>
-  <td class="p">šš<br/>š</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">šš<br>š</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> shin with shin dot</td>
   <td class="u">FB2A</td>
 </tr>
@@ -344,8 +344,8 @@ h1.chars {
   <td class="t">F</td>
   <td class="t">c</td>
   <td class="g">שׂ</td>
-  <td class="p">śś<br/>ś</td>
-  <td class="r">forte<br/>normal</td>
+  <td class="p">śś<br>ś</td>
+  <td class="r">forte<br>normal</td>
   <td class="n"><i>letter</i> shin with sin dot</td>
   <td class="u">FB2B</td>
 </tr>
@@ -353,8 +353,8 @@ h1.chars {
   <td class="t">T</td>
   <td class="t">t</td>
   <td class="g">ת</td>
-  <td class="p">tt<br/>t<br/>ṯ</td>
-  <td class="r">forte<br/>lene<br/>normal</td>
+  <td class="p">tt<br>t<br>ṯ</td>
+  <td class="r">forte<br>lene<br>normal</td>
   <td class="n"><i>letter</i> tav</td>
   <td class="u">05EA</td>
 </tr>
@@ -391,8 +391,8 @@ h1.chars {
   <td class="t">A</td>
   <td class="t">A Å</td>
   <td class="g"> ַ</td>
-  <td class="p">a<br/>ₐ</td>
-  <td class="r">normal<br/>*furtive*</td>
+  <td class="p">a<br>ₐ</td>
+  <td class="r">normal<br>*furtive*</td>
   <td class="n"><i>point</i> patah</td>
   <td class="u">05B7</td>
 </tr>
@@ -409,8 +409,8 @@ h1.chars {
   <td class="t">@</td>
   <td class="t">D ∂ Î</td>
   <td class="g"> ָ</td>
-  <td class="p">ā<br/>o</td>
-  <td class="r">gadol<br/>qatan</td>
+  <td class="p">ā<br>o</td>
+  <td class="r">gadol<br>qatan</td>
   <td class="n"><i>point</i> qamats</td>
   <td class="u">05B8</td>
 </tr>
@@ -427,8 +427,8 @@ h1.chars {
   <td class="t">E</td>
   <td class="t">R ® ‰</td>
   <td class="g"> ֶ</td>
-  <td class="p">e<br/>eʸ</td>
-  <td class="r">normal<br/>with following <span class="g">י</span></td>
+  <td class="p">e<br>eʸ</td>
+  <td class="r">normal<br>with following <span class="g">י</span></td>
   <td class="n"><i>point</i> segol</td>
   <td class="u">05B6</td>
 </tr>
@@ -436,8 +436,8 @@ h1.chars {
   <td class="t">:E</td>
   <td class="t">T</td>
   <td class="g"> ֱ</td>
-  <td class="p">ᵉ<br/>ᵉʸ</td>
-  <td class="r">normal<br/>with following <span class="g">י</span></td>
+  <td class="p">ᵉ<br>ᵉʸ</td>
+  <td class="r">normal<br>with following <span class="g">י</span></td>
   <td class="n"><i>point</i> hataf segol</td>
   <td class="u">05B1</td>
 </tr>
@@ -445,8 +445,8 @@ h1.chars {
   <td class="t">;</td>
   <td class="t">E é ´</td>
   <td class="g"> ֵ</td>
-  <td class="p">ê<br/>ē</td>
-  <td class="r">with following <span class="g">י</span><br/>alone</td>
+  <td class="p">ê<br>ē</td>
+  <td class="r">with following <span class="g">י</span><br>alone</td>
   <td class="n"><i>point</i> tsere</td>
   <td class="u">05B5</td>
 </tr>
@@ -454,8 +454,8 @@ h1.chars {
   <td class="t">I</td>
   <td class="t">I ˆ î Ê</td>
   <td class="g"> ִ</td>
-  <td class="p">î<br/>i</td>
-  <td class="r">with following <span class="g">י</span><br/>alone</td>
+  <td class="p">î<br>i</td>
+  <td class="r">with following <span class="g">י</span><br>alone</td>
   <td class="n"><i>point</i> hiriq</td>
   <td class="u">05B4</td>
 </tr>
@@ -463,8 +463,8 @@ h1.chars {
   <td class="t">O</td>
   <td class="t">O ø</td>
   <td class="g"> ֹ</td>
-  <td class="p">ô<br/>ō</td>
-  <td class="r">with following <span class="g">ו</span><br/>alone</td>
+  <td class="p">ô<br>ō</td>
+  <td class="r">with following <span class="g">ו</span><br>alone</td>
   <td class="n"><i>point</i> holam</td>
   <td class="u">05B9</td>
 </tr>

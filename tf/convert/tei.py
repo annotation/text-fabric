@@ -281,6 +281,16 @@ CSS_REND_ALIAS = dict(
 KNOWN_RENDS = set()
 REND_DESC = {}
 
+NEST = "nest"
+SLOT = "slot"
+WORD = "word"
+CHAR = "char"
+
+FOLDER = "folder"
+FILE = "file"
+CHAPTER = "chapter"
+CHUNK = "chunk"
+
 
 def makeCssInfo():
     rends = ""
@@ -298,7 +308,14 @@ def makeCssInfo():
     return rends
 
 
-SECTION_MODELS = dict(I={}, II=dict(element=(str, "head"), attributes=(dict, {})))
+SECTION_MODELS = dict(
+    I=dict(levels=(list, [FOLDER, FILE, CHUNK])),
+    II=dict(
+        levels=(list, [CHAPTER, CHUNK]),
+        element=(str, "head"),
+        attributes=(dict, {}),
+    ),
+)
 SECTION_MODEL_DEFAULT = "I"
 
 
@@ -306,8 +323,8 @@ def checkSectionModel(sectionModel):
     if sectionModel is None:
         model = SECTION_MODEL_DEFAULT
         console(f"WARNING: No section model specified. Assuming model {model}.")
-        criteria = {k: v[1] for (k, v) in SECTION_MODELS[model].items()}
-        return dict(model=model, criteria=criteria)
+        properties = {k: v[1] for (k, v) in SECTION_MODELS[model].items()}
+        return dict(model=model, properties=properties)
 
     if type(sectionModel) is str:
         if sectionModel in SECTION_MODELS:
@@ -331,65 +348,70 @@ def checkSectionModel(sectionModel):
         console(f"WARNING: unknown section model: {sectionModel}")
         return False
 
-    criteria = {k: v for (k, v) in sectionModel.items() if k != "model"}
-    modelCriteria = SECTION_MODELS[model]
+    properties = {k: v for (k, v) in sectionModel.items() if k != "model"}
+    modelProperties = SECTION_MODELS[model]
 
     good = True
     delKeys = []
 
-    for (k, v) in criteria.items():
-        if k not in modelCriteria:
-            console(f"WARNING: ignoring unknown model criterium {k}={v}")
+    for (k, v) in properties.items():
+        if k not in modelProperties:
+            console(f"WARNING: ignoring unknown model property {k}={v}")
             delKeys.append(k)
-        elif type(v) is not modelCriteria[k][0]:
+        elif type(v) is not modelProperties[k][0]:
             console(
-                f"ERROR: criterium {k} should have type {modelCriteria[k][0]}"
+                f"ERROR: property {k} should have type {modelProperties[k][0]}"
                 f" but {v} has type {type(v)}"
             )
             good = False
     if good:
         for k in delKeys:
-            del criteria[k]
+            del properties[k]
 
-    for (k, v) in modelCriteria.items():
-        if k not in criteria:
-            console(
-                f"WARNING: model criterium {k} not specified, taking default {v[1]}"
-            )
-            criteria[k] = v[1]
+    for (k, v) in modelProperties.items():
+        if k not in properties:
+            console(f"WARNING: model property {k} not specified, taking default {v[1]}")
+            properties[k] = v[1]
 
     if not good:
         return False
 
-    return dict(model=model, criteria=criteria)
+    return dict(model=model, properties=properties)
 
 
-def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
+def tweakTrans(template, wordAsSlot, sectionModel, sectionProperties):
     if wordAsSlot:
-        slot = "word"
+        slot = WORD
         slotc = "Word"
         slotf = "words"
         xslot = "`word`"
     else:
         slotc = "Char"
-        slot = "char"
+        slot = CHAR
         slotf = "characters"
         xslot = "`char` and `word`"
 
+    levelNames = sectionProperties["levels"]
+
     if sectionModel == "II":
         nLevels = "2"
-        head = sectionCriteria["element"]
-        attributes = sectionCriteria["attributes"]
-        criteriaRaw = repr(sectionCriteria)
-        criteria = (
+        chapterSection = levelNames[0]
+        chunkSection = levelNames[1]
+        head = sectionProperties["element"]
+        attributes = sectionProperties["attributes"]
+        propertiesRaw = repr(sectionProperties)
+        properties = (
             "".join(
                 f"\t*\t`{att}` = `{val}`\n" for (att, val) in sorted(attributes.items())
             )
             if attributes
-            else "\t*\t*no attribute criteria*\n"
+            else "\t*\t*no attribute properties*\n"
         )
     else:
         nLevels = "3"
+        folderSection = levelNames[0]
+        fileSection = levelNames[1]
+        chunkSection = levelNames[2]
 
     rendDesc = "\n".join(
         f"`{val}` | {desc}" for (val, desc) in sorted(REND_DESC.items())
@@ -413,8 +435,16 @@ def tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria):
     if sectionModel == "II":
         text = (
             text.replace("«head»", head)
-            .replace("«criteria»", criteria)
-            .replace("«criteriaRaw»", criteriaRaw)
+            .replace("«properties»", properties)
+            .replace("«propertiesRaw»", propertiesRaw)
+            .replace("«chapter»", chapterSection)
+            .replace("«chunk»", chunkSection)
+        )
+    else:
+        text = (
+            text.replace("«folder»", folderSection)
+            .replace("«file»", fileSection)
+            .replace("«chunk»", chunkSection)
         )
 
     text = modelKeepRe.sub("", text)
@@ -596,21 +626,30 @@ class TEI:
             model:
 
             ```
-            dict(model="II", element="head", attributes=dict(rend="h3"))
+            dict(
+                model="II",
+                levels=["chapter", "chunk"],
+                element="head",
+                attributes=dict(rend="h3"),
+            )
             ```
 
             or
 
             ```
-            dict(model="I")
+            dict(
+                model="I",
+                levels=["folder", "file", "chunk"],
+            )
             ```
 
-            because model I does not require parameters.
+            because model I does not require the *attribute* parameter.
 
             For model II, the default parameters are:
 
             ```
             element="head"
+            levels=["chapter", "chunk"],
             attributes={}
             ```
 
@@ -690,7 +729,19 @@ class TEI:
             return
 
         self.sectionModel = sectionModel["model"]
-        self.sectionCriteria = sectionModel.get("criteria", None)
+        sectionProperties = sectionModel.get("properties", None)
+        self.sectionProperties = sectionProperties
+        levelNames = sectionProperties["levels"]
+        self.levelNames = levelNames
+
+        if self.sectionModel == "II":
+            self.chapterSection = levelNames[0]
+            self.chunkSection = levelNames[1]
+        else:
+            self.folderSection = levelNames[0]
+            self.fileSection = levelNames[1]
+            self.chunkSection = levelNames[2]
+
         self.generic = generic
         self.transform = transform
         self.tfVersion = tfVersion
@@ -886,6 +937,13 @@ class TEI:
 
         Then it makes an inventory of all elements and attributes in the TEI files.
 
+        If tags are used in multiple namespaces, it will be reported.
+
+        !!! caution "Conflation of namespaces"
+            The TEI to TF conversion does constructs node types and attributes
+            without taking namespaces into account.
+            However, the parsing process is namespace aware.
+
         The inventory lists all elements and attributes, and many attribute values.
         But is represents any digit with `n`, and some attributes that contain
         ids or keywords, are reduced to the value `x`.
@@ -917,6 +975,7 @@ class TEI:
         )
         analysis = {x: getStore() for x in kindLabels}
         errors = []
+        tagByNs = collections.defaultdict(collections.Counter)
 
         parser = self.getParser()
         validator = self.getValidator()
@@ -959,8 +1018,12 @@ class TEI:
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
             def nodeInfo(node):
-                tag = etree.QName(node.tag).localname
+                qName = etree.QName(node.tag)
+                tag = qName.localname
+                ns = qName.namespace
                 atts = node.attrib
+
+                tagByNs[tag][ns] += 1
 
                 if len(atts) == 0:
                     kind = "rest"
@@ -1005,6 +1068,36 @@ class TEI:
 
             console(
                 f"{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}"
+            )
+
+        def writeNamespaces():
+            errorFile = f"{reportDir}/namespaces.txt"
+
+            nErrors = 0
+
+            nTags = len(tagByNs)
+
+            with open(errorFile, "w", encoding="utf8") as fh:
+                for (tag, nsInfo) in sorted(
+                    tagByNs.items(), key=lambda x: (-len(x[1]), x[0])
+                ):
+                    label = "OK"
+                    nNs = len(nsInfo)
+                    if nNs > 1:
+                        nErrors += 1
+                        label = "XX"
+
+                    for (ns, amount) in sorted(
+                        nsInfo.items(), key=lambda x: (-x[1], x[0])
+                    ):
+                        fh.write(
+                            f"{label} {nNs:>2} namespace for "
+                            f"{tag:<16} : {amount:>5}x {ns}\n"
+                        )
+
+            console(
+                f"{nTags} tags of which {nErrors} with multiple namespaces "
+                f"written to {errorFile}"
             )
 
         def writeReport():
@@ -1159,6 +1252,7 @@ class TEI:
         writeReport()
         writeDoc()
         writeErrors()
+        writeNamespaces()
 
     # SET UP CONVERSION
 
@@ -1318,8 +1412,155 @@ class TEI:
         )
         NEWLINE_ELEMENTS = set(
             """
+            ab
+            abstract
+            accMat
+            acquisition
+            additional
+            additions
+            address
+            addrLine
+            adminInfo
+            annotation
+            argument
+            biblFull
+            binding
+            bindingDesc
+            caption
+            castGroup
+            catDesc
+            cb
+            channel
+            citeData
+            citeStructure
+            classDecl
+            classes
+            classSpec
+            closer
+            collation
+            condition
+            constitution
+            cRefPattern
+            custEvent
+            custodialHist
+            dataSpec
+            decoDesc
+            decoNote
+            def
+            derivation
+            div
+            divGen
+            domain
+            edition
+            editionStmt
+            editorialDecl
+            elementSpec
+            encodingDesc
+            event
+            exemplum
+            factuality
+            figDesc
+            figure
+            fileDesc
+            filiation
+            foliation
+            fDecl
+            fDescr
+            fsDecl
+            fsDescr
+            fsdDecl
+            geoDecl
+            handDesc
+            head
+            history
+            imprimatur
+            interaction
+            item
+            l
+            langUsage
+            layout
+            layoutDesc
             lb
+            lg
+            licence
+            line
+            list
+            listAnnotation
+            listApp
+            listBibl
+            listEvent
+            listNym
+            listPerson
+            listPlace
+            listObject
+            listOrg
+            listRelation
+            listTranspose
+            listWit
+            macroSpec
+            model
+            modelGrp
+            modelSequence
+            moduleSpec
+            msDesc
+            msFrag
+            msPart
+            musicNotation
+            notesStmt
+            opener
+            origin
+            p
+            particDesc
             pb
+            physdesc
+            postscript
+            preparedness
+            profileDesc
+            projectDesc
+            provenance
+            publicationStmt
+            purpose
+            recordHist
+            refsDecl
+            remarks
+            respStmt
+            row
+            schemaSpec
+            scriptDesc
+            salute
+            samplingDecl
+            seal
+            sealDesc
+            seg
+            seriesStmt
+            set
+            setting
+            settingDesc
+            signed
+            source
+            sourceDesc
+            sourceDoc
+            specList
+            specGrp
+            spGrp
+            styleDefDecl
+            summary
+            support
+            surrogates
+            table
+            tagsDecl
+            tagsUsage
+            taxonomy
+            textDesc
+            title
+            titleStmt
+            typeDesc
+            typeNote
+            u
+            unitDef
+            unitDecl
+            witDetail
+            witness
             """.strip().split()
         )
 
@@ -1342,7 +1583,7 @@ class TEI:
                 An lxml element node.
             """
             tag = etree.QName(node.tag).localname
-            cur["nest"].append(tag)
+            cur[NEST].append(tag)
 
             beforeChildren(cv, cur, node, tag)
 
@@ -1350,7 +1591,7 @@ class TEI:
                 walkNode(cv, cur, child)
 
             afterChildren(cv, cur, node, tag)
-            cur["nest"].pop()
+            cur[NEST].pop()
             afterTag(cv, cur, node, tag)
 
         def isChapter(cur):
@@ -1358,7 +1599,7 @@ class TEI:
 
             ## Model I
 
-            Not relevant: there are no chapter nodes.
+            Not relevant: there are no chapter nodes inside an XML file.
 
             ## Model II
 
@@ -1385,7 +1626,7 @@ class TEI:
             sectionModel = self.sectionModel
 
             if sectionModel == "II":
-                nest = cur["nest"]
+                nest = cur[NEST]
                 nNest = len(nest)
 
                 if nNest > 0 and nest[-1] in EMPTY_ELEMENTS:
@@ -1435,11 +1676,8 @@ class TEI:
             """
             sectionModel = self.sectionModel
 
-            nest = cur["nest"]
+            nest = cur[NEST]
             nNest = len(nest)
-
-            # if nNest > 0 and nest[-1] in EMPTY_ELEMENTS:
-            #     return False
 
             if sectionModel == "II":
                 return nNest > 1 and (
@@ -1483,7 +1721,7 @@ class TEI:
             -------
             boolean
             """
-            nest = cur["nest"]
+            nest = cur[NEST]
             return len(nest) > 0 and nest[-1] in cur["pureElems"]
 
         def isEndInPure(cur):
@@ -1504,7 +1742,7 @@ class TEI:
             -------
             boolean
             """
-            nest = cur["nest"]
+            nest = cur[NEST]
             return len(nest) > 1 and nest[-2] in cur["pureElems"]
 
         def startWord(cv, cur, ch):
@@ -1524,7 +1762,7 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             """
-            curWord = cur["word"]
+            curWord = cur[WORD]
             if not curWord:
                 prevWord = cur["prevWord"]
                 if prevWord is not None:
@@ -1533,8 +1771,8 @@ class TEI:
                     if wordAsSlot:
                         curWord = cv.slot()
                     else:
-                        curWord = cv.node("word")
-                    cur["word"] = curWord
+                        curWord = cv.node(WORD)
+                    cur[WORD] = curWord
                     if cur["inHeader"]:
                         cv.feature(curWord, is_meta=1)
                     if cur["inNote"]:
@@ -1565,12 +1803,12 @@ class TEI:
             withNewline:
                 Whether to add a newline after the word.
             """
-            curWord = cur["word"]
+            curWord = cur[WORD]
             if curWord:
                 cv.feature(curWord, str=cur["wordStr"])
                 if not wordAsSlot:
                     cv.terminate(curWord)
-                cur["word"] = None
+                cur[WORD] = None
                 cur["wordStr"] = ""
                 cur["prevWord"] = curWord
                 cur["afterStr"] = ""
@@ -1578,7 +1816,31 @@ class TEI:
             if ch is not None:
                 cur["afterStr"] += ch
             if withNewline:
-                cur["afterStr"] += "\n"
+                cur["afterStr"] = cur["afterStr"].rstrip() + "\n"
+
+        def addEmpty(cv, cur):
+            """Add an empty slot.
+
+            We also terminate the current word.
+            If words are slots, the empty slot is a word on its own.
+
+            Returns
+            -------
+            node
+                The empty slot
+            """
+            finishWord(cv, cur, None, False)
+            startWord(cv, cur, ZWSP)
+            emptyNode = cur[WORD]
+            cv.feature(emptyNode, empty=1)
+
+            if not wordAsSlot:
+                emptyNode = cv.slot()
+                cv.feature(emptyNode, ch=ZWSP, empty=1)
+
+            finishWord(cv, cur, None, False)
+
+            return emptyNode
 
         def addSlot(cv, cur, ch):
             """Add a slot.
@@ -1604,10 +1866,9 @@ class TEI:
                 finishWord(cv, cur, ch, False)
 
             if wordAsSlot:
-                s = cur["word"]
+                s = cur[WORD]
             else:
                 s = cv.slot()
-                cur["slot"] = s
                 cv.feature(s, ch=ch)
             if s is not None:
                 if cur["inHeader"]:
@@ -1634,34 +1895,50 @@ class TEI:
                 The tag of the lxml node.
             """
             sectionModel = self.sectionModel
-            sectionCriteria = self.sectionCriteria
+            sectionProperties = self.sectionProperties
 
             atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
 
             if sectionModel == "II":
+                chapterSection = self.chapterSection
+                chunkSection = self.chunkSection
+
                 if isChapter(cur):
                     cur["chapterNum"] += 1
-                    cur["chapter"] = cv.node("chapter")
-                    cv.feature(cur["chapter"], chapter=f"{cur['chapterNum']} {tag}")
+                    cur["prevChapter"] = cur.get(CHAPTER, None)
+                    cur[CHAPTER] = cv.node(chapterSection)
+                    for danglingSlot in cur["danglingSlots"]:
+                        cv.link(cur[CHAPTER], danglingSlot)
+
+                    value = {chapterSection: f"{cur['chapterNum']} {tag}"}
+                    cv.feature(cur[CHAPTER], **value)
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
-                    cur["chunk"] = cv.node("chunk")
+                    cur["prevChunk"] = cur.get(CHUNK, None)
+                    cur[CHUNK] = cv.node(chunkSection)
+                    for danglingSlot in cur["danglingSlots"]:
+                        cv.link(cur[CHUNK], danglingSlot)
+                    cur["danglingSlots"] = set()
                     cur["infirstChunk"] = True
                 elif isChunk(cur):
                     if cur["infirstChunk"]:
                         cur["infirstChunk"] = False
                     else:
-                        cur["chunk"] = cv.node("chunk")
+                        cur[CHUNK] = cv.node(chunkSection)
+                        for danglingSlot in cur["danglingSlots"]:
+                            cv.link(cur[CHUNK], danglingSlot)
+                        cur["danglingSlots"] = set()
                     if tag == "p":
                         cur["chunkPNum"] += 1
                         cn = cur["chunkPNum"]
                     else:
                         cur["chunkONum"] -= 1
                         cn = cur["chunkONum"]
-                    cv.feature(cur["chunk"], chunk=cn)
+                    value = {chunkSection: cn}
+                    cv.feature(cur[CHUNK], **value)
 
-                if tag == sectionCriteria["element"]:
-                    criticalAtts = sectionCriteria["attributes"]
+                if tag == sectionProperties["element"]:
+                    criticalAtts = sectionProperties["attributes"]
                     match = True
                     for (k, v) in criticalAtts.items():
                         if atts.get(k, None) != v:
@@ -1671,58 +1948,46 @@ class TEI:
                         heading = etree.tostring(
                             node, encoding="unicode", method="text", with_tail=False
                         ).replace("\n", " ")
-                        cv.feature(cur["chapter"], chapter=heading)
+                        cv.feature(cur[CHAPTER], chapterSection=heading)
                         chapterNum = cur["chapterNum"]
                         console(
                             f"\rchapter {chapterNum:>4} {heading:<50}", newline=False
                         )
             else:
+                chunkSection = self.chunkSection
+
                 if isChunk(cur):
                     cur["chunkNum"] += 1
-                    cur["chunk"] = cv.node("chunk")
-                    cv.feature(cur["chunk"], chunk=cur["chunkNum"])
+                    cur["prevChunk"] = cur.get(CHUNK, None)
+                    cur[CHUNK] = cv.node(chunkSection)
+                    for danglingSlot in cur["danglingSlots"]:
+                        cv.link(cur[CHUNK], danglingSlot)
+                    cur["danglingSlots"] = set()
+                    value = {chunkSection: cur["chunkNum"]}
+                    cv.feature(cur[CHUNK], **value)
 
             if tag == TEI_HEADER:
                 cur["inHeader"] = True
                 if sectionModel == "II":
-                    cv.feature(cur["chapter"], chapter="TEI header")
+                    value = {chapterSection: "TEI header"}
+                    cv.feature(cur[CHAPTER], **value)
             if tag in NOTE_LIKE:
                 cur["inNote"] = True
                 finishWord(cv, cur, None, False)
 
             if tag not in PASS_THROUGH:
-                mustEmpty = tag in EMPTY_ELEMENTS
-                if mustEmpty:
-                    curNode = cur["word"] if wordAsSlot else cur["slot"]
-                    if curNode is None:
-                        curNode = cv.slot()
-                        if wordAsSlot:
-                            cur["word"] = curNode
-                        else:
-                            cur["slot"] = curNode
-                    emptyAtts = {f"empty_{tag}_{k}": v for (k, v) in atts.items()}
-                    emptyAtts[f"empty_{tag}"] = 1
-                    mustNewLine = tag in NEWLINE_ELEMENTS
-                    if mustNewLine:
-                        cv.feature(curNode, after="\n")
-                    if len(emptyAtts):
-                        cv.feature(curNode, **emptyAtts)
-                else:
-                    curNode = cv.node(tag)
-                    if wordAsSlot:
-                        if cur["word"]:
-                            cv.link(curNode, [cur["word"][1]])
-                    cur["elems"].append(curNode)
-                    if len(atts):
-                        cv.feature(curNode, **atts)
-                        if "rend" in atts:
-                            rValue = atts["rend"]
-                            r = makeNameLike(rValue)
-                            if r:
-                                cur.setdefault("rend", {}).setdefault(r, []).append(
-                                    True
-                                )
-
+                curNode = cv.node(tag)
+                if wordAsSlot:
+                    if cur[WORD]:
+                        cv.link(curNode, [cur[WORD][1]])
+                cur["elems"].append(curNode)
+                if len(atts):
+                    cv.feature(curNode, **atts)
+                    if "rend" in atts:
+                        rValue = atts["rend"]
+                        r = makeNameLike(rValue)
+                        if r:
+                            cur.setdefault("rend", {}).setdefault(r, []).append(True)
             if node.text:
                 textMaterial = WHITE_TRIM_RE.sub(" ", node.text)
                 if isPure(cur):
@@ -1731,7 +1996,7 @@ class TEI:
                             "WARNING: Text material at the start of "
                             f"pure-content element <{tag}>"
                         )
-                        stack = "-".join(cur["nest"])
+                        stack = "-".join(cur[NEST])
                         console(f"\tElement stack: {stack}")
                         console(f"\tMaterial: `{textMaterial}`")
                 else:
@@ -1740,6 +2005,9 @@ class TEI:
 
         def afterChildren(cv, cur, node, tag):
             """Node actions after dealing with the children, but before the end tag.
+
+            Here we make sure that the newline elements will get their last slot
+            having a newline at the end of their `after` feature.
 
             Parameters
             ----------
@@ -1756,41 +2024,56 @@ class TEI:
             sectionModel = self.sectionModel
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
+            slotType = WORD if wordAsSlot else CHAR
 
             if tag not in PASS_THROUGH:
                 if isEndInPure(cur):
                     finishWord(cv, cur, None, False)
 
-                mustEmpty = tag in EMPTY_ELEMENTS
-                if not mustEmpty:
-                    curNode = cur["elems"].pop()
+                curNode = cur["elems"].pop()
 
-                if not mustEmpty or isChnk:
-                    if not cv.linked(curNode):
-                        s = cv.slot()
-                        cur["slot"] = s
-                        if wordAsSlot:
-                            cv.feature(s, str=ZWSP, empty=1)
+                slots = cv.linked(curNode)
+
+                if len(slots):
+                    lastSlot = (slotType, slots[-1])
+                else:
+                    lastSlot = addEmpty(cv, cur)
+                    if cur["inHeader"]:
+                        cv.feature(lastSlot, is_meta=1)
+                    if cur["inNote"]:
+                        cv.feature(lastSlot, is_note=1)
+                    # take care that this empty slot falls under all sections
+                    # for folders and files this is already guaranteed
+                    # We need only to watch out for chapters and chunks
+                    if sectionModel == "II":
+                        if cur.get(CHAPTER, None) is None:
+                            prevChapter = cur.get("prevChapter", None)
+                            if prevChapter is None:
+                                cur["danglingSlots"].add(lastSlot)
+                            else:
+                                cv.link(prevChapter, lastSlot)
+                    if cur.get(CHUNK, None) is None:
+                        prevChunk = cur.get("prevChunk", None)
+                        if prevChunk is None:
+                            cur["danglingSlots"].add(lastSlot)
                         else:
-                            cv.feature(s, ch=ZWSP, empty=1)
-                        if cur["inHeader"]:
-                            cv.feature(s, is_meta=1)
-                        if cur["inNote"]:
-                            cv.feature(s, is_note=1)
+                            cv.link(prevChunk, lastSlot)
 
-                if not mustEmpty:
-                    cv.terminate(curNode)
+                if tag in NEWLINE_ELEMENTS:
+                    finishWord(cv, cur, None, True)
+
+                cv.terminate(curNode)
 
             if sectionModel == "II":
                 if isChap:
-                    cv.terminate(cur["chapter"])
+                    cv.terminate(cur[CHAPTER])
                     finishWord(cv, cur, None, True)
                 elif isChnk:
-                    cv.terminate(cur["chunk"])
+                    cv.terminate(cur[CHUNK])
                     finishWord(cv, cur, None, True)
             else:
                 if isChnk:
-                    cv.terminate(cur["chunk"])
+                    cv.terminate(cur[CHUNK])
                     finishWord(cv, cur, None, True)
 
         def afterTag(cv, cur, node, tag):
@@ -1818,27 +2101,23 @@ class TEI:
                 cur["inNote"] = False
 
             if tag not in PASS_THROUGH:
-                mustEmpty = tag in EMPTY_ELEMENTS
-                if not mustEmpty:
-                    atts = {
-                        etree.QName(k).localname: v for (k, v) in node.attrib.items()
-                    }
-                    if "rend" in atts:
-                        rValue = atts["rend"]
-                        r = makeNameLike(rValue)
-                        if r:
-                            cur["rend"][r].pop()
+                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                if "rend" in atts:
+                    rValue = atts["rend"]
+                    r = makeNameLike(rValue)
+                    if r:
+                        cur["rend"][r].pop()
 
             if node.tail:
                 tailMaterial = WHITE_TRIM_RE.sub(" ", node.tail)
                 if isPure(cur):
                     if tailMaterial and tailMaterial != " ":
-                        elem = cur["nest"][-1]
+                        elem = cur[NEST][-1]
                         console(
                             "WARNING: Text material after "
                             f"<{tag}> in pure-content element <{elem}>"
                         )
-                        stack = "-".join(cur["nest"])
+                        stack = "-".join(cur[NEST])
                         console(f"\tElement stack: {stack}-{tag}")
                         console(f"\tMaterial: `{tailMaterial}`")
                 else:
@@ -1869,19 +2148,24 @@ class TEI:
             }
 
             if sectionModel == "I":
+                folderSection = self.folderSection
+                fileSection = self.fileSection
+
                 i = 0
                 for (xmlFolder, xmlFiles) in self.getXML():
                     console(f"Start folder {xmlFolder}:")
 
-                    cur["folder"] = cv.node("folder")
-                    cv.feature(cur["folder"], folder=xmlFolder)
+                    cur[FOLDER] = cv.node(folderSection)
+                    value = {folderSection: xmlFolder}
+                    cv.feature(cur[FOLDER], **value)
 
                     for xmlFile in xmlFiles:
                         i += 1
                         console(f"\r{i:>4} {xmlFile:<50}", newline=False)
 
-                        cur["file"] = cv.node("file")
-                        cv.feature(cur["file"], file=xmlFile.removesuffix(".xml"))
+                        cur[FILE] = cv.node(fileSection)
+                        value = {fileSection: xmlFile.removesuffix(".xml")}
+                        cv.feature(cur[FILE], **value)
 
                         with open(
                             f"{sourceDir}/{xmlFolder}/{xmlFile}", encoding="utf8"
@@ -1892,21 +2176,23 @@ class TEI:
                             root = tree.getroot()
                             cur["inHeader"] = False
                             cur["inNote"] = False
-                            cur["nest"] = []
+                            cur[NEST] = []
                             cur["elems"] = []
                             cur["chunkNum"] = 0
-                            cur["word"] = None
+                            cur["prevChunk"] = None
+                            cur["danglingSlots"] = set()
+                            cur[WORD] = None
                             cur["prevWord"] = None
                             cur["wordStr"] = ""
                             cur["afterStr"] = ""
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
-                        cv.terminate(cur["file"])
+                        cv.terminate(cur[FILE])
 
                     console("")
                     console(f"End   folder {xmlFolder}")
-                    cv.terminate(cur["folder"])
+                    cv.terminate(cur[FOLDER])
 
             elif sectionModel == "II":
                 xmlFile = self.getXML()
@@ -1921,12 +2207,15 @@ class TEI:
                     root = tree.getroot()
                     cur["inHeader"] = False
                     cur["inNote"] = False
-                    cur["nest"] = []
+                    cur[NEST] = []
                     cur["elems"] = []
                     cur["chapterNum"] = 0
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
-                    cur["word"] = None
+                    cur["prevChunk"] = None
+                    cur["prevChapter"] = None
+                    cur["danglingSlots"] = set()
+                    cur[WORD] = None
                     cur["prevWord"] = None
                     cur["wordStr"] = ""
                     cur["afterStr"] = ""
@@ -1950,22 +2239,6 @@ class TEI:
                             valueType="int",
                         )
                         intFeatures.add(fName)
-                    elif fName.startswith("empty_"):
-                        parts = fName.split("_", 2)
-                        tag = parts[1]
-                        if len(parts) == 2:
-                            description = f"empty TEI element {tag} follows"
-                            intFeatures.add(fName)
-                            valueType = "int"
-                        else:
-                            att = parts[2]
-                            description = f"TEI attribute {att} of empty element {tag}"
-                            valueType = "str"
-                        cv.meta(
-                            fName,
-                            description=description,
-                            valueType=valueType,
-                        )
                     else:
                         cv.meta(
                             fName,
@@ -1994,16 +2267,15 @@ class TEI:
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         sourceDir = self.sourceDir
+        chunkSection = self.chunkSection
+        levelNames = self.levelNames
 
         console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
 
-        slotType = "word" if wordAsSlot else "char"
+        slotType = WORD if wordAsSlot else CHAR
 
-        sectionFeatures = "folder,file,chunk"
-        sectionTypes = "folder,file,chunk"
-        if sectionModel == "II":
-            sectionFeatures = "chapter,chunk"
-            sectionTypes = "chapter,chunk"
+        sectionFeatures = ",".join(levelNames)
+        sectionTypes = ",".join(levelNames)
 
         textFeatures = "{str}{after}" if wordAsSlot else "{ch}"
         otext = {
@@ -2011,9 +2283,8 @@ class TEI:
             "sectionFeatures": sectionFeatures,
             "sectionTypes": sectionTypes,
         }
-        intFeatures = {"empty", "chunk"}
+        intFeatures = {"empty", chunkSection}
         featureMeta = dict(
-            chunk=dict(description="number of a chunk within a file"),
             str=dict(description="the text of a word"),
             after=dict(description="the text after a word till the next word"),
             empty=dict(
@@ -2024,13 +2295,22 @@ class TEI:
             ),
             is_note=dict(description="whether a slot or word is in the note element"),
         )
+        featureMeta[chunkSection] = dict(
+            description=f"number of a {chunkSection} within a document"
+        )
+
         if not wordAsSlot:
             featureMeta["ch"] = dict(description="the unicode character of a slot")
         if sectionModel == "II":
-            featureMeta["chapter"] = dict(description="name of chapter")
+            chapterSection = self.chapterSection
+            featureMeta[chapterSection] = dict(description=f"name of {chapterSection}")
         else:
-            featureMeta["folder"] = dict(description="name of source folder")
-            featureMeta["file"] = dict(description="name of source file")
+            folderSection = self.folderSection
+            fileSection = self.fileSection
+            featureMeta[folderSection] = dict(
+                description=f"name of source {folderSection}"
+            )
+            featureMeta[fileSection] = dict(description=f"name of source {fileSection}")
 
         self.intFeatures = intFeatures
         self.featureMeta = featureMeta
@@ -2121,7 +2401,7 @@ class TEI:
         force = self.force
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
-        sectionCriteria = self.sectionCriteria
+        sectionProperties = self.sectionProperties
         docsDir = self.docsDir
 
         initTree(docsDir)
@@ -2233,7 +2513,7 @@ class TEI:
 
                 """
                 )
-                + tweakTrans(template, wordAsSlot, sectionModel, sectionCriteria)
+                + tweakTrans(template, wordAsSlot, sectionModel, sectionProperties)
                 + dedent(
                     """
 
@@ -2285,7 +2565,7 @@ class TEI:
             (sourceBit, targetBit) = (
                 parent if type(parent) is tuple else (parent, parent)
             )
-            file = info["file"]
+            file = info[FILE]
             hasTemplate = info["hasTemplate"]
 
             targetDir = f"{refDir}/{targetBit}"

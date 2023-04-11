@@ -161,28 +161,18 @@ Text-Fabric uses the GitHub API to get its apps and data on the fly.
 
 ### GitHub Rate Limit Exceeded!
 
-Two solutions:
+Several solutions:
 
-1. increase your rate limit by making yourself known to GitHub (**recommended**)
-2. use previously downloaded data or get data manually from GitHub
+1. (*recommended*) ask the provider of the dataset to use
+   `tf.advanced.zipdata.zipAll()` to create a zipfile of the complete dataset
+   and attach it to the latest release on GitHub.
+   Then TF uses a method to get your data which does not involve the GitHub API, and
+   your problem is gone.
+1. use previously downloaded data or get data manually from GitHub, e.g. by *cloning*
+   the GitHub repository that holds the dataset.
+   This requires confidence with git/GitHub operations such as cloning and pulling.
+1. increase your rate limit by making yourself known to GitHub.
+   The work needed to increase the rate is fairly simple, but it assumes a bit
+   more knowledge about how your terminal and operating system works.
 
-An increased rate limit is more than enough for normal use of using Text-Fabric
-with default settings. In this scenario, you always work with the latest
-release of Text-Fabric data and apps.
-
-The work needed to increase the rate is fairly simple, but it assumes a bit more
-knowledge about how your terminal or your command line prompt operates.
-
-If you work very intensely with data, repeatedly accessing many corpora, it
-is a waste to access GitHub for every single load action.
-In those cases you can pass extra parameters to the commands by which you load
-the data.
-
-This does not require any extra knowledge, except a section of the Text-Fabric API
-docs. But you must remember that in order to get the data the first time, you
-need to pass different parameters than the subsequent times.
-
-All in all, the second solution requires confidence with cloning and pulling
-from GitHub and familiarity with all the ways that Text-Fabric can obtain its data.
-
-See `tf.advanced.repo` for instructions to follow both solutions.
+See also `tf.advanced.repo`.

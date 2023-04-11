@@ -34,7 +34,7 @@ the TEI source files to a Text-Fabric data set.
 
 «beginModelI»
 
-### node type `folder`
+### node type `«folder»`
 
 *The type of subfolders of TEI documents.*
 
@@ -44,9 +44,9 @@ the TEI source files to a Text-Fabric data set.
 
 feature | description
 --- | ---
-`folder` | name of the subfolder
+`«folder»` | name of the subfolder
 
-### node type `file`
+### node type `«file»`
 
 *The type of individual TEI documents.*
 
@@ -56,15 +56,15 @@ feature | description
 
 feature | description
 --- | ---
-`file` | name of the file, without the `.xml` extension. Other extensions are included.
+`«file»` | name of the file, without the `.xml` extension. Other extensions are included.
 
 «endModelI»
 
 «beginModelII»
 
-### node type `chapter`
+### node type `«chapter»`
 
-*The type of chapters in a TEI document.*
+*The type of «chapter»s in a TEI document.*
 
 **Section level 1**
 
@@ -72,11 +72,11 @@ feature | description
 
 feature | description
 --- | ---
-`chapter` | heading of the chapter
+`«chapter»` | heading of the «chapter»
 
 «endModelII»
 
-### node type `chunk`
+### node type `«chunk»`
 
 «beginModelI»
 *Top-level division of material in a TEI document.*
@@ -94,7 +94,7 @@ feature | description
 
 feature | description
 --- | ---
-`chunk` | sequence number of the chunk within the file, starting with 1.
+`«chunk»` | sequence number of the «chunk» within the «file», starting with 1.
 
 «endModelI»
 
@@ -102,7 +102,7 @@ feature | description
 
 feature | description
 --- | ---
-`chunk` | sequence number of the chunk within the chapter, positive for `<p>` chunks, negative for other chunks.
+`«chunk»` | sequence number of the «chunk» within the «chapter», positive for `<p>` «chunk»s, negative for other «chunk»s.
 
 «endModelII»
 
@@ -148,18 +148,6 @@ feature | description
 
 «endSlotchar»
 
-### Additional features
-
-Empty «slot»s may have been inserted to mark the place of empty elements.
-Or empty elements may have left features on preceding «slot»s.
-
-feature | description
---- | ---
-`empty` | whether a «slot» has been inserted in an empty element
-`empty_`*element* | whether there is a following empty *element*
-`empty_`*element*`_`*attribute* | the value of *attribute* of the following empty *element*
-
-
 ## Sectioning
 
 The material is divided into «nLevels» levels of sections, mainly for the purposes
@@ -184,31 +172,33 @@ consisting of xml files, the TEI files.
 
 There are three section levels:
 
-*   *folder* Level 1 heading corresponding to folders with TEI files;
+*   *«folder»* Level 1 heading corresponding to folders with TEI files;
     heading: the name of the folder;
-*   *file* Level 2 heading corresponding to individual TEI files;
+*   *«file»* Level 2 heading corresponding to individual TEI files;
     heading: the name of the file;
-*   *chunk* Level 3 heading corresponding to top-level divisions in a TEI file;
-    heading: the sequence number of the chunk within the file.
+*   *«chunk»* Level 3 heading corresponding to top-level divisions in a TEI file;
+    heading: the sequence number of the «chunk» within the file.
 
 All section headings are stored in a feature with the same name as the type of the section:
-*folder*, *file*, *chunk*.
+*«folder»*, *«file»*, *«chunk»*.
 
 #### Details
 
-1.  *chunk* nodes have been made as follows:
+1.  *«chunk»* nodes have been made as follows:
 
-    *   `<facsimile>`, `<fsdDecl>`, `<sourceDoc>`, and `<standOff>` are chunks;
-    *   immediate children of `<teiHeader>` are chunks;
-    *   immediate children of `<text>` are chunks,
+    *   `<facsimile>`, `<fsdDecl>`, `<sourceDoc>`, and `<standOff>` are «chunk»s;
+    *   immediate children of `<teiHeader>` are «chunk»s;
+    *   immediate children of `<text>` are «chunk»s,
         except the *text structure* elements
         `<front>`, `<body>`, `<back>` and `<group>`;
-    *   immediate children of the text structure elements are chunks,
+    *   immediate children of the text structure elements are «chunk»s,
     *   but not necessarily empty elements such as `<lb/>` and `<pb/>`.
 
-1.  files and folders are sorted in the lexicographic ordering of their names;
+1.  «file»s and «folder» are sorted in the lexicographic ordering of their names;
 1.  the folder `__ignore__` is ignored.
-1.  the headings consist of the names of the files and folders
+1.  the headings consist of the names of the «file»s and «folder»s
+1.  the slots generated for empty elements are linked to the current chunk if there is
+    a current chunk; otherwise they will be linked to the upcoming chunk.
 
 There are no additional switches for tweaking the model further, at the moment.
 
@@ -222,54 +212,57 @@ This model assumes that the source is a single TEI file.
 
 There are two section levels: 
 
-*   *chapter* Top-level division, roughly corresponding to top-level `<div>` elements;
+*   *«chapter»* Top-level division, roughly corresponding to top-level `<div>` elements;
     heading: a sequence number and a tag name, or the contents of an heading-bearing element;
-*   *chunk* division withint the chapters, roughly corresponding to `<p>` elements.
-    heading: sequence number of the chunk within a chapter; chunks that are `<p>` elements
-    are numbered with positive numbers; other chunks are numbered separately with negative numbers.
+*   *«chunk»* division withint the «chapter»s, roughly corresponding to `<p>` elements.
+    heading: sequence number of the «chunk» within a «chapter»; «chunk»s that are `<p>` elements
+    are numbered with positive numbers; other «chunk»s are numbered separately with negative numbers.
 
 All section headings are stored in a feature with the same name as the type of section:
-*chapter*, *chunk*.
+*«chapter»*, *«chunk»*.
 
 #### Details
 
-1.  *chapter* nodes have been made as follows:
+1.  *«chapter»* nodes have been made as follows:
 
-    *   `<teiHeader>` is a chapter;
-    *   immediate children of `<text>` are chapters,
+    *   `<teiHeader>` is a «chapter»;
+    *   immediate children of `<text>` are «chapter»s,
         except the *text structure* elements
         `<front>`, `<body>`, `<back>` and `<group>`;
-    *   immediate children of the text structure elements are chapters;
+    *   immediate children of the text structure elements are «chapter»s;
 
-1.  *chunk* nodes have been made as follows:
+1.  *«chunk»* nodes have been made as follows:
 
-    *   the `<teiHeader>` is a chunk;
-    *   immediate children of `<text>` are chunks,
+    *   the `<teiHeader>` is a «chunk»;
+    *   immediate children of `<text>` are «chunk»s,
         except the *text structure* elements
         `<front>`, `<body>`, `<back>` and `<group>`;
-    *   immediate children of the text structure elements are chunks,
+    *   immediate children of the text structure elements are «chunk»s,
     *   but not necessarily empty elements such as `<lb/>` and `<pb/>`.
 
-1.  The heading of a chapter is either the text in a heading-bearing element,
+1.  the slots generated for empty elements are linked to the current chapter and chunk
+    if there they exist; otherwise they will be linked to the upcoming chapter
+    and chunk.
+1.  The heading of a «chapter» is either the text in a heading-bearing element,
     or, if no such element is found, a sequence number and the tag name.
-1.  Extra parameters specify how to find the head-bearing element for a chapter.
+1.  Extra parameters specify how to find the head-bearing element for a «chapter».
     This corpus is parametrized with
 
     ```
-    «criteriaRaw»
+    «propertiesRaw»
     ```
 
     meaning:
     
-    *   heads occur in `<«head»>` elements that follow the chapter-starting element;
-        but only those ones that satisfy the following attribute criteria, if any:
+    *   heads occur in `<«head»>` elements that follow the «chapter»-starting element;
+        but only those ones that satisfy the following attribute properties, if any:
 
-    «criteria»
+    «properties»
 
 1.  Additional remarks about heading bearing elements:
     1.  their original occurrences in the text are preserved and treated in the same
         way as all other elements;
-    1.  only the plain text content of the headings are used for the chapter headings,
+    1.  only the plain text content of the headings are used for the «chapter» headings,
         markup inside headings is ignored for this purpose.
 
 «endModelII»
@@ -297,17 +290,8 @@ by the parameter `wordAsSlot`, passed to the conversion
 
 When empty elements occur, something must be done to anchor them to the text stream.
 
-*   *accidentally empty*:
-    When the element is empty, but could have had content, we add an empty «slot», with
-    features derived from the attributes of the element.
-    This empty «slot» also gets the ZERO-WIDTH-SPACE (Unicode 200B) as character value.
-*   *necessarily empty*:
-    When the element can never have content (as defined by the TEI guidelines), we add
-    its attributes as features to the previous «slot» (if there is no such «slot»,
-    we make an empty «slot»).
-    We also add a feature `empty_`*tag*`=1` on that «slot»; *tag* is the name of the
-    empty element. All attributes of such an element go into features
-    `empty_`*tag*`_`*att*`=`*value* on the same «slot».
+To such elements we add an empty «slot» with the ZERO-WIDTH-SPACE (Unicode 200B) as
+character/string value.
 
 ### «Slot»s in general
 

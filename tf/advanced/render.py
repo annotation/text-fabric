@@ -521,7 +521,7 @@ def _getFeatures(info, n, nType):
                     None if value in noneValues else htmlEsc(value or "", math=showMath)
                 )
                 if value is not None:
-                    value = value.replace("\n", "<br/>")
+                    value = value.replace("\n", "\\n<br>")
                     if value.endswith(" "):
                         value = value[0:-1] + NBSP
                     isBare = i < bFeatures

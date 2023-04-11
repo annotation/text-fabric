@@ -15,9 +15,11 @@ HELP = """
 nbconvert inputDir [outputDir]
 ```
 
-Two modes:
+Several modes:
 
-1. If outputDir is given:
+Copy mode
+---------
+If outputDir is given and not equal to "-":
 
 Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
 Copies all other files in *inputDir* to *outputDir*.
@@ -26,7 +28,19 @@ If *outputDir* does not exist, it will be created.
 Makes sure that all links in the resulting html to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
-2. Without outputDir
+In place mode
+-------------
+If outputDir is given and equal to "-":
+
+Converts all `.ipynb` files in *inputDir* to `.html` files next to their originals.
+Overwrites existing html names with the same name.
+
+Makes sure that all links in the resulting html to one of the
+original `.ipynb` files are transformed in links to the converted `.html` files.
+
+Index mode
+----------
+Without outputDir
 
 Generates an index.html file in inputDir with links
 to all html files that can be recursively found inside the inputDir.
@@ -53,6 +67,7 @@ def task(*args):
         return 1
 
     if len(args) == 1:
+        console("INDEX MODE")
         makeIndex(inputDir)
     else:
         convertDir(inputDir, args[1])
@@ -134,7 +149,11 @@ def makeIndex(inputDir):
 
 
 def convertDir(inputDir, outputDir):
-    initTree(outputDir, fresh=True)
+    inPlace = outputDir == "-"
+    console("IN PLACE MODE" if inPlace else "COPY MODE")
+
+    if not inPlace:
+        initTree(outputDir, fresh=True)
 
     convertedNotebooks = []
 
@@ -143,8 +162,10 @@ def convertDir(inputDir, outputDir):
 
     def doSubDir(path):
         subInputDir = inputDir if path == "" else f"{inputDir}/{path}"
-        subOutputDir = outputDir if path == "" else f"{outputDir}/{path}"
-        initTree(subOutputDir)
+
+        if not inPlace:
+            subOutputDir = outputDir if path == "" else f"{outputDir}/{path}"
+            initTree(subOutputDir)
 
         theseNotebooks = []
 
@@ -159,18 +180,20 @@ def convertDir(inputDir, outputDir):
                 elif name.endswith(NB_EXT):
                     theseNotebooks.append(name)
                 else:
-                    fileCopy(f"{subInputDir}/{name}", f"{subOutputDir}/{name}")
+                    if not inPlace:
+                        fileCopy(f"{subInputDir}/{name}", f"{subOutputDir}/{name}")
 
         if len(theseNotebooks):
             command = "jupyter nbconvert --to html"
             inFiles = " ".join(
                 f"{subInputDir}/{escapeSpace(name)}" for name in theseNotebooks
             )
-            commandLine = f"{command} --output-dir={subOutputDir} {inFiles}"
+            destDir = subInputDir if inPlace else subOutputDir
+            commandLine = f"{command} --output-dir={destDir} {inFiles}"
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
                 convertedNotebooks.append(
-                    (subOutputDir, thisNotebook.replace(NB_EXT, ""))
+                    (destDir, thisNotebook.replace(NB_EXT, ""))
                 )
 
     doSubDir("")

@@ -28,6 +28,13 @@ On GitLab we ignore the rate limiting.
 GitHub has a rate limiting policy for its API of max 60 calls per hour.
 This can be too restrictive, and here are two ways to keep working nevertheless.
 
+!!! hint
+    If you are a dataset provider, use `tf.advanced.zipdata.zipAll()` to
+    produce a zipfile of your complete dataset, and then attach it to the latest
+    release on GitHub.
+    Then TF will find this file and download it automatically if needed, without ever
+    using the GitHub API, so your users do not have to do the things described below!
+
 ## Increase the rate limit
 
 If you use this function in an application of yours that uses it very often,
@@ -389,6 +396,9 @@ import io
 import re
 import base64
 from zipfile import ZipFile
+import urllib.request as ur
+from urllib.error import HTTPError
+import ssl
 
 from ..parameters import (
     GH,
@@ -403,6 +413,7 @@ from ..core.files import (
     DOWNLOADS,
     EXPRESS_SYNC,
     EXPRESS_SYNC_LEGACY,
+    APP_EXPRESS_ZIP,
     prefixSlash,
     baseNm,
     dirNm,
@@ -481,6 +492,8 @@ class Repo:
     def newRelease(self):
         if not self.makeZip():
             return False
+
+        return True
 
         conn = self.connect()
 
@@ -858,6 +871,9 @@ class Checkout:
     def isOffline(self):
         return self.local in {"clone", "local"}
 
+    def isExpress(self):
+        return self.local is None and not self.commitChk and self.releaseChk == ""
+
     def __init__(
         self,
         backend,
@@ -890,7 +906,6 @@ class Checkout:
         self.dest = dest
         (self.commitChk, self.releaseChk, self.local) = self.fromString(checkout)
         clone = self.isClone()
-        offline = self.isOffline()
 
         relative = prefixSlash(relative)
         self.relative = relative
@@ -928,16 +943,14 @@ class Checkout:
         self.localBase = False
         self.localDir = None
 
+        self.connected = False
+
         if clone:
             self.commitOff = None
             self.releaseOff = None
         else:
             self.fixInfo()
             self.readInfo()
-
-        if not offline:
-            self.connect()
-            self.fetchInfo()
 
     def login(self):
         onGithub = self.onGithub
@@ -1107,13 +1120,53 @@ class Checkout:
         _browse = self._browse
         backend = self.backend
         label = self.label
+
+        isExpr = self.isExpress()
+
+        if isExpr:
+            success = self.downloadComplete()
+            if success:
+                self.localBase = self.baseLocal
+                self.localDir = self.dataPath
+                state = "latest release"
+                offString = self.toString(
+                    self.commitOff,
+                    self.releaseOff,
+                    self.local,
+                    backend,
+                    dest=self.dest,
+                    source=self.source,
+                )
+                labelEsc = htmlEsc(label)
+                stateEsc = htmlEsc(state)
+                offEsc = htmlEsc(offString)
+                loc = f"{self.localBase}/{self.localDir}{self.versionRep}"
+                locRep = ux(loc)
+                locEsc = htmlEsc(locRep)
+                if _browse:
+                    self.info(
+                        f"Using {label} in {self.localBase}/{self.localDir}{self.versionRep}:"
+                    )
+                    self.info(f"\t{offString} ({state})")
+                else:
+                    self.display(
+                        (
+                            f'<b title="{stateEsc}">{labelEsc}:</b>'
+                            f' <span title="{offEsc}">{locEsc}</span>'
+                        ),
+                        f"{label}: {locRep}",
+                    )
+                return
+
+        self.fetchInfo()
+
         offline = self.isOffline()
         clone = self.isClone()
 
-        cOff = self.commitOff
-        rOff = self.releaseOff
         cChk = self.commitChk
         rChk = self.releaseChk
+        cOff = self.commitOff
+        rOff = self.releaseOff
         cOn = self.commitOn
         rOn = self.releaseOn
         rcOn = self.releaseCommitOn
@@ -1208,7 +1261,6 @@ class Checkout:
                         self.error("No online connection")
                 elif not isOnline:
                     self.error(f"The requested {label} is not available online")
-                    self.error("C")
                 else:
                     self.localBase = self.baseLocal if self.download() else False
 
@@ -1260,6 +1312,116 @@ class Checkout:
                     ),
                     f"{label}: {locRep}",
                 )
+
+    @staticmethod
+    def getFinalUrl(url):
+        finalUrl = None
+        msg = None
+
+        try:
+            response = ur.urlopen(url)
+            finalUrl = response.geturl()
+        except HTTPError as e:
+            msg = str(e)
+
+        return (False, msg) if finalUrl is None else (True, finalUrl)
+
+    @staticmethod
+    def retrieve(url):
+        response = None
+        msg = None
+
+        try:
+            response = ur.urlopen(url)
+            status = response.status
+        except HTTPError as e:
+            msg = str(e)
+            status = 500
+
+        if status != 200:
+            result = (False, status, msg or "ERROR")
+        else:
+            data = response.read()
+            result = (True, status, data)
+
+        return result
+
+    def downloadComplete(self):
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+        backend = self.backend
+        org = self.org
+        repo = self.repo
+        bUrl = backendRep(backend, "url")
+        repoUrl = f"{bUrl}/{org}/{repo}"
+        releaseUrlPre = (
+            f"{repoUrl}/releases/latest"
+            if backend == GH
+            else f"{repoUrl}/-/releases/permalink/latest"
+        )
+        (good, info) = self.getFinalUrl(releaseUrlPre)
+        if not good:
+            console(f"Cannot follow {releaseUrlPre}: {info}", error=True)
+            return False
+
+        releaseUrl = info
+        releaseOn = releaseUrl.rstrip("/").split("/")[-1]
+        self.releaseOn = releaseOn
+        releaseOff = self.releaseOff
+        if releaseOff == releaseOn:
+            self.display(
+                f"Status: latest release online <b>{releaseOn}</b> is locally available",
+                f"Status: latest release online {releaseOn} is locally available",
+            )
+            return True
+
+        self.display(
+            f"Status: latest release online <b>{releaseOn}</b> versus "
+            f"<b>{releaseOff}</b> locally",
+            f"Status: latest release online {releaseOn} versus "
+            f"{releaseOff} locally",
+        )
+        self.display(
+            "downloading app, main data and requested additions ...",
+            "downloading app, main data and requested additions ...",
+        )
+        patt = "/tag/" if backend == GH else "/releases/"
+        subst = "/download/" if backend == GH else "/archive/"
+        assetUrl = releaseUrl.replace(patt, subst) + f"/{APP_EXPRESS_ZIP}"
+
+        if backend != GH:
+            # At the moment GitLab offers a zip of the whole
+            # repo when complete.zip is not attached.
+            # That zip file is not useful.
+            return False
+
+        try:
+            r = requests.get(assetUrl, allow_redirects=True)
+            zf = r.content
+            zf = io.BytesIO(zf)
+        except Exception as e:
+            msg = f"\t{str(e)}\n\tcould not download {APP_EXPRESS_ZIP}"
+            self.possibleError(msg, True, again=True)
+            return False
+
+        cwd = getCwd()
+        destZip = self.baseLocal
+
+        try:
+            z = ZipFile(zf)
+            if not dirExists(destZip):
+                dirMake(destZip)
+            chDir(destZip)
+            z.extractall()
+            dirRemove("__MACOSX")
+        except Exception as e:
+            msg = f"\tcould not save corpus data to {destZip}"
+            console(str(e), error=True)
+            self.possibleError(msg, showErrors=True, again=True)
+            chDir(cwd)
+            return False
+
+        return True
 
     def download(self):
         cChk = self.commitChk
@@ -1662,6 +1824,14 @@ class Checkout:
         return c.sha if onGithub else c.id
 
     def fetchInfo(self):
+        if self.isOffline():
+            return
+
+        if self.connected:
+            return
+
+        self.connect()
+
         g = self.repoOnline
         if not g:
             return
@@ -1677,6 +1847,8 @@ class Checkout:
             result = self.getCommit(self.commitChk)
             if result:
                 self.commitOn = result
+
+        self.connected = True
 
     def fixInfo(self):
         sDir = self.dirPathLocal
@@ -1702,13 +1874,15 @@ class Checkout:
                     if release:
                         self.releaseOff = release
 
-    def writeInfo(self):
+    def writeInfo(self, release=None, commit=None):
+        releaseOff = self.releaseOff if release is None else release
+        commitOff = self.commitOff if commit is None else commit
         dirMake(self.dirPathLocal)
         with open(self.filePathLocal, "w", encoding="utf8") as f:
-            if self.releaseOff:
-                f.write(f"{self.releaseOff}\n")
-            if self.commitOff:
-                f.write(f"{self.commitOff}\n")
+            if releaseOff:
+                f.write(f"{releaseOff}\n")
+            if commitOff:
+                f.write(f"{commitOff}\n")
 
 
 def checkoutRepo(

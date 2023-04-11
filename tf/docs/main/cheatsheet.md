@@ -991,6 +991,16 @@ A.export(results, ...)
 
 ---
 
+## Export to ZIP
+
+``` python
+A.zipAll()
+```
+:   store the complete corpus data in a file *complete.zip*
+:   `tf.advanced.zipdata.zipAll`
+
+---
+
 ## Interchange with external annotation tools
 
 ``` python
