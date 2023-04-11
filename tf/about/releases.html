@@ -33,15 +33,67 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="113">11.3</h3>
-<h3 id="1131-upcoming">11.3.1 (upcoming)</h3>
-<p>2023-03-??</p>
+<h3 id="1131">11.3.1</h3>
+<p>2023-04-11</p>
 <ul>
-<li>Fix: <code>open()</code> statements should specify the <code>encoding="utf8"</code>, otherwise
+<li>
+<p>GitHub API Rate Limit avoidance</p>
+<ul>
+<li>TF first tries to download requested data without using the GitHub API.
+This happens when you request the latest release of a corpus.
+All data specified in the corpus app (the app itself, the main data,
+the standard module data for that corpus, the graphics files if the corpus
+needs them) are expected in the file <code>complete.zip</code> which should be
+attached to the latest release on Github.
+TF can find that file and download it without any API access.</li>
+<li>There is a new function <code>A.zipAll()</code> that zips all corpus data into
+a file <code>complete.zip</code>, which you can attach to a release.</li>
+<li>This file can also be unzipped in your text-fabric-data directory.</li>
+</ul>
+</li>
+<li>
+<p>TEI to TF converter:</p>
+<ul>
+<li>Fix: better console output when running the the check task.</li>
+<li>Improvement: detect when tags are being used in multiple namespaces.</li>
+<li>Improvement: you can configure the names of the section levels and features.</li>
+<li>Change: more straightforward dealing with empty elements: all empty elements
+get an empty slot, and care is being taken that these slots end up within
+the section structure and not strangely outside it.</li>
+</ul>
+</li>
+<li>
+<p>Walker converter</p>
+<ul>
+<li>Fix in cv.linked(): the slots are returned sorted. If during the walk you linked
+slots to nodes by cv.link(), the order of linking the slots might not be the
+order of the slots in the text. So, cv.linked() has to sort the slots before
+returning.</li>
+</ul>
+</li>
+<li>
+<p>Display in TF browser and in Notebooks:</p>
+<ul>
+<li>Fix: a deliberate newline in feature values is translated to a <code>&lt;br&gt;</code> element,
+so that you see a line-break.</li>
+<li>Fix: in the TF-browser, if not default text format is configured, the default
+<code>text-orig-full</code> will be taken.</li>
+</ul>
+</li>
+<li>
+<p>Fix: <code>open()</code> statements should specify the <code>encoding="utf8"</code>, otherwise
 a non utf8 encoding may be used on Windows.
 I
 [knew}(<a href="https://annotation.github.io/text-fabric/tf/about/releasesold.html#7102">https://annotation.github.io/text-fabric/tf/about/releasesold.html#7102</a>)
 this, but in later code I have forgotten this.
-Thanks to Saulo de Oliveira Cantanhêde for reporting this.</li>
+Thanks to Saulo de Oliveira Cantanhêde for reporting this.</p>
+</li>
+<li>
+<p>Fix: bumped the version requirement for Python to 3.9.</p>
+</li>
+<li>Fix: Text-Fabric should not print the full-path to your home directory,
+but replace it with a <code>~</code>. There were some cases where this escaping was
+not successfully applied, e.g. in <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code>.</li>
 </ul>
 <h3 id="1130">11.3.0</h3>
 <p>2023-03-23</p>
@@ -262,7 +314,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -336,7 +388,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#113">11.3</a></li>
-<li><a href="#1131-upcoming">11.3.1 (upcoming)</a></li>
+<li><a href="#1131">11.3.1</a></li>
 <li><a href="#1130">11.3.0</a></li>
 <li><a href="#112">11.2</a></li>
 <li><a href="#1123">11.2.3</a></li>

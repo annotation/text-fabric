@@ -26,26 +26,33 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/advanced/zipdata.py#L1-L239" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L1-L417" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
+import types
 from zipfile import ZipFile
 
-from .helpers import splitModRef
+from .helpers import splitModRef, run
 from ..parameters import ZIP_OPTIONS, RELATIVE
 from ..core.helpers import console
 from ..core.files import (
     normpath,
     expanduser as ex,
+    unexpanduser as ux,
     backendRep,
     DOWNLOADS,
     TEMP_DIR,
+    APP_APP,
+    APP_EXPRESS_ZIP,
+    EXPRESS_SYNC,
     prefixSlash,
     dirExists,
+    dirMake,
     scanDir,
     initTree,
 )
 
+HOME = ex(&#34;~&#34;)
 DW = ex(DOWNLOADS)
 
 __pdoc__ = {}
@@ -84,7 +91,195 @@ and the are named *relative*-*version*.zip
 
 &#34;&#34;&#34;
 
-EXCLUDE = {&#34;.DS_Store&#34;}
+EXCLUDE = {&#34;.DS_Store&#34;, &#34;.tf&#34;, &#34;__pycache__&#34;, &#34;_local&#34;, &#34;_temp&#34;, &#34;.ipynb_checkpoints&#34;}
+
+
+def zipApi(app):
+    &#34;&#34;&#34;Produce the zip creation API.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    &#34;&#34;&#34;
+
+    app.zipAll = types.MethodType(zipAll, app)
+
+
+def zipAll(app):
+    &#34;&#34;&#34;Gathers all data for a TF resource and zips it into one file.
+
+    The data gathered is:
+
+    *   the app
+    *   the main data module
+    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
+    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+
+    The data will be zipped in a file complete.zip which can be unpacked
+    in the ~/text-fabric-data directory.
+
+    !!! Hint
+        You can attach this file straight to the latest release of of dataset
+        on GitHub. This makes that users can download the dataset from GitHub
+        without problems such as bumping against the GitHub API rate limit.
+
+    !!! Caution
+        All data should reside on the same backend.
+
+    !!! Note &#34;checkout files&#34;
+        There will be `__checkout__.txt` files included in the zip file,
+        so that after unpacking Text-Fabric detects from which release the data is
+        coming.
+
+    Parameters
+    ----------
+    app: object
+        A loaded text-fabric datasource
+    &#34;&#34;&#34;
+    context = app.context
+
+    backend = app.backend
+    base = backendRep(backend, &#34;clone&#34;)
+    org = context.org
+    repo = context.repo
+    relative = context.relative
+    relative = prefixSlash(normpath(relative))
+    version = context.version
+
+    graphics = context.graphicsRelative
+    graphics = prefixSlash(normpath(graphics))
+
+    prov = context.provenanceSpec
+    mods = prov.get(&#34;moduleSpecs&#34;, [])
+
+    repoDir = f&#34;{base}/{org}/{repo}&#34;
+
+    dataItems = [
+        (&#34;app&#34;, f&#34;{repoDir}/{APP_APP}&#34;),
+        (&#34;main data&#34;, f&#34;{repoDir}{relative}/{version}&#34;),
+    ]
+    if graphics:
+        dataItems.append((&#34;graphics&#34;, f&#34;{repoDir}{graphics}&#34;))
+
+    good = True
+
+    for mod in mods:
+        mbackend = mod[&#34;backend&#34;]
+        if mbackend is None:
+            mbackend = app.backend
+        mbase = backendRep(mbackend, &#34;clone&#34;)
+        morg = mod[&#34;org&#34;]
+        mrepo = mod[&#34;repo&#34;]
+        mrelative = mod[&#34;relative&#34;]
+        mrelative = prefixSlash(normpath(mrelative))
+        mrepoDir = f&#34;{mbase}/{morg}/{mrepo}&#34;
+        labelItems = []
+        if mbase != base:
+            labelItems.append(mbase)
+        if morg != org:
+            labelItems.append(morg)
+        if mrepo != repo:
+            labelItems.append(mrepo)
+        if mrelative != relative:
+            labelItems.append(mrelative)
+        label = &#34;-&#34;.join(labelItems)
+        if mbase != base:
+            good = False
+            console(f&#34;ERROR: module {label} not on expected backend {backend}&#34;)
+        dataItems.append((f&#34;module {label}&#34;, f&#34;{mrepoDir}{mrelative}/{version}&#34;))
+
+    if not good:
+        return
+
+    destBase = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
+    dest = normpath(f&#34;{destBase}/{org}/{repo}&#34;)
+    destFile = f&#34;{dest}/{APP_EXPRESS_ZIP}&#34;
+
+    console(&#34;Data to be zipped:&#34;)
+    results = []
+
+    for (label, path) in dataItems:
+        if dirExists(path):
+            (release, commit) = addCheckout(path)
+            checkout = f&#34;({release or &#39;v??&#39;} {commit[-6:] if commit else &#39;??&#39;})&#34;
+            zipBase = path.removeprefix(f&#34;{base}/&#34;)
+            collectFiles(path, &#34;&#34;, results, zipBase=zipBase)
+            status = &#34;OK&#34;
+        else:
+            good = False
+            status = &#34;missing&#34;
+            checkout = &#34;(??)&#34;
+        console(f&#34;\t{status:&lt;8} {label:&lt;24} {checkout:&lt;20}: {path}&#34;)
+
+    if not good:
+        return
+
+    if not dirExists(dest):
+        dirMake(dest)
+    console(&#34;Writing zip file ...&#34;)
+    with ZipFile(destFile, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
+        for (internalPath, path) in sorted(results):
+            zipFile.write(
+                path,
+                arcname=internalPath,
+            )
+    console(f&#34;Result: {ux(destFile)}&#34;)
+
+
+def addCheckout(path):
+    release = None
+    commit = None
+
+    (good, gitInfo, stdErr) = run(&#34;git describe --tags --abbrev=1000 --long&#34;, workDir=path)
+    if good:
+        (release, n, commit) = [x.strip() for x in gitInfo.split(&#34;-&#34;, 2)]
+    else:
+        if &#34;cannot describe&#34; in stdErr.lower():
+            console(&#34;WARNING: no local release info found.&#34;, error=True)
+            console(&#34;Maybe you have to do go to this repo and do `git pull --tags`&#34;)
+            console(&#34;We&#39;ll fetch the local commit info anyway.&#34;)
+            (good, gitInfo, stdErr) = run(&#34;git rev-parse HEAD&#34;, workDir=path)
+            if good:
+                commit = gitInfo
+            else:
+                console(stdErr, error=True)
+        else:
+            console(stdErr, error=True)
+
+    if release is not None or commit is not None:
+        with open(f&#34;{path}/{EXPRESS_SYNC}&#34;, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            if release is not None:
+                fh.write(f&#34;{release}\n&#34;)
+            if commit is not None:
+                fh.write(f&#34;{commit}\n&#34;)
+    return (release, commit)
+
+
+def collectFiles(base, path, results, zipBase=None):
+    if zipBase is None:
+        zipBase = base
+
+    sep = &#34;/&#34; if path else &#34;&#34;
+    thisPath = f&#34;{base}{sep}{path}&#34; if path else base
+    internalBase = f&#34;{zipBase}{sep}{path}&#34;
+    with scanDir(thisPath) as sd:
+        for e in sd:
+            name = e.name
+            if name in EXCLUDE:
+                continue
+            if e.is_file():
+                results.append((f&#34;{internalBase}/{name}&#34;, f&#34;{thisPath}/{name}&#34;))
+            elif e.is_dir():
+                collectFiles(base, f&#34;{path}{sep}{name}&#34;, results, zipBase=zipBase)
+
+
+def zipDataPart(source, results):
+    if not dirExists(source):
+        return (False, &#34;missing&#34;)
+    zipBase = source.removeprefix(f&#34;{HOME}/&#34;)
+    collectFiles(source, &#34;&#34;, results, zipBase=zipBase)
+    return (True, &#34;OK&#34;)
 
 
 def zipData(
@@ -190,23 +385,6 @@ def zipData(
                         arcname=featureFile,
                     )
     else:
-
-        def collectFiles(base, path, results):
-            thisPath = f&#34;{base}/{path}&#34; if path else base
-            # internalBase = f&#34;{relative}/{path}&#34; if path else relative
-            internalBase = path
-            with scanDir(thisPath) as sd:
-                for e in sd:
-                    name = e.name
-                    if name in EXCLUDE:
-                        continue
-                    if e.is_file():
-                        results.append(
-                            (f&#34;{internalBase}/{name}&#34;, f&#34;{base}/{path}/{name}&#34;)
-                        )
-                    elif e.is_dir():
-                        collectFiles(base, f&#34;{path}/{name}&#34;, results)
-
         results = []
         versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
         sourceDir = f&#34;{sourceDir}{versionRep}&#34;
@@ -276,6 +454,73 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.advanced.zipdata.addCheckout"><code class="name flex">
+<span>def <span class="ident">addCheckout</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L200-L226" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def addCheckout(path):
+    release = None
+    commit = None
+
+    (good, gitInfo, stdErr) = run(&#34;git describe --tags --abbrev=1000 --long&#34;, workDir=path)
+    if good:
+        (release, n, commit) = [x.strip() for x in gitInfo.split(&#34;-&#34;, 2)]
+    else:
+        if &#34;cannot describe&#34; in stdErr.lower():
+            console(&#34;WARNING: no local release info found.&#34;, error=True)
+            console(&#34;Maybe you have to do go to this repo and do `git pull --tags`&#34;)
+            console(&#34;We&#39;ll fetch the local commit info anyway.&#34;)
+            (good, gitInfo, stdErr) = run(&#34;git rev-parse HEAD&#34;, workDir=path)
+            if good:
+                commit = gitInfo
+            else:
+                console(stdErr, error=True)
+        else:
+            console(stdErr, error=True)
+
+    if release is not None or commit is not None:
+        with open(f&#34;{path}/{EXPRESS_SYNC}&#34;, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            if release is not None:
+                fh.write(f&#34;{release}\n&#34;)
+            if commit is not None:
+                fh.write(f&#34;{commit}\n&#34;)
+    return (release, commit)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.zipdata.collectFiles"><code class="name flex">
+<span>def <span class="ident">collectFiles</span></span>(<span>base, path, results, zipBase=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L229-L244" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def collectFiles(base, path, results, zipBase=None):
+    if zipBase is None:
+        zipBase = base
+
+    sep = &#34;/&#34; if path else &#34;&#34;
+    thisPath = f&#34;{base}{sep}{path}&#34; if path else base
+    internalBase = f&#34;{zipBase}{sep}{path}&#34;
+    with scanDir(thisPath) as sd:
+        for e in sd:
+            name = e.name
+            if name in EXCLUDE:
+                continue
+            if e.is_file():
+                results.append((f&#34;{internalBase}/{name}&#34;, f&#34;{thisPath}/{name}&#34;))
+            elif e.is_dir():
+                collectFiles(base, f&#34;{path}{sep}{name}&#34;, results, zipBase=zipBase)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.zipdata.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>cargs=['/Library/Frameworks/Python.framework/Versions/3.11/bin/pdoc3', '--force', '--html', '--output-dir', 'site', '--template-dir', 'tf/docs/templates', 'tf'])</span>
 </code></dt>
@@ -304,7 +549,7 @@ and the are named <em>relative</em>-<em>version</em>.zip
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/advanced/zipdata.py#L196-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L374-L410" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     if len(cargs) &lt; 2 or any(
@@ -345,6 +590,194 @@ and the are named <em>relative</em>-<em>version</em>.zip
     zipData(theBackend or backend, org, repo, relative=relative, tf=tf)</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.zipdata.zipAll"><code class="name flex">
+<span>def <span class="ident">zipAll</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gathers all data for a TF resource and zips it into one file.</p>
+<p>The data gathered is:</p>
+<ul>
+<li>the app</li>
+<li>the main data module</li>
+<li>all modules mentioned in the moduleSpecs in the provenanceSpec of the app</li>
+<li>all graphics data mentioned in the graphicsRelative of the provenanceSpec</li>
+</ul>
+<p>The data will be zipped in a file complete.zip which can be unpacked
+in the ~/text-fabric-data directory.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>You can attach this file straight to the latest release of of dataset
+on GitHub. This makes that users can download the dataset from GitHub
+without problems such as bumping against the GitHub API rate limit.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>All data should reside on the same backend.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">checkout files</p>
+<p>There will be <code>__checkout__.txt</code> files included in the zip file,
+so that after unpacking Text-Fabric detects from which release the data is
+coming.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>A loaded text-fabric datasource</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L79-L197" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def zipAll(app):
+    &#34;&#34;&#34;Gathers all data for a TF resource and zips it into one file.
+
+    The data gathered is:
+
+    *   the app
+    *   the main data module
+    *   all modules mentioned in the moduleSpecs in the provenanceSpec of the app
+    *   all graphics data mentioned in the graphicsRelative of the provenanceSpec
+
+    The data will be zipped in a file complete.zip which can be unpacked
+    in the ~/text-fabric-data directory.
+
+    !!! Hint
+        You can attach this file straight to the latest release of of dataset
+        on GitHub. This makes that users can download the dataset from GitHub
+        without problems such as bumping against the GitHub API rate limit.
+
+    !!! Caution
+        All data should reside on the same backend.
+
+    !!! Note &#34;checkout files&#34;
+        There will be `__checkout__.txt` files included in the zip file,
+        so that after unpacking Text-Fabric detects from which release the data is
+        coming.
+
+    Parameters
+    ----------
+    app: object
+        A loaded text-fabric datasource
+    &#34;&#34;&#34;
+    context = app.context
+
+    backend = app.backend
+    base = backendRep(backend, &#34;clone&#34;)
+    org = context.org
+    repo = context.repo
+    relative = context.relative
+    relative = prefixSlash(normpath(relative))
+    version = context.version
+
+    graphics = context.graphicsRelative
+    graphics = prefixSlash(normpath(graphics))
+
+    prov = context.provenanceSpec
+    mods = prov.get(&#34;moduleSpecs&#34;, [])
+
+    repoDir = f&#34;{base}/{org}/{repo}&#34;
+
+    dataItems = [
+        (&#34;app&#34;, f&#34;{repoDir}/{APP_APP}&#34;),
+        (&#34;main data&#34;, f&#34;{repoDir}{relative}/{version}&#34;),
+    ]
+    if graphics:
+        dataItems.append((&#34;graphics&#34;, f&#34;{repoDir}{graphics}&#34;))
+
+    good = True
+
+    for mod in mods:
+        mbackend = mod[&#34;backend&#34;]
+        if mbackend is None:
+            mbackend = app.backend
+        mbase = backendRep(mbackend, &#34;clone&#34;)
+        morg = mod[&#34;org&#34;]
+        mrepo = mod[&#34;repo&#34;]
+        mrelative = mod[&#34;relative&#34;]
+        mrelative = prefixSlash(normpath(mrelative))
+        mrepoDir = f&#34;{mbase}/{morg}/{mrepo}&#34;
+        labelItems = []
+        if mbase != base:
+            labelItems.append(mbase)
+        if morg != org:
+            labelItems.append(morg)
+        if mrepo != repo:
+            labelItems.append(mrepo)
+        if mrelative != relative:
+            labelItems.append(mrelative)
+        label = &#34;-&#34;.join(labelItems)
+        if mbase != base:
+            good = False
+            console(f&#34;ERROR: module {label} not on expected backend {backend}&#34;)
+        dataItems.append((f&#34;module {label}&#34;, f&#34;{mrepoDir}{mrelative}/{version}&#34;))
+
+    if not good:
+        return
+
+    destBase = f&#34;{DW}/{backendRep(backend, &#39;norm&#39;)}&#34;
+    dest = normpath(f&#34;{destBase}/{org}/{repo}&#34;)
+    destFile = f&#34;{dest}/{APP_EXPRESS_ZIP}&#34;
+
+    console(&#34;Data to be zipped:&#34;)
+    results = []
+
+    for (label, path) in dataItems:
+        if dirExists(path):
+            (release, commit) = addCheckout(path)
+            checkout = f&#34;({release or &#39;v??&#39;} {commit[-6:] if commit else &#39;??&#39;})&#34;
+            zipBase = path.removeprefix(f&#34;{base}/&#34;)
+            collectFiles(path, &#34;&#34;, results, zipBase=zipBase)
+            status = &#34;OK&#34;
+        else:
+            good = False
+            status = &#34;missing&#34;
+            checkout = &#34;(??)&#34;
+        console(f&#34;\t{status:&lt;8} {label:&lt;24} {checkout:&lt;20}: {path}&#34;)
+
+    if not good:
+        return
+
+    if not dirExists(dest):
+        dirMake(dest)
+    console(&#34;Writing zip file ...&#34;)
+    with ZipFile(destFile, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
+        for (internalPath, path) in sorted(results):
+            zipFile.write(
+                path,
+                arcname=internalPath,
+            )
+    console(f&#34;Result: {ux(destFile)}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.zipdata.zipApi"><code class="name flex">
+<span>def <span class="ident">zipApi</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produce the zip creation API.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>obj</code></dt>
+<dd>The high-level API object</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L67-L76" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def zipApi(app):
+    &#34;&#34;&#34;Produce the zip creation API.
+
+    Parameters
+    ----------
+    app: obj
+        The high-level API object
+    &#34;&#34;&#34;
+
+    app.zipAll = types.MethodType(zipAll, app)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.zipdata.zipData"><code class="name flex">
 <span>def <span class="ident">zipData</span></span>(<span>backend, org, repo, relative='tf', version=None, tf=True, keep=True, source=None, dest=None)</span>
 </code></dt>
@@ -377,7 +810,7 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/advanced/zipdata.py#L60-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L255-L371" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipData(
     backend,
@@ -482,23 +915,6 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
                         arcname=featureFile,
                     )
     else:
-
-        def collectFiles(base, path, results):
-            thisPath = f&#34;{base}/{path}&#34; if path else base
-            # internalBase = f&#34;{relative}/{path}&#34; if path else relative
-            internalBase = path
-            with scanDir(thisPath) as sd:
-                for e in sd:
-                    name = e.name
-                    if name in EXCLUDE:
-                        continue
-                    if e.is_file():
-                        results.append(
-                            (f&#34;{internalBase}/{name}&#34;, f&#34;{base}/{path}/{name}&#34;)
-                        )
-                    elif e.is_dir():
-                        collectFiles(base, f&#34;{path}/{name}&#34;, results)
-
         results = []
         versionRep = f&#34;/{version}&#34; if version else &#34;&#34;
         sourceDir = f&#34;{sourceDir}{versionRep}&#34;
@@ -513,6 +929,24 @@ the backend: <code>~/Downloads/github</code>, <code>~/Downloads/gitlab</code>, e
                     path,
                     arcname=internalPath,
                 )</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.zipdata.zipDataPart"><code class="name flex">
+<span>def <span class="ident">zipDataPart</span></span>(<span>source, results)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/zipdata.py#L247-L252" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def zipDataPart(source, results):
+    if not dirExists(source):
+        return (False, &#34;missing&#34;)
+    zipBase = source.removeprefix(f&#34;{HOME}/&#34;)
+    collectFiles(source, &#34;&#34;, results, zipBase=zipBase)
+    return (True, &#34;OK&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -583,9 +1017,14 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="tf.advanced.zipdata.addCheckout" href="#tf.advanced.zipdata.addCheckout">addCheckout</a></code></li>
+<li><code><a title="tf.advanced.zipdata.collectFiles" href="#tf.advanced.zipdata.collectFiles">collectFiles</a></code></li>
 <li><code><a title="tf.advanced.zipdata.main" href="#tf.advanced.zipdata.main">main</a></code></li>
+<li><code><a title="tf.advanced.zipdata.zipAll" href="#tf.advanced.zipdata.zipAll">zipAll</a></code></li>
+<li><code><a title="tf.advanced.zipdata.zipApi" href="#tf.advanced.zipdata.zipApi">zipApi</a></code></li>
 <li><code><a title="tf.advanced.zipdata.zipData" href="#tf.advanced.zipdata.zipData">zipData</a></code></li>
+<li><code><a title="tf.advanced.zipdata.zipDataPart" href="#tf.advanced.zipdata.zipDataPart">zipDataPart</a></code></li>
 </ul>
 </li>
 </ul>

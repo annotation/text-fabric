@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/advanced/render.py#L1-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/render.py#L1-L546" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -565,7 +565,7 @@ def _getFeatures(info, n, nType):
                     None if value in noneValues else htmlEsc(value or &#34;&#34;, math=showMath)
                 )
                 if value is not None:
-                    value = value.replace(&#34;\n&#34;, &#34;&lt;br/&gt;&#34;)
+                    value = value.replace(&#34;\n&#34;, &#34;\\n&lt;br&gt;&#34;)
                     if value.endswith(&#34; &#34;):
                         value = value[0:-1] + NBSP
                     isBare = i &lt; bFeatures
@@ -605,7 +605,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/advanced/render.py#L28-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/advanced/render.py#L28-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;

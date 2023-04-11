@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/nbconvert.py#L1-L232" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/tools/nbconvert.py#L1-L255" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 import re
@@ -45,9 +45,11 @@ HELP = &#34;&#34;&#34;
 nbconvert inputDir [outputDir]
 ```
 
-Two modes:
+Several modes:
 
-1. If outputDir is given:
+Copy mode
+---------
+If outputDir is given and not equal to &#34;-&#34;:
 
 Converts all `.ipynb` files in *inputDir* to `.html` files in *outputDir*.
 Copies all other files in *inputDir* to *outputDir*.
@@ -56,7 +58,19 @@ If *outputDir* does not exist, it will be created.
 Makes sure that all links in the resulting html to one of the
 original `.ipynb` files are transformed in links to the converted `.html` files.
 
-2. Without outputDir
+In place mode
+-------------
+If outputDir is given and equal to &#34;-&#34;:
+
+Converts all `.ipynb` files in *inputDir* to `.html` files next to their originals.
+Overwrites existing html names with the same name.
+
+Makes sure that all links in the resulting html to one of the
+original `.ipynb` files are transformed in links to the converted `.html` files.
+
+Index mode
+----------
+Without outputDir
 
 Generates an index.html file in inputDir with links
 to all html files that can be recursively found inside the inputDir.
@@ -83,6 +97,7 @@ def task(*args):
         return 1
 
     if len(args) == 1:
+        console(&#34;INDEX MODE&#34;)
         makeIndex(inputDir)
     else:
         convertDir(inputDir, args[1])
@@ -164,7 +179,11 @@ def makeIndex(inputDir):
 
 
 def convertDir(inputDir, outputDir):
-    initTree(outputDir, fresh=True)
+    inPlace = outputDir == &#34;-&#34;
+    console(&#34;IN PLACE MODE&#34; if inPlace else &#34;COPY MODE&#34;)
+
+    if not inPlace:
+        initTree(outputDir, fresh=True)
 
     convertedNotebooks = []
 
@@ -173,8 +192,10 @@ def convertDir(inputDir, outputDir):
 
     def doSubDir(path):
         subInputDir = inputDir if path == &#34;&#34; else f&#34;{inputDir}/{path}&#34;
-        subOutputDir = outputDir if path == &#34;&#34; else f&#34;{outputDir}/{path}&#34;
-        initTree(subOutputDir)
+
+        if not inPlace:
+            subOutputDir = outputDir if path == &#34;&#34; else f&#34;{outputDir}/{path}&#34;
+            initTree(subOutputDir)
 
         theseNotebooks = []
 
@@ -189,18 +210,20 @@ def convertDir(inputDir, outputDir):
                 elif name.endswith(NB_EXT):
                     theseNotebooks.append(name)
                 else:
-                    fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
+                    if not inPlace:
+                        fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
 
         if len(theseNotebooks):
             command = &#34;jupyter nbconvert --to html&#34;
             inFiles = &#34; &#34;.join(
                 f&#34;{subInputDir}/{escapeSpace(name)}&#34; for name in theseNotebooks
             )
-            commandLine = f&#34;{command} --output-dir={subOutputDir} {inFiles}&#34;
+            destDir = subInputDir if inPlace else subOutputDir
+            commandLine = f&#34;{command} --output-dir={destDir} {inFiles}&#34;
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
                 convertedNotebooks.append(
-                    (subOutputDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
+                    (destDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
                 )
 
     doSubDir(&#34;&#34;)
@@ -277,10 +300,14 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/nbconvert.py#L136-L216" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/tools/nbconvert.py#L151-L239" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertDir(inputDir, outputDir):
-    initTree(outputDir, fresh=True)
+    inPlace = outputDir == &#34;-&#34;
+    console(&#34;IN PLACE MODE&#34; if inPlace else &#34;COPY MODE&#34;)
+
+    if not inPlace:
+        initTree(outputDir, fresh=True)
 
     convertedNotebooks = []
 
@@ -289,8 +316,10 @@ if __name__ == &#34;__main__&#34;:
 
     def doSubDir(path):
         subInputDir = inputDir if path == &#34;&#34; else f&#34;{inputDir}/{path}&#34;
-        subOutputDir = outputDir if path == &#34;&#34; else f&#34;{outputDir}/{path}&#34;
-        initTree(subOutputDir)
+
+        if not inPlace:
+            subOutputDir = outputDir if path == &#34;&#34; else f&#34;{outputDir}/{path}&#34;
+            initTree(subOutputDir)
 
         theseNotebooks = []
 
@@ -305,18 +334,20 @@ if __name__ == &#34;__main__&#34;:
                 elif name.endswith(NB_EXT):
                     theseNotebooks.append(name)
                 else:
-                    fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
+                    if not inPlace:
+                        fileCopy(f&#34;{subInputDir}/{name}&#34;, f&#34;{subOutputDir}/{name}&#34;)
 
         if len(theseNotebooks):
             command = &#34;jupyter nbconvert --to html&#34;
             inFiles = &#34; &#34;.join(
                 f&#34;{subInputDir}/{escapeSpace(name)}&#34; for name in theseNotebooks
             )
-            commandLine = f&#34;{command} --output-dir={subOutputDir} {inFiles}&#34;
+            destDir = subInputDir if inPlace else subOutputDir
+            commandLine = f&#34;{command} --output-dir={destDir} {inFiles}&#34;
             run(commandLine, shell=True)
             for thisNotebook in theseNotebooks:
                 convertedNotebooks.append(
-                    (subOutputDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
+                    (destDir, thisNotebook.replace(NB_EXT, &#34;&#34;))
                 )
 
     doSubDir(&#34;&#34;)
@@ -370,7 +401,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/nbconvert.py#L219-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/tools/nbconvert.py#L242-L248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     args = sys.argv[1:]
@@ -389,7 +420,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/nbconvert.py#L61-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/tools/nbconvert.py#L76-L148" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(inputDir):
     htmlStart = dedent(
@@ -472,18 +503,22 @@ if __name__ == &#34;__main__&#34;:
 <dd>
 <div class="desc"><pre><code class="language-sh">nbconvert inputDir [outputDir]
 </code></pre>
-<p>Two modes:</p>
-<ol>
-<li>If outputDir is given:</li>
-</ol>
+<p>Several modes:</p>
+<h2 id="copy-mode">Copy Mode</h2>
+<p>If outputDir is given and not equal to "-":</p>
 <p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files in <em>outputDir</em>.
 Copies all other files in <em>inputDir</em> to <em>outputDir</em>.
 If <em>outputDir</em> does not exist, it will be created.</p>
 <p>Makes sure that all links in the resulting html to one of the
 original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
-<ol>
-<li>Without outputDir</li>
-</ol>
+<h2 id="in-place-mode">In Place Mode</h2>
+<p>If outputDir is given and equal to "-":</p>
+<p>Converts all <code>.ipynb</code> files in <em>inputDir</em> to <code>.html</code> files next to their originals.
+Overwrites existing html names with the same name.</p>
+<p>Makes sure that all links in the resulting html to one of the
+original <code>.ipynb</code> files are transformed in links to the converted <code>.html</code> files.</p>
+<h2 id="index-mode">Index Mode</h2>
+<p>Without outputDir</p>
 <p>Generates an index.html file in inputDir with links
 to all html files that can be recursively found inside the inputDir.</p>
 <p>Command switches</p>
@@ -493,7 +528,7 @@ to all html files that can be recursively found inside the inputDir.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/661b88da6b2837c3f0e94ddbe02ee7d5c1babf96/tf/tools/nbconvert.py#L49-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1cd488c1fea936c1c8356615dc78232ea6a7040e/tf/tools/nbconvert.py#L63-L73" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(*args):
     inputDir = args[0]
@@ -502,6 +537,7 @@ to all html files that can be recursively found inside the inputDir.</p>
         return 1
 
     if len(args) == 1:
+        console(&#34;INDEX MODE&#34;)
         makeIndex(inputDir)
     else:
         convertDir(inputDir, args[1])</code></pre>
