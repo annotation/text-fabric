@@ -24,9 +24,16 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 [annotation/banks](https://github.com/annotation/banks)
 :   *modern english*
-    Iain M. Banks, 1984 - 1987,
+    Iain M. Banks, 1954 - 2013,
     99 words from the SF novel
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
+    Dirk Roorda
+
+[annotation/mobydick](https://github.com/annotation/mobydick)
+:   *english*
+    Herman Melville, 1819 - 1891,
+    Novel, 1851;
+    converted from TEI in the Oxford Text Archive,
     Dirk Roorda
 
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
@@ -64,7 +71,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 ## [CLARIAH](https://github.com/CLARIAH)
 
-[CLARIAH/descartes](https://github.com/CLARIAH/wp6-missieven)
+[CLARIAH/descartes-tf](https://github.com/CLARIAH/descartes-tf)
 :   *French*, *Latin*, *Dutch* 
     Letters from and to Descartes, 1619 - 1650,
     **René Descartes - Correspondance**;
