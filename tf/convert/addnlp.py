@@ -2,7 +2,7 @@
 """
 
 from .recorder import Recorder
-from .myspacy import tokensAndSentences
+from ..tools.myspacy import tokensAndSentences
 from ..dataset import modify
 from ..core.helpers import console
 from ..core.files import initTree

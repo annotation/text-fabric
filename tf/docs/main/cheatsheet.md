@@ -1031,20 +1031,19 @@ T = TEI(...)
 
 ## NLP import
 
-**in order to use this, install Spacy, see `tf.convert.myspacy`**
+**in order to use this, install Spacy, see `tf.tools.myspacy`**
 
 ``` python
 
-from tf.convert.myspacy import tokensAndSentences
-from tf.convert.addnlp import generatePlain, ingest
+from tf.convert.addnlp import addTokensAndSentences
 ```
 
 ``` python
-(text, positions) = generateMain(A)
-(tokens, sentences) = tokensAndSentences(text)
-(node, slots, featureData) = ingest(positions, stream, tp, feature)
+newVersion = addTokensAndSenteces(A)
 ```
-:   prepare text to feed to NLP pipeline and ingest the results
+:   add tokens and sentences from NLP tool Spacy to an existing
+    TF dataset. See the docs how this is broken down in separate
+    steps.
 :   `tf.convert.addnlp`
 
 ---
