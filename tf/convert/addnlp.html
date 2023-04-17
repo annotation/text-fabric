@@ -27,13 +27,13 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L1-L484" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L1-L484" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 &#34;&#34;&#34;
 
 from .recorder import Recorder
-from .myspacy import tokensAndSentences
+from ..tools.myspacy import tokensAndSentences
 from ..dataset import modify
 from ..core.helpers import console
 from ..core.files import initTree
@@ -543,7 +543,7 @@ the repo, to the files <code>plain.txt</code> and <code>plain.txt.pos</code>.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L444-L484" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L444-L484" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def addTokensSentences(app, write=False):
     &#34;&#34;&#34;Creates a new version in a TF dataset with token and sentence nodes.
@@ -612,7 +612,7 @@ but without the <code>pre</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L11-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L11-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline:
     def __init__(self, app):
@@ -1056,7 +1056,7 @@ but without the <code>pre</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L288-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L288-L290" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def lingo(*args, **kwargs):
@@ -1105,7 +1105,7 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L27-L143" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L27-L143" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self, takeAways={&#34;note&#34;}, skips={}, write=False):
     &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -1294,7 +1294,7 @@ the element in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L145-L286" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L145-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(self, positions, stream, tp, features, nFeature=None, skipBlanks=False):
     &#34;&#34;&#34;Ingests a stream of NLP data and transforms it in nodes and a feature.
@@ -1501,7 +1501,7 @@ has the node of each sentence as value.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L292-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/addnlp.py#L292-L441" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestTokensAndSentences(
     self,
