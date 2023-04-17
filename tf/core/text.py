@@ -124,7 +124,21 @@ functions available by which you can make handy use of that information.
     your dataset, you can configure the right order in the *otext* feature, by means
     of a key `levels` with value a comma separated list of levels. Example:
 
-        @levels=tablet,face,column,line,case,cluster,quad,comment,sign
+    ```
+    @levels=tablet,face,column,line,case,cluster,quad,comment,sign
+    ```
+
+    If you only want to ensure that a certain type is smaller than other types,
+    you can add a key `levelConstraints` with a `;`-separated list of
+    constraints, where each constraint has the form
+
+    *smalller* `<` *bigger1*, *bigger2*, ...
+
+    Example:
+
+    ```
+    @levelConstraints=note < chunk, p ; opener < chunk
+    ```
 
 ## Book names and languages
 

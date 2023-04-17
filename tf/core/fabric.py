@@ -663,12 +663,12 @@ class FabricCore:
             )
         )
         todo = []
-        for (fName, data) in sorted(nodeFeatures.items()):
-            todo.append((fName, data, False, False))
-        for (fName, data) in sorted(edgeFeatures.items()):
-            todo.append((fName, data, True, False))
-        for (fName, data) in sorted(configFeatures.items()):
-            todo.append((fName, data, None, True))
+        for fName in sorted(nodeFeatures):
+            todo.append((fName, nodeFeatures[fName], False, False))
+        for fName in sorted(edgeFeatures):
+            todo.append((fName, edgeFeatures[fName], True, False))
+        for fName in sorted(configFeatures):
+            todo.append((fName, configFeatures[fName], None, True))
         total = collections.Counter()
         failed = collections.Counter()
         maxSlot = None

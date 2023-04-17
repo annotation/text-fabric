@@ -14,6 +14,7 @@ modify(
     mergeTypes=None,
     deleteTypes=None,
     addTypes=None,
+    replaceSlotType=None,
     featureMeta=None,
     silent="auto",
 )
@@ -23,6 +24,7 @@ modify(
 """
 
 import collections
+import functools
 
 from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
@@ -82,6 +84,7 @@ def modify(
     mergeTypes=None,
     deleteTypes=None,
     addTypes=None,
+    replaceSlotType=None,
     featureMeta=None,
     silent=SILENT_D,
 ):
@@ -104,6 +107,8 @@ def modify(
 
     The last two actions lead to a shifting of nodes, and all features that map
     them, will be shifted accordingly.
+
+    After all that, there is one remaining action that could be performed
 
     You can also pass meta data to be merged in.
 
@@ -364,6 +369,26 @@ def modify(
                     ),
                 ),
 
+    replaceSlotType: string, optional None
+        If passed, it should be a valid, non-slot node type.
+        The slot type will be replaced by this node type and the original slots will
+        be deleted.
+
+        When the original slot type gets replaced, the slot mapping of other nodes
+        needs to be adjusted. The new slots are a coarser division of the
+        corpus than the old slots. It might even be the case that the new slots
+        do not cover the corpus completely.
+
+        If other nodes are linked to slots that are not covered by the new slots,
+        these links are lost.
+        This may lead to nodes that do not have links to slots anymore.
+        These nodes will be lost, together with the feature values for these nodes
+        and the edges that involve these nodes.
+
+        Once the slot type is replaced, you may want to adapt the text formats in
+        the OTEXT feature. You can do so by passing appropriate values
+        in the `featureMeta` argument.
+
     featureMeta: dict, optional None
         If the features you have specified in one of the paramers above are new,
         do not forget to pass metadata for them in this  parameter
@@ -478,6 +503,7 @@ def modify(
         nonlocal origNodeFeatures
         nonlocal origEdgeFeatures
         nonlocal origMaxNode
+        nonlocal slotType
         nonlocal maxNode
         nonlocal shift
         nonlocal ePrefix
@@ -499,6 +525,7 @@ def modify(
 
         F = api.F
         C = api.C
+        slotType = F.otype.slotType
         origNodeTypes = {x[0]: (x[2], x[3]) for x in C.levels.data}
         origMaxSlot = F.otype.maxSlot
         origMaxNode = F.otype.maxNode
@@ -989,6 +1016,9 @@ def modify(
         return True
 
     def applyUpdates():
+        nonlocal good
+        nonlocal ePrefix
+        nonlocal eItem
         Fs = api.Fs
         Es = api.Es
 
@@ -1032,6 +1062,187 @@ def modify(
                 featOut[feat] = outData
                 metaDataOut[feat] = outMeta
 
+        if replaceSlotType:
+
+            # check replaceSlotType
+
+            eItem = f"{replaceSlotType}: "
+            ePrefix = "Replace slot type: "
+
+            allTypes = (set(nodeTypes) - deletedTypes) | set(addTypes)
+
+            if replaceSlotType not in allTypes:
+                err("Node type does not exist")
+            if replaceSlotType == slotType:
+                err("Node type is already the slot type")
+            if not good:
+                return
+
+            # map old slots to nodes of the new slot type
+
+            currentOtype = nodeFeaturesOut[OTYPE]
+            currentOslots = edgeFeaturesOut[OSLOTS]
+
+            # We have to sort the nodes of the new slot type in the canonical order
+
+            nextSlots = sorted(
+                (
+                    node
+                    for (node, nType) in currentOtype.items()
+                    if nType == replaceSlotType
+                ),
+                key=_canonical(currentOslots),
+            )
+
+            # Now we walk through the nodes of the new slot type and see
+            # to what slots they are linked.
+            # There might be old slots that are not linked to any of these nodes.
+            # These old slots must be removed.
+
+            currentSlotMap = {}
+            removeNodes = set()
+
+            for newSlot in nextSlots:
+                for slot in currentOslots[newSlot]:
+                    currentSlotMap[slot] = newSlot
+
+            for (oldSlot, nType) in currentOtype.items():
+                if nType == slotType:
+                    if oldSlot not in currentSlotMap:
+                        removeNodes.add(oldSlot)
+
+            # All features on old slots have to be extended to the new slots
+            # If a new slot has conflicting feature values for the old slots
+            # it is linked to, the first defined feature value will be taken.
+            # For now, we do not do this for edge features.
+
+            for (feat, featData) in nodeFeaturesOut.items():
+                if feat == OTYPE:
+                    continue
+                updates = {}
+                for (oldSlot, value) in featData.items():
+                    if oldSlot in removeNodes:
+                        continue
+                    nType = currentOtype[oldSlot]
+                    if nType != slotType:
+                        continue
+                    newSlot = currentSlotMap[oldSlot]
+                    currentVal = featData.get(newSlot, None)
+                    if currentVal is None:
+                        alreadyUpdated = updates.get(newSlot, None)
+                        if alreadyUpdated is None:
+                            updates[newSlot] = value
+                if updates:
+                    for (node, val) in updates.items():
+                        featData[node] = val
+
+            # link all nodes, except slot nodes and nodes of the new slot type to
+            # new slots.
+            # N.B. the new slots are still ordinary nodes, so this is just
+            # the next version of oslots, not the final version
+            # Gather the nodes that end up unlinked to new slots.
+
+            nextOslots = {}
+
+            for (node, slots) in currentOslots.items():
+                newSlots = {currentSlotMap[s] for s in slots if s in currentSlotMap}
+                if len(newSlots):
+                    nextOslots[node] = newSlots
+                else:
+                    removeNodes.add(node)
+
+            # build the final otype and oslots features
+            # we will shuffle nodes and delete nodes, so we maintain a map
+
+            newOtype = {}
+            newOslots = {}
+            newFromCurrent = {}
+            newNode = 0
+
+            # first the new slots
+
+            for node in nextSlots:
+                newNode += 1
+                newFromCurrent[node] = newNode
+                newOtype[newNode] = replaceSlotType
+
+            # now the rest
+
+            for (node, nType) in currentOtype.items():
+                if nType == slotType or nType == replaceSlotType or node in removeNodes:
+                    continue
+                newNode += 1
+                newFromCurrent[node] = newNode
+                newOtype[newNode] = nType
+                newOslots[newNode] = {newFromCurrent[s] for s in nextOslots[node]}
+
+            # now apply the node mapping to the remaining node and edge features
+            # we may have to delete features
+
+            removeNodeFeatures = set()
+            removeEdgeFeatures = set()
+
+            for (feat, featData) in nodeFeaturesOut.items():
+                if feat == OTYPE:
+                    nodeFeaturesOut[OTYPE] = newOtype
+                    continue
+
+                newFeatData = {}
+                for (node, value) in featData.items():
+                    if node in removeNodes:
+                        continue
+                    if node not in newFromCurrent:
+                        continue
+                    newFeatData[newFromCurrent[node]] = value
+                if len(newFeatData):
+                    nodeFeaturesOut[feat] = newFeatData
+                else:
+                    removeNodeFeatures.add(feat)
+
+            for (feat, featData) in edgeFeaturesOut.items():
+                if feat == OSLOTS:
+                    edgeFeaturesOut[OSLOTS] = newOslots
+                    continue
+
+                newFeatData = {}
+                for (node, targets) in featData.items():
+                    if node in removeNodes:
+                        continue
+                    newNode = newFromCurrent[node]
+                    if type(targets) is dict:
+                        newTargets = {}
+                        for (tNode, value) in targets.items():
+                            if tNode in removeNodes:
+                                continue
+                            newTNode = newFromCurrent[tNode]
+                            newTargets[newTNode] = value
+                    else:
+                        newTargets = set()
+                        for tNode in targets:
+                            if tNode in removeNodes:
+                                continue
+                            newTNode = newFromCurrent[tNode]
+                            newTargets.add(newTNode)
+                    if not len(newTargets):
+                        continue
+                    newFeatData[newNode] = newTargets
+
+                if len(newFeatData):
+                    edgeFeaturesOut[feat] = newFeatData
+                else:
+                    removeEdgeFeatures.add(feat)
+
+            # remove empty features
+
+            for feat in removeNodeFeatures:
+                del nodeFeaturesOut[feat]
+                if feat in metaDataOut:
+                    del metaDataOut[feat]
+            for feat in removeEdgeFeatures:
+                del edgeFeaturesOut[feat]
+                if feat in metaDataOut:
+                    del metaDataOut[feat]
+
         otextMeta = {}
         otextMeta.update(meta(OTEXT))
         mK = 0
@@ -1053,6 +1264,27 @@ def modify(
             info(f"done{fRep}{kRep}")
 
         return True
+
+    def _canonical(oslots):
+        def before(nodeA, nodeB):
+            slotsA = oslots[nodeA]
+            slotsB = oslots[nodeB]
+            if slotsA == slotsB:
+                return 0
+
+            aWithoutB = slotsA - slotsB
+            if not aWithoutB:
+                return 1
+
+            bWithoutA = slotsB - slotsA
+            if not bWithoutA:
+                return -1
+
+            aMin = min(aWithoutB)
+            bMin = min(bWithoutA)
+            return -1 if aMin < bMin else 1
+
+        return functools.cmp_to_key(before)
 
     def writeTf():
         indent(level=0)

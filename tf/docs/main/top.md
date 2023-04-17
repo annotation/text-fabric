@@ -7,7 +7,7 @@ Text-Fabric makes that knowledge accessible to programmers and non-programmers.
 
 Text-Fabric is machinery for processing such corpora as annotated graphs.
 It treats corpora and annotations as data, much like big tables, but without
-loosing the rich structure of text, such as embedding and multiple representations.
+losing the rich structure of text, such as embedding and multiple representations.
 It deals with text in a state where all markup is gone, but where the complete logical
 structure still sits in the data.
 

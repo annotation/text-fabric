@@ -406,12 +406,14 @@ class Analysis:
             self.resolve(definitions)
 
             for (name, odef) in definitions.items():
+
+                oKind = self.repKind(odef.get("kind", None))
+                oMixed = self.repMixed(odef.get("mixed", None))
+
                 if name in baseDefinitions:
                     baseDef = baseDefinitions[name]
                     baseKind = self.repKind(baseDef.get("kind", None))
                     baseMixed = self.repMixed(baseDef.get("mixed", None))
-                    oKind = self.repKind(odef.get("kind", None))
-                    oMixed = self.repMixed(odef.get("mixed", None))
                     transRep = (
                         f"{baseKind} {baseMixed} ==> {oKind} {oMixed}"
                         if baseKind != oKind and baseMixed != oMixed
@@ -424,6 +426,11 @@ class Analysis:
                     if transRep is not None:
                         baseDefinitions[name] = odef
                     self.overrides[name] = transRep
+                else:
+                    baseDefinitions[name] = odef
+                    if odef["tag"] == "element" and not odef["abstract"]:
+                        self.overrides[name] = f"{oKind} {oMixed} (added)"
+
         self.defs = tuple(
             (name, info.get("kind", None), info.get("mixed", None))
             for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)

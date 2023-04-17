@@ -10,6 +10,17 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.0 (upcoming)
+
+2023-04-??
+
+*   TF can now invoke a Spcay-based workflow to detect tokens and sentences.
+    See `tf.convert.myspacy`.
+*   The TEI->TF conversion can now be extended with NLP generated tokens and sentences,
+    there is single function to do this but the individual steps can also be run
+    in a notebook, see `tf.convert.addnlp`. Work in progress.
+*   TEI to TF conversion: usability improvements and fixes
+
 ### 11.3
 
 ### 11.3.1

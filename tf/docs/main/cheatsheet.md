@@ -944,7 +944,7 @@ from tf.dataset import modify
 
 modify(source, target, ...)
 ```
-:   Modifies a TF datasets into one new TF dataset
+:   Modifies a TF dataset into a new TF dataset
 :   `tf.dataset.modify`
 
 ``` python
@@ -1029,13 +1029,33 @@ T = TEI(...)
 
 ---
 
+## NLP import
+
+**in order to use this, install Spacy, see `tf.convert.myspacy`**
+
+``` python
+
+from tf.convert.myspacy import tokensAndSentences
+from tf.convert.addnlp import generatePlain, ingest
+```
+
+``` python
+(text, positions) = generateMain(A)
+(tokens, sentences) = tokensAndSentences(text)
+(node, slots, featureData) = ingest(positions, stream, tp, feature)
+```
+:   prepare text to feed to NLP pipeline and ingest the results
+:   `tf.convert.addnlp`
+
+---
+
 ## Pandas export
 
 ``` python
 A.exportPandas()
 ```
 :   export dataset as Pandas dataframe
-:   tf.convert.pandas
+:   `tf.convert.pandas`
 
 ---
 

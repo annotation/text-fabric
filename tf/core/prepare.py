@@ -66,13 +66,14 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` key to the `otext` config feature.
+        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     """
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get("levels", None)
+
     if levelOrder is not None:
         levelRank = {level: i for (i, level) in enumerate(levelOrder.split(","))}
     otypeCount = collections.Counter()
@@ -89,26 +90,44 @@ def levels(info, error, otype, oslots, otext):
             otypeMin[ntp] = tfn
         if ntp not in otypeMax or otypeMax[ntp] < tfn:
             otypeMax[ntp] = tfn
-    sortKey = (lambda x: -x[1]) if levelOrder is None else (lambda x: levelRank[x[0]])
-    result = tuple(
-        sorted(
-            (
-                (
-                    ntp,
-                    slotSetLengths[ntp] / otypeCount[ntp],
-                    otypeMin[ntp],
-                    otypeMax[ntp],
-                )
-                for ntp in otypeCount
-            ),
-            key=sortKey,
-        )
-        + [(slotType, 1, 1, maxSlot)]
+    sortKey = (
+        (lambda x: -x[1])
+        if levelOrder is None
+        else (lambda x: (-1, levelRank[x[0]]) if x[0] in levelRank else (1, -x[1]))
     )
+    result = sorted(
+        (
+            (
+                ntp,
+                slotSetLengths[ntp] / otypeCount[ntp],
+                otypeMin[ntp],
+                otypeMax[ntp],
+            )
+            for ntp in otypeCount
+        ),
+        key=sortKey,
+    ) + [(slotType, 1, 1, maxSlot)]
+    resultIndex = {r[0]: i for (i, r) in enumerate(result)}
+
+    levelConstraintsSpec = otext.get("levelConstraints", None)
+
+    if levelConstraintsSpec:
+        levelConstraints = levelConstraintsSpec.split(";")
+        for levelConstraint in levelConstraints:
+            (smaller, biggerSpec) = levelConstraint.strip().split("<")
+            smaller = smaller.strip()
+            biggers = {b.strip() for b in biggerSpec.strip().split(",")}
+            highestBigIndex = max(resultIndex.get(tp, 0) for tp in biggers)
+            smallerIndex = resultIndex.get(smaller, len(result))
+            if smallerIndex <= highestBigIndex:
+                x = result.pop(smallerIndex)
+                result.insert(highestBigIndex, x)
+            resultIndex = {r: i for (i, r) in enumerate(result)}
+
     info("results:")
     for (otp, av, omin, omax) in result:
         info(f"{otp:<15}: {round(av, 2):>8} {{{omin}-{omax}}}", tm=False)
-    return result
+    return tuple(result)
 
 
 def order(info, error, otype, oslots, levels):
@@ -274,7 +293,8 @@ def levUp(info, error, otype, oslots, rank):
         embedders.append(
             tuple(
                 sorted(
-                    [m for m in contentEmbedders if m != n], key=lambda k: -rank[k - 1],
+                    [m for m in contentEmbedders if m != n],
+                    key=lambda k: -rank[k - 1],
                 )
             )
         )
@@ -284,7 +304,9 @@ def levUp(info, error, otype, oslots, rank):
             embedders.append(tuple())
         else:
             contentEmbedders = functools.reduce(
-                lambda x, y: x & oslotsInv[y], mList[1:], oslotsInv[mList[0]],
+                lambda x, y: x & oslotsInv[y],
+                mList[1:],
+                oslotsInv[mList[0]],
             )
             embedders.append(
                 tuple(
@@ -556,9 +578,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             n0 = n0s[0]
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f"{sTypes[1]}-node {n1} has no section heading"
-                ] += 1
+                nestingProblems[f"{sTypes[1]}-node {n1} has no section heading"] += 1
             if n0 not in sec1:
                 sec1[n0] = {}
             if n1head not in sec1[n0]:
@@ -589,14 +609,10 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f"{sTypes[1]}-node {n1} has no section heading"
-                ] += 1
+                nestingProblems[f"{sTypes[1]}-node {n1} has no section heading"] += 1
             n2head = sFeats[2].get(n2, None)
             if n2head is None:
-                nestingProblems[
-                    f"{sTypes[2]}-node {n2} has no section heading"
-                ] += 1
+                nestingProblems[f"{sTypes[2]}-node {n2} has no section heading"] += 1
 
             if n0 not in sec1:
                 sec1[n0] = {}

@@ -25,6 +25,8 @@ In this dataset, **«slot»s** fullfill the role of slots.
 *   Text-Fabric *features* correspond to TEI *attributes*;
 *   Here are the [TEI elements and attributes](elements.md) used in this corpus.
 
+«token generation»
+
 The TEI to TF conversion is an almost literal and very faithful transformation from
 the TEI source files to a Text-Fabric data set.
 
@@ -106,24 +108,42 @@ feature | description
 
 «endModelII»
 
-### node type `word`
+«beginTokenYes»
+### node type `sentence`
 
-*Individual words, without punctuation.*
+*Sentences, i.e. material between full stops and several other punctuation marks*.
 
+feature | description
+--- | ---
+`nsent` | the sequence number of the sentence within the corpus
+
+«endTokenYes»
+
+### node type `«tokenWord»`
+
+*Individual «tokenWord»s, without space or punctuation.*
+
+«beginTokenNo»
 «beginSlotword»
 **Slot type.**
 «endSlotword»
+«endTokenNo»
+«beginTokenYes»
+**Slot type.**
+«endTokenYes»
 
 **Features**
 
 feature | description
 --- | ---
-`str` | the characters of the word, without soft hyphens.
-`after` | the non-word characters after the word, up till the next word.
-`is_meta` | whether a word is in the teiHeader element
-`is_note` | whether a word is in a note element
-`rend_`*r* | whether a word is under the influence of a `rend="`*r*`"` attribute.
+`str` | the characters of the «tokenWord», without soft hyphens.
+«beginTokenNo»`after` | the non-word characters after the word, up till the next word.
+«endTokenNo»«beginTokenYes»`after` | the space after the word, if present, otherwise the empty string.
+«endTokenYes»`is_meta` | whether a «tokenWord» is in the teiHeader element
+`is_note` | whether a «tokenWord» is in a note element
+`rend_`*r* | whether a «tokenWord» is under the influence of a `rend="`*r*`"` attribute.
 
+«beginTokenNo»
 «beginSlotchar»
 
 ### node type `char`
@@ -147,6 +167,7 @@ feature | description
 `rend_`*r* | whether a character is under the influence of a `rend="`*r*`"` attribute.
 
 «endSlotchar»
+«endTokenNo»
 
 ## Sectioning
 
@@ -267,9 +288,11 @@ All section headings are stored in a feature with the same name as the type of s
 
 «endModelII»
 
+«beginTokenNo»
 ## Word detection
 
-Words will be detected. They are maximally long sequences of alphanumeric characters
+Words have been be detected.
+They are maximally long sequences of alphanumeric characters
 and hyphens.
 
 1.  What is alphanumeric is determined by the unicode class of the character,
@@ -279,11 +302,26 @@ and hyphens.
 1.  Words get the following features:
     *   `str`: the alphanumeric string that is the word;
     *   `after`: the non-alphanumeric string after the word unti the following word.
+«endTokenNo»
+
+«beginTokenYes»
+## Token detection
+
+Tokens have been detected by an NLP pipeline.
+The values of tokens are either words or non-word characters.
+White space is not part of the token.
+Whether a token is followed by a space or not is in the feature `after`.
+
+## Sentence detection
+Sentences have been detected by an NLP pipeline.
+They form a new nodetype, `sentence`, with just a sequence number as feature (`nsent`).
+«endTokenYes»
 
 ## «Slot»s
 
-Whether characters of words are taken as the basic unit (*slot*) is decided
-by the parameter `wordAsSlot`, passed to the conversion
+Whether characters of words  or tokens are taken as the basic unit (*slot*) is decided
+by the parameter `wordAsSlot`, passed to the conversion, and whether tokens have been
+provided later on.
 (for this corpus the slot type is **«slot»**).
 
 ### «Slot»s and empty elements
@@ -314,6 +352,7 @@ quite 1-1, because of the white-space handling.
 «endSlotchar»
 
 «beginSlotword»
+«beginTokenNo»
 
 ## More about words
 
@@ -322,19 +361,30 @@ The basic unit is the word, as detected by the rules above.
 1.  *«slot»* nodes get these defining features:
     *   `str`: the string of the «slot»
     *   `after`: interword material after the word
+«endTokenNo»
+«beginTokenYes»
+## More about tokens
 
-1. Nodes that contain only part of the characters of a word, will contain the whole
-   word.
-1. Features that have different values for different characters in the word,
-   will have the last value encountered for the whole word.
+The basic unit is the word, as detected by the NLP pipeline used.
+
+1.  *«slot»* nodes get these defining features:
+    *   `str`: the string of the «slot»
+    *   `after`: a possible space after the word
+«endTokenYes»
+
+1. Nodes that contain only part of the characters of a «tokenWord», will
+   contain the whole «tokenWord».
+1. Features that have different values for different characters in the «tokenWord»,
+   will have the last value encountered for the whole «tokenWord».
 1. Formatting attributes, such as `rend=italic` (see below) will give rise
-   to features `r_italic`. If a word is embedded in severel elements with
-   `rend` attributes and different values for them, the word will get
+   to features `r_italic`. If a «tokenWord» is embedded in severel elements with
+   `rend` attributes and different values for them, the «tokenWord» will get
    features `r_`*value* for all those values. But if different parts of the
-   word are in the scope of different `rend` values, that information will be lost,
-   the `r_`*value* features all apply the whole word.
+   «tokenWord» are in the scope of different `rend` values, that information
+   will be lost, the `r_`*value* features all apply the whole «tokenWord».
 
 «endSlotword»
+
 
 ## Text kinds and styled formatting
 
@@ -345,12 +395,13 @@ The absence of values means that the corresponding property does not hold.
 
 The following features are added:
 
-*   `is_meta`: 1 if the word occurs in inside the `<teiHeader>`, no value otherwise.
-*   `is_note`: 1 if the word occurs in inside the `<note>`, no value otherwise.
+*   `is_meta`: 1 if the «tokenWord» occurs in inside the `<teiHeader>`, no
+    value otherwise.
+*   `is_note`: 1 if the «tokenWord» occurs in inside the `<note>`, no value otherwise.
 *   `rend_`*r*: for any *r* that is the value of a `rend` attribute.
 
 All these features are defined for «char and word» nodes.
-For word nodes, the value of these features is set equal to what these features
+For «tokenWord» nodes, the value of these features is set equal to what these features
 are for their first character.
 
 Special formatting for the `rend_`*r* features is supported for some values of *r*.

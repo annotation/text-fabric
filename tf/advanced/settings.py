@@ -744,7 +744,7 @@ Default:
 
 ---
 
-### `flow:`
+### `flow`
 
 Pretty: whether the container should arrange its subdisplays as a column or as a row.
 

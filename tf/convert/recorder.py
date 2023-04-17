@@ -114,7 +114,7 @@ from ..core.helpers import (
     specFromRanges,
     rangesFromSet,
 )
-from ..core.files import expanduser as ex, splitExt
+from ..core.files import expanduser as ex, splitExt, initTree, dirNm
 
 ZWJ = "\u200d"  # zero width joiner
 
@@ -208,6 +208,10 @@ class Recorder:
 
     def positions(self, byType=False, simple=False):
         """Get the node positions as mapping from character positions.
+
+        Character positions start at `0`.
+        For each character position we get the set of nodes whose material
+        occupies that character position.
 
         Parameters
         ----------
@@ -554,10 +558,15 @@ where `api` is the result of
         posExt = ".ipos" if inverted else ".pos"
         posPath = ex(posPath or f"{textPath}{posExt}")
 
+        textDir = dirNm(textPath)
+        initTree(textDir)
+
         with open(textPath, "w", encoding="utf8") as fh:
             fh.write(self.text())
 
         if not byType:
+            posDir = dirNm(posPath)
+            initTree(posDir)
             with open(posPath, "w", encoding="utf8") as fh:
                 if inverted:
                     fh.write(
@@ -575,6 +584,7 @@ where `api` is the result of
                             for nodes in self.nodesByPos
                         )
                     )
+                fh.write("\n")
             return
 
         mapByType = (
@@ -647,6 +657,10 @@ where `api` is the result of
             If absent, it equals `textPath` with the extension `.pos` .
             The file format is: one line for each character position,
             on each line a tab-separated list of active nodes.
+
+            !!! caution
+                Pos files that have been written with `optimize=True` cannot
+                be read back.
         """
 
         textPath = ex(textPath)
@@ -658,7 +672,10 @@ where `api` is the result of
 
         with open(posPath, encoding="utf8") as fh:
             self.nodesByPos = [
-                {int(n) for n in line.rstrip("\n").split("\t")} for line in fh
+                {int(n) for n in line.rstrip("\n").split("\t")}
+                if line != "\n"
+                else set()
+                for line in fh
             ]
 
     def makeFeatures(self, featurePath, headers=True):
