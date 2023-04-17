@@ -1,0 +1,1752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.convert.addnlp API documentation</title>
+<meta name="description" content="Add data from an NLP pipeline." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.convert.addnlp</code></h1>
+</header>
+<section id="section-intro">
+<p>Add data from an NLP pipeline.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L1-L484" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
+&#34;&#34;&#34;
+
+from .recorder import Recorder
+from .myspacy import tokensAndSentences
+from ..dataset import modify
+from ..core.helpers import console
+from ..core.files import initTree
+
+
+class NLPipeline:
+    def __init__(self, app):
+        &#34;&#34;&#34;Enrich a TF dataset with annotations generated by an NLP pipeline.
+
+        Parameters
+        ----------
+        app: object
+            The handle to the original TF dataset, already loaded.
+            We assume that the original data resides in the current
+            version, which has the string `pre` appended to it,
+            e.g. in version `1.3pre`.
+            We create a new version of the dataset, with the same number,
+            but without the `pre`.
+        &#34;&#34;&#34;
+        self.app = app
+
+    def generatePlain(self, takeAways={&#34;note&#34;}, skips={}, write=False):
+        &#34;&#34;&#34;Generates a plain text out of a data source.
+
+        The text is generatad in such a way that out of flow elements are collected
+        and put at the end. Examples of such elements are notes.
+        Leaving them at their original positions will interfere with sentence detection.
+
+        Parameters
+        ----------
+        takeAways: set, optional `{&#34;note&#34;}`
+            A set of node types whose content will be put in a separate text flow at
+            the end of the document.
+            It is assumed that for each takeaway element *elem* there is a feature
+            `is_`*elem* that has value 1 for each slot in such an element and no value
+            otherwise.
+        skips: set, optional {}
+            A set of features for slots to check. If one of these features hase
+            a true-ish value for a slot, that slot will be skipped.
+        write: boolean, optional False
+            If `True` the result will be written to files in the `_temp` directory of
+            the repo, to the files `plain.txt` and `plain.txt.pos`.
+
+        Returns
+        -------
+        tuple
+            The result is a tuple consisting of
+
+            *   *text*: the generated text
+            *   *positions*: a list of nodes such that list item *i* contains
+                the original slot that corresponds to the character *i* in the
+                generated text (counting from zero).
+        &#34;&#34;&#34;
+        app = self.app
+        api = app.api
+        F = api.F
+        Fs = api.Fs
+        L = api.L
+        N = api.N
+        slotType = F.otype.slotType
+
+        rec = Recorder(app.api)
+
+        remainingSlots = set(F.otype.s(slotType))
+
+        takeAwaySlots = {}
+
+        for skip in skips:
+            test = Fs(skip).v
+            remainingSlots -= {s for s in remainingSlots if test(s)}
+
+        for takeAway in takeAways:
+            test = Fs(f&#34;is_{takeAway}&#34;).v
+            takeAwaySlots[takeAway] = {s for s in remainingSlots if test(s)}
+
+        for takeAway in takeAways:
+            remainingSlots -= takeAwaySlots[takeAway]
+            takeAwaySlots[takeAway] = sorted(takeAwaySlots[takeAway])
+
+        rec.add(&#34;BEGIN META.\n\n&#34;)
+
+        th = F.otype.s(&#34;teiHeader&#34;)
+        metaNodes = L.d(th[0]) if th else []
+
+        for (n, end) in N.walk(events=True, nodes=metaNodes):
+            nType = F.otype.v(n)
+            if nType in {&#34;file&#34;, &#34;folder&#34;, &#34;chapter&#34;, &#34;chunk&#34;, &#34;word&#34;}:
+                continue
+            if end is None:  # slot node
+                if n in remainingSlots:
+                    rec.start(n)
+                    rec.add(F.ch.v(n))
+                    rec.end(n)
+            elif end:  # non slot node ends here
+                rec.add(&#34;.\n&#34;)
+            else:  # non slot node starts here
+                rec.add(f&#34;{nType}. &#34;)
+
+        rec.add(&#34;END META.\n\n&#34;)
+
+        metaSlots = {s for s in F.otype.s(slotType) if F.is_meta.v(s)}
+        remainingSlots -= metaSlots
+
+        rec.add(&#34;BEGIN MAIN.\n\n&#34;)
+
+        remainingSlots = sorted(remainingSlots)
+
+        for s in remainingSlots:
+            rec.start(s)
+            rec.add(F.ch.v(s))
+            rec.end(s)
+
+        rec.add(&#34;END MAIN.\n\n&#34;)
+
+        for takeAway in takeAways:
+            rec.add(f&#34;BEGIN {takeAway}s.\n\n&#34;)
+
+            for (i, n) in enumerate(F.otype.s(takeAway)):
+                slots = L.d(n, otype=slotType)
+
+                rec.add(f&#34;BEGIN {takeAway} {i + 1}.\n\n&#34;)
+
+                for s in slots:
+                    rec.start(s)
+                    rec.add(F.ch.v(s))
+                    rec.end(s)
+
+                rec.add(f&#34; .\n\nEND {takeAway} {i + 1}\n\n&#34;)
+
+            rec.add(f&#34;END {takeAway}s.\n\n&#34;)
+
+        if write:
+            repoDir = app.repoLocation
+            textPath = f&#34;{repoDir}/_temp/txt/plain.txt&#34;
+            rec.write(textPath)
+            console(f&#34;Generated text and positions written to {textPath}&#34;)
+
+        return (rec.text(), rec.positions(simple=True))
+
+    def ingest(self, positions, stream, tp, features, nFeature=None, skipBlanks=False):
+        &#34;&#34;&#34;Ingests a stream of NLP data and transforms it in nodes and a feature.
+
+        The data is a stream of values associated with a spans of text.
+
+        For each span a node will be created of the given type, and a feature
+        of the given name will assign a value to that span.
+        The value assigned is by default the value that is present in the data stream,
+        but it is possible to specify a method to change the value.
+
+        !!! caution
+            The plain text on which the NLP pipeline has run may not correspond
+            exactly with the text as defined by the corpus.
+            When the plain text was generated, some extra convenience material
+            may have been inserted.
+            Items in the stream that refer to these pieces of text will be ignored.
+
+            When items refer partly to proper corpus text and partly to convenience text,
+            they will be narrowed down to the proper text.
+
+        !!! caution
+            The plain text may exhibit another order of material than the proper corpus
+            text. For example, notes may have been collected and moved out of the
+            main text flow to the end of the text.
+
+            That means that if an item specifies a span in the plain text, it may
+            not refer to a single span in the proper text, but to various spans.
+
+            We take care to map all spans in the generated plain text back to *sets*
+            of slots in the proper text.
+
+        Parameters
+        ----------
+        positions: list
+            which slot node corresponds to which position in the plain text.
+
+        stream: list of tuple
+            The tuples should consist of
+
+            *   *start*: a start number (char pos in the plain text, starting at `0`)
+            *   *end*: an end number (char pos in tghe plain text plus one)
+            *   *value*: a value for feature assignment
+
+        tp: string
+            The type of the nodes that will be generated.
+
+        features: tuple
+            The names of the features that will be generated.
+
+        nFeature: string, optional None
+            If not None, the name of a feature that will hold the sequence number of
+            the element in the data stream, starting at 1.
+
+        skipBlanks: boolean, optional False
+            If True, rows whose text component is only white space will be skipped.
+
+        Returns
+        -------
+        tuple
+            We deliver the following pieces of information in a tuple:
+
+            * the last node
+            * the mapping of the new nodes to the slots they occupy;
+            * the data of the new feature.
+        &#34;&#34;&#34;
+        app = self.app
+        F = app.api.F
+
+        doN = nFeature is not None
+        slots = {}
+        featuresData = {feat: {} for feat in features}
+        if nFeature is not None:
+            featuresData[nFeature] = {}
+        node = 0
+
+        itemsOutside = []
+        itemsEmpty = []
+
+        console(f&#34;generating {tp}-nodes with features {&#39;, &#39;.join(featuresData)} &#34;)
+
+        for (i, (b, e, *vals)) in enumerate(stream):
+            mySlots = set()
+
+            for j in range(b, e):
+                s = positions[j]
+                if s is not None:
+                    mySlots.add(s)
+
+            nSlots = len(slots)
+
+            if len(mySlots) == 0:
+                if doN:
+                    vals.append(i + 1)
+                itemsOutside.append((i, b, e, *vals))
+                continue
+
+            if skipBlanks and len(vals):
+                slotsOrdered = sorted(mySlots)
+
+                start = min(
+                    (
+                        i
+                        for (i, s) in enumerate(slotsOrdered)
+                        if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                    ),
+                    default=nSlots,
+                )
+                end = max(
+                    (
+                        i + 1
+                        for (i, s) in enumerate(slotsOrdered)
+                        if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                    ),
+                    default=0,
+                )
+
+                if end &lt;= start:
+                    itemsEmpty.append((i, b, e, *vals))
+                    continue
+
+                mySlots = slotsOrdered[start:end]
+
+            node += 1
+            slots[node] = mySlots
+            for (feat, val) in zip(features, vals):
+                featuresData[feat][node] = val
+            if doN:
+                featuresData[nFeature][node] = node
+
+        repFeatures = &#34;, &#34;.join(features + ((nFeature,) if doN else ()))
+        console(f&#34;{node} {tp} nodes have values assigned for {repFeatures}&#34;)
+
+        tasks = [(&#34;Items contained in extra generated text&#34;, itemsOutside)]
+        if skipBlanks:
+            tasks.append((&#34;Items with empty final text&#34;, itemsEmpty))
+        for (label, items) in tasks:
+            nItems = len(items)
+            console(f&#34;{nItems:&gt;5}x {label}:&#34;)
+            for (i, b, e, *vals) in items[0:5]:
+                console(f&#34;\t{i} span {b}-{e}: {&#39;, &#39;.join(str(v) for v in vals)}&#34;)
+
+        return (node, slots, featuresData)
+
+    @staticmethod
+    def lingo(*args, **kwargs):
+        return tokensAndSentences(*args, **kwargs)
+
+    def ingestTokensAndSentences(
+        self,
+        positions,
+        tokenStream,
+        sentenceStream,
+        tokenType=&#34;token&#34;,
+        tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None),
+        sentenceType=&#34;sentence&#34;,
+        sentenceFeatures=(&#34;nsent&#34;,),
+    ):
+        &#34;&#34;&#34;Ingests a token stream and a sentence stream.
+
+
+        By default:
+
+        * tokens become nodes of a new type `token`;
+        * the texts of a token ends up in the feature `str`;
+        * if there is a space after a token, it ends up in the feature `after`;
+        * sentences become nodes of a new type `sentence`;
+        * the sentence number ends up in the feature `nsent`.
+
+        But this function can also be adapted to token and sentence streams that
+        have additional names and values, see below.
+
+        The streams of tokens and sentences may contain more fields.
+        In the parameters `tokenFeatures` and `sentenceFeatures` you may pass the
+        feature names for the data in those fields.
+
+        When the streams are read, for each feature name in the `tokenFeatures`
+        (resp. `sentenceFeatures`) the corresponding field in the stream will be
+        read, and the value found there will be assigned to that feature.
+
+        If there are more fields in the stream than there are declared in the
+        `tokenFeatures` (resp. `sentenceFeatures`) parameter, these extra fields will
+        be ignored.
+
+        The last feature name in these parameters is special.
+        If it is None, it will be ignored.
+        Otherwise, an extra feature with that name will be created, and it will be
+        filled with the node numbers of the newly generated nodes.
+
+        !!! hint &#34;Look at the defaults&#34;
+            The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None)` specifies that two
+            fields from the tokenstream will be read, and those values will be assigned
+            to features `str` and `after`.
+            There will be no field with the node itself in it.
+
+            The default `sentenceFeatures=(&#34;nsent&#34;,)` specifies that no field from the
+            tokenstream will be read, but that there will be a feature `nsent` that
+            has the node of each sentence as value.
+
+        Parameters
+        ----------
+        tokenStream: list
+            The list of tokens as delivered by the NLP pipe.
+        sentenceStream: list
+            The list of sentences as delivered by the NLP pipe.
+        tokenType: string, optional str
+            The node type for the tokens
+        tokenFeatures: tuple, optional (&#34;str&#34;, &#34;after&#34;, &#34;&#34;)
+            The names of the features that the token stream contains.
+        sentenceType: string, optional str
+            The node type for the sentences
+        sentenceFeatures: tuple, optional (&#34;nsent&#34;,)
+            The names of the features that the sentence stream contains.
+
+        Returns
+        -------
+        string
+            The new version number of the data that contains the tokens and sentences.
+        &#34;&#34;&#34;
+        app = self.app
+        slotLinks = {tokenType: {}, sentenceType: {}}
+        features = {}
+        for feat in tokenFeatures:
+            if feat is not None:
+                features[feat] = {}
+        for feat in sentenceFeatures:
+            if feat is not None:
+                features[feat] = {}
+        lastNode = {tokenType: 0, sentenceType: 0}
+
+        for (data, tp, feats, skipBlanks) in (
+            (tokenStream, tokenType, tokenFeatures, False),
+            (sentenceStream, sentenceType, sentenceFeatures, True),
+        ):
+            realFeats = feats[0:-1]
+            nFeat = feats[-1]
+            (node, slots, featuresData) = self.ingest(
+                positions,
+                data,
+                tp,
+                realFeats,
+                nFeature=nFeat,
+                skipBlanks=skipBlanks,
+            )
+            lastNode[tp] = node
+            slotLinks[tp] = slots
+            for (feat, featData) in featuresData.items():
+                features[feat] = featData
+
+        repoDir = app.repoLocation
+        versionPre = app.version
+        version = versionPre.removesuffix(&#34;pre&#34;)
+        origTf = f&#34;{repoDir}/tf/{versionPre}&#34;
+        newTf = f&#34;{repoDir}/tf/{version}&#34;
+        initTree(newTf, fresh=True, gentle=False)
+
+        modify(
+            origTf,
+            newTf,
+            addTypes=dict(
+                token=dict(
+                    nodeFrom=1,
+                    nodeTo=lastNode[tokenType],
+                    nodeSlots=slotLinks[tokenType],
+                    nodeFeatures={
+                        feat: features[feat]
+                        for feat in tokenFeatures
+                        if feat is not None
+                    },
+                ),
+                sentence=dict(
+                    nodeFrom=1,
+                    nodeTo=lastNode[sentenceType],
+                    nodeSlots=slotLinks[sentenceType],
+                    nodeFeatures={
+                        feat: features[feat]
+                        for feat in sentenceFeatures
+                        if feat is not None
+                    },
+                ),
+            ),
+            deleteTypes=(&#34;word&#34;,),
+            featureMeta=dict(
+                nsent=dict(
+                    valueType=&#34;int&#34;,
+                    description=&#34;number of sentence in corpus&#34;,
+                ),
+                otext={
+                    &#34;fmt:text-orig-full&#34;: &#34;{&#34;
+                    + tokenFeatures[0]
+                    + &#34;}{&#34;
+                    + tokenFeatures[1]
+                    + &#34;}&#34;
+                },
+            ),
+            replaceSlotType=tokenType,
+        )
+        return version
+
+
+def addTokensSentences(app, write=False):
+    &#34;&#34;&#34;Creates a new version in a TF dataset with token and sentence nodes.
+
+    Parameters
+    ----------
+    app: object
+        The handle to the original TF dataset.
+        We assume that the original data resides in the current
+        version, which has the string `pre` appended to it,
+        e.g. in version `1.3pre`.
+        We create a new version of the dataset, with the same number,
+        but without the `pre`.
+    write: boolean, optional False
+        If `True` the result will be written to files in the `_temp` directory of
+        the repo, to the files `plain.txt` and `plain.txt.pos`.
+
+    &#34;&#34;&#34;
+    NLP = NLPipeline(app)
+    app.indent(reset=True)
+    app.info(&#34;Generating a plain text with positions ...&#34;)
+
+    (text, positions) = NLP.generatePlain(write=write)
+
+    app.info(&#34;Getting tokens and sentences from Spacy ...&#34;)
+
+    (tokens, sentences) = NLP.lingo(text)
+
+    app.info(&#34;Ingesting tokens and sentences into the dataset (Spacy) ...&#34;)
+
+    newVersion = NLP.ingestTokensAndSentences(positions, tokens, sentences)
+    app.info(f&#34;Enriched data is available in version {newVersion}&#34;)
+    app.info(
+        &#34;You may need to adapt the config.yaml and app.py of this TF app&#34;, tm=False
+    )
+    app.info(
+        &#34;And the documententation of the transcription may need an update&#34;, tm=False
+    )
+    app.info(
+        &#34;If you have generated the orginal app by means of `tf.convert.tei`&#34;, tm=False
+    )
+    app.info(&#34;you can run `python tfFromTei.py appt&#34;, tm=False)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.convert.addnlp.addTokensSentences"><code class="name flex">
+<span>def <span class="ident">addTokensSentences</span></span>(<span>app, write=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new version in a TF dataset with token and sentence nodes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The handle to the original TF dataset.
+We assume that the original data resides in the current
+version, which has the string <code>pre</code> appended to it,
+e.g. in version <code>1.3pre</code>.
+We create a new version of the dataset, with the same number,
+but without the <code>pre</code>.</dd>
+<dt><strong><code>write</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If <code>True</code> the result will be written to files in the <code>_temp</code> directory of
+the repo, to the files <code>plain.txt</code> and <code>plain.txt.pos</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L444-L484" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def addTokensSentences(app, write=False):
+    &#34;&#34;&#34;Creates a new version in a TF dataset with token and sentence nodes.
+
+    Parameters
+    ----------
+    app: object
+        The handle to the original TF dataset.
+        We assume that the original data resides in the current
+        version, which has the string `pre` appended to it,
+        e.g. in version `1.3pre`.
+        We create a new version of the dataset, with the same number,
+        but without the `pre`.
+    write: boolean, optional False
+        If `True` the result will be written to files in the `_temp` directory of
+        the repo, to the files `plain.txt` and `plain.txt.pos`.
+
+    &#34;&#34;&#34;
+    NLP = NLPipeline(app)
+    app.indent(reset=True)
+    app.info(&#34;Generating a plain text with positions ...&#34;)
+
+    (text, positions) = NLP.generatePlain(write=write)
+
+    app.info(&#34;Getting tokens and sentences from Spacy ...&#34;)
+
+    (tokens, sentences) = NLP.lingo(text)
+
+    app.info(&#34;Ingesting tokens and sentences into the dataset (Spacy) ...&#34;)
+
+    newVersion = NLP.ingestTokensAndSentences(positions, tokens, sentences)
+    app.info(f&#34;Enriched data is available in version {newVersion}&#34;)
+    app.info(
+        &#34;You may need to adapt the config.yaml and app.py of this TF app&#34;, tm=False
+    )
+    app.info(
+        &#34;And the documententation of the transcription may need an update&#34;, tm=False
+    )
+    app.info(
+        &#34;If you have generated the orginal app by means of `tf.convert.tei`&#34;, tm=False
+    )
+    app.info(&#34;you can run `python tfFromTei.py appt&#34;, tm=False)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.convert.addnlp.NLPipeline"><code class="flex name class">
+<span>class <span class="ident">NLPipeline</span></span>
+<span>(</span><span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enrich a TF dataset with annotations generated by an NLP pipeline.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The handle to the original TF dataset, already loaded.
+We assume that the original data resides in the current
+version, which has the string <code>pre</code> appended to it,
+e.g. in version <code>1.3pre</code>.
+We create a new version of the dataset, with the same number,
+but without the <code>pre</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L11-L441" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class NLPipeline:
+    def __init__(self, app):
+        &#34;&#34;&#34;Enrich a TF dataset with annotations generated by an NLP pipeline.
+
+        Parameters
+        ----------
+        app: object
+            The handle to the original TF dataset, already loaded.
+            We assume that the original data resides in the current
+            version, which has the string `pre` appended to it,
+            e.g. in version `1.3pre`.
+            We create a new version of the dataset, with the same number,
+            but without the `pre`.
+        &#34;&#34;&#34;
+        self.app = app
+
+    def generatePlain(self, takeAways={&#34;note&#34;}, skips={}, write=False):
+        &#34;&#34;&#34;Generates a plain text out of a data source.
+
+        The text is generatad in such a way that out of flow elements are collected
+        and put at the end. Examples of such elements are notes.
+        Leaving them at their original positions will interfere with sentence detection.
+
+        Parameters
+        ----------
+        takeAways: set, optional `{&#34;note&#34;}`
+            A set of node types whose content will be put in a separate text flow at
+            the end of the document.
+            It is assumed that for each takeaway element *elem* there is a feature
+            `is_`*elem* that has value 1 for each slot in such an element and no value
+            otherwise.
+        skips: set, optional {}
+            A set of features for slots to check. If one of these features hase
+            a true-ish value for a slot, that slot will be skipped.
+        write: boolean, optional False
+            If `True` the result will be written to files in the `_temp` directory of
+            the repo, to the files `plain.txt` and `plain.txt.pos`.
+
+        Returns
+        -------
+        tuple
+            The result is a tuple consisting of
+
+            *   *text*: the generated text
+            *   *positions*: a list of nodes such that list item *i* contains
+                the original slot that corresponds to the character *i* in the
+                generated text (counting from zero).
+        &#34;&#34;&#34;
+        app = self.app
+        api = app.api
+        F = api.F
+        Fs = api.Fs
+        L = api.L
+        N = api.N
+        slotType = F.otype.slotType
+
+        rec = Recorder(app.api)
+
+        remainingSlots = set(F.otype.s(slotType))
+
+        takeAwaySlots = {}
+
+        for skip in skips:
+            test = Fs(skip).v
+            remainingSlots -= {s for s in remainingSlots if test(s)}
+
+        for takeAway in takeAways:
+            test = Fs(f&#34;is_{takeAway}&#34;).v
+            takeAwaySlots[takeAway] = {s for s in remainingSlots if test(s)}
+
+        for takeAway in takeAways:
+            remainingSlots -= takeAwaySlots[takeAway]
+            takeAwaySlots[takeAway] = sorted(takeAwaySlots[takeAway])
+
+        rec.add(&#34;BEGIN META.\n\n&#34;)
+
+        th = F.otype.s(&#34;teiHeader&#34;)
+        metaNodes = L.d(th[0]) if th else []
+
+        for (n, end) in N.walk(events=True, nodes=metaNodes):
+            nType = F.otype.v(n)
+            if nType in {&#34;file&#34;, &#34;folder&#34;, &#34;chapter&#34;, &#34;chunk&#34;, &#34;word&#34;}:
+                continue
+            if end is None:  # slot node
+                if n in remainingSlots:
+                    rec.start(n)
+                    rec.add(F.ch.v(n))
+                    rec.end(n)
+            elif end:  # non slot node ends here
+                rec.add(&#34;.\n&#34;)
+            else:  # non slot node starts here
+                rec.add(f&#34;{nType}. &#34;)
+
+        rec.add(&#34;END META.\n\n&#34;)
+
+        metaSlots = {s for s in F.otype.s(slotType) if F.is_meta.v(s)}
+        remainingSlots -= metaSlots
+
+        rec.add(&#34;BEGIN MAIN.\n\n&#34;)
+
+        remainingSlots = sorted(remainingSlots)
+
+        for s in remainingSlots:
+            rec.start(s)
+            rec.add(F.ch.v(s))
+            rec.end(s)
+
+        rec.add(&#34;END MAIN.\n\n&#34;)
+
+        for takeAway in takeAways:
+            rec.add(f&#34;BEGIN {takeAway}s.\n\n&#34;)
+
+            for (i, n) in enumerate(F.otype.s(takeAway)):
+                slots = L.d(n, otype=slotType)
+
+                rec.add(f&#34;BEGIN {takeAway} {i + 1}.\n\n&#34;)
+
+                for s in slots:
+                    rec.start(s)
+                    rec.add(F.ch.v(s))
+                    rec.end(s)
+
+                rec.add(f&#34; .\n\nEND {takeAway} {i + 1}\n\n&#34;)
+
+            rec.add(f&#34;END {takeAway}s.\n\n&#34;)
+
+        if write:
+            repoDir = app.repoLocation
+            textPath = f&#34;{repoDir}/_temp/txt/plain.txt&#34;
+            rec.write(textPath)
+            console(f&#34;Generated text and positions written to {textPath}&#34;)
+
+        return (rec.text(), rec.positions(simple=True))
+
+    def ingest(self, positions, stream, tp, features, nFeature=None, skipBlanks=False):
+        &#34;&#34;&#34;Ingests a stream of NLP data and transforms it in nodes and a feature.
+
+        The data is a stream of values associated with a spans of text.
+
+        For each span a node will be created of the given type, and a feature
+        of the given name will assign a value to that span.
+        The value assigned is by default the value that is present in the data stream,
+        but it is possible to specify a method to change the value.
+
+        !!! caution
+            The plain text on which the NLP pipeline has run may not correspond
+            exactly with the text as defined by the corpus.
+            When the plain text was generated, some extra convenience material
+            may have been inserted.
+            Items in the stream that refer to these pieces of text will be ignored.
+
+            When items refer partly to proper corpus text and partly to convenience text,
+            they will be narrowed down to the proper text.
+
+        !!! caution
+            The plain text may exhibit another order of material than the proper corpus
+            text. For example, notes may have been collected and moved out of the
+            main text flow to the end of the text.
+
+            That means that if an item specifies a span in the plain text, it may
+            not refer to a single span in the proper text, but to various spans.
+
+            We take care to map all spans in the generated plain text back to *sets*
+            of slots in the proper text.
+
+        Parameters
+        ----------
+        positions: list
+            which slot node corresponds to which position in the plain text.
+
+        stream: list of tuple
+            The tuples should consist of
+
+            *   *start*: a start number (char pos in the plain text, starting at `0`)
+            *   *end*: an end number (char pos in tghe plain text plus one)
+            *   *value*: a value for feature assignment
+
+        tp: string
+            The type of the nodes that will be generated.
+
+        features: tuple
+            The names of the features that will be generated.
+
+        nFeature: string, optional None
+            If not None, the name of a feature that will hold the sequence number of
+            the element in the data stream, starting at 1.
+
+        skipBlanks: boolean, optional False
+            If True, rows whose text component is only white space will be skipped.
+
+        Returns
+        -------
+        tuple
+            We deliver the following pieces of information in a tuple:
+
+            * the last node
+            * the mapping of the new nodes to the slots they occupy;
+            * the data of the new feature.
+        &#34;&#34;&#34;
+        app = self.app
+        F = app.api.F
+
+        doN = nFeature is not None
+        slots = {}
+        featuresData = {feat: {} for feat in features}
+        if nFeature is not None:
+            featuresData[nFeature] = {}
+        node = 0
+
+        itemsOutside = []
+        itemsEmpty = []
+
+        console(f&#34;generating {tp}-nodes with features {&#39;, &#39;.join(featuresData)} &#34;)
+
+        for (i, (b, e, *vals)) in enumerate(stream):
+            mySlots = set()
+
+            for j in range(b, e):
+                s = positions[j]
+                if s is not None:
+                    mySlots.add(s)
+
+            nSlots = len(slots)
+
+            if len(mySlots) == 0:
+                if doN:
+                    vals.append(i + 1)
+                itemsOutside.append((i, b, e, *vals))
+                continue
+
+            if skipBlanks and len(vals):
+                slotsOrdered = sorted(mySlots)
+
+                start = min(
+                    (
+                        i
+                        for (i, s) in enumerate(slotsOrdered)
+                        if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                    ),
+                    default=nSlots,
+                )
+                end = max(
+                    (
+                        i + 1
+                        for (i, s) in enumerate(slotsOrdered)
+                        if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                    ),
+                    default=0,
+                )
+
+                if end &lt;= start:
+                    itemsEmpty.append((i, b, e, *vals))
+                    continue
+
+                mySlots = slotsOrdered[start:end]
+
+            node += 1
+            slots[node] = mySlots
+            for (feat, val) in zip(features, vals):
+                featuresData[feat][node] = val
+            if doN:
+                featuresData[nFeature][node] = node
+
+        repFeatures = &#34;, &#34;.join(features + ((nFeature,) if doN else ()))
+        console(f&#34;{node} {tp} nodes have values assigned for {repFeatures}&#34;)
+
+        tasks = [(&#34;Items contained in extra generated text&#34;, itemsOutside)]
+        if skipBlanks:
+            tasks.append((&#34;Items with empty final text&#34;, itemsEmpty))
+        for (label, items) in tasks:
+            nItems = len(items)
+            console(f&#34;{nItems:&gt;5}x {label}:&#34;)
+            for (i, b, e, *vals) in items[0:5]:
+                console(f&#34;\t{i} span {b}-{e}: {&#39;, &#39;.join(str(v) for v in vals)}&#34;)
+
+        return (node, slots, featuresData)
+
+    @staticmethod
+    def lingo(*args, **kwargs):
+        return tokensAndSentences(*args, **kwargs)
+
+    def ingestTokensAndSentences(
+        self,
+        positions,
+        tokenStream,
+        sentenceStream,
+        tokenType=&#34;token&#34;,
+        tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None),
+        sentenceType=&#34;sentence&#34;,
+        sentenceFeatures=(&#34;nsent&#34;,),
+    ):
+        &#34;&#34;&#34;Ingests a token stream and a sentence stream.
+
+
+        By default:
+
+        * tokens become nodes of a new type `token`;
+        * the texts of a token ends up in the feature `str`;
+        * if there is a space after a token, it ends up in the feature `after`;
+        * sentences become nodes of a new type `sentence`;
+        * the sentence number ends up in the feature `nsent`.
+
+        But this function can also be adapted to token and sentence streams that
+        have additional names and values, see below.
+
+        The streams of tokens and sentences may contain more fields.
+        In the parameters `tokenFeatures` and `sentenceFeatures` you may pass the
+        feature names for the data in those fields.
+
+        When the streams are read, for each feature name in the `tokenFeatures`
+        (resp. `sentenceFeatures`) the corresponding field in the stream will be
+        read, and the value found there will be assigned to that feature.
+
+        If there are more fields in the stream than there are declared in the
+        `tokenFeatures` (resp. `sentenceFeatures`) parameter, these extra fields will
+        be ignored.
+
+        The last feature name in these parameters is special.
+        If it is None, it will be ignored.
+        Otherwise, an extra feature with that name will be created, and it will be
+        filled with the node numbers of the newly generated nodes.
+
+        !!! hint &#34;Look at the defaults&#34;
+            The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None)` specifies that two
+            fields from the tokenstream will be read, and those values will be assigned
+            to features `str` and `after`.
+            There will be no field with the node itself in it.
+
+            The default `sentenceFeatures=(&#34;nsent&#34;,)` specifies that no field from the
+            tokenstream will be read, but that there will be a feature `nsent` that
+            has the node of each sentence as value.
+
+        Parameters
+        ----------
+        tokenStream: list
+            The list of tokens as delivered by the NLP pipe.
+        sentenceStream: list
+            The list of sentences as delivered by the NLP pipe.
+        tokenType: string, optional str
+            The node type for the tokens
+        tokenFeatures: tuple, optional (&#34;str&#34;, &#34;after&#34;, &#34;&#34;)
+            The names of the features that the token stream contains.
+        sentenceType: string, optional str
+            The node type for the sentences
+        sentenceFeatures: tuple, optional (&#34;nsent&#34;,)
+            The names of the features that the sentence stream contains.
+
+        Returns
+        -------
+        string
+            The new version number of the data that contains the tokens and sentences.
+        &#34;&#34;&#34;
+        app = self.app
+        slotLinks = {tokenType: {}, sentenceType: {}}
+        features = {}
+        for feat in tokenFeatures:
+            if feat is not None:
+                features[feat] = {}
+        for feat in sentenceFeatures:
+            if feat is not None:
+                features[feat] = {}
+        lastNode = {tokenType: 0, sentenceType: 0}
+
+        for (data, tp, feats, skipBlanks) in (
+            (tokenStream, tokenType, tokenFeatures, False),
+            (sentenceStream, sentenceType, sentenceFeatures, True),
+        ):
+            realFeats = feats[0:-1]
+            nFeat = feats[-1]
+            (node, slots, featuresData) = self.ingest(
+                positions,
+                data,
+                tp,
+                realFeats,
+                nFeature=nFeat,
+                skipBlanks=skipBlanks,
+            )
+            lastNode[tp] = node
+            slotLinks[tp] = slots
+            for (feat, featData) in featuresData.items():
+                features[feat] = featData
+
+        repoDir = app.repoLocation
+        versionPre = app.version
+        version = versionPre.removesuffix(&#34;pre&#34;)
+        origTf = f&#34;{repoDir}/tf/{versionPre}&#34;
+        newTf = f&#34;{repoDir}/tf/{version}&#34;
+        initTree(newTf, fresh=True, gentle=False)
+
+        modify(
+            origTf,
+            newTf,
+            addTypes=dict(
+                token=dict(
+                    nodeFrom=1,
+                    nodeTo=lastNode[tokenType],
+                    nodeSlots=slotLinks[tokenType],
+                    nodeFeatures={
+                        feat: features[feat]
+                        for feat in tokenFeatures
+                        if feat is not None
+                    },
+                ),
+                sentence=dict(
+                    nodeFrom=1,
+                    nodeTo=lastNode[sentenceType],
+                    nodeSlots=slotLinks[sentenceType],
+                    nodeFeatures={
+                        feat: features[feat]
+                        for feat in sentenceFeatures
+                        if feat is not None
+                    },
+                ),
+            ),
+            deleteTypes=(&#34;word&#34;,),
+            featureMeta=dict(
+                nsent=dict(
+                    valueType=&#34;int&#34;,
+                    description=&#34;number of sentence in corpus&#34;,
+                ),
+                otext={
+                    &#34;fmt:text-orig-full&#34;: &#34;{&#34;
+                    + tokenFeatures[0]
+                    + &#34;}{&#34;
+                    + tokenFeatures[1]
+                    + &#34;}&#34;
+                },
+            ),
+            replaceSlotType=tokenType,
+        )
+        return version</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="tf.convert.addnlp.NLPipeline.lingo"><code class="name flex">
+<span>def <span class="ident">lingo</span></span>(<span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L288-L290" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def lingo(*args, **kwargs):
+    return tokensAndSentences(*args, **kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.convert.addnlp.NLPipeline.generatePlain"><code class="name flex">
+<span>def <span class="ident">generatePlain</span></span>(<span>self, takeAways={'note'}, skips={}, write=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates a plain text out of a data source.</p>
+<p>The text is generatad in such a way that out of flow elements are collected
+and put at the end. Examples of such elements are notes.
+Leaving them at their original positions will interfere with sentence detection.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>takeAways</code></strong> :&ensp;<code>set</code>, optional <code>{"note"}</code></dt>
+<dd>A set of node types whose content will be put in a separate text flow at
+the end of the document.
+It is assumed that for each takeaway element <em>elem</em> there is a feature
+<code>is_</code><em>elem</em> that has value 1 for each slot in such an element and no value
+otherwise.</dd>
+<dt><strong><code>skips</code></strong> :&ensp;<code>set</code>, optional <code>{}</code></dt>
+<dd>A set of features for slots to check. If one of these features hase
+a true-ish value for a slot, that slot will be skipped.</dd>
+<dt><strong><code>write</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If <code>True</code> the result will be written to files in the <code>_temp</code> directory of
+the repo, to the files <code>plain.txt</code> and <code>plain.txt.pos</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>The result is a tuple consisting of</p>
+<ul>
+<li><em>text</em>: the generated text</li>
+<li><em>positions</em>: a list of nodes such that list item <em>i</em> contains
+the original slot that corresponds to the character <em>i</em> in the
+generated text (counting from zero).</li>
+</ul>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L27-L143" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def generatePlain(self, takeAways={&#34;note&#34;}, skips={}, write=False):
+    &#34;&#34;&#34;Generates a plain text out of a data source.
+
+    The text is generatad in such a way that out of flow elements are collected
+    and put at the end. Examples of such elements are notes.
+    Leaving them at their original positions will interfere with sentence detection.
+
+    Parameters
+    ----------
+    takeAways: set, optional `{&#34;note&#34;}`
+        A set of node types whose content will be put in a separate text flow at
+        the end of the document.
+        It is assumed that for each takeaway element *elem* there is a feature
+        `is_`*elem* that has value 1 for each slot in such an element and no value
+        otherwise.
+    skips: set, optional {}
+        A set of features for slots to check. If one of these features hase
+        a true-ish value for a slot, that slot will be skipped.
+    write: boolean, optional False
+        If `True` the result will be written to files in the `_temp` directory of
+        the repo, to the files `plain.txt` and `plain.txt.pos`.
+
+    Returns
+    -------
+    tuple
+        The result is a tuple consisting of
+
+        *   *text*: the generated text
+        *   *positions*: a list of nodes such that list item *i* contains
+            the original slot that corresponds to the character *i* in the
+            generated text (counting from zero).
+    &#34;&#34;&#34;
+    app = self.app
+    api = app.api
+    F = api.F
+    Fs = api.Fs
+    L = api.L
+    N = api.N
+    slotType = F.otype.slotType
+
+    rec = Recorder(app.api)
+
+    remainingSlots = set(F.otype.s(slotType))
+
+    takeAwaySlots = {}
+
+    for skip in skips:
+        test = Fs(skip).v
+        remainingSlots -= {s for s in remainingSlots if test(s)}
+
+    for takeAway in takeAways:
+        test = Fs(f&#34;is_{takeAway}&#34;).v
+        takeAwaySlots[takeAway] = {s for s in remainingSlots if test(s)}
+
+    for takeAway in takeAways:
+        remainingSlots -= takeAwaySlots[takeAway]
+        takeAwaySlots[takeAway] = sorted(takeAwaySlots[takeAway])
+
+    rec.add(&#34;BEGIN META.\n\n&#34;)
+
+    th = F.otype.s(&#34;teiHeader&#34;)
+    metaNodes = L.d(th[0]) if th else []
+
+    for (n, end) in N.walk(events=True, nodes=metaNodes):
+        nType = F.otype.v(n)
+        if nType in {&#34;file&#34;, &#34;folder&#34;, &#34;chapter&#34;, &#34;chunk&#34;, &#34;word&#34;}:
+            continue
+        if end is None:  # slot node
+            if n in remainingSlots:
+                rec.start(n)
+                rec.add(F.ch.v(n))
+                rec.end(n)
+        elif end:  # non slot node ends here
+            rec.add(&#34;.\n&#34;)
+        else:  # non slot node starts here
+            rec.add(f&#34;{nType}. &#34;)
+
+    rec.add(&#34;END META.\n\n&#34;)
+
+    metaSlots = {s for s in F.otype.s(slotType) if F.is_meta.v(s)}
+    remainingSlots -= metaSlots
+
+    rec.add(&#34;BEGIN MAIN.\n\n&#34;)
+
+    remainingSlots = sorted(remainingSlots)
+
+    for s in remainingSlots:
+        rec.start(s)
+        rec.add(F.ch.v(s))
+        rec.end(s)
+
+    rec.add(&#34;END MAIN.\n\n&#34;)
+
+    for takeAway in takeAways:
+        rec.add(f&#34;BEGIN {takeAway}s.\n\n&#34;)
+
+        for (i, n) in enumerate(F.otype.s(takeAway)):
+            slots = L.d(n, otype=slotType)
+
+            rec.add(f&#34;BEGIN {takeAway} {i + 1}.\n\n&#34;)
+
+            for s in slots:
+                rec.start(s)
+                rec.add(F.ch.v(s))
+                rec.end(s)
+
+            rec.add(f&#34; .\n\nEND {takeAway} {i + 1}\n\n&#34;)
+
+        rec.add(f&#34;END {takeAway}s.\n\n&#34;)
+
+    if write:
+        repoDir = app.repoLocation
+        textPath = f&#34;{repoDir}/_temp/txt/plain.txt&#34;
+        rec.write(textPath)
+        console(f&#34;Generated text and positions written to {textPath}&#34;)
+
+    return (rec.text(), rec.positions(simple=True))</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.addnlp.NLPipeline.ingest"><code class="name flex">
+<span>def <span class="ident">ingest</span></span>(<span>self, positions, stream, tp, features, nFeature=None, skipBlanks=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ingests a stream of NLP data and transforms it in nodes and a feature.</p>
+<p>The data is a stream of values associated with a spans of text.</p>
+<p>For each span a node will be created of the given type, and a feature
+of the given name will assign a value to that span.
+The value assigned is by default the value that is present in the data stream,
+but it is possible to specify a method to change the value.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The plain text on which the NLP pipeline has run may not correspond
+exactly with the text as defined by the corpus.
+When the plain text was generated, some extra convenience material
+may have been inserted.
+Items in the stream that refer to these pieces of text will be ignored.</p>
+<p>When items refer partly to proper corpus text and partly to convenience text,
+they will be narrowed down to the proper text.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The plain text may exhibit another order of material than the proper corpus
+text. For example, notes may have been collected and moved out of the
+main text flow to the end of the text.</p>
+<p>That means that if an item specifies a span in the plain text, it may
+not refer to a single span in the proper text, but to various spans.</p>
+<p>We take care to map all spans in the generated plain text back to <em>sets</em>
+of slots in the proper text.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>positions</code></strong> :&ensp;<code>list</code></dt>
+<dd>which slot node corresponds to which position in the plain text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>list</code> of <code>tuple</code></dt>
+<dd>
+<p>The tuples should consist of</p>
+<ul>
+<li><em>start</em>: a start number (char pos in the plain text, starting at <code>0</code>)</li>
+<li><em>end</em>: an end number (char pos in tghe plain text plus one)</li>
+<li><em>value</em>: a value for feature assignment</li>
+</ul>
+</dd>
+<dt><strong><code>tp</code></strong> :&ensp;<code>string</code></dt>
+<dd>The type of the nodes that will be generated.</dd>
+<dt><strong><code>features</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The names of the features that will be generated.</dd>
+<dt><strong><code>nFeature</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If not None, the name of a feature that will hold the sequence number of
+the element in the data stream, starting at 1.</dd>
+<dt><strong><code>skipBlanks</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, rows whose text component is only white space will be skipped.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>
+<p>We deliver the following pieces of information in a tuple:</p>
+<ul>
+<li>the last node</li>
+<li>the mapping of the new nodes to the slots they occupy;</li>
+<li>the data of the new feature.</li>
+</ul>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L145-L286" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def ingest(self, positions, stream, tp, features, nFeature=None, skipBlanks=False):
+    &#34;&#34;&#34;Ingests a stream of NLP data and transforms it in nodes and a feature.
+
+    The data is a stream of values associated with a spans of text.
+
+    For each span a node will be created of the given type, and a feature
+    of the given name will assign a value to that span.
+    The value assigned is by default the value that is present in the data stream,
+    but it is possible to specify a method to change the value.
+
+    !!! caution
+        The plain text on which the NLP pipeline has run may not correspond
+        exactly with the text as defined by the corpus.
+        When the plain text was generated, some extra convenience material
+        may have been inserted.
+        Items in the stream that refer to these pieces of text will be ignored.
+
+        When items refer partly to proper corpus text and partly to convenience text,
+        they will be narrowed down to the proper text.
+
+    !!! caution
+        The plain text may exhibit another order of material than the proper corpus
+        text. For example, notes may have been collected and moved out of the
+        main text flow to the end of the text.
+
+        That means that if an item specifies a span in the plain text, it may
+        not refer to a single span in the proper text, but to various spans.
+
+        We take care to map all spans in the generated plain text back to *sets*
+        of slots in the proper text.
+
+    Parameters
+    ----------
+    positions: list
+        which slot node corresponds to which position in the plain text.
+
+    stream: list of tuple
+        The tuples should consist of
+
+        *   *start*: a start number (char pos in the plain text, starting at `0`)
+        *   *end*: an end number (char pos in tghe plain text plus one)
+        *   *value*: a value for feature assignment
+
+    tp: string
+        The type of the nodes that will be generated.
+
+    features: tuple
+        The names of the features that will be generated.
+
+    nFeature: string, optional None
+        If not None, the name of a feature that will hold the sequence number of
+        the element in the data stream, starting at 1.
+
+    skipBlanks: boolean, optional False
+        If True, rows whose text component is only white space will be skipped.
+
+    Returns
+    -------
+    tuple
+        We deliver the following pieces of information in a tuple:
+
+        * the last node
+        * the mapping of the new nodes to the slots they occupy;
+        * the data of the new feature.
+    &#34;&#34;&#34;
+    app = self.app
+    F = app.api.F
+
+    doN = nFeature is not None
+    slots = {}
+    featuresData = {feat: {} for feat in features}
+    if nFeature is not None:
+        featuresData[nFeature] = {}
+    node = 0
+
+    itemsOutside = []
+    itemsEmpty = []
+
+    console(f&#34;generating {tp}-nodes with features {&#39;, &#39;.join(featuresData)} &#34;)
+
+    for (i, (b, e, *vals)) in enumerate(stream):
+        mySlots = set()
+
+        for j in range(b, e):
+            s = positions[j]
+            if s is not None:
+                mySlots.add(s)
+
+        nSlots = len(slots)
+
+        if len(mySlots) == 0:
+            if doN:
+                vals.append(i + 1)
+            itemsOutside.append((i, b, e, *vals))
+            continue
+
+        if skipBlanks and len(vals):
+            slotsOrdered = sorted(mySlots)
+
+            start = min(
+                (
+                    i
+                    for (i, s) in enumerate(slotsOrdered)
+                    if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                ),
+                default=nSlots,
+            )
+            end = max(
+                (
+                    i + 1
+                    for (i, s) in enumerate(slotsOrdered)
+                    if F.ch.v(s) not in {&#34; &#34;, &#34;\t&#34;, &#34;\n&#34;}
+                ),
+                default=0,
+            )
+
+            if end &lt;= start:
+                itemsEmpty.append((i, b, e, *vals))
+                continue
+
+            mySlots = slotsOrdered[start:end]
+
+        node += 1
+        slots[node] = mySlots
+        for (feat, val) in zip(features, vals):
+            featuresData[feat][node] = val
+        if doN:
+            featuresData[nFeature][node] = node
+
+    repFeatures = &#34;, &#34;.join(features + ((nFeature,) if doN else ()))
+    console(f&#34;{node} {tp} nodes have values assigned for {repFeatures}&#34;)
+
+    tasks = [(&#34;Items contained in extra generated text&#34;, itemsOutside)]
+    if skipBlanks:
+        tasks.append((&#34;Items with empty final text&#34;, itemsEmpty))
+    for (label, items) in tasks:
+        nItems = len(items)
+        console(f&#34;{nItems:&gt;5}x {label}:&#34;)
+        for (i, b, e, *vals) in items[0:5]:
+            console(f&#34;\t{i} span {b}-{e}: {&#39;, &#39;.join(str(v) for v in vals)}&#34;)
+
+    return (node, slots, featuresData)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.addnlp.NLPipeline.ingestTokensAndSentences"><code class="name flex">
+<span>def <span class="ident">ingestTokensAndSentences</span></span>(<span>self, positions, tokenStream, sentenceStream, tokenType='token', tokenFeatures=('str', 'after', None), sentenceType='sentence', sentenceFeatures=('nsent',))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ingests a token stream and a sentence stream.</p>
+<p>By default:</p>
+<ul>
+<li>tokens become nodes of a new type <code>token</code>;</li>
+<li>the texts of a token ends up in the feature <code>str</code>;</li>
+<li>if there is a space after a token, it ends up in the feature <code>after</code>;</li>
+<li>sentences become nodes of a new type <code>sentence</code>;</li>
+<li>the sentence number ends up in the feature <code>nsent</code>.</li>
+</ul>
+<p>But this function can also be adapted to token and sentence streams that
+have additional names and values, see below.</p>
+<p>The streams of tokens and sentences may contain more fields.
+In the parameters <code>tokenFeatures</code> and <code>sentenceFeatures</code> you may pass the
+feature names for the data in those fields.</p>
+<p>When the streams are read, for each feature name in the <code>tokenFeatures</code>
+(resp. <code>sentenceFeatures</code>) the corresponding field in the stream will be
+read, and the value found there will be assigned to that feature.</p>
+<p>If there are more fields in the stream than there are declared in the
+<code>tokenFeatures</code> (resp. <code>sentenceFeatures</code>) parameter, these extra fields will
+be ignored.</p>
+<p>The last feature name in these parameters is special.
+If it is None, it will be ignored.
+Otherwise, an extra feature with that name will be created, and it will be
+filled with the node numbers of the newly generated nodes.</p>
+<div class="admonition hint">
+<p class="admonition-title">Look at the defaults</p>
+<p>The default <code>tokenFeatures=("str", "after", None)</code> specifies that two
+fields from the tokenstream will be read, and those values will be assigned
+to features <code>str</code> and <code>after</code>.
+There will be no field with the node itself in it.</p>
+<p>The default <code>sentenceFeatures=("nsent",)</code> specifies that no field from the
+tokenstream will be read, but that there will be a feature <code>nsent</code> that
+has the node of each sentence as value.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tokenStream</code></strong> :&ensp;<code>list</code></dt>
+<dd>The list of tokens as delivered by the NLP pipe.</dd>
+<dt><strong><code>sentenceStream</code></strong> :&ensp;<code>list</code></dt>
+<dd>The list of sentences as delivered by the NLP pipe.</dd>
+<dt><strong><code>tokenType</code></strong> :&ensp;<code>string</code>, optional <code>str</code></dt>
+<dd>The node type for the tokens</dd>
+<dt><strong><code>tokenFeatures</code></strong> :&ensp;<code>tuple</code>, optional <code>("str", "after", "")</code></dt>
+<dd>The names of the features that the token stream contains.</dd>
+<dt><strong><code>sentenceType</code></strong> :&ensp;<code>string</code>, optional <code>str</code></dt>
+<dd>The node type for the sentences</dd>
+<dt><strong><code>sentenceFeatures</code></strong> :&ensp;<code>tuple</code>, optional <code>("nsent",)</code></dt>
+<dd>The names of the features that the sentence stream contains.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>string</code></dt>
+<dd>The new version number of the data that contains the tokens and sentences.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/convert/addnlp.py#L292-L441" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def ingestTokensAndSentences(
+    self,
+    positions,
+    tokenStream,
+    sentenceStream,
+    tokenType=&#34;token&#34;,
+    tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None),
+    sentenceType=&#34;sentence&#34;,
+    sentenceFeatures=(&#34;nsent&#34;,),
+):
+    &#34;&#34;&#34;Ingests a token stream and a sentence stream.
+
+
+    By default:
+
+    * tokens become nodes of a new type `token`;
+    * the texts of a token ends up in the feature `str`;
+    * if there is a space after a token, it ends up in the feature `after`;
+    * sentences become nodes of a new type `sentence`;
+    * the sentence number ends up in the feature `nsent`.
+
+    But this function can also be adapted to token and sentence streams that
+    have additional names and values, see below.
+
+    The streams of tokens and sentences may contain more fields.
+    In the parameters `tokenFeatures` and `sentenceFeatures` you may pass the
+    feature names for the data in those fields.
+
+    When the streams are read, for each feature name in the `tokenFeatures`
+    (resp. `sentenceFeatures`) the corresponding field in the stream will be
+    read, and the value found there will be assigned to that feature.
+
+    If there are more fields in the stream than there are declared in the
+    `tokenFeatures` (resp. `sentenceFeatures`) parameter, these extra fields will
+    be ignored.
+
+    The last feature name in these parameters is special.
+    If it is None, it will be ignored.
+    Otherwise, an extra feature with that name will be created, and it will be
+    filled with the node numbers of the newly generated nodes.
+
+    !!! hint &#34;Look at the defaults&#34;
+        The default `tokenFeatures=(&#34;str&#34;, &#34;after&#34;, None)` specifies that two
+        fields from the tokenstream will be read, and those values will be assigned
+        to features `str` and `after`.
+        There will be no field with the node itself in it.
+
+        The default `sentenceFeatures=(&#34;nsent&#34;,)` specifies that no field from the
+        tokenstream will be read, but that there will be a feature `nsent` that
+        has the node of each sentence as value.
+
+    Parameters
+    ----------
+    tokenStream: list
+        The list of tokens as delivered by the NLP pipe.
+    sentenceStream: list
+        The list of sentences as delivered by the NLP pipe.
+    tokenType: string, optional str
+        The node type for the tokens
+    tokenFeatures: tuple, optional (&#34;str&#34;, &#34;after&#34;, &#34;&#34;)
+        The names of the features that the token stream contains.
+    sentenceType: string, optional str
+        The node type for the sentences
+    sentenceFeatures: tuple, optional (&#34;nsent&#34;,)
+        The names of the features that the sentence stream contains.
+
+    Returns
+    -------
+    string
+        The new version number of the data that contains the tokens and sentences.
+    &#34;&#34;&#34;
+    app = self.app
+    slotLinks = {tokenType: {}, sentenceType: {}}
+    features = {}
+    for feat in tokenFeatures:
+        if feat is not None:
+            features[feat] = {}
+    for feat in sentenceFeatures:
+        if feat is not None:
+            features[feat] = {}
+    lastNode = {tokenType: 0, sentenceType: 0}
+
+    for (data, tp, feats, skipBlanks) in (
+        (tokenStream, tokenType, tokenFeatures, False),
+        (sentenceStream, sentenceType, sentenceFeatures, True),
+    ):
+        realFeats = feats[0:-1]
+        nFeat = feats[-1]
+        (node, slots, featuresData) = self.ingest(
+            positions,
+            data,
+            tp,
+            realFeats,
+            nFeature=nFeat,
+            skipBlanks=skipBlanks,
+        )
+        lastNode[tp] = node
+        slotLinks[tp] = slots
+        for (feat, featData) in featuresData.items():
+            features[feat] = featData
+
+    repoDir = app.repoLocation
+    versionPre = app.version
+    version = versionPre.removesuffix(&#34;pre&#34;)
+    origTf = f&#34;{repoDir}/tf/{versionPre}&#34;
+    newTf = f&#34;{repoDir}/tf/{version}&#34;
+    initTree(newTf, fresh=True, gentle=False)
+
+    modify(
+        origTf,
+        newTf,
+        addTypes=dict(
+            token=dict(
+                nodeFrom=1,
+                nodeTo=lastNode[tokenType],
+                nodeSlots=slotLinks[tokenType],
+                nodeFeatures={
+                    feat: features[feat]
+                    for feat in tokenFeatures
+                    if feat is not None
+                },
+            ),
+            sentence=dict(
+                nodeFrom=1,
+                nodeTo=lastNode[sentenceType],
+                nodeSlots=slotLinks[sentenceType],
+                nodeFeatures={
+                    feat: features[feat]
+                    for feat in sentenceFeatures
+                    if feat is not None
+                },
+            ),
+        ),
+        deleteTypes=(&#34;word&#34;,),
+        featureMeta=dict(
+            nsent=dict(
+                valueType=&#34;int&#34;,
+                description=&#34;number of sentence in corpus&#34;,
+            ),
+            otext={
+                &#34;fmt:text-orig-full&#34;: &#34;{&#34;
+                + tokenFeatures[0]
+                + &#34;}{&#34;
+                + tokenFeatures[1]
+                + &#34;}&#34;
+            },
+        ),
+        replaceSlotType=tokenType,
+    )
+    return version</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.convert.addnlp.addTokensSentences" href="#tf.convert.addnlp.addTokensSentences">addTokensSentences</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.convert.addnlp.NLPipeline" href="#tf.convert.addnlp.NLPipeline">NLPipeline</a></code></h4>
+<ul class="">
+<li><code><a title="tf.convert.addnlp.NLPipeline.generatePlain" href="#tf.convert.addnlp.NLPipeline.generatePlain">generatePlain</a></code></li>
+<li><code><a title="tf.convert.addnlp.NLPipeline.ingest" href="#tf.convert.addnlp.NLPipeline.ingest">ingest</a></code></li>
+<li><code><a title="tf.convert.addnlp.NLPipeline.ingestTokensAndSentences" href="#tf.convert.addnlp.NLPipeline.ingestTokensAndSentences">ingestTokensAndSentences</a></code></li>
+<li><code><a title="tf.convert.addnlp.NLPipeline.lingo" href="#tf.convert.addnlp.NLPipeline.lingo">lingo</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

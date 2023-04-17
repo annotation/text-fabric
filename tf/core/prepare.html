@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L1-L756" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L1-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Precompute data.
@@ -104,13 +104,14 @@ def levels(info, error, otype, oslots, otext):
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` key to the `otext` config feature.
+        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get(&#34;levels&#34;, None)
+
     if levelOrder is not None:
         levelRank = {level: i for (i, level) in enumerate(levelOrder.split(&#34;,&#34;))}
     otypeCount = collections.Counter()
@@ -127,26 +128,44 @@ def levels(info, error, otype, oslots, otext):
             otypeMin[ntp] = tfn
         if ntp not in otypeMax or otypeMax[ntp] &lt; tfn:
             otypeMax[ntp] = tfn
-    sortKey = (lambda x: -x[1]) if levelOrder is None else (lambda x: levelRank[x[0]])
-    result = tuple(
-        sorted(
-            (
-                (
-                    ntp,
-                    slotSetLengths[ntp] / otypeCount[ntp],
-                    otypeMin[ntp],
-                    otypeMax[ntp],
-                )
-                for ntp in otypeCount
-            ),
-            key=sortKey,
-        )
-        + [(slotType, 1, 1, maxSlot)]
+    sortKey = (
+        (lambda x: -x[1])
+        if levelOrder is None
+        else (lambda x: (-1, levelRank[x[0]]) if x[0] in levelRank else (1, -x[1]))
     )
+    result = sorted(
+        (
+            (
+                ntp,
+                slotSetLengths[ntp] / otypeCount[ntp],
+                otypeMin[ntp],
+                otypeMax[ntp],
+            )
+            for ntp in otypeCount
+        ),
+        key=sortKey,
+    ) + [(slotType, 1, 1, maxSlot)]
+    resultIndex = {r[0]: i for (i, r) in enumerate(result)}
+
+    levelConstraintsSpec = otext.get(&#34;levelConstraints&#34;, None)
+
+    if levelConstraintsSpec:
+        levelConstraints = levelConstraintsSpec.split(&#34;;&#34;)
+        for levelConstraint in levelConstraints:
+            (smaller, biggerSpec) = levelConstraint.strip().split(&#34;&lt;&#34;)
+            smaller = smaller.strip()
+            biggers = {b.strip() for b in biggerSpec.strip().split(&#34;,&#34;)}
+            highestBigIndex = max(resultIndex.get(tp, 0) for tp in biggers)
+            smallerIndex = resultIndex.get(smaller, len(result))
+            if smallerIndex &lt;= highestBigIndex:
+                x = result.pop(smallerIndex)
+                result.insert(highestBigIndex, x)
+            resultIndex = {r: i for (i, r) in enumerate(result)}
+
     info(&#34;results:&#34;)
     for (otp, av, omin, omax) in result:
         info(f&#34;{otp:&lt;15}: {round(av, 2):&gt;8} {{{omin}-{omax}}}&#34;, tm=False)
-    return result
+    return tuple(result)
 
 
 def order(info, error, otype, oslots, levels):
@@ -312,7 +331,8 @@ def levUp(info, error, otype, oslots, rank):
         embedders.append(
             tuple(
                 sorted(
-                    [m for m in contentEmbedders if m != n], key=lambda k: -rank[k - 1],
+                    [m for m in contentEmbedders if m != n],
+                    key=lambda k: -rank[k - 1],
                 )
             )
         )
@@ -322,7 +342,9 @@ def levUp(info, error, otype, oslots, rank):
             embedders.append(tuple())
         else:
             contentEmbedders = functools.reduce(
-                lambda x, y: x &amp; oslotsInv[y], mList[1:], oslotsInv[mList[0]],
+                lambda x, y: x &amp; oslotsInv[y],
+                mList[1:],
+                oslotsInv[mList[0]],
             )
             embedders.append(
                 tuple(
@@ -594,9 +616,7 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
             n0 = n0s[0]
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[1]}-node {n1} has no section heading&#34;] += 1
             if n0 not in sec1:
                 sec1[n0] = {}
             if n1head not in sec1[n0]:
@@ -627,14 +647,10 @@ def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
 
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[1]}-node {n1} has no section heading&#34;] += 1
             n2head = sFeats[2].get(n2, None)
             if n2head is None:
-                nestingProblems[
-                    f&#34;{sTypes[2]}-node {n2} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[2]}-node {n2} has no section heading&#34;] += 1
 
             if n0 not in sec1:
                 sec1[n0] = {}
@@ -848,7 +864,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L419-L479" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L441-L501" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -945,7 +961,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L364-L416" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L386-L438" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -1045,7 +1061,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L308-L361" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L330-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1144,7 +1160,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L221-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L240-L327" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1202,7 +1218,8 @@ this raw data might be a deal.</p></div>
         embedders.append(
             tuple(
                 sorted(
-                    [m for m in contentEmbedders if m != n], key=lambda k: -rank[k - 1],
+                    [m for m in contentEmbedders if m != n],
+                    key=lambda k: -rank[k - 1],
                 )
             )
         )
@@ -1212,7 +1229,9 @@ this raw data might be a deal.</p></div>
             embedders.append(tuple())
         else:
             contentEmbedders = functools.reduce(
-                lambda x, y: x &amp; oslotsInv[y], mList[1:], oslotsInv[mList[0]],
+                lambda x, y: x &amp; oslotsInv[y],
+                mList[1:],
+                oslotsInv[mList[0]],
             )
             embedders.append(
                 tuple(
@@ -1284,13 +1303,13 @@ not occur in clusters, then the algorithm may assign a lower rank to clusters
 than to phrases.</p>
 <p>In general, it is too expensive to try to compute the levels in a sophisticated
 way. In order to remedy cases where the algorithm assigns wrong levels, you can
-add a <code>@levels</code> key to the <code>otext</code> config feature.
+add a <code>@levels</code> and/or <code>@levelsConstraint</code> key to the <code>otext</code> config feature.
 See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 </div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L20-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L20-L130" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1341,13 +1360,14 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 
         In general, it is too expensive to try to compute the levels in a sophisticated
         way. In order to remedy cases where the algorithm assigns wrong levels, you can
-        add a `@levels` key to the `otext` config feature.
+        add a `@levels` and/or `@levelsConstraint` key to the `otext` config feature.
         See `tf.core.text`.
     &#34;&#34;&#34;
 
     (otype, maxSlot, maxNode, slotType) = otype
     oslots = oslots[0]
     levelOrder = otext.get(&#34;levels&#34;, None)
+
     if levelOrder is not None:
         levelRank = {level: i for (i, level) in enumerate(levelOrder.split(&#34;,&#34;))}
     otypeCount = collections.Counter()
@@ -1364,26 +1384,44 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
             otypeMin[ntp] = tfn
         if ntp not in otypeMax or otypeMax[ntp] &lt; tfn:
             otypeMax[ntp] = tfn
-    sortKey = (lambda x: -x[1]) if levelOrder is None else (lambda x: levelRank[x[0]])
-    result = tuple(
-        sorted(
-            (
-                (
-                    ntp,
-                    slotSetLengths[ntp] / otypeCount[ntp],
-                    otypeMin[ntp],
-                    otypeMax[ntp],
-                )
-                for ntp in otypeCount
-            ),
-            key=sortKey,
-        )
-        + [(slotType, 1, 1, maxSlot)]
+    sortKey = (
+        (lambda x: -x[1])
+        if levelOrder is None
+        else (lambda x: (-1, levelRank[x[0]]) if x[0] in levelRank else (1, -x[1]))
     )
+    result = sorted(
+        (
+            (
+                ntp,
+                slotSetLengths[ntp] / otypeCount[ntp],
+                otypeMin[ntp],
+                otypeMax[ntp],
+            )
+            for ntp in otypeCount
+        ),
+        key=sortKey,
+    ) + [(slotType, 1, 1, maxSlot)]
+    resultIndex = {r[0]: i for (i, r) in enumerate(result)}
+
+    levelConstraintsSpec = otext.get(&#34;levelConstraints&#34;, None)
+
+    if levelConstraintsSpec:
+        levelConstraints = levelConstraintsSpec.split(&#34;;&#34;)
+        for levelConstraint in levelConstraints:
+            (smaller, biggerSpec) = levelConstraint.strip().split(&#34;&lt;&#34;)
+            smaller = smaller.strip()
+            biggers = {b.strip() for b in biggerSpec.strip().split(&#34;,&#34;)}
+            highestBigIndex = max(resultIndex.get(tp, 0) for tp in biggers)
+            smallerIndex = resultIndex.get(smaller, len(result))
+            if smallerIndex &lt;= highestBigIndex:
+                x = result.pop(smallerIndex)
+                result.insert(highestBigIndex, x)
+            resultIndex = {r: i for (i, r) in enumerate(result)}
+
     info(&#34;results:&#34;)
     for (otp, av, omin, omax) in result:
         info(f&#34;{otp:&lt;15}: {round(av, 2):&gt;8} {{{omin}-{omax}}}&#34;, tm=False)
-    return result</code></pre>
+    return tuple(result)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.order"><code class="name flex">
@@ -1421,7 +1459,7 @@ account.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L114-L188" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L133-L207" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1526,7 +1564,7 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L191-L218" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L210-L237" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1613,7 +1651,7 @@ spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L482-L614" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L504-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1692,9 +1730,7 @@ spells out the names of the sections.</p></div>
             n0 = n0s[0]
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[1]}-node {n1} has no section heading&#34;] += 1
             if n0 not in sec1:
                 sec1[n0] = {}
             if n1head not in sec1[n0]:
@@ -1725,14 +1761,10 @@ spells out the names of the sections.</p></div>
 
             n1head = sFeats[1].get(n1, None)
             if n1head is None:
-                nestingProblems[
-                    f&#34;{sTypes[1]}-node {n1} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[1]}-node {n1} has no section heading&#34;] += 1
             n2head = sFeats[2].get(n2, None)
             if n2head is None:
-                nestingProblems[
-                    f&#34;{sTypes[2]}-node {n2} has no section heading&#34;
-                ] += 1
+                nestingProblems[f&#34;{sTypes[2]}-node {n2} has no section heading&#34;] += 1
 
             if n0 not in sec1:
                 sec1[n0] = {}
@@ -1809,7 +1841,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/core/prepare.py#L617-L756" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/core/prepare.py#L633-L772" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.

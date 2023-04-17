@@ -32,6 +32,16 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="1140-upcoming">11.4.0 (upcoming)</h3>
+<p>2023-04-??</p>
+<ul>
+<li>TF can now invoke a Spcay-based workflow to detect tokens and sentences.
+See <code><a title="tf.convert.myspacy" href="../convert/myspacy.html">tf.convert.myspacy</a></code>.</li>
+<li>The TEI-&gt;TF conversion can now be extended with NLP generated tokens and sentences,
+there is single function to do this but the individual steps can also be run
+in a notebook, see <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>. Work in progress.</li>
+<li>TEI to TF conversion: usability improvements and fixes</li>
+</ul>
 <h3 id="113">11.3</h3>
 <h3 id="1131">11.3.1</h3>
 <p>2023-04-11</p>
@@ -314,7 +324,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -387,6 +397,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#1140-upcoming">11.4.0 (upcoming)</a></li>
 <li><a href="#113">11.3</a></li>
 <li><a href="#1131">11.3.1</a></li>
 <li><a href="#1130">11.3.0</a></li>

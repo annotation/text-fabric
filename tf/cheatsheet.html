@@ -1217,7 +1217,7 @@ collect(volumes, work, ...)
 modify(source, target, ...)
 </code></pre></dt>
 <dd>
-<p>Modifies a TF datasets into one new TF dataset</p>
+<p>Modifies a TF dataset into a new TF dataset</p>
 </dd>
 <dd>
 <p><code><a title="tf.dataset.modify" href="dataset/modify.html">tf.dataset.modify</a></code></p>
@@ -1311,6 +1311,25 @@ from tf.lib import writeSets
 </dd>
 </dl>
 <hr>
+<h2 id="nlp-import">NLP import</h2>
+<p><strong>in order to use this, install Spacy, see <code><a title="tf.convert.myspacy" href="convert/myspacy.html">tf.convert.myspacy</a></code></strong></p>
+<pre><code class="language-python">
+from tf.convert.myspacy import tokensAndSentences
+from tf.convert.addnlp import generatePlain, ingest
+</code></pre>
+<dl>
+<dt><pre><code class="language-python">(text, positions) = generateMain(A)
+(tokens, sentences) = tokensAndSentences(text)
+(node, slots, featureData) = ingest(positions, stream, tp, feature)
+</code></pre></dt>
+<dd>
+<p>prepare text to feed to NLP pipeline and ingest the results</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
+</dd>
+</dl>
+<hr>
 <h2 id="pandas-export">Pandas export</h2>
 <dl>
 <dt><pre><code class="language-python">A.exportPandas()
@@ -1319,7 +1338,7 @@ from tf.lib import writeSets
 <p>export dataset as Pandas dataframe</p>
 </dd>
 <dd>
-<p>tf.convert.pandas</p>
+<p><code><a title="tf.convert.pandas" href="convert/pandas.html">tf.convert.pandas</a></code></p>
 </dd>
 </dl>
 <hr>
@@ -1473,7 +1492,7 @@ the XML that adheres to that schema.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/afb429e6b1c40218b4bc65e36737c5338ac37367/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/edb70b11b4cd1dbaa580a1d8a62302657f358c19/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1588,6 +1607,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#export-to-zip">Export to ZIP</a></li>
 <li><a href="#interchange-with-external-annotation-tools">Interchange with external annotation tools</a></li>
 <li><a href="#tei-import">TEI import</a></li>
+<li><a href="#nlp-import">NLP import</a></li>
 <li><a href="#pandas-export">Pandas export</a></li>
 <li><a href="#mql-interchange">MQL interchange</a></li>
 <li><a href="#walker-conversion">Walker conversion</a></li>
