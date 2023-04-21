@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L1-L490" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L1-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 from shutil import rmtree, copytree, copy
@@ -68,7 +68,7 @@ def unexpanduser(path):
     # if nPath.startswith(_homeDir):
     #    return f&#34;~{nPath[len(_homeDir):]}&#34;
 
-    return nPath.replace(_homeDir, &#39;~&#39;)
+    return nPath.replace(_homeDir, &#34;~&#34;)
 
 
 def setDir(obj):
@@ -88,8 +88,7 @@ def expandDir(obj, dirName):
 
 
 def prefixSlash(path):
-    &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.&#34;&#34;&#34;
     return f&#34;/{path}&#34; if path and not path.startswith(&#34;/&#34;) else path
 
 
@@ -241,13 +240,7 @@ def backendRep(be, kind, default=None):
         return f&#34;{URL_NB}/{be}&#34;
 
     if kind == &#34;pages&#34;:
-        return (
-            f&#34;{GH}.io&#34;
-            if be == GH
-            else f&#34;{GL}.io&#34;
-            if be == GL
-            else f&#34;pages.{beTail}&#34;
-        )
+        return f&#34;{GH}.io&#34; if be == GH else f&#34;{GL}.io&#34; if be == GL else f&#34;pages.{beTail}&#34;
     return None
 
 
@@ -473,7 +466,15 @@ def fileMove(pathSrc, pathDst):
 
 def dirExists(path):
     &#34;&#34;&#34;Whether a path exists as directory on the file system.&#34;&#34;&#34;
-    return os.path.isdir(path)
+    return (
+        False
+        if path is None
+        else True
+        if path == &#34;&#34;
+        else os.path.isdir(path)
+        if path
+        else True
+    )
 
 
 def dirRemove(path):
@@ -634,7 +635,7 @@ Put a line</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L24-L25" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L24-L25" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def abspath(path):
     return normpath(os.path.abspath(path))</code></pre>
@@ -692,7 +693,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L124-L221" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L123-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def backendRep(be, kind, default=None):
     &#34;&#34;&#34;Various backend dependent values.
@@ -784,13 +785,7 @@ but only if that module has a different backend than the main module.</p>
         return f&#34;{URL_NB}/{be}&#34;
 
     if kind == &#34;pages&#34;:
-        return (
-            f&#34;{GH}.io&#34;
-            if be == GH
-            else f&#34;{GL}.io&#34;
-            if be == GL
-            else f&#34;pages.{beTail}&#34;
-        )
+        return f&#34;{GH}.io&#34; if be == GH else f&#34;{GL}.io&#34; if be == GL else f&#34;pages.{beTail}&#34;
     return None</code></pre>
 </details>
 </dd>
@@ -802,7 +797,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L393-L395" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L386-L388" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def baseNm(path):
     &#34;&#34;&#34;Get the file part of a file name.&#34;&#34;&#34;
@@ -822,7 +817,7 @@ but only if that module has a different backend than the main module.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L482-L490" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L483-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def chDir(directory):
     &#34;&#34;&#34;Change to other directory.
@@ -850,7 +845,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L325-L353" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L318-L346" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def clearTree(path):
     &#34;&#34;&#34;Remove all files from a directory, recursively, but leave subdirs.
@@ -892,7 +887,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L455-L462" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L456-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirCopy(pathSrc, pathDst):
     &#34;&#34;&#34;Copies a directory if it exists as directory.
@@ -912,7 +907,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L320-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L313-L315" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirEmpty(target):
     target = normpath(target)
@@ -927,11 +922,19 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L444-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L437-L447" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirExists(path):
     &#34;&#34;&#34;Whether a path exists as directory on the file system.&#34;&#34;&#34;
-    return os.path.isdir(path)</code></pre>
+    return (
+        False
+        if path is None
+        else True
+        if path == &#34;&#34;
+        else os.path.isdir(path)
+        if path
+        else True
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.core.files.dirMake"><code class="name flex">
@@ -942,7 +945,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L465-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L466-L469" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirMake(path):
     &#34;&#34;&#34;Creates a directory if it does not already exist as directory.&#34;&#34;&#34;
@@ -958,7 +961,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L388-L390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L381-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirNm(path):
     &#34;&#34;&#34;Get the directory part of a file name.&#34;&#34;&#34;
@@ -973,7 +976,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L449-L452" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L450-L453" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def dirRemove(path):
     &#34;&#34;&#34;Removes a directory if it exists as directory.&#34;&#34;&#34;
@@ -989,7 +992,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L50-L57" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L50-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expandDir(obj, dirName):
     if dirName.startswith(&#34;~&#34;):
@@ -1009,7 +1012,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L28-L33" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L28-L33" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def expanduser(path):
     nPath = normpath(path)
@@ -1028,7 +1031,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L424-L431" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L417-L424" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileCopy(pathSrc, pathDst):
     &#34;&#34;&#34;Copies a file if it exists as file.
@@ -1048,7 +1051,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L413-L415" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L406-L408" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileExists(path):
     &#34;&#34;&#34;Whether a path exists as file on the file system.&#34;&#34;&#34;
@@ -1064,7 +1067,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L434-L441" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L427-L434" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileMove(pathSrc, pathDst):
     &#34;&#34;&#34;Moves a file if it exists as file.
@@ -1084,7 +1087,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L418-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L411-L414" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fileRemove(path):
     &#34;&#34;&#34;Removes a file if it exists as file.&#34;&#34;&#34;
@@ -1105,7 +1108,7 @@ home directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L471-L479" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L472-L480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getCwd():
     &#34;&#34;&#34;Get current directory.
@@ -1147,7 +1150,7 @@ Relative is either empty or it starts with a "/" plus a non-empty path.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L66-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L65-L120" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getLocation(targetDir=None):
     &#34;&#34;&#34;Get backend, org, repo, relative of directory.
@@ -1228,7 +1231,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L356-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L349-L378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def initTree(path, fresh=False, gentle=False):
     &#34;&#34;&#34;Make sure a directory exists, optionally clean it.
@@ -1270,7 +1273,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L408-L410" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L401-L403" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isDir(path):
     &#34;&#34;&#34;Whether path exists and is a directory.&#34;&#34;&#34;
@@ -1285,7 +1288,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L403-L405" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L396-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isFile(path):
     &#34;&#34;&#34;Whether path exists and is a file.&#34;&#34;&#34;
@@ -1300,7 +1303,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L7-L11" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L7-L11" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normpath(path):
     if path is None:
@@ -1317,11 +1320,10 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L60-L63" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L60-L62" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def prefixSlash(path):
-    &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;Prefix a / before a path if it is non-empty and not already starts with it.&#34;&#34;&#34;
     return f&#34;/{path}&#34; if path and not path.startswith(&#34;/&#34;) else path</code></pre>
 </details>
 </dd>
@@ -1333,7 +1335,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L44-L47" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L44-L47" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setDir(obj):
     obj.homeDir = expanduser(&#34;~&#34;)
@@ -1349,7 +1351,7 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L398-L400" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L391-L393" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def splitPath(path):
     &#34;&#34;&#34;Split a filename in a directory part and a file part.&#34;&#34;&#34;
@@ -1364,14 +1366,14 @@ subdirectories.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/core/files.py#L36-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/core/files.py#L36-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unexpanduser(path):
     nPath = normpath(path)
     # if nPath.startswith(_homeDir):
     #    return f&#34;~{nPath[len(_homeDir):]}&#34;
 
-    return nPath.replace(_homeDir, &#39;~&#39;)</code></pre>
+    return nPath.replace(_homeDir, &#34;~&#34;)</code></pre>
 </details>
 </dd>
 </dl>

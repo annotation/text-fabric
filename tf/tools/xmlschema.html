@@ -107,7 +107,7 @@ defs = A.getDefs()}
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L1-L677" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L1-L718" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 ## Meaningful information from XML schemas.
@@ -261,7 +261,7 @@ class Analysis:
             &#34;&#34;&#34;
         )
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, verbose=-1):
         &#34;&#34;&#34;Trivial initialization of the Analysis class.
 
         Further configuration happens in the `configure` method.
@@ -271,10 +271,22 @@ class Analysis:
         debug: boolean, optional False
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
 
+        self.verbose = verbose
         self.debug = debug
         self.myDir = dirNm(abspath(__file__))
+        self.setModes(debug=debug, verbose=verbose)
+
+    def setModes(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Sets debug and verbose modes.
+
+        See `tf.tools.xmlschema.Analysis`
+        &#34;&#34;&#34;
+        self.debug = debug
+        self.verbose = verbose
 
     def configure(self, baseSchema=None, override=None):
         &#34;&#34;&#34;Configure for an XML schema and overrides
@@ -290,6 +302,8 @@ class Analysis:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         &#34;&#34;&#34;
+
+        verbose = self.verbose
 
         if baseSchema is None:
             myDir = self.myDir
@@ -318,8 +332,9 @@ class Analysis:
                     otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
                     otherExists = fileExists(otherPath)
                     status = &#34;exists&#34; if otherExists else &#34;missing&#34;
-                    kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
-                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                    if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                        console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
                     if otherExists:
                         dependents.append(otherPath)
 
@@ -430,6 +445,7 @@ class Analysis:
         If all went well, there are no such absences!
         &#34;&#34;&#34;
 
+        verbose = self.verbose
         debug = self.debug
         roots = self.roots
         oroots = self.oroots
@@ -495,7 +511,8 @@ class Analysis:
             for child in node.iterchildren(tag=etree.Element):
                 findDefs(child, defining, top)
 
-        console(f&#34;Analysing {self.baseSchema}&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {self.baseSchema}&#34;)
         for root in roots:
             findDefs(root, False, False)
         if debug:
@@ -509,7 +526,8 @@ class Analysis:
         if len(oroots) &gt; 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f&#34;Analysing {override}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;Analysing {override}&#34;)
             for root in oroots:
                 findDefs(root, False, False)
             if debug:
@@ -595,6 +613,7 @@ class Analysis:
         in places where the names occur.
         &#34;&#34;&#34;
         debug = self.debug
+        verbose = self.verbose
 
         def infer():
             changed = 0
@@ -608,7 +627,8 @@ class Analysis:
                     otherInfo = definitions.get(otherBare, None)
                     if otherInfo is None:
                         if not other.startswith(&#34;xs:&#34;):
-                            console(f&#34;Warning: {other} is not defined.&#34;)
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other} is not defined.&#34;)
                         continue
                     if otherInfo[&#34;mixed&#34;]:
                         info[&#34;mixed&#34;] = True
@@ -624,7 +644,8 @@ class Analysis:
                             info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
                             changed += 1
                         else:
-                            console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other}.mixed is not defined.&#34;)
 
             return changed
 
@@ -634,7 +655,8 @@ class Analysis:
             changed = infer()
             i += 1
             if changed:
-                console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+                if verbose == 1:
+                    console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
                 if debug:
                     self.showElems()
             else:
@@ -669,18 +691,22 @@ class Analysis:
     def showOverrides(self):
         &#34;&#34;&#34;Shows the overriding definitions.
         &#34;&#34;&#34;
+        verbose = self.verbose
         override = self.override
 
         if override:
             overrides = self.overrides
             same = sum(1 for x in overrides.items() if x[1] is None)
             distinct = len(overrides) - same
-            console(f&#34;{same:&gt;3} identical override(s)&#34;)
-            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-        for (name, trans) in sorted(
-            x for x in self.overrides.items() if x[1] is not None
-        ):
-            console(f&#34;\t{name} {trans}&#34;)
+            if verbose == 1:
+                console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        if verbose &gt;= 0:
+            for (name, trans) in sorted(
+                x for x in self.overrides.items() if x[1] is not None
+            ):
+                console(f&#34;\t{name} {trans}&#34;)
 
     def task(self, task, *args):
         &#34;&#34;&#34;Implements a higher level task.
@@ -701,6 +727,7 @@ class Analysis:
             whether the task was completed successfully.
         &#34;&#34;&#34;
 
+        verbose = self.verbose
         myDir = self.myDir
 
         if task in {&#34;tei&#34;, &#34;analyse&#34;}:
@@ -725,7 +752,8 @@ class Analysis:
                 return False
             defs = self.getDefs(asTsv=True)
 
-            console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{len(defs):&gt;3} elements defined&#34;)
             with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(defs)
             console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -753,7 +781,19 @@ class Analysis:
             analyse={1},
             fromrelax={1},
         )
-        args = sys.argv[1:]
+        possibleFlags = {
+            &#34;-debug&#34;: False,
+            &#34;+debug&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+
+        args = set(sys.argv[1:])
+
+        flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+        args = {a for a in args if a not in flags}
+
         if &#34;-h&#34; in args or &#34;--help&#34; in args:
             self.help()
             return 0
@@ -775,6 +815,7 @@ class Analysis:
             console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
             return -1
 
+        self.setModes(**flags)
         return 0 if self.task(task, *args) else 1
 
 
@@ -803,7 +844,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L670-L672" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L711-L713" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     A = Analysis()
@@ -817,7 +858,7 @@ if __name__ == &#34;__main__&#34;:
 <dl>
 <dt id="tf.tools.xmlschema.Analysis"><code class="flex name class">
 <span>class <span class="ident">Analysis</span></span>
-<span>(</span><span>debug=False)</span>
+<span>(</span><span>debug=False, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Trivial initialization of the Analysis class.</p>
@@ -827,11 +868,13 @@ if __name__ == &#34;__main__&#34;:
 <dt><strong><code>debug</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to run in debug mode or not.
 In debug mode more information is shown on the console.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L122-L667" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L122-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Analysis:
     types = set(
@@ -864,7 +907,7 @@ In debug mode more information is shown on the console.</dd>
             &#34;&#34;&#34;
         )
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, verbose=-1):
         &#34;&#34;&#34;Trivial initialization of the Analysis class.
 
         Further configuration happens in the `configure` method.
@@ -874,10 +917,22 @@ In debug mode more information is shown on the console.</dd>
         debug: boolean, optional False
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
 
+        self.verbose = verbose
         self.debug = debug
         self.myDir = dirNm(abspath(__file__))
+        self.setModes(debug=debug, verbose=verbose)
+
+    def setModes(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Sets debug and verbose modes.
+
+        See `tf.tools.xmlschema.Analysis`
+        &#34;&#34;&#34;
+        self.debug = debug
+        self.verbose = verbose
 
     def configure(self, baseSchema=None, override=None):
         &#34;&#34;&#34;Configure for an XML schema and overrides
@@ -893,6 +948,8 @@ In debug mode more information is shown on the console.</dd>
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         &#34;&#34;&#34;
+
+        verbose = self.verbose
 
         if baseSchema is None:
             myDir = self.myDir
@@ -921,8 +978,9 @@ In debug mode more information is shown on the console.</dd>
                     otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
                     otherExists = fileExists(otherPath)
                     status = &#34;exists&#34; if otherExists else &#34;missing&#34;
-                    kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
-                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                    if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                        console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
                     if otherExists:
                         dependents.append(otherPath)
 
@@ -1033,6 +1091,7 @@ In debug mode more information is shown on the console.</dd>
         If all went well, there are no such absences!
         &#34;&#34;&#34;
 
+        verbose = self.verbose
         debug = self.debug
         roots = self.roots
         oroots = self.oroots
@@ -1098,7 +1157,8 @@ In debug mode more information is shown on the console.</dd>
             for child in node.iterchildren(tag=etree.Element):
                 findDefs(child, defining, top)
 
-        console(f&#34;Analysing {self.baseSchema}&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {self.baseSchema}&#34;)
         for root in roots:
             findDefs(root, False, False)
         if debug:
@@ -1112,7 +1172,8 @@ In debug mode more information is shown on the console.</dd>
         if len(oroots) &gt; 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f&#34;Analysing {override}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;Analysing {override}&#34;)
             for root in oroots:
                 findDefs(root, False, False)
             if debug:
@@ -1198,6 +1259,7 @@ In debug mode more information is shown on the console.</dd>
         in places where the names occur.
         &#34;&#34;&#34;
         debug = self.debug
+        verbose = self.verbose
 
         def infer():
             changed = 0
@@ -1211,7 +1273,8 @@ In debug mode more information is shown on the console.</dd>
                     otherInfo = definitions.get(otherBare, None)
                     if otherInfo is None:
                         if not other.startswith(&#34;xs:&#34;):
-                            console(f&#34;Warning: {other} is not defined.&#34;)
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other} is not defined.&#34;)
                         continue
                     if otherInfo[&#34;mixed&#34;]:
                         info[&#34;mixed&#34;] = True
@@ -1227,7 +1290,8 @@ In debug mode more information is shown on the console.</dd>
                             info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
                             changed += 1
                         else:
-                            console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other}.mixed is not defined.&#34;)
 
             return changed
 
@@ -1237,7 +1301,8 @@ In debug mode more information is shown on the console.</dd>
             changed = infer()
             i += 1
             if changed:
-                console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+                if verbose == 1:
+                    console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
                 if debug:
                     self.showElems()
             else:
@@ -1272,18 +1337,22 @@ In debug mode more information is shown on the console.</dd>
     def showOverrides(self):
         &#34;&#34;&#34;Shows the overriding definitions.
         &#34;&#34;&#34;
+        verbose = self.verbose
         override = self.override
 
         if override:
             overrides = self.overrides
             same = sum(1 for x in overrides.items() if x[1] is None)
             distinct = len(overrides) - same
-            console(f&#34;{same:&gt;3} identical override(s)&#34;)
-            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-        for (name, trans) in sorted(
-            x for x in self.overrides.items() if x[1] is not None
-        ):
-            console(f&#34;\t{name} {trans}&#34;)
+            if verbose == 1:
+                console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        if verbose &gt;= 0:
+            for (name, trans) in sorted(
+                x for x in self.overrides.items() if x[1] is not None
+            ):
+                console(f&#34;\t{name} {trans}&#34;)
 
     def task(self, task, *args):
         &#34;&#34;&#34;Implements a higher level task.
@@ -1304,6 +1373,7 @@ In debug mode more information is shown on the console.</dd>
             whether the task was completed successfully.
         &#34;&#34;&#34;
 
+        verbose = self.verbose
         myDir = self.myDir
 
         if task in {&#34;tei&#34;, &#34;analyse&#34;}:
@@ -1328,7 +1398,8 @@ In debug mode more information is shown on the console.</dd>
                 return False
             defs = self.getDefs(asTsv=True)
 
-            console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{len(defs):&gt;3} elements defined&#34;)
             with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(defs)
             console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -1356,7 +1427,19 @@ In debug mode more information is shown on the console.</dd>
             analyse={1},
             fromrelax={1},
         )
-        args = sys.argv[1:]
+        possibleFlags = {
+            &#34;-debug&#34;: False,
+            &#34;+debug&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+
+        args = set(sys.argv[1:])
+
+        flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+        args = {a for a in args if a not in flags}
+
         if &#34;-h&#34; in args or &#34;--help&#34; in args:
             self.help()
             return 0
@@ -1378,6 +1461,7 @@ In debug mode more information is shown on the console.</dd>
             console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
             return -1
 
+        self.setModes(**flags)
         return 0 if self.task(task, *args) else 1</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -1412,7 +1496,7 @@ and within xs:element those that are "abstract" come first.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L267-L290" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L282-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def eKey(x):
@@ -1448,7 +1532,7 @@ def eKey(x):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L138-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L138-L151" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help():
@@ -1474,7 +1558,7 @@ def help():
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L475-L477" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L493-L495" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repKind(k):
@@ -1489,7 +1573,7 @@ def repKind(k):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L471-L473" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L489-L491" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def repMixed(m):
@@ -1518,7 +1602,7 @@ In debug mode more information is shown on the console.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L168-L265" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L180-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def configure(self, baseSchema=None, override=None):
     &#34;&#34;&#34;Configure for an XML schema and overrides
@@ -1534,6 +1618,8 @@ In debug mode more information is shown on the console.</dd>
         Whether to run in debug mode or not.
         In debug mode more information is shown on the console.
     &#34;&#34;&#34;
+
+    verbose = self.verbose
 
     if baseSchema is None:
         myDir = self.myDir
@@ -1562,8 +1648,9 @@ In debug mode more information is shown on the console.</dd>
                 otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
                 otherExists = fileExists(otherPath)
                 status = &#34;exists&#34; if otherExists else &#34;missing&#34;
-                kind = &#34;INFO&#34; if otherExists else &#34;WARN~ING&#34;
-                console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
                 if otherExists:
                     dependents.append(otherPath)
 
@@ -1645,7 +1732,7 @@ If all went well, there are n such absences!</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L441-L469" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L459-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDefs(self, asTsv=False):
     &#34;&#34;&#34;Delivers the analysis results.
@@ -1704,7 +1791,7 @@ If all went well, there are no such absences!</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L292-L439" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L307-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def interpret(self):
     &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
@@ -1736,6 +1823,7 @@ If all went well, there are no such absences!</p></div>
     If all went well, there are no such absences!
     &#34;&#34;&#34;
 
+    verbose = self.verbose
     debug = self.debug
     roots = self.roots
     oroots = self.oroots
@@ -1801,7 +1889,8 @@ If all went well, there are no such absences!</p></div>
         for child in node.iterchildren(tag=etree.Element):
             findDefs(child, defining, top)
 
-    console(f&#34;Analysing {self.baseSchema}&#34;)
+    if verbose &gt;= 0:
+        console(f&#34;Analysing {self.baseSchema}&#34;)
     for root in roots:
         findDefs(root, False, False)
     if debug:
@@ -1815,7 +1904,8 @@ If all went well, there are no such absences!</p></div>
     if len(oroots) &gt; 0:
         definitions = {}
         redefinitions = collections.Counter()
-        console(f&#34;Analysing {override}&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {override}&#34;)
         for root in oroots:
             findDefs(root, False, False)
         if debug:
@@ -1867,7 +1957,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L479-L530" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L497-L552" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resolve(self, definitions):
     &#34;&#34;&#34;Resolve indirections in the definitions.
@@ -1877,6 +1967,7 @@ in places where the names occur.</p></div>
     in places where the names occur.
     &#34;&#34;&#34;
     debug = self.debug
+    verbose = self.verbose
 
     def infer():
         changed = 0
@@ -1890,7 +1981,8 @@ in places where the names occur.</p></div>
                 otherInfo = definitions.get(otherBare, None)
                 if otherInfo is None:
                     if not other.startswith(&#34;xs:&#34;):
-                        console(f&#34;Warning: {other} is not defined.&#34;)
+                        if verbose &gt;= 0:
+                            console(f&#34;Warning: {other} is not defined.&#34;)
                     continue
                 if otherInfo[&#34;mixed&#34;]:
                     info[&#34;mixed&#34;] = True
@@ -1906,7 +1998,8 @@ in places where the names occur.</p></div>
                         info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
                         changed += 1
                     else:
-                        console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+                        if verbose &gt;= 0:
+                            console(f&#34;Warning: {other}.mixed is not defined.&#34;)
 
         return changed
 
@@ -1916,7 +2009,8 @@ in places where the names occur.</p></div>
         changed = infer()
         i += 1
         if changed:
-            console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+            if verbose == 1:
+                console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
             if debug:
                 self.showElems()
         else:
@@ -1938,7 +2032,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L630-L667" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L658-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self):
     &#34;&#34;&#34;Run a task specified by arguments on the command line.
@@ -1955,7 +2049,19 @@ in places where the names occur.</p></div>
         analyse={1},
         fromrelax={1},
     )
-    args = sys.argv[1:]
+    possibleFlags = {
+        &#34;-debug&#34;: False,
+        &#34;+debug&#34;: True,
+        &#34;-verbose&#34;: -1,
+        &#34;+verbose&#34;: 0,
+        &#34;++verbose&#34;: 1,
+    }
+
+    args = set(sys.argv[1:])
+
+    flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+    args = {a for a in args if a not in flags}
+
     if &#34;-h&#34; in args or &#34;--help&#34; in args:
         self.help()
         return 0
@@ -1977,7 +2083,28 @@ in places where the names occur.</p></div>
         console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
         return -1
 
+    self.setModes(**flags)
     return 0 if self.task(task, *args) else 1</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.setModes"><code class="name flex">
+<span>def <span class="ident">setModes</span></span>(<span>self, debug=False, verbose=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets debug and verbose modes.</p>
+<p>See <code><a title="tf.tools.xmlschema.Analysis" href="#tf.tools.xmlschema.Analysis">Analysis</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L172-L178" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setModes(self, debug=False, verbose=-1):
+    &#34;&#34;&#34;Sets debug and verbose modes.
+
+    See `tf.tools.xmlschema.Analysis`
+    &#34;&#34;&#34;
+    self.debug = debug
+    self.verbose = verbose</code></pre>
 </details>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.showElems"><code class="name flex">
@@ -1989,7 +2116,7 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L532-L556" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L554-L578" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showElems(self):
     &#34;&#34;&#34;Shows the current state of definitions.
@@ -2026,23 +2153,27 @@ in places where the names occur.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L558-L572" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L580-L598" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def showOverrides(self):
     &#34;&#34;&#34;Shows the overriding definitions.
     &#34;&#34;&#34;
+    verbose = self.verbose
     override = self.override
 
     if override:
         overrides = self.overrides
         same = sum(1 for x in overrides.items() if x[1] is None)
         distinct = len(overrides) - same
-        console(f&#34;{same:&gt;3} identical override(s)&#34;)
-        console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
-    for (name, trans) in sorted(
-        x for x in self.overrides.items() if x[1] is not None
-    ):
-        console(f&#34;\t{name} {trans}&#34;)</code></pre>
+        if verbose == 1:
+            console(f&#34;{same:&gt;3} identical override(s)&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+    if verbose &gt;= 0:
+        for (name, trans) in sorted(
+            x for x in self.overrides.items() if x[1] is not None
+        ):
+            console(f&#34;\t{name} {trans}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.tools.xmlschema.Analysis.task"><code class="name flex">
@@ -2067,7 +2198,7 @@ Not all tasks require both.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/tools/xmlschema.py#L574-L628" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/tools/xmlschema.py#L600-L656" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(self, task, *args):
     &#34;&#34;&#34;Implements a higher level task.
@@ -2088,6 +2219,7 @@ Not all tasks require both.</dd>
         whether the task was completed successfully.
     &#34;&#34;&#34;
 
+    verbose = self.verbose
     myDir = self.myDir
 
     if task in {&#34;tei&#34;, &#34;analyse&#34;}:
@@ -2112,7 +2244,8 @@ Not all tasks require both.</dd>
             return False
         defs = self.getDefs(asTsv=True)
 
-        console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;{len(defs):&gt;3} elements defined&#34;)
         with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(defs)
         console(f&#34;Analysis written to {outputFile}\n&#34;)
@@ -2220,6 +2353,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.tools.xmlschema.Analysis.repMixed" href="#tf.tools.xmlschema.Analysis.repMixed">repMixed</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.resolve" href="#tf.tools.xmlschema.Analysis.resolve">resolve</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.run" href="#tf.tools.xmlschema.Analysis.run">run</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.setModes" href="#tf.tools.xmlschema.Analysis.setModes">setModes</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.showElems" href="#tf.tools.xmlschema.Analysis.showElems">showElems</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.showOverrides" href="#tf.tools.xmlschema.Analysis.showOverrides">showOverrides</a></code></li>
 <li><code><a title="tf.tools.xmlschema.Analysis.task" href="#tf.tools.xmlschema.Analysis.task">task</a></code></li>

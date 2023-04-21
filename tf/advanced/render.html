@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/advanced/render.py#L1-L546" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/advanced/render.py#L1-L571" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -63,6 +63,8 @@ because all information it needs from the `app` object is stored in the tree,
 and all methods that need to be invoked on the `app` object are also accessible
 directly from an attribute in the tree.
 &#34;&#34;&#34;
+
+import re
 
 from .helpers import htmlSafe, NB, dh
 from .unravel import _unravel
@@ -158,9 +160,9 @@ def _render(
             after = props.after
     else:
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
-        contrib = _plainTree(tree, outer, first, last, level, boundaryCls, passage)
-        if contribB:
-            html.append(contribB)
+        contrib = _plainTree(
+            contribB, tree, outer, first, last, level, boundaryCls, passage
+        )
         if contrib:
             html.append(contrib)
 
@@ -221,7 +223,11 @@ def _plainPost(contribE, html):
         html.append(contribE)
 
 
+SPAN_RE = re.compile(r&#34;^(&lt;span\b[^&gt;]*&gt;)(.*)(&lt;/span&gt;)$&#34;, re.S)
+
+
 def _plainTree(
+    contribB,
     tree,
     outer,
     first,
@@ -263,7 +269,7 @@ def _plainTree(
 
     if plainCustom is not None:
         contrib = plainCustom(options, chunk, nType, outer)
-        return contrib + graphics
+        return contribB + contrib + graphics
 
     if isSlotOrDescend:
         text = textMethod(
@@ -277,7 +283,26 @@ def _plainTree(
         )
         if text:
             material = htmlSafe(text, isHtml, math=showMath)
-            contrib = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;{material}&lt;/span&gt;&#39;
+            cb = f&#39;&lt;span class=&#34;{textCls}&#34;&gt;&#39;
+            ce = &#34;&lt;/span&gt;&#34;
+
+            # a &lt;br&gt; in flex box has no effect
+            # so we create a &#34;breaking&#34; span by setting the width to 100% and
+            # the height to 0
+            # See https://tobiasahlin.com/blog/flexbox-break-to-new-row/
+            if &#34;&lt;br&gt;&#34; in material:
+                match = SPAN_RE.match(material)
+                if match:
+                    (start, content, end) = match.group(1, 2, 3)
+                else:
+                    (start, content, end) = (&#34;&#34;, material, &#34;&#34;)
+                parts = content.split(&#34;&lt;br&gt;&#34;)
+                material = &#39;&lt;span class=&#34;break&#34;&gt;&lt;br&gt;&lt;/span&gt;&#39;.join(
+                    f&#34;{cb}{start}{part}{end}{ce}&#34; for part in parts
+                )
+                contrib = material
+            else:
+                contrib = f&#34;{cb}{material}{ce}&#34;
     else:
         tplFilled = getText(
             False,
@@ -294,7 +319,7 @@ def _plainTree(
         if tplFilled:
             contrib = f&#39;&lt;span class=&#34;{textCls} {ltr}&#34;&gt;{tplFilled}&lt;/span&gt;&#39;
 
-    return contrib + graphics
+    return contribB + contrib + graphics
 
 
 # PRETTY LOW-LEVEL
@@ -605,7 +630,7 @@ def _getFeatures(info, n, nType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/advanced/render.py#L28-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/advanced/render.py#L30-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;

@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/lib.py#L1-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/lib.py#L1-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Uitility functions
@@ -41,6 +41,107 @@ import gzip
 from .parameters import PICKLE_PROTOCOL, GZIP_LEVEL
 from .core.helpers import console
 from .core.files import expanduser as ex, fileExists, dirMake, splitPath
+
+
+def writeList(data, dest, intCols=None):
+    &#34;&#34;&#34;Writes a list of tuples sets to a tsv file.
+
+    The members of the tuples will be written
+    as string values in tab separated lines, with newlines and tabs
+    escaped with backslashes.
+
+    The first line has a tab-separated values that are either the
+    string `str` or the string `int`, indicating the type of values of the
+    corresponding column.
+    values are supposed to be integers.
+
+    Intended use: if you have data from an NLP pipeline, it usually comes as a list
+    of tuples, where each tuple has two position columns plus extra columns
+    for linguistic features, which are strings or numbers.
+
+    If there is no data, an empty file is created, with a header line.
+    If intCols is not given, the header line itself is empty.
+
+    !!! caution &#34;Equal length&#34;
+        It is assumed that all tuples have equal length.
+
+    Parameters
+    ----------
+    data: list of tuples
+    dest: string
+        A file path. You may use `~` to refer to your home directory.
+        The result will be written from this file.
+    intCols: tuple, optional None
+        A sequence of boolean values, indicating which columns have integer values.
+        If None, all columns are of type string.
+
+    Returns
+    -------
+    boolean
+        `True` if all went well, `False` otherwise.
+    &#34;&#34;&#34;
+
+    destPath = ex(dest)
+    (baseDir, fileName) = splitPath(destPath)
+
+    dirMake(baseDir)
+
+    with open(destPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        if intCols is None:
+            intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
+        else:
+            intCols = {i: isInt for (i, isInt) in enumerate(intCols)}
+
+        headLine = &#34;\t&#34;.join(&#34;int&#34; if intCols[i] else &#34;str&#34; for i in sorted(intCols))
+        fh.write(f&#34;{headLine}\n&#34;)
+
+        for fields in data:
+            dataLine = &#34;\t&#34;.join(
+                str(f) if intCols[i] else str(f).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+                for (i, f) in enumerate(fields)
+            )
+            fh.write(f&#34;{dataLine}\n&#34;)
+    return True
+
+
+def readList(source):
+    &#34;&#34;&#34;Reads list of tuples from a tsv file.
+
+    The first line of the tsv file will be interpreted as the types of the
+    columns.
+
+    Parameters
+    ----------
+    source: string
+        A file path. You may use `~` to refer to your home directory.
+        This file must contain a gzipped, pickled data structure.
+
+    Returns
+    -------
+    data | boolean
+        The list of tuples obtained from the file if all went well, False otherwise.
+
+    &#34;&#34;&#34;
+
+    sourcePath = ex(source)
+    if not fileExists(sourcePath):
+        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
+        return False
+
+    data = []
+
+    with open(sourcePath, encoding=&#34;utf8&#34;) as fh:
+        colInt = {
+            i: tp == &#34;int&#34; for (i, tp) in enumerate(next(fh).rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+        }
+        for line in fh:
+            fields = tuple(
+                int(f) if colInt[i] else f.replace(&#34;\\n&#34;, &#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;)
+                for (i, f) in enumerate(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+            )
+            data.append(fields)
+
+    return data
 
 
 def writeSets(sets, dest):
@@ -110,6 +211,69 @@ def readSets(source):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.lib.readList"><code class="name flex">
+<span>def <span class="ident">readList</span></span>(<span>source)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads list of tuples from a tsv file.</p>
+<p>The first line of the tsv file will be interpreted as the types of the
+columns.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>source</code></strong> :&ensp;<code>string</code></dt>
+<dd>A file path. You may use <code>~</code> to refer to your home directory.
+This file must contain a gzipped, pickled data structure.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>data | boolean</code></dt>
+<dd>The list of tuples obtained from the file if all went well, False otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/lib.py#L75-L112" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def readList(source):
+    &#34;&#34;&#34;Reads list of tuples from a tsv file.
+
+    The first line of the tsv file will be interpreted as the types of the
+    columns.
+
+    Parameters
+    ----------
+    source: string
+        A file path. You may use `~` to refer to your home directory.
+        This file must contain a gzipped, pickled data structure.
+
+    Returns
+    -------
+    data | boolean
+        The list of tuples obtained from the file if all went well, False otherwise.
+
+    &#34;&#34;&#34;
+
+    sourcePath = ex(source)
+    if not fileExists(sourcePath):
+        console(f&#39;Sets file &#34;{source}&#34; does not exist.&#39;)
+        return False
+
+    data = []
+
+    with open(sourcePath, encoding=&#34;utf8&#34;) as fh:
+        colInt = {
+            i: tp == &#34;int&#34; for (i, tp) in enumerate(next(fh).rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+        }
+        for line in fh:
+            fields = tuple(
+                int(f) if colInt[i] else f.replace(&#34;\\n&#34;, &#34;\n&#34;).replace(&#34;\\t&#34;, &#34;\t&#34;)
+                for (i, f) in enumerate(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+            )
+            data.append(fields)
+
+    return data</code></pre>
+</details>
+</dd>
 <dt id="tf.lib.readSets"><code class="name flex">
 <span>def <span class="ident">readSets</span></span>(<span>source)</span>
 </code></dt>
@@ -131,7 +295,7 @@ This file must contain a gzipped, pickled data structure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/lib.py#L46-L71" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/lib.py#L147-L172" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSets(source):
     &#34;&#34;&#34;Reads a dictionary of named sets from file.
@@ -161,6 +325,109 @@ This file must contain a gzipped, pickled data structure.</dd>
     return sets</code></pre>
 </details>
 </dd>
+<dt id="tf.lib.writeList"><code class="name flex">
+<span>def <span class="ident">writeList</span></span>(<span>data, dest, intCols=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Writes a list of tuples sets to a tsv file.</p>
+<p>The members of the tuples will be written
+as string values in tab separated lines, with newlines and tabs
+escaped with backslashes.</p>
+<p>The first line has a tab-separated values that are either the
+string <code>str</code> or the string <code>int</code>, indicating the type of values of the
+corresponding column.
+values are supposed to be integers.</p>
+<p>Intended use: if you have data from an NLP pipeline, it usually comes as a list
+of tuples, where each tuple has two position columns plus extra columns
+for linguistic features, which are strings or numbers.</p>
+<p>If there is no data, an empty file is created, with a header line.
+If intCols is not given, the header line itself is empty.</p>
+<div class="admonition caution">
+<p class="admonition-title">Equal length</p>
+<p>It is assumed that all tuples have equal length.</p>
+</div>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>list</code> of <code>tuples</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>dest</code></strong> :&ensp;<code>string</code></dt>
+<dd>A file path. You may use <code>~</code> to refer to your home directory.
+The result will be written from this file.</dd>
+<dt><strong><code>intCols</code></strong> :&ensp;<code>tuple</code>, optional <code>None</code></dt>
+<dd>A sequence of boolean values, indicating which columns have integer values.
+If None, all columns are of type string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd><code>True</code> if all went well, <code>False</code> otherwise.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/lib.py#L14-L72" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def writeList(data, dest, intCols=None):
+    &#34;&#34;&#34;Writes a list of tuples sets to a tsv file.
+
+    The members of the tuples will be written
+    as string values in tab separated lines, with newlines and tabs
+    escaped with backslashes.
+
+    The first line has a tab-separated values that are either the
+    string `str` or the string `int`, indicating the type of values of the
+    corresponding column.
+    values are supposed to be integers.
+
+    Intended use: if you have data from an NLP pipeline, it usually comes as a list
+    of tuples, where each tuple has two position columns plus extra columns
+    for linguistic features, which are strings or numbers.
+
+    If there is no data, an empty file is created, with a header line.
+    If intCols is not given, the header line itself is empty.
+
+    !!! caution &#34;Equal length&#34;
+        It is assumed that all tuples have equal length.
+
+    Parameters
+    ----------
+    data: list of tuples
+    dest: string
+        A file path. You may use `~` to refer to your home directory.
+        The result will be written from this file.
+    intCols: tuple, optional None
+        A sequence of boolean values, indicating which columns have integer values.
+        If None, all columns are of type string.
+
+    Returns
+    -------
+    boolean
+        `True` if all went well, `False` otherwise.
+    &#34;&#34;&#34;
+
+    destPath = ex(dest)
+    (baseDir, fileName) = splitPath(destPath)
+
+    dirMake(baseDir)
+
+    with open(destPath, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+        if intCols is None:
+            intCols = {i: False for i in range(len(data[0]))} if len(data) else {}
+        else:
+            intCols = {i: isInt for (i, isInt) in enumerate(intCols)}
+
+        headLine = &#34;\t&#34;.join(&#34;int&#34; if intCols[i] else &#34;str&#34; for i in sorted(intCols))
+        fh.write(f&#34;{headLine}\n&#34;)
+
+        for fields in data:
+            dataLine = &#34;\t&#34;.join(
+                str(f) if intCols[i] else str(f).replace(&#34;\t&#34;, &#34;\\t&#34;).replace(&#34;\n&#34;, &#34;\\n&#34;)
+                for (i, f) in enumerate(fields)
+            )
+            fh.write(f&#34;{dataLine}\n&#34;)
+    return True</code></pre>
+</details>
+</dd>
 <dt id="tf.lib.writeSets"><code class="name flex">
 <span>def <span class="ident">writeSets</span></span>(<span>sets, dest)</span>
 </code></dt>
@@ -185,7 +452,7 @@ The result will be written from this file.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/lib.py#L14-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/lib.py#L115-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeSets(sets, dest):
     &#34;&#34;&#34;Writes a dictionary of named sets to file.
@@ -290,7 +557,9 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.lib.readList" href="#tf.lib.readList">readList</a></code></li>
 <li><code><a title="tf.lib.readSets" href="#tf.lib.readSets">readSets</a></code></li>
+<li><code><a title="tf.lib.writeList" href="#tf.lib.writeList">writeList</a></code></li>
 <li><code><a title="tf.lib.writeSets" href="#tf.lib.writeSets">writeSets</a></code></li>
 </ul>
 </li>

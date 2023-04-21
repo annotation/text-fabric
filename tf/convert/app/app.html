@@ -26,11 +26,12 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/app/app.py#L1-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/app/app.py#L1-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 from tf.advanced.app import App
 
+# INSERT import
 
 KNOWN_RENDS = &#34;rèndValues&#34;
 
@@ -48,6 +49,8 @@ class TfApp(App):
         )
         app.isFeatures = tuple(f for f in app.api.Fall() if f.startswith(&#34;is_&#34;))
 
+# INSERT init
+
     def _wrapHtml(app, n):
         rendFeatures = app.rendFeatures
         isFeatures = app.isFeatures
@@ -63,7 +66,9 @@ class TfApp(App):
         iClses = &#34; &#34;.join(ic for ic in isFeatures if Fs(ic).v(n))
         if rClses or iClses:
             material = f&#39;&lt;span class=&#34;{rClses} {iClses}&#34;&gt;{material}&lt;/span&gt;&#39;
-        return material</code></pre>
+        return material
+
+# INSERT extra</code></pre>
 </details>
 </section>
 <section>
@@ -81,7 +86,7 @@ class TfApp(App):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/app/app.py#L8-L9" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/app/app.py#L9-L10" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fmt_layout(app, n, **kwargs):
     return app._wrapHtml(n)</code></pre>
@@ -134,7 +139,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/app/app.py#L12-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/app/app.py#L13-L39" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TfApp(App):
     def __init__(app, *args, **kwargs):
@@ -144,6 +149,8 @@ loading features. Used to experiment with performance.</dd>
             (f, f[5:]) for f in app.api.Fall() if f.startswith(&#34;rend_&#34;)
         )
         app.isFeatures = tuple(f for f in app.api.Fall() if f.startswith(&#34;is_&#34;))
+
+# INSERT init
 
     def _wrapHtml(app, n):
         rendFeatures = app.rendFeatures

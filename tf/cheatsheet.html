@@ -1284,6 +1284,19 @@ from tf.lib import writeSets
 </dl>
 <hr>
 <h2 id="interchange-with-external-annotation-tools">Interchange with external annotation tools</h2>
+<pre><code class="language-python">from tf.convert.addnlp import NLPipeline
+</code></pre>
+<dl>
+<dt><pre><code class="language-python">NLPipeline()
+</code></pre></dt>
+<dd>
+<p>generate plain text, feed into NLP, ingest results</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
+</dd>
+</dl>
+<hr>
 <pre><code class="language-python">from convert.recorder import Recorder
 </code></pre>
 <dl>
@@ -1487,11 +1500,20 @@ the XML that adheres to that schema.</p>
 <dd>
 <p><code><a title="tf.tools.xmlschema" href="tools/xmlschema.html">tf.tools.xmlschema</a></code></p>
 </dd>
+<dt><pre><code class="language-sh">addnlp
+</code></pre></dt>
+<dd>
+<p>When run in the repo of a TF dataset, it adds tokens and sentences to it
+after running an NLP pipeline (Spacy) to get them.</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
+</dd>
 </dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md

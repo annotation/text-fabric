@@ -69,7 +69,6 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent=&quot;auto&quot;,
 )
 
 if good:
@@ -143,7 +142,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1-L1630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1-L1643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -197,7 +196,6 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent=&#34;auto&#34;,
 )
 
 if good:
@@ -298,7 +296,7 @@ import re
 
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.helpers import itemize, isInt
-from ..core.timestamp import SILENT_D, silentConvert
+from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
 
 class CV:
@@ -317,6 +315,7 @@ class CV:
         &#34;&#34;&#34;
 
         self.TF = TF
+        self.silent = silent
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -326,6 +325,7 @@ class CV:
         setSilent(silent)
 
     def _showWarnings(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -343,11 +343,11 @@ class CV:
 
             if warnings:
                 for (kind, msgs) in sorted(warnings.items()):
-                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;)
+                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;, force=silent != DEEP)
                     indent(level=2)
                     for msg in sorted(set(msgs))[0:20]:
                         if msg:
-                            method(f&#34;{msg}&#34;, tm=False)
+                            method(f&#34;{msg}&#34;, tm=False, force=silent != DEEP)
                 self.warnings = {}
                 if warn:
                     info(&#34;use `cv.walk(..., warn=False)` to continue after warnings&#34;)
@@ -358,6 +358,7 @@ class CV:
                     info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
 
     def _showErrors(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -380,7 +381,7 @@ class CV:
             error(&#34;STOPPED by the stop() instruction&#34;)
         elif not errors:
             if self.good:
-                info(&#34;OK&#34;)
+                info(&#34;OK&#34;, force=silent != DEEP)
             else:
                 error(&#34;STOPPED because of warnings&#34;)
 
@@ -487,9 +488,10 @@ class CV:
         info = tmObj.info
         indent = tmObj.indent
         setSilent = tmObj.setSilent
+        silent = self.silent
 
         indent(level=0, reset=True)
-        info(&#34;Importing data from walking through the source ...&#34;)
+        info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
 
         self.force = force
         self.good = True
@@ -527,7 +529,6 @@ class CV:
         self._reassignFeatures()
 
         if generateTf:
-
             indent(level=0)
 
             if self.good or self.force:
@@ -535,6 +536,7 @@ class CV:
                     metaData=self.metaData,
                     nodeFeatures=self.nodeFeatures,
                     edgeFeatures=self.edgeFeatures,
+                    silent=silent,
                 )
 
         self._showWarnings()
@@ -543,6 +545,7 @@ class CV:
         return self.good
 
     def _prepareMeta(self, otext, generic):
+        silent = self.silent
         varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
 
         tmObj = self.TF.tmObj
@@ -552,7 +555,7 @@ class CV:
         if not self.good and not self.force:
             return
 
-        info(&#34;Preparing metadata... &#34;)
+        info(&#34;Preparing metadata... &#34;, force=silent != DEEP)
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -1340,13 +1343,14 @@ class CV:
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good:
             return
 
-        info(&#34;Following director... &#34;)
+        info(&#34;Following director... &#34;, force=silent != DEEP)
 
         slotType = self.slotType
         errors = self.errors
@@ -1375,7 +1379,7 @@ class CV:
             return
 
         for (actionType, amount) in sorted(self.stats.items()):
-            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;)
+            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;, force=silent != DEEP)
 
         totalNodes = 0
 
@@ -1385,7 +1389,7 @@ class CV:
             slotRep = &#34; = slot type&#34; if nType == slotType else &#34;&#34;
             info(f&#39;{lastSeq:&gt;8} x &#34;{nType}&#34; node {slotRep}&#39;, tm=False)
             totalNodes += lastSeq
-        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False)
+        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False, force=silent != DEEP)
 
         self.totalNodes = totalNodes
 
@@ -1402,6 +1406,7 @@ class CV:
         self._showErrors()
 
     def _removeUnlinked(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -1426,7 +1431,7 @@ class CV:
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info(&#34;Removing unlinked nodes ... &#34;)
+            info(&#34;Removing unlinked nodes ... &#34;, force=silent != DEEP)
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -1435,7 +1440,10 @@ class CV:
                 totalRemoved += lSeqs
                 rep = &#34; ...&#34; if lSeqs &gt; 5 else &#34;&#34;
                 pl = &#34;&#34; if lSeqs == 1 else &#34;s&#34;
-                info(f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;)
+                info(
+                    f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;,
+                    force=silent != DEEP,
+                )
                 for seq in seqs:
                     node = (nType, seq)
                     theseNodes.discard(seq)
@@ -1449,19 +1457,20 @@ class CV:
                                 if node in toValues:
                                     del toValues[node]
             pl = &#34;&#34; if totalRemoved == 1 else &#34;s&#34;
-            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;)
+            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;, force=silent != DEEP)
             self.totalNodes -= totalRemoved
-            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;)
+            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;, force=silent != DEEP)
             indent(level=1)
 
     def _checkGraph(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;checking for nodes and edges ... &#34;)
+        info(&#34;checking for nodes and edges ... &#34;, force=silent != DEEP)
 
         nodes = self.nodes
         errors = self.errors
@@ -1487,13 +1496,14 @@ class CV:
         self._showErrors()
 
     def _checkFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;checking (section) features ... &#34;)
+        info(&#34;checking (section) features ... &#34;, force=silent != DEEP)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1648,13 +1658,14 @@ class CV:
         self._showErrors()
 
     def _reorderNodes(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;reordering nodes ...&#34;)
+        info(&#34;reordering nodes ...&#34;, force=silent != DEEP)
 
         nodeTypes = self.curSeq
         nodes = self.nodes
@@ -1685,7 +1696,7 @@ class CV:
                 nodeMap[(nType, seq)] = n
 
         self.maxNode = n
-        info(f&#34;Max node = {n}&#34;)
+        info(f&#34;Max node = {n}&#34;, force=silent != DEEP)
 
         self._showErrors()
 
@@ -1713,6 +1724,7 @@ class CV:
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -1720,7 +1732,7 @@ class CV:
         if not self.good and not self.force:
             return
 
-        info(&#34;reassigning feature values ...&#34;)
+        info(&#34;reassigning feature values ...&#34;, force=silent != DEEP)
 
         nodeMap = self.nodeMap
         oslots = self.oslots
@@ -1797,7 +1809,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L157-L1630" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L156-L1643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
@@ -1815,6 +1827,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         &#34;&#34;&#34;
 
         self.TF = TF
+        self.silent = silent
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -1824,6 +1837,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         setSilent(silent)
 
     def _showWarnings(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -1841,11 +1855,11 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 
             if warnings:
                 for (kind, msgs) in sorted(warnings.items()):
-                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;)
+                    method(f&#34;WARNING {kind} ({len(msgs)} x):&#34;, force=silent != DEEP)
                     indent(level=2)
                     for msg in sorted(set(msgs))[0:20]:
                         if msg:
-                            method(f&#34;{msg}&#34;, tm=False)
+                            method(f&#34;{msg}&#34;, tm=False, force=silent != DEEP)
                 self.warnings = {}
                 if warn:
                     info(&#34;use `cv.walk(..., warn=False)` to continue after warnings&#34;)
@@ -1856,6 +1870,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                     info(&#34;use `cv.walk(..., warn=None)` to suppress warnings&#34;)
 
     def _showErrors(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -1878,7 +1893,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             error(&#34;STOPPED by the stop() instruction&#34;)
         elif not errors:
             if self.good:
-                info(&#34;OK&#34;)
+                info(&#34;OK&#34;, force=silent != DEEP)
             else:
                 error(&#34;STOPPED because of warnings&#34;)
 
@@ -1985,9 +2000,10 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         info = tmObj.info
         indent = tmObj.indent
         setSilent = tmObj.setSilent
+        silent = self.silent
 
         indent(level=0, reset=True)
-        info(&#34;Importing data from walking through the source ...&#34;)
+        info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
 
         self.force = force
         self.good = True
@@ -2025,7 +2041,6 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self._reassignFeatures()
 
         if generateTf:
-
             indent(level=0)
 
             if self.good or self.force:
@@ -2033,6 +2048,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                     metaData=self.metaData,
                     nodeFeatures=self.nodeFeatures,
                     edgeFeatures=self.edgeFeatures,
+                    silent=silent,
                 )
 
         self._showWarnings()
@@ -2041,6 +2057,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return self.good
 
     def _prepareMeta(self, otext, generic):
+        silent = self.silent
         varRe = re.compile(r&#34;\{([^}]+)\}&#34;)
 
         tmObj = self.TF.tmObj
@@ -2050,7 +2067,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         if not self.good and not self.force:
             return
 
-        info(&#34;Preparing metadata... &#34;)
+        info(&#34;Preparing metadata... &#34;, force=silent != DEEP)
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -2838,13 +2855,14 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good:
             return
 
-        info(&#34;Following director... &#34;)
+        info(&#34;Following director... &#34;, force=silent != DEEP)
 
         slotType = self.slotType
         errors = self.errors
@@ -2873,7 +2891,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             return
 
         for (actionType, amount) in sorted(self.stats.items()):
-            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;)
+            info(f&#39;&#34;{actionType}&#34; actions: {amount}&#39;, force=silent != DEEP)
 
         totalNodes = 0
 
@@ -2883,7 +2901,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             slotRep = &#34; = slot type&#34; if nType == slotType else &#34;&#34;
             info(f&#39;{lastSeq:&gt;8} x &#34;{nType}&#34; node {slotRep}&#39;, tm=False)
             totalNodes += lastSeq
-        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False)
+        info(f&#34;{totalNodes:&gt;8} nodes of all types&#34;, tm=False, force=silent != DEEP)
 
         self.totalNodes = totalNodes
 
@@ -2900,6 +2918,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self._showErrors()
 
     def _removeUnlinked(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -2924,7 +2943,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info(&#34;Removing unlinked nodes ... &#34;)
+            info(&#34;Removing unlinked nodes ... &#34;, force=silent != DEEP)
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -2933,7 +2952,10 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                 totalRemoved += lSeqs
                 rep = &#34; ...&#34; if lSeqs &gt; 5 else &#34;&#34;
                 pl = &#34;&#34; if lSeqs == 1 else &#34;s&#34;
-                info(f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;)
+                info(
+                    f&#39;{lSeqs:&gt;6} unlinked &#34;{nType}&#34; node{pl}: {seqs[0:5]}{rep}&#39;,
+                    force=silent != DEEP,
+                )
                 for seq in seqs:
                     node = (nType, seq)
                     theseNodes.discard(seq)
@@ -2947,19 +2969,20 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                                 if node in toValues:
                                     del toValues[node]
             pl = &#34;&#34; if totalRemoved == 1 else &#34;s&#34;
-            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;)
+            info(f&#34;{totalRemoved:&gt;6} unlinked node{pl}&#34;, force=silent != DEEP)
             self.totalNodes -= totalRemoved
-            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;)
+            info(f&#34;Leaving {self.totalNodes:&gt;6} nodes&#34;, force=silent != DEEP)
             indent(level=1)
 
     def _checkGraph(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;checking for nodes and edges ... &#34;)
+        info(&#34;checking for nodes and edges ... &#34;, force=silent != DEEP)
 
         nodes = self.nodes
         errors = self.errors
@@ -2985,13 +3008,14 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self._showErrors()
 
     def _checkFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;checking (section) features ... &#34;)
+        info(&#34;checking (section) features ... &#34;, force=silent != DEEP)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -3146,13 +3170,14 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self._showErrors()
 
     def _reorderNodes(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info(&#34;reordering nodes ...&#34;)
+        info(&#34;reordering nodes ...&#34;, force=silent != DEEP)
 
         nodeTypes = self.curSeq
         nodes = self.nodes
@@ -3183,7 +3208,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
                 nodeMap[(nType, seq)] = n
 
         self.maxNode = n
-        info(f&#34;Max node = {n}&#34;)
+        info(f&#34;Max node = {n}&#34;, force=silent != DEEP)
 
         self._showErrors()
 
@@ -3211,6 +3236,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -3218,7 +3244,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         if not self.good and not self.force:
             return
 
-        info(&#34;reassigning feature values ...&#34;)
+        info(&#34;reassigning feature values ...&#34;, force=silent != DEEP)
 
         nodeMap = self.nodeMap
         oslots = self.oslots
@@ -3329,7 +3355,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1042-L1066" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1046-L1070" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3381,7 +3407,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1068-L1089" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1072-L1093" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3427,7 +3453,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1091-L1105" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1095-L1109" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3478,7 +3504,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L906-L938" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L910-L942" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3541,7 +3567,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L876-L904" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L880-L908" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3589,7 +3615,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1028-L1040" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1032-L1044" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def features(self):
     &#34;&#34;&#34;Get the list of all features.
@@ -3635,7 +3661,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L1107-L1146" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L1111-L1150" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3705,7 +3731,7 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L814-L844" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L818-L848" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
     &#34;&#34;&#34;Link the given, existing slots to a node.
@@ -3767,7 +3793,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L846-L874" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L850-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3827,7 +3853,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L975-L1026" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L979-L1030" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3928,7 +3954,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L677-L755" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L681-L759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -4042,7 +4068,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L940-L973" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L944-L977" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4104,7 +4130,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L780-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L784-L816" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -4168,7 +4194,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L629-L675" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L633-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -4244,7 +4270,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L601-L627" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L605-L631" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4297,7 +4323,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L757-L778" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L761-L782" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4408,7 +4434,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/walker.py#L240-L396" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/walker.py#L242-L399" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4513,9 +4539,10 @@ to TF.</p>
     info = tmObj.info
     indent = tmObj.indent
     setSilent = tmObj.setSilent
+    silent = self.silent
 
     indent(level=0, reset=True)
-    info(&#34;Importing data from walking through the source ...&#34;)
+    info(&#34;Importing data from walking through the source ...&#34;, force=silent != DEEP)
 
     self.force = force
     self.good = True
@@ -4553,7 +4580,6 @@ to TF.</p>
     self._reassignFeatures()
 
     if generateTf:
-
         indent(level=0)
 
         if self.good or self.force:
@@ -4561,6 +4587,7 @@ to TF.</p>
                 metaData=self.metaData,
                 nodeFeatures=self.nodeFeatures,
                 edgeFeatures=self.edgeFeatures,
+                silent=silent,
             )
 
     self._showWarnings()

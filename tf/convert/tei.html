@@ -74,7 +74,7 @@ which you can use as a starting point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L1-L2733" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1-L2960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -157,6 +157,7 @@ from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..core.helpers import console
 from ..convert.walker import CV
+from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.helpers import mergeDict
 from ..core.files import (
     abspath,
@@ -174,6 +175,8 @@ from ..core.files import (
 
 from ..tools.xmlschema import Analysis
 
+
+ZWSP = &#34;\u200b&#34;  # zero-width space
 
 CSS_REND = dict(
     h1=(
@@ -574,6 +577,7 @@ class TEI:
         appConfig={},
         docMaterial={},
         force=False,
+        verbose=-1,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -783,6 +787,9 @@ class TEI:
             If True, the `app` task will overwrite existing files with generated
             files, and remove any files with `_generated` in the name.
             Except for the logo, which will not be overwritten.
+
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
@@ -790,9 +797,13 @@ class TEI:
                 &#34;Not working in a repo: &#34;
                 f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
             )
-            quit()
+            self.good = False
+            return
 
-        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
+        if verbose == 1:
+            console(
+                f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;
+            )
 
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
@@ -859,6 +870,7 @@ class TEI:
         self.appConfig = appConfig
         self.docMaterial = docMaterial
         self.force = force
+        self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
@@ -904,10 +916,13 @@ class TEI:
                 just starts the text-fabric browser on the result;
 
         flags:
-            test:
-                run in test mode
-            force:
-                when generating app files, overwrite previously existing app files
+            -test, +test:
+                whether to run in test mode
+            -force, +force:
+                whether to overwrite previously existing app files when
+                generating app files
+            +verbose, ++verbose:
+                Produce more progress and reporting messages
         &#34;&#34;&#34;
         )
 
@@ -948,12 +963,18 @@ class TEI:
         schemaDoc = etree.parse(schemaFile)
         return etree.XMLSchema(schemaDoc)
 
-    def getElementInfo(self):
+    def getElementInfo(self, verbose=None):
         &#34;&#34;&#34;Analyse the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
         fast-accessible.
+
+        Parameters
+        ----------
+        verbose: boolean, optional None
+            Produce more progress and reporting messages
+            If not passed, take the verbose member of this object.
 
         Returns
         -------
@@ -962,15 +983,18 @@ class TEI:
             for each name is a tuple of booleans: whether the element is simple
             or complex; whether the element allows mixed content or only pure content.
         &#34;&#34;&#34;
+        if verbose is not None:
+            self.verbose = verbose
+        verbose = self.verbose
         schemaFile = self.schemaFile
 
         self.elementDefs = {}
 
-        A = Analysis()
+        A = Analysis(verbose=verbose)
         A.configure(override=schemaFile)
         A.interpret()
         if not A.good:
-            quit()
+            return
 
         self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
@@ -991,9 +1015,11 @@ class TEI:
 
             It is the name of the single XML file.
         &#34;&#34;&#34;
+        verbose = self.verbose
         sourceDir = self.sourceDir
         sectionModel = self.sectionModel
-        console(f&#34;Section model {sectionModel}&#34;)
+        if verbose == 1:
+            console(f&#34;Section model {sectionModel}&#34;)
 
         if sectionModel == &#34;I&#34;:
             testMode = self.testMode
@@ -1067,12 +1093,15 @@ class TEI:
         if not self.good:
             return
 
+        verbose = self.verbose
+
         sourceDir = self.sourceDir
         reportDir = self.reportDir
         docsDir = self.docsDir
         sectionModel = self.sectionModel
 
-        console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+        if verbose == 1:
+            console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
 
         kindLabels = dict(
             format=&#34;Formatting Attributes&#34;,
@@ -1179,6 +1208,8 @@ class TEI:
 
             console(
                 f&#34;{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}&#34;
+                if verbose &gt;= 0 or nErrors
+                else &#34;Validation OK&#34;
             )
 
         def writeNamespaces():
@@ -1209,6 +1240,8 @@ class TEI:
             console(
                 f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
                 f&#34;written to {errorFile}&#34;
+                if verbose &gt;= 0 or nErrors
+                else &#34;Namespaces OK&#34;
             )
 
         def writeReport():
@@ -1261,7 +1294,8 @@ class TEI:
                     for (tag, tagInfo) in sorted(analysis[kind].items()):
                         writeTagInfo(tag, tagInfo)
 
-            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
 
         def writeDoc():
             teiUrl = &#34;https://tei-c.org/release/doc/tei-p5-doc/en/html&#34;
@@ -1385,10 +1419,12 @@ class TEI:
         object
             The `tf.convert.walker.CV` converter object, initialized.
         &#34;&#34;&#34;
+        verbose = self.verbose
         tfPath = self.tfPath
 
-        TF = Fabric(locations=tfPath)
-        return CV(TF)
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=tfPath, silent=silent)
+        return CV(TF, silent=silent)
 
     # DIRECTOR
 
@@ -1448,8 +1484,7 @@ class TEI:
 
         IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
-        ZWSP = &#34;\u200b&#34;  # zero-width space
-
+        verbose = self.verbose
         sourceDir = self.sourceDir
         wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
@@ -1464,7 +1499,7 @@ class TEI:
         )
 
         parser = self.getParser()
-        self.getElementInfo()
+        self.getElementInfo(verbose=-1)
 
         # WALKERS
 
@@ -1617,7 +1652,7 @@ class TEI:
                 if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
                     return False
 
-                return nNest &gt; 0 and (
+                outcome = nNest &gt; 0 and (
                     nest[-1] == TEI_HEADER
                     or (
                         nNest &gt; 1
@@ -1628,6 +1663,10 @@ class TEI:
                         )
                     )
                 )
+                if outcome:
+                    cur[&#34;chapterElems&#34;].add(nest[-1])
+
+                return outcome
 
             return False
 
@@ -1671,7 +1710,7 @@ class TEI:
 
             if sectionModel == &#34;II&#34;:
                 meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
-                return nNest &gt; 1 and (
+                outcome = nNest &gt; 1 and (
                     meChptChnk
                     or (
                         nest[-2] == TEI_HEADER
@@ -1687,8 +1726,11 @@ class TEI:
                         )
                     )
                 )
+                if outcome:
+                    cur[&#34;chunkElems&#34;].add(nest[-1])
+                return outcome
 
-            return nNest &gt; 0 and (
+            outcome = nNest &gt; 0 and (
                 nest[-1] in CHUNK_ELEMS
                 or (
                     nNest &gt; 1
@@ -1700,6 +1742,9 @@ class TEI:
                     )
                 )
             )
+            if outcome:
+                cur[&#34;chunkElems&#34;].add(nest[-1])
+            return outcome
 
         def isPure(cur):
             &#34;&#34;&#34;Whether the current tag has pure content.
@@ -1737,6 +1782,36 @@ class TEI:
             &#34;&#34;&#34;
             nest = cur[NEST]
             return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
+
+        def hasMixedAncestor(cur):
+            &#34;&#34;&#34;Whether the current tag has an ancestor with mixed content.
+
+            We use this in case a tag ends in an element with pure content.
+            We should then add whitespace to separate it from the next
+            element of its parent.
+
+            If the whole stack of element has pure content, we add
+            a newline, because then we are probably in the TEI header,
+            and things are most clear if they are on separate lines.
+
+            But if one of the ancestors has mixed content, we are typically
+            in some structured piece of information within running text,
+            such as change markup. In this case we want to add merely a space.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            nest = cur[NEST]
+            return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
             &#34;&#34;&#34;Start a word node if necessary.
@@ -1788,7 +1863,8 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             withNewline:
-                Whether to add a newline after the word.
+                Whether to add a newline or space after the word.
+                That depends on whether there is a mixed ancestor.
             &#34;&#34;&#34;
             curWord = cur[WORD]
             if curWord:
@@ -1803,9 +1879,13 @@ class TEI:
             if ch is not None:
                 cur[&#34;afterStr&#34;] += ch
             if withNewline:
-                cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + &#34;\n&#34;
+                spaceChar = &#34; &#34; if hasMixedAncestor(cur) else &#34;\n&#34;
+                cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + spaceChar
                 if not wordAsSlot:
-                    addNewline(cv, cur)
+                    addSpace(cv, cur, spaceChar)
+                cur[&#34;afterSpace&#34;] = True
+            else:
+                cur[&#34;afterSpace&#34;] = False
 
         def addEmpty(cv, cur):
             &#34;&#34;&#34;Add an empty slot.
@@ -1875,7 +1955,7 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             &#34;&#34;&#34;
-            if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
+            if ch in {&#34;_&#34;, None} or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
                 finishWord(cv, cur, ch, False)
@@ -1890,8 +1970,8 @@ class TEI:
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
-        def addNewline(cv, cur):
-            &#34;&#34;&#34;Adds a new line.
+        def addSpace(cv, cur, spaceChar):
+            &#34;&#34;&#34;Adds a space or a new line.
 
             Parameters
             ----------
@@ -1900,6 +1980,8 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
+            spaceChar: string
+                The character to add (supposed to be either a space or a newline).
 
             Only meant for the case where slots are characters.
 
@@ -1907,7 +1989,7 @@ class TEI:
             &#34;&#34;&#34;
             if chunkLevel in cv.activeTypes():
                 s = cv.slot()
-                cv.feature(s, ch=&#34;\n&#34;)
+                cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
         def beforeChildren(cv, cur, node, tag):
@@ -2012,6 +2094,7 @@ class TEI:
                 finishWord(cv, cur, None, False)
 
             if tag not in PASS_THROUGH:
+                cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
@@ -2064,15 +2147,23 @@ class TEI:
             hasFinishedWord = False
 
             if tag not in PASS_THROUGH:
-                if isEndInPure(cur) or tag in NEWLINE_ELEMENTS:
+                curNode = cur[&#34;elems&#34;][-1]
+                slots = cv.linked(curNode)
+                empty = len(slots) == 0
+
+                if (
+                    tag in NEWLINE_ELEMENTS
+                    or isEndInPure(cur)
+                    and not empty
+                    and not cur[&#34;afterSpace&#34;]
+                ):
                     finishWord(cv, cur, None, True)
                     hasFinishedWord = True
 
-                curNode = cur[&#34;elems&#34;].pop()
-
                 slots = cv.linked(curNode)
+                empty = len(slots) == 0
 
-                if not len(slots):
+                if empty:
                     lastSlot = addEmpty(cv, cur)
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(lastSlot, is_meta=1)
@@ -2095,6 +2186,7 @@ class TEI:
                             else:
                                 cv.link(prevChapter, lastSlot)
 
+                cur[&#34;elems&#34;].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -2177,6 +2269,9 @@ class TEI:
             cur[&#34;pureElems&#34;] = {
                 x for (x, (typ, mixed)) in elementDefs.items() if not mixed
             }
+            cur[&#34;mixedElems&#34;] = {
+                x for (x, (typ, mixed)) in elementDefs.items() if mixed
+            }
 
             if sectionModel == &#34;I&#34;:
                 folderSection = self.folderSection
@@ -2216,6 +2311,8 @@ class TEI:
                             cur[&#34;prevWord&#34;] = None
                             cur[&#34;wordStr&#34;] = &#34;&#34;
                             cur[&#34;afterStr&#34;] = &#34;&#34;
+                            cur[&#34;afterSpace&#34;] = True
+                            cur[&#34;chunkElems&#34;] = set()
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
@@ -2250,6 +2347,9 @@ class TEI:
                     cur[&#34;prevWord&#34;] = None
                     cur[&#34;wordStr&#34;] = &#34;&#34;
                     cur[&#34;afterStr&#34;] = &#34;&#34;
+                    cur[&#34;afterSpace&#34;] = True
+                    cur[&#34;chunkElems&#34;] = set()
+                    cur[&#34;chapterElems&#34;] = set()
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
@@ -2276,7 +2376,21 @@ class TEI:
                             description=f&#34;this is TEI attribute {fName}&#34;,
                             valueType=&#34;str&#34;,
                         )
-            console(&#34;source reading done&#34;)
+
+            levelConstraints = [&#34;note &lt; chunk, p&#34;]
+            if &#34;chapterElems&#34; in cur:
+                for elem in cur[&#34;chapterElems&#34;]:
+                    levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
+            if &#34;chunkElems&#34; in cur:
+                for elem in cur[&#34;chunkElems&#34;]:
+                    levelConstraints.append(f&#34;{elem} &lt; chunk&#34;)
+
+            levelConstraints = &#34;; &#34;.join(levelConstraints)
+
+            cv.meta(&#34;otext&#34;, levelConstraints=levelConstraints)
+
+            if verbose == 1:
+                console(&#34;source reading done&#34;)
             return True
 
         return director
@@ -2294,6 +2408,7 @@ class TEI:
         if not self.good:
             return
 
+        verbose = self.verbose
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         tfPath = self.tfPath
@@ -2301,7 +2416,8 @@ class TEI:
         chunkSection = self.chunkSection
         levelNames = self.levelNames
 
-        console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+        if verbose == 1:
+            console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -2313,7 +2429,6 @@ class TEI:
             &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
-            &#34;levelConstraints&#34;: &#34;note &lt; chunk, p&#34;,
         }
         intFeatures = {&#34;empty&#34;, chunkSection}
         featureMeta = dict(
@@ -2392,6 +2507,8 @@ class TEI:
             return
 
         tfPath = self.tfPath
+        verbose = self.verbose
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
             console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
@@ -2399,12 +2516,13 @@ class TEI:
             self.good = False
             return
 
-        TF = Fabric(locations=[tfPath])
+        TF = Fabric(locations=[tfPath], silent=silent)
         allFeatures = TF.explore(silent=True, show=True)
         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        api = TF.load(loadableFeatures, silent=False)
+        api = TF.load(loadableFeatures, silent=silent)
         if api:
-            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;max node = {api.F.otype.maxNode}&#34;)
             self.good = True
             return
 
@@ -2419,6 +2537,22 @@ class TEI:
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
+        It will also read custom additions that are present in the target app directory.
+        These files are:
+
+        *   `config_custom.yaml`:
+            A yaml file with config data that will be *merged* into the generated
+            config.yaml.
+        *   `app_custom.py`:
+            A file with named snippets of code to be inserted
+            at corresponding places in the generated `app.py`
+        *   `display_custom.css`:
+            Additonal css definitions that will be appended to the generated
+            `display.css`.
+
+        If the TF app for this resource needs custom code, this is the way to retain
+        that code between automatic generation of files.
+
         Returns
         -------
         boolean
@@ -2426,6 +2560,8 @@ class TEI:
         &#34;&#34;&#34;
         if not self.good:
             return
+
+        verbose = self.verbose
 
         refDir = self.refDir
         myDir = self.myDir
@@ -2438,6 +2574,11 @@ class TEI:
 
         initTree(docsDir)
 
+        # key | parent dir | file | template based
+
+        # if parent dir is a tuple, the first part is the parent of the source
+        # end the second part is the parent of the destination
+
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
             (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
@@ -2446,10 +2587,22 @@ class TEI:
             (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
             (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
         )
-        items = {
+        genTasks = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
+
+        def readCustom(itemTarget):
+            (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
+            itemCustom = f&#34;{base}_custom.{ext}&#34;
+
+            custom = &#34;&#34;
+
+            if fileExists(itemCustom):
+                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                    custom = fh.read()
+
+            return custom
 
         def createConfig(itemSource, itemTarget):
             tfVersion = self.tfVersion
@@ -2466,6 +2619,12 @@ class TEI:
             if tokenBased:
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
+
+            customText = readCustom(itemTarget)
+            customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+
+            mergeDict(settings, customSettings)
+
             text = yaml.dump(settings, allow_unicode=True)
 
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
@@ -2483,8 +2642,11 @@ class TEI:
 
             css = css.replace(&#34;«rends»&#34;, cssInfo)
 
+            customText = readCustom(itemTarget)
+
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(css)
+                fh.write(f&#34;\n{customText}\n&#34;)
 
         def createApp(itemSource, itemTarget):
             &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
@@ -2526,8 +2688,44 @@ class TEI:
             code = code.replace(&#34;F.matérial&#34;, materialCode)
             code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
+            hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
+            hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
+            hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
+
+            customCode = readCustom(itemTarget)
+
+            custom = {}
+            section = None
+
+            for line in customCode.split(&#34;\n&#34;):
+                line = line.rstrip()
+
+                if section is None:
+                    match = hookStartRe.match(line)
+                    if match:
+                        section = match.group(1)
+                        custom[section] = []
+                else:
+                    match = hookEndRe.match(line)
+                    if match:
+                        section = None
+                    else:
+                        custom[section].append(line)
+
+            codeLines = []
+
+            for line in code.split(&#34;\n&#34;):
+                line = line.rstrip()
+
+                match = hookInsertRe.match(line)
+                if match:
+                    section = match.group(1)
+                    codeLines.extend(custom.get(section, []))
+                else:
+                    codeLines.append(line)
+
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(code)
+                fh.write(&#34;\n&#34;.join(codeLines))
 
         def createTranscription(itemSource, itemTarget):
             &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
@@ -2597,9 +2795,12 @@ class TEI:
                 )
             )
 
-        console(&#34;App updating ...&#34;)
+        extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
 
-        for (name, info) in items.items():
+        if verbose &gt;= 0:
+            console(f&#34;App updating {extraRep} ...&#34;)
+
+        for (name, info) in genTasks.items():
             parent = info[&#34;parent&#34;]
             (sourceBit, targetBit) = (
                 parent if type(parent) is tuple else (parent, parent)
@@ -2652,7 +2853,13 @@ class TEI:
             else:
                 with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                     fh.write(createAbout())
-            console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+            if verbose == 1:
+                console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+
+        if verbose &gt;= 0:
+            console(&#34;Done&#34;)
+        else:
+            console(f&#34;App updated{extraRep}&#34;)
 
     # START the TEXT-FABRIC BROWSER on this CORPUS
 
@@ -2679,6 +2886,7 @@ class TEI:
 
         backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
         versionOpt = f&#34;--version={tfVersion}&#34;
+        versionOpt = &#34;&#34;
         try:
             run(
                 (
@@ -2700,12 +2908,14 @@ class TEI:
         browse=False,
         test=None,
         force=False,
+        verbose=-1,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: check, convert load.
+        The tasks will be executed in a fixed order: check, convert, load, app,
+        apptoken, browse.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -2728,6 +2938,8 @@ class TEI:
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         force: boolean, optional False
             Whether the app task should overwrite previously generated files
 
@@ -2743,9 +2955,10 @@ class TEI:
             self.testMode = test
 
         self.force = force
+        self.verbose = verbose
 
         if not self.good:
-            return
+            return False
 
         for (condition, method, kwargs) in (
             (check, self.checkTask, {}),
@@ -2757,6 +2970,10 @@ class TEI:
         ):
             if condition:
                 method(**kwargs)
+                if not self.good:
+                    break
+
+        return self.good
 
     def run(self, program=None):
         &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -2783,10 +3000,18 @@ class TEI:
         &#34;&#34;&#34;
         programRep = &#34;TEI-converter&#34; if program is None else program
         possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-        possibleFlags = {&#34;test&#34;, &#34;force&#34;}
-        possibleArgs = possibleTasks | possibleFlags
+        possibleFlags = {
+            &#34;-test&#34;: False,
+            &#34;+test&#34;: True,
+            &#34;-force&#34;: False,
+            &#34;+force&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+        possibleArgs = possibleTasks | set(possibleFlags)
 
-        args = sys.argv[1:]
+        args = set(sys.argv[1:])
 
         if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
             self.help(programRep)
@@ -2801,8 +3026,10 @@ class TEI:
                 console(f&#34;Illegal argument `{arg}`&#34;)
             sys.exit(-1)
 
-        tasks = {arg: True for arg in args if arg in possibleTasks}
-        flags = {arg: True for arg in args if arg in possibleFlags}
+        tasks = {arg: True for arg in possibleTasks if arg in args}
+        flags = {
+            arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
+        }
 
         self.task(**tasks, **flags)
         if self.good:
@@ -2826,7 +3053,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L325-L382" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L328-L385" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -2896,7 +3123,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L298-L311" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L301-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -2922,7 +3149,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L385-L482" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L388-L485" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties):
     if wordAsSlot:
@@ -3031,7 +3258,7 @@ class TEI:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False)</span>
+<span>(</span><span>sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -3193,11 +3420,13 @@ transcription and encoding details.</li>
 <dd>If True, the <code>app</code> task will overwrite existing files with generated
 files, and remove any files with <code>_generated</code> in the name.
 Except for the logo, which will not be overwritten.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L485-L2733" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L488-L2960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3213,6 +3442,7 @@ Except for the logo, which will not be overwritten.</dd>
         appConfig={},
         docMaterial={},
         force=False,
+        verbose=-1,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -3422,6 +3652,9 @@ Except for the logo, which will not be overwritten.</dd>
             If True, the `app` task will overwrite existing files with generated
             files, and remove any files with `_generated` in the name.
             Except for the logo, which will not be overwritten.
+
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
@@ -3429,9 +3662,13 @@ Except for the logo, which will not be overwritten.</dd>
                 &#34;Not working in a repo: &#34;
                 f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
             )
-            quit()
+            self.good = False
+            return
 
-        console(f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;)
+        if verbose == 1:
+            console(
+                f&#34;Working in repository {org}/{repo}{relative} in backend {backend}&#34;
+            )
 
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
@@ -3498,6 +3735,7 @@ Except for the logo, which will not be overwritten.</dd>
         self.appConfig = appConfig
         self.docMaterial = docMaterial
         self.force = force
+        self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
@@ -3543,10 +3781,13 @@ Except for the logo, which will not be overwritten.</dd>
                 just starts the text-fabric browser on the result;
 
         flags:
-            test:
-                run in test mode
-            force:
-                when generating app files, overwrite previously existing app files
+            -test, +test:
+                whether to run in test mode
+            -force, +force:
+                whether to overwrite previously existing app files when
+                generating app files
+            +verbose, ++verbose:
+                Produce more progress and reporting messages
         &#34;&#34;&#34;
         )
 
@@ -3587,12 +3828,18 @@ Except for the logo, which will not be overwritten.</dd>
         schemaDoc = etree.parse(schemaFile)
         return etree.XMLSchema(schemaDoc)
 
-    def getElementInfo(self):
+    def getElementInfo(self, verbose=None):
         &#34;&#34;&#34;Analyse the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
         fast-accessible.
+
+        Parameters
+        ----------
+        verbose: boolean, optional None
+            Produce more progress and reporting messages
+            If not passed, take the verbose member of this object.
 
         Returns
         -------
@@ -3601,15 +3848,18 @@ Except for the logo, which will not be overwritten.</dd>
             for each name is a tuple of booleans: whether the element is simple
             or complex; whether the element allows mixed content or only pure content.
         &#34;&#34;&#34;
+        if verbose is not None:
+            self.verbose = verbose
+        verbose = self.verbose
         schemaFile = self.schemaFile
 
         self.elementDefs = {}
 
-        A = Analysis()
+        A = Analysis(verbose=verbose)
         A.configure(override=schemaFile)
         A.interpret()
         if not A.good:
-            quit()
+            return
 
         self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
@@ -3630,9 +3880,11 @@ Except for the logo, which will not be overwritten.</dd>
 
             It is the name of the single XML file.
         &#34;&#34;&#34;
+        verbose = self.verbose
         sourceDir = self.sourceDir
         sectionModel = self.sectionModel
-        console(f&#34;Section model {sectionModel}&#34;)
+        if verbose == 1:
+            console(f&#34;Section model {sectionModel}&#34;)
 
         if sectionModel == &#34;I&#34;:
             testMode = self.testMode
@@ -3706,12 +3958,15 @@ Except for the logo, which will not be overwritten.</dd>
         if not self.good:
             return
 
+        verbose = self.verbose
+
         sourceDir = self.sourceDir
         reportDir = self.reportDir
         docsDir = self.docsDir
         sectionModel = self.sectionModel
 
-        console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+        if verbose == 1:
+            console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
 
         kindLabels = dict(
             format=&#34;Formatting Attributes&#34;,
@@ -3818,6 +4073,8 @@ Except for the logo, which will not be overwritten.</dd>
 
             console(
                 f&#34;{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}&#34;
+                if verbose &gt;= 0 or nErrors
+                else &#34;Validation OK&#34;
             )
 
         def writeNamespaces():
@@ -3848,6 +4105,8 @@ Except for the logo, which will not be overwritten.</dd>
             console(
                 f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
                 f&#34;written to {errorFile}&#34;
+                if verbose &gt;= 0 or nErrors
+                else &#34;Namespaces OK&#34;
             )
 
         def writeReport():
@@ -3900,7 +4159,8 @@ Except for the logo, which will not be overwritten.</dd>
                     for (tag, tagInfo) in sorted(analysis[kind].items()):
                         writeTagInfo(tag, tagInfo)
 
-            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
 
         def writeDoc():
             teiUrl = &#34;https://tei-c.org/release/doc/tei-p5-doc/en/html&#34;
@@ -4024,10 +4284,12 @@ Except for the logo, which will not be overwritten.</dd>
         object
             The `tf.convert.walker.CV` converter object, initialized.
         &#34;&#34;&#34;
+        verbose = self.verbose
         tfPath = self.tfPath
 
-        TF = Fabric(locations=tfPath)
-        return CV(TF)
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=tfPath, silent=silent)
+        return CV(TF, silent=silent)
 
     # DIRECTOR
 
@@ -4087,8 +4349,7 @@ Except for the logo, which will not be overwritten.</dd>
 
         IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
-        ZWSP = &#34;\u200b&#34;  # zero-width space
-
+        verbose = self.verbose
         sourceDir = self.sourceDir
         wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
@@ -4103,7 +4364,7 @@ Except for the logo, which will not be overwritten.</dd>
         )
 
         parser = self.getParser()
-        self.getElementInfo()
+        self.getElementInfo(verbose=-1)
 
         # WALKERS
 
@@ -4256,7 +4517,7 @@ Except for the logo, which will not be overwritten.</dd>
                 if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
                     return False
 
-                return nNest &gt; 0 and (
+                outcome = nNest &gt; 0 and (
                     nest[-1] == TEI_HEADER
                     or (
                         nNest &gt; 1
@@ -4267,6 +4528,10 @@ Except for the logo, which will not be overwritten.</dd>
                         )
                     )
                 )
+                if outcome:
+                    cur[&#34;chapterElems&#34;].add(nest[-1])
+
+                return outcome
 
             return False
 
@@ -4310,7 +4575,7 @@ Except for the logo, which will not be overwritten.</dd>
 
             if sectionModel == &#34;II&#34;:
                 meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
-                return nNest &gt; 1 and (
+                outcome = nNest &gt; 1 and (
                     meChptChnk
                     or (
                         nest[-2] == TEI_HEADER
@@ -4326,8 +4591,11 @@ Except for the logo, which will not be overwritten.</dd>
                         )
                     )
                 )
+                if outcome:
+                    cur[&#34;chunkElems&#34;].add(nest[-1])
+                return outcome
 
-            return nNest &gt; 0 and (
+            outcome = nNest &gt; 0 and (
                 nest[-1] in CHUNK_ELEMS
                 or (
                     nNest &gt; 1
@@ -4339,6 +4607,9 @@ Except for the logo, which will not be overwritten.</dd>
                     )
                 )
             )
+            if outcome:
+                cur[&#34;chunkElems&#34;].add(nest[-1])
+            return outcome
 
         def isPure(cur):
             &#34;&#34;&#34;Whether the current tag has pure content.
@@ -4376,6 +4647,36 @@ Except for the logo, which will not be overwritten.</dd>
             &#34;&#34;&#34;
             nest = cur[NEST]
             return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
+
+        def hasMixedAncestor(cur):
+            &#34;&#34;&#34;Whether the current tag has an ancestor with mixed content.
+
+            We use this in case a tag ends in an element with pure content.
+            We should then add whitespace to separate it from the next
+            element of its parent.
+
+            If the whole stack of element has pure content, we add
+            a newline, because then we are probably in the TEI header,
+            and things are most clear if they are on separate lines.
+
+            But if one of the ancestors has mixed content, we are typically
+            in some structured piece of information within running text,
+            such as change markup. In this case we want to add merely a space.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            &#34;&#34;&#34;
+            nest = cur[NEST]
+            return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
             &#34;&#34;&#34;Start a word node if necessary.
@@ -4427,7 +4728,8 @@ Except for the logo, which will not be overwritten.</dd>
             ch: string
                 A single character, the next slot in the result data.
             withNewline:
-                Whether to add a newline after the word.
+                Whether to add a newline or space after the word.
+                That depends on whether there is a mixed ancestor.
             &#34;&#34;&#34;
             curWord = cur[WORD]
             if curWord:
@@ -4442,9 +4744,13 @@ Except for the logo, which will not be overwritten.</dd>
             if ch is not None:
                 cur[&#34;afterStr&#34;] += ch
             if withNewline:
-                cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + &#34;\n&#34;
+                spaceChar = &#34; &#34; if hasMixedAncestor(cur) else &#34;\n&#34;
+                cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + spaceChar
                 if not wordAsSlot:
-                    addNewline(cv, cur)
+                    addSpace(cv, cur, spaceChar)
+                cur[&#34;afterSpace&#34;] = True
+            else:
+                cur[&#34;afterSpace&#34;] = False
 
         def addEmpty(cv, cur):
             &#34;&#34;&#34;Add an empty slot.
@@ -4514,7 +4820,7 @@ Except for the logo, which will not be overwritten.</dd>
             ch: string
                 A single character, the next slot in the result data.
             &#34;&#34;&#34;
-            if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
+            if ch in {&#34;_&#34;, None} or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
                 finishWord(cv, cur, ch, False)
@@ -4529,8 +4835,8 @@ Except for the logo, which will not be overwritten.</dd>
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
-        def addNewline(cv, cur):
-            &#34;&#34;&#34;Adds a new line.
+        def addSpace(cv, cur, spaceChar):
+            &#34;&#34;&#34;Adds a space or a new line.
 
             Parameters
             ----------
@@ -4539,6 +4845,8 @@ Except for the logo, which will not be overwritten.</dd>
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
+            spaceChar: string
+                The character to add (supposed to be either a space or a newline).
 
             Only meant for the case where slots are characters.
 
@@ -4546,7 +4854,7 @@ Except for the logo, which will not be overwritten.</dd>
             &#34;&#34;&#34;
             if chunkLevel in cv.activeTypes():
                 s = cv.slot()
-                cv.feature(s, ch=&#34;\n&#34;)
+                cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
         def beforeChildren(cv, cur, node, tag):
@@ -4651,6 +4959,7 @@ Except for the logo, which will not be overwritten.</dd>
                 finishWord(cv, cur, None, False)
 
             if tag not in PASS_THROUGH:
+                cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
@@ -4703,15 +5012,23 @@ Except for the logo, which will not be overwritten.</dd>
             hasFinishedWord = False
 
             if tag not in PASS_THROUGH:
-                if isEndInPure(cur) or tag in NEWLINE_ELEMENTS:
+                curNode = cur[&#34;elems&#34;][-1]
+                slots = cv.linked(curNode)
+                empty = len(slots) == 0
+
+                if (
+                    tag in NEWLINE_ELEMENTS
+                    or isEndInPure(cur)
+                    and not empty
+                    and not cur[&#34;afterSpace&#34;]
+                ):
                     finishWord(cv, cur, None, True)
                     hasFinishedWord = True
 
-                curNode = cur[&#34;elems&#34;].pop()
-
                 slots = cv.linked(curNode)
+                empty = len(slots) == 0
 
-                if not len(slots):
+                if empty:
                     lastSlot = addEmpty(cv, cur)
                     if cur[&#34;inHeader&#34;]:
                         cv.feature(lastSlot, is_meta=1)
@@ -4734,6 +5051,7 @@ Except for the logo, which will not be overwritten.</dd>
                             else:
                                 cv.link(prevChapter, lastSlot)
 
+                cur[&#34;elems&#34;].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -4816,6 +5134,9 @@ Except for the logo, which will not be overwritten.</dd>
             cur[&#34;pureElems&#34;] = {
                 x for (x, (typ, mixed)) in elementDefs.items() if not mixed
             }
+            cur[&#34;mixedElems&#34;] = {
+                x for (x, (typ, mixed)) in elementDefs.items() if mixed
+            }
 
             if sectionModel == &#34;I&#34;:
                 folderSection = self.folderSection
@@ -4855,6 +5176,8 @@ Except for the logo, which will not be overwritten.</dd>
                             cur[&#34;prevWord&#34;] = None
                             cur[&#34;wordStr&#34;] = &#34;&#34;
                             cur[&#34;afterStr&#34;] = &#34;&#34;
+                            cur[&#34;afterSpace&#34;] = True
+                            cur[&#34;chunkElems&#34;] = set()
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
@@ -4889,6 +5212,9 @@ Except for the logo, which will not be overwritten.</dd>
                     cur[&#34;prevWord&#34;] = None
                     cur[&#34;wordStr&#34;] = &#34;&#34;
                     cur[&#34;afterStr&#34;] = &#34;&#34;
+                    cur[&#34;afterSpace&#34;] = True
+                    cur[&#34;chunkElems&#34;] = set()
+                    cur[&#34;chapterElems&#34;] = set()
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
@@ -4915,7 +5241,21 @@ Except for the logo, which will not be overwritten.</dd>
                             description=f&#34;this is TEI attribute {fName}&#34;,
                             valueType=&#34;str&#34;,
                         )
-            console(&#34;source reading done&#34;)
+
+            levelConstraints = [&#34;note &lt; chunk, p&#34;]
+            if &#34;chapterElems&#34; in cur:
+                for elem in cur[&#34;chapterElems&#34;]:
+                    levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
+            if &#34;chunkElems&#34; in cur:
+                for elem in cur[&#34;chunkElems&#34;]:
+                    levelConstraints.append(f&#34;{elem} &lt; chunk&#34;)
+
+            levelConstraints = &#34;; &#34;.join(levelConstraints)
+
+            cv.meta(&#34;otext&#34;, levelConstraints=levelConstraints)
+
+            if verbose == 1:
+                console(&#34;source reading done&#34;)
             return True
 
         return director
@@ -4933,6 +5273,7 @@ Except for the logo, which will not be overwritten.</dd>
         if not self.good:
             return
 
+        verbose = self.verbose
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         tfPath = self.tfPath
@@ -4940,7 +5281,8 @@ Except for the logo, which will not be overwritten.</dd>
         chunkSection = self.chunkSection
         levelNames = self.levelNames
 
-        console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+        if verbose == 1:
+            console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -4952,7 +5294,6 @@ Except for the logo, which will not be overwritten.</dd>
             &#34;fmt:text-orig-full&#34;: textFeatures,
             &#34;sectionFeatures&#34;: sectionFeatures,
             &#34;sectionTypes&#34;: sectionTypes,
-            &#34;levelConstraints&#34;: &#34;note &lt; chunk, p&#34;,
         }
         intFeatures = {&#34;empty&#34;, chunkSection}
         featureMeta = dict(
@@ -5031,6 +5372,8 @@ Except for the logo, which will not be overwritten.</dd>
             return
 
         tfPath = self.tfPath
+        verbose = self.verbose
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
             console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
@@ -5038,12 +5381,13 @@ Except for the logo, which will not be overwritten.</dd>
             self.good = False
             return
 
-        TF = Fabric(locations=[tfPath])
+        TF = Fabric(locations=[tfPath], silent=silent)
         allFeatures = TF.explore(silent=True, show=True)
         loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-        api = TF.load(loadableFeatures, silent=False)
+        api = TF.load(loadableFeatures, silent=silent)
         if api:
-            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;max node = {api.F.otype.maxNode}&#34;)
             self.good = True
             return
 
@@ -5058,6 +5402,22 @@ Except for the logo, which will not be overwritten.</dd>
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
+        It will also read custom additions that are present in the target app directory.
+        These files are:
+
+        *   `config_custom.yaml`:
+            A yaml file with config data that will be *merged* into the generated
+            config.yaml.
+        *   `app_custom.py`:
+            A file with named snippets of code to be inserted
+            at corresponding places in the generated `app.py`
+        *   `display_custom.css`:
+            Additonal css definitions that will be appended to the generated
+            `display.css`.
+
+        If the TF app for this resource needs custom code, this is the way to retain
+        that code between automatic generation of files.
+
         Returns
         -------
         boolean
@@ -5065,6 +5425,8 @@ Except for the logo, which will not be overwritten.</dd>
         &#34;&#34;&#34;
         if not self.good:
             return
+
+        verbose = self.verbose
 
         refDir = self.refDir
         myDir = self.myDir
@@ -5077,6 +5439,11 @@ Except for the logo, which will not be overwritten.</dd>
 
         initTree(docsDir)
 
+        # key | parent dir | file | template based
+
+        # if parent dir is a tuple, the first part is the parent of the source
+        # end the second part is the parent of the destination
+
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
             (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
@@ -5085,10 +5452,22 @@ Except for the logo, which will not be overwritten.</dd>
             (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
             (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
         )
-        items = {
+        genTasks = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
+
+        def readCustom(itemTarget):
+            (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
+            itemCustom = f&#34;{base}_custom.{ext}&#34;
+
+            custom = &#34;&#34;
+
+            if fileExists(itemCustom):
+                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                    custom = fh.read()
+
+            return custom
 
         def createConfig(itemSource, itemTarget):
             tfVersion = self.tfVersion
@@ -5105,6 +5484,12 @@ Except for the logo, which will not be overwritten.</dd>
             if tokenBased:
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
+
+            customText = readCustom(itemTarget)
+            customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+
+            mergeDict(settings, customSettings)
+
             text = yaml.dump(settings, allow_unicode=True)
 
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
@@ -5122,8 +5507,11 @@ Except for the logo, which will not be overwritten.</dd>
 
             css = css.replace(&#34;«rends»&#34;, cssInfo)
 
+            customText = readCustom(itemTarget)
+
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(css)
+                fh.write(f&#34;\n{customText}\n&#34;)
 
         def createApp(itemSource, itemTarget):
             &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
@@ -5165,8 +5553,44 @@ Except for the logo, which will not be overwritten.</dd>
             code = code.replace(&#34;F.matérial&#34;, materialCode)
             code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
+            hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
+            hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
+            hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
+
+            customCode = readCustom(itemTarget)
+
+            custom = {}
+            section = None
+
+            for line in customCode.split(&#34;\n&#34;):
+                line = line.rstrip()
+
+                if section is None:
+                    match = hookStartRe.match(line)
+                    if match:
+                        section = match.group(1)
+                        custom[section] = []
+                else:
+                    match = hookEndRe.match(line)
+                    if match:
+                        section = None
+                    else:
+                        custom[section].append(line)
+
+            codeLines = []
+
+            for line in code.split(&#34;\n&#34;):
+                line = line.rstrip()
+
+                match = hookInsertRe.match(line)
+                if match:
+                    section = match.group(1)
+                    codeLines.extend(custom.get(section, []))
+                else:
+                    codeLines.append(line)
+
             with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(code)
+                fh.write(&#34;\n&#34;.join(codeLines))
 
         def createTranscription(itemSource, itemTarget):
             &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
@@ -5236,9 +5660,12 @@ Except for the logo, which will not be overwritten.</dd>
                 )
             )
 
-        console(&#34;App updating ...&#34;)
+        extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
 
-        for (name, info) in items.items():
+        if verbose &gt;= 0:
+            console(f&#34;App updating {extraRep} ...&#34;)
+
+        for (name, info) in genTasks.items():
             parent = info[&#34;parent&#34;]
             (sourceBit, targetBit) = (
                 parent if type(parent) is tuple else (parent, parent)
@@ -5291,7 +5718,13 @@ Except for the logo, which will not be overwritten.</dd>
             else:
                 with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                     fh.write(createAbout())
-            console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+            if verbose == 1:
+                console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+
+        if verbose &gt;= 0:
+            console(&#34;Done&#34;)
+        else:
+            console(f&#34;App updated{extraRep}&#34;)
 
     # START the TEXT-FABRIC BROWSER on this CORPUS
 
@@ -5318,6 +5751,7 @@ Except for the logo, which will not be overwritten.</dd>
 
         backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
         versionOpt = f&#34;--version={tfVersion}&#34;
+        versionOpt = &#34;&#34;
         try:
             run(
                 (
@@ -5339,12 +5773,14 @@ Except for the logo, which will not be overwritten.</dd>
         browse=False,
         test=None,
         force=False,
+        verbose=-1,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: check, convert load.
+        The tasks will be executed in a fixed order: check, convert, load, app,
+        apptoken, browse.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -5367,6 +5803,8 @@ Except for the logo, which will not be overwritten.</dd>
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         force: boolean, optional False
             Whether the app task should overwrite previously generated files
 
@@ -5382,9 +5820,10 @@ Except for the logo, which will not be overwritten.</dd>
             self.testMode = test
 
         self.force = force
+        self.verbose = verbose
 
         if not self.good:
-            return
+            return False
 
         for (condition, method, kwargs) in (
             (check, self.checkTask, {}),
@@ -5396,6 +5835,10 @@ Except for the logo, which will not be overwritten.</dd>
         ):
             if condition:
                 method(**kwargs)
+                if not self.good:
+                    break
+
+        return self.good
 
     def run(self, program=None):
         &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -5422,10 +5865,18 @@ Except for the logo, which will not be overwritten.</dd>
         &#34;&#34;&#34;
         programRep = &#34;TEI-converter&#34; if program is None else program
         possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-        possibleFlags = {&#34;test&#34;, &#34;force&#34;}
-        possibleArgs = possibleTasks | possibleFlags
+        possibleFlags = {
+            &#34;-test&#34;: False,
+            &#34;+test&#34;: True,
+            &#34;-force&#34;: False,
+            &#34;+force&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+        possibleArgs = possibleTasks | set(possibleFlags)
 
-        args = sys.argv[1:]
+        args = set(sys.argv[1:])
 
         if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
             self.help(programRep)
@@ -5440,8 +5891,10 @@ Except for the logo, which will not be overwritten.</dd>
                 console(f&#34;Illegal argument `{arg}`&#34;)
             sys.exit(-1)
 
-        tasks = {arg: True for arg in args if arg in possibleTasks}
-        flags = {arg: True for arg in args if arg in possibleFlags}
+        tasks = {arg: True for arg in possibleTasks if arg in args}
+        flags = {
+            arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
+        }
 
         self.task(**tasks, **flags)
         if self.good:
@@ -5465,7 +5918,7 @@ Except for the logo, which will not be overwritten.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L836-L852" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L851-L867" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5504,7 +5957,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L787-L834" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L799-L849" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -5548,10 +6001,13 @@ def help(program):
             just starts the text-fabric browser on the result;
 
     flags:
-        test:
-            run in test mode
-        force:
-            when generating app files, overwrite previously existing app files
+        -test, +test:
+            whether to run in test mode
+        -force, +force:
+            whether to overwrite previously existing app files when
+            generating app files
+        +verbose, ++verbose:
+            Produce more progress and reporting messages
     &#34;&#34;&#34;
     )</code></pre>
 </details>
@@ -5567,6 +6023,21 @@ def help(program):
 <p>It creates/updates a corpus-specific app.
 There should be a valid TF dataset in place, because some
 settings in the app derive from it.</p>
+<p>It will also read custom additions that are present in the target app directory.
+These files are:</p>
+<ul>
+<li><code>config_custom.yaml</code>:
+A yaml file with config data that will be <em>merged</em> into the generated
+config.yaml.</li>
+<li><code>app_custom.py</code>:
+A file with named snippets of code to be inserted
+at corresponding places in the generated <code>app.py</code></li>
+<li><code>display_custom.css</code>:
+Additonal css definitions that will be appended to the generated
+<code>display.css</code>.</li>
+</ul>
+<p>If the TF app for this resource needs custom code, this is the way to retain
+that code between automatic generation of files.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>boolean</code></dt>
@@ -5575,7 +6046,7 @@ settings in the app derive from it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2337-L2577" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2455-L2784" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -5584,6 +6055,22 @@ settings in the app derive from it.</p>
     There should be a valid TF dataset in place, because some
     settings in the app derive from it.
 
+    It will also read custom additions that are present in the target app directory.
+    These files are:
+
+    *   `config_custom.yaml`:
+        A yaml file with config data that will be *merged* into the generated
+        config.yaml.
+    *   `app_custom.py`:
+        A file with named snippets of code to be inserted
+        at corresponding places in the generated `app.py`
+    *   `display_custom.css`:
+        Additonal css definitions that will be appended to the generated
+        `display.css`.
+
+    If the TF app for this resource needs custom code, this is the way to retain
+    that code between automatic generation of files.
+
     Returns
     -------
     boolean
@@ -5591,6 +6078,8 @@ settings in the app derive from it.</p>
     &#34;&#34;&#34;
     if not self.good:
         return
+
+    verbose = self.verbose
 
     refDir = self.refDir
     myDir = self.myDir
@@ -5603,6 +6092,11 @@ settings in the app derive from it.</p>
 
     initTree(docsDir)
 
+    # key | parent dir | file | template based
+
+    # if parent dir is a tuple, the first part is the parent of the source
+    # end the second part is the parent of the destination
+
     itemSpecs = (
         (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
         (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
@@ -5611,10 +6105,22 @@ settings in the app derive from it.</p>
         (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
         (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
     )
-    items = {
+    genTasks = {
         s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
     }
     cssInfo = makeCssInfo()
+
+    def readCustom(itemTarget):
+        (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
+        itemCustom = f&#34;{base}_custom.{ext}&#34;
+
+        custom = &#34;&#34;
+
+        if fileExists(itemCustom):
+            with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                custom = fh.read()
+
+        return custom
 
     def createConfig(itemSource, itemTarget):
         tfVersion = self.tfVersion
@@ -5631,6 +6137,12 @@ settings in the app derive from it.</p>
         if tokenBased:
             if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                 del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
+
+        customText = readCustom(itemTarget)
+        customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+
+        mergeDict(settings, customSettings)
+
         text = yaml.dump(settings, allow_unicode=True)
 
         with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
@@ -5648,8 +6160,11 @@ settings in the app derive from it.</p>
 
         css = css.replace(&#34;«rends»&#34;, cssInfo)
 
+        customText = readCustom(itemTarget)
+
         with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(css)
+            fh.write(f&#34;\n{customText}\n&#34;)
 
     def createApp(itemSource, itemTarget):
         &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
@@ -5691,8 +6206,44 @@ settings in the app derive from it.</p>
         code = code.replace(&#34;F.matérial&#34;, materialCode)
         code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
+        hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
+        hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
+        hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
+
+        customCode = readCustom(itemTarget)
+
+        custom = {}
+        section = None
+
+        for line in customCode.split(&#34;\n&#34;):
+            line = line.rstrip()
+
+            if section is None:
+                match = hookStartRe.match(line)
+                if match:
+                    section = match.group(1)
+                    custom[section] = []
+            else:
+                match = hookEndRe.match(line)
+                if match:
+                    section = None
+                else:
+                    custom[section].append(line)
+
+        codeLines = []
+
+        for line in code.split(&#34;\n&#34;):
+            line = line.rstrip()
+
+            match = hookInsertRe.match(line)
+            if match:
+                section = match.group(1)
+                codeLines.extend(custom.get(section, []))
+            else:
+                codeLines.append(line)
+
         with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(code)
+            fh.write(&#34;\n&#34;.join(codeLines))
 
     def createTranscription(itemSource, itemTarget):
         &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
@@ -5762,9 +6313,12 @@ settings in the app derive from it.</p>
             )
         )
 
-    console(&#34;App updating ...&#34;)
+    extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
 
-    for (name, info) in items.items():
+    if verbose &gt;= 0:
+        console(f&#34;App updating {extraRep} ...&#34;)
+
+    for (name, info) in genTasks.items():
         parent = info[&#34;parent&#34;]
         (sourceBit, targetBit) = (
             parent if type(parent) is tuple else (parent, parent)
@@ -5817,7 +6371,13 @@ settings in the app derive from it.</p>
         else:
             with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(createAbout())
-        console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)</code></pre>
+        if verbose == 1:
+            console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+
+    if verbose &gt;= 0:
+        console(&#34;Done&#34;)
+    else:
+        console(f&#34;App updated{extraRep}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.browseTask"><code class="name flex">
@@ -5836,7 +6396,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2581-L2613" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2788-L2821" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -5861,6 +6421,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 
     backendOpt = &#34;&#34; if backend == &#34;github&#34; else f&#34;--backend={backend}&#34;
     versionOpt = f&#34;--version={tfVersion}&#34;
+    versionOpt = &#34;&#34;
     try:
         run(
             (
@@ -5900,7 +6461,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L963-L1298" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L989-L1332" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -5931,12 +6492,15 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     if not self.good:
         return
 
+    verbose = self.verbose
+
     sourceDir = self.sourceDir
     reportDir = self.reportDir
     docsDir = self.docsDir
     sectionModel = self.sectionModel
 
-    console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+    if verbose == 1:
+        console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
 
     kindLabels = dict(
         format=&#34;Formatting Attributes&#34;,
@@ -6043,6 +6607,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
         console(
             f&#34;{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}&#34;
+            if verbose &gt;= 0 or nErrors
+            else &#34;Validation OK&#34;
         )
 
     def writeNamespaces():
@@ -6073,6 +6639,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         console(
             f&#34;{nTags} tags of which {nErrors} with multiple namespaces &#34;
             f&#34;written to {errorFile}&#34;
+            if verbose &gt;= 0 or nErrors
+            else &#34;Namespaces OK&#34;
         )
 
     def writeReport():
@@ -6125,7 +6693,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                 for (tag, tagInfo) in sorted(analysis[kind].items()):
                     writeTagInfo(tag, tagInfo)
 
-        console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;{infoLines} info line(s) written to {reportFile}&#34;)
 
     def writeDoc():
         teiUrl = &#34;https://tei-c.org/release/doc/tei-p5-doc/en/html&#34;
@@ -6254,7 +6823,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2206-L2292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2320-L2407" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6269,6 +6838,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     if not self.good:
         return
 
+    verbose = self.verbose
     wordAsSlot = self.wordAsSlot
     sectionModel = self.sectionModel
     tfPath = self.tfPath
@@ -6276,7 +6846,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     chunkSection = self.chunkSection
     levelNames = self.levelNames
 
-    console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+    if verbose == 1:
+        console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
 
     slotType = WORD if wordAsSlot else CHAR
 
@@ -6288,7 +6859,6 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         &#34;fmt:text-orig-full&#34;: textFeatures,
         &#34;sectionFeatures&#34;: sectionFeatures,
         &#34;sectionTypes&#34;: sectionTypes,
-        &#34;levelConstraints&#34;: &#34;note &lt; chunk, p&#34;,
     }
     intFeatures = {&#34;empty&#34;, chunkSection}
     featureMeta = dict(
@@ -6358,7 +6928,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L1302-L1313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1336-L1349" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6368,10 +6938,12 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     object
         The `tf.convert.walker.CV` converter object, initialized.
     &#34;&#34;&#34;
+    verbose = self.verbose
     tfPath = self.tfPath
 
-    TF = Fabric(locations=tfPath)
-    return CV(TF)</code></pre>
+    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+    TF = Fabric(locations=tfPath, silent=silent)
+    return CV(TF, silent=silent)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.getDirector"><code class="name flex">
@@ -6397,7 +6969,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L1317-L2204" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1353-L2318" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -6455,8 +7027,7 @@ that has access to this data.</p>
 
     IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
-    ZWSP = &#34;\u200b&#34;  # zero-width space
-
+    verbose = self.verbose
     sourceDir = self.sourceDir
     wordAsSlot = self.wordAsSlot
     featureMeta = self.featureMeta
@@ -6471,7 +7042,7 @@ that has access to this data.</p>
     )
 
     parser = self.getParser()
-    self.getElementInfo()
+    self.getElementInfo(verbose=-1)
 
     # WALKERS
 
@@ -6624,7 +7195,7 @@ that has access to this data.</p>
             if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
                 return False
 
-            return nNest &gt; 0 and (
+            outcome = nNest &gt; 0 and (
                 nest[-1] == TEI_HEADER
                 or (
                     nNest &gt; 1
@@ -6635,6 +7206,10 @@ that has access to this data.</p>
                     )
                 )
             )
+            if outcome:
+                cur[&#34;chapterElems&#34;].add(nest[-1])
+
+            return outcome
 
         return False
 
@@ -6678,7 +7253,7 @@ that has access to this data.</p>
 
         if sectionModel == &#34;II&#34;:
             meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
-            return nNest &gt; 1 and (
+            outcome = nNest &gt; 1 and (
                 meChptChnk
                 or (
                     nest[-2] == TEI_HEADER
@@ -6694,8 +7269,11 @@ that has access to this data.</p>
                     )
                 )
             )
+            if outcome:
+                cur[&#34;chunkElems&#34;].add(nest[-1])
+            return outcome
 
-        return nNest &gt; 0 and (
+        outcome = nNest &gt; 0 and (
             nest[-1] in CHUNK_ELEMS
             or (
                 nNest &gt; 1
@@ -6707,6 +7285,9 @@ that has access to this data.</p>
                 )
             )
         )
+        if outcome:
+            cur[&#34;chunkElems&#34;].add(nest[-1])
+        return outcome
 
     def isPure(cur):
         &#34;&#34;&#34;Whether the current tag has pure content.
@@ -6744,6 +7325,36 @@ that has access to this data.</p>
         &#34;&#34;&#34;
         nest = cur[NEST]
         return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
+
+    def hasMixedAncestor(cur):
+        &#34;&#34;&#34;Whether the current tag has an ancestor with mixed content.
+
+        We use this in case a tag ends in an element with pure content.
+        We should then add whitespace to separate it from the next
+        element of its parent.
+
+        If the whole stack of element has pure content, we add
+        a newline, because then we are probably in the TEI header,
+        and things are most clear if they are on separate lines.
+
+        But if one of the ancestors has mixed content, we are typically
+        in some structured piece of information within running text,
+        such as change markup. In this case we want to add merely a space.
+
+        And we should not strip spaces after it.
+
+        Parameters
+        ----------
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+
+        Returns
+        -------
+        boolean
+        &#34;&#34;&#34;
+        nest = cur[NEST]
+        return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
     def startWord(cv, cur, ch):
         &#34;&#34;&#34;Start a word node if necessary.
@@ -6795,7 +7406,8 @@ that has access to this data.</p>
         ch: string
             A single character, the next slot in the result data.
         withNewline:
-            Whether to add a newline after the word.
+            Whether to add a newline or space after the word.
+            That depends on whether there is a mixed ancestor.
         &#34;&#34;&#34;
         curWord = cur[WORD]
         if curWord:
@@ -6810,9 +7422,13 @@ that has access to this data.</p>
         if ch is not None:
             cur[&#34;afterStr&#34;] += ch
         if withNewline:
-            cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + &#34;\n&#34;
+            spaceChar = &#34; &#34; if hasMixedAncestor(cur) else &#34;\n&#34;
+            cur[&#34;afterStr&#34;] = cur[&#34;afterStr&#34;].rstrip() + spaceChar
             if not wordAsSlot:
-                addNewline(cv, cur)
+                addSpace(cv, cur, spaceChar)
+            cur[&#34;afterSpace&#34;] = True
+        else:
+            cur[&#34;afterSpace&#34;] = False
 
     def addEmpty(cv, cur):
         &#34;&#34;&#34;Add an empty slot.
@@ -6882,7 +7498,7 @@ that has access to this data.</p>
         ch: string
             A single character, the next slot in the result data.
         &#34;&#34;&#34;
-        if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
+        if ch in {&#34;_&#34;, None} or ch.isalnum() or ch in IN_WORD_HYPHENS:
             startWord(cv, cur, ch)
         else:
             finishWord(cv, cur, ch, False)
@@ -6897,8 +7513,8 @@ that has access to this data.</p>
         if s is not None:
             addSlotFeatures(cv, cur, s)
 
-    def addNewline(cv, cur):
-        &#34;&#34;&#34;Adds a new line.
+    def addSpace(cv, cur, spaceChar):
+        &#34;&#34;&#34;Adds a space or a new line.
 
         Parameters
         ----------
@@ -6907,6 +7523,8 @@ that has access to this data.</p>
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
+        spaceChar: string
+            The character to add (supposed to be either a space or a newline).
 
         Only meant for the case where slots are characters.
 
@@ -6914,7 +7532,7 @@ that has access to this data.</p>
         &#34;&#34;&#34;
         if chunkLevel in cv.activeTypes():
             s = cv.slot()
-            cv.feature(s, ch=&#34;\n&#34;)
+            cv.feature(s, ch=spaceChar, extraspace=1)
             addSlotFeatures(cv, cur, s)
 
     def beforeChildren(cv, cur, node, tag):
@@ -7019,6 +7637,7 @@ that has access to this data.</p>
             finishWord(cv, cur, None, False)
 
         if tag not in PASS_THROUGH:
+            cur[&#34;afterSpace&#34;] = False
             curNode = cv.node(tag)
             if wordAsSlot:
                 if cur[WORD]:
@@ -7071,15 +7690,23 @@ that has access to this data.</p>
         hasFinishedWord = False
 
         if tag not in PASS_THROUGH:
-            if isEndInPure(cur) or tag in NEWLINE_ELEMENTS:
+            curNode = cur[&#34;elems&#34;][-1]
+            slots = cv.linked(curNode)
+            empty = len(slots) == 0
+
+            if (
+                tag in NEWLINE_ELEMENTS
+                or isEndInPure(cur)
+                and not empty
+                and not cur[&#34;afterSpace&#34;]
+            ):
                 finishWord(cv, cur, None, True)
                 hasFinishedWord = True
 
-            curNode = cur[&#34;elems&#34;].pop()
-
             slots = cv.linked(curNode)
+            empty = len(slots) == 0
 
-            if not len(slots):
+            if empty:
                 lastSlot = addEmpty(cv, cur)
                 if cur[&#34;inHeader&#34;]:
                     cv.feature(lastSlot, is_meta=1)
@@ -7102,6 +7729,7 @@ that has access to this data.</p>
                         else:
                             cv.link(prevChapter, lastSlot)
 
+            cur[&#34;elems&#34;].pop()
             cv.terminate(curNode)
 
         if isChnk:
@@ -7184,6 +7812,9 @@ that has access to this data.</p>
         cur[&#34;pureElems&#34;] = {
             x for (x, (typ, mixed)) in elementDefs.items() if not mixed
         }
+        cur[&#34;mixedElems&#34;] = {
+            x for (x, (typ, mixed)) in elementDefs.items() if mixed
+        }
 
         if sectionModel == &#34;I&#34;:
             folderSection = self.folderSection
@@ -7223,6 +7854,8 @@ that has access to this data.</p>
                         cur[&#34;prevWord&#34;] = None
                         cur[&#34;wordStr&#34;] = &#34;&#34;
                         cur[&#34;afterStr&#34;] = &#34;&#34;
+                        cur[&#34;afterSpace&#34;] = True
+                        cur[&#34;chunkElems&#34;] = set()
                         walkNode(cv, cur, root)
 
                     addSlot(cv, cur, None)
@@ -7257,6 +7890,9 @@ that has access to this data.</p>
                 cur[&#34;prevWord&#34;] = None
                 cur[&#34;wordStr&#34;] = &#34;&#34;
                 cur[&#34;afterStr&#34;] = &#34;&#34;
+                cur[&#34;afterSpace&#34;] = True
+                cur[&#34;chunkElems&#34;] = set()
+                cur[&#34;chapterElems&#34;] = set()
                 for child in root.iterchildren(tag=etree.Element):
                     walkNode(cv, cur, child)
 
@@ -7283,20 +7919,40 @@ that has access to this data.</p>
                         description=f&#34;this is TEI attribute {fName}&#34;,
                         valueType=&#34;str&#34;,
                     )
-        console(&#34;source reading done&#34;)
+
+        levelConstraints = [&#34;note &lt; chunk, p&#34;]
+        if &#34;chapterElems&#34; in cur:
+            for elem in cur[&#34;chapterElems&#34;]:
+                levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
+        if &#34;chunkElems&#34; in cur:
+            for elem in cur[&#34;chunkElems&#34;]:
+                levelConstraints.append(f&#34;{elem} &lt; chunk&#34;)
+
+        levelConstraints = &#34;; &#34;.join(levelConstraints)
+
+        cv.meta(&#34;otext&#34;, levelConstraints=levelConstraints)
+
+        if verbose == 1:
+            console(&#34;source reading done&#34;)
         return True
 
     return director</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.getElementInfo"><code class="name flex">
-<span>def <span class="ident">getElementInfo</span></span>(<span>self)</span>
+<span>def <span class="ident">getElementInfo</span></span>(<span>self, verbose=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Analyse the schema.</p>
 <p>The XML schema has useful information about the XML elements that
 occur in the source. Here we extract that information and make it
 fast-accessible.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
+<dd>Produce more progress and reporting messages
+If not passed, take the verbose member of this object.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>dict</code></dt>
@@ -7307,14 +7963,20 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L873-L897" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L888-L921" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getElementInfo(self):
+<pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
 
     The XML schema has useful information about the XML elements that
     occur in the source. Here we extract that information and make it
     fast-accessible.
+
+    Parameters
+    ----------
+    verbose: boolean, optional None
+        Produce more progress and reporting messages
+        If not passed, take the verbose member of this object.
 
     Returns
     -------
@@ -7323,15 +7985,18 @@ or complex; whether the element allows mixed content or only pure content.</dd>
         for each name is a tuple of booleans: whether the element is simple
         or complex; whether the element allows mixed content or only pure content.
     &#34;&#34;&#34;
+    if verbose is not None:
+        self.verbose = verbose
+    verbose = self.verbose
     schemaFile = self.schemaFile
 
     self.elementDefs = {}
 
-    A = Analysis()
+    A = Analysis(verbose=verbose)
     A.configure(override=schemaFile)
     A.interpret()
     if not A.good:
-        quit()
+        return
 
     self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}</code></pre>
 </details>
@@ -7351,7 +8016,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L854-L871" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L869-L886" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7394,7 +8059,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L899-L961" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L923-L987" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7413,9 +8078,11 @@ that contains the file names in that folder, sorted.</p>
 
         It is the name of the single XML file.
     &#34;&#34;&#34;
+    verbose = self.verbose
     sourceDir = self.sourceDir
     sectionModel = self.sectionModel
-    console(f&#34;Section model {sectionModel}&#34;)
+    if verbose == 1:
+        console(f&#34;Section model {sectionModel}&#34;)
 
     if sectionModel == &#34;I&#34;:
         testMode = self.testMode
@@ -7481,7 +8148,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2294-L2333" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2409-L2451" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -7506,6 +8173,8 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
         return
 
     tfPath = self.tfPath
+    verbose = self.verbose
+    silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
     if not dirExists(tfPath):
         console(f&#34;Directory {ux(tfPath)} does not exist.&#34;)
@@ -7513,12 +8182,13 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
         self.good = False
         return
 
-    TF = Fabric(locations=[tfPath])
+    TF = Fabric(locations=[tfPath], silent=silent)
     allFeatures = TF.explore(silent=True, show=True)
     loadableFeatures = allFeatures[&#34;nodes&#34;] + allFeatures[&#34;edges&#34;]
-    api = TF.load(loadableFeatures, silent=False)
+    api = TF.load(loadableFeatures, silent=silent)
     if api:
-        console(f&#34;max node = {api.F.otype.maxNode}&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;max node = {api.F.otype.maxNode}&#34;)
         self.good = True
         return
 
@@ -7551,7 +8221,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2683-L2733" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2900-L2960" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -7578,10 +8248,18 @@ an return a status code: 0 for succes, 1 for failure.</dd>
     &#34;&#34;&#34;
     programRep = &#34;TEI-converter&#34; if program is None else program
     possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-    possibleFlags = {&#34;test&#34;, &#34;force&#34;}
-    possibleArgs = possibleTasks | possibleFlags
+    possibleFlags = {
+        &#34;-test&#34;: False,
+        &#34;+test&#34;: True,
+        &#34;-force&#34;: False,
+        &#34;+force&#34;: True,
+        &#34;-verbose&#34;: -1,
+        &#34;+verbose&#34;: 0,
+        &#34;++verbose&#34;: 1,
+    }
+    possibleArgs = possibleTasks | set(possibleFlags)
 
-    args = sys.argv[1:]
+    args = set(sys.argv[1:])
 
     if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
         self.help(programRep)
@@ -7596,8 +8274,10 @@ an return a status code: 0 for succes, 1 for failure.</dd>
             console(f&#34;Illegal argument `{arg}`&#34;)
         sys.exit(-1)
 
-    tasks = {arg: True for arg in args if arg in possibleTasks}
-    flags = {arg: True for arg in args if arg in possibleFlags}
+    tasks = {arg: True for arg in possibleTasks if arg in args}
+    flags = {
+        arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
+    }
 
     self.task(**tasks, **flags)
     if self.good:
@@ -7607,12 +8287,13 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, test=None, force=False)</span>
+<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, test=None, force=False, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
 <p>This is a higher level function that can execute a selection of tasks.</p>
-<p>The tasks will be executed in a fixed order: check, convert load.
+<p>The tasks will be executed in a fixed order: check, convert, load, app,
+apptoken, browse.
 But you can select which one(s) must be executed.</p>
 <p>If multiple tasks must be executed and one fails, the subsequent tasks
 will not be executed.</p>
@@ -7633,6 +8314,8 @@ will not be executed.</p>
 <dt><strong><code>test</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
 <dd>Whether to run in test mode.
 In test mode only the files in the test set are converted.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 <dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p>Whether the app task should overwrite previously generated files</p>
@@ -7648,7 +8331,7 @@ In test mode only the files in the test set are converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3298ff3768c1608a1b3a3e1b875bd80c27031636/tf/convert/tei.py#L2615-L2681" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2823-L2898" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -7660,12 +8343,14 @@ In test mode only the files in the test set are converted.</dd>
     browse=False,
     test=None,
     force=False,
+    verbose=-1,
 ):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
     This is a higher level function that can execute a selection of tasks.
 
-    The tasks will be executed in a fixed order: check, convert load.
+    The tasks will be executed in a fixed order: check, convert, load, app,
+    apptoken, browse.
     But you can select which one(s) must be executed.
 
     If multiple tasks must be executed and one fails, the subsequent tasks
@@ -7688,6 +8373,8 @@ In test mode only the files in the test set are converted.</dd>
     test: boolean, optional None
         Whether to run in test mode.
         In test mode only the files in the test set are converted.
+    verbose: integer, optional -1
+        Produce no (-1), some (0) or many (1) orprogress and reporting messages
     force: boolean, optional False
         Whether the app task should overwrite previously generated files
 
@@ -7703,9 +8390,10 @@ In test mode only the files in the test set are converted.</dd>
         self.testMode = test
 
     self.force = force
+    self.verbose = verbose
 
     if not self.good:
-        return
+        return False
 
     for (condition, method, kwargs) in (
         (check, self.checkTask, {}),
@@ -7716,7 +8404,11 @@ In test mode only the files in the test set are converted.</dd>
         (browse, self.browseTask, {}),
     ):
         if condition:
-            method(**kwargs)</code></pre>
+            method(**kwargs)
+            if not self.good:
+                break
+
+    return self.good</code></pre>
 </details>
 </dd>
 </dl>
