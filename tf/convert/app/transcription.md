@@ -162,6 +162,7 @@ feature | description
 --- | ---
 `ch` | the unicode character in that «slot».
 `empty` | whether a «slot» has been inserted in an empty element
+`extraspace` | whether this is an extra space or newline, added by the conversion
 `is_meta` | whether a character is in the teiHeader element
 `is_note` | whether a character is in a note element
 `rend_`*r* | whether a character is under the influence of a `rend="`*r*`"` attribute.
@@ -331,10 +332,21 @@ When empty elements occur, something must be done to anchor them to the text str
 To such elements we add an empty «slot» with the ZERO-WIDTH-SPACE (Unicode 200B) as
 character/string value.
 
+Such slots get the feature `empty` assigned with value 1.
+
 ### «Slot»s in general
 
 1.  Spaces are stripped when they are between elements whose parent does not allow
     mixed content; other whitespace is reduced to a single space.
+1.  However, after direct child elements of pure elements we add a single space
+    or newline: if there is an ancestor with mixed content, we add a space;
+    if the whole ancestry consists of pure elements (typically in the TEI header),
+    we add a newline.
+    «beginSlotword»
+
+    These added slots get the feature `extraspace` set to 1.
+    «endSlotword»
+    
 1.  All «slot»s inside the teiHeader will get the feature `is_meta` set to 1;
     for «slot»s inside the body, `is_meta` has no value.
 

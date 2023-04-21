@@ -1,4 +1,5 @@
 [console_scripts]
+addnlp = tf.convert.addnlp:main
 nbconvert = tf.tools.nbconvert:main
 text-fabric = tf.server.start:main
 text-fabric-make = tf.client.make.build:main

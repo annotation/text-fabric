@@ -371,6 +371,7 @@ tf/client/static/png/github.png
 tf/client/static/png/maker.png
 tf/client/static/png/tf.png
 tf/convert/__init__.py
+tf/convert/addnlp.py
 tf/convert/mql.py
 tf/convert/pandas.py
 tf/convert/recorder.py
@@ -550,6 +551,7 @@ tf/server/templates/export.html
 tf/server/templates/index.html
 tf/tools/__init__.py
 tf/tools/checkdiffs.py
+tf/tools/myspacy.py
 tf/tools/nbconvert.py
 tf/tools/pdocs.py
 tf/tools/release.py

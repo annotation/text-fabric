@@ -1004,6 +1004,18 @@ A.zipAll()
 ## Interchange with external annotation tools
 
 ``` python
+from tf.convert.addnlp import NLPipeline
+```
+
+``` python
+NLPipeline()
+```
+:   generate plain text, feed into NLP, ingest results
+:   `tf.convert.addnlp`
+
+---
+
+``` python
 from convert.recorder import Recorder
 ```
 
@@ -1186,3 +1198,10 @@ xmlschema analysis {schema}.xsd
 :   Analyses an XML *schema* file and extracts meaningful information for processing
     the XML that adheres to that schema.
 :   `tf.tools.xmlschema`
+
+``` sh
+addnlp
+```
+:   When run in the repo of a TF dataset, it adds tokens and sentences to it
+    after running an NLP pipeline (Spacy) to get them.
+:   `tf.convert.addnlp`

@@ -113,6 +113,7 @@ def levels(info, error, otype, oslots, otext):
 
     if levelConstraintsSpec:
         levelConstraints = levelConstraintsSpec.split(";")
+
         for levelConstraint in levelConstraints:
             (smaller, biggerSpec) = levelConstraint.strip().split("<")
             smaller = smaller.strip()
@@ -122,7 +123,7 @@ def levels(info, error, otype, oslots, otext):
             if smallerIndex <= highestBigIndex:
                 x = result.pop(smallerIndex)
                 result.insert(highestBigIndex, x)
-            resultIndex = {r: i for (i, r) in enumerate(result)}
+            resultIndex = {r[0]: i for (i, r) in enumerate(result)}
 
     info("results:")
     for (otp, av, omin, omax) in result:

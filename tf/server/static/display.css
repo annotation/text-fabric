@@ -259,6 +259,10 @@ span.plain {
     flex-flow: row wrap;
     white-space: pre-wrap;
 }
+span.break {
+  flex-basis: 100%;
+  height: 0;
+}
 .plain {
     background-color: #ffffff;
 }

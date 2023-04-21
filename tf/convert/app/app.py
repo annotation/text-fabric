@@ -1,6 +1,7 @@
 import types
 from tf.advanced.app import App
 
+# INSERT import
 
 KNOWN_RENDS = "rèndValues"
 
@@ -18,6 +19,8 @@ class TfApp(App):
         )
         app.isFeatures = tuple(f for f in app.api.Fall() if f.startswith("is_"))
 
+# INSERT init
+
     def _wrapHtml(app, n):
         rendFeatures = app.rendFeatures
         isFeatures = app.isFeatures
@@ -34,3 +37,5 @@ class TfApp(App):
         if rClses or iClses:
             material = f'<span class="{rClses} {iClses}">{material}</span>'
         return material
+
+# INSERT extra

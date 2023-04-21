@@ -150,7 +150,7 @@ class Analysis:
             """
         )
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, verbose=-1):
         """Trivial initialization of the Analysis class.
 
         Further configuration happens in the `configure` method.
@@ -160,10 +160,22 @@ class Analysis:
         debug: boolean, optional False
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         """
 
+        self.verbose = verbose
         self.debug = debug
         self.myDir = dirNm(abspath(__file__))
+        self.setModes(debug=debug, verbose=verbose)
+
+    def setModes(self, debug=False, verbose=-1):
+        """Sets debug and verbose modes.
+
+        See `tf.tools.xmlschema.Analysis`
+        """
+        self.debug = debug
+        self.verbose = verbose
 
     def configure(self, baseSchema=None, override=None):
         """Configure for an XML schema and overrides
@@ -179,6 +191,8 @@ class Analysis:
             Whether to run in debug mode or not.
             In debug mode more information is shown on the console.
         """
+
+        verbose = self.verbose
 
         if baseSchema is None:
             myDir = self.myDir
@@ -207,8 +221,9 @@ class Analysis:
                     otherPath = f"{schemaDir}{sep}{otherFile}"
                     otherExists = fileExists(otherPath)
                     status = "exists" if otherExists else "missing"
-                    kind = "INFO" if otherExists else "WARN~ING"
-                    console(f"{kind}: Needs {otherFile} ({status})")
+                    kind = "INFO" if otherExists else "WARNING"
+                    if verbose >= 0 or kind != "INFO":
+                        console(f"{kind}: Needs {otherFile} ({status})")
                     if otherExists:
                         dependents.append(otherPath)
 
@@ -319,6 +334,7 @@ class Analysis:
         If all went well, there are no such absences!
         """
 
+        verbose = self.verbose
         debug = self.debug
         roots = self.roots
         oroots = self.oroots
@@ -384,7 +400,8 @@ class Analysis:
             for child in node.iterchildren(tag=etree.Element):
                 findDefs(child, defining, top)
 
-        console(f"Analysing {self.baseSchema}")
+        if verbose >= 0:
+            console(f"Analysing {self.baseSchema}")
         for root in roots:
             findDefs(root, False, False)
         if debug:
@@ -398,7 +415,8 @@ class Analysis:
         if len(oroots) > 0:
             definitions = {}
             redefinitions = collections.Counter()
-            console(f"Analysing {override}")
+            if verbose >= 0:
+                console(f"Analysing {override}")
             for root in oroots:
                 findDefs(root, False, False)
             if debug:
@@ -484,6 +502,7 @@ class Analysis:
         in places where the names occur.
         """
         debug = self.debug
+        verbose = self.verbose
 
         def infer():
             changed = 0
@@ -497,7 +516,8 @@ class Analysis:
                     otherInfo = definitions.get(otherBare, None)
                     if otherInfo is None:
                         if not other.startswith("xs:"):
-                            console(f"Warning: {other} is not defined.")
+                            if verbose >= 0:
+                                console(f"Warning: {other} is not defined.")
                         continue
                     if otherInfo["mixed"]:
                         info["mixed"] = True
@@ -513,7 +533,8 @@ class Analysis:
                             info["mixed"] = otherInfo["mixed"]
                             changed += 1
                         else:
-                            console(f"Warning: {other}.mixed is not defined.")
+                            if verbose >= 0:
+                                console(f"Warning: {other}.mixed is not defined.")
 
             return changed
 
@@ -523,7 +544,8 @@ class Analysis:
             changed = infer()
             i += 1
             if changed:
-                console(f"\tround {i:>3}: {changed:>3} changes")
+                if verbose == 1:
+                    console(f"\tround {i:>3}: {changed:>3} changes")
                 if debug:
                     self.showElems()
             else:
@@ -558,18 +580,22 @@ class Analysis:
     def showOverrides(self):
         """Shows the overriding definitions.
         """
+        verbose = self.verbose
         override = self.override
 
         if override:
             overrides = self.overrides
             same = sum(1 for x in overrides.items() if x[1] is None)
             distinct = len(overrides) - same
-            console(f"{same:>3} identical override(s)")
-            console(f"{distinct:>3} changing override(s)")
-        for (name, trans) in sorted(
-            x for x in self.overrides.items() if x[1] is not None
-        ):
-            console(f"\t{name} {trans}")
+            if verbose == 1:
+                console(f"{same:>3} identical override(s)")
+            if verbose >= 0:
+                console(f"{distinct:>3} changing override(s)")
+        if verbose >= 0:
+            for (name, trans) in sorted(
+                x for x in self.overrides.items() if x[1] is not None
+            ):
+                console(f"\t{name} {trans}")
 
     def task(self, task, *args):
         """Implements a higher level task.
@@ -590,6 +616,7 @@ class Analysis:
             whether the task was completed successfully.
         """
 
+        verbose = self.verbose
         myDir = self.myDir
 
         if task in {"tei", "analyse"}:
@@ -614,7 +641,8 @@ class Analysis:
                 return False
             defs = self.getDefs(asTsv=True)
 
-            console(f"{len(defs):>3} elements defined")
+            if verbose >= 0:
+                console(f"{len(defs):>3} elements defined")
             with open(outputFile, "w", encoding="utf8") as fh:
                 fh.write(defs)
             console(f"Analysis written to {outputFile}\n")
@@ -642,7 +670,19 @@ class Analysis:
             analyse={1},
             fromrelax={1},
         )
-        args = sys.argv[1:]
+        possibleFlags = {
+            "-debug": False,
+            "+debug": True,
+            "-verbose": -1,
+            "+verbose": 0,
+            "++verbose": 1,
+        }
+
+        args = set(sys.argv[1:])
+
+        flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+        args = {a for a in args if a not in flags}
+
         if "-h" in args or "--help" in args:
             self.help()
             return 0
@@ -664,6 +704,7 @@ class Analysis:
             console(f"Wrong number of arguments ({len(args)} for {task}")
             return -1
 
+        self.setModes(**flags)
         return 0 if self.task(task, *args) else 1
 
 

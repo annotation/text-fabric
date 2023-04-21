@@ -38,7 +38,7 @@ def unexpanduser(path):
     # if nPath.startswith(_homeDir):
     #    return f"~{nPath[len(_homeDir):]}"
 
-    return nPath.replace(_homeDir, '~')
+    return nPath.replace(_homeDir, "~")
 
 
 def setDir(obj):
@@ -58,8 +58,7 @@ def expandDir(obj, dirName):
 
 
 def prefixSlash(path):
-    """Prefix a / before a path if it is non-empty and not already starts with it.
-    """
+    """Prefix a / before a path if it is non-empty and not already starts with it."""
     return f"/{path}" if path and not path.startswith("/") else path
 
 
@@ -211,13 +210,7 @@ def backendRep(be, kind, default=None):
         return f"{URL_NB}/{be}"
 
     if kind == "pages":
-        return (
-            f"{GH}.io"
-            if be == GH
-            else f"{GL}.io"
-            if be == GL
-            else f"pages.{beTail}"
-        )
+        return f"{GH}.io" if be == GH else f"{GL}.io" if be == GL else f"pages.{beTail}"
     return None
 
 
@@ -443,7 +436,15 @@ def fileMove(pathSrc, pathDst):
 
 def dirExists(path):
     """Whether a path exists as directory on the file system."""
-    return os.path.isdir(path)
+    return (
+        False
+        if path is None
+        else True
+        if path == ""
+        else os.path.isdir(path)
+        if path
+        else True
+    )
 
 
 def dirRemove(path):

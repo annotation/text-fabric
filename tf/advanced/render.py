@@ -20,6 +20,8 @@ and all methods that need to be invoked on the `app` object are also accessible
 directly from an attribute in the tree.
 """
 
+import re
+
 from .helpers import htmlSafe, NB, dh
 from .unravel import _unravel
 from ..core.helpers import NBSP, htmlEsc, flattenToSet
@@ -114,9 +116,9 @@ def _render(
             after = props.after
     else:
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
-        contrib = _plainTree(tree, outer, first, last, level, boundaryCls, passage)
-        if contribB:
-            html.append(contribB)
+        contrib = _plainTree(
+            contribB, tree, outer, first, last, level, boundaryCls, passage
+        )
         if contrib:
             html.append(contrib)
 
@@ -177,7 +179,11 @@ def _plainPost(contribE, html):
         html.append(contribE)
 
 
+SPAN_RE = re.compile(r"^(<span\b[^>]*>)(.*)(</span>)$", re.S)
+
+
 def _plainTree(
+    contribB,
     tree,
     outer,
     first,
@@ -219,7 +225,7 @@ def _plainTree(
 
     if plainCustom is not None:
         contrib = plainCustom(options, chunk, nType, outer)
-        return contrib + graphics
+        return contribB + contrib + graphics
 
     if isSlotOrDescend:
         text = textMethod(
@@ -233,7 +239,26 @@ def _plainTree(
         )
         if text:
             material = htmlSafe(text, isHtml, math=showMath)
-            contrib = f'<span class="{textCls}">{material}</span>'
+            cb = f'<span class="{textCls}">'
+            ce = "</span>"
+
+            # a <br> in flex box has no effect
+            # so we create a "breaking" span by setting the width to 100% and
+            # the height to 0
+            # See https://tobiasahlin.com/blog/flexbox-break-to-new-row/
+            if "<br>" in material:
+                match = SPAN_RE.match(material)
+                if match:
+                    (start, content, end) = match.group(1, 2, 3)
+                else:
+                    (start, content, end) = ("", material, "")
+                parts = content.split("<br>")
+                material = '<span class="break"><br></span>'.join(
+                    f"{cb}{start}{part}{end}{ce}" for part in parts
+                )
+                contrib = material
+            else:
+                contrib = f"{cb}{material}{ce}"
     else:
         tplFilled = getText(
             False,
@@ -250,7 +275,7 @@ def _plainTree(
         if tplFilled:
             contrib = f'<span class="{textCls} {ltr}">{tplFilled}</span>'
 
-    return contrib + graphics
+    return contribB + contrib + graphics
 
 
 # PRETTY LOW-LEVEL

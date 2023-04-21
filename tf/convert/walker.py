@@ -50,7 +50,6 @@ good = cv.walk(
     featureMeta=featureMeta,
     warn=True,
     force=False,
-    silent="auto",
 )
 
 if good:
@@ -151,7 +150,7 @@ import re
 
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.helpers import itemize, isInt
-from ..core.timestamp import SILENT_D, silentConvert
+from ..core.timestamp import SILENT_D, DEEP, silentConvert
 
 
 class CV:
@@ -170,6 +169,7 @@ class CV:
         """
 
         self.TF = TF
+        self.silent = silent
         tmObj = TF.tmObj
         isSilent = tmObj.isSilent
         setSilent = tmObj.setSilent
@@ -179,6 +179,7 @@ class CV:
         setSilent(silent)
 
     def _showWarnings(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -196,11 +197,11 @@ class CV:
 
             if warnings:
                 for (kind, msgs) in sorted(warnings.items()):
-                    method(f"WARNING {kind} ({len(msgs)} x):")
+                    method(f"WARNING {kind} ({len(msgs)} x):", force=silent != DEEP)
                     indent(level=2)
                     for msg in sorted(set(msgs))[0:20]:
                         if msg:
-                            method(f"{msg}", tm=False)
+                            method(f"{msg}", tm=False, force=silent != DEEP)
                 self.warnings = {}
                 if warn:
                     info("use `cv.walk(..., warn=False)` to continue after warnings")
@@ -211,6 +212,7 @@ class CV:
                     info("use `cv.walk(..., warn=None)` to suppress warnings")
 
     def _showErrors(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         error = tmObj.error
         info = tmObj.info
@@ -233,7 +235,7 @@ class CV:
             error("STOPPED by the stop() instruction")
         elif not errors:
             if self.good:
-                info("OK")
+                info("OK", force=silent != DEEP)
             else:
                 error("STOPPED because of warnings")
 
@@ -340,9 +342,10 @@ class CV:
         info = tmObj.info
         indent = tmObj.indent
         setSilent = tmObj.setSilent
+        silent = self.silent
 
         indent(level=0, reset=True)
-        info("Importing data from walking through the source ...")
+        info("Importing data from walking through the source ...", force=silent != DEEP)
 
         self.force = force
         self.good = True
@@ -380,7 +383,6 @@ class CV:
         self._reassignFeatures()
 
         if generateTf:
-
             indent(level=0)
 
             if self.good or self.force:
@@ -388,6 +390,7 @@ class CV:
                     metaData=self.metaData,
                     nodeFeatures=self.nodeFeatures,
                     edgeFeatures=self.edgeFeatures,
+                    silent=silent,
                 )
 
         self._showWarnings()
@@ -396,6 +399,7 @@ class CV:
         return self.good
 
     def _prepareMeta(self, otext, generic):
+        silent = self.silent
         varRe = re.compile(r"\{([^}]+)\}")
 
         tmObj = self.TF.tmObj
@@ -405,7 +409,7 @@ class CV:
         if not self.good and not self.force:
             return
 
-        info("Preparing metadata... ")
+        info("Preparing metadata... ", force=silent != DEEP)
 
         intFeatures = self.intFeatures
         featureMeta = self.featureMeta
@@ -1193,13 +1197,14 @@ class CV:
         # If you resume a slot node, it all non slot nodes in the current context
         # will be linked to it.
 
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good:
             return
 
-        info("Following director... ")
+        info("Following director... ", force=silent != DEEP)
 
         slotType = self.slotType
         errors = self.errors
@@ -1228,7 +1233,7 @@ class CV:
             return
 
         for (actionType, amount) in sorted(self.stats.items()):
-            info(f'"{actionType}" actions: {amount}')
+            info(f'"{actionType}" actions: {amount}', force=silent != DEEP)
 
         totalNodes = 0
 
@@ -1238,7 +1243,7 @@ class CV:
             slotRep = " = slot type" if nType == slotType else ""
             info(f'{lastSeq:>8} x "{nType}" node {slotRep}', tm=False)
             totalNodes += lastSeq
-        info(f"{totalNodes:>8} nodes of all types", tm=False)
+        info(f"{totalNodes:>8} nodes of all types", tm=False, force=silent != DEEP)
 
         self.totalNodes = totalNodes
 
@@ -1255,6 +1260,7 @@ class CV:
         self._showErrors()
 
     def _removeUnlinked(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -1279,7 +1285,7 @@ class CV:
                     unlinked.setdefault(nType, []).append(seq)
 
         if unlinked:
-            info("Removing unlinked nodes ... ")
+            info("Removing unlinked nodes ... ", force=silent != DEEP)
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
@@ -1288,7 +1294,10 @@ class CV:
                 totalRemoved += lSeqs
                 rep = " ..." if lSeqs > 5 else ""
                 pl = "" if lSeqs == 1 else "s"
-                info(f'{lSeqs:>6} unlinked "{nType}" node{pl}: {seqs[0:5]}{rep}')
+                info(
+                    f'{lSeqs:>6} unlinked "{nType}" node{pl}: {seqs[0:5]}{rep}',
+                    force=silent != DEEP,
+                )
                 for seq in seqs:
                     node = (nType, seq)
                     theseNodes.discard(seq)
@@ -1302,19 +1311,20 @@ class CV:
                                 if node in toValues:
                                     del toValues[node]
             pl = "" if totalRemoved == 1 else "s"
-            info(f"{totalRemoved:>6} unlinked node{pl}")
+            info(f"{totalRemoved:>6} unlinked node{pl}", force=silent != DEEP)
             self.totalNodes -= totalRemoved
-            info(f"Leaving {self.totalNodes:>6} nodes")
+            info(f"Leaving {self.totalNodes:>6} nodes", force=silent != DEEP)
             indent(level=1)
 
     def _checkGraph(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info("checking for nodes and edges ... ")
+        info("checking for nodes and edges ... ", force=silent != DEEP)
 
         nodes = self.nodes
         errors = self.errors
@@ -1340,13 +1350,14 @@ class CV:
         self._showErrors()
 
     def _checkFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info("checking (section) features ... ")
+        info("checking (section) features ... ", force=silent != DEEP)
 
         intFeatures = self.intFeatures
         metaData = self.metaData
@@ -1501,13 +1512,14 @@ class CV:
         self._showErrors()
 
     def _reorderNodes(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
 
         if not self.good and not self.force:
             return
 
-        info("reordering nodes ...")
+        info("reordering nodes ...", force=silent != DEEP)
 
         nodeTypes = self.curSeq
         nodes = self.nodes
@@ -1538,7 +1550,7 @@ class CV:
                 nodeMap[(nType, seq)] = n
 
         self.maxNode = n
-        info(f"Max node = {n}")
+        info(f"Max node = {n}", force=silent != DEEP)
 
         self._showErrors()
 
@@ -1566,6 +1578,7 @@ class CV:
         return functools.cmp_to_key(before)
 
     def _reassignFeatures(self):
+        silent = self.silent
         tmObj = self.TF.tmObj
         info = tmObj.info
         indent = tmObj.indent
@@ -1573,7 +1586,7 @@ class CV:
         if not self.good and not self.force:
             return
 
-        info("reassigning feature values ...")
+        info("reassigning feature values ...", force=silent != DEEP)
 
         nodeMap = self.nodeMap
         oslots = self.oslots

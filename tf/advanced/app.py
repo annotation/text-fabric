@@ -425,7 +425,8 @@ def findApp(
     dataFolder = None
     inNb = runsInNotebook()
 
-    dm("**Locating corpus resources ...**", inNb=inNb)
+    if silent not in {TERSE, DEEP}:
+        dm("**Locating corpus resources ...**", inNb=inNb)
 
     if dataLoc is None:
         if appLoc:

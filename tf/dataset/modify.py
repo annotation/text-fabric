@@ -16,7 +16,7 @@ modify(
     addTypes=None,
     replaceSlotType=None,
     featureMeta=None,
-    silent="auto",
+    silent="deep",
 )
 ```
 
@@ -62,13 +62,6 @@ SE_TP = "sectionTypes"
 SE_FT = "sectionFeatures"
 ST_TP = "structureTypes"
 ST_FT = "structureFeatures"
-
-TM = Timestamp()
-indent = TM.indent
-info = TM.info
-error = TM.error
-isSilent = TM.isSilent
-setSilent = TM.setSilent
 
 
 def _rep(iterable):
@@ -370,9 +363,17 @@ def modify(
                 ),
 
     replaceSlotType: string, optional None
-        If passed, it should be a valid, non-slot node type.
+        If passed, it should be a tuple whose first member is a valid, non-slot
+        node type.
         The slot type will be replaced by this node type and the original slots will
         be deleted.
+        The remaining members are features that should be discarded in the process,
+        they are typically features defined for old slot nodes that have little or no
+        meaning for new slot nodes.
+        Other features thatare defined for old slots carry over to the corresponding
+        new slots, but only in the new slot does not have already that feature
+        assigned. Only the value of the first old slot that corresponds with a new slot
+        carries over to that new slot.
 
         When the original slot type gets replaced, the slot mapping of other nodes
         needs to be adjusted. The new slots are a coarser division of the
@@ -384,6 +385,7 @@ def modify(
         This may lead to nodes that do not have links to slots anymore.
         These nodes will be lost, together with the feature values for these nodes
         and the edges that involve these nodes.
+
 
         Once the slot type is replaced, you may want to adapt the text formats in
         the OTEXT feature. You can do so by passing appropriate values
@@ -419,6 +421,14 @@ def modify(
     silent: string, optional tf.core.timestamp.SILENT_D
         See `tf.core.timestamp.Timestamp`
     """
+
+    TM = Timestamp()
+    indent = TM.indent
+    info = TM.info
+    error = TM.error
+    setSilent = TM.setSilent
+
+    setSilent(silent)
 
     addFeatures = addFeatures or {}
     onlyDeliverUpdatedFeatures = False
@@ -1019,6 +1029,7 @@ def modify(
         nonlocal good
         nonlocal ePrefix
         nonlocal eItem
+        nonlocal replaceSlotType
         Fs = api.Fs
         Es = api.Es
 
@@ -1063,6 +1074,16 @@ def modify(
                 metaDataOut[feat] = outMeta
 
         if replaceSlotType:
+            if type(replaceSlotType) is str:
+                ignoreSlotFeatures = ()
+            else:
+                (replaceSlotType, *ignoreSlotFeatures) = replaceSlotType
+            ignoreSlotFeatures = set(ignoreSlotFeatures)
+
+            ignoreRep = (
+                f" while ignoring {ignoreSlotFeatures}" if ignoreSlotFeatures else ""
+            )
+            info(f"Replacing slot type {slotType} by {replaceSlotType}{ignoreRep}")
 
             # check replaceSlotType
 
@@ -1103,21 +1124,26 @@ def modify(
             removeNodes = set()
 
             for newSlot in nextSlots:
-                for slot in currentOslots[newSlot]:
-                    currentSlotMap[slot] = newSlot
+                for oldSlot in currentOslots[newSlot]:
+                    currentSlotMap[oldSlot] = newSlot
 
             for (oldSlot, nType) in currentOtype.items():
                 if nType == slotType:
                     if oldSlot not in currentSlotMap:
                         removeNodes.add(oldSlot)
 
-            # All features on old slots have to be extended to the new slots
+            info(f"{len(removeNodes)} old {slotType}s do not map to {replaceSlotType}s")
+
+            # All features (except those in ignoreSlotFeatures) on old slots
+            # have to be extended to the new slots
             # If a new slot has conflicting feature values for the old slots
             # it is linked to, the first defined feature value will be taken.
             # For now, we do not do this for edge features.
 
             for (feat, featData) in nodeFeaturesOut.items():
                 if feat == OTYPE:
+                    continue
+                if feat in ignoreSlotFeatures:
                     continue
                 updates = {}
                 for (oldSlot, value) in featData.items():
@@ -1295,6 +1321,7 @@ def modify(
             metaData=metaDataOut,
             nodeFeatures=nodeFeaturesOut,
             edgeFeatures=edgeFeaturesOut,
+            silent=silent,
         )
         return True
 
@@ -1320,8 +1347,5 @@ def modify(
                 return False
         return True
 
-    wasSilent = isSilent()
-    setSilent(silent)
     result = process()
-    setSilent(wasSilent)
     return result

@@ -36,6 +36,13 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     converted from TEI in the Oxford Text Archive,
     Dirk Roorda
 
+[annotation/mondriaan](https://github.com/annotation/mondriaan)
+:   *english*
+    Piet Mondriaan, 1872 - 1944,
+    Test corpus of 14 letters;
+    converted from TEI from the Huygens Institute, together with RKD and HuC;
+    many people involved
+
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
 [CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)

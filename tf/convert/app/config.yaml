@@ -27,7 +27,5 @@ provenanceSpec:
   webLang: en
   webUrl: '{webBase}/<1>/<2>/<3>&version={version}'
   webUrlLex: '{webBase}/word?version={version}&id=<lid>'
-typeDisplay:
-  word:
-    base: true
+typeDisplay: {}
 writing: ''

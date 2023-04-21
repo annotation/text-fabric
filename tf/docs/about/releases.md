@@ -10,16 +10,29 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.0 (upcoming)
+### 11.4.0
 
-2023-04-??
+2023-04-21
 
+This new version is all about using the results of NLP pipelines in the creation
+of a TF dataset.
+We build on the TEI to TF conversion in `tf.convert.tei` and surround it with
+other data creation steps.
+The following workflow is now supported by means of simple commands.
+
+*   The TEI to TF conversion can now be extended with NLP generated tokens and
+    sentences, there is single command to do this but the individual steps can
+    also be run in a notebook, see `tf.convert.addnlp`. Work in progress.
 *   TF can now invoke a Spcay-based workflow to detect tokens and sentences.
     See `tf.tools.myspacy`.
-*   The TEI->TF conversion can now be extended with NLP generated tokens and sentences,
-    there is single function to do this but the individual steps can also be run
-    in a notebook, see `tf.convert.addnlp`. Work in progress.
-*   TEI to TF conversion: usability improvements and fixes
+*   TEI to TF conversion: usability improvements and fixes.
+*   `tf.dataset.modify` can now also replace the slot type in a dataset by an other
+    node type. For example, you can use this function to add tokens to a dataset
+    that is character-based and make the tokens the new slot type and cause all
+    character nodes to be discarded. This can be done in one go.
+*   Examples are in the Mondriaan test garden:
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb)
+    in three levels of detail.
 
 ### 11.3
 

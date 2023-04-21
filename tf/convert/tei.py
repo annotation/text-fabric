@@ -79,6 +79,7 @@ from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..core.helpers import console
 from ..convert.walker import CV
+from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.helpers import mergeDict
 from ..core.files import (
     abspath,
@@ -96,6 +97,8 @@ from ..core.files import (
 
 from ..tools.xmlschema import Analysis
 
+
+ZWSP = "\u200b"  # zero-width space
 
 CSS_REND = dict(
     h1=(
@@ -496,6 +499,7 @@ class TEI:
         appConfig={},
         docMaterial={},
         force=False,
+        verbose=-1,
     ):
         """Converts TEI to TF.
 
@@ -705,6 +709,9 @@ class TEI:
             If True, the `app` task will overwrite existing files with generated
             files, and remove any files with `_generated` in the name.
             Except for the logo, which will not be overwritten.
+
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         """
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
@@ -712,9 +719,13 @@ class TEI:
                 "Not working in a repo: "
                 f"backend={backend} org={org} repo={repo} relative={relative}"
             )
-            quit()
+            self.good = False
+            return
 
-        console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
+        if verbose == 1:
+            console(
+                f"Working in repository {org}/{repo}{relative} in backend {backend}"
+            )
 
         base = ex(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
@@ -781,6 +792,7 @@ class TEI:
         self.appConfig = appConfig
         self.docMaterial = docMaterial
         self.force = force
+        self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
@@ -826,10 +838,13 @@ class TEI:
                 just starts the text-fabric browser on the result;
 
         flags:
-            test:
-                run in test mode
-            force:
-                when generating app files, overwrite previously existing app files
+            -test, +test:
+                whether to run in test mode
+            -force, +force:
+                whether to overwrite previously existing app files when
+                generating app files
+            +verbose, ++verbose:
+                Produce more progress and reporting messages
         """
         )
 
@@ -870,12 +885,18 @@ class TEI:
         schemaDoc = etree.parse(schemaFile)
         return etree.XMLSchema(schemaDoc)
 
-    def getElementInfo(self):
+    def getElementInfo(self, verbose=None):
         """Analyse the schema.
 
         The XML schema has useful information about the XML elements that
         occur in the source. Here we extract that information and make it
         fast-accessible.
+
+        Parameters
+        ----------
+        verbose: boolean, optional None
+            Produce more progress and reporting messages
+            If not passed, take the verbose member of this object.
 
         Returns
         -------
@@ -884,15 +905,18 @@ class TEI:
             for each name is a tuple of booleans: whether the element is simple
             or complex; whether the element allows mixed content or only pure content.
         """
+        if verbose is not None:
+            self.verbose = verbose
+        verbose = self.verbose
         schemaFile = self.schemaFile
 
         self.elementDefs = {}
 
-        A = Analysis()
+        A = Analysis(verbose=verbose)
         A.configure(override=schemaFile)
         A.interpret()
         if not A.good:
-            quit()
+            return
 
         self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
@@ -913,9 +937,11 @@ class TEI:
 
             It is the name of the single XML file.
         """
+        verbose = self.verbose
         sourceDir = self.sourceDir
         sectionModel = self.sectionModel
-        console(f"Section model {sectionModel}")
+        if verbose == 1:
+            console(f"Section model {sectionModel}")
 
         if sectionModel == "I":
             testMode = self.testMode
@@ -989,12 +1015,15 @@ class TEI:
         if not self.good:
             return
 
+        verbose = self.verbose
+
         sourceDir = self.sourceDir
         reportDir = self.reportDir
         docsDir = self.docsDir
         sectionModel = self.sectionModel
 
-        console(f"TEI to TF checking: {ux(sourceDir)} => {ux(reportDir)}")
+        if verbose == 1:
+            console(f"TEI to TF checking: {ux(sourceDir)} => {ux(reportDir)}")
 
         kindLabels = dict(
             format="Formatting Attributes",
@@ -1101,6 +1130,8 @@ class TEI:
 
             console(
                 f"{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}"
+                if verbose >= 0 or nErrors
+                else "Validation OK"
             )
 
         def writeNamespaces():
@@ -1131,6 +1162,8 @@ class TEI:
             console(
                 f"{nTags} tags of which {nErrors} with multiple namespaces "
                 f"written to {errorFile}"
+                if verbose >= 0 or nErrors
+                else "Namespaces OK"
             )
 
         def writeReport():
@@ -1183,7 +1216,8 @@ class TEI:
                     for (tag, tagInfo) in sorted(analysis[kind].items()):
                         writeTagInfo(tag, tagInfo)
 
-            console(f"{infoLines} info line(s) written to {reportFile}")
+            if verbose >= 0:
+                console(f"{infoLines} info line(s) written to {reportFile}")
 
         def writeDoc():
             teiUrl = "https://tei-c.org/release/doc/tei-p5-doc/en/html"
@@ -1307,10 +1341,12 @@ class TEI:
         object
             The `tf.convert.walker.CV` converter object, initialized.
         """
+        verbose = self.verbose
         tfPath = self.tfPath
 
-        TF = Fabric(locations=tfPath)
-        return CV(TF)
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
+        TF = Fabric(locations=tfPath, silent=silent)
+        return CV(TF, silent=silent)
 
     # DIRECTOR
 
@@ -1370,8 +1406,7 @@ class TEI:
 
         IN_WORD_HYPHENS = {HY, "-"}
 
-        ZWSP = "\u200b"  # zero-width space
-
+        verbose = self.verbose
         sourceDir = self.sourceDir
         wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
@@ -1386,7 +1421,7 @@ class TEI:
         )
 
         parser = self.getParser()
-        self.getElementInfo()
+        self.getElementInfo(verbose=-1)
 
         # WALKERS
 
@@ -1539,7 +1574,7 @@ class TEI:
                 if nNest > 0 and nest[-1] in EMPTY_ELEMENTS:
                     return False
 
-                return nNest > 0 and (
+                outcome = nNest > 0 and (
                     nest[-1] == TEI_HEADER
                     or (
                         nNest > 1
@@ -1550,6 +1585,10 @@ class TEI:
                         )
                     )
                 )
+                if outcome:
+                    cur["chapterElems"].add(nest[-1])
+
+                return outcome
 
             return False
 
@@ -1593,7 +1632,7 @@ class TEI:
 
             if sectionModel == "II":
                 meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur["pureElems"]
-                return nNest > 1 and (
+                outcome = nNest > 1 and (
                     meChptChnk
                     or (
                         nest[-2] == TEI_HEADER
@@ -1609,8 +1648,11 @@ class TEI:
                         )
                     )
                 )
+                if outcome:
+                    cur["chunkElems"].add(nest[-1])
+                return outcome
 
-            return nNest > 0 and (
+            outcome = nNest > 0 and (
                 nest[-1] in CHUNK_ELEMS
                 or (
                     nNest > 1
@@ -1622,6 +1664,9 @@ class TEI:
                     )
                 )
             )
+            if outcome:
+                cur["chunkElems"].add(nest[-1])
+            return outcome
 
         def isPure(cur):
             """Whether the current tag has pure content.
@@ -1659,6 +1704,36 @@ class TEI:
             """
             nest = cur[NEST]
             return len(nest) > 1 and nest[-2] in cur["pureElems"]
+
+        def hasMixedAncestor(cur):
+            """Whether the current tag has an ancestor with mixed content.
+
+            We use this in case a tag ends in an element with pure content.
+            We should then add whitespace to separate it from the next
+            element of its parent.
+
+            If the whole stack of element has pure content, we add
+            a newline, because then we are probably in the TEI header,
+            and things are most clear if they are on separate lines.
+
+            But if one of the ancestors has mixed content, we are typically
+            in some structured piece of information within running text,
+            such as change markup. In this case we want to add merely a space.
+
+            And we should not strip spaces after it.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
+            nest = cur[NEST]
+            return any(n in cur["mixedElems"] for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
             """Start a word node if necessary.
@@ -1710,7 +1785,8 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             withNewline:
-                Whether to add a newline after the word.
+                Whether to add a newline or space after the word.
+                That depends on whether there is a mixed ancestor.
             """
             curWord = cur[WORD]
             if curWord:
@@ -1725,9 +1801,13 @@ class TEI:
             if ch is not None:
                 cur["afterStr"] += ch
             if withNewline:
-                cur["afterStr"] = cur["afterStr"].rstrip() + "\n"
+                spaceChar = " " if hasMixedAncestor(cur) else "\n"
+                cur["afterStr"] = cur["afterStr"].rstrip() + spaceChar
                 if not wordAsSlot:
-                    addNewline(cv, cur)
+                    addSpace(cv, cur, spaceChar)
+                cur["afterSpace"] = True
+            else:
+                cur["afterSpace"] = False
 
         def addEmpty(cv, cur):
             """Add an empty slot.
@@ -1797,7 +1877,7 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             """
-            if ch is None or ch.isalnum() or ch in IN_WORD_HYPHENS:
+            if ch in {"_", None} or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
                 finishWord(cv, cur, ch, False)
@@ -1812,8 +1892,8 @@ class TEI:
             if s is not None:
                 addSlotFeatures(cv, cur, s)
 
-        def addNewline(cv, cur):
-            """Adds a new line.
+        def addSpace(cv, cur, spaceChar):
+            """Adds a space or a new line.
 
             Parameters
             ----------
@@ -1822,6 +1902,8 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
+            spaceChar: string
+                The character to add (supposed to be either a space or a newline).
 
             Only meant for the case where slots are characters.
 
@@ -1829,7 +1911,7 @@ class TEI:
             """
             if chunkLevel in cv.activeTypes():
                 s = cv.slot()
-                cv.feature(s, ch="\n")
+                cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
         def beforeChildren(cv, cur, node, tag):
@@ -1934,6 +2016,7 @@ class TEI:
                 finishWord(cv, cur, None, False)
 
             if tag not in PASS_THROUGH:
+                cur["afterSpace"] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
@@ -1986,15 +2069,23 @@ class TEI:
             hasFinishedWord = False
 
             if tag not in PASS_THROUGH:
-                if isEndInPure(cur) or tag in NEWLINE_ELEMENTS:
+                curNode = cur["elems"][-1]
+                slots = cv.linked(curNode)
+                empty = len(slots) == 0
+
+                if (
+                    tag in NEWLINE_ELEMENTS
+                    or isEndInPure(cur)
+                    and not empty
+                    and not cur["afterSpace"]
+                ):
                     finishWord(cv, cur, None, True)
                     hasFinishedWord = True
 
-                curNode = cur["elems"].pop()
-
                 slots = cv.linked(curNode)
+                empty = len(slots) == 0
 
-                if not len(slots):
+                if empty:
                     lastSlot = addEmpty(cv, cur)
                     if cur["inHeader"]:
                         cv.feature(lastSlot, is_meta=1)
@@ -2017,6 +2108,7 @@ class TEI:
                             else:
                                 cv.link(prevChapter, lastSlot)
 
+                cur["elems"].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -2099,6 +2191,9 @@ class TEI:
             cur["pureElems"] = {
                 x for (x, (typ, mixed)) in elementDefs.items() if not mixed
             }
+            cur["mixedElems"] = {
+                x for (x, (typ, mixed)) in elementDefs.items() if mixed
+            }
 
             if sectionModel == "I":
                 folderSection = self.folderSection
@@ -2138,6 +2233,8 @@ class TEI:
                             cur["prevWord"] = None
                             cur["wordStr"] = ""
                             cur["afterStr"] = ""
+                            cur["afterSpace"] = True
+                            cur["chunkElems"] = set()
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
@@ -2172,6 +2269,9 @@ class TEI:
                     cur["prevWord"] = None
                     cur["wordStr"] = ""
                     cur["afterStr"] = ""
+                    cur["afterSpace"] = True
+                    cur["chunkElems"] = set()
+                    cur["chapterElems"] = set()
                     for child in root.iterchildren(tag=etree.Element):
                         walkNode(cv, cur, child)
 
@@ -2198,7 +2298,21 @@ class TEI:
                             description=f"this is TEI attribute {fName}",
                             valueType="str",
                         )
-            console("source reading done")
+
+            levelConstraints = ["note < chunk, p"]
+            if "chapterElems" in cur:
+                for elem in cur["chapterElems"]:
+                    levelConstraints.append(f"{elem} < chapter")
+            if "chunkElems" in cur:
+                for elem in cur["chunkElems"]:
+                    levelConstraints.append(f"{elem} < chunk")
+
+            levelConstraints = "; ".join(levelConstraints)
+
+            cv.meta("otext", levelConstraints=levelConstraints)
+
+            if verbose == 1:
+                console("source reading done")
             return True
 
         return director
@@ -2216,6 +2330,7 @@ class TEI:
         if not self.good:
             return
 
+        verbose = self.verbose
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         tfPath = self.tfPath
@@ -2223,7 +2338,8 @@ class TEI:
         chunkSection = self.chunkSection
         levelNames = self.levelNames
 
-        console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
+        if verbose == 1:
+            console(f"TEI to TF converting: {ux(sourceDir)} => {ux(tfPath)}")
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -2235,7 +2351,6 @@ class TEI:
             "fmt:text-orig-full": textFeatures,
             "sectionFeatures": sectionFeatures,
             "sectionTypes": sectionTypes,
-            "levelConstraints": "note < chunk, p",
         }
         intFeatures = {"empty", chunkSection}
         featureMeta = dict(
@@ -2314,6 +2429,8 @@ class TEI:
             return
 
         tfPath = self.tfPath
+        verbose = self.verbose
+        silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         if not dirExists(tfPath):
             console(f"Directory {ux(tfPath)} does not exist.")
@@ -2321,12 +2438,13 @@ class TEI:
             self.good = False
             return
 
-        TF = Fabric(locations=[tfPath])
+        TF = Fabric(locations=[tfPath], silent=silent)
         allFeatures = TF.explore(silent=True, show=True)
         loadableFeatures = allFeatures["nodes"] + allFeatures["edges"]
-        api = TF.load(loadableFeatures, silent=False)
+        api = TF.load(loadableFeatures, silent=silent)
         if api:
-            console(f"max node = {api.F.otype.maxNode}")
+            if verbose >= 0:
+                console(f"max node = {api.F.otype.maxNode}")
             self.good = True
             return
 
@@ -2341,6 +2459,22 @@ class TEI:
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
+        It will also read custom additions that are present in the target app directory.
+        These files are:
+
+        *   `config_custom.yaml`:
+            A yaml file with config data that will be *merged* into the generated
+            config.yaml.
+        *   `app_custom.py`:
+            A file with named snippets of code to be inserted
+            at corresponding places in the generated `app.py`
+        *   `display_custom.css`:
+            Additonal css definitions that will be appended to the generated
+            `display.css`.
+
+        If the TF app for this resource needs custom code, this is the way to retain
+        that code between automatic generation of files.
+
         Returns
         -------
         boolean
@@ -2348,6 +2482,8 @@ class TEI:
         """
         if not self.good:
             return
+
+        verbose = self.verbose
 
         refDir = self.refDir
         myDir = self.myDir
@@ -2360,6 +2496,11 @@ class TEI:
 
         initTree(docsDir)
 
+        # key | parent dir | file | template based
+
+        # if parent dir is a tuple, the first part is the parent of the source
+        # end the second part is the parent of the destination
+
         itemSpecs = (
             ("about", "docs", "about.md", False),
             ("trans", ("app", "docs"), "transcription.md", True),
@@ -2368,10 +2509,22 @@ class TEI:
             ("config", "app", "config.yaml", True),
             ("app", "app", "app.py", True),
         )
-        items = {
+        genTasks = {
             s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
+
+        def readCustom(itemTarget):
+            (base, ext) = itemTarget.rsplit(".", 1)
+            itemCustom = f"{base}_custom.{ext}"
+
+            custom = ""
+
+            if fileExists(itemCustom):
+                with open(itemCustom, encoding="utf8") as fh:
+                    custom = fh.read()
+
+            return custom
 
         def createConfig(itemSource, itemTarget):
             tfVersion = self.tfVersion
@@ -2388,6 +2541,12 @@ class TEI:
             if tokenBased:
                 if "typeDisplay" in settings and "word" in settings["typeDisplay"]:
                     del settings["typeDisplay"]["word"]
+
+            customText = readCustom(itemTarget)
+            customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+
+            mergeDict(settings, customSettings)
+
             text = yaml.dump(settings, allow_unicode=True)
 
             with open(itemTarget, "w", encoding="utf8") as fh:
@@ -2405,8 +2564,11 @@ class TEI:
 
             css = css.replace("«rends»", cssInfo)
 
+            customText = readCustom(itemTarget)
+
             with open(itemTarget, "w", encoding="utf8") as fh:
                 fh.write(css)
+                fh.write(f"\n{customText}\n")
 
         def createApp(itemSource, itemTarget):
             """Copies and tweaks the app.py file of an TF app.
@@ -2448,8 +2610,44 @@ class TEI:
             code = code.replace("F.matérial", materialCode)
             code = code.replace('"rèndValues"', rendValues)
 
+            hookStartRe = re.compile(r"^# DEF (import|init|extra)\s*$", re.S)
+            hookEndRe = re.compile(r"^# END DEF\s*$", re.S)
+            hookInsertRe = re.compile(r"^# INSERT (import|init|extra)\s*$", re.S)
+
+            customCode = readCustom(itemTarget)
+
+            custom = {}
+            section = None
+
+            for line in customCode.split("\n"):
+                line = line.rstrip()
+
+                if section is None:
+                    match = hookStartRe.match(line)
+                    if match:
+                        section = match.group(1)
+                        custom[section] = []
+                else:
+                    match = hookEndRe.match(line)
+                    if match:
+                        section = None
+                    else:
+                        custom[section].append(line)
+
+            codeLines = []
+
+            for line in code.split("\n"):
+                line = line.rstrip()
+
+                match = hookInsertRe.match(line)
+                if match:
+                    section = match.group(1)
+                    codeLines.extend(custom.get(section, []))
+                else:
+                    codeLines.append(line)
+
             with open(itemTarget, "w", encoding="utf8") as fh:
-                fh.write(code)
+                fh.write("\n".join(codeLines))
 
         def createTranscription(itemSource, itemTarget):
             """Copies and tweaks the transcription.md file for a TF corpus."""
@@ -2519,9 +2717,12 @@ class TEI:
                 )
             )
 
-        console("App updating ...")
+        extraRep = " adapted to tokens and sentences" if tokenBased else ""
 
-        for (name, info) in items.items():
+        if verbose >= 0:
+            console(f"App updating {extraRep} ...")
+
+        for (name, info) in genTasks.items():
             parent = info["parent"]
             (sourceBit, targetBit) = (
                 parent if type(parent) is tuple else (parent, parent)
@@ -2574,7 +2775,13 @@ class TEI:
             else:
                 with open(target, "w", encoding="utf8") as fh:
                     fh.write(createAbout())
-            console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
+            if verbose == 1:
+                console(f"\t{name:<7}: {existRep}, {changeRep} {ux(target)}")
+
+        if verbose >= 0:
+            console("Done")
+        else:
+            console(f"App updated{extraRep}")
 
     # START the TEXT-FABRIC BROWSER on this CORPUS
 
@@ -2601,6 +2808,7 @@ class TEI:
 
         backendOpt = "" if backend == "github" else f"--backend={backend}"
         versionOpt = f"--version={tfVersion}"
+        versionOpt = ""
         try:
             run(
                 (
@@ -2622,12 +2830,14 @@ class TEI:
         browse=False,
         test=None,
         force=False,
+        verbose=-1,
     ):
         """Carry out any task, possibly modified by any flag.
 
         This is a higher level function that can execute a selection of tasks.
 
-        The tasks will be executed in a fixed order: check, convert load.
+        The tasks will be executed in a fixed order: check, convert, load, app,
+        apptoken, browse.
         But you can select which one(s) must be executed.
 
         If multiple tasks must be executed and one fails, the subsequent tasks
@@ -2650,6 +2860,8 @@ class TEI:
         test: boolean, optional None
             Whether to run in test mode.
             In test mode only the files in the test set are converted.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
         force: boolean, optional False
             Whether the app task should overwrite previously generated files
 
@@ -2665,9 +2877,10 @@ class TEI:
             self.testMode = test
 
         self.force = force
+        self.verbose = verbose
 
         if not self.good:
-            return
+            return False
 
         for (condition, method, kwargs) in (
             (check, self.checkTask, {}),
@@ -2679,6 +2892,10 @@ class TEI:
         ):
             if condition:
                 method(**kwargs)
+                if not self.good:
+                    break
+
+        return self.good
 
     def run(self, program=None):
         """Carry out tasks specified by arguments on the command line.
@@ -2705,10 +2922,18 @@ class TEI:
         """
         programRep = "TEI-converter" if program is None else program
         possibleTasks = {"check", "convert", "load", "app", "apptoken", "browse"}
-        possibleFlags = {"test", "force"}
-        possibleArgs = possibleTasks | possibleFlags
+        possibleFlags = {
+            "-test": False,
+            "+test": True,
+            "-force": False,
+            "+force": True,
+            "-verbose": -1,
+            "+verbose": 0,
+            "++verbose": 1,
+        }
+        possibleArgs = possibleTasks | set(possibleFlags)
 
-        args = sys.argv[1:]
+        args = set(sys.argv[1:])
 
         if not len(args) or "--help" in args or "-h" in args:
             self.help(programRep)
@@ -2723,8 +2948,10 @@ class TEI:
                 console(f"Illegal argument `{arg}`")
             sys.exit(-1)
 
-        tasks = {arg: True for arg in args if arg in possibleTasks}
-        flags = {arg: True for arg in args if arg in possibleFlags}
+        tasks = {arg: True for arg in possibleTasks if arg in args}
+        flags = {
+            arg.lstrip("+-"): val for (arg, val) in possibleFlags.items() if arg in args
+        }
 
         self.task(**tasks, **flags)
         if self.good:
