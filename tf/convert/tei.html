@@ -74,7 +74,7 @@ which you can use as a starting point.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1-L2960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1-L2918" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -169,7 +169,6 @@ from ..core.files import (
     dirExists,
     fileExists,
     fileCopy,
-    fileRemove,
     scanDir,
 )
 
@@ -575,8 +574,6 @@ class TEI:
         transform=None,
         tfVersion=&#34;0.1&#34;,
         appConfig={},
-        docMaterial={},
-        force=False,
         verbose=-1,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
@@ -684,29 +681,13 @@ class TEI:
         These settings can be overriden by the parameter `appConfig`.
         Also a default `display.css` file and a logo are added.
 
-        If such a file already exists, it will be left untouched and a generated file
-        is put next to the item, with `_generated` in the file name.
-
-        This behaviour can be modified by passing `force=True` to the initialization
-        of the TEI object.
+        Custom content for these files can be provided in files
+        with `_custom` appended to their base name.
 
         ### `docs`
 
         Location of additional documentation.
         This can be generated or had-written material, or a mixture of the two.
-
-        !!! caution &#34;Dataloss by overwriting app and docs files.
-            When `force` is `False`, the app docs files will not be overwritten by
-            generated files. Instead, the generated files are produced
-            alongside them, with `_generated` in their names.
-            These `_generated` files will be overwritten by successive runs
-            of the `app` task.
-
-            When you have generated your files, and they cannot be improved anymore,
-            be sure to set `force` to `False`.
-
-            Then you can edit the apps and docs files by hand, and they will not be
-            overwritten inadvertently.
 
         Parameters
         ----------
@@ -775,18 +756,6 @@ class TEI:
         appConfig: dict, optional {}
             Additional configuration settings, which will override the initial
             settings.
-
-        docMaterial: dict, optional {}
-            Additional documentation:
-
-            *   under key `about`: colofon-like information;
-            *   under key `trans`: additional information about the
-                transcription and encoding details.
-
-        force: boolean, optional False
-            If True, the `app` task will overwrite existing files with generated
-            files, and remove any files with `_generated` in the name.
-            Except for the logo, which will not be overwritten.
 
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
@@ -868,8 +837,6 @@ class TEI:
         ):
             appConfig.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
         self.appConfig = appConfig
-        self.docMaterial = docMaterial
-        self.force = force
         self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
@@ -918,9 +885,6 @@ class TEI:
         flags:
             -test, +test:
                 whether to run in test mode
-            -force, +force:
-                whether to overwrite previously existing app files when
-                generating app files
             +verbose, ++verbose:
                 Produce more progress and reporting messages
         &#34;&#34;&#34;
@@ -2377,7 +2341,7 @@ class TEI:
                             valueType=&#34;str&#34;,
                         )
 
-            levelConstraints = [&#34;note &lt; chunk, p&#34;]
+            levelConstraints = [&#34;note &lt; chunk, p&#34;, &#34;salute &lt; opener, closer&#34;]
             if &#34;chapterElems&#34; in cur:
                 for elem in cur[&#34;chapterElems&#34;]:
                     levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
@@ -2533,18 +2497,24 @@ class TEI:
     def appTask(self, tokenBased=False):
         &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
 
-        It creates/updates a corpus-specific app.
+        It creates/updates a corpus-specific app plus specific documentation files.
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
         It will also read custom additions that are present in the target app directory.
         These files are:
 
+        *   `about_custom.md`:
+            A markdown file with specific colofon information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `transcription_custom.md`:
+            A markdown file with specific encoding information about the dataset.
+            In the generated file, this information will be put at the start.
         *   `config_custom.yaml`:
             A yaml file with config data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
-            A file with named snippets of code to be inserted
+            A python file with named snippets of code to be inserted
             at corresponding places in the generated `app.py`
         *   `display_custom.css`:
             Additonal css definitions that will be appended to the generated
@@ -2566,13 +2536,9 @@ class TEI:
         refDir = self.refDir
         myDir = self.myDir
         appConfig = self.appConfig
-        force = self.force
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
-        docsDir = self.docsDir
-
-        initTree(docsDir)
 
         # key | parent dir | file | template based
 
@@ -2581,37 +2547,21 @@ class TEI:
 
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
-            (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
+            (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, False),
             (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
-            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
-            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
+            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, False),
+            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, False),
+            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
         )
         genTasks = {
-            s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
+            s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
 
-        def readCustom(itemTarget):
-            (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
-            itemCustom = f&#34;{base}_custom.{ext}&#34;
-
-            custom = &#34;&#34;
-
-            if fileExists(itemCustom):
-                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
-                    custom = fh.read()
-
-            return custom
-
-        def createConfig(itemSource, itemTarget):
+        def createConfig(sourceText, customText):
             tfVersion = self.tfVersion
-
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-
             version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
-            text = text.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+            text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
             settings = yaml.load(text, Loader=yaml.FullLoader)
             mergeDict(settings, appConfig)
@@ -2620,35 +2570,29 @@ class TEI:
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
-            customText = readCustom(itemTarget)
-            customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+            customSettings = (
+                {}
+                if customText is None
+                else yaml.load(customText, Loader=yaml.FullLoader)
+            )
 
             mergeDict(settings, customSettings)
 
             text = yaml.dump(settings, allow_unicode=True)
 
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(text)
+            return text
 
-        def createDisplay(itemSource, itemTarget):
+        def createDisplay(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the display.css file of an TF app.
 
             We generate css code for a certain text formatting styles,
             triggered by `rend` attributes in the source.
             &#34;&#34;&#34;
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                css = fh.read()
+            css = sourceText.replace(&#34;«rends»&#34;, cssInfo)
+            return f&#34;{css}\n\n{customText}\n&#34;
 
-            css = css.replace(&#34;«rends»&#34;, cssInfo)
-
-            customText = readCustom(itemTarget)
-
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(css)
-                fh.write(f&#34;\n{customText}\n&#34;)
-
-        def createApp(itemSource, itemTarget):
+        def createApp(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
 
             The template app.py provides text formatting functions.
@@ -2682,22 +2626,17 @@ class TEI:
             )
             rendValues = repr(KNOWN_RENDS)
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                code = fh.read()
-
-            code = code.replace(&#34;F.matérial&#34;, materialCode)
+            code = sourceText.replace(&#34;F.matérial&#34;, materialCode)
             code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
             hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
             hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
             hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
 
-            customCode = readCustom(itemTarget)
-
             custom = {}
             section = None
 
-            for line in customCode.split(&#34;\n&#34;):
+            for line in (customText or &#34;&#34;).split(&#34;\n&#34;):
                 line = line.rstrip()
 
                 if section is None:
@@ -2724,10 +2663,9 @@ class TEI:
                 else:
                     codeLines.append(line)
 
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(&#34;\n&#34;.join(codeLines))
+            return &#34;\n&#34;.join(codeLines) + &#34;\n&#34;
 
-        def createTranscription(itemSource, itemTarget):
+        def createTranscription(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
             org = self.org
             repo = self.repo
@@ -2738,10 +2676,7 @@ class TEI:
                 f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
             )
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                template = fh.read()
-
-            result = (
+            text = (
                 dedent(
                     f&#34;&#34;&#34;
                 # Corpus {org} - {repo}{relative}
@@ -2749,7 +2684,7 @@ class TEI:
                 &#34;&#34;&#34;
                 )
                 + tweakTrans(
-                    template, wordAsSlot, tokenBased, sectionModel, sectionProperties
+                    sourceText, wordAsSlot, tokenBased, sectionModel, sectionProperties
                 )
                 + dedent(
                     &#34;&#34;&#34;
@@ -2760,10 +2695,9 @@ class TEI:
                     &#34;&#34;&#34;
                 )
             )
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(result)
+            return f&#34;{text}\n\n{customText}\n&#34;
 
-        def createAbout():
+        def createAbout(sourceText, customText):
             org = self.org
             repo = self.repo
             relative = self.relative
@@ -2773,7 +2707,7 @@ class TEI:
                 f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
             )
 
-            return (
+            return f&#34;{customText}\n\n{sourceText}\n\n&#34; + (
                 dedent(
                     f&#34;&#34;&#34;
                 # Corpus {org} - {repo}{relative}
@@ -2795,7 +2729,7 @@ class TEI:
                 )
             )
 
-        extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
+        extraRep = &#34; with tokens and sentences &#34; if tokenBased else &#34;&#34;
 
         if verbose &gt;= 0:
             console(f&#34;App updating {extraRep} ...&#34;)
@@ -2806,39 +2740,70 @@ class TEI:
                 parent if type(parent) is tuple else (parent, parent)
             )
             file = info[FILE]
-            hasTemplate = info[&#34;hasTemplate&#34;]
-
-            targetDir = f&#34;{refDir}/{targetBit}&#34;
-            itemTarget = f&#34;{targetDir}/{file}&#34;
             fileParts = file.rsplit(&#34;.&#34;, 1)
             if len(fileParts) == 1:
                 fileParts = [file, &#34;&#34;]
             (fileBase, fileExt) = fileParts
-            itemTargetGen = f&#34;{targetDir}/{fileBase}_generated.{fileExt}&#34;
-            itemExists = fileExists(itemTarget)
-            itemGenExists = fileExists(itemTargetGen)
+            if fileExt:
+                fileExt = f&#34;.{fileExt}&#34;
+            targetDir = f&#34;{refDir}/{targetBit}&#34;
+            itemTarget = f&#34;{targetDir}/{file}&#34;
+            itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+            itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
-            existRep = &#34;exists &#34; if itemExists else &#34;missing&#34;
-            changeRep = &#34;generated&#34; if itemExists else &#34;added   &#34;
+            justCopy = info[&#34;justCopy&#34;]
+            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{sourceDir}/{file}&#34;
+
+            # If there is custom info, we do not have to preserve the previous version.
+            # Otherwise we save the target before overwriting it; # unless it
+            # has been saved before
+
+            preExists = fileExists(itemPre)
+            targetExists = fileExists(itemTarget)
+            customExists = fileExists(itemCustom)
+
+            msg = &#34;&#34;
+
+            if justCopy:
+                if targetExists:
+                    msg = &#34;(already exists, not overwritten)&#34;
+                    safe = False
+                else:
+                    msg = &#34;(copied)&#34;
+                    safe = True
+            else:
+                if targetExists:
+                    if customExists:
+                        msg = &#34;(generated with custom info)&#34;
+                    else:
+                        if preExists:
+                            msg = &#34;(no custom info, older orginal exists)&#34;
+                        else:
+                            msg = &#34;(no custom info, original preserved)&#34;
+                            fileCopy(itemTarget, itemPre)
+                else:
+                    msg = &#34;(created)&#34;
 
             initTree(targetDir, fresh=False)
 
-            target = itemTarget
-
-            if force:
-                if itemGenExists:
-                    fileRemove(itemTargetGen)
+            if justCopy:
+                if safe:
+                    fileCopy(itemSource, itemTarget)
             else:
-                if itemExists:
-                    target = itemTargetGen
+                if fileExists(itemSource):
+                    with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                        sourceText = fh.read()
+                else:
+                    sourceText = &#34;&#34;
 
-            if force and itemExists and name == &#34;logo&#34;:
-                continue
+                if fileExists(itemCustom):
+                    with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                        customText = fh.read()
+                else:
+                    customText = &#34;&#34;
 
-            if hasTemplate:
-                sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-                itemSource = f&#34;{sourceDir}/{file}&#34;
-                (
+                targetText = (
                     createConfig
                     if name == &#34;config&#34;
                     else createApp
@@ -2847,14 +2812,16 @@ class TEI:
                     if name == &#34;display&#34;
                     else createTranscription
                     if name == &#34;trans&#34;
-                    else fileCopy
-                )(itemSource, target)
+                    else createAbout
+                    if name == &#34;about&#34;
+                    else fileCopy  # this cannot occur because justCopy is False
+                )(sourceText, customText)
 
-            else:
-                with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                    fh.write(createAbout())
-            if verbose == 1:
-                console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+                with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                    fh.write(targetText)
+
+            if verbose &gt;= 0:
+                console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
 
         if verbose &gt;= 0:
             console(&#34;Done&#34;)
@@ -2907,7 +2874,6 @@ class TEI:
         apptoken=False,
         browse=False,
         test=None,
-        force=False,
         verbose=-1,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
@@ -2940,11 +2906,6 @@ class TEI:
             In test mode only the files in the test set are converted.
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
-        force: boolean, optional False
-            Whether the app task should overwrite previously generated files
-
-            If None, it will read its value from the attribute `testMode` of the
-            `TEI` object.
 
         Returns
         -------
@@ -2954,7 +2915,6 @@ class TEI:
         if test is not None:
             self.testMode = test
 
-        self.force = force
         self.verbose = verbose
 
         if not self.good:
@@ -3003,8 +2963,6 @@ class TEI:
         possibleFlags = {
             &#34;-test&#34;: False,
             &#34;+test&#34;: True,
-            &#34;-force&#34;: False,
-            &#34;+force&#34;: True,
             &#34;-verbose&#34;: -1,
             &#34;+verbose&#34;: 0,
             &#34;++verbose&#34;: 1,
@@ -3053,7 +3011,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L328-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L327-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -3123,7 +3081,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L301-L314" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L300-L313" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3149,7 +3107,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L388-L485" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L387-L484" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties):
     if wordAsSlot:
@@ -3258,7 +3216,7 @@ class TEI:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, docMaterial={}, force=False, verbose=-1)</span>
+<span>(</span><span>sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -3339,25 +3297,11 @@ If they do not exist, they will be created with some sensible default
 settings and generated documentation.
 These settings can be overriden by the parameter <code>appConfig</code>.
 Also a default <code>display.css</code> file and a logo are added.</p>
-<p>If such a file already exists, it will be left untouched and a generated file
-is put next to the item, with <code>_generated</code> in the file name.</p>
-<p>This behaviour can be modified by passing <code>force=True</code> to the initialization
-of the TEI object.</p>
+<p>Custom content for these files can be provided in files
+with <code>_custom</code> appended to their base name.</p>
 <h3 id="docs"><code>docs</code></h3>
 <p>Location of additional documentation.
 This can be generated or had-written material, or a mixture of the two.</p>
-<p>!!! caution "Dataloss by overwriting app and docs files.
-When <code>force</code> is <code>False</code>, the app docs files will not be overwritten by
-generated files. Instead, the generated files are produced
-alongside them, with <code>_generated</code> in their names.
-These <code>_generated</code> files will be overwritten by successive runs
-of the <code>app</code> task.</p>
-<pre><code>When you have generated your files, and they cannot be improved anymore,
-be sure to set &lt;code&gt;force&lt;/code&gt; to &lt;code&gt;False&lt;/code&gt;.
-
-Then you can edit the apps and docs files by hand, and they will not be
-overwritten inadvertently.
-</code></pre>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>sourceVersion</code></strong> :&ensp;<code>string</code>, optional <code>"0.1"</code></dt>
@@ -3407,26 +3351,13 @@ subfolder of the <code><a title="tf" href="../index.html">tf</a></code> output f
 <dt><strong><code>appConfig</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
 <dd>Additional configuration settings, which will override the initial
 settings.</dd>
-<dt><strong><code>docMaterial</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
-<dd>
-<p>Additional documentation:</p>
-<ul>
-<li>under key <code>about</code>: colofon-like information;</li>
-<li>under key <code>trans</code>: additional information about the
-transcription and encoding details.</li>
-</ul>
-</dd>
-<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>If True, the <code>app</code> task will overwrite existing files with generated
-files, and remove any files with <code>_generated</code> in the name.
-Except for the logo, which will not be overwritten.</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
 <dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L488-L2960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L487-L2918" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3440,8 +3371,6 @@ Except for the logo, which will not be overwritten.</dd>
         transform=None,
         tfVersion=&#34;0.1&#34;,
         appConfig={},
-        docMaterial={},
-        force=False,
         verbose=-1,
     ):
         &#34;&#34;&#34;Converts TEI to TF.
@@ -3549,29 +3478,13 @@ Except for the logo, which will not be overwritten.</dd>
         These settings can be overriden by the parameter `appConfig`.
         Also a default `display.css` file and a logo are added.
 
-        If such a file already exists, it will be left untouched and a generated file
-        is put next to the item, with `_generated` in the file name.
-
-        This behaviour can be modified by passing `force=True` to the initialization
-        of the TEI object.
+        Custom content for these files can be provided in files
+        with `_custom` appended to their base name.
 
         ### `docs`
 
         Location of additional documentation.
         This can be generated or had-written material, or a mixture of the two.
-
-        !!! caution &#34;Dataloss by overwriting app and docs files.
-            When `force` is `False`, the app docs files will not be overwritten by
-            generated files. Instead, the generated files are produced
-            alongside them, with `_generated` in their names.
-            These `_generated` files will be overwritten by successive runs
-            of the `app` task.
-
-            When you have generated your files, and they cannot be improved anymore,
-            be sure to set `force` to `False`.
-
-            Then you can edit the apps and docs files by hand, and they will not be
-            overwritten inadvertently.
 
         Parameters
         ----------
@@ -3640,18 +3553,6 @@ Except for the logo, which will not be overwritten.</dd>
         appConfig: dict, optional {}
             Additional configuration settings, which will override the initial
             settings.
-
-        docMaterial: dict, optional {}
-            Additional documentation:
-
-            *   under key `about`: colofon-like information;
-            *   under key `trans`: additional information about the
-                transcription and encoding details.
-
-        force: boolean, optional False
-            If True, the `app` task will overwrite existing files with generated
-            files, and remove any files with `_generated` in the name.
-            Except for the logo, which will not be overwritten.
 
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
@@ -3733,8 +3634,6 @@ Except for the logo, which will not be overwritten.</dd>
         ):
             appConfig.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
         self.appConfig = appConfig
-        self.docMaterial = docMaterial
-        self.force = force
         self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
@@ -3783,9 +3682,6 @@ Except for the logo, which will not be overwritten.</dd>
         flags:
             -test, +test:
                 whether to run in test mode
-            -force, +force:
-                whether to overwrite previously existing app files when
-                generating app files
             +verbose, ++verbose:
                 Produce more progress and reporting messages
         &#34;&#34;&#34;
@@ -5242,7 +5138,7 @@ Except for the logo, which will not be overwritten.</dd>
                             valueType=&#34;str&#34;,
                         )
 
-            levelConstraints = [&#34;note &lt; chunk, p&#34;]
+            levelConstraints = [&#34;note &lt; chunk, p&#34;, &#34;salute &lt; opener, closer&#34;]
             if &#34;chapterElems&#34; in cur:
                 for elem in cur[&#34;chapterElems&#34;]:
                     levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
@@ -5398,18 +5294,24 @@ Except for the logo, which will not be overwritten.</dd>
     def appTask(self, tokenBased=False):
         &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
 
-        It creates/updates a corpus-specific app.
+        It creates/updates a corpus-specific app plus specific documentation files.
         There should be a valid TF dataset in place, because some
         settings in the app derive from it.
 
         It will also read custom additions that are present in the target app directory.
         These files are:
 
+        *   `about_custom.md`:
+            A markdown file with specific colofon information about the dataset.
+            In the generated file, this information will be put at the start.
+        *   `transcription_custom.md`:
+            A markdown file with specific encoding information about the dataset.
+            In the generated file, this information will be put at the start.
         *   `config_custom.yaml`:
             A yaml file with config data that will be *merged* into the generated
             config.yaml.
         *   `app_custom.py`:
-            A file with named snippets of code to be inserted
+            A python file with named snippets of code to be inserted
             at corresponding places in the generated `app.py`
         *   `display_custom.css`:
             Additonal css definitions that will be appended to the generated
@@ -5431,13 +5333,9 @@ Except for the logo, which will not be overwritten.</dd>
         refDir = self.refDir
         myDir = self.myDir
         appConfig = self.appConfig
-        force = self.force
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
-        docsDir = self.docsDir
-
-        initTree(docsDir)
 
         # key | parent dir | file | template based
 
@@ -5446,37 +5344,21 @@ Except for the logo, which will not be overwritten.</dd>
 
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
-            (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
+            (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, False),
             (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
-            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
-            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
+            (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, False),
+            (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, False),
+            (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
         )
         genTasks = {
-            s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
+            s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
 
-        def readCustom(itemTarget):
-            (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
-            itemCustom = f&#34;{base}_custom.{ext}&#34;
-
-            custom = &#34;&#34;
-
-            if fileExists(itemCustom):
-                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
-                    custom = fh.read()
-
-            return custom
-
-        def createConfig(itemSource, itemTarget):
+        def createConfig(sourceText, customText):
             tfVersion = self.tfVersion
-
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                text = fh.read()
-
             version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
-            text = text.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+            text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
             settings = yaml.load(text, Loader=yaml.FullLoader)
             mergeDict(settings, appConfig)
@@ -5485,35 +5367,29 @@ Except for the logo, which will not be overwritten.</dd>
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
-            customText = readCustom(itemTarget)
-            customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+            customSettings = (
+                {}
+                if customText is None
+                else yaml.load(customText, Loader=yaml.FullLoader)
+            )
 
             mergeDict(settings, customSettings)
 
             text = yaml.dump(settings, allow_unicode=True)
 
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(text)
+            return text
 
-        def createDisplay(itemSource, itemTarget):
+        def createDisplay(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the display.css file of an TF app.
 
             We generate css code for a certain text formatting styles,
             triggered by `rend` attributes in the source.
             &#34;&#34;&#34;
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                css = fh.read()
+            css = sourceText.replace(&#34;«rends»&#34;, cssInfo)
+            return f&#34;{css}\n\n{customText}\n&#34;
 
-            css = css.replace(&#34;«rends»&#34;, cssInfo)
-
-            customText = readCustom(itemTarget)
-
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(css)
-                fh.write(f&#34;\n{customText}\n&#34;)
-
-        def createApp(itemSource, itemTarget):
+        def createApp(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
 
             The template app.py provides text formatting functions.
@@ -5547,22 +5423,17 @@ Except for the logo, which will not be overwritten.</dd>
             )
             rendValues = repr(KNOWN_RENDS)
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                code = fh.read()
-
-            code = code.replace(&#34;F.matérial&#34;, materialCode)
+            code = sourceText.replace(&#34;F.matérial&#34;, materialCode)
             code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
             hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
             hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
             hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
 
-            customCode = readCustom(itemTarget)
-
             custom = {}
             section = None
 
-            for line in customCode.split(&#34;\n&#34;):
+            for line in (customText or &#34;&#34;).split(&#34;\n&#34;):
                 line = line.rstrip()
 
                 if section is None:
@@ -5589,10 +5460,9 @@ Except for the logo, which will not be overwritten.</dd>
                 else:
                     codeLines.append(line)
 
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(&#34;\n&#34;.join(codeLines))
+            return &#34;\n&#34;.join(codeLines) + &#34;\n&#34;
 
-        def createTranscription(itemSource, itemTarget):
+        def createTranscription(sourceText, customText):
             &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
             org = self.org
             repo = self.repo
@@ -5603,10 +5473,7 @@ Except for the logo, which will not be overwritten.</dd>
                 f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
             )
 
-            with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-                template = fh.read()
-
-            result = (
+            text = (
                 dedent(
                     f&#34;&#34;&#34;
                 # Corpus {org} - {repo}{relative}
@@ -5614,7 +5481,7 @@ Except for the logo, which will not be overwritten.</dd>
                 &#34;&#34;&#34;
                 )
                 + tweakTrans(
-                    template, wordAsSlot, tokenBased, sectionModel, sectionProperties
+                    sourceText, wordAsSlot, tokenBased, sectionModel, sectionProperties
                 )
                 + dedent(
                     &#34;&#34;&#34;
@@ -5625,10 +5492,9 @@ Except for the logo, which will not be overwritten.</dd>
                     &#34;&#34;&#34;
                 )
             )
-            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(result)
+            return f&#34;{text}\n\n{customText}\n&#34;
 
-        def createAbout():
+        def createAbout(sourceText, customText):
             org = self.org
             repo = self.repo
             relative = self.relative
@@ -5638,7 +5504,7 @@ Except for the logo, which will not be overwritten.</dd>
                 f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
             )
 
-            return (
+            return f&#34;{customText}\n\n{sourceText}\n\n&#34; + (
                 dedent(
                     f&#34;&#34;&#34;
                 # Corpus {org} - {repo}{relative}
@@ -5660,7 +5526,7 @@ Except for the logo, which will not be overwritten.</dd>
                 )
             )
 
-        extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
+        extraRep = &#34; with tokens and sentences &#34; if tokenBased else &#34;&#34;
 
         if verbose &gt;= 0:
             console(f&#34;App updating {extraRep} ...&#34;)
@@ -5671,39 +5537,70 @@ Except for the logo, which will not be overwritten.</dd>
                 parent if type(parent) is tuple else (parent, parent)
             )
             file = info[FILE]
-            hasTemplate = info[&#34;hasTemplate&#34;]
-
-            targetDir = f&#34;{refDir}/{targetBit}&#34;
-            itemTarget = f&#34;{targetDir}/{file}&#34;
             fileParts = file.rsplit(&#34;.&#34;, 1)
             if len(fileParts) == 1:
                 fileParts = [file, &#34;&#34;]
             (fileBase, fileExt) = fileParts
-            itemTargetGen = f&#34;{targetDir}/{fileBase}_generated.{fileExt}&#34;
-            itemExists = fileExists(itemTarget)
-            itemGenExists = fileExists(itemTargetGen)
+            if fileExt:
+                fileExt = f&#34;.{fileExt}&#34;
+            targetDir = f&#34;{refDir}/{targetBit}&#34;
+            itemTarget = f&#34;{targetDir}/{file}&#34;
+            itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+            itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
-            existRep = &#34;exists &#34; if itemExists else &#34;missing&#34;
-            changeRep = &#34;generated&#34; if itemExists else &#34;added   &#34;
+            justCopy = info[&#34;justCopy&#34;]
+            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{sourceDir}/{file}&#34;
+
+            # If there is custom info, we do not have to preserve the previous version.
+            # Otherwise we save the target before overwriting it; # unless it
+            # has been saved before
+
+            preExists = fileExists(itemPre)
+            targetExists = fileExists(itemTarget)
+            customExists = fileExists(itemCustom)
+
+            msg = &#34;&#34;
+
+            if justCopy:
+                if targetExists:
+                    msg = &#34;(already exists, not overwritten)&#34;
+                    safe = False
+                else:
+                    msg = &#34;(copied)&#34;
+                    safe = True
+            else:
+                if targetExists:
+                    if customExists:
+                        msg = &#34;(generated with custom info)&#34;
+                    else:
+                        if preExists:
+                            msg = &#34;(no custom info, older orginal exists)&#34;
+                        else:
+                            msg = &#34;(no custom info, original preserved)&#34;
+                            fileCopy(itemTarget, itemPre)
+                else:
+                    msg = &#34;(created)&#34;
 
             initTree(targetDir, fresh=False)
 
-            target = itemTarget
-
-            if force:
-                if itemGenExists:
-                    fileRemove(itemTargetGen)
+            if justCopy:
+                if safe:
+                    fileCopy(itemSource, itemTarget)
             else:
-                if itemExists:
-                    target = itemTargetGen
+                if fileExists(itemSource):
+                    with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                        sourceText = fh.read()
+                else:
+                    sourceText = &#34;&#34;
 
-            if force and itemExists and name == &#34;logo&#34;:
-                continue
+                if fileExists(itemCustom):
+                    with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                        customText = fh.read()
+                else:
+                    customText = &#34;&#34;
 
-            if hasTemplate:
-                sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-                itemSource = f&#34;{sourceDir}/{file}&#34;
-                (
+                targetText = (
                     createConfig
                     if name == &#34;config&#34;
                     else createApp
@@ -5712,14 +5609,16 @@ Except for the logo, which will not be overwritten.</dd>
                     if name == &#34;display&#34;
                     else createTranscription
                     if name == &#34;trans&#34;
-                    else fileCopy
-                )(itemSource, target)
+                    else createAbout
+                    if name == &#34;about&#34;
+                    else fileCopy  # this cannot occur because justCopy is False
+                )(sourceText, customText)
 
-            else:
-                with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                    fh.write(createAbout())
-            if verbose == 1:
-                console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+                with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                    fh.write(targetText)
+
+            if verbose &gt;= 0:
+                console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
 
         if verbose &gt;= 0:
             console(&#34;Done&#34;)
@@ -5772,7 +5671,6 @@ Except for the logo, which will not be overwritten.</dd>
         apptoken=False,
         browse=False,
         test=None,
-        force=False,
         verbose=-1,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
@@ -5805,11 +5703,6 @@ Except for the logo, which will not be overwritten.</dd>
             In test mode only the files in the test set are converted.
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
-        force: boolean, optional False
-            Whether the app task should overwrite previously generated files
-
-            If None, it will read its value from the attribute `testMode` of the
-            `TEI` object.
 
         Returns
         -------
@@ -5819,7 +5712,6 @@ Except for the logo, which will not be overwritten.</dd>
         if test is not None:
             self.testMode = test
 
-        self.force = force
         self.verbose = verbose
 
         if not self.good:
@@ -5868,8 +5760,6 @@ Except for the logo, which will not be overwritten.</dd>
         possibleFlags = {
             &#34;-test&#34;: False,
             &#34;+test&#34;: True,
-            &#34;-force&#34;: False,
-            &#34;+force&#34;: True,
             &#34;-verbose&#34;: -1,
             &#34;+verbose&#34;: 0,
             &#34;++verbose&#34;: 1,
@@ -5918,7 +5808,7 @@ Except for the logo, which will not be overwritten.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L851-L867" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L815-L831" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5957,7 +5847,7 @@ in the help string.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L799-L849" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L766-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def help(program):
@@ -6003,9 +5893,6 @@ def help(program):
     flags:
         -test, +test:
             whether to run in test mode
-        -force, +force:
-            whether to overwrite previously existing app files when
-            generating app files
         +verbose, ++verbose:
             Produce more progress and reporting messages
     &#34;&#34;&#34;
@@ -6020,17 +5907,23 @@ def help(program):
 </code></dt>
 <dd>
 <div class="desc"><p>Implementation of the "app" task.</p>
-<p>It creates/updates a corpus-specific app.
+<p>It creates/updates a corpus-specific app plus specific documentation files.
 There should be a valid TF dataset in place, because some
 settings in the app derive from it.</p>
 <p>It will also read custom additions that are present in the target app directory.
 These files are:</p>
 <ul>
+<li><code>about_custom.md</code>:
+A markdown file with specific colofon information about the dataset.
+In the generated file, this information will be put at the start.</li>
+<li><code>transcription_custom.md</code>:
+A markdown file with specific encoding information about the dataset.
+In the generated file, this information will be put at the start.</li>
 <li><code>config_custom.yaml</code>:
 A yaml file with config data that will be <em>merged</em> into the generated
 config.yaml.</li>
 <li><code>app_custom.py</code>:
-A file with named snippets of code to be inserted
+A python file with named snippets of code to be inserted
 at corresponding places in the generated <code>app.py</code></li>
 <li><code>display_custom.css</code>:
 Additonal css definitions that will be appended to the generated
@@ -6046,23 +5939,29 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2455-L2784" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2419-L2751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
 
-    It creates/updates a corpus-specific app.
+    It creates/updates a corpus-specific app plus specific documentation files.
     There should be a valid TF dataset in place, because some
     settings in the app derive from it.
 
     It will also read custom additions that are present in the target app directory.
     These files are:
 
+    *   `about_custom.md`:
+        A markdown file with specific colofon information about the dataset.
+        In the generated file, this information will be put at the start.
+    *   `transcription_custom.md`:
+        A markdown file with specific encoding information about the dataset.
+        In the generated file, this information will be put at the start.
     *   `config_custom.yaml`:
         A yaml file with config data that will be *merged* into the generated
         config.yaml.
     *   `app_custom.py`:
-        A file with named snippets of code to be inserted
+        A python file with named snippets of code to be inserted
         at corresponding places in the generated `app.py`
     *   `display_custom.css`:
         Additonal css definitions that will be appended to the generated
@@ -6084,13 +5983,9 @@ that code between automatic generation of files.</p>
     refDir = self.refDir
     myDir = self.myDir
     appConfig = self.appConfig
-    force = self.force
     wordAsSlot = self.wordAsSlot
     sectionModel = self.sectionModel
     sectionProperties = self.sectionProperties
-    docsDir = self.docsDir
-
-    initTree(docsDir)
 
     # key | parent dir | file | template based
 
@@ -6099,37 +5994,21 @@ that code between automatic generation of files.</p>
 
     itemSpecs = (
         (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
-        (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, True),
+        (&#34;trans&#34;, (&#34;app&#34;, &#34;docs&#34;), &#34;transcription.md&#34;, False),
         (&#34;logo&#34;, &#34;app/static&#34;, &#34;logo.png&#34;, True),
-        (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, True),
-        (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, True),
-        (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, True),
+        (&#34;display&#34;, &#34;app/static&#34;, &#34;display.css&#34;, False),
+        (&#34;config&#34;, &#34;app&#34;, &#34;config.yaml&#34;, False),
+        (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
     )
     genTasks = {
-        s[0]: dict(parent=s[1], file=s[2], hasTemplate=s[3]) for s in itemSpecs
+        s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
     }
     cssInfo = makeCssInfo()
 
-    def readCustom(itemTarget):
-        (base, ext) = itemTarget.rsplit(&#34;.&#34;, 1)
-        itemCustom = f&#34;{base}_custom.{ext}&#34;
-
-        custom = &#34;&#34;
-
-        if fileExists(itemCustom):
-            with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
-                custom = fh.read()
-
-        return custom
-
-    def createConfig(itemSource, itemTarget):
+    def createConfig(sourceText, customText):
         tfVersion = self.tfVersion
-
-        with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-            text = fh.read()
-
         version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
-        text = text.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
+        text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
         settings = yaml.load(text, Loader=yaml.FullLoader)
         mergeDict(settings, appConfig)
@@ -6138,35 +6017,29 @@ that code between automatic generation of files.</p>
             if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
                 del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
-        customText = readCustom(itemTarget)
-        customSettings = yaml.load(customText, Loader=yaml.FullLoader)
+        customSettings = (
+            {}
+            if customText is None
+            else yaml.load(customText, Loader=yaml.FullLoader)
+        )
 
         mergeDict(settings, customSettings)
 
         text = yaml.dump(settings, allow_unicode=True)
 
-        with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(text)
+        return text
 
-    def createDisplay(itemSource, itemTarget):
+    def createDisplay(sourceText, customText):
         &#34;&#34;&#34;Copies and tweaks the display.css file of an TF app.
 
         We generate css code for a certain text formatting styles,
         triggered by `rend` attributes in the source.
         &#34;&#34;&#34;
 
-        with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-            css = fh.read()
+        css = sourceText.replace(&#34;«rends»&#34;, cssInfo)
+        return f&#34;{css}\n\n{customText}\n&#34;
 
-        css = css.replace(&#34;«rends»&#34;, cssInfo)
-
-        customText = readCustom(itemTarget)
-
-        with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(css)
-            fh.write(f&#34;\n{customText}\n&#34;)
-
-    def createApp(itemSource, itemTarget):
+    def createApp(sourceText, customText):
         &#34;&#34;&#34;Copies and tweaks the app.py file of an TF app.
 
         The template app.py provides text formatting functions.
@@ -6200,22 +6073,17 @@ that code between automatic generation of files.</p>
         )
         rendValues = repr(KNOWN_RENDS)
 
-        with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-            code = fh.read()
-
-        code = code.replace(&#34;F.matérial&#34;, materialCode)
+        code = sourceText.replace(&#34;F.matérial&#34;, materialCode)
         code = code.replace(&#39;&#34;rèndValues&#34;&#39;, rendValues)
 
         hookStartRe = re.compile(r&#34;^# DEF (import|init|extra)\s*$&#34;, re.S)
         hookEndRe = re.compile(r&#34;^# END DEF\s*$&#34;, re.S)
         hookInsertRe = re.compile(r&#34;^# INSERT (import|init|extra)\s*$&#34;, re.S)
 
-        customCode = readCustom(itemTarget)
-
         custom = {}
         section = None
 
-        for line in customCode.split(&#34;\n&#34;):
+        for line in (customText or &#34;&#34;).split(&#34;\n&#34;):
             line = line.rstrip()
 
             if section is None:
@@ -6242,10 +6110,9 @@ that code between automatic generation of files.</p>
             else:
                 codeLines.append(line)
 
-        with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(&#34;\n&#34;.join(codeLines))
+        return &#34;\n&#34;.join(codeLines) + &#34;\n&#34;
 
-    def createTranscription(itemSource, itemTarget):
+    def createTranscription(sourceText, customText):
         &#34;&#34;&#34;Copies and tweaks the transcription.md file for a TF corpus.&#34;&#34;&#34;
         org = self.org
         repo = self.repo
@@ -6256,10 +6123,7 @@ that code between automatic generation of files.</p>
             f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
         )
 
-        with open(itemSource, encoding=&#34;utf8&#34;) as fh:
-            template = fh.read()
-
-        result = (
+        text = (
             dedent(
                 f&#34;&#34;&#34;
             # Corpus {org} - {repo}{relative}
@@ -6267,7 +6131,7 @@ that code between automatic generation of files.</p>
             &#34;&#34;&#34;
             )
             + tweakTrans(
-                template, wordAsSlot, tokenBased, sectionModel, sectionProperties
+                sourceText, wordAsSlot, tokenBased, sectionModel, sectionProperties
             )
             + dedent(
                 &#34;&#34;&#34;
@@ -6278,10 +6142,9 @@ that code between automatic generation of files.</p>
                 &#34;&#34;&#34;
             )
         )
-        with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-            fh.write(result)
+        return f&#34;{text}\n\n{customText}\n&#34;
 
-    def createAbout():
+    def createAbout(sourceText, customText):
         org = self.org
         repo = self.repo
         relative = self.relative
@@ -6291,7 +6154,7 @@ that code between automatic generation of files.</p>
             f&#34;## {key}\n\n{value}\n&#34; for (key, value) in generic.items()
         )
 
-        return (
+        return f&#34;{customText}\n\n{sourceText}\n\n&#34; + (
             dedent(
                 f&#34;&#34;&#34;
             # Corpus {org} - {repo}{relative}
@@ -6313,7 +6176,7 @@ that code between automatic generation of files.</p>
             )
         )
 
-    extraRep = &#34; adapted to tokens and sentences&#34; if tokenBased else &#34;&#34;
+    extraRep = &#34; with tokens and sentences &#34; if tokenBased else &#34;&#34;
 
     if verbose &gt;= 0:
         console(f&#34;App updating {extraRep} ...&#34;)
@@ -6324,39 +6187,70 @@ that code between automatic generation of files.</p>
             parent if type(parent) is tuple else (parent, parent)
         )
         file = info[FILE]
-        hasTemplate = info[&#34;hasTemplate&#34;]
-
-        targetDir = f&#34;{refDir}/{targetBit}&#34;
-        itemTarget = f&#34;{targetDir}/{file}&#34;
         fileParts = file.rsplit(&#34;.&#34;, 1)
         if len(fileParts) == 1:
             fileParts = [file, &#34;&#34;]
         (fileBase, fileExt) = fileParts
-        itemTargetGen = f&#34;{targetDir}/{fileBase}_generated.{fileExt}&#34;
-        itemExists = fileExists(itemTarget)
-        itemGenExists = fileExists(itemTargetGen)
+        if fileExt:
+            fileExt = f&#34;.{fileExt}&#34;
+        targetDir = f&#34;{refDir}/{targetBit}&#34;
+        itemTarget = f&#34;{targetDir}/{file}&#34;
+        itemCustom = f&#34;{targetDir}/{fileBase}_custom{fileExt}&#34;
+        itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
-        existRep = &#34;exists &#34; if itemExists else &#34;missing&#34;
-        changeRep = &#34;generated&#34; if itemExists else &#34;added   &#34;
+        justCopy = info[&#34;justCopy&#34;]
+        sourceDir = f&#34;{myDir}/{sourceBit}&#34;
+        itemSource = f&#34;{sourceDir}/{file}&#34;
+
+        # If there is custom info, we do not have to preserve the previous version.
+        # Otherwise we save the target before overwriting it; # unless it
+        # has been saved before
+
+        preExists = fileExists(itemPre)
+        targetExists = fileExists(itemTarget)
+        customExists = fileExists(itemCustom)
+
+        msg = &#34;&#34;
+
+        if justCopy:
+            if targetExists:
+                msg = &#34;(already exists, not overwritten)&#34;
+                safe = False
+            else:
+                msg = &#34;(copied)&#34;
+                safe = True
+        else:
+            if targetExists:
+                if customExists:
+                    msg = &#34;(generated with custom info)&#34;
+                else:
+                    if preExists:
+                        msg = &#34;(no custom info, older orginal exists)&#34;
+                    else:
+                        msg = &#34;(no custom info, original preserved)&#34;
+                        fileCopy(itemTarget, itemPre)
+            else:
+                msg = &#34;(created)&#34;
 
         initTree(targetDir, fresh=False)
 
-        target = itemTarget
-
-        if force:
-            if itemGenExists:
-                fileRemove(itemTargetGen)
+        if justCopy:
+            if safe:
+                fileCopy(itemSource, itemTarget)
         else:
-            if itemExists:
-                target = itemTargetGen
+            if fileExists(itemSource):
+                with open(itemSource, encoding=&#34;utf8&#34;) as fh:
+                    sourceText = fh.read()
+            else:
+                sourceText = &#34;&#34;
 
-        if force and itemExists and name == &#34;logo&#34;:
-            continue
+            if fileExists(itemCustom):
+                with open(itemCustom, encoding=&#34;utf8&#34;) as fh:
+                    customText = fh.read()
+            else:
+                customText = &#34;&#34;
 
-        if hasTemplate:
-            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-            itemSource = f&#34;{sourceDir}/{file}&#34;
-            (
+            targetText = (
                 createConfig
                 if name == &#34;config&#34;
                 else createApp
@@ -6365,14 +6259,16 @@ that code between automatic generation of files.</p>
                 if name == &#34;display&#34;
                 else createTranscription
                 if name == &#34;trans&#34;
-                else fileCopy
-            )(itemSource, target)
+                else createAbout
+                if name == &#34;about&#34;
+                else fileCopy  # this cannot occur because justCopy is False
+            )(sourceText, customText)
 
-        else:
-            with open(target, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
-                fh.write(createAbout())
-        if verbose == 1:
-            console(f&#34;\t{name:&lt;7}: {existRep}, {changeRep} {ux(target)}&#34;)
+            with open(itemTarget, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                fh.write(targetText)
+
+        if verbose &gt;= 0:
+            console(f&#34;\t{ux(itemTarget):30} {msg}&#34;)
 
     if verbose &gt;= 0:
         console(&#34;Done&#34;)
@@ -6396,7 +6292,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2788-L2821" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2755-L2788" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6461,7 +6357,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L989-L1332" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L953-L1296" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6823,7 +6719,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2320-L2407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2284-L2371" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6928,7 +6824,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1336-L1349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1300-L1313" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6969,7 +6865,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L1353-L2318" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1317-L2282" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -7920,7 +7816,7 @@ that has access to this data.</p>
                         valueType=&#34;str&#34;,
                     )
 
-        levelConstraints = [&#34;note &lt; chunk, p&#34;]
+        levelConstraints = [&#34;note &lt; chunk, p&#34;, &#34;salute &lt; opener, closer&#34;]
         if &#34;chapterElems&#34; in cur:
             for elem in cur[&#34;chapterElems&#34;]:
                 levelConstraints.append(f&#34;{elem} &lt; chapter&#34;)
@@ -7963,7 +7859,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L888-L921" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L852-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -8016,7 +7912,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L869-L886" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -8059,7 +7955,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L923-L987" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L887-L951" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -8148,7 +8044,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2409-L2451" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2373-L2415" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -8221,7 +8117,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2900-L2960" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2860-L2918" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def run(self, program=None):
     &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
@@ -8251,8 +8147,6 @@ an return a status code: 0 for succes, 1 for failure.</dd>
     possibleFlags = {
         &#34;-test&#34;: False,
         &#34;+test&#34;: True,
-        &#34;-force&#34;: False,
-        &#34;+force&#34;: True,
         &#34;-verbose&#34;: -1,
         &#34;+verbose&#34;: 0,
         &#34;++verbose&#34;: 1,
@@ -8287,7 +8181,7 @@ an return a status code: 0 for succes, 1 for failure.</dd>
 </details>
 </dd>
 <dt id="tf.convert.tei.TEI.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, test=None, force=False, verbose=-1)</span>
+<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, test=None, verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
@@ -8316,12 +8210,6 @@ will not be executed.</p>
 In test mode only the files in the test set are converted.</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
 <dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
-<dt><strong><code>force</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>
-<p>Whether the app task should overwrite previously generated files</p>
-<p>If None, it will read its value from the attribute <code>testMode</code> of the
-<code><a title="tf.convert.tei.TEI" href="#tf.convert.tei.TEI">TEI</a></code> object.</p>
-</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -8331,7 +8219,7 @@ In test mode only the files in the test set are converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d8e405eaff85b7d1f61b7f352eda49fd0aa50fe9/tf/convert/tei.py#L2823-L2898" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2790-L2858" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -8342,7 +8230,6 @@ In test mode only the files in the test set are converted.</dd>
     apptoken=False,
     browse=False,
     test=None,
-    force=False,
     verbose=-1,
 ):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
@@ -8375,11 +8262,6 @@ In test mode only the files in the test set are converted.</dd>
         In test mode only the files in the test set are converted.
     verbose: integer, optional -1
         Produce no (-1), some (0) or many (1) orprogress and reporting messages
-    force: boolean, optional False
-        Whether the app task should overwrite previously generated files
-
-        If None, it will read its value from the attribute `testMode` of the
-        `TEI` object.
 
     Returns
     -------
@@ -8389,7 +8271,6 @@ In test mode only the files in the test set are converted.</dd>
     if test is not None:
         self.testMode = test
 
-    self.force = force
     self.verbose = verbose
 
     if not self.good:
