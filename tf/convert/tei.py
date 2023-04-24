@@ -2263,7 +2263,7 @@ class TEI:
                             valueType="str",
                         )
 
-            levelConstraints = ["note < chunk, p"]
+            levelConstraints = ["note < chunk, p", "salute < opener, closer"]
             if "chapterElems" in cur:
                 for elem in cur["chapterElems"]:
                     levelConstraints.append(f"{elem} < chapter")

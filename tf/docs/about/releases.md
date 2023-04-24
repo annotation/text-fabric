@@ -10,6 +10,14 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.1
+
+2023-04-24
+
+Small fixes in the TEI conversion and the NLP pipeline integration.
+The parameters/flags for the convert steps and pipeline operations have been
+made more powerful and superfluous options have been removed.
+
 ### 11.4.0
 
 2023-04-21
