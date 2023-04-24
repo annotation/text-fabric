@@ -20,10 +20,42 @@ You can install many more [language models](https://spacy.io/usage/models).
 
 import re
 import spacy
+from spacy.cli.download import download
+
+from ..core.helpers import console
+
+
+LANG_MODELS = """
+ca core_news Catalan
+da core_news Danish
+de core_news German
+el core_news Greek
+en core_web English
+es core_news Spanish
+fi core_news Finnish
+fr core_news French
+hr core_news Croatian
+it core_news Italian
+ja core_news Japanese
+ko core_news Korean
+lt core_news Lithuanian
+mk core_news Macedonian
+nb core_news Norwegian (Bokmål)
+nl core_news Dutch
+pl core_news Polish
+pt core_news Portuguese
+ro core_news Romanian
+ru core_news Russian
+sv core_news Swedish
+uk core_news Ukrainian
+zh core_news Chinese
+xx ent_wiki multi-language
+""".strip().split("\n")
+"""Languages and their associated Spacy models."""
 
 
 class Spacy:
-    def __init__(self, langmodel="en_core_web_sm"):
+    def __init__(self, lang=None):
         """Sets up an NLP (Natural Language Processing) pipeline.
 
         The pipeline is tied to a particular language model, which you can pass
@@ -35,13 +67,92 @@ class Spacy:
 
         Parameters
         ----------
-        langmodel: string, optional en_core_web_sm
-            The language model to be used; it should be installed; see
-            `tf.tools.myspacy` for how to get language models.
+        lang: string, optional xx
+            The language to be used; Spacy may need to download it, if so, it will
+            happen automatically.
+
+            If the language is not supported by Spacy, we switch to the multilanguage
+            called `xx`.
+
+            See `tf.tools.myspacy.LANG_MODELS` about the language models that Spacy supports.
         """
-        nlp = spacy.load(langmodel, disable=["parser"])
-        nlp.add_pipe("sentencizer")
+        langModels = {}
+        languages = {}
+
+        for spec in LANG_MODELS:
+            (lng, model, language) = spec.split(maxsplit=2)
+            langModels[lng] = f"{lng}_{model}_sm"
+            languages[lng] = language
+
+        self.langModels = langModels
+        self.languages = languages
+
+        prevLang = None
+        targetLang = lang
+        loaded = False
+
+        i = 0
+        while True:
+            i += 1
+            targetModel = langModels.get(targetLang, None)
+            targetLanguage = languages.get(targetLang, None)
+
+            if targetModel is None:
+                (prevLang, targetLang) = (targetLang, "xx")
+                targetModel = langModels[targetLang]
+                targetLanguage = languages[targetLang]
+
+                if prevLang is None:
+                    console("No language specified")
+                else:
+                    console(
+                        f"No language model for {prevLang} supported by Spacy.\n"
+                    )
+                console(
+                    f"Switching to the {targetLanguage} model"
+                )
+                if targetLang == prevLang:
+                    break
+                else:
+                    continue
+
+            try:
+                nlp = spacy.load(targetModel)
+                loaded = True
+                break
+
+            except Exception:
+                console(f"Language model {targetModel} not installed. Downloading ...")
+
+            try:
+                console(f"Downloading {targetModel} ...")
+                download(targetModel)
+            except Exception:
+                console(f"Could not download {targetModel} ...")
+                (prevLang, targetLang) = (targetLang, "xx")
+                if targetLang == prevLang:
+                    break
+                else:
+                    continue
+
+        if loaded:
+            try:
+                nlp.disable_pipe("parser")
+                nlp.disable_pipe("sentencizer")
+            except Exception:
+                pass
+            try:
+                nlp.enable_pipe("senter")
+                self.canSentence = True
+            except Exception:
+                self.canSentence = False
+                console("This language does not support sentence boundary detection")
+        else:
+            console("Cannot load (language data) to get Spacy working")
+            nlp = None
+
         self.nlp = nlp
+        self.doc = None
 
     def read(self, text):
         """Process a plain text.
@@ -57,6 +168,11 @@ class Spacy:
         """
         nText = len(text)
         nlp = self.nlp
+
+        if nlp is None:
+            console("The NLP pipeline is not functioning")
+            return
+
         nlp.max_length = nText
         doc = nlp(text)
         self.doc = doc
@@ -86,6 +202,10 @@ class Spacy:
             All tokens as tuples.
         """
         doc = self.doc
+        if self.doc is None:
+            console("No results available from the NLP pipeline")
+            return []
+
         result = []
         for token in doc:
             start = token.idx
@@ -112,6 +232,14 @@ class Spacy:
             All sentences as tuples.
         """
         doc = self.doc
+        if self.doc is None:
+            console("No results available from the NLP pipeline")
+            return []
+
+        if not self.canSentence:
+            console("No sentence results available from the NLP pipeline")
+            return []
+
         result = []
 
         whiteRe = re.compile(r"^[.?!\s]*$", re.S)
@@ -134,15 +262,16 @@ class Spacy:
         return result
 
 
-def tokensAndSentences(text, langmodel="en_core_web_sm"):
+# def tokensAndSentences(text, langmodel="en_core_web_sm"):
+def tokensAndSentences(text, lang="en"):
     """Runs the Spacy NLP pipeline and delivers the results.
 
     Parameters
     ----------
     text: string
         The complete, raw text.
-    langmodel: string, optional en_core_web_sm
-        The language model to be used; it should be installed; see
+    lang: string, optional en
+        The language to be used; its model should be installed; see
         `tf.tools.myspacy` for how to get language models.
 
     Returns
@@ -153,6 +282,6 @@ def tokensAndSentences(text, langmodel="en_core_web_sm"):
 
         Both tokens and sentences are tuples (start, end, text).
     """
-    S = Spacy(langmodel=langmodel)
+    S = Spacy(lang=lang)
     S.read(text)
     return (S.getTokens(), S.getSentences())
