@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L1-L609" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L1-L693" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -47,6 +47,8 @@ from ..core.files import (
     prefixSlash,
     splitPath,
     isDir,
+    getLocation,
+    backendRep,
 )
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
@@ -636,7 +638,89 @@ def findApp(
         traceback.print_exc()
         console(&#34;Text-Fabric is not loaded&#34;, error=True)
         return None
-    return app</code></pre>
+    return app
+
+
+def useApp(appName, backend):
+    &#34;&#34;&#34;Make use of a corpus.
+
+    For a detailed description, see `tf.about.usefunc`.
+
+    Parameters
+    ----------
+    appName: string
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
+
+    args:
+        Do not pass any other positional argument!
+
+    kwargs:
+        Used to initialize the corpus app that we use.
+        That is either an uncustomized `tf.advanced.app.App` or
+        a customization of it.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    See Also
+    --------
+    tf.advanced.app.App
+    &#34;&#34;&#34;
+
+    if appName.startswith(&#34;data:&#34;):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith(&#34;app:&#34;):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(&#34;:&#34;, maxsplit=1)
+        if len(parts) == 1:
+            parts.append(&#34;&#34;)
+        (appName, checkoutApp) = parts
+
+    backend = backendRep(backend, &#39;norm&#39;)
+
+    return (appName, checkoutApp, dataLoc, backend)
+
+
+def loadApp(silent=DEEP):
+    &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
+
+    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    and it will load this data.
+
+    Parameters
+    ----------
+    silent: string, optional &#34;deep&#34;
+        The level of silence in which the loading will happen.
+        The default is as silent as possible.
+
+    Returns
+    -------
+    app: object|void
+        The handle to the loaded TF dataset, if it is successfully loaded, else `None`.
+    &#34;&#34;&#34;
+    (backend, org, repo, relative) = getLocation()
+
+    if any(s is None for s in (backend, org, repo, relative)):
+        console(
+            &#34;Not working in a repo: &#34;
+            f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+        )
+        return None
+
+    (appName, checkoutApp, dataLoc, backend) = useApp(f&#34;{org}/{repo}{relative}:clone&#34;, backend)
+
+    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent)</code></pre>
 </details>
 </section>
 <section>
@@ -697,7 +781,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L345-L609" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L347-L611" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -966,6 +1050,144 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
     return app</code></pre>
 </details>
 </dd>
+<dt id="tf.advanced.app.loadApp"><code class="name flex">
+<span>def <span class="ident">loadApp</span></span>(<span>silent='deep')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads a given TF app or loads the TF app based on the working directory.</p>
+<p>It assumes that the dataset sits in a clone from a backend (github/gitlab),
+and it will load this data.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code>"deep"</code></dt>
+<dd>The level of silence in which the loading will happen.
+The default is as silent as possible.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object|void</code></dt>
+<dd>The handle to the loaded TF dataset, if it is successfully loaded, else <code>None</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L665-L693" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def loadApp(silent=DEEP):
+    &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
+
+    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    and it will load this data.
+
+    Parameters
+    ----------
+    silent: string, optional &#34;deep&#34;
+        The level of silence in which the loading will happen.
+        The default is as silent as possible.
+
+    Returns
+    -------
+    app: object|void
+        The handle to the loaded TF dataset, if it is successfully loaded, else `None`.
+    &#34;&#34;&#34;
+    (backend, org, repo, relative) = getLocation()
+
+    if any(s is None for s in (backend, org, repo, relative)):
+        console(
+            &#34;Not working in a repo: &#34;
+            f&#34;backend={backend} org={org} repo={repo} relative={relative}&#34;
+        )
+        return None
+
+    (appName, checkoutApp, dataLoc, backend) = useApp(f&#34;{org}/{repo}{relative}:clone&#34;, backend)
+
+    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout=&#34;clone&#34;, silent=silent)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.app.useApp"><code class="name flex">
+<span>def <span class="ident">useApp</span></span>(<span>appName, backend)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make use of a corpus.</p>
+<p>For a detailed description, see <code><a title="tf.about.usefunc" href="../about/usefunc.html">tf.about.usefunc</a></code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>appName</code></strong> :&ensp;<code>string</code></dt>
+<dd>&nbsp;</dd>
+<dt><strong><code>backend</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If present, it is <code>github</code> or <code>gitlab</code>
+or a GitLab instance such as <code>gitlab.huc.knaw.nl</code>.
+If absent, <code>None</code> or empty, it is <code>github</code>.</dd>
+</dl>
+<p>args:
+Do not pass any other positional argument!</p>
+<p>kwargs:
+Used to initialize the corpus app that we use.
+That is either an uncustomized <code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code> or
+a customization of it.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>A</code></strong> :&ensp;<code>object</code></dt>
+<dd>The object whose attributes and methods constitute the advanced API.</dd>
+</dl>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L614-L662" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def useApp(appName, backend):
+    &#34;&#34;&#34;Make use of a corpus.
+
+    For a detailed description, see `tf.about.usefunc`.
+
+    Parameters
+    ----------
+    appName: string
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
+
+    args:
+        Do not pass any other positional argument!
+
+    kwargs:
+        Used to initialize the corpus app that we use.
+        That is either an uncustomized `tf.advanced.app.App` or
+        a customization of it.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    See Also
+    --------
+    tf.advanced.app.App
+    &#34;&#34;&#34;
+
+    if appName.startswith(&#34;data:&#34;):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith(&#34;app:&#34;):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(&#34;:&#34;, maxsplit=1)
+        if len(parts) == 1:
+            parts.append(&#34;&#34;)
+        (appName, checkoutApp) = parts
+
+    backend = backendRep(backend, &#39;norm&#39;)
+
+    return (appName, checkoutApp, dataLoc, backend)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -1013,7 +1235,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L54-L342" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L56-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1344,7 +1566,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L248-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L250-L274" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1382,7 +1604,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L274-L279" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L276-L281" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1417,7 +1639,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/advanced/app.py#L281-L342" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/advanced/app.py#L283-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
@@ -1553,6 +1775,8 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.advanced.app.findApp" href="#tf.advanced.app.findApp">findApp</a></code></li>
+<li><code><a title="tf.advanced.app.loadApp" href="#tf.advanced.app.loadApp">loadApp</a></code></li>
+<li><code><a title="tf.advanced.app.useApp" href="#tf.advanced.app.useApp">useApp</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

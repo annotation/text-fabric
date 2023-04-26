@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.search API documentation</title>
-<meta name="description" content="Guidance for searching …" />
+<title>tf.zip API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -20,78 +20,98 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.search</code></h1>
+<h1 class="title">Module <code>tf.zip</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="guidance-for-searching">Guidance for searching</h1>
-<ul>
-<li>User guide to search: <code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code></li>
-<li>Search API: <code><a title="tf.search.search" href="search.html">tf.search.search</a></code>.</li>
-<li>Implementation of search: <code><a title="tf.about.searchdesign" href="../about/searchdesign.html">tf.about.searchdesign</a></code></li>
-</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/search/__init__.py#L1-L7" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/zip.py#L1-L27" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-# Guidance for searching
+<pre><code class="python">from .advanced.app import loadApp
+from .core.timestamp import DEEP
+from .core.helpers import console
 
-*   User guide to search: `tf.about.searchusage`
-*   Search API: `tf.search.search`.
-*   Implementation of search: `tf.about.searchdesign`
-&#34;&#34;&#34;</code></pre>
+
+def main():
+    &#34;&#34;&#34;Makes a complete zip file.
+
+    Determines the repository that contains the current directory.
+    Finds the TF dataset of that repository.
+
+    Then zips its TF data (most recent version) plus all related data modules,
+    not only other tf data, but also images that are included.
+
+    Puts the TF data somewhere in your Downloads directory,
+    from where you can attach it to a release on GitHub or GitLab.
+
+    Text-Fabric is instructed to try that file first
+    if a user of this dataset needs to download the latest data.
+    &#34;&#34;&#34;
+    console(&#34;loading tf app ...&#34;)
+    app = loadApp(silent=DEEP)
+    app.zipAll()
+
+
+if __name__ == &#34;__main__&#34;:
+    main()</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="tf.search.graph" href="graph.html">tf.search.graph</a></code></dt>
+<dt id="tf.zip.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Graph oriented functions needed for search</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.relations" href="relations.html">tf.search.relations</a></code></dt>
-<dd>
-<div class="desc"><p>Search by relational patterns between nodes</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.search" href="search.html">tf.search.search</a></code></dt>
-<dd>
-<div class="desc"><p>Search (top-level)</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.searchexe" href="searchexe.html">tf.search.searchexe</a></code></dt>
-<dd>
-<div class="desc"><p>Search execution management</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.semantics" href="semantics.html">tf.search.semantics</a></code></dt>
-<dd>
-<div class="desc"><p>Semantics of search templates</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.spin" href="spin.html">tf.search.spin</a></code></dt>
-<dd>
-<div class="desc"><p>Search preprocessing</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.stitch" href="stitch.html">tf.search.stitch</a></code></dt>
-<dd>
-<div class="desc"><p>Search result finding</p></div>
-</dd>
-<dt><code class="name"><a title="tf.search.syntax" href="syntax.html">tf.search.syntax</a></code></dt>
-<dd>
-<div class="desc"><p>Syntax of search templates</p></div>
+<div class="desc"><p>Makes a complete zip file.</p>
+<p>Determines the repository that contains the current directory.
+Finds the TF dataset of that repository.</p>
+<p>Then zips its TF data (most recent version) plus all related data modules,
+not only other tf data, but also images that are included.</p>
+<p>Puts the TF data somewhere in your Downloads directory,
+from where you can attach it to a release on GitHub or GitLab.</p>
+<p>Text-Fabric is instructed to try that file first
+if a user of this dataset needs to download the latest data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/zip.py#L6-L23" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main():
+    &#34;&#34;&#34;Makes a complete zip file.
+
+    Determines the repository that contains the current directory.
+    Finds the TF dataset of that repository.
+
+    Then zips its TF data (most recent version) plus all related data modules,
+    not only other tf data, but also images that are included.
+
+    Puts the TF data somewhere in your Downloads directory,
+    from where you can attach it to a release on GitHub or GitLab.
+
+    Text-Fabric is instructed to try that file first
+    if a user of this dataset needs to download the latest data.
+    &#34;&#34;&#34;
+    console(&#34;loading tf app ...&#34;)
+    app = loadApp(silent=DEEP)
+    app.zipAll()</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 <section>
 </section>
-<section>
-</section>
-<section>
-</section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../tf/index.html">tf home</a> -
-<a href="../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../tf/index.html">tf home</a> -
+<a href="../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -127,7 +147,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../doc-search.html#' + encodeURIComponent(query);
+const url = '../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -141,26 +161,17 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#guidance-for-searching">Guidance for searching</a></li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf" href="../index.html">tf</a></code></li>
+<li><code><a title="tf" href="index.html">tf</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="tf.search.graph" href="graph.html">tf.search.graph</a></code></li>
-<li><code><a title="tf.search.relations" href="relations.html">tf.search.relations</a></code></li>
-<li><code><a title="tf.search.search" href="search.html">tf.search.search</a></code></li>
-<li><code><a title="tf.search.searchexe" href="searchexe.html">tf.search.searchexe</a></code></li>
-<li><code><a title="tf.search.semantics" href="semantics.html">tf.search.semantics</a></code></li>
-<li><code><a title="tf.search.spin" href="spin.html">tf.search.spin</a></code></li>
-<li><code><a title="tf.search.stitch" href="stitch.html">tf.search.stitch</a></code></li>
-<li><code><a title="tf.search.syntax" href="syntax.html">tf.search.syntax</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.zip.main" href="#tf.zip.main">main</a></code></li>
 </ul>
 </li>
 </ul>
@@ -168,7 +179,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

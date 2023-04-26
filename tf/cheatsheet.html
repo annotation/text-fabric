@@ -1466,7 +1466,8 @@ More commands
 <h1 id="command-line-tools">Command-line tools</h1>
 <p>(these work on the commandline if Text-Fabric is installed)</p>
 <dl>
-<dt><pre><code class="language-sh">text-fabric {org}/{repo}
+<dt><pre><code class="language-sh">tf {org}/{repo}
+text-fabric {org}/{repo}
 </code></pre></dt>
 <dd>
 <p>Starts the text-fabric browser for the corpus in <em>org</em>/<em>repo</em>.</p>
@@ -1474,7 +1475,18 @@ More commands
 <dd>
 <p><code><a title="tf.server.start" href="server/start.html">tf.server.start</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">text-fabric-zip {org}/{repo}
+<dt><pre><code class="language-sh">tf-zipall
+</code></pre></dt>
+<dd>
+<p>Zips the TF dataset located by the current directory,
+<em>with all its additional data modules</em>, but only <em>the latest version</em>,
+so that it can be attached to a release on Github/GitLab.</p>
+</dd>
+<dd>
+<p><code><a title="tf.advanced.zipdata.zipAll" href="advanced/zipdata.html#tf.advanced.zipdata.zipAll">zipAll()</a></code> and <code><a title="tf.zip" href="zip.html">tf.zip</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">tf-zip {org}/{repo}
+text-fabric-zip {org}/{repo}
 </code></pre></dt>
 <dd>
 <p>Zips the TF dataset in <em>org</em>/<em>repo</em> so that it can be attached to a release on
@@ -1483,7 +1495,8 @@ Github/GitLab.</p>
 <dd>
 <p><code><a title="tf.advanced.zipdata" href="advanced/zipdata.html">tf.advanced.zipdata</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">nbconvert {inDirectory} {outDirectory}
+<dt><pre><code class="language-sh">tf-nbconvert {inDirectory} {outDirectory}
+nbconvert {inDirectory} {outDirectory}
 </code></pre></dt>
 <dd>
 <p>Converts notebooks in <em>inDirectory</em> to HTML and stores them in <em>outDirectory</em>.</p>
@@ -1491,7 +1504,8 @@ Github/GitLab.</p>
 <dd>
 <p><code><a title="tf.tools.nbconvert" href="tools/nbconvert.html">tf.tools.nbconvert</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">xmlschema analysis {schema}.xsd
+<dt><pre><code class="language-sh">tf-xmlschema analysis {schema}.xsd
+xmlschema analysis {schema}.xsd
 </code></pre></dt>
 <dd>
 <p>Analyses an XML <em>schema</em> file and extracts meaningful information for processing
@@ -1500,7 +1514,17 @@ the XML that adheres to that schema.</p>
 <dd>
 <p><code><a title="tf.tools.xmlschema" href="tools/xmlschema.html">tf.tools.xmlschema</a></code></p>
 </dd>
-<dt><pre><code class="language-sh">addnlp
+<dt><pre><code class="language-sh">tf-fromtei
+</code></pre></dt>
+<dd>
+<p>When run in a repo it finds a TEI source and converts it to TF.
+The resulting TF data is delivered in the repo.</p>
+</dd>
+<dd>
+<p><code><a title="tf.convert.addnlp" href="convert/addnlp.html">tf.convert.addnlp</a></code></p>
+</dd>
+<dt><pre><code class="language-sh">tf-addnlp
+addnlp
 </code></pre></dt>
 <dd>
 <p>When run in the repo of a TF dataset, it adds tokens and sentences to it
@@ -1513,7 +1537,7 @@ after running an NLP pipeline (Spacy) to get them.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md

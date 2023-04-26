@@ -36,6 +36,75 @@ importer, and it will read it and override the generic information of the TEI el
 browser is instantly usable.</p>
 <p>The TEI conversion is rather straightforward because of some conventions
 that cannot be changed.</p>
+<h1 id="configuration">Configuration</h1>
+<p>We assumed that you have a <code>programs</code> directory at the top-level of your repo.
+In this directory we'll look for two optional files:</p>
+<ul>
+<li>
+<p>a file <code>tei.yaml</code> in which you specify a bunch of values
+Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.</p>
+</li>
+<li>
+<p>a file <code>tei.py</code> in which you define a function <code>transform(text)</code> which
+takes a text string ar argument and delivers a text string as result.
+The converter will call this on every TEI input file it reads <em>before</em>
+feeding it to the XML parser.</p>
+</li>
+</ul>
+<h2 id="keys-and-values-of-the-teiyaml-file">Keys and values of the <code>tei.yaml</code> file</h2>
+<h3 id="generic">generic</h3>
+<p>dict, optional <code>{}</code></p>
+<p>Metadata for all generated TF feature.</p>
+<h3 id="schema">schema</h3>
+<p>string, optional <code>None</code></p>
+<p>Which XML schema to be used, if not specified we fall back on full TEI.
+If specified, leave out the <code>.xsd</code> extension. The file is relative to the
+<code>schema</code> directory.</p>
+<h3 id="prelim">prelim</h3>
+<p>boolean, optional <code>True</code></p>
+<p>Whether to work with the <code>pre</code> tf versions.
+Use this if you convert TEI to a preliminary TF dataset, which will
+receive NLP additions later on. That version will then lose the <code>pre</code>.</p>
+<h3 id="wordasslot">wordAsSlot</h3>
+<p>boolean, optional <code>False</code></p>
+<p>Whether to take words as the basic entities (slots).
+If not, the characters are taken as basic entities.</p>
+<h3 id="sectionmodel">sectionModel</h3>
+<p>dict, optional <code>{}</code></p>
+<p>If not passed, or an empty dict, section model I is assumed.
+A section model must be specified with the parameters relevant for the
+model:</p>
+<pre><code>dict(
+    model=&quot;II&quot;,
+    levels=[&quot;chapter&quot;, &quot;chunk&quot;],
+    element=&quot;head&quot;,
+    attributes=dict(rend=&quot;h3&quot;),
+)
+</code></pre>
+<p>or</p>
+<pre><code>dict(
+    model=&quot;I&quot;,
+    levels=[&quot;folder&quot;, &quot;file&quot;, &quot;chunk&quot;],
+)
+</code></pre>
+<p>because model I does not require the <em>attribute</em> parameter.</p>
+<p>For model II, the default parameters are:</p>
+<pre><code>element=&quot;head&quot;
+levels=[&quot;chapter&quot;, &quot;chunk&quot;],
+attributes={}
+</code></pre>
+<h1 id="usage">Usage</h1>
+<h2 id="commandline">Commandline</h2>
+<pre><code class="language-sh">tf-fromtei tasks flags
+</code></pre>
+<h2 id="from-python">From Python</h2>
+<pre><code class="language-python">from tf.convert.tei import TEI
+
+T = TEI()
+T.task(**tasks, **flags)
+</code></pre>
+<p>For a short overview the tasks and flags, see <code>HELP</code>.</p>
 <h2 id="tasks">Tasks</h2>
 <p>We have the following conversion tasks:</p>
 <ol>
@@ -52,29 +121,33 @@ to a token-based dataset.</li>
 </ol>
 <p>Tasks can be run by passing any choice of task keywords to the
 <code><a title="tf.convert.tei.TEI.task" href="#tf.convert.tei.TEI.task">TEI.task()</a></code> method.</p>
-<h2 id="flags">Flags</h2>
-<p>We have one flag:</p>
-<ol>
-<li><code>test</code>: only converts those files in the input that are named in a test set.</li>
-</ol>
-<p>The test set is passed as argument to the <code><a title="tf.convert.tei.TEI" href="#tf.convert.tei.TEI">TEI</a></code> constructur.</p>
-<p>The <code>test</code> flag is passed to the <code><a title="tf.convert.tei.TEI.task" href="#tf.convert.tei.TEI.task">TEI.task()</a></code> method.</p>
-<h2 id="usage">Usage</h2>
-<p>It is intended that you call this converter in a script.</p>
-<p>In that script you can define auxiliary Python functions and pass them
-to the converter. The <code><a title="tf.convert.tei.TEI" href="#tf.convert.tei.TEI">TEI</a></code> class has some hooks where such functions
-can be plugged in.</p>
-<p>Here you can also define a test set, in case you want to experiment with the
-conversion.</p>
-<p>Last, but not least, you can assemble all the input parameters needed to
-get the conversion off the ground.</p>
-<p>The resulting script will look like
-<a href="https://github.com/annotation/text-fabric/blob/master/tf/convert/tfFromTeiExample.py">tfFromTeiExample.py</a>
-which you can use as a starting point.</p>
+<h2 id="note-on-versions">Note on versions</h2>
+<p>The TEI source files come in versions, indicated with a data.
+The converter picks the most recent one, unless you specify an other one:</p>
+<pre><code class="language-python">tf-from-tei tei=-2  # previous version
+tf-from-tei tei=0  # first version
+tf-from-tei tei=3  # third version
+tf-from-tei tei=2019-12-23  # explicit version
+</code></pre>
+<p>The resulting TF data is independently versioned, like <code>1.2.3</code> or <code>1.2.3pre</code>.
+When the converter runs, by default it overwrites the most recent version,
+unless you specify another one.</p>
+<p>It looks at the latest version and then bumps a part of the version number.</p>
+<pre><code class="language-python">tf-fromtei tf=3  # minor version, 1.2.3 becomes 1.2.4; 1.2.3pre becomes 1.2.4pre
+tf-fromtei tf=2  # intermediate version, 1.2.3 becomes 1.3.0
+tf-fromtei tf=1  # major version, 1.2.3 becomes 2.0.0
+tf-fromtei tf=1.8.3  # explicit version
+</code></pre>
+<h2 id="examples">Examples</h2>
+<p>Exactly how you can call the methods of this module is demonstrated in the small
+corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
+<ul>
+<li><a href="https://nbviewer.org/github/annotation/mondriaan/blob/main/programs/convertExpress.ipynb">Mondriaan</a>.</li>
+</ul>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1-L2918" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1-L3035" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -97,6 +170,107 @@ browser is instantly usable.
 The TEI conversion is rather straightforward because of some conventions
 that cannot be changed.
 
+# Configuration
+
+We assumed that you have a `programs` directory at the top-level of your repo.
+In this directory we&#39;ll look for two optional files:
+
+*   a file `tei.yaml` in which you specify a bunch of values
+    Last, but not least, you can assemble all the input parameters needed to
+    get the conversion off the ground.
+
+*   a file `tei.py` in which you define a function `transform(text)` which
+    takes a text string ar argument and delivers a text string as result.
+    The converter will call this on every TEI input file it reads *before*
+    feeding it to the XML parser.
+
+
+## Keys and values of the `tei.yaml` file
+
+### generic
+
+dict, optional `{}`
+
+Metadata for all generated TF feature.
+
+### schema
+
+string, optional `None`
+
+Which XML schema to be used, if not specified we fall back on full TEI.
+If specified, leave out the `.xsd` extension. The file is relative to the
+`schema` directory.
+
+### prelim
+
+boolean, optional `True`
+
+Whether to work with the `pre` tf versions.
+Use this if you convert TEI to a preliminary TF dataset, which will
+receive NLP additions later on. That version will then lose the `pre`.
+
+### wordAsSlot
+
+boolean, optional `False`
+
+Whether to take words as the basic entities (slots).
+If not, the characters are taken as basic entities.
+
+### sectionModel
+
+dict, optional `{}`
+
+If not passed, or an empty dict, section model I is assumed.
+A section model must be specified with the parameters relevant for the
+model:
+
+```
+dict(
+    model=&#34;II&#34;,
+    levels=[&#34;chapter&#34;, &#34;chunk&#34;],
+    element=&#34;head&#34;,
+    attributes=dict(rend=&#34;h3&#34;),
+)
+```
+
+or
+
+```
+dict(
+    model=&#34;I&#34;,
+    levels=[&#34;folder&#34;, &#34;file&#34;, &#34;chunk&#34;],
+)
+```
+
+because model I does not require the *attribute* parameter.
+
+For model II, the default parameters are:
+
+```
+element=&#34;head&#34;
+levels=[&#34;chapter&#34;, &#34;chunk&#34;],
+attributes={}
+```
+
+# Usage
+
+## Commandline
+
+```sh
+tf-fromtei tasks flags
+```
+
+## From Python
+
+```python
+from tf.convert.tei import TEI
+
+T = TEI()
+T.task(**tasks, **flags)
+```
+
+For a short overview the tasks and flags, see `HELP`.
+
 ## Tasks
 
 We have the following conversion tasks:
@@ -115,33 +289,37 @@ We have the following conversion tasks:
 Tasks can be run by passing any choice of task keywords to the
 `TEI.task()` method.
 
-## Flags
+## Note on versions
 
-We have one flag:
+The TEI source files come in versions, indicated with a data.
+The converter picks the most recent one, unless you specify an other one:
 
-1. `test`: only converts those files in the input that are named in a test set.
+```python
+tf-from-tei tei=-2  # previous version
+tf-from-tei tei=0  # first version
+tf-from-tei tei=3  # third version
+tf-from-tei tei=2019-12-23  # explicit version
+```
 
-The test set is passed as argument to the `TEI` constructur.
+The resulting TF data is independently versioned, like `1.2.3` or `1.2.3pre`.
+When the converter runs, by default it overwrites the most recent version,
+unless you specify another one.
 
-The `test` flag is passed to the `TEI.task()` method.
+It looks at the latest version and then bumps a part of the version number.
 
-## Usage
+```python
+tf-fromtei tf=3  # minor version, 1.2.3 becomes 1.2.4; 1.2.3pre becomes 1.2.4pre
+tf-fromtei tf=2  # intermediate version, 1.2.3 becomes 1.3.0
+tf-fromtei tf=1  # major version, 1.2.3 becomes 2.0.0
+tf-fromtei tf=1.8.3  # explicit version
+```
 
-It is intended that you call this converter in a script.
+## Examples
 
-In that script you can define auxiliary Python functions and pass them
-to the converter. The `TEI` class has some hooks where such functions
-can be plugged in.
+Exactly how you can call the methods of this module is demonstrated in the small
+corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
-Here you can also define a test set, in case you want to experiment with the
-conversion.
-
-Last, but not least, you can assemble all the input parameters needed to
-get the conversion off the ground.
-
-The resulting script will look like
-[tfFromTeiExample.py](https://github.com/annotation/text-fabric/blob/master/tf/convert/tfFromTeiExample.py)
-which you can use as a starting point.
+*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/main/programs/convertExpress.ipynb).
 &#34;&#34;&#34;
 
 import sys
@@ -150,14 +328,16 @@ import re
 from textwrap import dedent
 from io import BytesIO
 from subprocess import run
+from importlib import util
 
 import yaml
 from lxml import etree
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
-from ..core.helpers import console
+from ..core.helpers import console, versionSort
 from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
+from ..core.command import readArgs
 from ..core.helpers import mergeDict
 from ..core.files import (
     abspath,
@@ -167,6 +347,7 @@ from ..core.files import (
     initTree,
     dirNm,
     dirExists,
+    dirContents,
     fileExists,
     fileCopy,
     scanDir,
@@ -174,6 +355,48 @@ from ..core.files import (
 
 from ..tools.xmlschema import Analysis
 
+
+HELP = &#34;&#34;&#34;
+Convert TEI to TF.
+
+There are also commands to check the TEI and to load the TF.&#34;&#34;&#34;
+
+TASKS = dict(
+    check=&#34;reports on the elements in the source&#34;,
+    convert=&#34;converts TEI to TF&#34;,
+    load=&#34;loads the generated TF&#34;,
+    app=&#34;configures the TF-app for the result&#34;,
+    apptoken=&#34;modifies the TF-app to make it token- instead of character-based&#34;,
+    browse=&#34;starts the text-fabric browser on the result&#34;,
+)
+TASKS_EXCLUDED = {&#34;apptoken&#34;, &#34;browse&#34;}
+
+PARAMS = dict(
+    tf=(
+        (
+            &#34;0 or latest: update latest version;\n\t\t&#34;
+            &#34;1 2 3: increase major, intermediate, minor tf version;\n\t\t&#34;
+            &#34;rest: explicit version.&#34;
+        ),
+        &#34;latest&#34;,
+    ),
+    tei=(
+        (
+            &#34;0 or latest: latest version;\n\t\t&#34;
+            &#34;-1 -2 etc: previous version, before previous, ...;\n\t\t&#34;
+            &#34;1 2 etc: first version, second version, ...;\n\t\t&#34;
+            &#34;rest: explicit version.&#34;
+        ),
+        &#34;latest&#34;,
+    ),
+)
+
+FLAGS = dict(
+    verbose=(&#34;Produce less or more progress and reporting messages&#34;, -1, 3),
+)
+
+
+PRE = &#34;pre&#34;
 
 ZWSP = &#34;\u200b&#34;  # zero-width space
 
@@ -564,17 +787,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 
 class TEI:
     def __init__(
-        self,
-        sourceVersion=&#34;0.1&#34;,
-        schema=None,
-        testSet=set(),
-        wordAsSlot=True,
-        sectionModel=None,
-        generic={},
-        transform=None,
-        tfVersion=&#34;0.1&#34;,
-        appConfig={},
-        verbose=-1,
+        self, tei=PARAMS[&#34;tei&#34;][1], tf=PARAMS[&#34;tf&#34;][1], verbose=FLAGS[&#34;verbose&#34;][1]
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -678,7 +891,7 @@ class TEI:
         Location of additional TF-app configuration and documentation files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden by the parameter `appConfig`.
+        These settings can be overriden in the `app/config_custom.ymal` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -691,75 +904,40 @@ class TEI:
 
         Parameters
         ----------
+        tei: string, optional &#34;&#34;
+            If empty, use the latest version under the `tei` directory with sources.
+            Otherwise it should be a valid integer, and it is the index in the
+            sorted list of versions there.
 
-        sourceVersion: string, optional &#34;0.1&#34;
-            Version of the source files. This is the name of a top-level
-            subfolder of the `tei` input folder.
+            *   `0` or `latest`: latest version;
+            *   `-1`, `-2`, ... : previous version, version before previous, ...;
+            *   `1`, `2`, ...: first version, second version, ....
+            *   everything else that is not a number is an explicit version
 
-        schema: string, optional None
-            Which XML schema to be used, if not specified we fall back on full TEI.
-            If specified, leave out the `.xsd` extension. The file is relative to the
-            `schema` directory.
+            If the value cannot be parsed as an integer, it is used as the exact
+            version name.
 
-        testSet: set, optional empty
-            A set of file names. If you run the conversion in test mode
-            (pass `test` as argument to the `TEI.task()` method),
-            only the files in the test set are converted.
+        tf: string, optional &#34;&#34;
+            If empty, the tf version used will be the latest one under the `tf`
+            directory. If the parameter `prelim` was used in the initialization of
+            the TEI object, only versions ending in `pre` will be taken into account.
 
-        wordAsSlot: boolean, optional False
-            Whether to take words as the basic entities (slots).
-            If not, the characters are taken as basic entities.
-        sectionModel: dict, optional {}
-            If not passed, or an empty dict, section model I is assumed.
-            A section model must be specified with the parameters relevant for the
-            model:
+            If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+            relevant tf version:
 
-            ```
-            dict(
-                model=&#34;II&#34;,
-                levels=[&#34;chapter&#34;, &#34;chunk&#34;],
-                element=&#34;head&#34;,
-                attributes=dict(rend=&#34;h3&#34;),
-            )
-            ```
+            *   `0` or `latest`: overwrite the latest version
+            *   `1` will bump the major version
+            *   `2` will bump the intermediate version
+            *   `3` will bump the minor version
+            *   everything else is an explicit version
 
-            or
-
-            ```
-            dict(
-                model=&#34;I&#34;,
-                levels=[&#34;folder&#34;, &#34;file&#34;, &#34;chunk&#34;],
-            )
-            ```
-
-            because model I does not require the *attribute* parameter.
-
-            For model II, the default parameters are:
-
-            ```
-            element=&#34;head&#34;
-            levels=[&#34;chapter&#34;, &#34;chunk&#34;],
-            attributes={}
-            ```
-
-        generic: dict, optional {}
-            Metadata for all generated TF feature.
-
-        transform: function, optional None
-            If not None, a function that transforms text to text, used
-            as a preprocessing step for each input xml file.
-
-        tfVersion: string, optional &#34;0.1&#34;
-            Version of the generated tf files. This is the name of a top-level
-            subfolder of the `tf` output folder.
-
-        appConfig: dict, optional {}
-            Additional configuration settings, which will override the initial
-            settings.
+            Otherwise, the value is taken as the exact version name.
 
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
+        self.good = True
+
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
             console(
@@ -777,15 +955,160 @@ class TEI:
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
-        sourceDir = f&#34;{refDir}/tei/{sourceVersion}&#34;
+        programDir = f&#34;{refDir}/programs&#34;
+        convertSpec = f&#34;{programDir}/tei.yaml&#34;
+        convertCustom = f&#34;{programDir}/tei.py&#34;
+
+        settings = {}
+        if fileExists(convertSpec):
+            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
+                text = fh.read()
+            settings = yaml.load(text, Loader=yaml.FullLoader)
+
+        if fileExists(convertCustom):
+            try:
+                spec = util.spec_from_file_location(&#34;teicustom&#34;, convertCustom)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, dirNm(convertCustom))
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                self.transform = code.transform
+            except Exception as e:
+                print(str(e))
+                self.transform = None
+
+        generic = settings.get(&#34;generic&#34;, {})
+        schema = settings.get(&#34;schema&#34;, None)
+        prelim = settings.get(&#34;prelim&#34;, True)
+        wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        sectionModel = settings.get(&#34;sectionModel&#34;, {})
+
+        sectionModel = checkSectionModel(sectionModel)
+        if not sectionModel:
+            self.good = False
+            return
+
+        sectionProperties = sectionModel.get(&#34;properties&#34;, None)
+
+        self.generic = generic
+        self.schema = schema
+        self.prelim = prelim
+        self.wordAsSlot = wordAsSlot
+        self.sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionProperties = sectionProperties
+
         reportDir = f&#34;{refDir}/report&#34;
-        tfDir = f&#34;{refDir}/tf&#34;
         appDir = f&#34;{refDir}/app&#34;
         docsDir = f&#34;{refDir}/docs&#34;
+        teiDir = f&#34;{refDir}/tei&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+
+        teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
+        nTeiVersions = len(teiVersions)
+
+        if tei in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(tei).lstrip(&#34;-&#34;).isdecimal():
+            teiIndex = (0 if tei == &#34;latest&#34; else int(tei)) - 1
+
+            try:
+                teiVersion = teiVersions[teiIndex]
+            except Exception:
+                absIndex = teiIndex + (nTeiVersions if teiIndex &lt; 0 else 0) + 1
+                console(
+                    (
+                        f&#34;no item in {absIndex} in {nTeiVersions} source versions &#34;
+                        f&#34;in {ux(teiDir)}&#34;
+                    )
+                    if len(teiVersions)
+                    else f&#34;no source versions in {ux(teiDir)}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+        else:
+            teiVersion = tei
+
+        teiPath = f&#34;{teiDir}/{teiVersion}&#34;
+        reportPath = f&#34;{reportDir}/{teiVersion}&#34;
+
+        if not dirExists(teiPath):
+            console(
+                f&#34;source version {teiVersion} does not exists in {ux(teiDir)}&#34;,
+                error=True,
+            )
+            self.good = False
+            return
+
+        teiStatuses = {tv: i for (i, tv) in enumerate(reversed(teiVersions))}
+        teiStatus = teiStatuses[teiVersion]
+        teiStatusRep = (
+            &#34;most recent&#34;
+            if teiStatus == 0
+            else &#34;previous&#34;
+            if teiStatus == 1
+            else f&#34;{teiStatus - 1} before previous&#34;
+        )
+        if teiStatus == len(teiVersions) - 1 and len(teiVersions) &gt; 1:
+            teiStatusRep = &#34;oldest&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;TEI data version is {teiVersion} ({teiStatusRep})&#34;)
+
+        tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
+        if prelim:
+            tfVersions = [tv for tv in tfVersions if tv.endswith(PRE)]
+
+        latestTfVersion = (
+            tfVersions[-1] if len(tfVersions) else (&#34;0.0.0&#34; + (PRE if prelim else &#34;&#34;))
+        )
+        if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
+            tfVersion = latestTfVersion
+            vRep = &#34;latest&#34;
+        elif tf in {&#34;1&#34;, &#34;2&#34;, &#34;3&#34;, 1, 2, 3}:
+            bump = int(tf)
+            parts = latestTfVersion.split(&#34;.&#34;)
+
+            def getVer(b):
+                return (
+                    int(parts[b].removesuffix(PRE))
+                    if prelim and b == len(parts) - 1
+                    else int(parts[b])
+                )
+
+            def setVer(b, val):
+                parts[b] = f&#34;{val}{PRE}&#34; if prelim and b == len(parts) - 1 else f&#34;{val}&#34;
+
+            if bump &gt; len(parts):
+                console(
+                    f&#34;Cannot bump part {bump} of latest TF version {latestTfVersion}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+            else:
+                b1 = bump - 1
+                old = getVer(b1)
+                setVer(b1, old + 1)
+                for b in range(b1 + 1, len(parts)):
+                    setVer(b, 0)
+                tfVersion = &#34;.&#34;.join(parts)
+                vRep = &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
+                vRep = f&#34;next {vRep}&#34;
+        else:
+            tfVersion = tf
+            status = &#34;exising&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
+            vRep = f&#34;explicit {status}&#34;
+
+        tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
 
         self.refDir = refDir
-        self.sourceDir = sourceDir
-        self.reportDir = reportDir
+        self.teiVersion = teiVersion
+        self.teiPath = teiPath
+        self.tfVersion = tfVersion
+        self.tfPath = tfPath
+        self.reportPath = reportPath
         self.tfDir = tfDir
         self.appDir = appDir
         self.docsDir = docsDir
@@ -794,27 +1117,7 @@ class TEI:
         self.repo = repo
         self.relative = relative
 
-        self.good = True
-
-        if sourceDir is None or not dirExists(sourceDir):
-            console(f&#34;Source location does not exist: {sourceDir}&#34;)
-            self.good = False
-            return
-
-        self.schema = schema
         self.schemaFile = None if schema is None else f&#34;{refDir}/schema/{schema}.xsd&#34;
-        self.sourceVersion = sourceVersion
-        self.testMode = False
-        self.testSet = testSet
-        self.wordAsSlot = wordAsSlot
-        sectionModel = checkSectionModel(sectionModel)
-        if not sectionModel:
-            self.good = False
-            return
-
-        self.sectionModel = sectionModel[&#34;model&#34;]
-        sectionProperties = sectionModel.get(&#34;properties&#34;, None)
-        self.sectionProperties = sectionProperties
         levelNames = sectionProperties[&#34;levels&#34;]
         self.levelNames = levelNames
         self.chunkLevel = levelNames[-1]
@@ -827,68 +1130,9 @@ class TEI:
             self.fileSection = levelNames[1]
             self.chunkSection = levelNames[2]
 
-        self.generic = generic
-        self.transform = transform
-        self.tfVersion = tfVersion
-        self.tfPath = f&#34;{tfDir}/{tfVersion}&#34;
-        if (
-            &#34;provenanceSpec&#34; not in appConfig
-            or &#34;branch&#34; not in appConfig[&#34;provenanceSpec&#34;]
-        ):
-            appConfig.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
-        self.appConfig = appConfig
         self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
-
-    @staticmethod
-    def help(program):
-        &#34;&#34;&#34;Print a help text to the console.
-
-        The intended use of this module is that it is included by a conversion
-        script.
-        In order to give help on the command line, here is a pre-baked help text.
-        Only the name of the conversion script needs to be merged in.
-
-        Parameters
-        ----------
-        program: string
-            The name of the program that you want to display
-            in the help string.
-        &#34;&#34;&#34;
-
-        console(
-            f&#34;&#34;&#34;
-
-        Convert TEI to TF.
-        There are also commands to check the TEI and to load the TF.
-
-        python3 {program} [tasks/flags] [--help]
-
-        --help: show this text and exit
-
-        tasks:
-            a sequence of tasks:
-            check:
-                just reports on the elements in the source.
-            convert:
-                just converts TEI to TF
-            load:
-                just loads the generated TF;
-            app:
-                just configures the TF-app for the result;
-            apptoken:
-                just modifies the TF-app to make it token- instead of character-based;
-            browse:
-                just starts the text-fabric browser on the result;
-
-        flags:
-            -test, +test:
-                whether to run in test mode
-            +verbose, ++verbose:
-                Produce more progress and reporting messages
-        &#34;&#34;&#34;
-        )
 
     @staticmethod
     def getParser():
@@ -980,34 +1224,29 @@ class TEI:
             It is the name of the single XML file.
         &#34;&#34;&#34;
         verbose = self.verbose
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         sectionModel = self.sectionModel
         if verbose == 1:
             console(f&#34;Section model {sectionModel}&#34;)
 
         if sectionModel == &#34;I&#34;:
-            testMode = self.testMode
-            testSet = self.testSet
-
             IGNORE = &#34;__ignore__&#34;
 
             xmlFilesRaw = collections.defaultdict(list)
 
-            with scanDir(sourceDir) as dh:
+            with scanDir(teiPath) as dh:
                 for folder in dh:
                     folderName = folder.name
                     if folderName == IGNORE:
                         continue
                     if not folder.is_dir():
                         continue
-                    with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                    with scanDir(f&#34;{teiPath}/{folderName}&#34;) as fh:
                         for file in fh:
                             fileName = file.name
                             if not (
                                 fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
                             ):
-                                continue
-                            if testMode and fileName not in testSet:
                                 continue
                             xmlFilesRaw[folderName].append(fileName)
 
@@ -1019,7 +1258,7 @@ class TEI:
 
         if sectionModel == &#34;II&#34;:
             xmlFile = None
-            with scanDir(sourceDir) as fh:
+            with scanDir(teiPath) as fh:
                 for file in fh:
                     fileName = file.name
                     if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
@@ -1049,7 +1288,7 @@ class TEI:
 
         This information reduction helps to get a clear overview.
 
-        It writes reports to the `reportDir`:
+        It writes reports to the `reportPath`:
 
         *   `errors.txt`: validation errors
         *   `elements.txt`: element/attribute inventory.
@@ -1059,13 +1298,13 @@ class TEI:
 
         verbose = self.verbose
 
-        sourceDir = self.sourceDir
-        reportDir = self.reportDir
+        teiPath = self.teiPath
+        reportPath = self.reportPath
         docsDir = self.docsDir
         sectionModel = self.sectionModel
 
         if verbose == 1:
-            console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+            console(f&#34;TEI to TF checking: {ux(teiPath)} =&gt; {ux(reportPath)}&#34;)
 
         kindLabels = dict(
             format=&#34;Formatting Attributes&#34;,
@@ -1084,7 +1323,7 @@ class TEI:
         self.getElementInfo()
         elementDefs = self.elementDefs
 
-        initTree(reportDir)
+        initTree(reportPath)
         initTree(docsDir)
 
         def analyse(root, analysis):
@@ -1158,7 +1397,7 @@ class TEI:
             nodeInfo(root)
 
         def writeErrors():
-            errorFile = f&#34;{reportDir}/errors.txt&#34;
+            errorFile = f&#34;{reportPath}/errors.txt&#34;
 
             nErrors = 0
 
@@ -1177,7 +1416,7 @@ class TEI:
             )
 
         def writeNamespaces():
-            errorFile = f&#34;{reportDir}/namespaces.txt&#34;
+            errorFile = f&#34;{reportPath}/namespaces.txt&#34;
 
             nErrors = 0
 
@@ -1209,7 +1448,7 @@ class TEI:
             )
 
         def writeReport():
-            reportFile = f&#34;{reportDir}/elements.txt&#34;
+            reportFile = f&#34;{reportPath}/elements.txt&#34;
             with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(
                     &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
@@ -1341,6 +1580,7 @@ class TEI:
                 if len(theseErrors):
                     console(&#34;ERROR\n&#34;)
                     errors.append((xmlFile, theseErrors))
+                    self.good = False
                 return
 
             root = tree.getroot()
@@ -1353,7 +1593,7 @@ class TEI:
                 for xmlFile in xmlFiles:
                     i += 1
                     console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-                    xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                    xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
                     doXMLFile(xmlPath)
                 console(&#34;&#34;)
                 console(f&#34;End   folder {xmlFolder}&#34;)
@@ -1364,7 +1604,7 @@ class TEI:
                 console(&#34;No XML files found!&#34;)
                 return False
 
-            xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+            xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
             doXMLFile(xmlPath)
 
         console(&#34;&#34;)
@@ -1449,7 +1689,7 @@ class TEI:
         IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
         verbose = self.verbose
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
@@ -2258,7 +2498,7 @@ class TEI:
                         cv.feature(cur[FILE], **value)
 
                         with open(
-                            f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
+                            f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
                         ) as fh:
                             text = fh.read()
                             text = transformFunc(text)
@@ -2292,7 +2532,7 @@ class TEI:
                     console(&#34;No XML files found!&#34;)
                     return False
 
-                with open(f&#34;{sourceDir}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
@@ -2376,12 +2616,12 @@ class TEI:
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         tfPath = self.tfPath
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         chunkSection = self.chunkSection
         levelNames = self.levelNames
 
         if verbose == 1:
-            console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+            console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -2535,7 +2775,6 @@ class TEI:
 
         refDir = self.refDir
         myDir = self.myDir
-        appConfig = self.appConfig
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
@@ -2560,11 +2799,11 @@ class TEI:
 
         def createConfig(sourceText, customText):
             tfVersion = self.tfVersion
-            version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
+            version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
             settings = yaml.load(text, Loader=yaml.FullLoader)
-            mergeDict(settings, appConfig)
+            settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
             if tokenBased:
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
@@ -2752,8 +2991,8 @@ class TEI:
             itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
             justCopy = info[&#34;justCopy&#34;]
-            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-            itemSource = f&#34;{sourceDir}/{file}&#34;
+            teiDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{teiDir}/{file}&#34;
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it
@@ -2873,8 +3112,7 @@ class TEI:
         app=False,
         apptoken=False,
         browse=False,
-        test=None,
-        verbose=-1,
+        verbose=None,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -2901,9 +3139,6 @@ class TEI:
             Whether to carry out the &#34;apptoken&#34; task.
         browse: boolean, optional False
             Whether to carry out the &#34;browse&#34; task&#34;
-        test: boolean, optional None
-            Whether to run in test mode.
-            In test mode only the files in the test set are converted.
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
 
@@ -2912,10 +3147,8 @@ class TEI:
         boolean
             Whether all tasks have executed successfully.
         &#34;&#34;&#34;
-        if test is not None:
-            self.testMode = test
-
-        self.verbose = verbose
+        if verbose is not None:
+            self.verbose = verbose
 
         if not self.good:
             return False
@@ -2935,65 +3168,22 @@ class TEI:
 
         return self.good
 
-    def run(self, program=None):
-        &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
 
-        The intended use of this module is that it is included by a conversion
-        script.
-        When that script is invoked, you can pass arguments to specify tasks
-        and flags.
+def main():
+    (good, tasks, params, flags) = readArgs(
+        &#34;tf-fromtei&#34;, HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
+    )
+    if not good:
+        return False
 
-        This function inspects those arguments, and runs the specified tasks,
-        with the specified flags enabled.
+    T = TEI(**params, **flags)
+    T.task(**tasks, **flags)
 
-        Parameters
-        ----------
-        program: string
-            The name of the program that you want to display
-            in the help string, in case a help text must be displayed.
+    return T.good
 
-        Returns
-        -------
-        integer
-            In fact, this function will terminate the conversion program
-            an return a status code: 0 for succes, 1 for failure.
-        &#34;&#34;&#34;
-        programRep = &#34;TEI-converter&#34; if program is None else program
-        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-        possibleFlags = {
-            &#34;-test&#34;: False,
-            &#34;+test&#34;: True,
-            &#34;-verbose&#34;: -1,
-            &#34;+verbose&#34;: 0,
-            &#34;++verbose&#34;: 1,
-        }
-        possibleArgs = possibleTasks | set(possibleFlags)
 
-        args = set(sys.argv[1:])
-
-        if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
-            self.help(programRep)
-            console(&#34;No task specified&#34;)
-            sys.exit(-1)
-
-        illegalArgs = {arg for arg in args if arg not in possibleArgs}
-
-        if len(illegalArgs):
-            self.help(programRep)
-            for arg in illegalArgs:
-                console(f&#34;Illegal argument `{arg}`&#34;)
-            sys.exit(-1)
-
-        tasks = {arg: True for arg in possibleTasks if arg in args}
-        flags = {
-            arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
-        }
-
-        self.task(**tasks, **flags)
-        if self.good:
-            sys.exit(0)
-        else:
-            sys.exit(1)</code></pre>
+if __name__ == &#34;__main__&#34;:
+    sys.exit(0 if main() else 1)</code></pre>
 </details>
 </section>
 <section>
@@ -3011,7 +3201,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L327-L384" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L477-L534" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -3073,6 +3263,29 @@ class TEI:
     return dict(model=model, properties=properties)</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.tei.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L3021-L3031" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main():
+    (good, tasks, params, flags) = readArgs(
+        &#34;tf-fromtei&#34;, HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
+    )
+    if not good:
+        return False
+
+    T = TEI(**params, **flags)
+    T.task(**tasks, **flags)
+
+    return T.good</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.tei.makeCssInfo"><code class="name flex">
 <span>def <span class="ident">makeCssInfo</span></span>(<span>)</span>
 </code></dt>
@@ -3081,7 +3294,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L300-L313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L450-L463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3107,7 +3320,7 @@ class TEI:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L387-L484" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L537-L634" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties):
     if wordAsSlot:
@@ -3216,7 +3429,7 @@ class TEI:
 <dl>
 <dt id="tf.convert.tei.TEI"><code class="flex name class">
 <span>class <span class="ident">TEI</span></span>
-<span>(</span><span>sourceVersion='0.1', schema=None, testSet=set(), wordAsSlot=True, sectionModel=None, generic={}, transform=None, tfVersion='0.1', appConfig={}, verbose=-1)</span>
+<span>(</span><span>tei='latest', tf='latest', verbose=-1)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Converts TEI to TF.</p>
@@ -3295,7 +3508,7 @@ passed as <code>tfVersion</code>.</p>
 <p>Location of additional TF-app configuration and documentation files.
 If they do not exist, they will be created with some sensible default
 settings and generated documentation.
-These settings can be overriden by the parameter <code>appConfig</code>.
+These settings can be overriden in the <code>app/config_custom.ymal</code> file.
 Also a default <code>display.css</code> file and a logo are added.</p>
 <p>Custom content for these files can be provided in files
 with <code>_custom</code> appended to their base name.</p>
@@ -3304,74 +3517,47 @@ with <code>_custom</code> appended to their base name.</p>
 This can be generated or had-written material, or a mixture of the two.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>sourceVersion</code></strong> :&ensp;<code>string</code>, optional <code>"0.1"</code></dt>
-<dd>Version of the source files. This is the name of a top-level
-subfolder of the <code>tei</code> input folder.</dd>
-<dt><strong><code>schema</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
-<dd>Which XML schema to be used, if not specified we fall back on full TEI.
-If specified, leave out the <code>.xsd</code> extension. The file is relative to the
-<code>schema</code> directory.</dd>
-<dt><strong><code>testSet</code></strong> :&ensp;<code>set</code>, optional <code>empty</code></dt>
-<dd>A set of file names. If you run the conversion in test mode
-(pass <code>test</code> as argument to the <code><a title="tf.convert.tei.TEI.task" href="#tf.convert.tei.TEI.task">TEI.task()</a></code> method),
-only the files in the test set are converted.</dd>
-<dt><strong><code>wordAsSlot</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>Whether to take words as the basic entities (slots).
-If not, the characters are taken as basic entities.</dd>
-<dt><strong><code>sectionModel</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
+<dt><strong><code>tei</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
 <dd>
-<p>If not passed, or an empty dict, section model I is assumed.
-A section model must be specified with the parameters relevant for the
-model:</p>
-<p><code>dict(
-model="II",
-levels=["chapter", "chunk"],
-element="head",
-attributes=dict(rend="h3"),
-)</code></p>
-<p>or</p>
-<p><code>dict(
-model="I",
-levels=["folder", "file", "chunk"],
-)</code></p>
-<p>because model I does not require the <em>attribute</em> parameter.</p>
-<p>For model II, the default parameters are:</p>
-<p><code>element="head"
-levels=["chapter", "chunk"],
-attributes={}</code></p>
+<p>If empty, use the latest version under the <code>tei</code> directory with sources.
+Otherwise it should be a valid integer, and it is the index in the
+sorted list of versions there.</p>
+<ul>
+<li><code>0</code> or <code>latest</code>: latest version;</li>
+<li><code>-1</code>, <code>-2</code>, &hellip; : previous version, version before previous, &hellip;;</li>
+<li><code>1</code>, <code>2</code>, &hellip;: first version, second version, ....</li>
+<li>everything else that is not a number is an explicit version</li>
+</ul>
+<p>If the value cannot be parsed as an integer, it is used as the exact
+version name.</p>
 </dd>
-<dt><strong><code>generic</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
-<dd>Metadata for all generated TF feature.</dd>
-<dt><strong><code>transform</code></strong> :&ensp;<code>function</code>, optional <code>None</code></dt>
-<dd>If not None, a function that transforms text to text, used
-as a preprocessing step for each input xml file.</dd>
-<dt><strong><code>tfVersion</code></strong> :&ensp;<code>string</code>, optional <code>"0.1"</code></dt>
-<dd>Version of the generated tf files. This is the name of a top-level
-subfolder of the <code><a title="tf" href="../index.html">tf</a></code> output folder.</dd>
-<dt><strong><code>appConfig</code></strong> :&ensp;<code>dict</code>, optional <code>{}</code></dt>
-<dd>Additional configuration settings, which will override the initial
-settings.</dd>
+<dt><strong><code>tf</code></strong> :&ensp;<code>string</code>, optional <code>""</code></dt>
+<dd>
+<p>If empty, the tf version used will be the latest one under the <code><a title="tf" href="../index.html">tf</a></code>
+directory. If the parameter <code>prelim</code> was used in the initialization of
+the TEI object, only versions ending in <code>pre</code> will be taken into account.</p>
+<p>If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+relevant tf version:</p>
+<ul>
+<li><code>0</code> or <code>latest</code>: overwrite the latest version</li>
+<li><code>1</code> will bump the major version</li>
+<li><code>2</code> will bump the intermediate version</li>
+<li><code>3</code> will bump the minor version</li>
+<li>everything else is an explicit version</li>
+</ul>
+<p>Otherwise, the value is taken as the exact version name.</p>
+</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
 <dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L487-L2918" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L637-L3018" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
-        self,
-        sourceVersion=&#34;0.1&#34;,
-        schema=None,
-        testSet=set(),
-        wordAsSlot=True,
-        sectionModel=None,
-        generic={},
-        transform=None,
-        tfVersion=&#34;0.1&#34;,
-        appConfig={},
-        verbose=-1,
+        self, tei=PARAMS[&#34;tei&#34;][1], tf=PARAMS[&#34;tf&#34;][1], verbose=FLAGS[&#34;verbose&#34;][1]
     ):
         &#34;&#34;&#34;Converts TEI to TF.
 
@@ -3475,7 +3661,7 @@ settings.</dd>
         Location of additional TF-app configuration and documentation files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden by the parameter `appConfig`.
+        These settings can be overriden in the `app/config_custom.ymal` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -3488,75 +3674,40 @@ settings.</dd>
 
         Parameters
         ----------
+        tei: string, optional &#34;&#34;
+            If empty, use the latest version under the `tei` directory with sources.
+            Otherwise it should be a valid integer, and it is the index in the
+            sorted list of versions there.
 
-        sourceVersion: string, optional &#34;0.1&#34;
-            Version of the source files. This is the name of a top-level
-            subfolder of the `tei` input folder.
+            *   `0` or `latest`: latest version;
+            *   `-1`, `-2`, ... : previous version, version before previous, ...;
+            *   `1`, `2`, ...: first version, second version, ....
+            *   everything else that is not a number is an explicit version
 
-        schema: string, optional None
-            Which XML schema to be used, if not specified we fall back on full TEI.
-            If specified, leave out the `.xsd` extension. The file is relative to the
-            `schema` directory.
+            If the value cannot be parsed as an integer, it is used as the exact
+            version name.
 
-        testSet: set, optional empty
-            A set of file names. If you run the conversion in test mode
-            (pass `test` as argument to the `TEI.task()` method),
-            only the files in the test set are converted.
+        tf: string, optional &#34;&#34;
+            If empty, the tf version used will be the latest one under the `tf`
+            directory. If the parameter `prelim` was used in the initialization of
+            the TEI object, only versions ending in `pre` will be taken into account.
 
-        wordAsSlot: boolean, optional False
-            Whether to take words as the basic entities (slots).
-            If not, the characters are taken as basic entities.
-        sectionModel: dict, optional {}
-            If not passed, or an empty dict, section model I is assumed.
-            A section model must be specified with the parameters relevant for the
-            model:
+            If it can be parsed as the integers 1, 2, or 3 it will bump the latest
+            relevant tf version:
 
-            ```
-            dict(
-                model=&#34;II&#34;,
-                levels=[&#34;chapter&#34;, &#34;chunk&#34;],
-                element=&#34;head&#34;,
-                attributes=dict(rend=&#34;h3&#34;),
-            )
-            ```
+            *   `0` or `latest`: overwrite the latest version
+            *   `1` will bump the major version
+            *   `2` will bump the intermediate version
+            *   `3` will bump the minor version
+            *   everything else is an explicit version
 
-            or
-
-            ```
-            dict(
-                model=&#34;I&#34;,
-                levels=[&#34;folder&#34;, &#34;file&#34;, &#34;chunk&#34;],
-            )
-            ```
-
-            because model I does not require the *attribute* parameter.
-
-            For model II, the default parameters are:
-
-            ```
-            element=&#34;head&#34;
-            levels=[&#34;chapter&#34;, &#34;chunk&#34;],
-            attributes={}
-            ```
-
-        generic: dict, optional {}
-            Metadata for all generated TF feature.
-
-        transform: function, optional None
-            If not None, a function that transforms text to text, used
-            as a preprocessing step for each input xml file.
-
-        tfVersion: string, optional &#34;0.1&#34;
-            Version of the generated tf files. This is the name of a top-level
-            subfolder of the `tf` output folder.
-
-        appConfig: dict, optional {}
-            Additional configuration settings, which will override the initial
-            settings.
+            Otherwise, the value is taken as the exact version name.
 
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
         &#34;&#34;&#34;
+        self.good = True
+
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
             console(
@@ -3574,15 +3725,160 @@ settings.</dd>
         base = ex(f&#34;~/{backend}&#34;)
         repoDir = f&#34;{base}/{org}/{repo}&#34;
         refDir = f&#34;{repoDir}{relative}&#34;
-        sourceDir = f&#34;{refDir}/tei/{sourceVersion}&#34;
+        programDir = f&#34;{refDir}/programs&#34;
+        convertSpec = f&#34;{programDir}/tei.yaml&#34;
+        convertCustom = f&#34;{programDir}/tei.py&#34;
+
+        settings = {}
+        if fileExists(convertSpec):
+            with open(convertSpec, encoding=&#34;utf8&#34;) as fh:
+                text = fh.read()
+            settings = yaml.load(text, Loader=yaml.FullLoader)
+
+        if fileExists(convertCustom):
+            try:
+                spec = util.spec_from_file_location(&#34;teicustom&#34;, convertCustom)
+                code = util.module_from_spec(spec)
+                sys.path.insert(0, dirNm(convertCustom))
+                spec.loader.exec_module(code)
+                sys.path.pop(0)
+                self.transform = code.transform
+            except Exception as e:
+                print(str(e))
+                self.transform = None
+
+        generic = settings.get(&#34;generic&#34;, {})
+        schema = settings.get(&#34;schema&#34;, None)
+        prelim = settings.get(&#34;prelim&#34;, True)
+        wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        sectionModel = settings.get(&#34;sectionModel&#34;, {})
+
+        sectionModel = checkSectionModel(sectionModel)
+        if not sectionModel:
+            self.good = False
+            return
+
+        sectionProperties = sectionModel.get(&#34;properties&#34;, None)
+
+        self.generic = generic
+        self.schema = schema
+        self.prelim = prelim
+        self.wordAsSlot = wordAsSlot
+        self.sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionProperties = sectionProperties
+
         reportDir = f&#34;{refDir}/report&#34;
-        tfDir = f&#34;{refDir}/tf&#34;
         appDir = f&#34;{refDir}/app&#34;
         docsDir = f&#34;{refDir}/docs&#34;
+        teiDir = f&#34;{refDir}/tei&#34;
+        tfDir = f&#34;{refDir}/tf&#34;
+
+        teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
+        nTeiVersions = len(teiVersions)
+
+        if tei in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0} or str(tei).lstrip(&#34;-&#34;).isdecimal():
+            teiIndex = (0 if tei == &#34;latest&#34; else int(tei)) - 1
+
+            try:
+                teiVersion = teiVersions[teiIndex]
+            except Exception:
+                absIndex = teiIndex + (nTeiVersions if teiIndex &lt; 0 else 0) + 1
+                console(
+                    (
+                        f&#34;no item in {absIndex} in {nTeiVersions} source versions &#34;
+                        f&#34;in {ux(teiDir)}&#34;
+                    )
+                    if len(teiVersions)
+                    else f&#34;no source versions in {ux(teiDir)}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+        else:
+            teiVersion = tei
+
+        teiPath = f&#34;{teiDir}/{teiVersion}&#34;
+        reportPath = f&#34;{reportDir}/{teiVersion}&#34;
+
+        if not dirExists(teiPath):
+            console(
+                f&#34;source version {teiVersion} does not exists in {ux(teiDir)}&#34;,
+                error=True,
+            )
+            self.good = False
+            return
+
+        teiStatuses = {tv: i for (i, tv) in enumerate(reversed(teiVersions))}
+        teiStatus = teiStatuses[teiVersion]
+        teiStatusRep = (
+            &#34;most recent&#34;
+            if teiStatus == 0
+            else &#34;previous&#34;
+            if teiStatus == 1
+            else f&#34;{teiStatus - 1} before previous&#34;
+        )
+        if teiStatus == len(teiVersions) - 1 and len(teiVersions) &gt; 1:
+            teiStatusRep = &#34;oldest&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;TEI data version is {teiVersion} ({teiStatusRep})&#34;)
+
+        tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
+        if prelim:
+            tfVersions = [tv for tv in tfVersions if tv.endswith(PRE)]
+
+        latestTfVersion = (
+            tfVersions[-1] if len(tfVersions) else (&#34;0.0.0&#34; + (PRE if prelim else &#34;&#34;))
+        )
+        if tf in {&#34;latest&#34;, &#34;&#34;, &#34;0&#34;, 0}:
+            tfVersion = latestTfVersion
+            vRep = &#34;latest&#34;
+        elif tf in {&#34;1&#34;, &#34;2&#34;, &#34;3&#34;, 1, 2, 3}:
+            bump = int(tf)
+            parts = latestTfVersion.split(&#34;.&#34;)
+
+            def getVer(b):
+                return (
+                    int(parts[b].removesuffix(PRE))
+                    if prelim and b == len(parts) - 1
+                    else int(parts[b])
+                )
+
+            def setVer(b, val):
+                parts[b] = f&#34;{val}{PRE}&#34; if prelim and b == len(parts) - 1 else f&#34;{val}&#34;
+
+            if bump &gt; len(parts):
+                console(
+                    f&#34;Cannot bump part {bump} of latest TF version {latestTfVersion}&#34;,
+                    error=True,
+                )
+                self.good = False
+                return
+            else:
+                b1 = bump - 1
+                old = getVer(b1)
+                setVer(b1, old + 1)
+                for b in range(b1 + 1, len(parts)):
+                    setVer(b, 0)
+                tfVersion = &#34;.&#34;.join(parts)
+                vRep = &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
+                vRep = f&#34;next {vRep}&#34;
+        else:
+            tfVersion = tf
+            status = &#34;exising&#34; if dirExists(f&#34;{tfDir}/{tfVersion}&#34;) else &#34;new&#34;
+            vRep = f&#34;explicit {status}&#34;
+
+        tfPath = f&#34;{tfDir}/{tfVersion}&#34;
+
+        if verbose &gt;= 0:
+            console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
 
         self.refDir = refDir
-        self.sourceDir = sourceDir
-        self.reportDir = reportDir
+        self.teiVersion = teiVersion
+        self.teiPath = teiPath
+        self.tfVersion = tfVersion
+        self.tfPath = tfPath
+        self.reportPath = reportPath
         self.tfDir = tfDir
         self.appDir = appDir
         self.docsDir = docsDir
@@ -3591,27 +3887,7 @@ settings.</dd>
         self.repo = repo
         self.relative = relative
 
-        self.good = True
-
-        if sourceDir is None or not dirExists(sourceDir):
-            console(f&#34;Source location does not exist: {sourceDir}&#34;)
-            self.good = False
-            return
-
-        self.schema = schema
         self.schemaFile = None if schema is None else f&#34;{refDir}/schema/{schema}.xsd&#34;
-        self.sourceVersion = sourceVersion
-        self.testMode = False
-        self.testSet = testSet
-        self.wordAsSlot = wordAsSlot
-        sectionModel = checkSectionModel(sectionModel)
-        if not sectionModel:
-            self.good = False
-            return
-
-        self.sectionModel = sectionModel[&#34;model&#34;]
-        sectionProperties = sectionModel.get(&#34;properties&#34;, None)
-        self.sectionProperties = sectionProperties
         levelNames = sectionProperties[&#34;levels&#34;]
         self.levelNames = levelNames
         self.chunkLevel = levelNames[-1]
@@ -3624,68 +3900,9 @@ settings.</dd>
             self.fileSection = levelNames[1]
             self.chunkSection = levelNames[2]
 
-        self.generic = generic
-        self.transform = transform
-        self.tfVersion = tfVersion
-        self.tfPath = f&#34;{tfDir}/{tfVersion}&#34;
-        if (
-            &#34;provenanceSpec&#34; not in appConfig
-            or &#34;branch&#34; not in appConfig[&#34;provenanceSpec&#34;]
-        ):
-            appConfig.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
-        self.appConfig = appConfig
         self.verbose = verbose
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
-
-    @staticmethod
-    def help(program):
-        &#34;&#34;&#34;Print a help text to the console.
-
-        The intended use of this module is that it is included by a conversion
-        script.
-        In order to give help on the command line, here is a pre-baked help text.
-        Only the name of the conversion script needs to be merged in.
-
-        Parameters
-        ----------
-        program: string
-            The name of the program that you want to display
-            in the help string.
-        &#34;&#34;&#34;
-
-        console(
-            f&#34;&#34;&#34;
-
-        Convert TEI to TF.
-        There are also commands to check the TEI and to load the TF.
-
-        python3 {program} [tasks/flags] [--help]
-
-        --help: show this text and exit
-
-        tasks:
-            a sequence of tasks:
-            check:
-                just reports on the elements in the source.
-            convert:
-                just converts TEI to TF
-            load:
-                just loads the generated TF;
-            app:
-                just configures the TF-app for the result;
-            apptoken:
-                just modifies the TF-app to make it token- instead of character-based;
-            browse:
-                just starts the text-fabric browser on the result;
-
-        flags:
-            -test, +test:
-                whether to run in test mode
-            +verbose, ++verbose:
-                Produce more progress and reporting messages
-        &#34;&#34;&#34;
-        )
 
     @staticmethod
     def getParser():
@@ -3777,34 +3994,29 @@ settings.</dd>
             It is the name of the single XML file.
         &#34;&#34;&#34;
         verbose = self.verbose
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         sectionModel = self.sectionModel
         if verbose == 1:
             console(f&#34;Section model {sectionModel}&#34;)
 
         if sectionModel == &#34;I&#34;:
-            testMode = self.testMode
-            testSet = self.testSet
-
             IGNORE = &#34;__ignore__&#34;
 
             xmlFilesRaw = collections.defaultdict(list)
 
-            with scanDir(sourceDir) as dh:
+            with scanDir(teiPath) as dh:
                 for folder in dh:
                     folderName = folder.name
                     if folderName == IGNORE:
                         continue
                     if not folder.is_dir():
                         continue
-                    with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                    with scanDir(f&#34;{teiPath}/{folderName}&#34;) as fh:
                         for file in fh:
                             fileName = file.name
                             if not (
                                 fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
                             ):
-                                continue
-                            if testMode and fileName not in testSet:
                                 continue
                             xmlFilesRaw[folderName].append(fileName)
 
@@ -3816,7 +4028,7 @@ settings.</dd>
 
         if sectionModel == &#34;II&#34;:
             xmlFile = None
-            with scanDir(sourceDir) as fh:
+            with scanDir(teiPath) as fh:
                 for file in fh:
                     fileName = file.name
                     if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
@@ -3846,7 +4058,7 @@ settings.</dd>
 
         This information reduction helps to get a clear overview.
 
-        It writes reports to the `reportDir`:
+        It writes reports to the `reportPath`:
 
         *   `errors.txt`: validation errors
         *   `elements.txt`: element/attribute inventory.
@@ -3856,13 +4068,13 @@ settings.</dd>
 
         verbose = self.verbose
 
-        sourceDir = self.sourceDir
-        reportDir = self.reportDir
+        teiPath = self.teiPath
+        reportPath = self.reportPath
         docsDir = self.docsDir
         sectionModel = self.sectionModel
 
         if verbose == 1:
-            console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+            console(f&#34;TEI to TF checking: {ux(teiPath)} =&gt; {ux(reportPath)}&#34;)
 
         kindLabels = dict(
             format=&#34;Formatting Attributes&#34;,
@@ -3881,7 +4093,7 @@ settings.</dd>
         self.getElementInfo()
         elementDefs = self.elementDefs
 
-        initTree(reportDir)
+        initTree(reportPath)
         initTree(docsDir)
 
         def analyse(root, analysis):
@@ -3955,7 +4167,7 @@ settings.</dd>
             nodeInfo(root)
 
         def writeErrors():
-            errorFile = f&#34;{reportDir}/errors.txt&#34;
+            errorFile = f&#34;{reportPath}/errors.txt&#34;
 
             nErrors = 0
 
@@ -3974,7 +4186,7 @@ settings.</dd>
             )
 
         def writeNamespaces():
-            errorFile = f&#34;{reportDir}/namespaces.txt&#34;
+            errorFile = f&#34;{reportPath}/namespaces.txt&#34;
 
             nErrors = 0
 
@@ -4006,7 +4218,7 @@ settings.</dd>
             )
 
         def writeReport():
-            reportFile = f&#34;{reportDir}/elements.txt&#34;
+            reportFile = f&#34;{reportPath}/elements.txt&#34;
             with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
                 fh.write(
                     &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
@@ -4138,6 +4350,7 @@ settings.</dd>
                 if len(theseErrors):
                     console(&#34;ERROR\n&#34;)
                     errors.append((xmlFile, theseErrors))
+                    self.good = False
                 return
 
             root = tree.getroot()
@@ -4150,7 +4363,7 @@ settings.</dd>
                 for xmlFile in xmlFiles:
                     i += 1
                     console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-                    xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                    xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
                     doXMLFile(xmlPath)
                 console(&#34;&#34;)
                 console(f&#34;End   folder {xmlFolder}&#34;)
@@ -4161,7 +4374,7 @@ settings.</dd>
                 console(&#34;No XML files found!&#34;)
                 return False
 
-            xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+            xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
             doXMLFile(xmlPath)
 
         console(&#34;&#34;)
@@ -4246,7 +4459,7 @@ settings.</dd>
         IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
         verbose = self.verbose
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
@@ -5055,7 +5268,7 @@ settings.</dd>
                         cv.feature(cur[FILE], **value)
 
                         with open(
-                            f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
+                            f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
                         ) as fh:
                             text = fh.read()
                             text = transformFunc(text)
@@ -5089,7 +5302,7 @@ settings.</dd>
                     console(&#34;No XML files found!&#34;)
                     return False
 
-                with open(f&#34;{sourceDir}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+                with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
@@ -5173,12 +5386,12 @@ settings.</dd>
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         tfPath = self.tfPath
-        sourceDir = self.sourceDir
+        teiPath = self.teiPath
         chunkSection = self.chunkSection
         levelNames = self.levelNames
 
         if verbose == 1:
-            console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+            console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -5332,7 +5545,6 @@ settings.</dd>
 
         refDir = self.refDir
         myDir = self.myDir
-        appConfig = self.appConfig
         wordAsSlot = self.wordAsSlot
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
@@ -5357,11 +5569,11 @@ settings.</dd>
 
         def createConfig(sourceText, customText):
             tfVersion = self.tfVersion
-            version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
+            version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
             text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
             settings = yaml.load(text, Loader=yaml.FullLoader)
-            mergeDict(settings, appConfig)
+            settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
             if tokenBased:
                 if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
@@ -5549,8 +5761,8 @@ settings.</dd>
             itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
             justCopy = info[&#34;justCopy&#34;]
-            sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-            itemSource = f&#34;{sourceDir}/{file}&#34;
+            teiDir = f&#34;{myDir}/{sourceBit}&#34;
+            itemSource = f&#34;{teiDir}/{file}&#34;
 
             # If there is custom info, we do not have to preserve the previous version.
             # Otherwise we save the target before overwriting it; # unless it
@@ -5670,8 +5882,7 @@ settings.</dd>
         app=False,
         apptoken=False,
         browse=False,
-        test=None,
-        verbose=-1,
+        verbose=None,
     ):
         &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -5698,9 +5909,6 @@ settings.</dd>
             Whether to carry out the &#34;apptoken&#34; task.
         browse: boolean, optional False
             Whether to carry out the &#34;browse&#34; task&#34;
-        test: boolean, optional None
-            Whether to run in test mode.
-            In test mode only the files in the test set are converted.
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
 
@@ -5709,10 +5917,8 @@ settings.</dd>
         boolean
             Whether all tasks have executed successfully.
         &#34;&#34;&#34;
-        if test is not None:
-            self.testMode = test
-
-        self.verbose = verbose
+        if verbose is not None:
+            self.verbose = verbose
 
         if not self.good:
             return False
@@ -5730,67 +5936,7 @@ settings.</dd>
                 if not self.good:
                     break
 
-        return self.good
-
-    def run(self, program=None):
-        &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
-
-        The intended use of this module is that it is included by a conversion
-        script.
-        When that script is invoked, you can pass arguments to specify tasks
-        and flags.
-
-        This function inspects those arguments, and runs the specified tasks,
-        with the specified flags enabled.
-
-        Parameters
-        ----------
-        program: string
-            The name of the program that you want to display
-            in the help string, in case a help text must be displayed.
-
-        Returns
-        -------
-        integer
-            In fact, this function will terminate the conversion program
-            an return a status code: 0 for succes, 1 for failure.
-        &#34;&#34;&#34;
-        programRep = &#34;TEI-converter&#34; if program is None else program
-        possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-        possibleFlags = {
-            &#34;-test&#34;: False,
-            &#34;+test&#34;: True,
-            &#34;-verbose&#34;: -1,
-            &#34;+verbose&#34;: 0,
-            &#34;++verbose&#34;: 1,
-        }
-        possibleArgs = possibleTasks | set(possibleFlags)
-
-        args = set(sys.argv[1:])
-
-        if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
-            self.help(programRep)
-            console(&#34;No task specified&#34;)
-            sys.exit(-1)
-
-        illegalArgs = {arg for arg in args if arg not in possibleArgs}
-
-        if len(illegalArgs):
-            self.help(programRep)
-            for arg in illegalArgs:
-                console(f&#34;Illegal argument `{arg}`&#34;)
-            sys.exit(-1)
-
-        tasks = {arg: True for arg in possibleTasks if arg in args}
-        flags = {
-            arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
-        }
-
-        self.task(**tasks, **flags)
-        if self.good:
-            sys.exit(0)
-        else:
-            sys.exit(1)</code></pre>
+        return self.good</code></pre>
 </details>
 <h3>Static methods</h3>
 <dl>
@@ -5808,7 +5954,7 @@ settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L815-L831" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L986-L1002" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5826,76 +5972,6 @@ def getParser():
         collect_ids=False,
         remove_comments=True,
         remove_pis=True,
-    )</code></pre>
-</details>
-</dd>
-<dt id="tf.convert.tei.TEI.help"><code class="name flex">
-<span>def <span class="ident">help</span></span>(<span>program)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Print a help text to the console.</p>
-<p>The intended use of this module is that it is included by a conversion
-script.
-In order to give help on the command line, here is a pre-baked help text.
-Only the name of the conversion script needs to be merged in.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>program</code></strong> :&ensp;<code>string</code></dt>
-<dd>The name of the program that you want to display
-in the help string.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L766-L813" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@staticmethod
-def help(program):
-    &#34;&#34;&#34;Print a help text to the console.
-
-    The intended use of this module is that it is included by a conversion
-    script.
-    In order to give help on the command line, here is a pre-baked help text.
-    Only the name of the conversion script needs to be merged in.
-
-    Parameters
-    ----------
-    program: string
-        The name of the program that you want to display
-        in the help string.
-    &#34;&#34;&#34;
-
-    console(
-        f&#34;&#34;&#34;
-
-    Convert TEI to TF.
-    There are also commands to check the TEI and to load the TF.
-
-    python3 {program} [tasks/flags] [--help]
-
-    --help: show this text and exit
-
-    tasks:
-        a sequence of tasks:
-        check:
-            just reports on the elements in the source.
-        convert:
-            just converts TEI to TF
-        load:
-            just loads the generated TF;
-        app:
-            just configures the TF-app for the result;
-        apptoken:
-            just modifies the TF-app to make it token- instead of character-based;
-        browse:
-            just starts the text-fabric browser on the result;
-
-    flags:
-        -test, +test:
-            whether to run in test mode
-        +verbose, ++verbose:
-            Produce more progress and reporting messages
-    &#34;&#34;&#34;
     )</code></pre>
 </details>
 </dd>
@@ -5939,7 +6015,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2419-L2751" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L2586-L2917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -5982,7 +6058,6 @@ that code between automatic generation of files.</p>
 
     refDir = self.refDir
     myDir = self.myDir
-    appConfig = self.appConfig
     wordAsSlot = self.wordAsSlot
     sectionModel = self.sectionModel
     sectionProperties = self.sectionProperties
@@ -6007,11 +6082,11 @@ that code between automatic generation of files.</p>
 
     def createConfig(sourceText, customText):
         tfVersion = self.tfVersion
-        version = tfVersion.removesuffix(&#34;pre&#34;) if tokenBased else tfVersion
+        version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
         text = sourceText.replace(&#34;«version»&#34;, f&#39;&#34;{version}&#34;&#39;)
 
         settings = yaml.load(text, Loader=yaml.FullLoader)
-        mergeDict(settings, appConfig)
+        settings.setdefault(&#34;provenanceSpec&#34;, {})[&#34;branch&#34;] = BRANCH_DEFAULT_NEW
 
         if tokenBased:
             if &#34;typeDisplay&#34; in settings and &#34;word&#34; in settings[&#34;typeDisplay&#34;]:
@@ -6199,8 +6274,8 @@ that code between automatic generation of files.</p>
         itemPre = f&#34;{targetDir}/{fileBase}_orig{fileExt}&#34;
 
         justCopy = info[&#34;justCopy&#34;]
-        sourceDir = f&#34;{myDir}/{sourceBit}&#34;
-        itemSource = f&#34;{sourceDir}/{file}&#34;
+        teiDir = f&#34;{myDir}/{sourceBit}&#34;
+        itemSource = f&#34;{teiDir}/{file}&#34;
 
         # If there is custom info, we do not have to preserve the previous version.
         # Otherwise we save the target before overwriting it; # unless it
@@ -6292,7 +6367,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2755-L2788" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L2921-L2954" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6349,7 +6424,7 @@ However, the parsing process is namespace aware.</p>
 But is represents any digit with <code>n</code>, and some attributes that contain
 ids or keywords, are reduced to the value <code>x</code>.</p>
 <p>This information reduction helps to get a clear overview.</p>
-<p>It writes reports to the <code>reportDir</code>:</p>
+<p>It writes reports to the <code>reportPath</code>:</p>
 <ul>
 <li><code>errors.txt</code>: validation errors</li>
 <li><code>elements.txt</code>: element/attribute inventory.</li>
@@ -6357,7 +6432,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L953-L1296" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1119-L1463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6380,7 +6455,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     This information reduction helps to get a clear overview.
 
-    It writes reports to the `reportDir`:
+    It writes reports to the `reportPath`:
 
     *   `errors.txt`: validation errors
     *   `elements.txt`: element/attribute inventory.
@@ -6390,13 +6465,13 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     verbose = self.verbose
 
-    sourceDir = self.sourceDir
-    reportDir = self.reportDir
+    teiPath = self.teiPath
+    reportPath = self.reportPath
     docsDir = self.docsDir
     sectionModel = self.sectionModel
 
     if verbose == 1:
-        console(f&#34;TEI to TF checking: {ux(sourceDir)} =&gt; {ux(reportDir)}&#34;)
+        console(f&#34;TEI to TF checking: {ux(teiPath)} =&gt; {ux(reportPath)}&#34;)
 
     kindLabels = dict(
         format=&#34;Formatting Attributes&#34;,
@@ -6415,7 +6490,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     self.getElementInfo()
     elementDefs = self.elementDefs
 
-    initTree(reportDir)
+    initTree(reportPath)
     initTree(docsDir)
 
     def analyse(root, analysis):
@@ -6489,7 +6564,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         nodeInfo(root)
 
     def writeErrors():
-        errorFile = f&#34;{reportDir}/errors.txt&#34;
+        errorFile = f&#34;{reportPath}/errors.txt&#34;
 
         nErrors = 0
 
@@ -6508,7 +6583,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         )
 
     def writeNamespaces():
-        errorFile = f&#34;{reportDir}/namespaces.txt&#34;
+        errorFile = f&#34;{reportPath}/namespaces.txt&#34;
 
         nErrors = 0
 
@@ -6540,7 +6615,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         )
 
     def writeReport():
-        reportFile = f&#34;{reportDir}/elements.txt&#34;
+        reportFile = f&#34;{reportPath}/elements.txt&#34;
         with open(reportFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
             fh.write(
                 &#34;Inventory of tags and attributes in the source XML file(s).\n&#34;
@@ -6672,6 +6747,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
             if len(theseErrors):
                 console(&#34;ERROR\n&#34;)
                 errors.append((xmlFile, theseErrors))
+                self.good = False
             return
 
         root = tree.getroot()
@@ -6684,7 +6760,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
             for xmlFile in xmlFiles:
                 i += 1
                 console(f&#34;\r{i:&gt;4} {xmlFile:&lt;50}&#34;, newline=False)
-                xmlPath = f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;
+                xmlPath = f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;
                 doXMLFile(xmlPath)
             console(&#34;&#34;)
             console(f&#34;End   folder {xmlFolder}&#34;)
@@ -6695,7 +6771,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
             console(&#34;No XML files found!&#34;)
             return False
 
-        xmlPath = f&#34;{sourceDir}/{xmlFile}&#34;
+        xmlPath = f&#34;{teiPath}/{xmlFile}&#34;
         doXMLFile(xmlPath)
 
     console(&#34;&#34;)
@@ -6719,7 +6795,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2284-L2371" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L2451-L2538" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6738,12 +6814,12 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     wordAsSlot = self.wordAsSlot
     sectionModel = self.sectionModel
     tfPath = self.tfPath
-    sourceDir = self.sourceDir
+    teiPath = self.teiPath
     chunkSection = self.chunkSection
     levelNames = self.levelNames
 
     if verbose == 1:
-        console(f&#34;TEI to TF converting: {ux(sourceDir)} =&gt; {ux(tfPath)}&#34;)
+        console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
 
     slotType = WORD if wordAsSlot else CHAR
 
@@ -6824,7 +6900,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1300-L1313" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1467-L1480" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6865,7 +6941,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L1317-L2282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1484-L2449" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -6924,7 +7000,7 @@ that has access to this data.</p>
     IN_WORD_HYPHENS = {HY, &#34;-&#34;}
 
     verbose = self.verbose
-    sourceDir = self.sourceDir
+    teiPath = self.teiPath
     wordAsSlot = self.wordAsSlot
     featureMeta = self.featureMeta
     intFeatures = self.intFeatures
@@ -7733,7 +7809,7 @@ that has access to this data.</p>
                     cv.feature(cur[FILE], **value)
 
                     with open(
-                        f&#34;{sourceDir}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
+                        f&#34;{teiPath}/{xmlFolder}/{xmlFile}&#34;, encoding=&#34;utf8&#34;
                     ) as fh:
                         text = fh.read()
                         text = transformFunc(text)
@@ -7767,7 +7843,7 @@ that has access to this data.</p>
                 console(&#34;No XML files found!&#34;)
                 return False
 
-            with open(f&#34;{sourceDir}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
+            with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                 text = fh.read()
                 text = transformFunc(text)
                 tree = etree.parse(text, parser)
@@ -7859,7 +7935,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L852-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1023-L1056" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -7912,7 +7988,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1004-L1021" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7955,7 +8031,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L887-L951" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L1058-L1117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7975,34 +8051,29 @@ that contains the file names in that folder, sorted.</p>
         It is the name of the single XML file.
     &#34;&#34;&#34;
     verbose = self.verbose
-    sourceDir = self.sourceDir
+    teiPath = self.teiPath
     sectionModel = self.sectionModel
     if verbose == 1:
         console(f&#34;Section model {sectionModel}&#34;)
 
     if sectionModel == &#34;I&#34;:
-        testMode = self.testMode
-        testSet = self.testSet
-
         IGNORE = &#34;__ignore__&#34;
 
         xmlFilesRaw = collections.defaultdict(list)
 
-        with scanDir(sourceDir) as dh:
+        with scanDir(teiPath) as dh:
             for folder in dh:
                 folderName = folder.name
                 if folderName == IGNORE:
                     continue
                 if not folder.is_dir():
                     continue
-                with scanDir(f&#34;{sourceDir}/{folderName}&#34;) as fh:
+                with scanDir(f&#34;{teiPath}/{folderName}&#34;) as fh:
                     for file in fh:
                         fileName = file.name
                         if not (
                             fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()
                         ):
-                            continue
-                        if testMode and fileName not in testSet:
                             continue
                         xmlFilesRaw[folderName].append(fileName)
 
@@ -8014,7 +8085,7 @@ that contains the file names in that folder, sorted.</p>
 
     if sectionModel == &#34;II&#34;:
         xmlFile = None
-        with scanDir(sourceDir) as fh:
+        with scanDir(teiPath) as fh:
             for file in fh:
                 fileName = file.name
                 if not (fileName.lower().endswith(&#34;.xml&#34;) and file.is_file()):
@@ -8044,7 +8115,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2373-L2415" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L2540-L2582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -8091,97 +8162,8 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
     self.good = False</code></pre>
 </details>
 </dd>
-<dt id="tf.convert.tei.TEI.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, program=None)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Carry out tasks specified by arguments on the command line.</p>
-<p>The intended use of this module is that it is included by a conversion
-script.
-When that script is invoked, you can pass arguments to specify tasks
-and flags.</p>
-<p>This function inspects those arguments, and runs the specified tasks,
-with the specified flags enabled.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>program</code></strong> :&ensp;<code>string</code></dt>
-<dd>The name of the program that you want to display
-in the help string, in case a help text must be displayed.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>integer</code></dt>
-<dd>In fact, this function will terminate the conversion program
-an return a status code: 0 for succes, 1 for failure.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2860-L2918" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def run(self, program=None):
-    &#34;&#34;&#34;Carry out tasks specified by arguments on the command line.
-
-    The intended use of this module is that it is included by a conversion
-    script.
-    When that script is invoked, you can pass arguments to specify tasks
-    and flags.
-
-    This function inspects those arguments, and runs the specified tasks,
-    with the specified flags enabled.
-
-    Parameters
-    ----------
-    program: string
-        The name of the program that you want to display
-        in the help string, in case a help text must be displayed.
-
-    Returns
-    -------
-    integer
-        In fact, this function will terminate the conversion program
-        an return a status code: 0 for succes, 1 for failure.
-    &#34;&#34;&#34;
-    programRep = &#34;TEI-converter&#34; if program is None else program
-    possibleTasks = {&#34;check&#34;, &#34;convert&#34;, &#34;load&#34;, &#34;app&#34;, &#34;apptoken&#34;, &#34;browse&#34;}
-    possibleFlags = {
-        &#34;-test&#34;: False,
-        &#34;+test&#34;: True,
-        &#34;-verbose&#34;: -1,
-        &#34;+verbose&#34;: 0,
-        &#34;++verbose&#34;: 1,
-    }
-    possibleArgs = possibleTasks | set(possibleFlags)
-
-    args = set(sys.argv[1:])
-
-    if not len(args) or &#34;--help&#34; in args or &#34;-h&#34; in args:
-        self.help(programRep)
-        console(&#34;No task specified&#34;)
-        sys.exit(-1)
-
-    illegalArgs = {arg for arg in args if arg not in possibleArgs}
-
-    if len(illegalArgs):
-        self.help(programRep)
-        for arg in illegalArgs:
-            console(f&#34;Illegal argument `{arg}`&#34;)
-        sys.exit(-1)
-
-    tasks = {arg: True for arg in possibleTasks if arg in args}
-    flags = {
-        arg.lstrip(&#34;+-&#34;): val for (arg, val) in possibleFlags.items() if arg in args
-    }
-
-    self.task(**tasks, **flags)
-    if self.good:
-        sys.exit(0)
-    else:
-        sys.exit(1)</code></pre>
-</details>
-</dd>
 <dt id="tf.convert.tei.TEI.task"><code class="name flex">
-<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, test=None, verbose=-1)</span>
+<span>def <span class="ident">task</span></span>(<span>self, check=False, convert=False, load=False, app=False, apptoken=False, browse=False, verbose=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Carry out any task, possibly modified by any flag.</p>
@@ -8205,9 +8187,6 @@ will not be executed.</p>
 <dd>Whether to carry out the "apptoken" task.</dd>
 <dt><strong><code>browse</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>Whether to carry out the "browse" task"</dd>
-<dt><strong><code>test</code></strong> :&ensp;<code>boolean</code>, optional <code>None</code></dt>
-<dd>Whether to run in test mode.
-In test mode only the files in the test set are converted.</dd>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
 <dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
 </dl>
@@ -8219,7 +8198,7 @@ In test mode only the files in the test set are converted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/convert/tei.py#L2790-L2858" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/convert/tei.py#L2956-L3018" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -8229,8 +8208,7 @@ In test mode only the files in the test set are converted.</dd>
     app=False,
     apptoken=False,
     browse=False,
-    test=None,
-    verbose=-1,
+    verbose=None,
 ):
     &#34;&#34;&#34;Carry out any task, possibly modified by any flag.
 
@@ -8257,9 +8235,6 @@ In test mode only the files in the test set are converted.</dd>
         Whether to carry out the &#34;apptoken&#34; task.
     browse: boolean, optional False
         Whether to carry out the &#34;browse&#34; task&#34;
-    test: boolean, optional None
-        Whether to run in test mode.
-        In test mode only the files in the test set are converted.
     verbose: integer, optional -1
         Produce no (-1), some (0) or many (1) orprogress and reporting messages
 
@@ -8268,10 +8243,8 @@ In test mode only the files in the test set are converted.</dd>
     boolean
         Whether all tasks have executed successfully.
     &#34;&#34;&#34;
-    if test is not None:
-        self.testMode = test
-
-    self.verbose = verbose
+    if verbose is not None:
+        self.verbose = verbose
 
     if not self.good:
         return False
@@ -8352,10 +8325,24 @@ setTimeout(() => input.focus(), 100);
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#tei-import">TEI import</a><ul>
+<li><a href="#tei-import">TEI import</a></li>
+<li><a href="#configuration">Configuration</a><ul>
+<li><a href="#keys-and-values-of-the-teiyaml-file">Keys and values of the tei.yaml file</a><ul>
+<li><a href="#generic">generic</a></li>
+<li><a href="#schema">schema</a></li>
+<li><a href="#prelim">prelim</a></li>
+<li><a href="#wordasslot">wordAsSlot</a></li>
+<li><a href="#sectionmodel">sectionModel</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#commandline">Commandline</a></li>
+<li><a href="#from-python">From Python</a></li>
 <li><a href="#tasks">Tasks</a></li>
-<li><a href="#flags">Flags</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#note-on-versions">Note on versions</a></li>
+<li><a href="#examples">Examples</a></li>
 </ul>
 </li>
 </ul>
@@ -8369,6 +8356,7 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.convert.tei.checkSectionModel" href="#tf.convert.tei.checkSectionModel">checkSectionModel</a></code></li>
+<li><code><a title="tf.convert.tei.main" href="#tf.convert.tei.main">main</a></code></li>
 <li><code><a title="tf.convert.tei.makeCssInfo" href="#tf.convert.tei.makeCssInfo">makeCssInfo</a></code></li>
 <li><code><a title="tf.convert.tei.tweakTrans" href="#tf.convert.tei.tweakTrans">tweakTrans</a></code></li>
 </ul>
@@ -8388,9 +8376,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.tei.TEI.getParser" href="#tf.convert.tei.TEI.getParser">getParser</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.getValidator" href="#tf.convert.tei.TEI.getValidator">getValidator</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.getXML" href="#tf.convert.tei.TEI.getXML">getXML</a></code></li>
-<li><code><a title="tf.convert.tei.TEI.help" href="#tf.convert.tei.TEI.help">help</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.loadTask" href="#tf.convert.tei.TEI.loadTask">loadTask</a></code></li>
-<li><code><a title="tf.convert.tei.TEI.run" href="#tf.convert.tei.TEI.run">run</a></code></li>
 <li><code><a title="tf.convert.tei.TEI.task" href="#tf.convert.tei.TEI.task">task</a></code></li>
 </ul>
 </li>

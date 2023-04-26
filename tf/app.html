@@ -34,7 +34,7 @@ settings for a corpus, and possibly some supporting application code and CSS sty
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/app.py#L1-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/app.py#L1-L56" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Make use of a corpus.
@@ -51,8 +51,7 @@ This power can be invoked by a very simple command: `use(&#34;org/repo&#34;)`.
 For a detailed description, see `tf.about.usefunc`.
 &#34;&#34;&#34;
 
-from .advanced.app import findApp
-from .core.files import backendRep
+from .advanced.app import findApp, useApp
 
 
 # START AN APP
@@ -90,21 +89,8 @@ def use(appName, *args, backend=None, **kwargs):
     tf.advanced.app.App
     &#34;&#34;&#34;
 
-    if appName.startswith(&#34;data:&#34;):
-        dataLoc = appName[5:]
-        appName = None
-        checkoutApp = None
-    elif appName.startswith(&#34;app:&#34;):
-        dataLoc = None
-        checkoutApp = None
-    else:
-        dataLoc = None
-        parts = appName.split(&#34;:&#34;, maxsplit=1)
-        if len(parts) == 1:
-            parts.append(&#34;&#34;)
-        (appName, checkoutApp) = parts
+    (appName, checkoutApp, dataLoc, backend) = useApp(appName, backend)
 
-    backend = backendRep(backend, &#39;norm&#39;)
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </section>
@@ -146,7 +132,7 @@ a customization of it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/app.py#L23-L70" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/app.py#L22-L56" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def use(appName, *args, backend=None, **kwargs):
     &#34;&#34;&#34;Make use of a corpus.
@@ -180,21 +166,8 @@ a customization of it.</p>
     tf.advanced.app.App
     &#34;&#34;&#34;
 
-    if appName.startswith(&#34;data:&#34;):
-        dataLoc = appName[5:]
-        appName = None
-        checkoutApp = None
-    elif appName.startswith(&#34;app:&#34;):
-        dataLoc = None
-        checkoutApp = None
-    else:
-        dataLoc = None
-        parts = appName.split(&#34;:&#34;, maxsplit=1)
-        if len(parts) == 1:
-            parts.append(&#34;&#34;)
-        (appName, checkoutApp) = parts
+    (appName, checkoutApp, dataLoc, backend) = useApp(appName, backend)
 
-    backend = backendRep(backend, &#39;norm&#39;)
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)</code></pre>
 </details>
 </dd>

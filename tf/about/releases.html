@@ -32,6 +32,87 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="1142-upcoming">11.4.2 (upcoming)</h3>
+<p>2023-04-26</p>
+<h5 id="commandline-tasks">Commandline tasks</h5>
+<p>I'am going to change the commands that Text-Fabric provides on the commandline after installing.</p>
+<p>They will all start with <code>tf-</code>.
+Then there is less risk of interference with other commands that users already have on the commandline.</p>
+<p>Here is a table with the old names and the new names.
+The old names remain available until the next intermediate version 11.5 or major version 12.</p>
+<p>Here is a table of the commands in question</p>
+<table>
+<thead>
+<tr>
+<th>current</th>
+<th>new</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>not yet available</td>
+<td><code>tf-fromtei</code></td>
+<td>converts a TEI source in the repo of the current directory to TF</td>
+</tr>
+<tr>
+<td>not yet available</td>
+<td><code>tf-zipall</code></td>
+<td>makes a complete zip of the dataset in the repo of the current directory</td>
+</tr>
+<tr>
+<td><code>text-fabric</code></td>
+<td><code><a title="tf" href="../index.html">tf</a></code></td>
+<td>starts the text-fabric browser</td>
+</tr>
+<tr>
+<td><code>text-fabric-zip</code></td>
+<td><code>tf-zip</code></td>
+<td>zips tf files into versioned zip files</td>
+</tr>
+<tr>
+<td><code>text-fabric-make</code></td>
+<td><code>tf-make</code></td>
+<td>builds a client-side search interface for a dataset</td>
+</tr>
+<tr>
+<td><code>nbconvert</code></td>
+<td><code>tf-nbconvert</code></td>
+<td>converts a directory with Jupyter notebooks to html</td>
+</tr>
+<tr>
+<td><code>xmlschema</code></td>
+<td><code>tf-xmlschema</code></td>
+<td>extracts useful information from xml schemas</td>
+</tr>
+<tr>
+<td><code>addnlp</code></td>
+<td><code>tf-addnlp</code></td>
+<td>feeds a dataset to Spacy and adds results to it</td>
+</tr>
+</tbody>
+</table>
+<p>The usage of <code>tf-fromtei</code> and <code>tf-addnlp</code> is now highly streamlined: you
+can pass them arguments which are</p>
+<ul>
+<li>plain word strings are <em>tasks</em></li>
+<li>name<code>=</code>value strings are parameters</li>
+<li><code>-</code>word, <code>+</code>word, <code>++</code>word are flags</li>
+</ul>
+<h5 id="conversion-and-nlp-workflows">Conversion and NLP workflows</h5>
+<ul>
+<li>The way the <code>tf-fromtei</code> and <code>tf-addnlp</code> workflows can be controlled has
+been streamlined; they have the same conventions for passing tasks, parameters, and
+flags. </li>
+<li>You do not have to write an almost trivial program to wrap the tei conversion,
+typically <code>tfFromTei.py</code>. Instead, put some config info in a <code>tei.yaml</code> file and
+a transformation function in a <code>tei.py</code> file, both optional.</li>
+<li>You can pass less info to <code>tf-fromtei</code>: the converter autodetects available versions
+of the TEI source, and selects the latest by default.
+It also autodetects the generated TF dataset versions, and by default overwrites
+the latest one. But you can easily direct the converter to other versions, both
+of the TEI and the TF.</li>
+</ul>
 <h3 id="1141">11.4.1</h3>
 <p>2023-04-24</p>
 <p>Small fixes in the TEI conversion and the NLP pipeline integration.
@@ -341,7 +422,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e3da1869a3a7b032eb0b9630438732555e94b150/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/42c9c10c6bb5c38b140df3f76927ceb73d49338a/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -414,6 +495,11 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#1142-upcoming">11.4.2 (upcoming)</a><ul>
+<li><a href="#commandline-tasks">Commandline tasks</a></li>
+<li><a href="#conversion-and-nlp-workflows">Conversion and NLP workflows</a></li>
+</ul>
+</li>
 <li><a href="#1141">11.4.1</a></li>
 <li><a href="#1140">11.4.0</a></li>
 <li><a href="#113">11.3</a></li>
