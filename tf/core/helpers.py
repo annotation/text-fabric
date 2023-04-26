@@ -38,8 +38,20 @@ SEP_RE = re.compile(r"[\n\t ,]+")
 STRIP_RE = re.compile(r"(?:^[\n\t ,]+)|(?:[\n\t ,]+$)", re.S)
 VAR_RE = re.compile(r"\{([^}]+?)(:[^}]*)?\}")
 MSG_LINE_RE = re.compile(r"^( *[0-9]+) (.*)$")
+NUM_ALFA_RE = re.compile(r"^([0-9]*)([^0-9]*)(.*)$")
 
 QUAD = "    "
+
+
+def versionSort(x):
+    parts = []
+
+    for p in x.split("."):
+        match = NUM_ALFA_RE.match(p)
+        (num, alfa, rest) = match.group(1, 2, 3)
+        parts.append((int(num) if num else 0, alfa, rest))
+
+    return tuple(parts)
 
 
 def var(envVar):

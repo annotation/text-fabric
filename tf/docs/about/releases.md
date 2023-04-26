@@ -10,6 +10,54 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.2 (upcoming)
+
+2023-04-26
+
+##### Commandline tasks
+
+I'am going to change the commands that Text-Fabric provides on the commandline after installing.
+
+They will all start with `tf-`.
+Then there is less risk of interference with other commands that users already have on the commandline.
+
+Here is a table with the old names and the new names.
+The old names remain available until the next intermediate version 11.5 or major version 12.
+
+Here is a table of the commands in question
+
+current | new | description
+--- | --- | ---
+not yet available | `tf-fromtei` | converts a TEI source in the repo of the current directory to TF
+not yet available | `tf-zipall` | makes a complete zip of the dataset in the repo of the current directory
+`text-fabric` | `tf` | starts the text-fabric browser
+`text-fabric-zip` | `tf-zip` | zips tf files into versioned zip files
+`text-fabric-make` | `tf-make` | builds a client-side search interface for a dataset
+`nbconvert` | `tf-nbconvert` | converts a directory with Jupyter notebooks to html
+`xmlschema` | `tf-xmlschema` | extracts useful information from xml schemas
+`addnlp` | `tf-addnlp` | feeds a dataset to Spacy and adds results to it
+
+The usage of `tf-fromtei` and `tf-addnlp` is now highly streamlined: you 
+can pass them arguments which are
+
+*   plain word strings are *tasks*
+*   name`=`value strings are parameters
+*   `-`word, `+`word, `++`word are flags
+
+##### Conversion and NLP workflows
+
+*   The way the `tf-fromtei` and `tf-addnlp` workflows can be controlled has
+    been streamlined; they have the same conventions for passing tasks, parameters, and
+    flags. 
+*   You do not have to write an almost trivial program to wrap the tei conversion,
+    typically `tfFromTei.py`. Instead, put some config info in a `tei.yaml` file and
+    a transformation function in a `tei.py` file, both optional.
+*   You can pass less info to `tf-fromtei`: the converter autodetects available versions
+    of the TEI source, and selects the latest by default.
+    It also autodetects the generated TF dataset versions, and by default overwrites
+    the latest one. But you can easily direct the converter to other versions, both
+    of the TEI and the TF.
+
 ### 11.4.1
 
 2023-04-24

@@ -469,6 +469,40 @@ def dirMake(path):
         os.makedirs(path, exist_ok=True)
 
 
+def dirContents(path):
+    """Gets the contents of a directory.
+
+    Only the direct entries in the directory (not recursively), and only real files
+    and folders.
+
+    The list of files and folders will be returned separately.
+    There is no attempt to sort the files.
+
+    Parameters
+    ----------
+    path: string
+        The path to the directory on the file system.
+
+    Returns
+    -------
+    tuple of tuple
+        The subdirectories and the files.
+    """
+    if not dirExists(path):
+        return ((), ())
+
+    files = []
+    dirs = []
+
+    for entry in os.listdir(path):
+        if os.path.isfile(f"{path}/{entry}"):
+            files.append(entry)
+        elif os.path.isdir(f"{path}/{entry}"):
+            dirs.append(entry)
+
+    return (tuple(files), tuple(dirs))
+
+
 def getCwd():
     """Get current directory.
 

@@ -108,7 +108,7 @@ def invertMap(legend):
     )
 
 
-def readArgs():
+def readArgsLegacy():
     class Args:
         pass
 
@@ -1343,7 +1343,7 @@ def makeSearchClients(dataset, folder, appFolder, backend=None, dataDir=None):
 
 
 def main():
-    Args = readArgs()
+    Args = readArgsLegacy()
     if Args is None:
         return 0
 

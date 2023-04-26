@@ -292,6 +292,7 @@ tf/clean.py
 tf/fabric.py
 tf/lib.py
 tf/parameters.py
+tf/zip.py
 tf/about/__init__.py
 tf/about/apps.py
 tf/about/background.py
@@ -383,6 +384,7 @@ tf/convert/walker.py
 tf/convert/xml.py
 tf/core/__init__.py
 tf/core/api.py
+tf/core/command.py
 tf/core/computed.py
 tf/core/data.py
 tf/core/edgefeature.py

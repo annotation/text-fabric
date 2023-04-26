@@ -255,7 +255,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('org/repo:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkout='clone', hoist=globals())
 ```
 
 This will instruct Text-Fabric to use the app and data from within your `~/github`
@@ -281,7 +281,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('org/repo:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkout='clone', hoist=globals())
 ```
 
 In the second case, do this:
@@ -293,7 +293,7 @@ text-fabric corpus:clone checkout=clone --backend=gitlab
 or, in a program,
 
 ``` python
-A = use('org/repo:clone', checkData='clone', backend="gitlab", hoist=globals())
+A = use('org/repo:clone', checkout='clone', backend="gitlab", hoist=globals())
 ```
 
 In the third case, do this:
@@ -307,7 +307,7 @@ or, in a program,
 ``` python
 A = use(
         'org/repo:clone',
-        checkData='clone',
+        checkout='clone',
         backend="gitlab".huc.knaw.nl,
         hoist=globals(),
     )
@@ -362,7 +362,7 @@ text-fabric corpus:clone checkout=clone
 or, in a program,
 
 ``` python
-A = use('org/repo:clone', checkData='clone', hoist=globals())
+A = use('org/repo:clone', checkout='clone', hoist=globals())
 ```
 
 If you have autoloaded it from the backend,
@@ -375,7 +375,7 @@ text-fabric corpus:latest checkout=latest
 or, in a program,
 
 ``` python
-A = use('org/repo:latest', checkData='latest', hoist=globals())
+A = use('org/repo:latest', checkout='latest', hoist=globals())
 ```
 
 And after that, you can omit `latest` or `hot` again, until you need new data again.

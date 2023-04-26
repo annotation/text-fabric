@@ -17,6 +17,8 @@ from ..core.files import (
     prefixSlash,
     splitPath,
     isDir,
+    getLocation,
+    backendRep,
 )
 from ..core.timestamp import SILENT_D, AUTO, DEEP, TERSE, VERBOSE, silentConvert
 from .find import findAppConfig, findAppClass
@@ -607,3 +609,85 @@ def findApp(
         console("Text-Fabric is not loaded", error=True)
         return None
     return app
+
+
+def useApp(appName, backend):
+    """Make use of a corpus.
+
+    For a detailed description, see `tf.about.usefunc`.
+
+    Parameters
+    ----------
+    appName: string
+
+    backend: string, optional None
+        If present, it is `github` or `gitlab`
+        or a GitLab instance such as `gitlab.huc.knaw.nl`.
+        If absent, `None` or empty, it is `github`.
+
+    args:
+        Do not pass any other positional argument!
+
+    kwargs:
+        Used to initialize the corpus app that we use.
+        That is either an uncustomized `tf.advanced.app.App` or
+        a customization of it.
+
+    Returns
+    -------
+    A: object
+        The object whose attributes and methods constitute the advanced API.
+
+    See Also
+    --------
+    tf.advanced.app.App
+    """
+
+    if appName.startswith("data:"):
+        dataLoc = appName[5:]
+        appName = None
+        checkoutApp = None
+    elif appName.startswith("app:"):
+        dataLoc = None
+        checkoutApp = None
+    else:
+        dataLoc = None
+        parts = appName.split(":", maxsplit=1)
+        if len(parts) == 1:
+            parts.append("")
+        (appName, checkoutApp) = parts
+
+    backend = backendRep(backend, 'norm')
+
+    return (appName, checkoutApp, dataLoc, backend)
+
+
+def loadApp(silent=DEEP):
+    """Loads a given TF app or loads the TF app based on the working directory.
+
+    It assumes that the dataset sits in a clone from a backend (github/gitlab),
+    and it will load this data.
+
+    Parameters
+    ----------
+    silent: string, optional "deep"
+        The level of silence in which the loading will happen.
+        The default is as silent as possible.
+
+    Returns
+    -------
+    app: object|void
+        The handle to the loaded TF dataset, if it is successfully loaded, else `None`.
+    """
+    (backend, org, repo, relative) = getLocation()
+
+    if any(s is None for s in (backend, org, repo, relative)):
+        console(
+            "Not working in a repo: "
+            f"backend={backend} org={org} repo={repo} relative={relative}"
+        )
+        return None
+
+    (appName, checkoutApp, dataLoc, backend) = useApp(f"{org}/{repo}{relative}:clone", backend)
+
+    return findApp(appName, checkoutApp, dataLoc, backend, False, checkout="clone", silent=silent)

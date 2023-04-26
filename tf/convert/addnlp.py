@@ -50,7 +50,7 @@ new tokens will be used as slots.
 ## Commandline
 
 ```sh
-addnlp tasks params flags
+tf-addnlp tasks params flags
 ```
 
 ## From Python
@@ -64,12 +64,13 @@ REPO = "yourRepo"
 
 Apre = use(f"{ORG}/{REPO}:clone", checkout="clone")
 
-NLP = NLPipeline(**params)
+NLP = NLPipeline(**params, **flags)
 NLP.loadApp(Apre)
 NLP.task(**tasks, **flags)
 ```
 
-For the tasks, parameters and flags, see `HELP`.
+For the tasks, parameters and flags, see
+`TASKS`, `PARAMS`, and `FLAGS` and expand the code.
 
 The parameters have defaults that are exactly suited to corpora that have been
 converted from TEI by `tf.convert.tei`.
@@ -80,181 +81,103 @@ Exactly how you can call the methods of this module is demonstrated in the small
 corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
 *   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/main/programs/convertExpress.ipynb).
-
 """
 
 import sys
 import re
 
 from .recorder import Recorder
+from ..advanced.app import loadApp
 from ..tools.xmlschema import Analysis
 from ..tools.myspacy import tokensAndSentences
 from ..dataset import modify
 from ..core.helpers import console
-from ..core.files import initTree, getLocation, dirMake, dirExists
+from ..core.files import initTree, dirMake, dirExists
 from ..core.timestamp import DEEP, TERSE
-from ..app import use
+from ..core.command import readArgs
 from ..lib import writeList, readList
 
 
-HELP = """
-Add NLP-generated features to a TF dataset.
+HELP = "Add NLP-generated features to a TF dataset."
 
-There are also commands to perform this operation step by step.
+TASKS = dict(
+    plaintext="make a plain text for the NLP tools",
+    lingo="run the NLP tool on the plain text",
+    ingest="ingest the results of the NLP tool in the dataset",
+    all=None,
+)
+"""Possible tasks."""
 
-addnlp [tasks/params/flags] [--help]
+PARAMS = dict(
+    lang=("Set up the NLP tool for this language", "en"),
+    slotFeature=(
+        "When generating text, use this feature to obtain text from slots",
+        "ch",
+    ),
+    removeSlotFeatures=(
+        "Discardable slot features. Will not be translated to token features",
+        "ch",
+    ),
+    emptyFeature=("Feature to identify empty slots.", "empty"),
+    ignoreTypes=(
+        "Node types that will be ignored when generating the plain text.",
+        "word",
+    ),
+    outOfFlow=(
+        "These node types will be put in separate text flows in the plain text.",
+        "note,orig,del",
+    ),
+    tokenType=("The node type for the tokens.", "token"),
+    tokenFeatures=(
+        (
+            "The features in the token output by the NLP: "
+            "1: token content; 2: space after the token (if any), ..."
+        ),
+        "str,after",
+    ),
+    sentenceBarriers=("Elements that trigger a senetence boundary.", "div,p"),
+    sentenceSkipFlow=("The flows that are not feed to sentence detection.", "orig,del"),
+    tokenNFeature=("The feature that will hold the sequence number of the token.", ""),
+    sentenceType=("The node type for the sentences", "sentence"),
+    sentenceFeatures=("", ""),
+    sentenceNFeature=("The features in the sentence output by the NLP", ""),
+)
+"""Possible parameters."""
 
---help: show this text and exit
-
-tasks:
-    plaintext:
-        make a plain text for the NLP tools
-    lingo:
-        run the NLP tool on the plain text
-    ingest:
-        ingest the results of the NLP tool in the dataset
-    all:
-        all tasks
-
-params:
-    lang=en
-        Set up the NLP tool for language lan
-    slotFeature=ch
-        When generating text, use this feature to obtain text from slots
-    removeSlotFeatures=ch,...
-        Discardable slot features. Will not be translated to token features.
-    emptyFeature=empty
-        Feature to identify empty slots.
-    ignoreTypes=word,...
-        Node types that will be ignored when generating the plain text.
-    outOfFlow=note,orig,del,...
-        These node types will be put in separate text flows in the plain text.
-    tokenType=token
-        The node type for the tokens.
-    tokenFeatures=str,after,...
-        The features in the token output by the NLP.
-        At least two: 1: token content; 2: possible space after the token.
-    tokenNFeature=
-        The feature that will hold the sequence number of the token.
-    sentenceBarriers=div,p,...
-        Elements that trigger a senetence boundary.
-    sentenceSkipFlow=orig,del,...
-        The flows that are not feed to sentence detection.
-    sentenceType=sentence
-        The node type for the sentences
-    sentenceFeatures=,...
-        The features in the sentence output by the NLP.
-    sentenceNFeature=nsent
-        The feature that will hold the sequence number of the sentence.
-
-flags:
-    -write, +write:
-        whether to write the generated files with plain text and node
-        positions to disk
-    +verbose, ++verbose:
-        Produce more progress and reporting messages
-"""
-"""Help text for command line usage."""
-
-
-def readArgs():
-    """Interpret tasks, params and flags specified.
-
-    Returns
-    -------
-    tuple
-        The tuple returned consists of
-
-        *   a boolean whehter there is an error in the arguments
-        *   a dict keyed by the tasks, values are True or False
-        *   a dict of the params, values are strings
-        *   a dict of the flags, values are -1, 0 or 1
-    """
-    possibleTasks = {"all", "plaintext", "lingo", "ingest"}
-    possibleFlags = {
-        "-write": False,
-        "+write": True,
-        "-verbose": -1,
-        "+verbose": 0,
-        "++verbose": 1,
-    }
-    possibleParams = {
-        "lang",
-        "slotFeature",
-        "removeSlotFeatures",
-        "emptyFeature",
-        "ignoreTypes",
-        "outOfFlow",
-        "tokenType",
-        "tokenFeatures",
-        "sentenceBarriers",
-        "sentenceSkipFlow",
-        "tokenNFeature",
-        "sentenceType",
-        "sentenceFeatures",
-        "sentenceNFeature",
-    }
-    possibleArgs = possibleTasks | set(possibleFlags)
-
-    args = set(sys.argv[1:])
-
-    if not len(args) or "--help" in args or "-h" in args:
-        console(HELP)
-        if not len(args):
-            console("No task specified")
-        return (True, {}, {}, {})
-
-    illegalArgs = {
-        arg
-        for arg in args
-        if not (arg in possibleArgs or arg.split("=", 1)[0] in possibleParams)
-    }
-
-    if len(illegalArgs):
-        console(HELP)
-        for arg in illegalArgs:
-            console(f"Illegal argument `{arg}`")
-        return (False, {}, {}, {})
-
-    tasks = {arg: True for arg in possibleTasks if arg in args}
-    flags = {
-        arg.lstrip("+-"): val for (arg, val) in possibleFlags.items() if arg in args
-    }
-    params = {}
-    for arg in args:
-        parts = arg.split("=", 1)
-        param = parts[0]
-        if param not in possibleParams:
-            continue
-        params[param] = parts[1]
-
-    if "all" in tasks:
-        if tasks["all"]:
-            tasks = {arg: True for arg in possibleTasks if arg != "all"}
-        else:
-            del tasks["all"]
-
-    return (True, tasks, params, flags)
+FLAGS = dict(
+    write=(
+        (
+            "whether to write the generated files "
+            "with plain text and node positions to disk"
+        ),
+        False,
+        2,
+    ),
+    verbose=("Produce less or more progress and reporting messages", -1, 3),
+)
+"""Possible flags."""
 
 
 class NLPipeline:
     def __init__(
         self,
         app=None,
-        lang="en",
-        slotFeature="ch",
-        removeSlotFeatures="ch",
-        emptyFeature="empty",
-        ignoreTypes="word",
-        outOfFlow="note,orig,del",
-        tokenType="token",
-        tokenFeatures="str,after",
-        tokenNFeature=None,
-        sentenceBarriers="div,p",
-        sentenceSkipFlow="orig,del",
-        sentenceType="sentence",
-        sentenceFeatures="",
-        sentenceNFeature="nsent",
+        lang=PARAMS["lang"][1],
+        slotFeature=PARAMS["slotFeature"][1],
+        removeSlotFeatures=PARAMS["removeSlotFeatures"][1],
+        emptyFeature=PARAMS["emptyFeature"][1],
+        ignoreTypes=PARAMS["ignoreTypes"][1],
+        outOfFlow=PARAMS["outOfFlow"][1],
+        tokenType=PARAMS["tokenType"][1],
+        tokenFeatures=PARAMS["tokenFeatures"][1],
+        tokenNFeature=PARAMS["tokenNFeature"][1],
+        sentenceBarriers=PARAMS["sentenceBarriers"][1],
+        sentenceSkipFlow=PARAMS["sentenceSkipFlow"][1],
+        sentenceType=PARAMS["sentenceType"][1],
+        sentenceFeatures=PARAMS["sentenceFeatures"][1],
+        sentenceNFeature=PARAMS["sentenceNFeature"][1],
+        verbose=FLAGS["verbose"][1],
+        write=FLAGS["write"][1],
     ):
         """Enrich a TF dataset with annotations generated by an NLP pipeline.
 
@@ -265,6 +188,11 @@ class NLPipeline:
         app: object, None
             A loaded TF app. If None, the TF App that is nearby in the file system
             will be loaded.
+            We assume that the original data resides in the current
+            version, which has the string `pre` appended to it,
+            e.g. in version `1.3pre`.
+            We create a new version of the dataset, with the same number,
+            but without the `pre`.
         slotFeature: string, optional ch
             The  feature on slots that provides the text of a slot to be included
             in the generated text.
@@ -308,6 +236,7 @@ class NLPipeline:
             sequence number of the sentence in the data stream, starting at 1.
 
         """
+
         def makeString(s):
             return None if not s else s
 
@@ -333,7 +262,8 @@ class NLPipeline:
         self.sentenceType = makeString(sentenceType)
         self.sentenceFeatures = makeTuple(sentenceFeatures)
         self.sentenceNFeature = makeString(sentenceNFeature)
-        self.verbose = -1
+        self.verbose = verbose
+        self.write = write
 
     def loadApp(self, app=None, verbose=None):
         """Loads a given TF app or loads the TF app based on the working directory.
@@ -342,13 +272,9 @@ class NLPipeline:
         ----------
         app: object, optional None
             The handle to the original TF dataset, already loaded.
-            We assume that the original data resides in the current
-            version, which has the string `pre` appended to it,
-            e.g. in version `1.3pre`.
-            We create a new version of the dataset, with the same number,
-            but without the `pre`.
 
             If not given, we load the TF app that is nearby in the file system.
+
         verbose: integer, optional None
             Produce more progress and reporting messages
             If not passed, take the verbose member of this object.
@@ -359,21 +285,7 @@ class NLPipeline:
 
         if app is None:
             if self.app is None:
-                (backend, org, repo, relative) = getLocation()
-                if any(s is None for s in (backend, org, repo, relative)):
-                    console(
-                        "Not working in a repo: "
-                        f"backend={backend} org={org} repo={repo} relative={relative}"
-                    )
-                    self.good = False
-                    return
-
-                app = use(
-                    f"{org}/{repo}{relative}:clone",
-                    checkout="clone",
-                    backend=backend,
-                    silent=DEEP,
-                )
+                app = loadApp(silent=DEEP)
                 self.app = app
             else:
                 app = self.app
@@ -1090,12 +1002,10 @@ class NLPipeline:
         allTokenFeatures = list(tokenFeatures)
         if tokenNFeature is not None:
             allTokenFeatures.append(tokenNFeature)
-        console(f"{allTokenFeatures=}")
 
         allSentenceFeatures = list(sentenceFeatures)
         if sentenceNFeature is not None:
             allSentenceFeatures.append(sentenceNFeature)
-        console(f"{allSentenceFeatures=}")
 
         addTypes = dict(
             token=dict(
@@ -1152,8 +1062,8 @@ class NLPipeline:
         plaintext=False,
         lingo=False,
         ingest=False,
-        write=False,
-        verbose=-1,
+        write=None,
+        verbose=None,
         **kwargs,
     ):
         """Carry out tasks, possibly modified by flags.
@@ -1187,8 +1097,10 @@ class NLPipeline:
             Whether all tasks have executed successfully.
         """
 
-        self.write = write
-        self.verbose = verbose
+        if write is not None:
+            self.write = write
+        if verbose is not None:
+            self.verbose = verbose
 
         lang = self.lang
 
@@ -1260,13 +1172,15 @@ class NLPipeline:
 
 
 def main():
-    (good, tasks, params, flags) = readArgs()
+    (good, tasks, params, flags) = readArgs("tf-addnlp", HELP, TASKS, PARAMS, FLAGS)
     if not good:
-        return -1
+        return False
 
-    NLP = NLPipeline(**params)
+    NLP = NLPipeline(**params, **flags)
     NLP.task(**tasks, **flags)
+
+    return NLP.good
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(0 if main() else 1)

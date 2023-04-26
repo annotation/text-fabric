@@ -1174,12 +1174,22 @@ More commands
 (these work on the commandline if Text-Fabric is installed)
 
 ``` sh
+tf {org}/{repo}
 text-fabric {org}/{repo}
 ```
 :   Starts the text-fabric browser for the corpus in *org*/*repo*.
 :   `tf.server.start`
 
 ``` sh
+tf-zipall
+```
+:   Zips the TF dataset located by the current directory,
+    *with all its additional data modules*, but only *the latest version*,
+    so that it can be attached to a release on Github/GitLab.
+:   `tf.advanced.zipdata.zipAll` and `tf.zip`
+
+``` sh
+tf-zip {org}/{repo}
 text-fabric-zip {org}/{repo}
 ```
 :   Zips the TF dataset in *org*/*repo* so that it can be attached to a release on
@@ -1187,12 +1197,14 @@ text-fabric-zip {org}/{repo}
 :   `tf.advanced.zipdata`
 
 ``` sh
+tf-nbconvert {inDirectory} {outDirectory}
 nbconvert {inDirectory} {outDirectory}
 ```
 :   Converts notebooks in *inDirectory* to HTML and stores them in *outDirectory*.
 :   `tf.tools.nbconvert`
 
 ``` sh
+tf-xmlschema analysis {schema}.xsd
 xmlschema analysis {schema}.xsd
 ```
 :   Analyses an XML *schema* file and extracts meaningful information for processing
@@ -1200,6 +1212,14 @@ xmlschema analysis {schema}.xsd
 :   `tf.tools.xmlschema`
 
 ``` sh
+tf-fromtei
+```
+:   When run in a repo it finds a TEI source and converts it to TF. 
+    The resulting TF data is delivered in the repo.
+:   `tf.convert.addnlp`
+
+``` sh
+tf-addnlp
 addnlp
 ```
 :   When run in the repo of a TF dataset, it adds tokens and sentences to it

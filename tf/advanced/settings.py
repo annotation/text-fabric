@@ -214,7 +214,7 @@ Default:
 Base url page for the corpus documentation
 
 Default:
-:   string `{docRoot}/{org}/{repo}/blob/{branch}{relative}/docs`
+:   string `{docRoot}/{org}/{repo}/blob/{branch}/docs`
 
 ---
 
@@ -1111,7 +1111,7 @@ def DOC_DEFAULTS(backend):
     return (
         ("docRoot", f"{backendRep(backend, 'url')}"),
         ("docExt", ".md"),
-        ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}{relative}/docs"),
+        ("docBase", "{docRoot}/{org}/{repo}/blob/{branch}/docs"),
         ("docPage", "home"),
         ("docUrl", "{docBase}/{docPage}{docExt}"),
         ("featureBase", "{docBase}/features/<feature>{docExt}"),

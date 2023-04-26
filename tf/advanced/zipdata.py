@@ -70,7 +70,7 @@ def zipApi(app):
     Parameters
     ----------
     app: obj
-        The high-level API object
+        The high-level API object of a loaded TF dataset
     """
 
     app.zipAll = types.MethodType(zipAll, app)
@@ -105,7 +105,7 @@ def zipAll(app):
     Parameters
     ----------
     app: object
-        A loaded text-fabric datasource
+        A loaded text-fabric datasource or None.
     """
     context = app.context
 

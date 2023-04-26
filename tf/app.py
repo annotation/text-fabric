@@ -13,8 +13,7 @@ This power can be invoked by a very simple command: `use("org/repo")`.
 For a detailed description, see `tf.about.usefunc`.
 """
 
-from .advanced.app import findApp
-from .core.files import backendRep
+from .advanced.app import findApp, useApp
 
 
 # START AN APP
@@ -52,19 +51,6 @@ def use(appName, *args, backend=None, **kwargs):
     tf.advanced.app.App
     """
 
-    if appName.startswith("data:"):
-        dataLoc = appName[5:]
-        appName = None
-        checkoutApp = None
-    elif appName.startswith("app:"):
-        dataLoc = None
-        checkoutApp = None
-    else:
-        dataLoc = None
-        parts = appName.split(":", maxsplit=1)
-        if len(parts) == 1:
-            parts.append("")
-        (appName, checkoutApp) = parts
+    (appName, checkoutApp, dataLoc, backend) = useApp(appName, backend)
 
-    backend = backendRep(backend, 'norm')
     return findApp(appName, checkoutApp, dataLoc, backend, False, *args, **kwargs)
