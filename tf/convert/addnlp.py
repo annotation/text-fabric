@@ -80,7 +80,7 @@ converted from TEI by `tf.convert.tei`.
 Exactly how you can call the methods of this module is demonstrated in the small
 corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
-*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/main/programs/convertExpress.ipynb).
+*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb).
 """
 
 import sys
