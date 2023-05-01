@@ -32,8 +32,7 @@ class OtypeFeature:
         """List of all node types from big to small."""
 
     def items(self):
-        """As in `tf.core.nodefeature.NodeFeature.items`.
-        """
+        """As in `tf.core.nodefeature.NodeFeature.items`."""
 
         slotType = self.slotType
         maxSlot = self.maxSlot
@@ -94,7 +93,18 @@ class OtypeFeature:
         # NB: the support attribute has been added by precomputing __levels__
         if val in self.support:
             (b, e) = self.support[val]
-            return range(b, e + 1)
+            # N.B. for a long time we delivered range(b, e + 1)
+            # thereby forgetting to sort these nodes canonically.
+            # Because we cannot assume that nodes of non-slot types are already
+            # canonically sorted.
+            # That's a pity, because now we need more memory!
+            Crank = self.api.C.rank.data
+            return tuple(
+                sorted(
+                    range(b, e + 1),
+                    key=lambda n: Crank[n - 1],
+                )
+            )
         else:
             return ()
 

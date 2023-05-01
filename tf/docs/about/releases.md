@@ -10,9 +10,15 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.2 (upcoming)
+### 11.4.2
 
-2023-04-26
+2023-05-01
+
+*   Fix of a problem spotted by Cody Kingham: the nodes delivered by 
+    `F.otype.s(x)` are not always in canonical order. Case in point: subphrases in the
+    BHSA. It turns out that I implemented the `s()` function on the feature `otype`
+    in a different, more efficient way that on all other features. And I forgot to
+    sort the result in the `otype` case. From now on: these nodes *will* be sorted.
 
 ##### Commandline tasks
 

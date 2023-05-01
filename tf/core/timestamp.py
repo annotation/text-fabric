@@ -220,7 +220,7 @@ class Timestamp:
         if force or self.silent in {VERBOSE, AUTO, TERSE}:
             self.raw_msg(msg, tm=tm, nl=nl, cache=cache)
 
-    def error(self, msg, tm=True, nl=True, cache=0):
+    def error(self, msg, tm=True, nl=True, cache=0, force=True):
         """Sends an warning message to the standard error.
 
         In a Jupyter notebook, the standard error is displayed with

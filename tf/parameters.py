@@ -9,7 +9,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '11.4.2'
+VERSION = '11.4.3'
 """Program version.
 
 This value is under control of the update process, as run by
