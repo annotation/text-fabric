@@ -136,7 +136,7 @@ PARAMS = dict(
         "str,after",
     ),
     sentenceBarriers=("Elements that trigger a senetence boundary.", "div,p"),
-    sentenceSkipFlow=("The flows that are not feed to sentence detection.", "orig,del"),
+    sentenceSkipFlow=("The flows that are not fed to sentence detection.", "orig,del"),
     tokenNFeature=("The feature that will hold the sequence number of the token.", ""),
     sentenceType=("The node type for the sentences", "sentence"),
     sentenceFeatures=("", ""),
@@ -201,16 +201,16 @@ class NLPipeline:
             The names of features defined on original slots that do not have to be
             carried over to the new slots of type token.
             There should be at least one feature: the character content of the slot.
-        emptyFeature: string, optional empty
+        emptyFeature: string, optional "empty"
             Name of feature that identifies the empty slots.
-        ignoreTypes: set, optional {"word"}
+        ignoreTypes: set, optional "word"
             A set is distilled from comma-separated values.
             Node types that will be ignored when generating the plain text.
-        outOfFlow: set, optional {"note", "orig", "del"}
+        outOfFlow: string, optional "note,orig,del"
             A set is distilled from comma-separated values.
             A set of node types whose content will be put in separate text flows at
             the end of the document.
-        sentenceSkipFlow: set, optional {"orig", "del"}
+        sentenceSkipFlow: string, optional "orig,del"
             A set is distilled from comma-separated values.
             The elements whose flows in the sentence stream should be ignored
         tokenType: string, optional token

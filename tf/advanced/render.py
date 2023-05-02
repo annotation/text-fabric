@@ -28,8 +28,13 @@ from ..core.helpers import NBSP, htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    """Renders a node, in plain or pretty mode."""
+    """Renders a node, in plain or pretty mode.
 
+    We take care that when a node has graphics, and the node is split into several
+    chunks/fragments, the graphics only occurs on the first fragment.
+    """
+
+    graphicsFetched = set()
     inNb = app.inNb
     display = app.display
 
@@ -61,7 +66,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     html = []
 
     for subTree in subTrees:
-        _render(isPretty, subTree, True, True, 0, passage, html)
+        _render(isPretty, subTree, True, True, 0, passage, html, graphicsFetched)
 
     rep = "".join(html)
     ltr = settings.ltr
@@ -80,7 +85,16 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
 
 def _render(
-    isPretty, tree, first, last, level, passage, html, switched=False, _asString=False
+    isPretty,
+    tree,
+    first,
+    last,
+    level,
+    passage,
+    html,
+    graphicsFetched,
+    switched=False,
+    _asString=False,
 ):
     outer = level == 0
     (chunk, info, children) = tree
@@ -97,7 +111,16 @@ def _render(
         nodePlain = None
         if isBaseNonSlot:
             nodePlain = _render(
-                False, tree, first, last, level, "", [], switched=True, _asString=True
+                False,
+                tree,
+                first,
+                last,
+                level,
+                "",
+                [],
+                graphicsFetched,
+                switched=True,
+                _asString=True,
             )
         (label, featurePart) = _prettyTree(tree, outer, first, last, level, nodePlain)
         (containerB, containerE) = _prettyPre(
@@ -107,6 +130,7 @@ def _render(
             featurePart,
             boundaryCls,
             html,
+            graphicsFetched,
         )
         cls = props.cls
         childCls = cls["children"]
@@ -128,7 +152,16 @@ def _render(
         for (i, subTree) in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
-            _render(isPretty, subTree, thisFirst, thisLast, level + 1, "", html)
+            _render(
+                isPretty,
+                subTree,
+                thisFirst,
+                thisLast,
+                level + 1,
+                "",
+                html,
+                graphicsFetched,
+            )
             if isPretty and after:
                 html.append(after(subTree[0][0]))
 
@@ -191,6 +224,7 @@ def _plainTree(
     level,
     boundaryCls,
     passage,
+    graphicsFetched,
 ):
     (chunk, info, subTrees) = tree
 
@@ -217,9 +251,11 @@ def _plainTree(
     chunk = tree[0]
     n = chunk[0]
 
-    graphics = (
-        getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else ""
-    )
+    if showGraphics and hasGraphics and n not in graphicsFetched:
+        graphics = getGraphics(False, n, nType, outer)
+        graphicsFetched.add(n)
+    else:
+        graphics = ""
 
     contrib = ""
 
@@ -281,7 +317,7 @@ def _plainTree(
 # PRETTY LOW-LEVEL
 
 
-def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
+def _prettyPre(tree, outer, label, featurePart, boundaryCls, html, graphicsFetched):
     isPretty = True
     (chunk, info, subTrees) = tree
     n = chunk[0]
@@ -319,8 +355,9 @@ def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
         trm = terminalCls if isBaseNonSlot or not subTrees else ""
         html.append(f"{containerB.format(trm)}{label0}{material}")
 
-    if showGraphics and hasGraphics:
+    if showGraphics and hasGraphics and n not in graphicsFetched:
         html.append(getGraphics(True, n, nType, outer))
+        graphicsFetched.add(n)
 
     return (containerB, containerE)
 

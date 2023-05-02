@@ -111,7 +111,7 @@ def getLocation(targetDir=None):
 
     if len(parts) == 1:
         return (parts[0], None, None, None)
-    if len(parts) == 1:
+    if len(parts) == 2:
         return (parts[0], parts[1], None, None)
     if len(parts) in {2, 3}:
         return (parts[0], parts[1], parts[2], "")

@@ -370,8 +370,8 @@ def modify(
         The remaining members are features that should be discarded in the process,
         they are typically features defined for old slot nodes that have little or no
         meaning for new slot nodes.
-        Other features thatare defined for old slots carry over to the corresponding
-        new slots, but only in the new slot does not have already that feature
+        Other features that are defined for old slots carry over to the corresponding
+        new slots, but only if the new slot does not have already that feature
         assigned. Only the value of the first old slot that corresponds with a new slot
         carries over to that new slot.
 

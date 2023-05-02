@@ -10,7 +10,22 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.2
+### 11.4.4
+
+2023-05-02
+
+*   Fixed an issue with rendering: if a node is split in chunks and/or fragments
+    for display, every chunk/fragment will get the full node information displayed,
+    including any graphics if present.
+    That will cause a repetition of displayed images and it is probably not
+    what anybody wants. The render algorithm has been adapted to show graphics
+    only once for each node in the display.
+
+*   Fixed missing package contents
+
+*   Fixed a bug in `tf.core.files.getLocation()`
+
+### 11.4.3
 
 2023-05-01
 
@@ -19,6 +34,10 @@ See the app-specific tutorials via `tf.about.corpora`.
     BHSA. It turns out that I implemented the `s()` function on the feature `otype`
     in a different, more efficient way that on all other features. And I forgot to
     sort the result in the `otype` case. From now on: these nodes *will* be sorted.
+
+### 11.4.2
+
+2023-04-26
 
 ##### Commandline tasks
 
