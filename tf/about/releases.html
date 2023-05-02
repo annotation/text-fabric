@@ -32,7 +32,25 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
-<h3 id="1142">11.4.2</h3>
+<h3 id="1144">11.4.4</h3>
+<p>2023-05-02</p>
+<ul>
+<li>
+<p>Fixed an issue with rendering: if a node is split in chunks and/or fragments
+for display, every chunk/fragment will get the full node information displayed,
+including any graphics if present.
+That will cause a repetition of displayed images and it is probably not
+what anybody wants. The render algorithm has been adapted to show graphics
+only once for each node in the display.</p>
+</li>
+<li>
+<p>Fixed missing package contents</p>
+</li>
+<li>
+<p>Fixed a bug in <code><a title="tf.core.files.getLocation" href="../core/files.html#tf.core.files.getLocation">getLocation()</a></code></p>
+</li>
+</ul>
+<h3 id="1143">11.4.3</h3>
 <p>2023-05-01</p>
 <ul>
 <li>Fix of a problem spotted by Cody Kingham: the nodes delivered by
@@ -41,6 +59,8 @@ BHSA. It turns out that I implemented the <code>s()</code> function on the featu
 in a different, more efficient way that on all other features. And I forgot to
 sort the result in the <code>otype</code> case. From now on: these nodes <em>will</em> be sorted.</li>
 </ul>
+<h3 id="1142">11.4.2</h3>
+<p>2023-04-26</p>
 <h5 id="commandline-tasks">Commandline tasks</h5>
 <p>I'am going to change the commands that Text-Fabric provides on the commandline after installing.</p>
 <p>They will all start with <code>tf-</code>.
@@ -429,7 +449,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/609270cdc0a2d68b90f2e12d95cb5903976cbf95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d2c0c6e55112e5e12d2eee9246d9b11084539f15/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -502,6 +522,8 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#1144">11.4.4</a></li>
+<li><a href="#1143">11.4.3</a></li>
 <li><a href="#1142">11.4.2</a><ul>
 <li><a href="#commandline-tasks">Commandline tasks</a></li>
 <li><a href="#conversion-and-nlp-workflows">Conversion and NLP workflows</a></li>

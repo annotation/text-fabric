@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/609270cdc0a2d68b90f2e12d95cb5903976cbf95/tf/advanced/render.py#L1-L571" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d2c0c6e55112e5e12d2eee9246d9b11084539f15/tf/advanced/render.py#L1-L608" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -72,8 +72,13 @@ from ..core.helpers import NBSP, htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
+    &#34;&#34;&#34;Renders a node, in plain or pretty mode.
 
+    We take care that when a node has graphics, and the node is split into several
+    chunks/fragments, the graphics only occurs on the first fragment.
+    &#34;&#34;&#34;
+
+    graphicsFetched = set()
     inNb = app.inNb
     display = app.display
 
@@ -105,7 +110,7 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     html = []
 
     for subTree in subTrees:
-        _render(isPretty, subTree, True, True, 0, passage, html)
+        _render(isPretty, subTree, True, True, 0, passage, html, graphicsFetched)
 
     rep = &#34;&#34;.join(html)
     ltr = settings.ltr
@@ -124,7 +129,16 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
 
 
 def _render(
-    isPretty, tree, first, last, level, passage, html, switched=False, _asString=False
+    isPretty,
+    tree,
+    first,
+    last,
+    level,
+    passage,
+    html,
+    graphicsFetched,
+    switched=False,
+    _asString=False,
 ):
     outer = level == 0
     (chunk, info, children) = tree
@@ -141,7 +155,16 @@ def _render(
         nodePlain = None
         if isBaseNonSlot:
             nodePlain = _render(
-                False, tree, first, last, level, &#34;&#34;, [], switched=True, _asString=True
+                False,
+                tree,
+                first,
+                last,
+                level,
+                &#34;&#34;,
+                [],
+                graphicsFetched,
+                switched=True,
+                _asString=True,
             )
         (label, featurePart) = _prettyTree(tree, outer, first, last, level, nodePlain)
         (containerB, containerE) = _prettyPre(
@@ -151,6 +174,7 @@ def _render(
             featurePart,
             boundaryCls,
             html,
+            graphicsFetched,
         )
         cls = props.cls
         childCls = cls[&#34;children&#34;]
@@ -172,7 +196,16 @@ def _render(
         for (i, subTree) in enumerate(children):
             thisFirst = first and i == 0
             thisLast = last and i == lastCh
-            _render(isPretty, subTree, thisFirst, thisLast, level + 1, &#34;&#34;, html)
+            _render(
+                isPretty,
+                subTree,
+                thisFirst,
+                thisLast,
+                level + 1,
+                &#34;&#34;,
+                html,
+                graphicsFetched,
+            )
             if isPretty and after:
                 html.append(after(subTree[0][0]))
 
@@ -235,6 +268,7 @@ def _plainTree(
     level,
     boundaryCls,
     passage,
+    graphicsFetched,
 ):
     (chunk, info, subTrees) = tree
 
@@ -261,9 +295,11 @@ def _plainTree(
     chunk = tree[0]
     n = chunk[0]
 
-    graphics = (
-        getGraphics(False, n, nType, outer) if showGraphics and hasGraphics else &#34;&#34;
-    )
+    if showGraphics and hasGraphics and n not in graphicsFetched:
+        graphics = getGraphics(False, n, nType, outer)
+        graphicsFetched.add(n)
+    else:
+        graphics = &#34;&#34;
 
     contrib = &#34;&#34;
 
@@ -325,7 +361,7 @@ def _plainTree(
 # PRETTY LOW-LEVEL
 
 
-def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
+def _prettyPre(tree, outer, label, featurePart, boundaryCls, html, graphicsFetched):
     isPretty = True
     (chunk, info, subTrees) = tree
     n = chunk[0]
@@ -363,8 +399,9 @@ def _prettyPre(tree, outer, label, featurePart, boundaryCls, html):
         trm = terminalCls if isBaseNonSlot or not subTrees else &#34;&#34;
         html.append(f&#34;{containerB.format(trm)}{label0}{material}&#34;)
 
-    if showGraphics and hasGraphics:
+    if showGraphics and hasGraphics and n not in graphicsFetched:
         html.append(getGraphics(True, n, nType, outer))
+        graphicsFetched.add(n)
 
     return (containerB, containerE)
 
@@ -626,15 +663,22 @@ def _getFeatures(info, n, nType):
 <span>def <span class="ident">render</span></span>(<span>app, isPretty, n, _inTuple, _asString, explain, **options)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Renders a node, in plain or pretty mode.</p></div>
+<div class="desc"><p>Renders a node, in plain or pretty mode.</p>
+<p>We take care that when a node has graphics, and the node is split into several
+chunks/fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/609270cdc0a2d68b90f2e12d95cb5903976cbf95/tf/advanced/render.py#L30-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d2c0c6e55112e5e12d2eee9246d9b11084539f15/tf/advanced/render.py#L30-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
-    &#34;&#34;&#34;Renders a node, in plain or pretty mode.&#34;&#34;&#34;
+    &#34;&#34;&#34;Renders a node, in plain or pretty mode.
 
+    We take care that when a node has graphics, and the node is split into several
+    chunks/fragments, the graphics only occurs on the first fragment.
+    &#34;&#34;&#34;
+
+    graphicsFetched = set()
     inNb = app.inNb
     display = app.display
 
@@ -666,7 +710,7 @@ def _getFeatures(info, n, nType):
     html = []
 
     for subTree in subTrees:
-        _render(isPretty, subTree, True, True, 0, passage, html)
+        _render(isPretty, subTree, True, True, 0, passage, html, graphicsFetched)
 
     rep = &#34;&#34;.join(html)
     ltr = settings.ltr
