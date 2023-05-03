@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d2c0c6e55112e5e12d2eee9246d9b11084539f15/tf/advanced/render.py#L1-L608" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5431191b4352e598535d3b6dd0370c6e1c61ae93/tf/advanced/render.py#L1-L616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -185,7 +185,15 @@ def _render(
     else:
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
         contrib = _plainTree(
-            contribB, tree, outer, first, last, level, boundaryCls, passage
+            contribB,
+            tree,
+            outer,
+            first,
+            last,
+            level,
+            boundaryCls,
+            passage,
+            graphicsFetched,
         )
         if contrib:
             html.append(contrib)
@@ -669,7 +677,7 @@ chunks/fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d2c0c6e55112e5e12d2eee9246d9b11084539f15/tf/advanced/render.py#L30-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5431191b4352e598535d3b6dd0370c6e1c61ae93/tf/advanced/render.py#L30-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.
