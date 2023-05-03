@@ -141,7 +141,15 @@ def _render(
     else:
         (contribB, contribE) = _plainPre(info, n, boundaryCls, outer, switched)
         contrib = _plainTree(
-            contribB, tree, outer, first, last, level, boundaryCls, passage
+            contribB,
+            tree,
+            outer,
+            first,
+            last,
+            level,
+            boundaryCls,
+            passage,
+            graphicsFetched,
         )
         if contrib:
             html.append(contrib)

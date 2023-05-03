@@ -10,6 +10,12 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.5
+
+2023-05-03
+
+Fixed a left-over bug introduced by the previous update.
+
 ### 11.4.4
 
 2023-05-02

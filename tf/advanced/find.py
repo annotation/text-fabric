@@ -58,6 +58,9 @@ def findAppConfig(
         with open(configPath, encoding="utf8") as fh:
             cfg = yaml.load(fh, Loader=yaml.FullLoader)
     else:
+        cfg = None
+
+    if cfg is None or cfg == {}:
         cfg = {}
         checkApiVersion = False
         if fileExists(configPathOld):
