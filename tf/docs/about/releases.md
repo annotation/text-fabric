@@ -10,13 +10,6 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.6
-
-2023-05-04
-
-Added type annotations for nodeFeatures and edgeFeatures to the kwargs of 
-TF.save method.
-
 ### 11.4.5
 
 2023-05-03
