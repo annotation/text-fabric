@@ -393,12 +393,10 @@ tf/convert/mql.py
 tf/convert/pandas.py
 tf/convert/recorder.py
 tf/convert/tei.py
-tf/convert/teiNew.py
 tf/convert/tf.py
 tf/convert/variants.py
 tf/convert/walker.py
 tf/convert/xml.py
-tf/convert/xmlNew.py
 tf/convert/app/.DS_Store
 tf/convert/app/__init__.py
 tf/convert/app/app.py
