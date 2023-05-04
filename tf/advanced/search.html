@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.advanced.search API documentation</title>
+<meta name="description" content="Calls from the advanced API to the Search API." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.advanced.search</code></h1>
+</header>
+<section id="section-intro">
+<p>Calls from the advanced API to the Search API.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/advanced/search.py#L1-L223" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Calls from the advanced API to the Search API.
+&#34;&#34;&#34;
+
+import types
+
+from ..core.helpers import console, wrapMessages
+from ..core.timestamp import SILENT_D, silentConvert
+from .condense import condense
+
+
+def searchApi(app):
+    app.search = types.MethodType(search, app)
+
+
+def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
+    &#34;&#34;&#34;Search with some high-level features.
+
+    This function calls the lower level `tf.search.search.Search` facility aka `S`.
+    But whereas the `S` version returns a generator which yields the results
+    one by one, the `A` version collects all results and sorts them in the
+    canonical order (`tf.core.nodes`).
+    (but you can change the sorting, see the `sort` parameter).
+    It then reports the number of results.
+
+    It will also set the display parameter `tupleFeatures` (see below)
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
+    the features that have been used in the query.
+
+    Parameters
+    ----------
+
+    query: dict
+        the search template (`tf.about.searchusage`)
+        that has to be searched for.
+
+    silent: string, optional tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+
+    shallow: boolean, optional False
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple are retained.
+
+        If `False` or `0`, a list of all result tuples will be returned.
+
+    sets: dict, optional None
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes
+        that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+        and then in your query you can say
+
+           gphrase function=Pred`
+             word sp=verb`
+
+        etc.
+
+        This is handy when you need node sets that cannot be conveniently queried.
+        You can produce them by hand-coding.
+        Once you got them, you can use them over and over again in queries.
+        Or you can save them with `tf.lib.writeSets`
+        and use them in the TF browser.
+
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
+    sort: boolean, optional True
+        If `True` (default), search results will be returned in
+        canonical order (`tf.core.nodes`).
+
+        !!! note &#34;canonical sort key for tuples&#34;
+            This sort is achieved by using the function
+
+               tf.core.nodes.Nodes.sortKeyTuple`
+
+            as sort key.
+
+        If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+        returning values, then this key will be used to sort the results.
+
+        If it is a `False` value, no sorting will be applied.
+
+    limit: integer, optional None
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
+    !!! hint &#34;search template reference&#34;
+        See the search template reference (`tf.about.searchusage`)
+
+    !!! note &#34;Context Jupyter&#34;
+        The intended context of this function is: an ordinary Python program (including
+        the Jupyter notebook).
+        Web apps can better use `tf.advanced.search.runSearch`.
+    &#34;&#34;&#34;
+
+    warning = app.warning
+    isSilent = app.isSilent
+    setSilent = app.setSilent
+    api = app.api
+    S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
+
+    wasSilent = isSilent()
+
+    silent = silentConvert(silent)
+
+    passSets = {**app.sets} if app.sets else {}
+    if sets:
+        for (name, s) in sets.items():
+            passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
+    if not shallow:
+        if not sort:
+            results = list(results)
+        elif sort is True:
+            results = sorted(results, key=sortKeyTuple)
+        else:
+            try:
+                sortedResults = sorted(results, key=sort)
+            except Exception as e:
+                console(
+                    (
+                        &#34;WARNING: your sort key function caused an error\n&#34;
+                        f&#34;{str(e)}&#34;
+                        &#34;\nYou get unsorted results&#34;
+                    ),
+                    error=True,
+                )
+                sortedResults = list(results)
+            results = sortedResults
+
+        features = ()
+        if S.exe:
+            qnodes = getattr(S.exe, &#34;qnodes&#34;, [])
+            nodeMap = getattr(S.exe, &#34;nodeMap&#34;, {})
+            features = tuple(
+                (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+                for (i, q) in enumerate(qnodes)
+            )
+            app.displaySetup(tupleFeatures=features)
+
+    nResults = len(results)
+    plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
+    setSilent(silent)
+    warning(f&#34;{nResults} result{plural}&#34;)
+    setSilent(wasSilent)
+    return results
+
+
+def runSearch(app, query, cache):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    Before running the TF search, the *query* will be looked up in the *cache*.
+    If present, its cached results/error messages will be returned.
+    If not, the query will be run, results/error messages collected, put in the *cache*,
+    and returned.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    S = api.S
+    plainSearch = S.search
+
+    cacheKey = (query, False)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    options = dict(_msgCache=[])
+    if app.sets is not None:
+        options[&#34;sets&#34;] = app.sets
+    (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    features = ()
+    if exe:
+        qnodes = getattr(exe, &#34;qnodes&#34;, [])
+        nodeMap = getattr(exe, &#34;nodeMap&#34;, {})
+        features = tuple(
+            (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+            for (i, q) in enumerate(qnodes)
+        )
+    queryResults = tuple(sorted(queryResults))
+    (runStatus, runMessages) = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (status, runStatus), (messages, runMessages), features)
+    return (queryResults, (status, runStatus), (messages, runMessages), features)
+
+
+def runSearchCondensed(app, query, cache, condenseType):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    When query results need to be condensed into a container,
+    this function takes care of that.
+    It first tries the *cache* for condensed query results.
+    If that fails,
+    it collects the bare query results from the cache or by running the query.
+    Then it condenses the results, puts them in the *cache*, and returns them.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    cacheKey = (query, True, condenseType)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    (queryResults, status, messages, features) = runSearch(app, query, cache)
+    queryResults = condense(api, queryResults, condenseType, multiple=True)
+    cache[cacheKey] = (queryResults, status, messages, features)
+    return (queryResults, status, messages, features)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.advanced.search.runSearch"><code class="name flex">
+<span>def <span class="ident">runSearch</span></span>(<span>app, query, cache)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A wrapper around the generic search interface of TF.</p>
+<p>Before running the TF search, the <em>query</em> will be looked up in the <em>cache</em>.
+If present, its cached results/error messages will be returned.
+If not, the query will be run, results/error messages collected, put in the <em>cache</em>,
+and returned.</p>
+<div class="admonition note">
+<p class="admonition-title">Context web app</p>
+<p>The intended context of this function is: web app.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/advanced/search.py#L165-L199" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def runSearch(app, query, cache):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    Before running the TF search, the *query* will be looked up in the *cache*.
+    If present, its cached results/error messages will be returned.
+    If not, the query will be run, results/error messages collected, put in the *cache*,
+    and returned.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    S = api.S
+    plainSearch = S.search
+
+    cacheKey = (query, False)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    options = dict(_msgCache=[])
+    if app.sets is not None:
+        options[&#34;sets&#34;] = app.sets
+    (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    features = ()
+    if exe:
+        qnodes = getattr(exe, &#34;qnodes&#34;, [])
+        nodeMap = getattr(exe, &#34;nodeMap&#34;, {})
+        features = tuple(
+            (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+            for (i, q) in enumerate(qnodes)
+        )
+    queryResults = tuple(sorted(queryResults))
+    (runStatus, runMessages) = wrapMessages(S._msgCache)
+    cache[cacheKey] = (queryResults, (status, runStatus), (messages, runMessages), features)
+    return (queryResults, (status, runStatus), (messages, runMessages), features)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.search.runSearchCondensed"><code class="name flex">
+<span>def <span class="ident">runSearchCondensed</span></span>(<span>app, query, cache, condenseType)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A wrapper around the generic search interface of TF.</p>
+<p>When query results need to be condensed into a container,
+this function takes care of that.
+It first tries the <em>cache</em> for condensed query results.
+If that fails,
+it collects the bare query results from the cache or by running the query.
+Then it condenses the results, puts them in the <em>cache</em>, and returns them.</p>
+<div class="admonition note">
+<p class="admonition-title">Context web app</p>
+<p>The intended context of this function is: web app.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/advanced/search.py#L202-L223" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
+    &#34;&#34;&#34;A wrapper around the generic search interface of TF.
+
+    When query results need to be condensed into a container,
+    this function takes care of that.
+    It first tries the *cache* for condensed query results.
+    If that fails,
+    it collects the bare query results from the cache or by running the query.
+    Then it condenses the results, puts them in the *cache*, and returns them.
+
+    !!! note &#34;Context web app&#34;
+        The intended context of this function is: web app.
+    &#34;&#34;&#34;
+
+    api = app.api
+    cacheKey = (query, True, condenseType)
+    if cacheKey in cache:
+        return cache[cacheKey]
+    (queryResults, status, messages, features) = runSearch(app, query, cache)
+    queryResults = condense(api, queryResults, condenseType, multiple=True)
+    cache[cacheKey] = (queryResults, status, messages, features)
+    return (queryResults, status, messages, features)</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.search.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>app, query, silent='auto', sets=None, shallow=False, sort=True, limit=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search with some high-level features.</p>
+<p>This function calls the lower level <code><a title="tf.search.search.Search" href="../search/search.html#tf.search.search.Search">Search</a></code> facility aka <code>S</code>.
+But whereas the <code>S</code> version returns a generator which yields the results
+one by one, the <code>A</code> version collects all results and sorts them in the
+canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).
+(but you can change the sorting, see the <code>sort</code> parameter).
+It then reports the number of results.</p>
+<p>It will also set the display parameter <code>tupleFeatures</code> (see below)
+in such a way that subsequent calls to <code><a title="tf.advanced.display.export" href="display.html#tf.advanced.display.export">export()</a></code> emit
+the features that have been used in the query.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>dict</code></dt>
+<dd>the search template (<code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>)
+that has to be searched for.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional `tf.core.timestamp.SILENT_D``</dt>
+<dd>See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf.core.timestamp.Timestamp">Timestamp</a></code></dd>
+<dt><strong><code>shallow</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p>If <code>True</code> or <code>1</code>, the result is a set of things that match the top-level element
+of the <code>query</code>.</p>
+<p>If <code>2</code> or a bigger number <em>n</em>, return the set of truncated result tuples: only
+the first <em>n</em> members of each tuple are retained.</p>
+<p>If <code>False</code> or <code>0</code>, a list of all result tuples will be returned.</p>
+</dd>
+<dt><strong><code>sets</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>If not <code>None</code>, it should be a dictionary of sets, keyed by a names.
+In <code>query</code> you can refer to those names to invoke those sets.</p>
+<p>For example, if you have a set <code>gappedPhrases</code> of all phrase nodes
+that have a gap, you can pass <code>sets=dict(gphrase=gappedPhrases)</code>,
+and then in your query you can say</p>
+<p>gphrase function=Pred<code>word sp=verb</code></p>
+<p>etc.</p>
+<p>This is handy when you need node sets that cannot be conveniently queried.
+You can produce them by hand-coding.
+Once you got them, you can use them over and over again in queries.
+Or you can save them with <code><a title="tf.lib.writeSets" href="../lib.html#tf.lib.writeSets">writeSets()</a></code>
+and use them in the TF browser.</p>
+<p>If the app has been loaded with the <code>setFile</code> parameter,
+the sets found in that file will automatically be added to the sets passed
+in this argument.
+If you pass sets with a name that also occur in the sets from the app,
+then the sets you pass override the sets of the app.</p>
+</dd>
+<dt><strong><code>sort</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>
+<p>If <code>True</code> (default), search results will be returned in
+canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">canonical sort key for tuples</p>
+<p>This sort is achieved by using the function</p>
+<p>tf.core.nodes.Nodes.sortKeyTuple`</p>
+<p>as sort key.</p>
+</div>
+<p>If it is a <em>sort key</em>, i.e. function that can be applied to tuples of nodes
+returning values, then this key will be used to sort the results.</p>
+<p>If it is a <code>False</code> value, no sorting will be applied.</p>
+</dd>
+<dt><strong><code>limit</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
+<dd>
+<p>If <code>limit</code> is a positive number, it will fetch only that many results.
+If it is negative, 0, None, or absent, it will fetch arbitrary many results.</p>
+<p>!!! caution "there is an upper <em>fail limit</em> for safety reasons.
+The limit is a factor times the max node in your corpus.
+See <code><a title="tf.parameters.SEARCH_FAIL_FACTOR" href="../parameters.html#tf.parameters.SEARCH_FAIL_FACTOR">SEARCH_FAIL_FACTOR</a></code>.
+If this <em>fail limit</em> is exceeded in cases where no positive <code>limit</code>
+has been passed, you get a warning message.</p>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">search template reference</p>
+<p>See the search template reference (<code><a title="tf.about.searchusage" href="../about/searchusage.html">tf.about.searchusage</a></code>)</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Context Jupyter</p>
+<p>The intended context of this function is: an ordinary Python program (including
+the Jupyter notebook).
+Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.advanced.search.runSearch">runSearch()</a></code>.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/advanced/search.py#L16-L162" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
+    &#34;&#34;&#34;Search with some high-level features.
+
+    This function calls the lower level `tf.search.search.Search` facility aka `S`.
+    But whereas the `S` version returns a generator which yields the results
+    one by one, the `A` version collects all results and sorts them in the
+    canonical order (`tf.core.nodes`).
+    (but you can change the sorting, see the `sort` parameter).
+    It then reports the number of results.
+
+    It will also set the display parameter `tupleFeatures` (see below)
+    in such a way that subsequent calls to `tf.advanced.display.export` emit
+    the features that have been used in the query.
+
+    Parameters
+    ----------
+
+    query: dict
+        the search template (`tf.about.searchusage`)
+        that has to be searched for.
+
+    silent: string, optional tf.core.timestamp.SILENT_D`
+        See `tf.core.timestamp.Timestamp`
+
+    shallow: boolean, optional False
+        If `True` or `1`, the result is a set of things that match the top-level element
+        of the `query`.
+
+        If `2` or a bigger number *n*, return the set of truncated result tuples: only
+        the first *n* members of each tuple are retained.
+
+        If `False` or `0`, a list of all result tuples will be returned.
+
+    sets: dict, optional None
+        If not `None`, it should be a dictionary of sets, keyed by a names.
+        In `query` you can refer to those names to invoke those sets.
+
+        For example, if you have a set `gappedPhrases` of all phrase nodes
+        that have a gap, you can pass `sets=dict(gphrase=gappedPhrases)`,
+        and then in your query you can say
+
+           gphrase function=Pred`
+             word sp=verb`
+
+        etc.
+
+        This is handy when you need node sets that cannot be conveniently queried.
+        You can produce them by hand-coding.
+        Once you got them, you can use them over and over again in queries.
+        Or you can save them with `tf.lib.writeSets`
+        and use them in the TF browser.
+
+        If the app has been loaded with the `setFile` parameter,
+        the sets found in that file will automatically be added to the sets passed
+        in this argument.
+        If you pass sets with a name that also occur in the sets from the app,
+        then the sets you pass override the sets of the app.
+
+    sort: boolean, optional True
+        If `True` (default), search results will be returned in
+        canonical order (`tf.core.nodes`).
+
+        !!! note &#34;canonical sort key for tuples&#34;
+            This sort is achieved by using the function
+
+               tf.core.nodes.Nodes.sortKeyTuple`
+
+            as sort key.
+
+        If it is a *sort key*, i.e. function that can be applied to tuples of nodes
+        returning values, then this key will be used to sort the results.
+
+        If it is a `False` value, no sorting will be applied.
+
+    limit: integer, optional None
+        If `limit` is a positive number, it will fetch only that many results.
+        If it is negative, 0, None, or absent, it will fetch arbitrary many results.
+
+        !!! caution &#34;there is an upper *fail limit* for safety reasons.
+            The limit is a factor times the max node in your corpus.
+            See `tf.parameters.SEARCH_FAIL_FACTOR`.
+            If this *fail limit* is exceeded in cases where no positive `limit`
+            has been passed, you get a warning message.
+
+    !!! hint &#34;search template reference&#34;
+        See the search template reference (`tf.about.searchusage`)
+
+    !!! note &#34;Context Jupyter&#34;
+        The intended context of this function is: an ordinary Python program (including
+        the Jupyter notebook).
+        Web apps can better use `tf.advanced.search.runSearch`.
+    &#34;&#34;&#34;
+
+    warning = app.warning
+    isSilent = app.isSilent
+    setSilent = app.setSilent
+    api = app.api
+    S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
+
+    wasSilent = isSilent()
+
+    silent = silentConvert(silent)
+
+    passSets = {**app.sets} if app.sets else {}
+    if sets:
+        for (name, s) in sets.items():
+            passSets[name] = s
+
+    results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
+    if not shallow:
+        if not sort:
+            results = list(results)
+        elif sort is True:
+            results = sorted(results, key=sortKeyTuple)
+        else:
+            try:
+                sortedResults = sorted(results, key=sort)
+            except Exception as e:
+                console(
+                    (
+                        &#34;WARNING: your sort key function caused an error\n&#34;
+                        f&#34;{str(e)}&#34;
+                        &#34;\nYou get unsorted results&#34;
+                    ),
+                    error=True,
+                )
+                sortedResults = list(results)
+            results = sortedResults
+
+        features = ()
+        if S.exe:
+            qnodes = getattr(S.exe, &#34;qnodes&#34;, [])
+            nodeMap = getattr(S.exe, &#34;nodeMap&#34;, {})
+            features = tuple(
+                (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+                for (i, q) in enumerate(qnodes)
+            )
+            app.displaySetup(tupleFeatures=features)
+
+    nResults = len(results)
+    plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
+    setSilent(silent)
+    warning(f&#34;{nResults} result{plural}&#34;)
+    setSilent(wasSilent)
+    return results</code></pre>
+</details>
+</dd>
+<dt id="tf.advanced.search.searchApi"><code class="name flex">
+<span>def <span class="ident">searchApi</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def searchApi(app):
+    app.search = types.MethodType(search, app)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.advanced" href="index.html">tf.advanced</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.advanced.search.runSearch" href="#tf.advanced.search.runSearch">runSearch</a></code></li>
+<li><code><a title="tf.advanced.search.runSearchCondensed" href="#tf.advanced.search.runSearchCondensed">runSearchCondensed</a></code></li>
+<li><code><a title="tf.advanced.search.search" href="#tf.advanced.search.search">search</a></code></li>
+<li><code><a title="tf.advanced.search.searchApi" href="#tf.advanced.search.searchApi">searchApi</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

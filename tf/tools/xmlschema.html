@@ -1,0 +1,2374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.tools.xmlschema API documentation</title>
+<meta name="description" content="Meaningful information from XML schemas …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.tools.xmlschema</code></h1>
+</header>
+<section id="section-intro">
+<h2 id="meaningful-information-from-xml-schemas">Meaningful information from XML schemas.</h2>
+<p>When parsing XML it is sometimes needed to know the properties of the current
+element, especially whether it allows mixed content or not.</p>
+<p>If it does not, it is safe to discard white-space, otherwise not.</p>
+<p>Moreover, if there are two adjacent elements, each containing text, are
+the string at the end of the first element and the string at the start
+of the second element part of the same word?</p>
+<p>If both elements are contained in a element that does not allow mixed content,
+they are separate words (the XML-elements are used as data containers);
+otherwise they belong to the same word (the XML-elements annotate a piece
+of string).</p>
+<p>This module can perform several analysis tasks of xml schemas.</p>
+<p><strong>fromrelax</strong> task:</p>
+<p>Transforms a RelaxNG schema into an equivalent xsd schema using James Clark's
+trang library.
+For this, you must have java installed.</p>
+<p><strong>analyse</strong> task:</p>
+<p>Given an XML schema file, produces a tab-separated list of elements defined in
+the schema, with columns</p>
+<pre><code>(element name) (simple or complex) (mixed or pure content)
+</code></pre>
+<p><strong>tei</strong> task:</p>
+<p>Analyses the complete TEI schema plus optional customizations on top of it.
+If
+you pass an optional customized TEI schema, it will be analysed separately, and
+the result will be used to override the result of analysing the complete TEI
+schema.
+The complete TEI schema is part of this package, you do not have to
+provide it.
+It has been generated on with the online
+<a href="https://roma.tei-c.org/startroma.php">TEI-Roma tool</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Caution</p>
+<p>This code has only been tested on a single xsd, converted from a relaxRNG
+file produced by a customisation of TEI.</p>
+<p>It could very well be that I have missed parts of the semantics of XML-Schema.</p>
+</div>
+<h2 id="usage">Usage</h2>
+<p>This program can be used as a library or as a command line tool.</p>
+<h3 id="as-command-line-tool">As command-line tool</h3>
+<pre><code class="language-sh">xmlschema fromrelax schema.rng
+xmlschema analyse schema.xsd
+xmlschema tei customschema.xsd
+xmlschema tei
+</code></pre>
+<p>Here <code>customschema</code> and <code>schema</code> are variable arguments.</p>
+<p>The result is written to a file in the current directory
+(from where the command <code>xmlschema</code> is called):</p>
+<ul>
+<li>from task <code>fromrelax</code> is a file <em>schema</em><code>.xsd</code>;</li>
+<li>from task <code>analysis</code> is written to <em>schema</em>`.tsv;</li>
+<li>from task <code>tei</code> is written to <em>customschema</em>`.tsv.</li>
+</ul>
+<h3 id="as-library">As library</h3>
+<p>You can write a script with exactly the same behaviour as the <code>xmlschema</code> command
+as follows:</p>
+<pre><code class="language-python">from tf.tools.xmlschema import Analysis
+A = Analysis()
+A.run()
+</code></pre>
+<p>You can run individual commands:</p>
+<pre><code class="language-python">from tf.tools.xmlschema import Analysis
+A = Analysis()
+good = A.task(&quot;tei&quot;, &quot;customSchema.xsd&quot;)
+good = A.task(&quot;analysis&quot;, &quot;schema.xsd&quot;))
+good = A.task(&quot;fromrelax&quot;, &quot;schema.rng&quot;)
+</code></pre>
+<p>In order to get the analysis results after tasks <code>tei</code> and <code>analysis</code>:</p>
+<pre><code class="language-python">if good:
+    result = A.getDefs(asTsv=False)
+    result = A.getDefs(asTsv=True)
+</code></pre>
+<p>You can also work a bit more low-level, e.g. to run the tei task:</p>
+<pre><code class="language-python">from tf.tools.xmlschema import Analysis
+A = Analysis()
+A.configure(override=schemaFile)
+A.interpret()
+if not A.good:
+    quit()
+defs = A.getDefs()}
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L1-L718" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+## Meaningful information from XML schemas.
+
+When parsing XML it is sometimes needed to know the properties of the current
+element, especially whether it allows mixed content or not.
+
+If it does not, it is safe to discard white-space, otherwise not.
+
+Moreover, if there are two adjacent elements, each containing text, are
+the string at the end of the first element and the string at the start
+of the second element part of the same word?
+
+If both elements are contained in a element that does not allow mixed content,
+they are separate words (the XML-elements are used as data containers);
+otherwise they belong to the same word (the XML-elements annotate a piece
+of string).
+
+This module can perform several analysis tasks of xml schemas.
+
+**fromrelax** task:
+
+Transforms a RelaxNG schema into an equivalent xsd schema using James Clark&#39;s
+trang library.  For this, you must have java installed.
+
+**analyse** task:
+
+Given an XML schema file, produces a tab-separated list of elements defined in
+the schema, with columns
+
+    (element name) (simple or complex) (mixed or pure content)
+
+**tei** task:
+
+Analyses the complete TEI schema plus optional customizations on top of it.  If
+you pass an optional customized TEI schema, it will be analysed separately, and
+the result will be used to override the result of analysing the complete TEI
+schema.  The complete TEI schema is part of this package, you do not have to
+provide it.  It has been generated on with the online
+[TEI-Roma tool](https://roma.tei-c.org/startroma.php).
+
+!!! note &#34;Caution&#34;
+    This code has only been tested on a single xsd, converted from a relaxRNG
+    file produced by a customisation of TEI.
+
+    It could very well be that I have missed parts of the semantics of XML-Schema.
+
+## Usage
+
+This program can be used as a library or as a command line tool.
+
+### As command-line tool
+
+``` sh
+xmlschema fromrelax schema.rng
+xmlschema analyse schema.xsd
+xmlschema tei customschema.xsd
+xmlschema tei
+```
+
+Here `customschema` and `schema` are variable arguments.
+
+The result is written to a file in the current directory
+(from where the command `xmlschema` is called):
+
+*   from task `fromrelax` is a file *schema*`.xsd`;
+*   from task `analysis` is written to *schema*`.tsv;
+*   from task `tei` is written to *customschema*`.tsv.
+
+### As library
+
+You can write a script with exactly the same behaviour as the `xmlschema` command
+as follows:
+
+``` python
+from tf.tools.xmlschema import Analysis
+A = Analysis()
+A.run()
+```
+
+You can run individual commands:
+
+``` python
+from tf.tools.xmlschema import Analysis
+A = Analysis()
+good = A.task(&#34;tei&#34;, &#34;customSchema.xsd&#34;)
+good = A.task(&#34;analysis&#34;, &#34;schema.xsd&#34;))
+good = A.task(&#34;fromrelax&#34;, &#34;schema.rng&#34;)
+```
+
+In order to get the analysis results after tasks `tei` and `analysis`:
+
+``` python
+if good:
+    result = A.getDefs(asTsv=False)
+    result = A.getDefs(asTsv=True)
+```
+
+You can also work a bit more low-level, e.g. to run the tei task:
+
+``` python
+from tf.tools.xmlschema import Analysis
+A = Analysis()
+A.configure(override=schemaFile)
+A.interpret()
+if not A.good:
+    quit()
+defs = A.getDefs()}
+```
+
+&#34;&#34;&#34;
+
+import sys
+import collections
+from subprocess import run
+
+from lxml import etree
+
+from ..core.helpers import console
+from ..core.files import fileExists, baseNm, dirNm, abspath
+
+
+class Analysis:
+    types = set(
+        &#34;&#34;&#34;
+        simpleType
+        complexType
+        &#34;&#34;&#34;.strip().split()
+    )
+
+    notInteresting = set(
+        &#34;&#34;&#34;
+        attribute
+        attributeGroup
+        group
+        &#34;&#34;&#34;.strip().split()
+    )
+
+    @staticmethod
+    def help():
+        console(
+            &#34;&#34;&#34;
+            USAGE
+
+            Command line:
+
+            xmlschema tei [customschemafile.xsd]
+            xmlschema analyse {schemafile.xsd}
+            xmlschema fromrelax {schemafile.rng}
+
+            &#34;&#34;&#34;
+        )
+
+    def __init__(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Trivial initialization of the Analysis class.
+
+        Further configuration happens in the `configure` method.
+
+        Parameters
+        ----------
+        debug: boolean, optional False
+            Whether to run in debug mode or not.
+            In debug mode more information is shown on the console.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+        &#34;&#34;&#34;
+
+        self.verbose = verbose
+        self.debug = debug
+        self.myDir = dirNm(abspath(__file__))
+        self.setModes(debug=debug, verbose=verbose)
+
+    def setModes(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Sets debug and verbose modes.
+
+        See `tf.tools.xmlschema.Analysis`
+        &#34;&#34;&#34;
+        self.debug = debug
+        self.verbose = verbose
+
+    def configure(self, baseSchema=None, override=None):
+        &#34;&#34;&#34;Configure for an XML schema and overrides
+
+        Parameters
+        ----------
+        baseSchema: string, optional None
+            The path of the xsd file that acts as the base schema that we want
+            to analyse. If None, the complete TEI schema is chosen.
+        override: string, optional None
+            The path of another schema intended to override parts of the baseSchema.
+        debug: boolean, optional False
+            Whether to run in debug mode or not.
+            In debug mode more information is shown on the console.
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+
+        if baseSchema is None:
+            myDir = self.myDir
+            baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+
+        self.baseSchema = baseSchema
+        self.baseSchemaDir = dirNm(baseSchema)
+        self.override = override
+        self.overrideDir = None if override is None else dirNm(override)
+
+        def findImports(node):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            if tag == &#34;import&#34;:
+                otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+                if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                    sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                    otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                    otherExists = fileExists(otherPath)
+                    status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                    if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                        console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    if otherExists:
+                        dependents.append(otherPath)
+
+            for child in node.iterchildren(tag=etree.Element):
+                findImports(child)
+
+        roots = []
+        self.roots = roots
+        oroots = []
+        self.oroots = oroots
+
+        try:
+            with open(baseSchema, encoding=&#34;utf8&#34;) as fh:
+                tree = etree.parse(fh)
+
+            root = tree.getroot()
+            roots.append(root)
+            schemaDir = self.baseSchemaDir
+            dependents = []
+
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    roots.append(dRoot)
+
+            if override is not None:
+                with open(override, encoding=&#34;utf8&#34;) as fh:
+                    tree = etree.parse(fh)
+
+                root = tree.getroot()
+                oroots.append(root)
+                schemaDir = self.overrideDir
+                dependents = []
+
+                findImports(root)
+
+                for dependent in dependents:
+                    with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                        dTree = etree.parse(fh)
+                        dRoot = dTree.getroot()
+                        oroots.append(dRoot)
+
+            self.good = True
+
+        except Exception as e:
+            msg = f&#34;Could not read and parse {baseSchema}&#34;
+            if override is not None:
+                msg += &#34; or {override}&#34;
+            console(msg)
+            console(str(e))
+            self.good = False
+
+    @staticmethod
+    def eKey(x):
+        &#34;&#34;&#34;Sort the dict with element definitions.
+
+        Parameters
+        ----------
+        x: (str, dict)
+            The element name and the element info.
+
+        Returns
+        -------
+        tuple
+            The members are such that definitions from other than xs:element come first,
+            and within xs:element those that are &#34;abstract&#34; come first.
+        &#34;&#34;&#34;
+        name = x[0]
+        tag = x[1][&#34;tag&#34;]
+        abstract = x[1][&#34;abstract&#34;]
+
+        return (
+            &#34;0&#34; if tag == &#34;simpleType&#34; else &#34;1&#34; if tag == &#34;complexType&#34; else tag,
+            &#34;&#34; if abstract else &#34;x&#34;,
+            name,
+        )
+
+    def interpret(self):
+        &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+
+        The definitions are read with the module `lxml`.
+
+        For each definition of a name certain attributes are remembered, e.g.
+        the *kind*, the presence of a *mixed* attribute, whether it is a
+        *substitutionGroup* or *extension*, and whether it is *abstract*.
+
+        When elements refer to a *substitutionGroup*, they need to get
+        the *kind* and *mixed* attributes of that group.
+
+        When elements refer to a *base*, they need to get
+        the *kind* and *mixed* attributes of an extension with that *base*.
+
+        After an initial parse of the XSD file, we do a variable number of
+        resolving rounds, where we chase the substitution groups and
+        extensions, until nothing changes anymore.
+
+        The info that is gathered is put in `self.defs` and can be retrieved
+        by method `getDefs()`.
+
+        The info is a list of items, one item per element.
+        Each item is a tuple of: element name, element kind, mixed status.
+
+        The absence of the element *kind* and *mixed* status are indicated
+        with `None`.
+        If all went well, there are no such absences!
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+        debug = self.debug
+        roots = self.roots
+        oroots = self.oroots
+        types = self.types
+        override = self.override
+
+        definitions = {}
+        redefinitions = collections.Counter()
+
+        def findDefs(node, definingName, topDef):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            definingName: string | void
+                If this has a value, we are underneath a definition.
+
+            topDef: boolean
+                If we are underneath a definition, this indicates
+                we are at the top-level of that definition.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+
+            name = node.get(&#34;name&#34;)
+            abstract = node.get(&#34;abstract&#34;) == &#34;true&#34;
+            mixed = node.get(&#34;mixed&#34;) == &#34;true&#34;
+            subs = node.get(&#34;substitutionGroup&#34;)
+
+            if definingName:
+                if topDef:
+                    if tag in types:
+                        definitions[definingName][&#34;kind&#34;] = (
+                            &#34;simple&#34; if tag == &#34;simpleType&#34; else &#34;complex&#34;
+                        )
+                        if mixed:
+                            definitions[definingName][&#34;mixed&#34;] = mixed
+                else:
+                    if tag == &#34;extension&#34;:
+                        base = node.get(&#34;base&#34;)
+                        if base:
+                            definitions[definingName][&#34;base&#34;] = base
+
+            if name and tag not in self.notInteresting:
+                if name in definitions:
+                    redefinitions[name] += 1
+                else:
+                    definitions[name] = dict(
+                        tag=tag, abstract=abstract, mixed=mixed, subs=subs
+                    )
+
+            if definingName:
+                defining = definingName
+                top = False
+            else:
+                isElementDef = name and tag == &#34;element&#34;
+                defining = name if isElementDef else False
+                top = True if defining else False
+
+            for child in node.iterchildren(tag=etree.Element):
+                findDefs(child, defining, top)
+
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {self.baseSchema}&#34;)
+        for root in roots:
+            findDefs(root, False, False)
+        if debug:
+            self.showElems()
+        self.resolve(definitions)
+
+        baseDefinitions = definitions
+
+        self.overrides = {}
+
+        if len(oroots) &gt; 0:
+            definitions = {}
+            redefinitions = collections.Counter()
+            if verbose &gt;= 0:
+                console(f&#34;Analysing {override}&#34;)
+            for root in oroots:
+                findDefs(root, False, False)
+            if debug:
+                self.showElems()
+            self.resolve(definitions)
+
+            for (name, odef) in definitions.items():
+
+                oKind = self.repKind(odef.get(&#34;kind&#34;, None))
+                oMixed = self.repMixed(odef.get(&#34;mixed&#34;, None))
+
+                if name in baseDefinitions:
+                    baseDef = baseDefinitions[name]
+                    baseKind = self.repKind(baseDef.get(&#34;kind&#34;, None))
+                    baseMixed = self.repMixed(baseDef.get(&#34;mixed&#34;, None))
+                    transRep = (
+                        f&#34;{baseKind} {baseMixed} ==&gt; {oKind} {oMixed}&#34;
+                        if baseKind != oKind and baseMixed != oMixed
+                        else f&#34;{baseKind} ==&gt; {oKind}&#34;
+                        if baseKind != oKind
+                        else f&#34;{baseMixed} ==&gt; {oMixed}&#34;
+                        if baseMixed != oMixed
+                        else None
+                    )
+                    if transRep is not None:
+                        baseDefinitions[name] = odef
+                    self.overrides[name] = transRep
+                else:
+                    baseDefinitions[name] = odef
+                    if odef[&#34;tag&#34;] == &#34;element&#34; and not odef[&#34;abstract&#34;]:
+                        self.overrides[name] = f&#34;{oKind} {oMixed} (added)&#34;
+
+        self.defs = tuple(
+            (name, info.get(&#34;kind&#34;, None), info.get(&#34;mixed&#34;, None))
+            for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
+            if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
+        )
+        self.showOverrides()
+
+    def getDefs(self, asTsv=False):
+        &#34;&#34;&#34;Delivers the analysis results.
+
+        Parameters
+        ----------
+        asTsv: boolean, optional False
+            If True, the result is delivered as a TSV text,
+            otherwise as a list.
+
+        Returns
+        -------
+        str | list
+            One line/item per element.
+            Each line has: element name, element kind, mixed status.
+
+            The absence of the element *kind* and *mixed* status are indicated
+            with `---` in the TSV and with the `None` value in the list.
+            If all went well, there are n such absences!
+        &#34;&#34;&#34;
+        defs = self.defs
+
+        return (
+            &#34;\n&#34;.join(
+                f&#34;{name}\t{self.repKind(kind)}\t{self.repMixed(mixed)}&#34;
+                for (name, kind, mixed) in defs
+            )
+            if asTsv
+            else defs
+        )
+
+    @staticmethod
+    def repMixed(m):
+        return &#34;-----&#34; if m is None else &#34;mixed&#34; if m else &#34;pure&#34;
+
+    @staticmethod
+    def repKind(k):
+        return &#34;-----&#34; if k is None else k
+
+    def resolve(self, definitions):
+        &#34;&#34;&#34;Resolve indirections in the definitions.
+
+        After having read the complete XSD file,
+        we can now dereference names and fill properties of their definitions
+        in places where the names occur.
+        &#34;&#34;&#34;
+        debug = self.debug
+        verbose = self.verbose
+
+        def infer():
+            changed = 0
+            for (name, info) in definitions.items():
+                if info[&#34;mixed&#34;]:
+                    continue
+
+                other = info.get(&#34;base&#34;, info.get(&#34;subs&#34;, None))
+                if other:
+                    otherBare = other.split(&#34;:&#34;, 1)[-1]
+                    otherInfo = definitions.get(otherBare, None)
+                    if otherInfo is None:
+                        if not other.startswith(&#34;xs:&#34;):
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other} is not defined.&#34;)
+                        continue
+                    if otherInfo[&#34;mixed&#34;]:
+                        info[&#34;mixed&#34;] = True
+                        changed += 1
+                    if info.get(&#34;kind&#34;, None) is None:
+                        if otherInfo.get(&#34;kind&#34;, None):
+                            info[&#34;kind&#34;] = otherInfo[&#34;kind&#34;]
+                            changed += 1
+                        else:
+                            console(f&#34;Warning: {other}.kind is not defined.&#34;)
+                    if info.get(&#34;mixed&#34;, None) is None:
+                        if otherInfo.get(&#34;mixed&#34;, None):
+                            info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
+                            changed += 1
+                        else:
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+
+            return changed
+
+        i = 0
+
+        while True:
+            changed = infer()
+            i += 1
+            if changed:
+                if verbose == 1:
+                    console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+                if debug:
+                    self.showElems()
+            else:
+                break
+
+    def showElems(self):
+        &#34;&#34;&#34;Shows the current state of definitions.
+
+        Mainly for debugging.
+        &#34;&#34;&#34;
+        definitions = self.definitions
+        redefinitions = self.redefinitions
+
+        for (name, info) in sorted(definitions.items(), key=self.eKey):
+            tag = info[&#34;tag&#34;]
+            mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
+            abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
+            kind = info.get(&#34;kind&#34;, &#34;---&#34;)
+            subs = info.get(&#34;subs&#34;)
+            subsRep = f&#34;==&gt; {subs}&#34; if subs else &#34;&#34;
+            base = info.get(&#34;base&#34;)
+            baseRep = f&#34;&lt;== {base}&#34; if base else &#34;&#34;
+            console(
+                f&#34;{name:&lt;30} in {tag:&lt;20} &#34;
+                f&#34;({kind:&lt;7}) ({mixed}) ({abstract}) {subsRep}{baseRep}&#34;
+            )
+
+        console(&#34;=============================================&#34;)
+        for (name, amount) in sorted(redefinitions.items()):
+            console(f&#34;{amount:&gt;3}x {name}&#34;)
+
+    def showOverrides(self):
+        &#34;&#34;&#34;Shows the overriding definitions.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        override = self.override
+
+        if override:
+            overrides = self.overrides
+            same = sum(1 for x in overrides.items() if x[1] is None)
+            distinct = len(overrides) - same
+            if verbose == 1:
+                console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        if verbose &gt;= 0:
+            for (name, trans) in sorted(
+                x for x in self.overrides.items() if x[1] is not None
+            ):
+                console(f&#34;\t{name} {trans}&#34;)
+
+    def task(self, task, *args):
+        &#34;&#34;&#34;Implements a higher level task.
+
+        Parameters
+        ----------
+        task: string
+            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, or `&#34;tei&#34;`.
+
+        ask: list
+            Any arguments for the task.
+            That could be a base schema and an override.
+            Not all tasks require both.
+
+        Returns
+        -------
+        boolean
+            whether the task was completed successfully.
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+        myDir = self.myDir
+
+        if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+            if task == &#34;tei&#34;:
+                baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+                override = args[0] if len(args) else None
+            else:
+                baseSchema = args[0]
+                override = None
+            outputFile = (
+                baseNm(
+                    override if override is not None else baseSchema
+                ).removesuffix(&#34;.xsd&#34;)
+                + &#34;.tsv&#34;
+            )
+            self.configure(baseSchema=baseSchema, override=override)
+            if not self.good:
+                return False
+
+            self.interpret()
+            if not self.good:
+                return False
+            defs = self.getDefs(asTsv=True)
+
+            if verbose &gt;= 0:
+                console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+            with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                fh.write(defs)
+            console(f&#34;Analysis written to {outputFile}\n&#34;)
+            return True
+
+        elif task == &#34;fromrelax&#34;:
+            baseSchema = args[0]
+            trang = f&#34;{myDir}/trang/trang.jar&#34;
+            schemaOut = baseSchema.removesuffix(&#34;.rng&#34;) + &#34;.xsd&#34;
+            result = run(f&#34;java -jar {trang} {baseSchema} {schemaOut}&#34;, shell=True)
+            return True if result.returncode == 0 else False
+
+    def run(self):
+        &#34;&#34;&#34;Run a task specified by arguments on the command line.
+
+        Returns
+        -------
+        integer
+            0 if the task was executed successfully, otherwise 1
+            -1 is an error from before executing the task,
+            1 is an error from the actual execution of a task.
+        &#34;&#34;&#34;
+        tasks = dict(
+            tei={0, 1},
+            analyse={1},
+            fromrelax={1},
+        )
+        possibleFlags = {
+            &#34;-debug&#34;: False,
+            &#34;+debug&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+
+        args = set(sys.argv[1:])
+
+        flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+        args = {a for a in args if a not in flags}
+
+        if &#34;-h&#34; in args or &#34;--help&#34; in args:
+            self.help()
+            return 0
+
+        if len(args) == 0:
+            self.help()
+            console(&#34;No task specified&#34;)
+            return -1
+
+        task = args.pop(0)
+        nParams = tasks.get(task, None)
+        if nParams is None:
+            self.help()
+            console(f&#34;Unrecognized task {task}&#34;)
+            return -1
+
+        if len(args) not in nParams:
+            self.help()
+            console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
+            return -1
+
+        self.setModes(**flags)
+        return 0 if self.task(task, *args) else 1
+
+
+def main():
+    A = Analysis()
+    return A.run()
+
+
+if __name__ == &#34;__main__&#34;:
+    A = Analysis()
+    exit(main())</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="tf.tools.xmlschema.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L711-L713" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def main():
+    A = Analysis()
+    return A.run()</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="tf.tools.xmlschema.Analysis"><code class="flex name class">
+<span>class <span class="ident">Analysis</span></span>
+<span>(</span><span>debug=False, verbose=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Trivial initialization of the Analysis class.</p>
+<p>Further configuration happens in the <code>configure</code> method.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>debug</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to run in debug mode or not.
+In debug mode more information is shown on the console.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>integer</code>, optional <code>-1</code></dt>
+<dd>Produce no (-1), some (0) or many (1) orprogress and reporting messages</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L122-L708" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">class Analysis:
+    types = set(
+        &#34;&#34;&#34;
+        simpleType
+        complexType
+        &#34;&#34;&#34;.strip().split()
+    )
+
+    notInteresting = set(
+        &#34;&#34;&#34;
+        attribute
+        attributeGroup
+        group
+        &#34;&#34;&#34;.strip().split()
+    )
+
+    @staticmethod
+    def help():
+        console(
+            &#34;&#34;&#34;
+            USAGE
+
+            Command line:
+
+            xmlschema tei [customschemafile.xsd]
+            xmlschema analyse {schemafile.xsd}
+            xmlschema fromrelax {schemafile.rng}
+
+            &#34;&#34;&#34;
+        )
+
+    def __init__(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Trivial initialization of the Analysis class.
+
+        Further configuration happens in the `configure` method.
+
+        Parameters
+        ----------
+        debug: boolean, optional False
+            Whether to run in debug mode or not.
+            In debug mode more information is shown on the console.
+        verbose: integer, optional -1
+            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+        &#34;&#34;&#34;
+
+        self.verbose = verbose
+        self.debug = debug
+        self.myDir = dirNm(abspath(__file__))
+        self.setModes(debug=debug, verbose=verbose)
+
+    def setModes(self, debug=False, verbose=-1):
+        &#34;&#34;&#34;Sets debug and verbose modes.
+
+        See `tf.tools.xmlschema.Analysis`
+        &#34;&#34;&#34;
+        self.debug = debug
+        self.verbose = verbose
+
+    def configure(self, baseSchema=None, override=None):
+        &#34;&#34;&#34;Configure for an XML schema and overrides
+
+        Parameters
+        ----------
+        baseSchema: string, optional None
+            The path of the xsd file that acts as the base schema that we want
+            to analyse. If None, the complete TEI schema is chosen.
+        override: string, optional None
+            The path of another schema intended to override parts of the baseSchema.
+        debug: boolean, optional False
+            Whether to run in debug mode or not.
+            In debug mode more information is shown on the console.
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+
+        if baseSchema is None:
+            myDir = self.myDir
+            baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+
+        self.baseSchema = baseSchema
+        self.baseSchemaDir = dirNm(baseSchema)
+        self.override = override
+        self.overrideDir = None if override is None else dirNm(override)
+
+        def findImports(node):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+            if tag == &#34;import&#34;:
+                otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+                if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                    sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                    otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                    otherExists = fileExists(otherPath)
+                    status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                    kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                    if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                        console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                    if otherExists:
+                        dependents.append(otherPath)
+
+            for child in node.iterchildren(tag=etree.Element):
+                findImports(child)
+
+        roots = []
+        self.roots = roots
+        oroots = []
+        self.oroots = oroots
+
+        try:
+            with open(baseSchema, encoding=&#34;utf8&#34;) as fh:
+                tree = etree.parse(fh)
+
+            root = tree.getroot()
+            roots.append(root)
+            schemaDir = self.baseSchemaDir
+            dependents = []
+
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    roots.append(dRoot)
+
+            if override is not None:
+                with open(override, encoding=&#34;utf8&#34;) as fh:
+                    tree = etree.parse(fh)
+
+                root = tree.getroot()
+                oroots.append(root)
+                schemaDir = self.overrideDir
+                dependents = []
+
+                findImports(root)
+
+                for dependent in dependents:
+                    with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                        dTree = etree.parse(fh)
+                        dRoot = dTree.getroot()
+                        oroots.append(dRoot)
+
+            self.good = True
+
+        except Exception as e:
+            msg = f&#34;Could not read and parse {baseSchema}&#34;
+            if override is not None:
+                msg += &#34; or {override}&#34;
+            console(msg)
+            console(str(e))
+            self.good = False
+
+    @staticmethod
+    def eKey(x):
+        &#34;&#34;&#34;Sort the dict with element definitions.
+
+        Parameters
+        ----------
+        x: (str, dict)
+            The element name and the element info.
+
+        Returns
+        -------
+        tuple
+            The members are such that definitions from other than xs:element come first,
+            and within xs:element those that are &#34;abstract&#34; come first.
+        &#34;&#34;&#34;
+        name = x[0]
+        tag = x[1][&#34;tag&#34;]
+        abstract = x[1][&#34;abstract&#34;]
+
+        return (
+            &#34;0&#34; if tag == &#34;simpleType&#34; else &#34;1&#34; if tag == &#34;complexType&#34; else tag,
+            &#34;&#34; if abstract else &#34;x&#34;,
+            name,
+        )
+
+    def interpret(self):
+        &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+
+        The definitions are read with the module `lxml`.
+
+        For each definition of a name certain attributes are remembered, e.g.
+        the *kind*, the presence of a *mixed* attribute, whether it is a
+        *substitutionGroup* or *extension*, and whether it is *abstract*.
+
+        When elements refer to a *substitutionGroup*, they need to get
+        the *kind* and *mixed* attributes of that group.
+
+        When elements refer to a *base*, they need to get
+        the *kind* and *mixed* attributes of an extension with that *base*.
+
+        After an initial parse of the XSD file, we do a variable number of
+        resolving rounds, where we chase the substitution groups and
+        extensions, until nothing changes anymore.
+
+        The info that is gathered is put in `self.defs` and can be retrieved
+        by method `getDefs()`.
+
+        The info is a list of items, one item per element.
+        Each item is a tuple of: element name, element kind, mixed status.
+
+        The absence of the element *kind* and *mixed* status are indicated
+        with `None`.
+        If all went well, there are no such absences!
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+        debug = self.debug
+        roots = self.roots
+        oroots = self.oroots
+        types = self.types
+        override = self.override
+
+        definitions = {}
+        redefinitions = collections.Counter()
+
+        def findDefs(node, definingName, topDef):
+            &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+
+            This function is called recursively for child nodes.
+
+            Parameters
+            ----------
+            node: Object
+                The current node.
+            definingName: string | void
+                If this has a value, we are underneath a definition.
+
+            topDef: boolean
+                If we are underneath a definition, this indicates
+                we are at the top-level of that definition.
+            &#34;&#34;&#34;
+            tag = etree.QName(node.tag).localname
+
+            name = node.get(&#34;name&#34;)
+            abstract = node.get(&#34;abstract&#34;) == &#34;true&#34;
+            mixed = node.get(&#34;mixed&#34;) == &#34;true&#34;
+            subs = node.get(&#34;substitutionGroup&#34;)
+
+            if definingName:
+                if topDef:
+                    if tag in types:
+                        definitions[definingName][&#34;kind&#34;] = (
+                            &#34;simple&#34; if tag == &#34;simpleType&#34; else &#34;complex&#34;
+                        )
+                        if mixed:
+                            definitions[definingName][&#34;mixed&#34;] = mixed
+                else:
+                    if tag == &#34;extension&#34;:
+                        base = node.get(&#34;base&#34;)
+                        if base:
+                            definitions[definingName][&#34;base&#34;] = base
+
+            if name and tag not in self.notInteresting:
+                if name in definitions:
+                    redefinitions[name] += 1
+                else:
+                    definitions[name] = dict(
+                        tag=tag, abstract=abstract, mixed=mixed, subs=subs
+                    )
+
+            if definingName:
+                defining = definingName
+                top = False
+            else:
+                isElementDef = name and tag == &#34;element&#34;
+                defining = name if isElementDef else False
+                top = True if defining else False
+
+            for child in node.iterchildren(tag=etree.Element):
+                findDefs(child, defining, top)
+
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {self.baseSchema}&#34;)
+        for root in roots:
+            findDefs(root, False, False)
+        if debug:
+            self.showElems()
+        self.resolve(definitions)
+
+        baseDefinitions = definitions
+
+        self.overrides = {}
+
+        if len(oroots) &gt; 0:
+            definitions = {}
+            redefinitions = collections.Counter()
+            if verbose &gt;= 0:
+                console(f&#34;Analysing {override}&#34;)
+            for root in oroots:
+                findDefs(root, False, False)
+            if debug:
+                self.showElems()
+            self.resolve(definitions)
+
+            for (name, odef) in definitions.items():
+
+                oKind = self.repKind(odef.get(&#34;kind&#34;, None))
+                oMixed = self.repMixed(odef.get(&#34;mixed&#34;, None))
+
+                if name in baseDefinitions:
+                    baseDef = baseDefinitions[name]
+                    baseKind = self.repKind(baseDef.get(&#34;kind&#34;, None))
+                    baseMixed = self.repMixed(baseDef.get(&#34;mixed&#34;, None))
+                    transRep = (
+                        f&#34;{baseKind} {baseMixed} ==&gt; {oKind} {oMixed}&#34;
+                        if baseKind != oKind and baseMixed != oMixed
+                        else f&#34;{baseKind} ==&gt; {oKind}&#34;
+                        if baseKind != oKind
+                        else f&#34;{baseMixed} ==&gt; {oMixed}&#34;
+                        if baseMixed != oMixed
+                        else None
+                    )
+                    if transRep is not None:
+                        baseDefinitions[name] = odef
+                    self.overrides[name] = transRep
+                else:
+                    baseDefinitions[name] = odef
+                    if odef[&#34;tag&#34;] == &#34;element&#34; and not odef[&#34;abstract&#34;]:
+                        self.overrides[name] = f&#34;{oKind} {oMixed} (added)&#34;
+
+        self.defs = tuple(
+            (name, info.get(&#34;kind&#34;, None), info.get(&#34;mixed&#34;, None))
+            for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
+            if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
+        )
+        self.showOverrides()
+
+    def getDefs(self, asTsv=False):
+        &#34;&#34;&#34;Delivers the analysis results.
+
+        Parameters
+        ----------
+        asTsv: boolean, optional False
+            If True, the result is delivered as a TSV text,
+            otherwise as a list.
+
+        Returns
+        -------
+        str | list
+            One line/item per element.
+            Each line has: element name, element kind, mixed status.
+
+            The absence of the element *kind* and *mixed* status are indicated
+            with `---` in the TSV and with the `None` value in the list.
+            If all went well, there are n such absences!
+        &#34;&#34;&#34;
+        defs = self.defs
+
+        return (
+            &#34;\n&#34;.join(
+                f&#34;{name}\t{self.repKind(kind)}\t{self.repMixed(mixed)}&#34;
+                for (name, kind, mixed) in defs
+            )
+            if asTsv
+            else defs
+        )
+
+    @staticmethod
+    def repMixed(m):
+        return &#34;-----&#34; if m is None else &#34;mixed&#34; if m else &#34;pure&#34;
+
+    @staticmethod
+    def repKind(k):
+        return &#34;-----&#34; if k is None else k
+
+    def resolve(self, definitions):
+        &#34;&#34;&#34;Resolve indirections in the definitions.
+
+        After having read the complete XSD file,
+        we can now dereference names and fill properties of their definitions
+        in places where the names occur.
+        &#34;&#34;&#34;
+        debug = self.debug
+        verbose = self.verbose
+
+        def infer():
+            changed = 0
+            for (name, info) in definitions.items():
+                if info[&#34;mixed&#34;]:
+                    continue
+
+                other = info.get(&#34;base&#34;, info.get(&#34;subs&#34;, None))
+                if other:
+                    otherBare = other.split(&#34;:&#34;, 1)[-1]
+                    otherInfo = definitions.get(otherBare, None)
+                    if otherInfo is None:
+                        if not other.startswith(&#34;xs:&#34;):
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other} is not defined.&#34;)
+                        continue
+                    if otherInfo[&#34;mixed&#34;]:
+                        info[&#34;mixed&#34;] = True
+                        changed += 1
+                    if info.get(&#34;kind&#34;, None) is None:
+                        if otherInfo.get(&#34;kind&#34;, None):
+                            info[&#34;kind&#34;] = otherInfo[&#34;kind&#34;]
+                            changed += 1
+                        else:
+                            console(f&#34;Warning: {other}.kind is not defined.&#34;)
+                    if info.get(&#34;mixed&#34;, None) is None:
+                        if otherInfo.get(&#34;mixed&#34;, None):
+                            info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
+                            changed += 1
+                        else:
+                            if verbose &gt;= 0:
+                                console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+
+            return changed
+
+        i = 0
+
+        while True:
+            changed = infer()
+            i += 1
+            if changed:
+                if verbose == 1:
+                    console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+                if debug:
+                    self.showElems()
+            else:
+                break
+
+    def showElems(self):
+        &#34;&#34;&#34;Shows the current state of definitions.
+
+        Mainly for debugging.
+        &#34;&#34;&#34;
+        definitions = self.definitions
+        redefinitions = self.redefinitions
+
+        for (name, info) in sorted(definitions.items(), key=self.eKey):
+            tag = info[&#34;tag&#34;]
+            mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
+            abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
+            kind = info.get(&#34;kind&#34;, &#34;---&#34;)
+            subs = info.get(&#34;subs&#34;)
+            subsRep = f&#34;==&gt; {subs}&#34; if subs else &#34;&#34;
+            base = info.get(&#34;base&#34;)
+            baseRep = f&#34;&lt;== {base}&#34; if base else &#34;&#34;
+            console(
+                f&#34;{name:&lt;30} in {tag:&lt;20} &#34;
+                f&#34;({kind:&lt;7}) ({mixed}) ({abstract}) {subsRep}{baseRep}&#34;
+            )
+
+        console(&#34;=============================================&#34;)
+        for (name, amount) in sorted(redefinitions.items()):
+            console(f&#34;{amount:&gt;3}x {name}&#34;)
+
+    def showOverrides(self):
+        &#34;&#34;&#34;Shows the overriding definitions.
+        &#34;&#34;&#34;
+        verbose = self.verbose
+        override = self.override
+
+        if override:
+            overrides = self.overrides
+            same = sum(1 for x in overrides.items() if x[1] is None)
+            distinct = len(overrides) - same
+            if verbose == 1:
+                console(f&#34;{same:&gt;3} identical override(s)&#34;)
+            if verbose &gt;= 0:
+                console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+        if verbose &gt;= 0:
+            for (name, trans) in sorted(
+                x for x in self.overrides.items() if x[1] is not None
+            ):
+                console(f&#34;\t{name} {trans}&#34;)
+
+    def task(self, task, *args):
+        &#34;&#34;&#34;Implements a higher level task.
+
+        Parameters
+        ----------
+        task: string
+            The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, or `&#34;tei&#34;`.
+
+        ask: list
+            Any arguments for the task.
+            That could be a base schema and an override.
+            Not all tasks require both.
+
+        Returns
+        -------
+        boolean
+            whether the task was completed successfully.
+        &#34;&#34;&#34;
+
+        verbose = self.verbose
+        myDir = self.myDir
+
+        if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+            if task == &#34;tei&#34;:
+                baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+                override = args[0] if len(args) else None
+            else:
+                baseSchema = args[0]
+                override = None
+            outputFile = (
+                baseNm(
+                    override if override is not None else baseSchema
+                ).removesuffix(&#34;.xsd&#34;)
+                + &#34;.tsv&#34;
+            )
+            self.configure(baseSchema=baseSchema, override=override)
+            if not self.good:
+                return False
+
+            self.interpret()
+            if not self.good:
+                return False
+            defs = self.getDefs(asTsv=True)
+
+            if verbose &gt;= 0:
+                console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+            with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+                fh.write(defs)
+            console(f&#34;Analysis written to {outputFile}\n&#34;)
+            return True
+
+        elif task == &#34;fromrelax&#34;:
+            baseSchema = args[0]
+            trang = f&#34;{myDir}/trang/trang.jar&#34;
+            schemaOut = baseSchema.removesuffix(&#34;.rng&#34;) + &#34;.xsd&#34;
+            result = run(f&#34;java -jar {trang} {baseSchema} {schemaOut}&#34;, shell=True)
+            return True if result.returncode == 0 else False
+
+    def run(self):
+        &#34;&#34;&#34;Run a task specified by arguments on the command line.
+
+        Returns
+        -------
+        integer
+            0 if the task was executed successfully, otherwise 1
+            -1 is an error from before executing the task,
+            1 is an error from the actual execution of a task.
+        &#34;&#34;&#34;
+        tasks = dict(
+            tei={0, 1},
+            analyse={1},
+            fromrelax={1},
+        )
+        possibleFlags = {
+            &#34;-debug&#34;: False,
+            &#34;+debug&#34;: True,
+            &#34;-verbose&#34;: -1,
+            &#34;+verbose&#34;: 0,
+            &#34;++verbose&#34;: 1,
+        }
+
+        args = set(sys.argv[1:])
+
+        flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+        args = {a for a in args if a not in flags}
+
+        if &#34;-h&#34; in args or &#34;--help&#34; in args:
+            self.help()
+            return 0
+
+        if len(args) == 0:
+            self.help()
+            console(&#34;No task specified&#34;)
+            return -1
+
+        task = args.pop(0)
+        nParams = tasks.get(task, None)
+        if nParams is None:
+            self.help()
+            console(f&#34;Unrecognized task {task}&#34;)
+            return -1
+
+        if len(args) not in nParams:
+            self.help()
+            console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
+            return -1
+
+        self.setModes(**flags)
+        return 0 if self.task(task, *args) else 1</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="tf.tools.xmlschema.Analysis.notInteresting"><code class="name">var <span class="ident">notInteresting</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.types"><code class="name">var <span class="ident">types</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="tf.tools.xmlschema.Analysis.eKey"><code class="name flex">
+<span>def <span class="ident">eKey</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sort the dict with element definitions.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>(str, dict)</code></dt>
+<dd>The element name and the element info.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>The members are such that definitions from other than xs:element come first,
+and within xs:element those that are "abstract" come first.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L282-L305" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def eKey(x):
+    &#34;&#34;&#34;Sort the dict with element definitions.
+
+    Parameters
+    ----------
+    x: (str, dict)
+        The element name and the element info.
+
+    Returns
+    -------
+    tuple
+        The members are such that definitions from other than xs:element come first,
+        and within xs:element those that are &#34;abstract&#34; come first.
+    &#34;&#34;&#34;
+    name = x[0]
+    tag = x[1][&#34;tag&#34;]
+    abstract = x[1][&#34;abstract&#34;]
+
+    return (
+        &#34;0&#34; if tag == &#34;simpleType&#34; else &#34;1&#34; if tag == &#34;complexType&#34; else tag,
+        &#34;&#34; if abstract else &#34;x&#34;,
+        name,
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.help"><code class="name flex">
+<span>def <span class="ident">help</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L138-L151" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def help():
+    console(
+        &#34;&#34;&#34;
+        USAGE
+
+        Command line:
+
+        xmlschema tei [customschemafile.xsd]
+        xmlschema analyse {schemafile.xsd}
+        xmlschema fromrelax {schemafile.rng}
+
+        &#34;&#34;&#34;
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.repKind"><code class="name flex">
+<span>def <span class="ident">repKind</span></span>(<span>k)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L493-L495" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def repKind(k):
+    return &#34;-----&#34; if k is None else k</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.repMixed"><code class="name flex">
+<span>def <span class="ident">repMixed</span></span>(<span>m)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L489-L491" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">@staticmethod
+def repMixed(m):
+    return &#34;-----&#34; if m is None else &#34;mixed&#34; if m else &#34;pure&#34;</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.tools.xmlschema.Analysis.configure"><code class="name flex">
+<span>def <span class="ident">configure</span></span>(<span>self, baseSchema=None, override=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configure for an XML schema and overrides</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>baseSchema</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The path of the xsd file that acts as the base schema that we want
+to analyse. If None, the complete TEI schema is chosen.</dd>
+<dt><strong><code>override</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The path of another schema intended to override parts of the baseSchema.</dd>
+<dt><strong><code>debug</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to run in debug mode or not.
+In debug mode more information is shown on the console.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L180-L280" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def configure(self, baseSchema=None, override=None):
+    &#34;&#34;&#34;Configure for an XML schema and overrides
+
+    Parameters
+    ----------
+    baseSchema: string, optional None
+        The path of the xsd file that acts as the base schema that we want
+        to analyse. If None, the complete TEI schema is chosen.
+    override: string, optional None
+        The path of another schema intended to override parts of the baseSchema.
+    debug: boolean, optional False
+        Whether to run in debug mode or not.
+        In debug mode more information is shown on the console.
+    &#34;&#34;&#34;
+
+    verbose = self.verbose
+
+    if baseSchema is None:
+        myDir = self.myDir
+        baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+
+    self.baseSchema = baseSchema
+    self.baseSchemaDir = dirNm(baseSchema)
+    self.override = override
+    self.overrideDir = None if override is None else dirNm(override)
+
+    def findImports(node):
+        &#34;&#34;&#34;Inner function to walk through the xsd and get the import statements.
+
+        This function is called recursively for child nodes.
+
+        Parameters
+        ----------
+        node: Object
+            The current node.
+        &#34;&#34;&#34;
+        tag = etree.QName(node.tag).localname
+        if tag == &#34;import&#34;:
+            otherFile = node.attrib.get(&#34;schemaLocation&#34;, &#34;??&#34;)
+            if otherFile not in {&#34;xml.xsd&#34;, &#34;teix.xsd&#34;}:
+                sep = &#34;/&#34; if schemaDir else &#34;&#34;
+                otherPath = f&#34;{schemaDir}{sep}{otherFile}&#34;
+                otherExists = fileExists(otherPath)
+                status = &#34;exists&#34; if otherExists else &#34;missing&#34;
+                kind = &#34;INFO&#34; if otherExists else &#34;WARNING&#34;
+                if verbose &gt;= 0 or kind != &#34;INFO&#34;:
+                    console(f&#34;{kind}: Needs {otherFile} ({status})&#34;)
+                if otherExists:
+                    dependents.append(otherPath)
+
+        for child in node.iterchildren(tag=etree.Element):
+            findImports(child)
+
+    roots = []
+    self.roots = roots
+    oroots = []
+    self.oroots = oroots
+
+    try:
+        with open(baseSchema, encoding=&#34;utf8&#34;) as fh:
+            tree = etree.parse(fh)
+
+        root = tree.getroot()
+        roots.append(root)
+        schemaDir = self.baseSchemaDir
+        dependents = []
+
+        findImports(root)
+
+        for dependent in dependents:
+            with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                dTree = etree.parse(fh)
+                dRoot = dTree.getroot()
+                roots.append(dRoot)
+
+        if override is not None:
+            with open(override, encoding=&#34;utf8&#34;) as fh:
+                tree = etree.parse(fh)
+
+            root = tree.getroot()
+            oroots.append(root)
+            schemaDir = self.overrideDir
+            dependents = []
+
+            findImports(root)
+
+            for dependent in dependents:
+                with open(dependent, encoding=&#34;utf8&#34;) as fh:
+                    dTree = etree.parse(fh)
+                    dRoot = dTree.getroot()
+                    oroots.append(dRoot)
+
+        self.good = True
+
+    except Exception as e:
+        msg = f&#34;Could not read and parse {baseSchema}&#34;
+        if override is not None:
+            msg += &#34; or {override}&#34;
+        console(msg)
+        console(str(e))
+        self.good = False</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.getDefs"><code class="name flex">
+<span>def <span class="ident">getDefs</span></span>(<span>self, asTsv=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delivers the analysis results.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>asTsv</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>If True, the result is delivered as a TSV text,
+otherwise as a list.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str | list</code></dt>
+<dd>
+<p>One line/item per element.
+Each line has: element name, element kind, mixed status.</p>
+<p>The absence of the element <em>kind</em> and <em>mixed</em> status are indicated
+with <code>---</code> in the TSV and with the <code>None</code> value in the list.
+If all went well, there are n such absences!</p>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L459-L487" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getDefs(self, asTsv=False):
+    &#34;&#34;&#34;Delivers the analysis results.
+
+    Parameters
+    ----------
+    asTsv: boolean, optional False
+        If True, the result is delivered as a TSV text,
+        otherwise as a list.
+
+    Returns
+    -------
+    str | list
+        One line/item per element.
+        Each line has: element name, element kind, mixed status.
+
+        The absence of the element *kind* and *mixed* status are indicated
+        with `---` in the TSV and with the `None` value in the list.
+        If all went well, there are n such absences!
+    &#34;&#34;&#34;
+    defs = self.defs
+
+    return (
+        &#34;\n&#34;.join(
+            f&#34;{name}\t{self.repKind(kind)}\t{self.repMixed(mixed)}&#34;
+            for (name, kind, mixed) in defs
+        )
+        if asTsv
+        else defs
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.interpret"><code class="name flex">
+<span>def <span class="ident">interpret</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reads the xsd and interprets the element definitions.</p>
+<p>The definitions are read with the module <code>lxml</code>.</p>
+<p>For each definition of a name certain attributes are remembered, e.g.
+the <em>kind</em>, the presence of a <em>mixed</em> attribute, whether it is a
+<em>substitutionGroup</em> or <em>extension</em>, and whether it is <em>abstract</em>.</p>
+<p>When elements refer to a <em>substitutionGroup</em>, they need to get
+the <em>kind</em> and <em>mixed</em> attributes of that group.</p>
+<p>When elements refer to a <em>base</em>, they need to get
+the <em>kind</em> and <em>mixed</em> attributes of an extension with that <em>base</em>.</p>
+<p>After an initial parse of the XSD file, we do a variable number of
+resolving rounds, where we chase the substitution groups and
+extensions, until nothing changes anymore.</p>
+<p>The info that is gathered is put in <code>self.defs</code> and can be retrieved
+by method <code>getDefs()</code>.</p>
+<p>The info is a list of items, one item per element.
+Each item is a tuple of: element name, element kind, mixed status.</p>
+<p>The absence of the element <em>kind</em> and <em>mixed</em> status are indicated
+with <code>None</code>.
+If all went well, there are no such absences!</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L307-L457" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def interpret(self):
+    &#34;&#34;&#34;Reads the xsd and interprets the element definitions.
+
+    The definitions are read with the module `lxml`.
+
+    For each definition of a name certain attributes are remembered, e.g.
+    the *kind*, the presence of a *mixed* attribute, whether it is a
+    *substitutionGroup* or *extension*, and whether it is *abstract*.
+
+    When elements refer to a *substitutionGroup*, they need to get
+    the *kind* and *mixed* attributes of that group.
+
+    When elements refer to a *base*, they need to get
+    the *kind* and *mixed* attributes of an extension with that *base*.
+
+    After an initial parse of the XSD file, we do a variable number of
+    resolving rounds, where we chase the substitution groups and
+    extensions, until nothing changes anymore.
+
+    The info that is gathered is put in `self.defs` and can be retrieved
+    by method `getDefs()`.
+
+    The info is a list of items, one item per element.
+    Each item is a tuple of: element name, element kind, mixed status.
+
+    The absence of the element *kind* and *mixed* status are indicated
+    with `None`.
+    If all went well, there are no such absences!
+    &#34;&#34;&#34;
+
+    verbose = self.verbose
+    debug = self.debug
+    roots = self.roots
+    oroots = self.oroots
+    types = self.types
+    override = self.override
+
+    definitions = {}
+    redefinitions = collections.Counter()
+
+    def findDefs(node, definingName, topDef):
+        &#34;&#34;&#34;Inner function to walk through the xsd and get definitions.
+
+        This function is called recursively for child nodes.
+
+        Parameters
+        ----------
+        node: Object
+            The current node.
+        definingName: string | void
+            If this has a value, we are underneath a definition.
+
+        topDef: boolean
+            If we are underneath a definition, this indicates
+            we are at the top-level of that definition.
+        &#34;&#34;&#34;
+        tag = etree.QName(node.tag).localname
+
+        name = node.get(&#34;name&#34;)
+        abstract = node.get(&#34;abstract&#34;) == &#34;true&#34;
+        mixed = node.get(&#34;mixed&#34;) == &#34;true&#34;
+        subs = node.get(&#34;substitutionGroup&#34;)
+
+        if definingName:
+            if topDef:
+                if tag in types:
+                    definitions[definingName][&#34;kind&#34;] = (
+                        &#34;simple&#34; if tag == &#34;simpleType&#34; else &#34;complex&#34;
+                    )
+                    if mixed:
+                        definitions[definingName][&#34;mixed&#34;] = mixed
+            else:
+                if tag == &#34;extension&#34;:
+                    base = node.get(&#34;base&#34;)
+                    if base:
+                        definitions[definingName][&#34;base&#34;] = base
+
+        if name and tag not in self.notInteresting:
+            if name in definitions:
+                redefinitions[name] += 1
+            else:
+                definitions[name] = dict(
+                    tag=tag, abstract=abstract, mixed=mixed, subs=subs
+                )
+
+        if definingName:
+            defining = definingName
+            top = False
+        else:
+            isElementDef = name and tag == &#34;element&#34;
+            defining = name if isElementDef else False
+            top = True if defining else False
+
+        for child in node.iterchildren(tag=etree.Element):
+            findDefs(child, defining, top)
+
+    if verbose &gt;= 0:
+        console(f&#34;Analysing {self.baseSchema}&#34;)
+    for root in roots:
+        findDefs(root, False, False)
+    if debug:
+        self.showElems()
+    self.resolve(definitions)
+
+    baseDefinitions = definitions
+
+    self.overrides = {}
+
+    if len(oroots) &gt; 0:
+        definitions = {}
+        redefinitions = collections.Counter()
+        if verbose &gt;= 0:
+            console(f&#34;Analysing {override}&#34;)
+        for root in oroots:
+            findDefs(root, False, False)
+        if debug:
+            self.showElems()
+        self.resolve(definitions)
+
+        for (name, odef) in definitions.items():
+
+            oKind = self.repKind(odef.get(&#34;kind&#34;, None))
+            oMixed = self.repMixed(odef.get(&#34;mixed&#34;, None))
+
+            if name in baseDefinitions:
+                baseDef = baseDefinitions[name]
+                baseKind = self.repKind(baseDef.get(&#34;kind&#34;, None))
+                baseMixed = self.repMixed(baseDef.get(&#34;mixed&#34;, None))
+                transRep = (
+                    f&#34;{baseKind} {baseMixed} ==&gt; {oKind} {oMixed}&#34;
+                    if baseKind != oKind and baseMixed != oMixed
+                    else f&#34;{baseKind} ==&gt; {oKind}&#34;
+                    if baseKind != oKind
+                    else f&#34;{baseMixed} ==&gt; {oMixed}&#34;
+                    if baseMixed != oMixed
+                    else None
+                )
+                if transRep is not None:
+                    baseDefinitions[name] = odef
+                self.overrides[name] = transRep
+            else:
+                baseDefinitions[name] = odef
+                if odef[&#34;tag&#34;] == &#34;element&#34; and not odef[&#34;abstract&#34;]:
+                    self.overrides[name] = f&#34;{oKind} {oMixed} (added)&#34;
+
+    self.defs = tuple(
+        (name, info.get(&#34;kind&#34;, None), info.get(&#34;mixed&#34;, None))
+        for (name, info) in sorted(baseDefinitions.items(), key=self.eKey)
+        if info[&#34;tag&#34;] == &#34;element&#34; and not info[&#34;abstract&#34;]
+    )
+    self.showOverrides()</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.resolve"><code class="name flex">
+<span>def <span class="ident">resolve</span></span>(<span>self, definitions)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Resolve indirections in the definitions.</p>
+<p>After having read the complete XSD file,
+we can now dereference names and fill properties of their definitions
+in places where the names occur.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L497-L552" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def resolve(self, definitions):
+    &#34;&#34;&#34;Resolve indirections in the definitions.
+
+    After having read the complete XSD file,
+    we can now dereference names and fill properties of their definitions
+    in places where the names occur.
+    &#34;&#34;&#34;
+    debug = self.debug
+    verbose = self.verbose
+
+    def infer():
+        changed = 0
+        for (name, info) in definitions.items():
+            if info[&#34;mixed&#34;]:
+                continue
+
+            other = info.get(&#34;base&#34;, info.get(&#34;subs&#34;, None))
+            if other:
+                otherBare = other.split(&#34;:&#34;, 1)[-1]
+                otherInfo = definitions.get(otherBare, None)
+                if otherInfo is None:
+                    if not other.startswith(&#34;xs:&#34;):
+                        if verbose &gt;= 0:
+                            console(f&#34;Warning: {other} is not defined.&#34;)
+                    continue
+                if otherInfo[&#34;mixed&#34;]:
+                    info[&#34;mixed&#34;] = True
+                    changed += 1
+                if info.get(&#34;kind&#34;, None) is None:
+                    if otherInfo.get(&#34;kind&#34;, None):
+                        info[&#34;kind&#34;] = otherInfo[&#34;kind&#34;]
+                        changed += 1
+                    else:
+                        console(f&#34;Warning: {other}.kind is not defined.&#34;)
+                if info.get(&#34;mixed&#34;, None) is None:
+                    if otherInfo.get(&#34;mixed&#34;, None):
+                        info[&#34;mixed&#34;] = otherInfo[&#34;mixed&#34;]
+                        changed += 1
+                    else:
+                        if verbose &gt;= 0:
+                            console(f&#34;Warning: {other}.mixed is not defined.&#34;)
+
+        return changed
+
+    i = 0
+
+    while True:
+        changed = infer()
+        i += 1
+        if changed:
+            if verbose == 1:
+                console(f&#34;\tround {i:&gt;3}: {changed:&gt;3} changes&#34;)
+            if debug:
+                self.showElems()
+        else:
+            break</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run a task specified by arguments on the command line.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>integer</code></dt>
+<dd>0 if the task was executed successfully, otherwise 1
+-1 is an error from before executing the task,
+1 is an error from the actual execution of a task.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L658-L708" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def run(self):
+    &#34;&#34;&#34;Run a task specified by arguments on the command line.
+
+    Returns
+    -------
+    integer
+        0 if the task was executed successfully, otherwise 1
+        -1 is an error from before executing the task,
+        1 is an error from the actual execution of a task.
+    &#34;&#34;&#34;
+    tasks = dict(
+        tei={0, 1},
+        analyse={1},
+        fromrelax={1},
+    )
+    possibleFlags = {
+        &#34;-debug&#34;: False,
+        &#34;+debug&#34;: True,
+        &#34;-verbose&#34;: -1,
+        &#34;+verbose&#34;: 0,
+        &#34;++verbose&#34;: 1,
+    }
+
+    args = set(sys.argv[1:])
+
+    flags = {arg: val for (arg, val) in possibleFlags if arg in args}
+    args = {a for a in args if a not in flags}
+
+    if &#34;-h&#34; in args or &#34;--help&#34; in args:
+        self.help()
+        return 0
+
+    if len(args) == 0:
+        self.help()
+        console(&#34;No task specified&#34;)
+        return -1
+
+    task = args.pop(0)
+    nParams = tasks.get(task, None)
+    if nParams is None:
+        self.help()
+        console(f&#34;Unrecognized task {task}&#34;)
+        return -1
+
+    if len(args) not in nParams:
+        self.help()
+        console(f&#34;Wrong number of arguments ({len(args)} for {task}&#34;)
+        return -1
+
+    self.setModes(**flags)
+    return 0 if self.task(task, *args) else 1</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.setModes"><code class="name flex">
+<span>def <span class="ident">setModes</span></span>(<span>self, debug=False, verbose=-1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets debug and verbose modes.</p>
+<p>See <code><a title="tf.tools.xmlschema.Analysis" href="#tf.tools.xmlschema.Analysis">Analysis</a></code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L172-L178" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def setModes(self, debug=False, verbose=-1):
+    &#34;&#34;&#34;Sets debug and verbose modes.
+
+    See `tf.tools.xmlschema.Analysis`
+    &#34;&#34;&#34;
+    self.debug = debug
+    self.verbose = verbose</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.showElems"><code class="name flex">
+<span>def <span class="ident">showElems</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the current state of definitions.</p>
+<p>Mainly for debugging.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L554-L578" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showElems(self):
+    &#34;&#34;&#34;Shows the current state of definitions.
+
+    Mainly for debugging.
+    &#34;&#34;&#34;
+    definitions = self.definitions
+    redefinitions = self.redefinitions
+
+    for (name, info) in sorted(definitions.items(), key=self.eKey):
+        tag = info[&#34;tag&#34;]
+        mixed = &#34;mixed&#34; if info[&#34;mixed&#34;] else &#34;-----&#34;
+        abstract = &#34;abstract&#34; if info[&#34;abstract&#34;] else &#34;--------&#34;
+        kind = info.get(&#34;kind&#34;, &#34;---&#34;)
+        subs = info.get(&#34;subs&#34;)
+        subsRep = f&#34;==&gt; {subs}&#34; if subs else &#34;&#34;
+        base = info.get(&#34;base&#34;)
+        baseRep = f&#34;&lt;== {base}&#34; if base else &#34;&#34;
+        console(
+            f&#34;{name:&lt;30} in {tag:&lt;20} &#34;
+            f&#34;({kind:&lt;7}) ({mixed}) ({abstract}) {subsRep}{baseRep}&#34;
+        )
+
+    console(&#34;=============================================&#34;)
+    for (name, amount) in sorted(redefinitions.items()):
+        console(f&#34;{amount:&gt;3}x {name}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.showOverrides"><code class="name flex">
+<span>def <span class="ident">showOverrides</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Shows the overriding definitions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L580-L598" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def showOverrides(self):
+    &#34;&#34;&#34;Shows the overriding definitions.
+    &#34;&#34;&#34;
+    verbose = self.verbose
+    override = self.override
+
+    if override:
+        overrides = self.overrides
+        same = sum(1 for x in overrides.items() if x[1] is None)
+        distinct = len(overrides) - same
+        if verbose == 1:
+            console(f&#34;{same:&gt;3} identical override(s)&#34;)
+        if verbose &gt;= 0:
+            console(f&#34;{distinct:&gt;3} changing override(s)&#34;)
+    if verbose &gt;= 0:
+        for (name, trans) in sorted(
+            x for x in self.overrides.items() if x[1] is not None
+        ):
+            console(f&#34;\t{name} {trans}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.tools.xmlschema.Analysis.task"><code class="name flex">
+<span>def <span class="ident">task</span></span>(<span>self, task, *args)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implements a higher level task.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>task</code></strong> :&ensp;<code>string</code></dt>
+<dd>The task to execute: <code>"fromrelax"</code>, <code>"analyse"</code>, or <code>"tei"</code>.</dd>
+<dt><strong><code>ask</code></strong> :&ensp;<code>list</code></dt>
+<dd>Any arguments for the task.
+That could be a base schema and an override.
+Not all tasks require both.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>boolean</code></dt>
+<dd>whether the task was completed successfully.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/tools/xmlschema.py#L600-L656" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def task(self, task, *args):
+    &#34;&#34;&#34;Implements a higher level task.
+
+    Parameters
+    ----------
+    task: string
+        The task to execute: `&#34;fromrelax&#34;`, `&#34;analyse&#34;`, or `&#34;tei&#34;`.
+
+    ask: list
+        Any arguments for the task.
+        That could be a base schema and an override.
+        Not all tasks require both.
+
+    Returns
+    -------
+    boolean
+        whether the task was completed successfully.
+    &#34;&#34;&#34;
+
+    verbose = self.verbose
+    myDir = self.myDir
+
+    if task in {&#34;tei&#34;, &#34;analyse&#34;}:
+        if task == &#34;tei&#34;:
+            baseSchema = f&#34;{myDir}/tei/tei_all.xsd&#34;
+            override = args[0] if len(args) else None
+        else:
+            baseSchema = args[0]
+            override = None
+        outputFile = (
+            baseNm(
+                override if override is not None else baseSchema
+            ).removesuffix(&#34;.xsd&#34;)
+            + &#34;.tsv&#34;
+        )
+        self.configure(baseSchema=baseSchema, override=override)
+        if not self.good:
+            return False
+
+        self.interpret()
+        if not self.good:
+            return False
+        defs = self.getDefs(asTsv=True)
+
+        if verbose &gt;= 0:
+            console(f&#34;{len(defs):&gt;3} elements defined&#34;)
+        with open(outputFile, &#34;w&#34;, encoding=&#34;utf8&#34;) as fh:
+            fh.write(defs)
+        console(f&#34;Analysis written to {outputFile}\n&#34;)
+        return True
+
+    elif task == &#34;fromrelax&#34;:
+        baseSchema = args[0]
+        trang = f&#34;{myDir}/trang/trang.jar&#34;
+        schemaOut = baseSchema.removesuffix(&#34;.rng&#34;) + &#34;.xsd&#34;
+        result = run(f&#34;java -jar {trang} {baseSchema} {schemaOut}&#34;, shell=True)
+        return True if result.returncode == 0 else False</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#meaningful-information-from-xml-schemas">Meaningful information from XML schemas.</a></li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#as-command-line-tool">As command-line tool</a></li>
+<li><a href="#as-library">As library</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.tools" href="index.html">tf.tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.tools.xmlschema.main" href="#tf.tools.xmlschema.main">main</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="tf.tools.xmlschema.Analysis" href="#tf.tools.xmlschema.Analysis">Analysis</a></code></h4>
+<ul class="two-column">
+<li><code><a title="tf.tools.xmlschema.Analysis.configure" href="#tf.tools.xmlschema.Analysis.configure">configure</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.eKey" href="#tf.tools.xmlschema.Analysis.eKey">eKey</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.getDefs" href="#tf.tools.xmlschema.Analysis.getDefs">getDefs</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.help" href="#tf.tools.xmlschema.Analysis.help">help</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.interpret" href="#tf.tools.xmlschema.Analysis.interpret">interpret</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.notInteresting" href="#tf.tools.xmlschema.Analysis.notInteresting">notInteresting</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.repKind" href="#tf.tools.xmlschema.Analysis.repKind">repKind</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.repMixed" href="#tf.tools.xmlschema.Analysis.repMixed">repMixed</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.resolve" href="#tf.tools.xmlschema.Analysis.resolve">resolve</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.run" href="#tf.tools.xmlschema.Analysis.run">run</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.setModes" href="#tf.tools.xmlschema.Analysis.setModes">setModes</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.showElems" href="#tf.tools.xmlschema.Analysis.showElems">showElems</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.showOverrides" href="#tf.tools.xmlschema.Analysis.showOverrides">showOverrides</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.task" href="#tf.tools.xmlschema.Analysis.task">task</a></code></li>
+<li><code><a title="tf.tools.xmlschema.Analysis.types" href="#tf.tools.xmlschema.Analysis.types">types</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

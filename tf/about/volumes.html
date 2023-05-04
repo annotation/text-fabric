@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>tf.about.volumes API documentation</title>
+<meta name="description" content="Volumes and collections …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS_CHTML" integrity="sha256-kZafAc6mZvK3W3v1pHOcUix30OHQN6pU/NO2oFkqZVw=" crossorigin></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>tf.about.volumes</code></h1>
+</header>
+<section id="section-intro">
+<h1 id="volumes-and-collections">Volumes and collections</h1>
+<p>As from version 9.0.0, Text-Fabric supports working with partial datasets.</p>
+<h2 id="concepts">Concepts</h2>
+<p>Text-Fabric supports the concept of volume of a work and also the concept
+of a collection of volumes.</p>
+<p>It has methods to restrict the loading of data to a single volume or a single
+collection of volumes.</p>
+<p>Volumes and collections can be created from works by means of ready made
+functions in Text-Fabric.</p>
+<p>When volumes and collections are created, a profound rearrangement of information
+takes place. Yet the nodes in the portions can be mapped unto the nodes of the
+original work.</p>
+<p>That means that if you work inside a volume or collection, and produce results,
+you can translate these results back to the original work.</p>
+<h2 id="rationale">Rationale</h2>
+<p>There are various reasons for working with portions.</p>
+<p>Many corpora have a division in volumes that are relatively self-contained.
+When you do intensive processing that can be done inside a volume, it is a waste
+of time and other resources to load the whole corpus into RAM.</p>
+<p>Sometimes corpora are so large that there is no hope to fit them into RAM anytime soon.
+In those cases we need Text-Fabric to be able to work on its portions.</p>
+<p>What we do not have yet is a concept of a work that is not meant to be loaded entirely
+into Text-Fabric, but only volume-wise.
+Up till now the mechanism to create portions is dependent on being able to load
+the whole work.</p>
+<p>At the horizon there is the picture of large corpora lying in archives.
+These archives offer an API to select a volume and export it as a Text-Fabric volume.
+Researchers can do their job, and produce new annotations to the volume,
+which can be transformed into annotations to the work as a whole.</p>
+<h2 id="challenges">Challenges</h2>
+<p>Text-Fabric is heavily optimized around the idea that the whole corpus
+is addressed by natural numbers, starting at 1 at the first slot of the text,
+then going to the last word,
+and then continuing by enumerating textual objects of several types, type for type.</p>
+<p>When we extract a volume in order to turn it into a loadable dataset,
+we have to shift this big enumeration in a rather intricate way.</p>
+<p>In order to offer an efficient API, Text-Fabric needs to compute and store data
+about the dataset as a whole, and it is difficult to transform the precomputed data
+of the whole work into the precomputed data of a portion of it.</p>
+<p>Another holistic thing that causes problems is that there may be data in the work
+that is not strictly localized to single volumes:</p>
+<ul>
+<li>nodes that have slots across volumes</li>
+<li>edges that start and end in different volumes</li>
+</ul>
+<p>The approach we have chosen is to perform the shift of the enumeration
+(it is a quick process),
+and to precompute data for portions from scratch, which is also fast enough due to
+the limited size of a portion compared to the whole work.</p>
+<p>As to the holistic problems: we solve them to generate additional features
+with the volumes from which holistic information can be recreated when needed.</p>
+<h2 id="the-operation-in-detail">The operation in detail</h2>
+<p>Here we outline in a fair amount of detail what needs to be done to extract a volume
+from a work as a new dataset.</p>
+<p><img alt="volumes" src="../images/Volumes/Volumes.001.png"></p>
+<h3 id="the-source-a-work">The source: a work</h3>
+<p>In the right column you see a work represented as a Text-Fabric dataset.
+From top to bottom you see all nodes. First a block of <em>slot</em> nodes, corresponding
+to the basic units of the text. Here we assume that the words play that role.
+Subsequently you see nodes of other types, in this cases phrases, clauses etc.
+In a Text-Fabric dataset these types are just labels, with no built-in semantics.</p>
+<p>The only semantics of these other types is that their nodes are linked to slots.
+Nodes can be linked to arbitrary sets of slots, and this node-to-node mapping is
+stored as a special edge feature: <code>oslots</code>.</p>
+<p>Most Text-Fabric datasets have a section configuration. That means that certain node types
+are declared as section levels.
+Here we assume that the node type <em>book</em> acts as top-level sections.</p>
+<h3 id="the-recipe-a-volume-specification">The recipe: a volume specification</h3>
+<p>A volume is a set of top-level sections. In this instance, we have to specify for
+each volume that we want to define which books are part of the volume.</p>
+<p>We are not allowed to define volumes that overlap in books.
+But we may define volumes in such a way that some books are left out of any volume.</p>
+<h3 id="the-process-distribution-and-shuffling">The process: distribution and shuffling</h3>
+<p>From the volume specification we know which books belong to a volume.
+From the <code>oslots</code> edge feature, we know which slots belong to those books.
+From the inverse of <code>oslots</code> we know which other nodes need to go into the volumes,
+namely those that are linked to at least slots in the books of the volume.</p>
+<p>For the moment, we sweep one problem under the carpet: what about nodes that are linked
+to slots inside and outside the volume? We come to that later.</p>
+<p>We now know which slots and other nodes belong to each volume.
+We then start defining each volume by listing its slots, starting from 1.
+Essentially, we take the slots from the original work inside that volume,
+and shift them all back so that they start with 1.
+Then we look at the higher types, one by one. We take the nodes
+of the first non-slot type.
+The first node that belongs to our volume is put right after the first slot, the next
+one right after that, and so on till all the nodes of that type are done.
+Then we continue with the next type.
+While we do that, we remember for each new node in the volume where it came from in
+the original work.</p>
+<p>We have now reshuffled the nodes.</p>
+<p>The next thing is to re-map the features.
+For each node feature, we look at the volume nodes, trace that node back to the original work
+look up the feature value there, and define that as the value of that feature for that
+node in the volume.</p>
+<p>Edge features refer to two nodes.
+We follow essentially the same process for edges, heavily using the mapping from
+volume nodes to original work nodes.</p>
+<p>For the moment, we sweep the second problem under the carpet: what about edges whose
+end-points are in different volumes?</p>
+<h3 id="the-result-volume-datasets">The result: volume datasets</h3>
+<p>The last column shows the datasets for each of the new volumes.
+Basically they consist of reshuffled nodes and remapped features.
+But they have a few things more:</p>
+<ul>
+<li>they each have a feature <code>owork</code> which maps each volume node to the
+corresponding node in the original work.
+This mapping had been useful to construct the volume, but it is also useful
+to have when you work with the volume. Because it enables you to transfer
+results obtained against a volume to the work the volume is part of.</li>
+<li>all features in the volume have metadata statig the name and the top-level
+sections of this volume. This is important for registering provenance information.</li>
+<li>There is more, and that has to do with the problems we encountered.</li>
+</ul>
+<h3 id="problem-1-nodes-with-slots-across-volumes">Problem 1: nodes with slots across volumes</h3>
+<p><img alt="volumes" src="../images/Volumes/Volumes.002.png"></p>
+<p>Lexemes are a good case of nodes that are linked to slots throughout the work.
+Think of a lexeme node as linked to all slots that count as occurrences of that lexeme.
+It is a rule rather than an exception when a lexeme has occurrences across books.</p>
+<p>When we extract a volume, we retain all nodes that have at least one slot in that volume.
+We then adapt the <code>oslots</code> feature to discard all slots outside the volume from nodes.</p>
+<p>So, lexemes that span books end up in multiple lexeme nodes, one for each book where
+the lexeme occurs.</p>
+<p>When looking inside a book, this is not a problem.
+But when we collect volumes into a collection, and want to treat that collection
+as a single dataset, we end up with mutiple lexeme nodes for one lexeme.</p>
+<p>We want to be able to merge those nodes when the need arises.
+The mapping of nodes to their counterparts in the original work provides the means to do so.
+Whenever we collect volumes, we will identify nodes whose counterpart in the original work
+is identical.</p>
+<p>That is another reason why the <code>owork</code> feature is a crucial ingredient of a volume.</p>
+<h3 id="problem-2-inter-volume-edges">Problem 2: inter-volume edges</h3>
+<p><img alt="volumes" src="../images/Volumes/Volumes.003.png"></p>
+<p>Cross-references are a good example of edges that link nodes across volumes.
+Here we see that clause nodes may be crossreferenced.
+The data of this is in the edge feature <code>crossref</code>.
+In this corpus, <code>crossref</code> annotates those edges with a similarity measure.</p>
+<p>In case of cross-references inside a single book, there is no problem.</p>
+<p>But when a clause in one book is cross-referenced with a clause in another book,
+we have a problem. One of the nodes of the edge is not in the volume,
+so we cannot store the information in the <code>crossref</code> edge, nor in any other edge.</p>
+<p>Yet we cannot leave it out, because then we loose information.
+Because even from within a volume, it is relevant to know whether a clause points to
+another one in a different book. Or whether another clause in a different book
+points to it.</p>
+<p>Instead we store these bits of information in node features.
+Nodes that have dangling edges get a complex value that stores the name of the edge feature,
+the other node as it is known in the original work, and the value of the edge.</p>
+<p>This information ends up in feature <code>ointerfrom</code> for edges whose starting point is
+inside the volume. Edges with their end point in the volume get an entry in <code>ointerto</code>.</p>
+<p>When we collect volumes together, we can use <code>ointerfrom</code> and <code>ointerto</code> to reinstate
+edges that are no longer dangling in the collection of volumes.</p>
+<h3 id="collecting">Collecting</h3>
+<p>We have mentioned it several times: we can collect volumes into new datasets: collections.</p>
+<p>On the one hand, the <code>extract()</code> function with its volume specification argument is
+so flexible, that you do not need a function to collect volumes together: you could have
+extracted the collection as a volume straight away.</p>
+<p>But consider this scenario:</p>
+<ul>
+<li>you have extracted all books of the Hebrew Bible as single volumes;</li>
+<li>now you want to query across several books, say the poetry books</li>
+<li>then you feel the need to also query the prophetic books</li>
+</ul>
+<p>For this you create collections, out of the book volumes.
+You can build your queries, run them against your collections.
+You can transform the results (which are tuples of tuples of nodes) into results
+against the individual volumes or against the whole work, using the <code>owork</code>
+features of volumes and collections.</p>
+<p>For the moment Text-Fabric is still lacking in handy functions to apply these
+node maps, but that will probably change in subsequent versions.</p>
+<p>A more intrinsic reason to develop the collect function is that it is an inverse of
+extracting several volumes from one work. Moreover, collecting extracted volumes
+is a test whether the problems of extraction have been dealt with correctly.
+Extraction produces extra data and collection uses that extra data.</p>
+<p>Just as a volume has metadata in its features that describes the volume, in terms
+of its top-level sections,
+so a collection has metadata that describes it in terms of the volumes it contains.</p>
+<p>The more strategic reason to have collections too is that Text-Fabric could benefit
+from a good deal of agility in on-the-fly extracting and recombining portions
+of a work.</p>
+<p>Think of collections of cuneiform tablets. Tablets are loosely organized by period
+and/or geography and/or language. Having all transcribed tablets in one corpus introduces
+several problems:</p>
+<ul>
+<li>there will be a strict but rather arbitrary order on the tablets</li>
+<li>most research is done on subsets of tablets, so loading all tablets all the time
+is cumbersome.</li>
+</ul>
+<p>But as soon as you organize the tablets in families and turn those families into datasets,
+it is almost guaranteed that some researchers want a set of tablets that cuts through these
+families.</p>
+<p>This problem can be alleviated by making a number of fairly big corpora, each divided into
+compact volumes. When researchers can freely extract volumes from these corpora and recombine
+them, even across corpora, they have a workable situation.
+In theory it is then also possible to create a <em>virtual</em> work containing all tablets.
+This virtual work is not meant to be loaded in one go, but serves merely as a provider
+of <em>original work nodes</em>, so that when volumes are extracted, each volume is able
+to address itself in the space of all tablets.</p>
+<h2 id="in-practice">In practice</h2>
+<p>Text-Fabric offers volume and collection support for works that have a section structure
+(<code><a title="tf.core.text" href="../core/text.html">tf.core.text</a></code>).</p>
+<p>There is a
+<a href="https://nbviewer.jupyter.org/github/etcbc/bhsa/blob/master/tutorial/volumes.ipynb">tutorial, based on the BHSA corpus,</a>
+which guides you through all steps and peculiarities.</p>
+<p>Sections of level 1 (top-level) play a crucial role:</p>
+<p>We define</p>
+<ul>
+<li>a <em>volume</em> as an ordered set of top-level sections of a work.</li>
+<li>a <em>collection</em> as an ordered set of volumes of a work.</li>
+</ul>
+<p>Text-Fabric offers support for creating and collecting volumes and loading
+volumes and collections.</p>
+<p>There are several ways to do so, we start with the easiest and highest level way,
+and go down to the lower level and more generic ways.</p>
+<p>Suppose we have a work in org/repo: <code>work</code> = <code>"org/repo"</code>.</p>
+<h3 id="with-a-use">With <code>A = use()</code></h3>
+<p>If you have loaded a work like this: <code>A = use(work, ...)</code> then you can
+extract and collect volumes directly by</p>
+<pre><code>A.extract(volumes)
+</code></pre>
+<p>where <code>volumes</code> is a specification of which top-level sections go in which volumes.
+See <code><a title="tf.fabric.Fabric.extract" href="../fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code></p>
+<p>If you have created volumes, you can then collect some of them into a collection by</p>
+<pre><code>A.collect(volumes, collection)
+</code></pre>
+<p>where <code>volumes</code> is a list of volume names and <code>collection</code> is the name of a new collection.
+See <code><a title="tf.fabric.Fabric.extract" href="../fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code></p>
+<p>When you have volumes and collections created with these methods,
+you can load them as follows:</p>
+<pre><code>A = use(work, volume=volume)
+</code></pre>
+<p>where volume is the name of a volume, and</p>
+<pre><code>A = use(work, collection=collection)
+</code></pre>
+<p>where collection is the name of a collection.
+See <code><a title="tf.advanced.app.App" href="../advanced/app.html#tf.advanced.app.App">App</a></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Location of volumes and collections</p>
+<p>Volumes and collections created this way reside in a directory <code>_local</code>
+right under the directory where the work resides.</p>
+</div>
+<h3 id="with-tf-fabric">With <code>TF = Fabric()</code></h3>
+<p>If you have loaded a work like this: <code>TF = Fabric(locations, modules, ...)</code> then you have
+essentially the same API for extract, collect, and load:</p>
+<pre><code>TF.extract(volumes)
+TF.collect(volumes, collection)
+TF = Fabric(locations, modules, volume=volume)
+TF = Fabric(locations, modules, collection=collection)
+</code></pre>
+<p>See <code><a title="tf.fabric.Fabric.extract" href="../fabric.html#tf.fabric.Fabric.extract">Fabric.extract()</a></code>, <code><a title="tf.fabric.Fabric.collect" href="../fabric.html#tf.fabric.Fabric.collect">Fabric.collect()</a></code>, <code><a title="tf.fabric.Fabric" href="../fabric.html#tf.fabric.Fabric">Fabric</a></code>.</p>
+<h3 id="with-plain-functions-extract-and-collect">With plain functions <code>extract</code> and <code>collect</code></h3>
+<p>The workhorses for extract and collect are also available as plain functions.
+You can use them if the volumes and collections are taken from other places and need
+to be created in other places.</p>
+<p>See <code><a title="tf.volumes.extract" href="../volumes/extract.html">tf.volumes.extract</a></code> and <code><a title="tf.volumes.collect" href="../volumes/collect.html">tf.volumes.collect</a></code>.</p>
+<h2 id="reflection">Reflection</h2>
+<p>Extracting a volume from a Text-Fabric work turns out to be a complex operation.
+Can we change the data model of Text-Fabric in such a way that taking a portion becomes
+a triviality?</p>
+<p>Let's think about it.</p>
+<p>What is a bit weird in the data model is that the node sequence has an internal
+structure: the first nodes are slots, and after that come intervals of nodes of other
+types, one interval per type.</p>
+<p>If we could relax these requirements, and allow that each node can have a type independent
+of where it occurs, then we could simply copy over the features and cut away
+the entries for nodes outside the extracted portion.</p>
+<blockquote>
+<p>Objection: much of the efficiency of Text-Fabric directly stems from these requirements.
+For example, the information about node types is now stored in a very small feature <code>otype</code>.
+Also the linking of non-slot nodes to slots is stored rather efficiently in
+the feature <code>oslots</code>.</p>
+</blockquote>
+<p>Alternatively, we could represent nodes in a richer way than just by natural numbers.
+We could represent nodes of type <em>t</em> by tuples (1, <em>t</em>), (2, <em>t</em>), etc.
+This will prevent a lot of shifting of nodes and a lot of remapping.</p>
+<blockquote>
+<p>Objection: it will not prevent all remapping, there will still be quite a burden for
+the developer here. Moreover, moving away from natural numbers as an addressing scheme
+will make greatly inflate the storage of features and will make the inner workings
+of Text-Fabric more difficult.
+The main advantage of natural numbers is that they are &hellip; <em>natural</em>.
+For example, the lines in a file form a sequence. If you put a value on line <em>n</em>,
+you can interpret as a mapping from <em>n</em> to that value, without spending any bits on
+representing the <em>n</em>.
+The same holds for lists, arrays, and any iterable.</p>
+</blockquote>
+<p>There is one overarching objection, though.</p>
+<p>Extracting and collecting volumes are rare operations, that is, compared to all operations
+when running Text-Fabric on a dataset.
+When we need to choose where to optimize, we should do it where the computer spends the most
+time. </p>
+<p>And that is a choice I have made long before I developed Text-Fabric.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/da668f734609fda57221fdf677d10e3338cbbf73/tf/about/volumes.py#L1-L3" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+.. include:: ../docs/about/volumes.md
+&#34;&#34;&#34;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../tf/index.html">tf home</a> -
+<a href="../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+</p>
+<form>
+<input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
+disabled minlength="2">
+</form>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.css" integrity="sha512-j1u8eUJ4f23xPPxwOrLUPQaCD2dwzNqqmDDcWS4deWsMv2ohLqmXXuP3hU7g8TyzbMSakP/mMqoNBYWj8AEIFg==" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tingle/0.15.3/tingle.min.js" integrity="sha512-plGUER9JkeEWPPqQBE4sdLqBoQug5Ap+BCGMc7bJ8BXkm+VVj6QzkpBz5Yv2yPkkq+cqg9IpkBaGCas6uDbW8g==" crossorigin></script>
+<style>
+.modal-dialog iframe {
+width: 100vw;
+height: calc(100vh - 80px);
+}
+@media screen and (min-width: 700px) {
+.modal-dialog iframe {
+width: 70vw;
+height: 80vh;
+}
+}
+.modal-dialog .tingle-modal-box {width: auto;}
+.modal-dialog .tingle-modal-box__content {padding: 0;}
+</style>
+<script>
+const input = document.getElementById('lunr-search');
+input.disabled = false;
+input.form.addEventListener('submit', (ev) => {
+ev.preventDefault();
+const url = new URL(window.location);
+url.searchParams.set('q', input.value);
+history.replaceState({}, null, url.toString());
+search(input.value);
+});
+const query = new URL(window.location).searchParams.get('q');
+if (query)
+search(query);
+function search(query) {
+const url = '../../doc-search.html#' + encodeURIComponent(query);
+new tingle.modal({
+cssClass: ['modal-dialog'],
+onClose: () => {
+const url = new URL(window.location);
+url.searchParams.delete('q');
+history.replaceState({}, null, url.toString());
+setTimeout(() => input.focus(), 100);
+}
+}).setContent('<iframe src="' + url + '"></iframe>').open();
+}
+</script>
+<h1>Index</h1>
+<div class="toc">
+<ul>
+<li><a href="#volumes-and-collections">Volumes and collections</a><ul>
+<li><a href="#concepts">Concepts</a></li>
+<li><a href="#rationale">Rationale</a></li>
+<li><a href="#challenges">Challenges</a></li>
+<li><a href="#the-operation-in-detail">The operation in detail</a><ul>
+<li><a href="#the-source-a-work">The source: a work</a></li>
+<li><a href="#the-recipe-a-volume-specification">The recipe: a volume specification</a></li>
+<li><a href="#the-process-distribution-and-shuffling">The process: distribution and shuffling</a></li>
+<li><a href="#the-result-volume-datasets">The result: volume datasets</a></li>
+<li><a href="#problem-1-nodes-with-slots-across-volumes">Problem 1: nodes with slots across volumes</a></li>
+<li><a href="#problem-2-inter-volume-edges">Problem 2: inter-volume edges</a></li>
+<li><a href="#collecting">Collecting</a></li>
+</ul>
+</li>
+<li><a href="#in-practice">In practice</a><ul>
+<li><a href="#with-a-use">With A = use()</a></li>
+<li><a href="#with-tf-fabric">With TF = Fabric()</a></li>
+<li><a href="#with-plain-functions-extract-and-collect">With plain functions extract and collect</a></li>
+</ul>
+</li>
+<li><a href="#reflection">Reflection</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="tf.about" href="index.html">tf.about</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
