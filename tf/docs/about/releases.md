@@ -35,6 +35,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
     If you want to install text-fabric on the iPad, you should avoid this extra.
     Thanks Oliver Glanz for reporting this.
+
 *   Merged a pull request by Cody Kingham with some helpful type annotations in
     `tf.core.fabric`.
 
