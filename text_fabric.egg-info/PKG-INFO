@@ -33,6 +33,7 @@ Requires-Python: >=3.9.0
 Provides-Extra: github
 Provides-Extra: gitlab
 Provides-Extra: browser
+Provides-Extra: pandas
 Provides-Extra: all
 License-File: LICENSE
 

@@ -8,6 +8,7 @@ class Capable:
     def __init__(self, *extras):
         self.backendProviders = set()
         self.canBrowse = False
+        self.canPandas = False
         self.modules = {}
         self.tryImport(*extras)
 
@@ -25,7 +26,7 @@ class Capable:
                 except Exception:
                     pass
 
-            if kind == "gitlab":
+            elif kind == "gitlab":
                 try:
                     import gitlab
 
@@ -44,6 +45,16 @@ class Capable:
                     modules["rpyc"] = rpyc
                     modules["flask"] = flask
                     self.canBrowse = True
+                except Exception:
+                    pass
+
+            elif kind == "pandas":
+                try:
+                    import pyarrow  # noqa F401
+                    import pandas
+
+                    modules["pandas"] = pandas
+                    self.canPandas = True
                 except Exception:
                     pass
 
@@ -114,3 +125,6 @@ class Capable:
                 )
             )
             return False
+
+        if extra == "pandas":
+            return self.canPandas

@@ -293,6 +293,10 @@ class NLPipeline:
             self.app = app
 
         self.app = app
+        version = app.version
+        if verbose >= 0:
+            console(f"Input data has version {version}")
+
         repoDir = app.repoLocation
         txtDir = f"{repoDir}/_temp/txt"
         self.txtDir = txtDir
@@ -1040,6 +1044,7 @@ class NLPipeline:
         modify(
             origTf,
             newTf,
+            targetVersion=version,
             addTypes=addTypes,
             deleteTypes=("word",),
             featureMeta=featureMeta,

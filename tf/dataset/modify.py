@@ -71,6 +71,7 @@ def _rep(iterable):
 def modify(
     location,
     targetLocation,
+    targetVersion=None,
     mergeFeatures=None,
     deleteFeatures=None,
     addFeatures=None,
@@ -122,6 +123,10 @@ def modify(
     targetLocation: string
         The directory into which the result dataset will be written.
 
+    targetVersion: string, optional None
+        If given, the new version that will be written to the metadata of each
+        feature in the modified dataset.
+        If None, no version modification takes place.
     mergeFeatures: dict, optional None
         You can merge several features into one. This is especially useful if there
         are many features each operating on different node types, and you want to
@@ -1314,7 +1319,14 @@ def modify(
 
     def writeTf():
         indent(level=0)
-        info("write TF data ...")
+        if targetVersion is None:
+            versionMsg = "with the original version number"
+        else:
+            versionMsg = f"as version {targetVersion}"
+            for feat in set(nodeFeaturesOut) | set(edgeFeaturesOut):
+                metaDataOut.setdefault(feat, {})["version"] = targetVersion
+
+        info(f"write TF data {versionMsg} ... ")
         indent(level=1, reset=True)
         TF = Fabric(locations=targetLocation, silent=silent)
         TF.save(

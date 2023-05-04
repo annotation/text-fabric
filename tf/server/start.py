@@ -153,6 +153,18 @@ psutil = Cap.load("psutil")
 HELP = """
 USAGE
 
+tf
+tf --help
+tf -v
+tf -k [org/repo]
+tf -p [org/repo]
+
+tf org/repo
+tf app:/path/to/app --locations=locations-string [--modules=modules-string]
+
+The following ones do the same but are deprecated:
+
+text-fabric
 text-fabric --help
 text-fabric -v
 text-fabric -k [org/repo]
@@ -165,6 +177,7 @@ where all args are optional and args have one of these forms:
 
   -noweb
   --checkout=specifier
+  --backend=backend name (github, gitlab, gitlab.domain)
   --mod=modules
   --set=file
   --modules=modules-string
@@ -175,11 +188,14 @@ EFFECT
 
 See https://annotation.github.io/text-fabric/tf/server/start.html
 
+If called without org/repo, --backend=xxx, --checkout=yyy,
+the current directory is used to determine a clone of a repo containing a TF dataset.
+If that is found, the TF browser will be started for that dataset.
+
 If an org/repo is given and the -k and -p flags are not passed,
 a TF kernel for that org/repo is started.
 When the TF kernel is ready, a web server is started
-serving a website that exposes the data through
-a query interface.
+serving a website that exposes the data through a query interface.
 
 The default browser will be opened, except when -noweb is passed.
 
@@ -228,8 +244,9 @@ def filterProcess(proc):
             return False
         (call, *args) = parts
 
-        trigger = "text-fabric"
-        if call.endswith(trigger) or call.endswith(f"{trigger}.exe"):
+        if any(
+            call.endswith(t) or call.endswith(f"{t}.exe") for t in ("tf", "text-fabric")
+        ):
             if any(arg in {"-k", "-p"} for arg in args):
                 return False
             slug = argApp(parts)[1]

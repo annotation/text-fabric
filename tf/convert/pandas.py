@@ -33,11 +33,13 @@ programs, such as Text-Fabric, to process the same data.
 * [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 
-import pandas as pd
-
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
+from ..capable import Capable
+
+Cap = Capable("pandas")
+pandas = Cap.load("pandas")
 
 HELP = """
 Transforms TF dataset into Pandas
@@ -125,6 +127,22 @@ def exportPandas(app, inTypes=None, exportDir=None):
         The directory to which the Pandas file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     """
+
+    if not Cap.can("pandas"):
+        app.error(
+            "Cannot export to Pandas because python modules "
+            "pandas and/or pyarrow are not installed",
+            tm=False,
+        )
+        app.info("Do: `pip install pandas pyarrow` and try again", tm=False)
+        app.info(
+            "Alternatively, install text-fabric with the pandas capability "
+            "by doing any of:", tm=False
+        )
+        app.info("pip install text-fabric[pandas]", tm=False)
+        app.info("pip install text-fabric[all]", tm=False)
+        return
+
     api = app.api
     Eall = api.Eall
     Fall = api.Fall
@@ -210,18 +228,13 @@ def exportPandas(app, inTypes=None, exportDir=None):
 
         for n in N.walk():
             nType = F.otype.v(n)
-            textValues = [
-                pandasEsc(str(Fs(f).v(n) or "")) for f in textFeatures
-            ]
+            textValues = [pandasEsc(str(Fs(f).v(n) or "")) for f in textFeatures]
             sectionNodes = [
                 n if nType == section else (L.u(n, otype=section) or NA)[0]
                 for section in sectionTypes
             ]
             inValues = [(L.u(n, otype=inType) or NA)[0] for inType in inTypes]
-            edgeValues = [
-                pandasEsc(str((Es(f).f(n) or NA)[0]))
-                for f in edgeFeatures
-            ]
+            edgeValues = [pandasEsc(str((Es(f).f(n) or NA)[0])) for f in edgeFeatures]
             nodeValues = [
                 pandasEsc(
                     str(
@@ -273,7 +286,7 @@ def exportPandas(app, inTypes=None, exportDir=None):
     app.indent(level=True, reset=True)
     app.info("Reading tsv file ...")
 
-    dataFrame = pd.read_table(
+    dataFrame = pandas.read_table(
         tableFile,
         delimiter="\t",
         quotechar=PANDAS_QUOTE.encode("utf-8"),
@@ -286,7 +299,9 @@ def exportPandas(app, inTypes=None, exportDir=None):
         dtype=dtype,
     )
     app.info("Done. Size = {}".format(dataFrame.size))
+
     app.info("Saving as Parquet file ...")
+
     dataFrame.to_parquet(tableFilePd, engine="pyarrow")
     app.info("Saved")
     app.indent(level=False)

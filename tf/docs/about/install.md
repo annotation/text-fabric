@@ -141,6 +141,7 @@ Text-Fabric has some special capabilities:
   have a browse and search experience in a local web environment;
 * `github` and `gitlab`: repository backends from which Text-Fabric can load
   corpus data on-demand.
+* `pandas`: for exporting a dataset to Pandas.
 
 You can install Text-Fabric with a selection of capabilities:
 
@@ -149,8 +150,11 @@ You can install Text-Fabric with a selection of capabilities:
 * `pip install 'text-fabric[github]'` *with a github backend*
 * `pip install 'text-fabric[gitlab]'` *with a gitlab backend*
 * `pip install 'text-fabric[browser]'` *with the text-fabric browser enabled*
+* `pip install 'text-fabric[pandas]'` *with pandas export enabled*
 * `pip install 'text-fabric[github,browser]'` *with the selected extras*
 * `pip install 'text-fabric[github,gitlab]'` *with the selected extras*
 
 Even if Text-Fabric is not installed with certain capabilities,
 it will have those capabilities if the required modules are installed.
+To see which modules are required for which extras, consult
+[setup.cfg](https://github.com/annotation/text-fabric/blob/master/setup.cfg).

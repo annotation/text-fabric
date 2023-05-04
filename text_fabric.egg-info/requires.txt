@@ -3,8 +3,6 @@ markdown>=3.4.1
 ipython
 lxml
 pyyaml>=5.3
-pandas
-pyarrow
 
 [all]
 rpyc
@@ -27,3 +25,7 @@ pygithub>=1.57
 psutil
 requests
 python-gitlab>=3.5.0
+
+[pandas]
+pandas
+pyarrow

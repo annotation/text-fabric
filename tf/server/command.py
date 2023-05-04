@@ -2,6 +2,7 @@ import re
 import pickle
 import socket
 import errno
+
 """
 Command line argument processing
 """
@@ -10,6 +11,7 @@ from base64 import b64encode, b64decode
 from zlib import crc32
 
 from ..parameters import HOST, PORT_BASE
+from ..core.files import getLocation
 
 # COMMAND LINE ARGS
 
@@ -71,6 +73,19 @@ def argApp(cargs):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
     backend = argCollect("backend", cargs)
     checkout = argCollect("checkout", cargs)
+
+    if (
+        appName is None
+        and checkoutApp is None
+        and dataLoc is None
+        and backend is None
+        and checkout is None
+    ):
+        (backend, org, repo, relative) = getLocation()
+        appName = f"{org}/{repo}{relative}"
+        checkoutApp = "clone"
+        checkout = "clone"
+
     locations = argCollect("locations", cargs)
     modules = argCollect("modules", cargs)
     moduleRefs = argCollect("mod", cargs)

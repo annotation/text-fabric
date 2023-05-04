@@ -10,6 +10,31 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.6
+
+2023-05-04
+
+*   `tf.dataset.modify` accepts a new optional parameter with a new version for
+    the modified dataset, which will be written in the features' metadata.
+*   You can use `tf` or `text-fabric` without arguments if you are inside a clone
+    of a repo that contains a tf dataset.
+*   Moved the dependency on pandas and pyarrow (used in the Pandas export) to an extra
+    install option `pandas`. You get it if you do 
+
+    ```
+    pip install 'text-fabric[pandas]'
+    ```
+
+    or
+
+    ```
+    pip install 'text-fabric[all]'
+    ```
+
+    See `tf.about.install`
+
+    If you want to install text-fabric on the iPad, you should avoid this extra.
+
 ### 11.4.5
 
 2023-05-03

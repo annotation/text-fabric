@@ -1,179 +1,5 @@
-"""
-# TEI import
-
-You can convert any TEI source into TF by specifying a few details about the source.
-
-Text-Fabric then invokes the `tf.convert.walker` machinery to produce a Text-Fabric
-dataset out of the source.
-
-Text-Fabric knows the TEI elements, because it will read and parse the complete
-TEI schema. From this the set of complex, mixed elements is distilled.
-
-If the TEI source conforms to a customised TEI schema, you can pass it to the TEI
-importer, and it will read it and override the generic information of the TEI elements.
-
-The converter goes the extra mile: it generates a TF-app and documentation
-(an *about.md* file and a *transcription.md* file), in such a way that the Text-Fabric
-browser is instantly usable.
-
-The TEI conversion is rather straightforward because of some conventions
-that cannot be changed.
-
-# Configuration
-
-We assume that you have a `programs` directory at the top-level of your repo.
-In this directory we'll look for two optional files:
-
-*   a file `tei.yaml` in which you specify a bunch of values
-    Last, but not least, you can assemble all the input parameters needed to
-    get the conversion off the ground.
-
-*   a file `tei.py` in which you define a function `transform(text)` which
-    takes a text string ar argument and delivers a text string as result.
-    The converter will call this on every TEI input file it reads *before*
-    feeding it to the XML parser.
-
-
-## Keys and values of the `tei.yaml` file
-
-### generic
-
-dict, optional `{}`
-
-Metadata for all generated TF features.
-The actual source version of the TEI files does not have to be stated here,
-it will be inserted based on the version that the converter will actually use.
-That version depends on the `tei` argument passed to the program.
-The key under which the source version will be inserted is `teiVersion`.
-
-### schema
-
-string, optional `None`
-
-Which XML schema to be used, if not specified we fall back on full TEI.
-If specified, leave out the `.xsd` extension. The file is relative to the
-`schema` directory.
-
-### prelim
-
-boolean, optional `True`
-
-Whether to work with the `pre` tf versions.
-Use this if you convert TEI to a preliminary TF dataset, which will
-receive NLP additions later on. That version will then lose the `pre`.
-
-### wordAsSlot
-
-boolean, optional `False`
-
-Whether to take words as the basic entities (slots).
-If not, the characters are taken as basic entities.
-
-### sectionModel
-
-dict, optional `{}`
-
-If not passed, or an empty dict, section model I is assumed.
-A section model must be specified with the parameters relevant for the
-model:
-
-```
-dict(
-    model="II",
-    levels=["chapter", "chunk"],
-    element="head",
-    attributes=dict(rend="h3"),
-)
-```
-
-or
-
-```
-dict(
-    model="I",
-    levels=["folder", "file", "chunk"],
-)
-```
-
-because model I does not require the *attribute* parameter.
-
-For model II, the default parameters are:
-
-```
-element="head"
-levels=["chapter", "chunk"],
-attributes={}
-```
-
-# Usage
-
-## Commandline
-
-```sh
-tf-fromtei tasks flags
-```
-
-## From Python
-
-```python
-from tf.convert.tei import TEI
-
-T = TEI()
-T.task(**tasks, **flags)
-```
-
-For a short overview the tasks and flags, see `HELP`.
-
-## Tasks
-
-We have the following conversion tasks:
-
-1.  `check`: makes and inventory of all XML elements and attributes used.
-1.  `convert`: produces actual TF files by converting XML files.
-1.  `load`: loads the generated TF for the first time, by which the precomputation
-    step is triggered. During precomputation some checks are performed. Once this
-    has succeeded, we have a workable Text-Fabric dataset.
-1.  `app`: creates or updates a corpus specific TF-app with minimal sensible settings,
-    plus basic documentation.
-1.  `apptoken`: updates a corpus specific TF-app from a character-based dataset
-    to a token-based dataset.
-1.  `browse`: starts the text-fabric browser on the newly created dataset.
-
-Tasks can be run by passing any choice of task keywords to the
-`TEI.task()` method.
-
-## Note on versions
-
-The TEI source files come in versions, indicated with a data.
-The converter picks the most recent one, unless you specify an other one:
-
-```python
-tf-from-tei tei=-2  # previous version
-tf-from-tei tei=0  # first version
-tf-from-tei tei=3  # third version
-tf-from-tei tei=2019-12-23  # explicit version
-```
-
-The resulting TF data is independently versioned, like `1.2.3` or `1.2.3pre`.
-When the converter runs, by default it overwrites the most recent version,
-unless you specify another one.
-
-It looks at the latest version and then bumps a part of the version number.
-
-```python
-tf-fromtei tf=3  # minor version, 1.2.3 becomes 1.2.4; 1.2.3pre becomes 1.2.4pre
-tf-fromtei tf=2  # intermediate version, 1.2.3 becomes 1.3.0
-tf-fromtei tf=1  # major version, 1.2.3 becomes 2.0.0
-tf-fromtei tf=1.8.3  # explicit version
-```
-
-## Examples
-
-Exactly how you can call the methods of this module is demonstrated in the small
-corpus of 14 letter by the Dutch artist Piet Mondriaan.
-
-*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb).
-"""
+# tf.convert.tei.TEI is to be reimplemented on the basis of tf.convert.xml.XML
+# That will happen here, and then this will become the new tei.py
 
 import sys
 import collections
@@ -199,6 +25,7 @@ from .helpers import (
     WORD,
     CHAR,
 )
+from .xml import XML
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
 from ..core.helpers import console, versionSort
@@ -428,10 +255,8 @@ def makeCssInfo():
     return rends
 
 
-class TEI:
-    def __init__(
-        self, tei=PARAMS["tei"][1], tf=PARAMS["tf"][1], verbose=FLAGS["verbose"][1]
-    ):
+class TEI(XML):
+    def __init__(self, *args, **kwargs):
         """Converts TEI to TF.
 
         For documentation of the resulting encoding, read the
@@ -579,6 +404,7 @@ class TEI:
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
         """
+        super().__init__(*args, **kwargs)
         self.good = True
 
         (backend, org, repo, relative) = getLocation()
