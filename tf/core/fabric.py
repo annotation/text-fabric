@@ -16,6 +16,7 @@ By leaving out volume support, volume support can use FabricCore instead of Fabr
 
 import collections
 from itertools import chain
+from typing import Dict, Union, Set
 
 from ..parameters import BANNER, VERSION, OTYPE, OSLOTS, OTEXT
 from .data import Data, MEM_MSG
@@ -63,7 +64,15 @@ from .api import (
     addSearch,
 )
 
+# declare some types for type annotation
+featureType = Union[str, int]
+nodeFeatureDict = Dict[str, Dict[int, featureType]]
+edgeFeatureDict = Dict[str, Dict[int, Union[Set[int], Dict[int, featureType]]]]
+metaDataDict = Dict[str, Dict[str, str]]
+
+
 OTEXT_DEFAULT = dict(sectionFeatures="", sectionTypes="")
+
 
 PRECOMPUTE = (
     (0, "__levels__", levels, (OTYPE, OSLOTS, OTEXT)),
@@ -551,9 +560,9 @@ class FabricCore:
 
     def save(
         self,
-        nodeFeatures={},
-        edgeFeatures={},
-        metaData={},
+        nodeFeatures: nodeFeatureDict = {},
+        edgeFeatures: edgeFeatureDict = {},
+        metaData: metaDataDict = {},
         location=None,
         module=None,
         silent=SILENT_D,
