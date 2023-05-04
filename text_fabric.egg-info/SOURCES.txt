@@ -393,7 +393,6 @@ tf/convert/pandas.py
 tf/convert/recorder.py
 tf/convert/tei.py
 tf/convert/tf.py
-tf/convert/tfFromTeiExample.py
 tf/convert/variants.py
 tf/convert/walker.py
 tf/convert/xml.py

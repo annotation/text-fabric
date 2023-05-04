@@ -814,6 +814,7 @@ class TEI:
                 text = fh.read()
             settings = yaml.load(text, Loader=yaml.FullLoader)
 
+        self.transform = None
         if fileExists(convertCustom):
             try:
                 spec = util.spec_from_file_location("teicustom", convertCustom)
@@ -1546,7 +1547,7 @@ class TEI:
         chunkLevel = self.chunkLevel
 
         transformFunc = (
-            (lambda x: x)
+            (lambda x: BytesIO(x.encode("utf-8")))
             if transform is None
             else (lambda x: BytesIO(transform(x).encode("utf-8")))
         )
