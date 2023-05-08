@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/search/stitch.py#L1-L886" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/stitch.py#L1-L889" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search result finding
@@ -68,7 +68,9 @@ def setStrategy(searchExe, strategy, keep=False):
 
     func = globals().get(f&#34;_{strategy}&#34;, None)
     if not func:
-        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        error(
+            f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache
+        )
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy
@@ -758,7 +760,7 @@ def _stitchResults(searchExe):
                 else:
                     sN = stitch[f]
                     if nparams == 1:
-                        if sM in r(sN) or ():
+                        if r(sN) is not None and sM in r(sN):
                             for s in stitchOn(e + 1):
                                 yield s
                     else:
@@ -783,11 +785,12 @@ def _stitchResults(searchExe):
             else:
                 sN = stitch[f]
                 if nparams == 1:
-                    for m in r(sN) or ():
-                        if m in yarnT:
-                            stitch[t] = m
-                            for s in stitchOn(e + 1):
-                                yield s
+                    if r(sN) is not None:
+                        for m in r(sN):
+                            if m in yarnT:
+                                stitch[t] = m
+                                for s in stitchOn(e + 1):
+                                    yield s
                 else:
                     for m in yarnT:
                         if r(sN, m):
@@ -932,7 +935,7 @@ def _stitchResults(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/search/stitch.py#L22-L43" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/stitch.py#L22-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setStrategy(searchExe, strategy, keep=False):
     error = searchExe.api.TF.error
@@ -952,7 +955,9 @@ def _stitchResults(searchExe):
 
     func = globals().get(f&#34;_{strategy}&#34;, None)
     if not func:
-        error(f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache)
+        error(
+            f&#39;Strategy is defined, but not implemented: &#34;{strategy}&#34;&#39;, cache=_msgCache
+        )
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy</code></pre>
@@ -966,7 +971,7 @@ def _stitchResults(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/search/stitch.py#L492-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/stitch.py#L494-L498" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stitch(searchExe):
     estimateSpreads(searchExe, both=True)

@@ -32,6 +32,31 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="1147-upcoming">11.4.7 (upcoming)</h3>
+<p>2023-05-??</p>
+<ul>
+<li>
+<p>Some improvements that give a smoother run when using TF on an iPad, in the
+<a href="https://apps.apple.com/us/app/carnets-jupyter/id1450994949">Carnets app</a>:</p>
+<ul>
+<li>After unzipping downloaded data, cd back to the orginal directory
+(otherwise the Uruk corpus does not show the inline images).</li>
+<li>
+<p>Instead of <code>from array import array</code> we do <code>import array</code> and refer to
+<code>array.array</code>. Semantically, this should not matter, but the pickler seems to
+be fussy about it. I got an error like this:</p>
+<p><code>Can't pickle &lt;built-in function _array_reconstructor&gt;:
+it's not the same object as array._array_reconstructor</code>
+*
+Catch all errors when TF is loading/computing features, not only memory errors,
+and show the message.</p>
+</li>
+<li>
+<p>Fixed a bug in <code><a title="tf.core.data.Data.cleanDataBin" href="../core/data.html#tf.core.data.Data.cleanDataBin">Data.cleanDataBin()</a></code></p>
+</li>
+</ul>
+</li>
+</ul>
 <h3 id="1146">11.4.6</h3>
 <p>2023-05-04</p>
 <ul>
@@ -474,7 +499,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -547,6 +572,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#1147-upcoming">11.4.7 (upcoming)</a></li>
 <li><a href="#1146">11.4.6</a></li>
 <li><a href="#1145">11.4.5</a></li>
 <li><a href="#1144">11.4.4</a></li>

@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/server/kernel.py#L1-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/server/kernel.py#L1-L722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -166,7 +166,7 @@ from functools import reduce
 
 from ..parameters import GH
 from ..capable import Capable
-from ..core.helpers import console
+from ..core.helpers import console, isIntType
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -625,7 +625,7 @@ def makeTfKernel(app, appName, port):
                 for sectionLine in sectionLines:
                     sectionLine = sectionLine.strip()
                     node = app.nodeFromSectionStr(sectionLine)
-                    if type(node) is int:
+                    if isIntType(node):
                         sectionResults.append((node,))
             sectionResults = tuple(sectionResults)
 
@@ -822,7 +822,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/server/kernel.py#L645-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/server/kernel.py#L645-L703" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -893,7 +893,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/server/kernel.py#L623-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/server/kernel.py#L623-L639" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
     if not Cap.can(&#34;browser&#34;):
@@ -922,7 +922,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/server/kernel.py#L108-L617" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/server/kernel.py#L108-L617" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not Cap.can(&#34;browser&#34;):
@@ -1359,7 +1359,7 @@ if __name__ == &#34;__main__&#34;:
                 for sectionLine in sectionLines:
                     sectionLine = sectionLine.strip()
                     node = app.nodeFromSectionStr(sectionLine)
-                    if type(node) is int:
+                    if isIntType(node):
                         sectionResults.append((node,))
             sectionResults = tuple(sectionResults)
 

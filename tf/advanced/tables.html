@@ -26,9 +26,10 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/advanced/tables.py#L1-L322" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/advanced/tables.py#L1-L323" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">from ..core.text import DEFAULT_FORMAT
+from ..core.helpers import isIntType
 from .helpers import RESULT
 from .display import plain, plainTuple, pretty, prettyTuple
 
@@ -252,7 +253,7 @@ def composeP(
     if not items:
         return &#34;&#34;
 
-    if type(items) is int:
+    if isIntType(items):
         return pretty(app, items, **options)
 
     if getx is not None:
@@ -378,7 +379,7 @@ it.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/advanced/tables.py#L6-L97" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/advanced/tables.py#L7-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def compose(
     app, tuples, features, position, opened, getx=None, **options,
@@ -495,7 +496,7 @@ section node in question. See <em>browseContentPretty</em> in <code><a title="tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/advanced/tables.py#L182-L267" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/advanced/tables.py#L183-L268" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeP(
     app,
@@ -540,7 +541,7 @@ section node in question. See <em>browseContentPretty</em> in <code><a title="tf
     if not items:
         return &#34;&#34;
 
-    if type(items) is int:
+    if isIntType(items):
         return pretty(app, items, **options)
 
     if getx is not None:
@@ -596,7 +597,7 @@ in the TF-browser.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/76a89bd1d4266635b7ebcd81a00dff130ee64cb7/tf/advanced/tables.py#L103-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/advanced/tables.py#L104-L177" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeT(
     app, features, tuples, opened, getx=None, **options,
