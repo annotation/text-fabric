@@ -151,7 +151,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L1-L2841" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L1-L2841" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -689,7 +689,7 @@ class TEI:
         Location of additional TF-app configuration and documentation files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden in the `app/config_custom.ymal` file.
+        These settings can be overriden in the `app/config_custom.yaml` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -889,7 +889,7 @@ class TEI:
                 setVer(b1, old + 1)
                 for b in range(b1 + 1, len(parts)):
                     setVer(b, 0)
-                tfVersion = &#34;.&#34;.join(parts)
+                tfVersion = &#34;.&#34;.join(str(p) for p in parts)
                 vRep = (
                     &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
                 )
@@ -1079,7 +1079,7 @@ class TEI:
         If tags are used in multiple namespaces, it will be reported.
 
         !!! caution &#34;Conflation of namespaces&#34;
-            The TEI to TF conversion does constructs node types and attributes
+            The TEI to TF conversion does construct node types and attributes
             without taking namespaces into account.
             However, the parsing process is namespace aware.
 
@@ -3011,7 +3011,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2827-L2837" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2827-L2837" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -3034,7 +3034,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L415-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L415-L428" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3138,7 +3138,7 @@ passed as <code>tfVersion</code>.</p>
 <p>Location of additional TF-app configuration and documentation files.
 If they do not exist, they will be created with some sensible default
 settings and generated documentation.
-These settings can be overriden in the <code>app/config_custom.ymal</code> file.
+These settings can be overriden in the <code>app/config_custom.yaml</code> file.
 Also a default <code>display.css</code> file and a logo are added.</p>
 <p>Custom content for these files can be provided in files
 with <code>_custom</code> appended to their base name.</p>
@@ -3183,7 +3183,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L431-L2824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L431-L2824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3291,7 +3291,7 @@ relevant tf version:</p>
         Location of additional TF-app configuration and documentation files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden in the `app/config_custom.ymal` file.
+        These settings can be overriden in the `app/config_custom.yaml` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -3491,7 +3491,7 @@ relevant tf version:</p>
                 setVer(b1, old + 1)
                 for b in range(b1 + 1, len(parts)):
                     setVer(b, 0)
-                tfVersion = &#34;.&#34;.join(parts)
+                tfVersion = &#34;.&#34;.join(str(p) for p in parts)
                 vRep = (
                     &#34;major&#34; if bump == 1 else &#34;intermediate&#34; if bump == 2 else &#34;minor&#34;
                 )
@@ -3681,7 +3681,7 @@ relevant tf version:</p>
         If tags are used in multiple namespaces, it will be reported.
 
         !!! caution &#34;Conflation of namespaces&#34;
-            The TEI to TF conversion does constructs node types and attributes
+            The TEI to TF conversion does construct node types and attributes
             without taking namespaces into account.
             However, the parsing process is namespace aware.
 
@@ -5596,7 +5596,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L783-L799" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L783-L799" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5657,7 +5657,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2384-L2723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2384-L2723" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -6017,7 +6017,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2727-L2760" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2727-L2760" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6066,7 +6066,7 @@ when constructing the <code><a title="tf.convert.tei.TEI" href="#tf.convert.tei.
 <p>If tags are used in multiple namespaces, it will be reported.</p>
 <div class="admonition caution">
 <p class="admonition-title">Conflation of namespaces</p>
-<p>The TEI to TF conversion does constructs node types and attributes
+<p>The TEI to TF conversion does construct node types and attributes
 without taking namespaces into account.
 However, the parsing process is namespace aware.</p>
 </div>
@@ -6082,7 +6082,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L916-L1260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L916-L1260" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6095,7 +6095,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     If tags are used in multiple namespaces, it will be reported.
 
     !!! caution &#34;Conflation of namespaces&#34;
-        The TEI to TF conversion does constructs node types and attributes
+        The TEI to TF conversion does construct node types and attributes
         without taking namespaces into account.
         However, the parsing process is namespace aware.
 
@@ -6445,7 +6445,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2248-L2336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2248-L2336" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6551,7 +6551,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L1264-L1277" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L1264-L1277" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6592,7 +6592,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L1281-L2246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L1281-L2246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -7586,7 +7586,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L820-L853" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L820-L853" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -7639,7 +7639,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L801-L818" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L801-L818" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7682,7 +7682,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L855-L914" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L855-L914" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7766,7 +7766,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2338-L2380" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2338-L2380" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -7849,7 +7849,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/convert/tei.py#L2762-L2824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/convert/tei.py#L2762-L2824" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
