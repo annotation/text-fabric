@@ -10,6 +10,19 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.9
+
+2023-05-08
+
+The XML converter is now easier to use:
+
+*   It can be controlled much like the TEI converter
+*   If you need custom code to handle the XML, you can now supply it much more
+    easily and feed it to the converter.
+*   For an example, see the
+    [Nestle1904 dataset](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)
+    (Greek New Testament)
+
 ### 11.4.8
 
 2023-05-08

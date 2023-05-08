@@ -1,8 +1,3 @@
-# tf.convert.xml.XML is to be reimplemented with the same interface and
-# capabilities as the current tf.convert.tei.TEI.
-# That will happen here, and then this will become the new xml.py on which
-# the new tei.py can be based.
-
 """
 # XML import
 
@@ -11,168 +6,112 @@ You can convert any XML source into TF by specifying a few details about the sou
 Text-Fabric then invokes the `tf.convert.walker` machinery to produce a Text-Fabric
 dataset out of the source.
 
-!!! caution "As an example"
-    This is more intended as an example of how to tackle the conversion
-    of XML to TF than as a production engine.
-    Most XML corpora use elements for special things, and a good conversion
-    to TF should deal with the intention behind the elements.
+## Whitespace
 
-    See `tf.convert.tei` for a production converter of TEI XML to TF.
+Becasue of the lack of schema information we do not know exactly which white-space
+is significant. The only thing we do to whitespace is to condense each stretch
+of whitespace to a single space.
 
-# Configuration
+Whether some of these spaces around tags must be ignored is a matter of further
+customization.
 
-We assume that you have a `programs` directory at the top-level of your repo.
-In this directory we'll look for two optional files:
-
-*   a file `xml.yaml` in which you specify a bunch of values
-    Last, but not least, you can assemble all the input parameters needed to
-    get the conversion off the ground.
-
-*   a file `xml.py` in which you define a function `transform(text)` which
-    takes a text string ar argument and delivers a text string as result.
-    The converter will call this on every XML input file it reads *before*
-    feeding it to the XML parser.
-
-
-## Keys and values of the `xml.yaml` file
-
-### generic
-
-dict, optional `{}`
-
-Metadata for all generated TF features.
-The actual source version of the XML files does not have to be stated here,
-it will be inserted based on the version that the converter will actually use.
-That version depends on the `xml` argument passed to the program.
-The key under which the source version will be inserted is `xmlVersion`.
-
-### schema
-
-string, optional `None`
-
-Which XML schema to be used, if not specified we work in a schemaless way.
-If specified, leave out the `.xsd` extension. The file is relative to the
-`schema` directory.
-
-### prelim
-
-boolean, optional `True`
-
-Whether to work with the `pre` tf versions.
-Use this if you convert XML to a preliminary TF dataset, which will
-receive NLP additions later on. That version will then lose the `pre`.
-
-### wordAsSlot
-
-boolean, optional `False`
-
-Whether to take words as the basic entities (slots).
-If not, the characters are taken as basic entities.
-
-### sectionModel
-
-dict, optional `{}`
-
-If not passed, or an empty dict, section model I is assumed.
-A section model must be specified with the parameters relevant for the
-model:
-
-```
-dict(
-    model="II",
-    levels=["chapter", "chunk"],
-    element="head",
-    attributes=dict(rend="h3"),
-)
-```
-
-or
-
-```
-dict(
-    model="I",
-    levels=["folder", "file", "chunk"],
-)
-```
-
-because model I does not require the *attribute* parameter.
-
-For model II, the default parameters are:
-
-```
-element="head"
-levels=["chapter", "chunk"],
-attributes={}
-```
-
-# Usage
-
-## Commandline
-
-```sh
-tf-fromxml tasks flags
-```
-
-## From Python
-
-```python
-from tf.convert.xml import XML
-
-X = XML()
-X.task(**tasks, **flags)
-```
-
-For a short overview the tasks and flags, see `HELP`.
+This converter limits itself to generating the TF, it does not generated docs and
+also the creation of a TF app is out of scope.
 
 ## Tasks
 
 We have the following conversion tasks:
 
 1.  `check`: makes and inventory of all XML elements and attributes used.
-1.  `convert`: produces actual TF files by converting XML files.
-1.  `load`: loads the generated TF for the first time, by which the precomputation
+2.  `convert`: produces actual TF files by converting XML files.
+3.  `load`: loads the generated TF for the first time, by which the precomputation
     step is triggered. During precomputation some checks are performed. Once this
     has succeeded, we have a workable Text-Fabric dataset.
-1.  `app`: creates or updates a corpus specific TF-app with minimal sensible settings,
-    plus basic documentation.
-1.  `apptoken`: updates a corpus specific TF-app from a character-based dataset
-    to a token-based dataset.
-1.  `browse`: starts the text-fabric browser on the newly created dataset.
 
 Tasks can be run by passing any choice of task keywords to the
 `XML.task()` method.
 
-## Note on versions
+## Flags
 
-The XML source files come in versions, indicated with a data.
-The converter picks the most recent one, unless you specify an other one:
+We have one flag:
 
-```python
-tf-from-xml xml=-2  # previous version
-tf-from-xml xml=0  # first version
-tf-from-xml xml=3  # third version
-tf-from-xml xml=2019-12-23  # explicit version
+1. `test`: only converts those files in the input that are named in a test set.
+
+The test set is passed as argument to the `XML` constructur.
+
+The `test` flag is passed to the `XML.task()` method.
+
+## Usage
+
+It is intended that you call this converter in a script.
+
+In that script you can define auxiliary Python functions and pass them
+to the converter. The `XML` class has some hooks where such functions
+can be plugged in.
+
+Here you can also define a test set, in case you want to experiment with the
+conversion.
+
+Last, but not least, you can assemble all the input parameters needed to
+get the conversion off the ground.
+
+The resulting script will look like this:
+
+``` python
+
+from tf.convert.xml import XML
+from tf.core.files import baseNm
+
+
+TEST_SET = set(
+    '''
+    aa00.xml
+    bb11.xml
+    '''.strip().split()
+)
+
+AUTHOR = "Corpus Author"
+TITLE = "Corpus"
+INSTITUTE = "Corpus Maintainer"
+
+GENERIC = dict(
+    author=AUTHOR,
+    title=TITLE,
+    institute=INSTITUTE,
+    language="en",
+    converters="Corpus Convertor (Text-Fabric)",
+    sourceFormat="XML",
+    descriptionTf="Edition",
+)
+
+ABOUT_TEXT = '''
+# CONTRIBUTORS
+
+Researcher: S. Scholar.
+
+Editors: E. Editor et al.
+'''
+
+TRANSCRIPTION_TEXT = '''
+
+The XML has not been validated or polished
+before generating the TF data.
+'''
+
+def transform(text):
+    return text.replace(",,", ",")
+
+
+X = XML(
+    sourceVersion="2023-01-31",
+    testSet=TEST_SET,
+    generic=GENERIC,
+    transform=transform,
+    tfVersion="0.1",
+)
+
+X.run(baseNm(__file__))
 ```
-
-The resulting TF data is independently versioned, like `1.2.3` or `1.2.3pre`.
-When the converter runs, by default it overwrites the most recent version,
-unless you specify another one.
-
-It looks at the latest version and then bumps a part of the version number.
-
-```python
-tf-fromxml tf=3  # minor version, 1.2.3 becomes 1.2.4; 1.2.3pre becomes 1.2.4pre
-tf-fromxml tf=2  # intermediate version, 1.2.3 becomes 1.3.0
-tf-fromxml tf=1  # major version, 1.2.3 becomes 2.0.0
-tf-fromxml tf=1.8.3  # explicit version
-```
-
-## Examples
-
-Exactly how you can call the methods of this module is demonstrated in the small
-corpus of 14 letter by the Dutch artist Piet Mondriaan.
-
-*   [Mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/convertExpress.ipynb).
 """
 
 import sys
@@ -181,9 +120,7 @@ import re
 from io import BytesIO
 
 from lxml import etree
-from .helpers import tweakTrans, checkSectionModel
 from ..fabric import Fabric
-from ..core.command import readArgs
 from ..core.helpers import console
 from ..convert.walker import CV
 from ..core.files import (
@@ -194,43 +131,146 @@ from ..core.files import (
     initTree,
     dirNm,
     dirExists,
-    dirContents,
-    fileExists,
-    fileCopy,
     scanDir,
 )
 
-from ..tools.xmlschema import Analysis
+
+__pdoc__ = {}
+
+DOC_TRANS = """
+## Essentials
+
+*   Text-Fabric non-slot nodes correspond to XML elements in the source.
+*   Text-Fabric node-features correspond to XML attributes.
+*   Text-Fabric slot nodes correspond to characters in XML element content.
+
+## Sectioning
+
+The material is divided into two levels of sections, mainly for the purposes
+of text display.
+
+It is assumed that the source is a directory consisting of subdirectories
+consisting of xml files, the XML files.
+
+1.  Subdirectories and files are sorted in the lexicographic ordering
+1.  The subdirectory `__ignore__` is ignored.
+1.  For each subdirectory, a section level 1 node will be created, with
+    feature `name` containing its name.
+1.  For each file in a subdirecotry, a section level 2 node will be created, with
+    feature `name` containing its name.
 
 
+## Elements and attributes
 
-FOLDER = "folder"
-FILE = "file"
-CHAPTER = "chapter"
-CHUNK = "chunk"
+1.  All elements result in nodes whose type is
+    exactly equal to the tag name.
+1.  These nodes are linked to the slots that are produced when converting the
+    content of the corresponding source elements.
+1.  Attributes translate into features of the same name; the feature assigns
+    the attribute value (as string) to the node that corresponds to the element
+    of the attribute.
+
+## Slots
+
+The basic unit is the unicode character.
+For each character in the input we make a slot, but the correspondence is not
+quite 1-1.
+
+1.  Whitespace is reduced to a single space.
+1.  Empty elements will receive one extra slot; this will anchor the element to
+    a textual position; the empty slot gets the ZERO-WIDTH-SPACE (Unicode 200B)
+    as character value.
+1.  Slots get the following features:
+    *   `ch`: the character of the slot
+    *   `empty`: 1 if the slot has been inserted as an empty slot, no value otherwise.
 
 
-SECTION_MODELS = dict(
-    I=dict(levels=(list, [FOLDER, FILE, CHUNK])),
-    II=dict(
-        levels=(list, [CHAPTER, CHUNK]),
-        element=(str, "head"),
-        attributes=(dict, {}),
-    ),
-)
-SECTION_MODEL_DEFAULT = "I"
+## Text-formats
+
+Text-formats regulate how text is displayed, and they can also determine
+what text is displayed.
+
+We have the following formats:
+
+*   `text-orig-full`: all text
+
+## Simplifications
+
+XML is complicated.
+
+On the other hand, the resulting TF should consist of clearly demarcated node types
+and a simple list of features. In order to make that happen, we simplify matters
+a bit.
+
+1.  Processing instructions (`<!proc a="b">`) are ignored.
+1.  Comments (`<!-- this is a comment -->`) are ignored.
+1.  Declarations (`<?xml ...>` `<?xml-model ...>` `<?xml-stylesheet ...>`) are
+    read by the parser, but do not leave traces in the TF output.
+1.  The atrributes of the root-element are ignored.
+1.  Namespaces are read by the parser,
+    but only the unqualified names are distinguishable in the output as feature names.
+    So if the input has elements `ns1:abb` and `ns2:abb`, we'll see just the node
+    type `abb` in the output.
+
+## TF noded and features
+
+(only in as far they are not in 1-1 correspondence with XML elements and attributes)
+
+### node type `folder`
+
+*The type of subfolders of XML documents.*
+
+**Section level 1.**
+
+**Features**
+
+feature | description
+--- | ---
+`folder` | name of the subfolder
+
+### node type `file`
+
+*The type of individual XML documents.*
+
+**Section level 2.**
+
+**Features**
+
+feature | description
+--- | ---
+`file` | name of the file, without the `.xml` extension. Other extensions are included.
+
+### node type `char`
+
+*Unicode characters.*
+
+**Slot type.**
+
+The characters of the text of the elements.
+Ignorable whitespace has been discarded, and is not present in the TF dataset.
+Meaningful whitespace has been condensed to single spaces.
+
+Some empty slots have been inserted to mark the place of empty elements.
+
+**Features**
+
+feature | description
+--- | ---
+`ch` | the unicode character in that slot. There are also slots
+`empty` | whether a slot has been inserted in an empty element
+"""
 
 
 class XML:
     def __init__(
-        self, xml=PARAMS["xml"][1], tf=PARAMS["tf"][1], verbose=FLAGS["verbose"][1]
+        self,
+        sourceVersion="0.1",
+        testSet=set(),
+        generic={},
+        transform=None,
+        tfVersion="0.1",
     ):
         """Converts XML to TF.
-
-        For documentation of the resulting encoding, read the
-        [transcription template](https://github.com/annotation/text-fabric/blob/master/tf/convert/app/transcription.md).
-
-        Below we describe how to control the conversion machinery.
 
         We adopt a fair bit of "convention over configuration" here, in order to lessen
         the burden for the user of specifying so many details.
@@ -240,10 +280,10 @@ class XML:
         a `tf.convert.walker` conversion of the XML input.
 
         This function is assumed to work in the context of a repository,
-        i.e. a directory on your computer relative to which the input directory exists,
-        and various output directories: `tf`, `app`, `docs`.
+        i.e. a directory on your computer relative to which the input directory
+        `xml` and the output directory `tf` exist.
 
-        Your current directory must be at
+        Your current directory must be somewhere inside
 
         ```
         ~/backend/org/repo/relative
@@ -269,7 +309,7 @@ class XML:
         Relative to this directory the program expects and creates
         input/output directories.
 
-        ## Input directories
+        ## Input directory
 
         ### `xml`
 
@@ -281,24 +321,7 @@ class XML:
 
         1.  the version of the source (this could be a date string).
         2.  volumes/collections of documents. The subfolder `__ignore__` is ignored.
-        3.  the XML documents themselves, conforming to a schema
-
-        ### `schema`
-
-        *Location of the XML schema against which the sources can be validated.*
-
-        It should be an `.xsd` file, and the parameter `schema` may specify
-        its name (without extension).
-
-        !!! note "Multiple `.xsd` files"
-            When you started with a `.rng` file and used `tf.tools.xmlschema` to
-            convert it to `xsd`, you may have got multiple `.xsd` files.
-            One of them has the same base name as the original `.rng` file,
-            and you should pass that name. It will import the remaining `.xsd` files,
-            so do not throw them away.
-
-        If no schema is specified, we do not do validation and we cannot do
-        intelligent white-space stripping.
+        3.  the XML documents themselves
 
         ## Output directories
 
@@ -315,258 +338,69 @@ class XML:
         The directory under which the text-fabric output file (with extension `.tf`)
         are placed.
         If it does not exist, it will be created.
-        The tf files will be generated in a folder named by a version number,
+        The tf files will be generated in a subdirectory named by a version number,
         passed as `tfVersion`.
-
-        ### `app` and `docs`
-
-        Location of additional TF-app configuration and documentation files.
-        If they do not exist, they will be created with some sensible default
-        settings and generated documentation.
-        These settings can be overriden in the `app/config_custom.ymal` file.
-        Also a default `display.css` file and a logo are added.
-
-        Custom content for these files can be provided in files
-        with `_custom` appended to their base name.
-
-        ### `docs`
-
-        Location of additional documentation.
-        This can be generated or had-written material, or a mixture of the two.
 
         Parameters
         ----------
-        xml: string, optional ""
-            If empty, use the latest version under the `xml` directory with sources.
-            Otherwise it should be a valid integer, and it is the index in the
-            sorted list of versions there.
 
-            *   `0` or `latest`: latest version;
-            *   `-1`, `-2`, ... : previous version, version before previous, ...;
-            *   `1`, `2`, ...: first version, second version, ....
-            *   everything else that is not a number is an explicit version
+        sourceVersion: string, optional "0.1"
+            Version of the source files. This is the name of a top-level
+            subfolder of the `xml` input folder.
 
-            If the value cannot be parsed as an integer, it is used as the exact
-            version name.
+        testSet: set, optional empty
+            A set of file names. If you run the conversion in test mode
+            (pass `test` as argument to the `XML.task()` method),
+            only the files in the test set are converted.
 
-        tf: string, optional ""
-            If empty, the tf version used will be the latest one under the `tf`
-            directory. If the parameter `prelim` was used in the initialization of
-            the XML object, only versions ending in `pre` will be taken into account.
+        generic: dict, optional {}
+            Metadata for all generated TF feature.
 
-            If it can be parsed as the integers 1, 2, or 3 it will bump the latest
-            relevant tf version:
+        transform: function, optional None
+            If not None, a function that transforms text to text, used
+            as a preprocessing step for each input xml file.
 
-            *   `0` or `latest`: overwrite the latest version
-            *   `1` will bump the major version
-            *   `2` will bump the intermediate version
-            *   `3` will bump the minor version
-            *   everything else is an explicit version
-
-            Otherwise, the value is taken as the exact version name.
-
-        verbose: integer, optional -1
-            Produce no (-1), some (0) or many (1) orprogress and reporting messages
+        tfVersion: string, optional "0.1"
+            Version of the generated tf files. This is the name of a top-level
+            subfolder of the `tf` output folder.
         """
-        self.good = True
-
         (backend, org, repo, relative) = getLocation()
         if any(s is None for s in (backend, org, repo, relative)):
             console(
                 "Not working in a repo: "
                 f"backend={backend} org={org} repo={repo} relative={relative}"
             )
-            self.good = False
-            return
+            quit()
 
-        if verbose == 1:
-            console(
-                f"Working in repository {org}/{repo}{relative} in backend {backend}"
-            )
+        console(f"Working in repository {org}/{repo}{relative} in backend {backend}")
 
         base = ex(f"~/{backend}")
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
-        programDir = f"{refDir}/programs"
-        convertSpec = f"{programDir}/xml.yaml"
-        convertCustom = f"{programDir}/xml.py"
-
-        settings = {}
-        if fileExists(convertSpec):
-            with open(convertSpec, encoding="utf8") as fh:
-                text = fh.read()
-            settings = yaml.load(text, Loader=yaml.FullLoader)
-
-        self.transform = None
-        if fileExists(convertCustom):
-            try:
-                spec = util.spec_from_file_location("teicustom", convertCustom)
-                code = util.module_from_spec(spec)
-                sys.path.insert(0, dirNm(convertCustom))
-                spec.loader.exec_module(code)
-                sys.path.pop(0)
-                self.transform = code.transform
-            except Exception as e:
-                print(str(e))
-                self.transform = None
-
-        generic = settings.get("generic", {})
-        schema = settings.get("schema", None)
-        prelim = settings.get("prelim", True)
-        wordAsSlot = settings.get("wordAsSlot", True)
-        sectionModel = settings.get("sectionModel", {})
-
-        sectionModel = checkSectionModel(sectionModel)
-        if not sectionModel:
-            self.good = False
-            return
-
-        sectionProperties = sectionModel.get("properties", None)
-
-        self.generic = generic
-        self.schema = schema
-        self.prelim = prelim
-        self.wordAsSlot = wordAsSlot
-        self.sectionModel = sectionModel["model"]
-        self.sectionProperties = sectionProperties
-
+        sourceDir = f"{refDir}/xml/{sourceVersion}"
         reportDir = f"{refDir}/report"
-        appDir = f"{refDir}/app"
-        docsDir = f"{refDir}/docs"
-        teiDir = f"{refDir}/tei"
         tfDir = f"{refDir}/tf"
 
-        teiVersions = sorted(dirContents(teiDir)[1], key=versionSort)
-        nTeiVersions = len(teiVersions)
-
-        if tei in {"latest", "", "0", 0} or str(tei).lstrip("-").isdecimal():
-            teiIndex = (0 if tei == "latest" else int(tei)) - 1
-
-            try:
-                teiVersion = teiVersions[teiIndex]
-            except Exception:
-                absIndex = teiIndex + (nTeiVersions if teiIndex < 0 else 0) + 1
-                console(
-                    (
-                        f"no item in {absIndex} in {nTeiVersions} source versions "
-                        f"in {ux(teiDir)}"
-                    )
-                    if len(teiVersions)
-                    else f"no source versions in {ux(teiDir)}",
-                    error=True,
-                )
-                self.good = False
-                return
-        else:
-            teiVersion = tei
-
-        teiPath = f"{teiDir}/{teiVersion}"
-        reportPath = f"{reportDir}/{teiVersion}"
-
-        if not dirExists(teiPath):
-            console(
-                f"source version {teiVersion} does not exists in {ux(teiDir)}",
-                error=True,
-            )
-            self.good = False
-            return
-
-        teiStatuses = {tv: i for (i, tv) in enumerate(reversed(teiVersions))}
-        teiStatus = teiStatuses[teiVersion]
-        teiStatusRep = (
-            "most recent"
-            if teiStatus == 0
-            else "previous"
-            if teiStatus == 1
-            else f"{teiStatus - 1} before previous"
-        )
-        if teiStatus == len(teiVersions) - 1 and len(teiVersions) > 1:
-            teiStatusRep = "oldest"
-
-        if verbose >= 0:
-            console(f"TEI data version is {teiVersion} ({teiStatusRep})")
-
-        tfVersions = sorted(dirContents(tfDir)[1], key=versionSort)
-        if prelim:
-            tfVersions = [tv for tv in tfVersions if tv.endswith(PRE)]
-
-        latestTfVersion = (
-            tfVersions[-1] if len(tfVersions) else ("0.0.0" + (PRE if prelim else ""))
-        )
-        if tf in {"latest", "", "0", 0}:
-            tfVersion = latestTfVersion
-            vRep = "latest"
-        elif tf in {"1", "2", "3", 1, 2, 3}:
-            bump = int(tf)
-            parts = latestTfVersion.split(".")
-
-            def getVer(b):
-                return (
-                    int(parts[b].removesuffix(PRE))
-                    if prelim and b == len(parts) - 1
-                    else int(parts[b])
-                )
-
-            def setVer(b, val):
-                parts[b] = f"{val}{PRE}" if prelim and b == len(parts) - 1 else f"{val}"
-
-            if bump > len(parts):
-                console(
-                    f"Cannot bump part {bump} of latest TF version {latestTfVersion}",
-                    error=True,
-                )
-                self.good = False
-                return
-            else:
-                b1 = bump - 1
-                old = getVer(b1)
-                setVer(b1, old + 1)
-                for b in range(b1 + 1, len(parts)):
-                    setVer(b, 0)
-                tfVersion = ".".join(parts)
-                vRep = "major" if bump == 1 else "intermediate" if bump == 2 else "minor"
-                vRep = f"next {vRep}"
-        else:
-            tfVersion = tf
-            status = "exising" if dirExists(f"{tfDir}/{tfVersion}") else "new"
-            vRep = f"explicit {status}"
-
-        tfPath = f"{tfDir}/{tfVersion}"
-
-        if verbose >= 0:
-            console(f"TF data version is {tfVersion} ({vRep})")
-
         self.refDir = refDir
-        self.teiVersion = teiVersion
-        self.teiPath = teiPath
-        self.tfVersion = tfVersion
-        self.tfPath = tfPath
-        self.reportPath = reportPath
+        self.sourceDir = sourceDir
+        self.reportDir = reportDir
         self.tfDir = tfDir
-        self.appDir = appDir
-        self.docsDir = docsDir
-        self.backend = backend
         self.org = org
         self.repo = repo
-        self.relative = relative
 
-        self.schemaFile = None if schema is None else f"{refDir}/schema/{schema}.xsd"
-        levelNames = sectionProperties["levels"]
-        self.levelNames = levelNames
-        self.chunkLevel = levelNames[-1]
+        if sourceDir is None or not dirExists(sourceDir):
+            console(f"Source location does not exist: {sourceDir}")
+            quit()
 
-        if self.sectionModel == "II":
-            self.chapterSection = levelNames[0]
-            self.chunkSection = levelNames[1]
-        else:
-            self.folderSection = levelNames[0]
-            self.fileSection = levelNames[1]
-            self.chunkSection = levelNames[2]
-
-        self.verbose = verbose
+        self.sourceVersion = sourceVersion
+        self.testMode = False
+        self.testSet = testSet
+        self.generic = generic
+        self.transform = transform
+        self.tfVersion = tfVersion
+        self.tfPath = f"{tfDir}/{tfVersion}"
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
-
 
     @staticmethod
     def help(program):
@@ -1205,18 +1039,4 @@ class XML:
             sys.exit(1)
 
 
-def main():
-    (good, tasks, params, flags) = readArgs(
-        "tf-fromxml", HELP, TASKS, PARAMS, FLAGS, notInAll=TASKS_EXCLUDED
-    )
-    if not good:
-        return False
-
-    X = XML(**params, **flags)
-    X.task(**tasks, **flags)
-
-    return X.good
-
-
-if __name__ == "__main__":
-    sys.exit(0 if main() else 1)
+__pdoc__["XML"] = DOC_TRANS

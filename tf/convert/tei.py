@@ -534,7 +534,7 @@ class TEI:
         Location of additional TF-app configuration and documentation files.
         If they do not exist, they will be created with some sensible default
         settings and generated documentation.
-        These settings can be overriden in the `app/config_custom.ymal` file.
+        These settings can be overriden in the `app/config_custom.yaml` file.
         Also a default `display.css` file and a logo are added.
 
         Custom content for these files can be provided in files
@@ -734,7 +734,7 @@ class TEI:
                 setVer(b1, old + 1)
                 for b in range(b1 + 1, len(parts)):
                     setVer(b, 0)
-                tfVersion = ".".join(parts)
+                tfVersion = ".".join(str(p) for p in parts)
                 vRep = (
                     "major" if bump == 1 else "intermediate" if bump == 2 else "minor"
                 )
@@ -924,7 +924,7 @@ class TEI:
         If tags are used in multiple namespaces, it will be reported.
 
         !!! caution "Conflation of namespaces"
-            The TEI to TF conversion does constructs node types and attributes
+            The TEI to TF conversion does construct node types and attributes
             without taking namespaces into account.
             However, the parsing process is namespace aware.
 
