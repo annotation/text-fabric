@@ -133,7 +133,7 @@ V.makeVersionMapping()
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L1-L707" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L1-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Nodemaps
@@ -274,7 +274,6 @@ import sys
 import collections
 from itertools import chain
 from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
-from ..core.helpers import isIntType
 
 
 STAT_LABELS = collections.OrderedDict(
@@ -515,7 +514,7 @@ class Versions:
                 else diagnosis.get(node, {})
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None)
-                if isIntType(node)
+                if type(node) is int
                 else None
             )
         else:
@@ -531,7 +530,7 @@ class Versions:
                 )
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None) == label
-                if isIntType(node)
+                if type(node) is int
                 else None
             )
 
@@ -889,7 +888,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L155-L707" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L154-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Versions:
     def __init__(self, api, va, vb, silent=SILENT_D, slotMap=None):
@@ -1117,7 +1116,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
                 else diagnosis.get(node, {})
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None)
-                if isIntType(node)
+                if type(node) is int
                 else None
             )
         else:
@@ -1133,7 +1132,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
                 )
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None) == label
-                if isIntType(node)
+                if type(node) is int
                 else None
             )
 
@@ -1455,7 +1454,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L644-L707" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L643-L706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">    def caption(self, level, heading, good=None, newLine=True, continuation=False):
         silent = self.silent
@@ -1531,7 +1530,7 @@ only have to provide the <code><a title="tf.core.nodefeature.NodeFeatures" href=
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L308-L334" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L307-L333" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exploreNodeMapping(self, nodeType):
     va = self.va
@@ -1600,7 +1599,7 @@ by diagnostic label but now for all nodes.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L336-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L335-L398" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDiagnosis(self, node=None, label=None):
     &#34;&#34;&#34;Show the diagnosis of a mapping.
@@ -1647,7 +1646,7 @@ by diagnostic label but now for all nodes.</p>
             else diagnosis.get(node, {})
             if type(node) is str
             else diagnosis.get(otypesa(node), {}).get(node, None)
-            if isIntType(node)
+            if type(node) is int
             else None
         )
     else:
@@ -1663,7 +1662,7 @@ by diagnostic label but now for all nodes.</p>
             )
             if type(node) is str
             else diagnosis.get(otypesa(node), {}).get(node, None) == label
-            if isIntType(node)
+            if type(node) is int
             else None
         )</code></pre>
 </details>
@@ -1680,7 +1679,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L401-L412" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L400-L411" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def legend(self):
     &#34;&#34;&#34;Show the labels and descriptions of the diagnosis classes.
@@ -1704,7 +1703,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L228-L306" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L227-L305" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeNodeMapping(self, nodeType):
     edge = self.edge
@@ -1795,7 +1794,7 @@ See also <code><a title="tf.dataset.nodemaps" href="#tf.dataset.nodemaps">tf.dat
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L447-L458" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L446-L457" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeVersionMapping(self):
     Fa = self.Fa
@@ -1851,7 +1850,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L460-L642" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L459-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def migrateFeatures(self, featureNames, silent=None, location=None):
     &#34;&#34;&#34;Migrate features from one version to another based on a node map.
@@ -2046,7 +2045,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L414-L417" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L413-L416" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def omapName(self):
     va = self.va
@@ -2062,7 +2061,7 @@ that has been used when creating the <code><a title="tf.dataset.nodemaps.Version
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/dataset/nodemaps.py#L419-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/dataset/nodemaps.py#L418-L444" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def writeMap(self):
     TFb = self.TFb

@@ -26,9 +26,9 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L1-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L1-L719" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">import numpy
+<pre><code class="python">import array
 import gc
 import pickle
 from pickletools import optimize
@@ -415,12 +415,7 @@ class Data:
                         continue
                     otype.append(data[n])
                 maxNode = len(data)
-                self.data = (
-                    numpy.array(otype, dtype=object),
-                    maxSlot,
-                    maxNode,
-                    slotType,
-                )
+                self.data = (tuple(otype), maxSlot, maxNode, slotType)
             elif self.fileName == OSLOTS:
                 nodeList = sorted(data)
                 maxSlot = (
@@ -441,8 +436,9 @@ class Data:
                     pass
                 oslots = []
                 for n in nodeList:
-                    oslots.append(numpy.array(sorted(data[n]), dtype=numpy.uint32))
-                self.data = (numpy.array(oslots, dtype=object), maxSlot, maxNode)
+                    oslots.append(array.array(&#34;I&#34;, sorted(data[n])))
+                    # oslots.append(tuple(sorted(data[n])))
+                self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
                 seen = {}
                 datax = {}
@@ -771,7 +767,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L44-L723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L44-L719" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Data:
     def __init__(
@@ -1117,12 +1113,7 @@ class Data:
                         continue
                     otype.append(data[n])
                 maxNode = len(data)
-                self.data = (
-                    numpy.array(otype, dtype=object),
-                    maxSlot,
-                    maxNode,
-                    slotType,
-                )
+                self.data = (tuple(otype), maxSlot, maxNode, slotType)
             elif self.fileName == OSLOTS:
                 nodeList = sorted(data)
                 maxSlot = (
@@ -1143,8 +1134,9 @@ class Data:
                     pass
                 oslots = []
                 for n in nodeList:
-                    oslots.append(numpy.array(sorted(data[n]), dtype=numpy.uint32))
-                self.data = (numpy.array(oslots, dtype=object), maxSlot, maxNode)
+                    oslots.append(array.array(&#34;I&#34;, sorted(data[n])))
+                    # oslots.append(tuple(sorted(data[n])))
+                self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
                 seen = {}
                 datax = {}
@@ -1464,7 +1456,7 @@ class Data:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L678-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L674-L675" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanDataBin(self):
     fileRemove(self.binPath)</code></pre>
@@ -1481,7 +1473,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L77-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L77-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, metaOnly=False, silent=SILENT_D, _withGc=True):
     &#34;&#34;&#34;Load a feature.
@@ -1602,7 +1594,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L191-L201" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L191-L201" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def save(self, overwrite=False, nodeRanges=False, silent=SILENT_D):
     silent = silentConvert(silent)
@@ -1625,7 +1617,7 @@ loading features. Used to experiment with performance.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/data.py#L187-L189" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/data.py#L187-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unload(self):
     self.data = None

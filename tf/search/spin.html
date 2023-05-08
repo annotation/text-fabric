@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/spin.py#L1-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/search/spin.py#L1-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search preprocessing
@@ -308,9 +308,7 @@ def estimateSpreads(searchExe, both=False):
                 totalSpread = 0
                 if nparams == 1:
                     for n in triesn:
-                        mFromN = (
-                            set() if r(n) is None else {m for m in r(n) if m in yarnT}
-                        )
+                        mFromN = {m for m in r(n) or () if m in yarnT}
                         totalSpread += len(mFromN)
                 else:
                     yarnTl = len(yarnT)
@@ -474,7 +472,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/spin.py#L239-L306" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/search/spin.py#L239-L304" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def estimateSpreads(searchExe, both=False):
     TRY_LIMIT_F = searchExe.perfParams[&#34;tryLimitFrom&#34;]
@@ -517,9 +515,7 @@ def spinEdges(searchExe):
                 totalSpread = 0
                 if nparams == 1:
                     for n in triesn:
-                        mFromN = (
-                            set() if r(n) is None else {m for m in r(n) if m in yarnT}
-                        )
+                        mFromN = {m for m in r(n) or () if m in yarnT}
                         totalSpread += len(mFromN)
                 else:
                     yarnTl = len(yarnT)
@@ -554,7 +550,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/spin.py#L233-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/search/spin.py#L233-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def spinAtoms(searchExe):
     qnodes = searchExe.qnodes
@@ -570,7 +566,7 @@ def spinEdges(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/search/spin.py#L405-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/search/spin.py#L403-L426" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def spinEdges(searchExe):
     qnodes = searchExe.qnodes

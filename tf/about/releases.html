@@ -32,8 +32,8 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
-<h3 id="1147-upcoming">11.4.7 (upcoming)</h3>
-<p>2023-05-??</p>
+<h3 id="1148">11.4.8</h3>
+<p>2023-05-08</p>
 <ul>
 <li>
 <p>Some improvements that give a smoother run when using TF on an iPad, in the
@@ -54,9 +54,26 @@ and show the message.</p>
 <li>
 <p>Fixed a bug in <code><a title="tf.core.data.Data.cleanDataBin" href="../core/data.html#tf.core.data.Data.cleanDataBin">Data.cleanDataBin()</a></code></p>
 </li>
+<li>
+<p>Reverted back to the old way of data storage in RAM, with
+<code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code> set to <code>3</code>.</p>
+</li>
 </ul>
 </li>
 </ul>
+<h3 id="1147">11.4.7</h3>
+<p>2023-05-08</p>
+<p>I conducted an experiment to reduce the TF memory footprint by storing a lot of
+data in numpy arrays. That resulted in a reduction from 2.5 GB to 1.65 GB for the
+BHSA. However, TF became noticably slower. Some queries took 10-20 percent
+more time, but sometimes the execution time got several times slower, up to 8x
+slower.
+Moreover, when I ran the BHSA in this version on the iPad (with 3GB RAM),
+the reduction was not enough to prevent a crash.</p>
+<p>You can install this version and see for yourself.</p>
+<p>Note, that when Text-Fabric precokputes data, it will store the results in</p>
+<p><code>.tf/4</code> (<code>PACK_VERSION = 4</code>), whereas the old way's results are still in
+<code>.tf/3</code> (<code>PACK_VERSION = 3</code>). See <code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>.</p>
 <h3 id="1146">11.4.6</h3>
 <p>2023-05-04</p>
 <ul>
@@ -499,7 +516,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -572,7 +589,8 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
-<li><a href="#1147-upcoming">11.4.7 (upcoming)</a></li>
+<li><a href="#1148">11.4.8</a></li>
+<li><a href="#1147">11.4.7</a></li>
 <li><a href="#1146">11.4.6</a></li>
 <li><a href="#1145">11.4.5</a></li>
 <li><a href="#1144">11.4.4</a></li>

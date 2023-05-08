@@ -34,7 +34,7 @@ the order and nature of the steps is configured in
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L1-L788" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L1-L775" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Precompute data.
@@ -51,10 +51,8 @@ The functions in this module implement those tasks.
 
 import collections
 import functools
-
-# import array
+import array
 from .helpers import itemize
-import numpy
 
 
 def levels(info, error, otype, oslots, otext):
@@ -245,7 +243,7 @@ def order(info, error, otype, oslots, levels):
     info(&#34;sorting nodes&#34;)
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
     # return array.array(&#34;I&#34;, nodes)
-    return numpy.array(nodes, dtype=numpy.uint32)
+    return tuple(nodes)
 
 
 def rank(info, error, otype, order):
@@ -274,9 +272,7 @@ def rank(info, error, otype, order):
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-    return numpy.array(
-        [nodesRank[n] for n in range(1, maxNode + 1)], dtype=numpy.uint32
-    )
+    return array.array(&#34;I&#34;, (nodesRank[n] for n in range(1, maxNode + 1)))
     # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))
 
 
@@ -334,38 +330,40 @@ def levUp(info, error, otype, oslots, rank):
     for n in range(1, maxSlot + 1):
         contentEmbedders = oslotsInv.get(n, tuple())
         embedders.append(
-            numpy.array(
+            tuple(
                 sorted(
                     (m for m in contentEmbedders if m != n),
                     key=lambda k: -rank[k - 1],
-                ),
-                dtype=numpy.uint32,
+                )
             )
         )
-    seen = {}
     for n in range(maxSlot + 1, maxNode + 1):
-        mList = tuple(oslots[n - maxSlot - 1])
-        if mList in seen:
-            theseEmbedders = seen[mList]
+        mList = oslots[n - maxSlot - 1]
+        if len(mList) == 0:
+            embedders.append(tuple())
         else:
-            if len(mList) == 0:
-                theseEmbedders = numpy.array()
-            else:
-                contentEmbedders = functools.reduce(
-                    lambda x, y: x &amp; oslotsInv[y],
-                    mList[1:],
-                    oslotsInv[mList[0]],
-                )
-                theseEmbedders = numpy.array(
+            contentEmbedders = functools.reduce(
+                lambda x, y: x &amp; oslotsInv[y],
+                mList[1:],
+                oslotsInv[mList[0]],
+            )
+            embedders.append(
+                tuple(
                     sorted(
                         (m for m in contentEmbedders if m != n),
                         key=lambda k: -rank[k - 1],
-                    ),
-                    dtype=numpy.uint32,
+                    )
                 )
-            seen[mList] = theseEmbedders
-        embedders.append(theseEmbedders)
-    return numpy.array(embedders, dtype=object)
+            )
+    # reuse embedder tuples, because lots of nodes share embedders
+    seen = {}
+    embeddersx = []
+    for t in embedders:
+        if t not in seen:
+            # seen[t] = array.array(&#34;I&#34;, t)
+            seen[t] = tuple(t)
+        embeddersx.append(seen[t])
+    return tuple(embeddersx)
 
 
 def levDown(info, error, otype, levUp, rank):
@@ -415,16 +413,13 @@ def levDown(info, error, otype, levUp, rank):
         for m in levUp[n - 1]:
             inverse.setdefault(m, set()).add(n)
     info(&#34;turning embeddees into list&#34;)
-    return numpy.array(
-        [
-            numpy.array(
-                sorted(inverse.get(n, []), key=lambda m: rank[m - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(maxSlot + 1, maxNode + 1)
-        ],
-        dtype=object,
-    )
+    embeddees = []
+    for n in range(maxSlot + 1, maxNode + 1):
+        embeddees.append(
+            array.array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+        )
+    return tuple(embeddees)
 
 
 def characters(info, error, otext, tFormats, *tFeats):
@@ -532,25 +527,17 @@ def boundary(info, error, otype, oslots, rank):
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
 
-    firstSlots = numpy.array(
-        [
-            numpy.array(
-                sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(1, maxSlot + 1)
-        ],
-        dtype=object,
+    firstSlots = tuple(
+        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array.array(&#34;I&#34;, sorted(firstSlotsD.get(n, []),
+        # key=lambda node: -rank[node - 1]))
+        for n in range(1, maxSlot + 1)
     )
-    lastSlots = numpy.array(
-        [
-            numpy.array(
-                sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(1, maxSlot + 1)
-        ],
-        dtype=object,
+    lastSlots = tuple(
+        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array.array(&#34;I&#34;, sorted(lastSlotsD.get(n, []),
+        # key=lambda node: rank[node - 1]))
+        for n in range(1, maxSlot + 1)
     )
     return (firstSlots, lastSlots)
 
@@ -880,7 +867,7 @@ reversed canonical order?</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L447-L517" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L442-L504" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def boundary(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes boundary data.
@@ -932,25 +919,17 @@ reversed canonical order?</p>
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
 
-    firstSlots = numpy.array(
-        [
-            numpy.array(
-                sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(1, maxSlot + 1)
-        ],
-        dtype=object,
+    firstSlots = tuple(
+        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array.array(&#34;I&#34;, sorted(firstSlotsD.get(n, []),
+        # key=lambda node: -rank[node - 1]))
+        for n in range(1, maxSlot + 1)
     )
-    lastSlots = numpy.array(
-        [
-            numpy.array(
-                sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(1, maxSlot + 1)
-        ],
-        dtype=object,
+    lastSlots = tuple(
+        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array.array(&#34;I&#34;, sorted(lastSlotsD.get(n, []),
+        # key=lambda node: rank[node - 1]))
+        for n in range(1, maxSlot + 1)
     )
     return (firstSlots, lastSlots)</code></pre>
 </details>
@@ -987,7 +966,7 @@ of that character in the whole corpus when rendered with that format.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L392-L444" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L387-L439" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def characters(info, error, otext, tFormats, *tFeats):
     &#34;&#34;&#34;Computes character data.
@@ -1087,7 +1066,7 @@ this raw data might be a deal.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L333-L389" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L331-L384" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levDown(info, error, otype, levUp, rank):
     &#34;&#34;&#34;Computes level-down data.
@@ -1136,16 +1115,13 @@ this raw data might be a deal.</p>
         for m in levUp[n - 1]:
             inverse.setdefault(m, set()).add(n)
     info(&#34;turning embeddees into list&#34;)
-    return numpy.array(
-        [
-            numpy.array(
-                sorted(inverse.get(n, []), key=lambda m: rank[m - 1]),
-                dtype=numpy.uint32,
-            )
-            for n in range(maxSlot + 1, maxNode + 1)
-        ],
-        dtype=object,
-    )</code></pre>
+    embeddees = []
+    for n in range(maxSlot + 1, maxNode + 1):
+        embeddees.append(
+            array.array(&#34;I&#34;, sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+        )
+    return tuple(embeddees)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.levUp"><code class="name flex">
@@ -1189,7 +1165,7 @@ this raw data might be a deal.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L245-L330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L241-L328" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levUp(info, error, otype, oslots, rank):
     &#34;&#34;&#34;Computes level-up data.
@@ -1245,38 +1221,40 @@ this raw data might be a deal.</p></div>
     for n in range(1, maxSlot + 1):
         contentEmbedders = oslotsInv.get(n, tuple())
         embedders.append(
-            numpy.array(
+            tuple(
                 sorted(
                     (m for m in contentEmbedders if m != n),
                     key=lambda k: -rank[k - 1],
-                ),
-                dtype=numpy.uint32,
+                )
             )
         )
-    seen = {}
     for n in range(maxSlot + 1, maxNode + 1):
-        mList = tuple(oslots[n - maxSlot - 1])
-        if mList in seen:
-            theseEmbedders = seen[mList]
+        mList = oslots[n - maxSlot - 1]
+        if len(mList) == 0:
+            embedders.append(tuple())
         else:
-            if len(mList) == 0:
-                theseEmbedders = numpy.array()
-            else:
-                contentEmbedders = functools.reduce(
-                    lambda x, y: x &amp; oslotsInv[y],
-                    mList[1:],
-                    oslotsInv[mList[0]],
-                )
-                theseEmbedders = numpy.array(
+            contentEmbedders = functools.reduce(
+                lambda x, y: x &amp; oslotsInv[y],
+                mList[1:],
+                oslotsInv[mList[0]],
+            )
+            embedders.append(
+                tuple(
                     sorted(
                         (m for m in contentEmbedders if m != n),
                         key=lambda k: -rank[k - 1],
-                    ),
-                    dtype=numpy.uint32,
+                    )
                 )
-            seen[mList] = theseEmbedders
-        embedders.append(theseEmbedders)
-    return numpy.array(embedders, dtype=object)</code></pre>
+            )
+    # reuse embedder tuples, because lots of nodes share embedders
+    seen = {}
+    embeddersx = []
+    for t in embedders:
+        if t not in seen:
+            # seen[t] = array.array(&#34;I&#34;, t)
+            seen[t] = tuple(t)
+        embeddersx.append(seen[t])
+    return tuple(embeddersx)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.levels"><code class="name flex">
@@ -1336,7 +1314,7 @@ See <code><a title="tf.core.text" href="text.html">tf.core.text</a></code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L22-L133" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L20-L131" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def levels(info, error, otype, oslots, otext):
     &#34;&#34;&#34;Computes level data.
@@ -1487,7 +1465,7 @@ account.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L136-L210" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L134-L208" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def order(info, error, otype, oslots, levels):
     &#34;&#34;&#34;Computes order data for the canonical ordering.
@@ -1563,7 +1541,7 @@ account.</p>
     info(&#34;sorting nodes&#34;)
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
     # return array.array(&#34;I&#34;, nodes)
-    return numpy.array(nodes, dtype=numpy.uint32)</code></pre>
+    return tuple(nodes)</code></pre>
 </details>
 </dd>
 <dt id="tf.core.prepare.rank"><code class="name flex">
@@ -1592,7 +1570,7 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L213-L242" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L211-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rank(info, error, otype, order):
     &#34;&#34;&#34;Computes rank data.
@@ -1620,9 +1598,7 @@ canonical order (see <code><a title="tf.core.nodes" href="nodes.html">tf.core.no
     (otype, maxSlot, maxNode, slotType) = otype
     info(&#34;ranking nodes&#34;)
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-    return numpy.array(
-        [nodesRank[n] for n in range(1, maxNode + 1)], dtype=numpy.uint32
-    )
+    return array.array(&#34;I&#34;, (nodesRank[n] for n in range(1, maxNode + 1)))
     # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))</code></pre>
 </details>
 </dd>
@@ -1681,7 +1657,7 @@ spells out the names of the sections.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L520-L646" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L507-L633" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def sections(info, error, otype, oslots, otext, levUp, levels, *sFeats):
     &#34;&#34;&#34;Computes section data.
@@ -1871,7 +1847,7 @@ section key.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f08219e67a50eaf6ca866556c785b2da3e4f55fa/tf/core/prepare.py#L649-L788" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/99d2437be11d06b647ebe719b969190755d8c7af/tf/core/prepare.py#L636-L775" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def structure(info, error, otype, oslots, otext, rank, levUp, *sFeats):
     &#34;&#34;&#34;Computes structure data.
