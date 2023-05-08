@@ -13,8 +13,10 @@ The functions in this module implement those tasks.
 
 import collections
 import functools
-import array
+
+# import array
 from .helpers import itemize
+import numpy
 
 
 def levels(info, error, otype, oslots, otext):
@@ -205,7 +207,7 @@ def order(info, error, otype, oslots, levels):
     info("sorting nodes")
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
     # return array.array("I", nodes)
-    return tuple(nodes)
+    return numpy.array(nodes, dtype=numpy.uint32)
 
 
 def rank(info, error, otype, order):
@@ -234,7 +236,9 @@ def rank(info, error, otype, order):
     (otype, maxSlot, maxNode, slotType) = otype
     info("ranking nodes")
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-    return array.array("I", (nodesRank[n] for n in range(1, maxNode + 1)))
+    return numpy.array(
+        [nodesRank[n] for n in range(1, maxNode + 1)], dtype=numpy.uint32
+    )
     # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))
 
 
@@ -292,40 +296,38 @@ def levUp(info, error, otype, oslots, rank):
     for n in range(1, maxSlot + 1):
         contentEmbedders = oslotsInv.get(n, tuple())
         embedders.append(
-            tuple(
+            numpy.array(
                 sorted(
                     (m for m in contentEmbedders if m != n),
                     key=lambda k: -rank[k - 1],
-                )
+                ),
+                dtype=numpy.uint32,
             )
         )
+    seen = {}
     for n in range(maxSlot + 1, maxNode + 1):
-        mList = oslots[n - maxSlot - 1]
-        if len(mList) == 0:
-            embedders.append(tuple())
+        mList = tuple(oslots[n - maxSlot - 1])
+        if mList in seen:
+            theseEmbedders = seen[mList]
         else:
-            contentEmbedders = functools.reduce(
-                lambda x, y: x & oslotsInv[y],
-                mList[1:],
-                oslotsInv[mList[0]],
-            )
-            embedders.append(
-                tuple(
+            if len(mList) == 0:
+                theseEmbedders = numpy.array()
+            else:
+                contentEmbedders = functools.reduce(
+                    lambda x, y: x & oslotsInv[y],
+                    mList[1:],
+                    oslotsInv[mList[0]],
+                )
+                theseEmbedders = numpy.array(
                     sorted(
                         (m for m in contentEmbedders if m != n),
                         key=lambda k: -rank[k - 1],
-                    )
+                    ),
+                    dtype=numpy.uint32,
                 )
-            )
-    # reuse embedder tuples, because lots of nodes share embedders
-    seen = {}
-    embeddersx = []
-    for t in embedders:
-        if t not in seen:
-            # seen[t] = array.array("I", t)
-            seen[t] = tuple(t)
-        embeddersx.append(seen[t])
-    return tuple(embeddersx)
+            seen[mList] = theseEmbedders
+        embedders.append(theseEmbedders)
+    return numpy.array(embedders, dtype=object)
 
 
 def levDown(info, error, otype, levUp, rank):
@@ -375,13 +377,16 @@ def levDown(info, error, otype, levUp, rank):
         for m in levUp[n - 1]:
             inverse.setdefault(m, set()).add(n)
     info("turning embeddees into list")
-    embeddees = []
-    for n in range(maxSlot + 1, maxNode + 1):
-        embeddees.append(
-            array.array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
-            # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
-        )
-    return tuple(embeddees)
+    return numpy.array(
+        [
+            numpy.array(
+                sorted(inverse.get(n, []), key=lambda m: rank[m - 1]),
+                dtype=numpy.uint32,
+            )
+            for n in range(maxSlot + 1, maxNode + 1)
+        ],
+        dtype=object,
+    )
 
 
 def characters(info, error, otext, tFormats, *tFeats):
@@ -489,17 +494,25 @@ def boundary(info, error, otype, oslots, rank):
         firstSlotsD.setdefault(slots[0], []).append(realNode)
         lastSlotsD.setdefault(slots[-1], []).append(realNode)
 
-    firstSlots = tuple(
-        tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
-        # array.array("I", sorted(firstSlotsD.get(n, []),
-        # key=lambda node: -rank[node - 1]))
-        for n in range(1, maxSlot + 1)
+    firstSlots = numpy.array(
+        [
+            numpy.array(
+                sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]),
+                dtype=numpy.uint32,
+            )
+            for n in range(1, maxSlot + 1)
+        ],
+        dtype=object,
     )
-    lastSlots = tuple(
-        tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
-        # array.array("I", sorted(lastSlotsD.get(n, []),
-        # key=lambda node: rank[node - 1]))
-        for n in range(1, maxSlot + 1)
+    lastSlots = numpy.array(
+        [
+            numpy.array(
+                sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]),
+                dtype=numpy.uint32,
+            )
+            for n in range(1, maxSlot + 1)
+        ],
+        dtype=object,
     )
     return (firstSlots, lastSlots)
 

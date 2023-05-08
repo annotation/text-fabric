@@ -1728,7 +1728,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
                 childs = {childs}
             else:
                 childs = set(childs)
-            children[nType] = set(childs or ())
+            children[nType] = set(childs if len(childs) else ())
 
         isBig = info.get("isBig", False)
         if isBig:

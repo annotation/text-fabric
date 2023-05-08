@@ -137,6 +137,7 @@ import sys
 import collections
 from itertools import chain
 from ..core.timestamp import SILENT_D, VERBOSE, AUTO, TERSE, silentConvert
+from ..core.helpers import isIntType
 
 
 STAT_LABELS = collections.OrderedDict(
@@ -377,7 +378,7 @@ class Versions:
                 else diagnosis.get(node, {})
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None)
-                if type(node) is int
+                if isIntType(node)
                 else None
             )
         else:
@@ -393,7 +394,7 @@ class Versions:
                 )
                 if type(node) is str
                 else diagnosis.get(otypesa(node), {}).get(node, None) == label
-                if type(node) is int
+                if isIntType(node)
                 else None
             )
 

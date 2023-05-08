@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import numpy
 
 from ..parameters import OMAP
 from .files import unexpanduser as ux
@@ -76,6 +77,10 @@ def isInt(val):
     except Exception:
         return False
     return True
+
+
+def isIntType(val):
+    return type(val) in {int, numpy.uint32}
 
 
 def mathEsc(val):
@@ -347,14 +352,14 @@ def valueFromTf(tf):
 
 def tfFromValue(val):
     valTp = type(val)
-    isInt = valTp is int
+    isInt = isIntType(val)
     isStr = valTp is str
     if not isInt and not isStr:
         console(f"Wrong type for a TF value: {valTp}: {val}", error=True)
         return None
     return (
         str(val)
-        if type(val) is int
+        if isInt
         else val.replace("\\", "\\\\").replace("\t", "\\t").replace("\n", "\\n")
     )
 

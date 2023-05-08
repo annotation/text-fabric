@@ -1,4 +1,5 @@
 from ..core.text import DEFAULT_FORMAT
+from ..core.helpers import isIntType
 from .helpers import RESULT
 from .display import plain, plainTuple, pretty, prettyTuple
 
@@ -222,7 +223,7 @@ def composeP(
     if not items:
         return ""
 
-    if type(items) is int:
+    if isIntType(items):
         return pretty(app, items, **options)
 
     if getx is not None:

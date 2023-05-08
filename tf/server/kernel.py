@@ -81,7 +81,7 @@ from functools import reduce
 
 from ..parameters import GH
 from ..capable import Capable
-from ..core.helpers import console
+from ..core.helpers import console, isIntType
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -540,7 +540,7 @@ def makeTfKernel(app, appName, port):
                 for sectionLine in sectionLines:
                     sectionLine = sectionLine.strip()
                     node = app.nodeFromSectionStr(sectionLine)
-                    if type(node) is int:
+                    if isIntType(node):
                         sectionResults.append((node,))
             sectionResults = tuple(sectionResults)
 

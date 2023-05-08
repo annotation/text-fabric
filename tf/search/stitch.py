@@ -37,7 +37,9 @@ def setStrategy(searchExe, strategy, keep=False):
 
     func = globals().get(f"_{strategy}", None)
     if not func:
-        error(f'Strategy is defined, but not implemented: "{strategy}"', cache=_msgCache)
+        error(
+            f'Strategy is defined, but not implemented: "{strategy}"', cache=_msgCache
+        )
         searchExe.good = False
     searchExe.strategy = types.MethodType(func, searchExe)
     searchExe.strategyName = strategy
@@ -727,7 +729,7 @@ def _stitchResults(searchExe):
                 else:
                     sN = stitch[f]
                     if nparams == 1:
-                        if sM in r(sN) or ():
+                        if r(sN) is not None and sM in r(sN):
                             for s in stitchOn(e + 1):
                                 yield s
                     else:
@@ -752,11 +754,12 @@ def _stitchResults(searchExe):
             else:
                 sN = stitch[f]
                 if nparams == 1:
-                    for m in r(sN) or ():
-                        if m in yarnT:
-                            stitch[t] = m
-                            for s in stitchOn(e + 1):
-                                yield s
+                    if r(sN) is not None:
+                        for m in r(sN):
+                            if m in yarnT:
+                                stitch[t] = m
+                                for s in stitchOn(e + 1):
+                                    yield s
                 else:
                     for m in yarnT:
                         if r(sN, m):

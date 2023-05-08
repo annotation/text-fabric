@@ -359,6 +359,7 @@ features to furnish a decent representation.
 """
 
 from ..parameters import OTEXT
+from .helpers import isIntType
 
 DEFAULT_FORMAT = "text-orig-full"
 DEFAULT_FORMAT_TYPE = "{}-default"
@@ -780,7 +781,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         material = []
 
         def generate(struct, indent=""):
-            if type(struct) is int:
+            if isIntType(struct):
                 sKey = self.headingFromNode(struct)
                 if not fullHeading:
                     sKey = (sKey[-1],)
@@ -1048,7 +1049,7 @@ There are {len(hdFromNd)} structural elements in the dataset.
         def rescue(n, **kwargs):
             return f"{fOtype(n)}{n}"
 
-        single = type(nodes) is int
+        single = isIntType(nodes)
         material = []
         good = True
 

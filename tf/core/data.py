@@ -1,4 +1,4 @@
-import array
+import numpy
 import gc
 import pickle
 from pickletools import optimize
@@ -385,7 +385,12 @@ class Data:
                         continue
                     otype.append(data[n])
                 maxNode = len(data)
-                self.data = (tuple(otype), maxSlot, maxNode, slotType)
+                self.data = (
+                    numpy.array(otype, dtype=object),
+                    maxSlot,
+                    maxNode,
+                    slotType,
+                )
             elif self.fileName == OSLOTS:
                 nodeList = sorted(data)
                 maxSlot = (
@@ -406,9 +411,8 @@ class Data:
                     pass
                 oslots = []
                 for n in nodeList:
-                    oslots.append(array.array("I", sorted(data[n])))
-                    # oslots.append(tuple(sorted(data[n])))
-                self.data = (tuple(oslots), maxSlot, maxNode)
+                    oslots.append(numpy.array(sorted(data[n]), dtype=numpy.uint32))
+                self.data = (numpy.array(oslots, dtype=object), maxSlot, maxNode)
             elif isEdge:
                 seen = {}
                 datax = {}

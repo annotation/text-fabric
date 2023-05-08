@@ -277,7 +277,9 @@ def estimateSpreads(searchExe, both=False):
                 totalSpread = 0
                 if nparams == 1:
                     for n in triesn:
-                        mFromN = {m for m in r(n) or () if m in yarnT}
+                        mFromN = (
+                            set() if r(n) is None else {m for m in r(n) if m in yarnT}
+                        )
                         totalSpread += len(mFromN)
                 else:
                     yarnTl = len(yarnT)
