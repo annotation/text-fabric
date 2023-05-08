@@ -10,9 +10,9 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.7 (upcoming)
+### 11.4.8
 
-2023-05-??
+2023-05-08
 
 *   Some improvements that give a smoother run when using TF on an iPad, in the
     [Carnets app](https://apps.apple.com/us/app/carnets-jupyter/id1450994949):
@@ -31,6 +31,28 @@ See the app-specific tutorials via `tf.about.corpora`.
         and show the message.
 
     *   Fixed a bug in `tf.core.data.Data.cleanDataBin()`
+
+    *   Reverted back to the old way of data storage in RAM, with
+        `tf.parameters.PACK_VERSION` set to `3`.
+
+### 11.4.7
+
+2023-05-08
+
+I conducted an experiment to reduce the TF memory footprint by storing a lot of
+data in numpy arrays. That resulted in a reduction from 2.5 GB to 1.65 GB for the
+BHSA. However, TF became noticably slower. Some queries took 10-20 percent
+more time, but sometimes the execution time got several times slower, up to 8x
+slower.
+Moreover, when I ran the BHSA in this version on the iPad (with 3GB RAM),
+the reduction was not enough to prevent a crash.
+
+You can install this version and see for yourself.
+
+Note, that when Text-Fabric precokputes data, it will store the results in
+
+`.tf/4` (`PACK_VERSION = 4`), whereas the old way's results are still in 
+`.tf/3` (`PACK_VERSION = 3`). See `tf.parameters.PACK_VERSION`.
 
 ### 11.4.6
 
