@@ -10,6 +10,28 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.7 (upcoming)
+
+2023-05-??
+
+*   Some improvements that give a smoother run when using TF on an iPad, in the
+    [Carnets app](https://apps.apple.com/us/app/carnets-jupyter/id1450994949):
+
+    *   After unzipping downloaded data, cd back to the orginal directory
+        (otherwise the Uruk corpus does not show the inline images).
+    *   Instead of `from array import array` we do `import array` and refer to
+        `array.array`. Semantically, this should not matter, but the pickler seems to
+        be fussy about it. I got an error like this:
+
+        ```
+        Can't pickle <built-in function _array_reconstructor>:
+        it's not the same object as array._array_reconstructor
+        ```
+    *   Catch all errors when TF is loading/computing features, not only memory errors,
+        and show the message.
+
+    *   Fixed a bug in `tf.core.data.Data.cleanDataBin()`
+
 ### 11.4.6
 
 2023-05-04

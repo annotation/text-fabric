@@ -1,4 +1,4 @@
-from array import array
+import array
 import gc
 import pickle
 from pickletools import optimize
@@ -19,8 +19,8 @@ from .helpers import (
 from .files import (
     unexpanduser as ux,
     fileExists,
+    fileRemove,
     dirMake,
-    dirRemove,
     splitExt,
     splitPath,
     mTime,
@@ -37,6 +37,8 @@ MEM_MSG = (
     + ("* make sure that you run 64-bit Python and/or\n" if check32()[0] else "")
     + "* close all other programs and try again.\n"
 )
+
+FATAL_MSG = "There was a fatal error! The message is:\n"
 
 
 class Data:
@@ -159,6 +161,9 @@ class Data:
                                     self._writeDataBin()
             except MemoryError:
                 console(MEM_MSG)
+                good = False
+            except Exception as e:
+                console(f"{FATAL_MSG}: {e}")
                 good = False
         if self.isConfig:
             self.cleanDataBin()
@@ -401,7 +406,7 @@ class Data:
                     pass
                 oslots = []
                 for n in nodeList:
-                    oslots.append(array("I", sorted(data[n])))
+                    oslots.append(array.array("I", sorted(data[n])))
                     # oslots.append(tuple(sorted(data[n])))
                 self.data = (tuple(oslots), maxSlot, maxNode)
             elif isEdge:
@@ -667,7 +672,7 @@ class Data:
         return good
 
     def cleanDataBin(self):
-        dirRemove(self.binPath)
+        fileRemove(self.binPath)
 
     def _writeDataBin(self):
         tmObj = self.tmObj

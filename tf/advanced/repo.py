@@ -1413,6 +1413,7 @@ class Checkout:
                 dirMake(destZip)
             chDir(destZip)
             z.extractall()
+            chDir(cwd)
             dirRemove("__MACOSX")
         except Exception as e:
             msg = f"\tcould not save corpus data to {destZip}"

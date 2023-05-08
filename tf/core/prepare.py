@@ -13,7 +13,7 @@ The functions in this module implement those tasks.
 
 import collections
 import functools
-from array import array
+import array
 from .helpers import itemize
 
 
@@ -204,7 +204,7 @@ def order(info, error, otype, oslots, levels):
     canonKey = functools.cmp_to_key(before)
     info("sorting nodes")
     nodes = sorted(range(1, maxNode + 1), key=canonKey)
-    # return array("I", nodes)
+    # return array.array("I", nodes)
     return tuple(nodes)
 
 
@@ -234,7 +234,7 @@ def rank(info, error, otype, order):
     (otype, maxSlot, maxNode, slotType) = otype
     info("ranking nodes")
     nodesRank = dict(((n, i) for (i, n) in enumerate(order)))
-    return array("I", (nodesRank[n] for n in range(1, maxNode + 1)))
+    return array.array("I", (nodesRank[n] for n in range(1, maxNode + 1)))
     # return tuple((nodesRank[n] for n in range(1, maxNode + 1)))
 
 
@@ -273,7 +273,7 @@ def levUp(info, error, otype, oslots, rank):
 
     Warnings
     --------
-    It is not advisable to this data directly by `C.levUp.data`,
+    It is not advisable to use this data directly by `C.levUp.data`,
     it is far better to use the `tf.core.locality.Locality.u` function.
 
     Only when every bit of performance waste has to be squeezed out,
@@ -294,7 +294,7 @@ def levUp(info, error, otype, oslots, rank):
         embedders.append(
             tuple(
                 sorted(
-                    [m for m in contentEmbedders if m != n],
+                    (m for m in contentEmbedders if m != n),
                     key=lambda k: -rank[k - 1],
                 )
             )
@@ -312,7 +312,7 @@ def levUp(info, error, otype, oslots, rank):
             embedders.append(
                 tuple(
                     sorted(
-                        [m for m in contentEmbedders if m != n],
+                        (m for m in contentEmbedders if m != n),
                         key=lambda k: -rank[k - 1],
                     )
                 )
@@ -322,7 +322,7 @@ def levUp(info, error, otype, oslots, rank):
     embeddersx = []
     for t in embedders:
         if t not in seen:
-            # seen[t] = array("I", t)
+            # seen[t] = array.array("I", t)
             seen[t] = tuple(t)
         embeddersx.append(seen[t])
     return tuple(embeddersx)
@@ -361,7 +361,7 @@ def levDown(info, error, otype, levUp, rank):
         of node *maxSlot + 1*.
 
     !!! caution "Use with care"
-        It is not advisable to this data directly by `C.levDown.data`,
+        It is not advisable to use this data directly by `C.levDown.data`,
         it is far better to use the `tf.core.locality.Locality.d` function.
 
         Only when every bit of performance waste has to be squeezed out,
@@ -378,7 +378,7 @@ def levDown(info, error, otype, levUp, rank):
     embeddees = []
     for n in range(maxSlot + 1, maxNode + 1):
         embeddees.append(
-            array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
+            array.array("I", sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
             # tuple(sorted(inverse.get(n, []), key=lambda m: rank[m - 1]))
         )
     return tuple(embeddees)
@@ -491,12 +491,14 @@ def boundary(info, error, otype, oslots, rank):
 
     firstSlots = tuple(
         tuple(sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
-        # array("I", sorted(firstSlotsD.get(n, []), key=lambda node: -rank[node - 1]))
+        # array.array("I", sorted(firstSlotsD.get(n, []),
+        # key=lambda node: -rank[node - 1]))
         for n in range(1, maxSlot + 1)
     )
     lastSlots = tuple(
         tuple(sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
-        # array("I", sorted(lastSlotsD.get(n, []), key=lambda node: rank[node - 1]))
+        # array.array("I", sorted(lastSlotsD.get(n, []),
+        # key=lambda node: rank[node - 1]))
         for n in range(1, maxSlot + 1)
     )
     return (firstSlots, lastSlots)

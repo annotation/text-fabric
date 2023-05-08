@@ -6,7 +6,7 @@ import collections
 import types
 import re
 from itertools import chain
-from array import array
+import array
 
 from ..parameters import OTYPE, OSLOTS
 from ..core.helpers import makeIndex
@@ -186,7 +186,7 @@ def basicRelations(searchExe, api):
             def xx(n):
                 nmin = n - 1
                 if n < maxSlotP:
-                    nA = array("I", (n,))
+                    nA = array.array("I", (n,))
                     # nA = (n,)
                     yield n
                     for m in ClevUp[nmin]:
@@ -196,7 +196,7 @@ def basicRelations(searchExe, api):
                 nSlots = Eoslots[n - maxSlotP]
                 if len(nSlots) == 1:
                     slot1 = nSlots[0]
-                    nA = array("I", (slot1,))
+                    nA = array.array("I", (slot1,))
                     # nA = tuple(slot1,)
                     yield n
                     yield slot1
