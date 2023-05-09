@@ -32,6 +32,16 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="11410">11.4.10</h3>
+<p>2023-05-09</p>
+<ul>
+<li>Fixed a bug in <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> in case it is used to delete types from
+a dataset.</li>
+<li>Added a function <code>footprint()</code> to see the memory consumption of the data set.
+Explore this in this
+<a href="https://nbviewer.org/github/ETCBC/bhsa-min/blob/master/programs/make.ipynb">notebook</a>
+where we compare a minimalistic version of the BHSA with the complete BHSA.</li>
+</ul>
 <h3 id="1149">11.4.9</h3>
 <p>2023-05-08</p>
 <p>The XML converter is now easier to use:</p>
@@ -527,7 +537,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/d665a33be5092295250d7c87290c8ce17c1a81e7/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/c0ed587e19d268f0e845bdfa6acab5ae82178925/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -600,6 +610,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#11410">11.4.10</a></li>
 <li><a href="#1149">11.4.9</a></li>
 <li><a href="#1148">11.4.8</a></li>
 <li><a href="#1147">11.4.7</a></li>
