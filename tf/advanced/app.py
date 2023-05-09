@@ -50,6 +50,7 @@ FROM_TF_METHODS = """
     error
     indent
     featuresOnly
+    footprint
 """.strip().split()
 
 

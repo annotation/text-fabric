@@ -10,6 +10,18 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.10
+
+2023-05-09
+
+*   Fixed a bug in `tf.dataset.modify` in case it is used to delete types from
+    a dataset.
+*   Added a function `footprint()` to see the memory consumption of the data set.
+    Explore this in this
+    [notebook](https://nbviewer.org/github/ETCBC/bhsa-min/blob/master/programs/make.ipynb)
+    where we compare a minimalistic version of the BHSA with the complete BHSA.
+
+
 ### 11.4.9
 
 2023-05-08

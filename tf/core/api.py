@@ -4,9 +4,11 @@
 It provides methods to navigate nodes and edges and lookup features.
 """
 
-from textwrap import wrap
+import collections
+from textwrap import wrap, dedent
 
-from .helpers import flattenToSet, console, fitemize
+from .helpers import flattenToSet, console, fitemize, deepSize
+from ..advanced.helpers import dm
 from .files import unexpanduser as ux
 from .nodes import Nodes
 from .locality import Locality
@@ -86,6 +88,7 @@ class Api:
 
         TF.ensureLoaded = self.ensureLoaded
         TF.makeAvailableIn = self.makeAvailableIn
+        TF.footprint = self.footprint
 
         setattr(self, "FeatureString", self.Fs)
         setattr(self, "EdgeString", self.Es)
@@ -316,13 +319,21 @@ class Api:
                     if metaInfo:
                         if len(metaKeys) == 1:
                             value = metaInfo.get(metaKeys[0], "")
-                            value = "\n".join(wrap(value, width=80, subsequent_indent=indent))
+                            value = "\n".join(
+                                wrap(value, width=80, subsequent_indent=indent)
+                            )
                             metaRep = f" {value}" if value else ""
                         else:
                             indent = " " * 21
                             for k in metaKeys:
                                 value = metaInfo.get(k, "")
-                                value = "\n".join(wrap(value, width=80, subsequent_indent=f"\t{indent}  "))
+                                value = "\n".join(
+                                    wrap(
+                                        value,
+                                        width=80,
+                                        subsequent_indent=f"\t{indent}  ",
+                                    )
+                                )
                                 metaRep += f"\n\t{k:<20} = {value}"
 
                 msg = f"{heading}{metaRep}"
@@ -448,6 +459,67 @@ class Api:
             )
             loadedFeatures |= needToLoad
         return loadedFeatures
+
+    def footprint(self, recompute=False, bySize=True):
+        """Computes the memory footprint in RAM of the loaded TF data.
+
+        This includes the precomputed data.
+
+        Parameters
+        ----------
+        recompute: boolean, optional False
+            The function looks first for earlier computed size data.
+            If that is found, it will be used, and no size computation will take place.
+            Unless this parameter is True.
+            If no earlier computed size data is found, sizes will be computed anyway.
+        bySize: boolean, optional True
+            Whether to sort the features by the size they occupy in RAM.
+            If False, the features will be sorted alphabetically.
+        """
+        if hasattr(self, "sizes") and not recompute:
+            sizes = self.sizes
+        else:
+            TF = self.TF
+            features = TF.features
+            nFeatures = len(features)
+            sizes = {}
+
+            for ft in sorted(features):
+                console(f"\rcomputing size of {ft:<30}", newline=False)
+                data = features[ft].data
+                if data is None:
+                    continue
+                nData = len(data)
+                sData = deepSize(data)
+                sizes[ft] = (nData, sData)
+
+            console(f'\r{"":>40}', newline=False)
+            self.sizes = sizes
+
+        material = ""
+
+        nFeatures = len(sizes)
+        totals = collections.Counter()
+
+        for (ft, (nData, sData)) in sorted(
+            sizes.items(),
+            key=(lambda x: (-x[1][1], x[0])) if bySize else lambda x: x[0],
+        ):
+            material += f"{ft} | {nData:,} | {sData:,}\n"
+            totals["nData"] += nData
+            totals["sData"] += sData
+
+        material += f'TOTAL | {totals["nData"]:,} | {totals["sData"]:,}'
+        header = dedent(
+            f"""
+            # {nFeatures} features
+
+            feature | members | size in bytes
+            --- | --- | ---
+            """
+        )
+
+        dm(header + material)
 
 
 def addOtype(api):

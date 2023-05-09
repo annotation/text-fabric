@@ -30,7 +30,7 @@ from ..fabric import Fabric
 from ..parameters import WARP, OTYPE, OSLOTS, OTEXT
 from ..core.timestamp import Timestamp, SILENT_D, DEEP
 from ..core.helpers import itemize, fitemize, isInt, collectFormats
-from ..core.files import dirEmpty
+from ..core.files import dirEmpty, expanduser as ex
 
 VALTP = "valueType"
 
@@ -431,6 +431,7 @@ def modify(
     indent = TM.indent
     info = TM.info
     error = TM.error
+    warning = TM.warning
     setSilent = TM.setSilent
 
     setSilent(silent)
@@ -476,10 +477,15 @@ def modify(
     ePrefix = ""
     eItem = ""
 
+    targetLocation = ex(targetLocation)
+
     def err(msg):
         nonlocal good
         error(f"{ePrefix}{eItem}{msg}", tm=False)
         good = False
+
+    def warn(msg):
+        warning(f"WARNING: {ePrefix}{eItem}{msg}", tm=False)
 
     def inf(msg):
         info(f"{ePrefix}{eItem}{msg}", tm=False)
@@ -759,7 +765,7 @@ def modify(
         if problemTypes:
             ePrefix = "Missing for text API: "
             eItem = "types: "
-            err(f"{_rep(problemTypes)}")
+            warn(f"{_rep(problemTypes)}")
 
         problemFeats = addedFt & deletedFt
 
@@ -772,7 +778,7 @@ def modify(
         if problemFeats:
             ePrefix = "Missing for text API: "
             eItem = "features: "
-            err(f"{_rep(problemFeats)}")
+            warn(f"{_rep(problemFeats)}")
 
         if not dirEmpty(targetLocation):
             ePrefix = "Output directory: "
@@ -949,7 +955,10 @@ def modify(
     def deleteT():
         nonlocal maxNode
         nonlocal shiftNeeded
+        nonlocal ePrefix
+        nonlocal eItem
 
+        ePrefix = "Delete types: "
         indent(level=0)
         if deleteTypes:
             info("delete types ...")
@@ -957,13 +966,19 @@ def modify(
 
         curShift = 0
         for (nType, (nF, nT)) in sorted(origNodeTypes.items(), key=lambda x: x[1][0]):
+            eItem = f"{nType:<20}: "
             if nType in deleteTypes:
                 curShift -= nT - nF + 1
                 deletedTypes.add(nType)
+                inf(f"remove: delete nodes {nF:>7}-{nT:>7}")
             else:
                 nodeTypes[nType] = (nF + curShift, nT + curShift)
                 for n in range(nF, nT + 1):
-                    shift[n] = n - curShift
+                    shift[n] = n + curShift
+                inf(
+                    f"keep:   shift  nodes {nF:>7}-{nT:>7} to   "
+                    f"{nF + curShift:>7}-{nT + curShift:>7}"
+                )
 
         for (kind, upd) in (
             (NODE, nodeFeatures),
@@ -972,7 +987,9 @@ def modify(
             for (feat, uData) in upd.items():
                 upd[feat] = shiftFeature(kind, feat, uData)
 
-        maxNode = origMaxNode - curShift
+        maxNode = origMaxNode + curShift
+        eItem = "max node: "
+        inf(f"shifted from {origMaxNode} to {maxNode}")
         shiftNeeded = curShift != 0
 
         if deleteTypes:
@@ -1048,11 +1065,15 @@ def modify(
             (NODE, origNodeFeatures, Fs, nodeFeatures, nodeFeaturesOut),
             (EDGE, origEdgeFeatures, Es, edgeFeatures, edgeFeaturesOut),
         ):
+            ePrefix = f"Shift {kind} feature: "
+
             allFeatSet = set() if onlyDeliverUpdatedFeatures else set(featSet)
-            for feat in (allFeatSet | set(featUpd)) - deletedFeatures:
+            for feat in sorted((allFeatSet | set(featUpd)) - deletedFeatures):
+                eItem = f"{feat:<20}: "
                 outData = {}
                 outMeta = {}
                 if feat in featSet:
+                    # inf("original feature")
                     featObj = featSrc(feat)
                     outMeta.update(featObj.meta)
                     if shiftNeeded:
@@ -1061,6 +1082,7 @@ def modify(
                     else:
                         outData.update(featObj.items())
                 if feat in featUpd:
+                    # inf("new/updated feature")
                     outData.update(featUpd[feat])
                     if kind == EDGE:
                         aVal = next(iter(featUpd[feat].values()))
@@ -1092,8 +1114,8 @@ def modify(
 
             # check replaceSlotType
 
-            eItem = f"{replaceSlotType}: "
             ePrefix = "Replace slot type: "
+            eItem = f"{replaceSlotType}: "
 
             allTypes = (set(nodeTypes) - deletedTypes) | set(addTypes)
 

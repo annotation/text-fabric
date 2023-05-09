@@ -373,7 +373,9 @@ class Data:
             )
             if lnk > ERROR_CUTOFF:
                 error(f"\t and {lnk - ERROR_CUTOFF} more cases", tm=False)
+
         self.data = data
+
         if not errors:
             if self.fileName == OTYPE:
                 slotType = data[1]
