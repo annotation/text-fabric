@@ -93,6 +93,21 @@ There are actions to add nodes to the set of embedder nodes,
 to remove them from it,
 and to add them again.
 
+If your data is organized in such a way that you see the slots in a different
+order than the intended order, you kan pass a key value to the slot, like so
+
+```
+curWord = cv.slot(key=wordNumber)
+```
+
+After the walk is completed, the slots will be sorted by their keys, while keeping
+all feature assignments to them intact. All nodes will be linked to the same slots
+after sorting, and all edges that start from or arrive at slots will do that after
+the sorting.
+
+For an example, see
+[lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
+
 ## Dynamic Metadata
 
 When the director runs, you may have already specified all your feature
@@ -267,6 +282,9 @@ class CV:
         After the creation of the feature data, some extra checks will be performed
         to see whether the metadata matches the data and vice versa.
 
+        If the slots need to be sorted by their keys, it will happen at this point,
+        and the generated features will be adpated to the sorted slots.
+
         The new feature data will be written to the output directory of the
         underlying TF object.  In fact, the rules are exactly the same as for
         `tf.fabric.Fabric.save`.
@@ -360,6 +378,7 @@ class CV:
         self.metaData = {}
         self.nodeFeatures = {}
         self.edgeFeatures = {}
+        self.slotKeys = {}
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -630,7 +649,7 @@ class CV:
         self.force = False
         self.forcedStop = True
 
-    def slot(self):
+    def slot(self, key=None):
         """Make a slot node and return the handle to it in `n`.
 
             n = cv.slot()
@@ -645,7 +664,15 @@ class CV:
 
         Parameters
         ----------
-        None
+        key: string, optional None
+            If passed, it acts as a sortkey on the slot.
+            At the end of the walk, all slots will be sorted by their key and then
+            by their original order. Care will be taken that slots retain their
+            features and linkages.
+
+            !!! note "Keys are strings"
+            Note that the key must be a string. If you want to sort on numbers,
+            make sure to pad all numbers with leading zeros.
 
         Returns
         -------
@@ -658,6 +685,7 @@ class CV:
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
+        slotKeys = self.slotKeys
         levelFromSection = self.levelFromSection
         warnings = self.warnings
 
@@ -666,6 +694,8 @@ class CV:
 
         curSeq[nType] += 1
         seq = curSeq[nType]
+        if key is not None:
+            slotKeys[seq] = key
 
         inSection = False
         for eNode in curEmbedders:
@@ -1523,7 +1553,9 @@ class CV:
 
         nodeTypes = self.curSeq
         nodes = self.nodes
+        oslots = self.oslots
         slotType = self.slotType
+        slotKeys = self.slotKeys
 
         nTypes = (slotType,) + tuple(
             sorted(nType for nType in nodes if nType != slotType)
@@ -1535,22 +1567,52 @@ class CV:
         nodeMap = self.nodeMap
         maxSlot = self.maxSlot
 
-        n = 0
+        newN = 0
+
+        # we build a node map that we use later on to remap the features
+        # However, we do not have to remap the otype feature.
+        # And we only have to remap the oslots feature if the order of the slots
+        # is changed.
+
+        # first we reorder the slots, if needed. As a consequence, we have to
+        # 1. map the old slot nodes to the new slot nodes
+        # 2. adapt the oslots: each node must be linked to the new slots
+        # Because of the node map, _reassign features will adjust the other
+        # node and edge features for the slots
+
+        sortedSeqs = range(1, maxSlot + 1)
+        if len(slotKeys) > 0:
+            info(f'Sorting {maxSlot} slots (node type "{slotType}")')
+            sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, ""), x))
+        else:
+            info("No slot sorting needed")
+        for seq in sortedSeqs:
+            newN += 1
+            nodeMap[(slotType, seq)] = newN
+
+        # now we adapt the oslots feature
+        if len(slotKeys) > 0:
+            self.oslots = {
+                n: {nodeMap[(slotType, s)] for s in slots}
+                for (n, slots) in oslots.items()
+            }
+            oslots = self.oslots
 
         for nType in nTypes:
             canonical = self._canonical(nType)
             if nType == slotType:
-                sortedSeqs = range(1, maxSlot + 1)
-            else:
-                seqs = nodes[nType]
-                info(f'Sorting {len(seqs)} nodes of type "{nType}"')
-                sortedSeqs = sorted(seqs, key=canonical)
-            for seq in sortedSeqs:
-                n += 1
-                nodeMap[(nType, seq)] = n
+                continue
 
-        self.maxNode = n
-        info(f"Max node = {n}", force=silent != DEEP)
+            seqs = nodes[nType]
+            info(f'Sorting {len(seqs)} nodes of type "{nType}"')
+            sortedSeqs = sorted(seqs, key=canonical)
+
+            for seq in sortedSeqs:
+                newN += 1
+                nodeMap[(nType, seq)] = newN
+
+        self.maxNode = newN
+        info(f"Max node = {newN}", force=silent != DEEP)
 
         self._showErrors()
 

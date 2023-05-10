@@ -10,6 +10,22 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.11
+
+2023-05-10
+
+*   The `tf.convert.walker` conversion can now reorder slot nodes.
+    In the conversion of the Greek syntax trees from lowfat xml,
+    see [nestle1904](https://github.com/ETCBC/nestle1904),
+    the words are not in sentence order, but in a word-group-hierarchy order.
+    By passing a suitable key to `cv.slot()`, we can let TF reorder the word nodes
+    while keeping all linkage intact. We get interrupted word groups then.
+    See this code to see how that is done:
+
+    [lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py)
+
+## 11
+
 ### 11.4.10
 
 2023-05-09
