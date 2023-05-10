@@ -51,6 +51,12 @@ A.isLoaded(features=None)
 :   Show information about loaded features
 :   `tf.core.api.Api.isLoaded`
 
+``` python
+A.footprint()
+```
+:   Show memory footprint per feature
+:   `tf.core.api.Api.footprint`
+
 ---
 
 ## Displaying
@@ -843,6 +849,12 @@ TF.ignored
 :   Which features have been overridden.
 :   `tf.core.api.Api.ignored`
 
+``` python
+TF.footprint()
+```
+:   Show memory footprint per feature
+:   `tf.core.api.Api.footprint`
+
 ---
 
 ## Volumes
@@ -1027,7 +1039,19 @@ Recorder()
 
 ---
 
-## TEI import
+## XML/TEI import
+
+``` python
+from tf.convert.xml import XML
+```
+
+``` python
+X = XML(...)
+```
+:   convert XML source to full-fledged TF dataset plus app but no docs;
+    put in your own conversion code, if you wish;
+    see [Greek New Testament](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)
+:   `tf.convert.xml`
 
 ``` python
 from tf.convert.tei import TEI
@@ -1212,11 +1236,19 @@ xmlschema analysis {schema}.xsd
 :   `tf.tools.xmlschema`
 
 ``` sh
+tf-fromxml
+```
+:   When run in a repo it finds an XML source and converts it to TF. 
+    The resulting TF data is delivered in the repo.
+    There is a hook to put your own conversion code in.
+:   `tf.convert.xml`
+
+``` sh
 tf-fromtei
 ```
 :   When run in a repo it finds a TEI source and converts it to TF. 
     The resulting TF data is delivered in the repo.
-:   `tf.convert.addnlp`
+:   `tf.convert.tei`
 
 ``` sh
 tf-addnlp

@@ -29,12 +29,16 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     **[Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system)**,
     Dirk Roorda
 
+    *to see the details*
+
 [annotation/mobydick](https://github.com/annotation/mobydick)
 :   *english*
     Herman Melville, 1819 - 1891,
     Novel, 1851;
     converted from TEI in the Oxford Text Archive,
     Dirk Roorda
+
+    *with tokens and sentences from Spacy woven in*
 
 [annotation/mondriaan](https://github.com/annotation/mondriaan)
 :   *english*
@@ -43,6 +47,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     converted from TEI from the Huygens Institute, together with RKD and HuC;
     many people involved
 
+    *with tokens and sentences from Spacy woven in*
+
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
 [CambridgeSemiticsLab/nena_tf](https://github.com/CambridgeSemiticsLab/nena_tf)
@@ -50,6 +56,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     North Eastern Neo-Aramaic Corpus, 2000,
     **[Nena Cambridge](https://nena.ames.cam.ac.uk)**,
     Cody Kingham
+
+    *with a client-side, offline search interface in Javascript*
 
 ## [CenterBLC Andrews University](https://github.com/CenterBLC)
 
@@ -87,12 +95,16 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Erik-Jan Bos (ed, 2011); 
     Dirk Roorda (converter TEI, 2011 and TF 2023)
 
+    *with math display and illustrations*
+
 [CLARIAH/wp6-ferdinandhuyck](https://github.com/CLARIAH/wp6-ferdinandhuyck)
 :   *Dutch* 
     a novel by Jacob van Lennep, 1840,
     **Jacob van Lennep - Ferdinand Huyck**;
     From [DBNL](https://www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite;
     Dirk Roorda (converter TEI to TF), see also `tf.convert.tei`
+
+    *with tokens and sentences from Spacy woven in*
 
 [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
@@ -107,6 +119,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     the operation of the Dutch East-Indian Company**,
     Lodewijk Petram, Dirk Roorda.
     *work in progress, currently only volume 4*
+
+    *with many ocr errors and an attempt to detect them*
 
 ## [Cody Kingham](https://github.com/codykingham)
 
@@ -125,33 +139,44 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     **MS Dublin Chester Beatty Library 751 + MS Garizim 1**,
     Martijn Naaijer, Christian Canu Højgaard
 
-## [Eep Talstra Centre for Bible and Computer](https://github.com/etcbc)
+## [Eep Talstra Centre for Bible and Computer](https://github.com/ETCBC)
 
-[etcbc/bhsa](https://github.com/etcbc/bhsa)
+[ETCBC/bhsa](https://github.com/ETCBC/bhsa)
 :   *Hebrew*
     Bible (Old Testament), 1000 BCE - 900 AD,
-    **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://etcbc.github.io/bhsa/)**,
+    **[Biblia Hebraica Stuttgartensia (Amstelodamensis)](https://ETCBC.github.io/bhsa/)**,
     ETCBC + Dirk Roorda
 
-[etcbc/dhammapada](https://github.com/etcbc/dhammapada)
+    *the canonical TF dataset, where it all started*
+
+[ETCBC/dhammapada](https://github.com/ETCBC/dhammapada)
 :   *Pāli* and *Latin*
     Ancient Buddhist verses, 300 BCE and 1855 AD,
     **Transcription with Latin translations based on Viggo Fausbøll's book**,
     Bee Scherer, Yvonne Mataar, Dirk Roorda
 
-[etcbc/dss](https://github.com/etcbc/dss)
+[ETCBC/dss](https://github.com/ETCBC/dss)
 :   *Hebrew*
     Dead Sea Scrolls, 300 BCE - 100 AD,
     **Transcriptions with morphology based on Martin Abegg's data files**,
     Martijn Naaijer, Jarod Jacobs, Dirk Roorda
 
-[etcbc/peshitta](https://github.com/etcbc/peshitta)
+[ETCBC/nestle1904](https://github.com/ETCBC/nestle1904)
+:   *Greek*
+    New Testament, 100 - 400,
+    **GNT Nestle-Aland edition 1904 from LOWFAT-XML syntax trees**,
+    converted from 
+    [biblicalhumanities/greek-new-testament](https://github.com/biblicalhumanities/greek-new-testament/tree/master/syntax-trees/sblgnt-lowfat)
+    contributed by Jonathan Robie and Micheal Palmer;
+    Oliver Glanz, Tony Jurg, Saulo de Oliveira Cantanhêde, Dirk Roorda
+
+[ETCBC/peshitta](https://github.com/ETCBC/peshitta)
 :   *Syriac*
     Peshitta (Old Testament), 1000 BCE - 900 AD,
     **Vetus Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-[etcbc/syrnt](https://github.com/etcbc/syrnt)
+[ETCBC/syrnt](https://github.com/ETCBC/syrnt)
 :   *Syriac*
     New Testament, 0 - 1000,
     **Novum Testamentum Syriace**,
@@ -173,6 +198,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     **Not publicly accessible, the book is under copyright.**
 
+    *with a critical apparatus*
+
 [mondriaan/letters](https://git.diginfra.nl/mondriaan/letters)
 :   *Dutch*
     Letters of Piet Mondriaan. , 1892-1923.
@@ -180,6 +207,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Peter Boot et al, Dirk Roorda
 
     ** Work in progress, not yet public*.*
+
+    *with tokens and sentences from Spacy woven in*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 
@@ -206,6 +235,8 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     Uruk, 4000 - 3100 BCE,
     **Archaic tablets from Uruk**,
     Cale Johnson, Dirk Roorda
+
+    *with lots of illustrations*
 
 ## [Protestant Theological University](https://github.com/pthu)
 
@@ -290,7 +321,7 @@ In this way, you can work with data that is under your control.
     including the their change histories. There might also be other
     material in the repo, such as source data, tutorials, programs.
 
-    For example, the `etcbc/bhsa` repo is several GB, but the TF data for a specific
+    For example, the `ETCBC/bhsa` repo is several GB, but the TF data for a specific
     version is only 25MB.
 
 ### Extra data
