@@ -32,6 +32,21 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="11411">11.4.11</h3>
+<p>2023-05-10</p>
+<ul>
+<li>
+<p>The <code><a title="tf.convert.walker" href="../convert/walker.html">tf.convert.walker</a></code> conversion can now reorder slot nodes.
+In the conversion of the Greek syntax trees from lowfat xml,
+see <a href="https://github.com/ETCBC/nestle1904">nestle1904</a>,
+the words are not in sentence order, but in a word-group-hierarchy order.
+By passing a suitable key to <code>cv.slot()</code>, we can let TF reorder the word nodes
+while keeping all linkage intact. We get interrupted word groups then.
+See this code to see how that is done:</p>
+<p><a href="https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py">lowfat.py</a></p>
+</li>
+</ul>
+<h2 id="11_1">11</h2>
 <h3 id="11410">11.4.10</h3>
 <p>2023-05-09</p>
 <ul>
@@ -537,7 +552,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -610,6 +625,10 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#11411">11.4.11</a></li>
+</ul>
+</li>
+<li><a href="#11_1">11</a><ul>
 <li><a href="#11410">11.4.10</a></li>
 <li><a href="#1149">11.4.9</a></li>
 <li><a href="#1148">11.4.8</a></li>

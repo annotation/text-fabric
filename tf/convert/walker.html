@@ -97,6 +97,16 @@ When you create a slot node</p>
 <p>There are actions to add nodes to the set of embedder nodes,
 to remove them from it,
 and to add them again.</p>
+<p>If your data is organized in such a way that you see the slots in a different
+order than the intended order, you kan pass a key value to the slot, like so</p>
+<pre><code>curWord = cv.slot(key=wordNumber)
+</code></pre>
+<p>After the walk is completed, the slots will be sorted by their keys, while keeping
+all feature assignments to them intact. All nodes will be linked to the same slots
+after sorting, and all edges that start from or arrive at slots will do that after
+the sorting.</p>
+<p>For an example, see
+<a href="https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py">lowfat.py</a>.</p>
 <h2 id="dynamic-metadata">Dynamic Metadata</h2>
 <p>When the director runs, you may have already specified all your feature
 metadata, including the value types.</p>
@@ -142,7 +152,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1-L1643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1-L1705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -238,6 +248,21 @@ then TF will link all current embedder nodes to the resulting slot.
 There are actions to add nodes to the set of embedder nodes,
 to remove them from it,
 and to add them again.
+
+If your data is organized in such a way that you see the slots in a different
+order than the intended order, you kan pass a key value to the slot, like so
+
+```
+curWord = cv.slot(key=wordNumber)
+```
+
+After the walk is completed, the slots will be sorted by their keys, while keeping
+all feature assignments to them intact. All nodes will be linked to the same slots
+after sorting, and all edges that start from or arrive at slots will do that after
+the sorting.
+
+For an example, see
+[lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py).
 
 ## Dynamic Metadata
 
@@ -413,6 +438,9 @@ class CV:
         After the creation of the feature data, some extra checks will be performed
         to see whether the metadata matches the data and vice versa.
 
+        If the slots need to be sorted by their keys, it will happen at this point,
+        and the generated features will be adpated to the sorted slots.
+
         The new feature data will be written to the output directory of the
         underlying TF object.  In fact, the rules are exactly the same as for
         `tf.fabric.Fabric.save`.
@@ -506,6 +534,7 @@ class CV:
         self.metaData = {}
         self.nodeFeatures = {}
         self.edgeFeatures = {}
+        self.slotKeys = {}
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -776,7 +805,7 @@ class CV:
         self.force = False
         self.forcedStop = True
 
-    def slot(self):
+    def slot(self, key=None):
         &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
 
             n = cv.slot()
@@ -791,7 +820,15 @@ class CV:
 
         Parameters
         ----------
-        None
+        key: string, optional None
+            If passed, it acts as a sortkey on the slot.
+            At the end of the walk, all slots will be sorted by their key and then
+            by their original order. Care will be taken that slots retain their
+            features and linkages.
+
+            !!! note &#34;Keys are strings&#34;
+            Note that the key must be a string. If you want to sort on numbers,
+            make sure to pad all numbers with leading zeros.
 
         Returns
         -------
@@ -804,6 +841,7 @@ class CV:
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
+        slotKeys = self.slotKeys
         levelFromSection = self.levelFromSection
         warnings = self.warnings
 
@@ -812,6 +850,8 @@ class CV:
 
         curSeq[nType] += 1
         seq = curSeq[nType]
+        if key is not None:
+            slotKeys[seq] = key
 
         inSection = False
         for eNode in curEmbedders:
@@ -1669,7 +1709,9 @@ class CV:
 
         nodeTypes = self.curSeq
         nodes = self.nodes
+        oslots = self.oslots
         slotType = self.slotType
+        slotKeys = self.slotKeys
 
         nTypes = (slotType,) + tuple(
             sorted(nType for nType in nodes if nType != slotType)
@@ -1681,22 +1723,52 @@ class CV:
         nodeMap = self.nodeMap
         maxSlot = self.maxSlot
 
-        n = 0
+        newN = 0
+
+        # we build a node map that we use later on to remap the features
+        # However, we do not have to remap the otype feature.
+        # And we only have to remap the oslots feature if the order of the slots
+        # is changed.
+
+        # first we reorder the slots, if needed. As a consequence, we have to
+        # 1. map the old slot nodes to the new slot nodes
+        # 2. adapt the oslots: each node must be linked to the new slots
+        # Because of the node map, _reassign features will adjust the other
+        # node and edge features for the slots
+
+        sortedSeqs = range(1, maxSlot + 1)
+        if len(slotKeys) &gt; 0:
+            info(f&#39;Sorting {maxSlot} slots (node type &#34;{slotType}&#34;)&#39;)
+            sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
+        else:
+            info(&#34;No slot sorting needed&#34;)
+        for seq in sortedSeqs:
+            newN += 1
+            nodeMap[(slotType, seq)] = newN
+
+        # now we adapt the oslots feature
+        if len(slotKeys) &gt; 0:
+            self.oslots = {
+                n: {nodeMap[(slotType, s)] for s in slots}
+                for (n, slots) in oslots.items()
+            }
+            oslots = self.oslots
 
         for nType in nTypes:
             canonical = self._canonical(nType)
             if nType == slotType:
-                sortedSeqs = range(1, maxSlot + 1)
-            else:
-                seqs = nodes[nType]
-                info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
-                sortedSeqs = sorted(seqs, key=canonical)
-            for seq in sortedSeqs:
-                n += 1
-                nodeMap[(nType, seq)] = n
+                continue
 
-        self.maxNode = n
-        info(f&#34;Max node = {n}&#34;, force=silent != DEEP)
+            seqs = nodes[nType]
+            info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
+            sortedSeqs = sorted(seqs, key=canonical)
+
+            for seq in sortedSeqs:
+                newN += 1
+                nodeMap[(nType, seq)] = newN
+
+        self.maxNode = newN
+        info(f&#34;Max node = {newN}&#34;, force=silent != DEEP)
 
         self._showErrors()
 
@@ -1809,7 +1881,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L156-L1643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L171-L1705" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
@@ -1925,6 +1997,9 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         After the creation of the feature data, some extra checks will be performed
         to see whether the metadata matches the data and vice versa.
 
+        If the slots need to be sorted by their keys, it will happen at this point,
+        and the generated features will be adpated to the sorted slots.
+
         The new feature data will be written to the output directory of the
         underlying TF object.  In fact, the rules are exactly the same as for
         `tf.fabric.Fabric.save`.
@@ -2018,6 +2093,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self.metaData = {}
         self.nodeFeatures = {}
         self.edgeFeatures = {}
+        self.slotKeys = {}
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -2288,7 +2364,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self.force = False
         self.forcedStop = True
 
-    def slot(self):
+    def slot(self, key=None):
         &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
 
             n = cv.slot()
@@ -2303,7 +2379,15 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 
         Parameters
         ----------
-        None
+        key: string, optional None
+            If passed, it acts as a sortkey on the slot.
+            At the end of the walk, all slots will be sorted by their key and then
+            by their original order. Care will be taken that slots retain their
+            features and linkages.
+
+            !!! note &#34;Keys are strings&#34;
+            Note that the key must be a string. If you want to sort on numbers,
+            make sure to pad all numbers with leading zeros.
 
         Returns
         -------
@@ -2316,6 +2400,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         curSeq = self.curSeq
         curEmbedders = self.curEmbedders
         oslots = self.oslots
+        slotKeys = self.slotKeys
         levelFromSection = self.levelFromSection
         warnings = self.warnings
 
@@ -2324,6 +2409,8 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 
         curSeq[nType] += 1
         seq = curSeq[nType]
+        if key is not None:
+            slotKeys[seq] = key
 
         inSection = False
         for eNode in curEmbedders:
@@ -3181,7 +3268,9 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 
         nodeTypes = self.curSeq
         nodes = self.nodes
+        oslots = self.oslots
         slotType = self.slotType
+        slotKeys = self.slotKeys
 
         nTypes = (slotType,) + tuple(
             sorted(nType for nType in nodes if nType != slotType)
@@ -3193,22 +3282,52 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         nodeMap = self.nodeMap
         maxSlot = self.maxSlot
 
-        n = 0
+        newN = 0
+
+        # we build a node map that we use later on to remap the features
+        # However, we do not have to remap the otype feature.
+        # And we only have to remap the oslots feature if the order of the slots
+        # is changed.
+
+        # first we reorder the slots, if needed. As a consequence, we have to
+        # 1. map the old slot nodes to the new slot nodes
+        # 2. adapt the oslots: each node must be linked to the new slots
+        # Because of the node map, _reassign features will adjust the other
+        # node and edge features for the slots
+
+        sortedSeqs = range(1, maxSlot + 1)
+        if len(slotKeys) &gt; 0:
+            info(f&#39;Sorting {maxSlot} slots (node type &#34;{slotType}&#34;)&#39;)
+            sortedSeqs = sorted(sortedSeqs, key=lambda x: (slotKeys.get(x, &#34;&#34;), x))
+        else:
+            info(&#34;No slot sorting needed&#34;)
+        for seq in sortedSeqs:
+            newN += 1
+            nodeMap[(slotType, seq)] = newN
+
+        # now we adapt the oslots feature
+        if len(slotKeys) &gt; 0:
+            self.oslots = {
+                n: {nodeMap[(slotType, s)] for s in slots}
+                for (n, slots) in oslots.items()
+            }
+            oslots = self.oslots
 
         for nType in nTypes:
             canonical = self._canonical(nType)
             if nType == slotType:
-                sortedSeqs = range(1, maxSlot + 1)
-            else:
-                seqs = nodes[nType]
-                info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
-                sortedSeqs = sorted(seqs, key=canonical)
-            for seq in sortedSeqs:
-                n += 1
-                nodeMap[(nType, seq)] = n
+                continue
 
-        self.maxNode = n
-        info(f&#34;Max node = {n}&#34;, force=silent != DEEP)
+            seqs = nodes[nType]
+            info(f&#39;Sorting {len(seqs)} nodes of type &#34;{nType}&#34;&#39;)
+            sortedSeqs = sorted(seqs, key=canonical)
+
+            for seq in sortedSeqs:
+                newN += 1
+                nodeMap[(nType, seq)] = newN
+
+        self.maxNode = newN
+        info(f&#34;Max node = {newN}&#34;, force=silent != DEEP)
 
         self._showErrors()
 
@@ -3355,7 +3474,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1046-L1070" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1076-L1100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3407,7 +3526,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1072-L1093" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1102-L1123" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3453,7 +3572,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1095-L1109" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1125-L1139" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3504,7 +3623,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L910-L942" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L940-L972" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3567,7 +3686,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L880-L908" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L910-L938" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3615,7 +3734,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1032-L1044" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1062-L1074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def features(self):
     &#34;&#34;&#34;Get the list of all features.
@@ -3661,7 +3780,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L1111-L1150" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1141-L1180" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3731,7 +3850,7 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L818-L848" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L848-L878" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
     &#34;&#34;&#34;Link the given, existing slots to a node.
@@ -3793,7 +3912,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L850-L878" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L880-L908" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3853,7 +3972,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L979-L1030" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1009-L1060" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -3954,7 +4073,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L681-L759" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L711-L789" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -4068,7 +4187,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L944-L977" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L974-L1007" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4130,7 +4249,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L784-L816" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L814-L846" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -4168,7 +4287,7 @@ No new slot will be created.</p>
 </details>
 </dd>
 <dt id="tf.convert.walker.CV.slot"><code class="name flex">
-<span>def <span class="ident">slot</span></span>(<span>self)</span>
+<span>def <span class="ident">slot</span></span>(<span>self, key=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Make a slot node and return the handle to it in <code>n</code>.</p>
@@ -4181,8 +4300,18 @@ Remember that you can add features to the node by later</p>
 <p>calls.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>None</code></strong></dt>
-<dd>&nbsp;</dd>
+<dt><strong><code>key</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p>If passed, it acts as a sortkey on the slot.
+At the end of the walk, all slots will be sorted by their key and then
+by their original order. Care will be taken that slots retain their
+features and linkages.</p>
+<div class="admonition note">
+<p class="admonition-title">Keys are strings</p>
+</div>
+<p>Note that the key must be a string. If you want to sort on numbers,
+make sure to pad all numbers with leading zeros.</p>
+</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -4194,9 +4323,9 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L633-L679" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L652-L709" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def slot(self):
+<pre><code class="python">def slot(self, key=None):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
 
         n = cv.slot()
@@ -4211,7 +4340,15 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 
     Parameters
     ----------
-    None
+    key: string, optional None
+        If passed, it acts as a sortkey on the slot.
+        At the end of the walk, all slots will be sorted by their key and then
+        by their original order. Care will be taken that slots retain their
+        features and linkages.
+
+        !!! note &#34;Keys are strings&#34;
+        Note that the key must be a string. If you want to sort on numbers,
+        make sure to pad all numbers with leading zeros.
 
     Returns
     -------
@@ -4224,6 +4361,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
     curSeq = self.curSeq
     curEmbedders = self.curEmbedders
     oslots = self.oslots
+    slotKeys = self.slotKeys
     levelFromSection = self.levelFromSection
     warnings = self.warnings
 
@@ -4232,6 +4370,8 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 
     curSeq[nType] += 1
     seq = curSeq[nType]
+    if key is not None:
+        slotKeys[seq] = key
 
     inSection = False
     for eNode in curEmbedders:
@@ -4270,7 +4410,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L605-L631" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L624-L650" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4323,7 +4463,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L761-L782" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L791-L812" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4364,6 +4504,8 @@ complete.</p>
 and you will be warned if irregularities occur.</p>
 <p>After the creation of the feature data, some extra checks will be performed
 to see whether the metadata matches the data and vice versa.</p>
+<p>If the slots need to be sorted by their keys, it will happen at this point,
+and the generated features will be adpated to the sorted slots.</p>
 <p>The new feature data will be written to the output directory of the
 underlying TF object.
 In fact, the rules are exactly the same as for
@@ -4434,7 +4576,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/79010256f5f3f0f10ef79438f78f280118a8b569/tf/convert/walker.py#L242-L399" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L257-L418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4463,6 +4605,9 @@ to TF.</p>
 
     After the creation of the feature data, some extra checks will be performed
     to see whether the metadata matches the data and vice versa.
+
+    If the slots need to be sorted by their keys, it will happen at this point,
+    and the generated features will be adpated to the sorted slots.
 
     The new feature data will be written to the output directory of the
     underlying TF object.  In fact, the rules are exactly the same as for
@@ -4557,6 +4702,7 @@ to TF.</p>
     self.metaData = {}
     self.nodeFeatures = {}
     self.edgeFeatures = {}
+    self.slotKeys = {}
 
     indent(level=1, reset=True)
     self._prepareMeta(otext, generic)
