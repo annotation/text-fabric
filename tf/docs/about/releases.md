@@ -10,7 +10,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.11
+### 11.4.11,12
 
 2023-05-10
 
@@ -23,6 +23,7 @@ See the app-specific tutorials via `tf.about.corpora`.
     See this code to see how that is done:
 
     [lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py)
+*   You can tweak how attribute values are reported when you run preliminary checks.
 
 ## 11
 

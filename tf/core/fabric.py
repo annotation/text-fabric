@@ -420,7 +420,6 @@ class FabricCore:
                     break
                 reset()
 
-        indent(level=0)
         if self.good:
             if add:
                 try:

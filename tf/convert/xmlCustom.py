@@ -108,6 +108,7 @@ def getDirector(self):
     xmlPath = self.xmlPath
     featureMeta = self.featureMeta
     transform = self.transform
+    renameAtts = self.renameAtts
 
     transformFunc = (
         (lambda x: BytesIO(x.encode("utf-8")))
@@ -186,6 +187,7 @@ def getDirector(self):
             curNode = cv.node(tag)
             cur["elems"].append(curNode)
             atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
 

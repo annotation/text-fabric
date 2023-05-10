@@ -741,7 +741,7 @@ class TEI:
                 vRep = f"next {vRep}"
         else:
             tfVersion = tf
-            status = "exising" if dirExists(f"{tfDir}/{tfVersion}") else "new"
+            status = "existing" if dirExists(f"{tfDir}/{tfVersion}") else "new"
             vRep = f"explicit {status}"
 
         tfPath = f"{tfDir}/{tfVersion}"

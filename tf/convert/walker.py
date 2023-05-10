@@ -401,9 +401,10 @@ class CV:
         indent(level=1, reset=True)
         self._reassignFeatures()
 
-        if generateTf:
-            indent(level=0)
+        indent(level=0)
+        info("Features ready to write")
 
+        if generateTf:
             if self.good or self.force:
                 self.good = self.TF.save(
                     metaData=self.metaData,
@@ -1670,7 +1671,7 @@ class CV:
             featureDataProto = nodeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = "" if ln == 1 else "s"
-            info(f'node feature "{k}" with {ln} node{pl}')
+            info(f'node feature "{k}" with {ln} node{pl}', tm=False)
             featureData = {}
             for (node, value) in featureDataProto.items():
                 featureData[nodeMap[node]] = value
@@ -1680,7 +1681,7 @@ class CV:
             featureDataProto = edgeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = "" if ln == 1 else "s"
-            info(f'edge feature "{k}" with {ln} start node{pl}')
+            info(f'edge feature "{k}" with {ln} start node{pl}', tm=False)
             featureData = {}
             for (nodeFrom, toValues) in featureDataProto.items():
                 if type(toValues) is set:
