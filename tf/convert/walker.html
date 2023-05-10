@@ -152,7 +152,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1-L1705" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1-L1706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -557,9 +557,10 @@ class CV:
         indent(level=1, reset=True)
         self._reassignFeatures()
 
-        if generateTf:
-            indent(level=0)
+        indent(level=0)
+        info(&#34;Features ready to write&#34;)
 
+        if generateTf:
             if self.good or self.force:
                 self.good = self.TF.save(
                     metaData=self.metaData,
@@ -1826,7 +1827,7 @@ class CV:
             featureDataProto = nodeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = &#34;&#34; if ln == 1 else &#34;s&#34;
-            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;)
+            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;, tm=False)
             featureData = {}
             for (node, value) in featureDataProto.items():
                 featureData[nodeMap[node]] = value
@@ -1836,7 +1837,7 @@ class CV:
             featureDataProto = edgeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = &#34;&#34; if ln == 1 else &#34;s&#34;
-            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;)
+            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;, tm=False)
             featureData = {}
             for (nodeFrom, toValues) in featureDataProto.items():
                 if type(toValues) is set:
@@ -1881,7 +1882,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L171-L1705" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L171-L1706" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
@@ -2116,9 +2117,10 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         indent(level=1, reset=True)
         self._reassignFeatures()
 
-        if generateTf:
-            indent(level=0)
+        indent(level=0)
+        info(&#34;Features ready to write&#34;)
 
+        if generateTf:
             if self.good or self.force:
                 self.good = self.TF.save(
                     metaData=self.metaData,
@@ -3385,7 +3387,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             featureDataProto = nodeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = &#34;&#34; if ln == 1 else &#34;s&#34;
-            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;)
+            info(f&#39;node feature &#34;{k}&#34; with {ln} node{pl}&#39;, tm=False)
             featureData = {}
             for (node, value) in featureDataProto.items():
                 featureData[nodeMap[node]] = value
@@ -3395,7 +3397,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
             featureDataProto = edgeFeaturesProto[k]
             ln = len(featureDataProto)
             pl = &#34;&#34; if ln == 1 else &#34;s&#34;
-            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;)
+            info(f&#39;edge feature &#34;{k}&#34; with {ln} start node{pl}&#39;, tm=False)
             featureData = {}
             for (nodeFrom, toValues) in featureDataProto.items():
                 if type(toValues) is set:
@@ -3474,7 +3476,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1076-L1100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1077-L1101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3526,7 +3528,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1102-L1123" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1103-L1124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3572,7 +3574,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1125-L1139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1126-L1140" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3623,7 +3625,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L940-L972" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L941-L973" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3686,7 +3688,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L910-L938" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L911-L939" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3734,7 +3736,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1062-L1074" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1063-L1075" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def features(self):
     &#34;&#34;&#34;Get the list of all features.
@@ -3780,7 +3782,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1141-L1180" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1142-L1181" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3850,7 +3852,7 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L848-L878" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L849-L879" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
     &#34;&#34;&#34;Link the given, existing slots to a node.
@@ -3912,7 +3914,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L880-L908" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L881-L909" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3972,7 +3974,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L1009-L1060" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L1010-L1061" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -4073,7 +4075,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L711-L789" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L712-L790" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -4187,7 +4189,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L974-L1007" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L975-L1008" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4249,7 +4251,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L814-L846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L815-L847" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -4323,7 +4325,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L652-L709" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L653-L710" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self, key=None):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -4410,7 +4412,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L624-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L625-L651" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4463,7 +4465,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L791-L812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L792-L813" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4576,7 +4578,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/50200c862e7f991000a5e04482969debecd9ad58/tf/convert/walker.py#L257-L418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/d96072561e8bc5cd8f8c322ccb01a380bb522dbf/tf/convert/walker.py#L257-L419" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4725,9 +4727,10 @@ to TF.</p>
     indent(level=1, reset=True)
     self._reassignFeatures()
 
-    if generateTf:
-        indent(level=0)
+    indent(level=0)
+    info(&#34;Features ready to write&#34;)
 
+    if generateTf:
         if self.good or self.force:
             self.good = self.TF.save(
                 metaData=self.metaData,
