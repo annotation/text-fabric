@@ -7,7 +7,8 @@ from tf.core.files import initTree, unexpanduser as ux
 
 from tf.convert.helpers import (
     ZWSP,
-    NEST,
+    XNEST,
+    TNEST,
     CHAR,
     FOLDER,
     FILE
@@ -122,7 +123,7 @@ def getDirector(self):
 
     WHITE_TRIM_RE = re.compile(r"\s+", re.S)
 
-    def walkNode(cv, cur, node):
+    def walkNode(cv, cur, xnode):
         """Internal function to deal with a single element.
 
         Will be called recursively.
@@ -134,20 +135,20 @@ def getDirector(self):
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         """
-        tag = etree.QName(node.tag).localname
-        cur[NEST].append(tag)
+        tag = etree.QName(xnode.tag).localname
+        cur[XNEST].append(tag)
 
-        beforeChildren(cv, cur, node, tag)
+        beforeChildren(cv, cur, xnode, tag)
 
-        for child in node.iterchildren(tag=etree.Element):
+        for child in xnode.iterchildren(tag=etree.Element):
             walkNode(cv, cur, child)
 
-        afterChildren(cv, cur, node, tag)
-        cur[NEST].pop()
-        afterTag(cv, cur, node, tag)
+        afterChildren(cv, cur, xnode, tag)
+        cur[XNEST].pop()
+        afterTag(cv, cur, xnode, tag)
 
     def addSlot(cv, cur, ch):
         """Add a slot.
@@ -168,7 +169,7 @@ def getDirector(self):
         s = cv.slot()
         cv.feature(s, ch=ch)
 
-    def beforeChildren(cv, cur, node, tag):
+    def beforeChildren(cv, cur, xnode, tag):
         """Actions before dealing with the element's children.
 
         Parameters
@@ -178,25 +179,25 @@ def getDirector(self):
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
         """
         if tag not in PASS_THROUGH:
-            curNode = cv.node(tag)
-            cur["elems"].append(curNode)
-            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            curNode = cv.xnode(tag)
+            cur[TNEST].append(curNode)
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
             atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
 
-        if node.text:
-            textMaterial = WHITE_TRIM_RE.sub(" ", node.text)
+        if xnode.text:
+            textMaterial = WHITE_TRIM_RE.sub(" ", xnode.text)
             for ch in textMaterial:
                 addSlot(cv, cur, ch)
 
-    def afterChildren(cv, cur, node, tag):
+    def afterChildren(cv, cur, xnode, tag):
         """Node actions after dealing with the children, but before the end tag.
 
         Here we make sure that the newline elements will get their last slot
@@ -209,13 +210,13 @@ def getDirector(self):
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
         """
         if tag not in PASS_THROUGH:
-            curNode = cur["elems"].pop()
+            curNode = cur[TNEST].pop()
 
             if not cv.linked(curNode):
                 s = cv.slot()
@@ -223,7 +224,7 @@ def getDirector(self):
 
             cv.terminate(curNode)
 
-    def afterTag(cv, cur, node, tag):
+    def afterTag(cv, cur, xnode, tag):
         """Node actions after dealing with the children and after the end tag.
 
         This is the place where we proces the `tail` of an lxml node: the
@@ -237,13 +238,13 @@ def getDirector(self):
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
         """
-        if node.tail:
-            tailMaterial = WHITE_TRIM_RE.sub(" ", node.tail)
+        if xnode.tail:
+            tailMaterial = WHITE_TRIM_RE.sub(" ", xnode.tail)
             for ch in tailMaterial:
                 addSlot(cv, cur, ch)
 
@@ -283,8 +284,8 @@ def getDirector(self):
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
-                    cur[NEST] = []
-                    cur["elems"] = []
+                    cur[XNEST] = []
+                    cur[TNEST] = []
                     walkNode(cv, cur, root)
 
                 addSlot(cv, cur, None)

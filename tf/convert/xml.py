@@ -55,6 +55,19 @@ it will be inserted based on the version that the converter will actually use.
 That version depends on the `xml` argument passed to the program.
 The key under which the source version will be inserted is `xmlVersion`.
 
+### intFeatures
+
+list, optional `[]`
+
+The features (nodes and edges) that are integer-valued.
+
+### featureDescriptions
+
+dict, optional `{}`
+
+Short descriptions for the features.
+Will be included in the metadata of the feature files, after `@description`.
+
 # Usage
 
 ## Commandline
@@ -361,6 +374,12 @@ class XML:
 
         generic = settings.get("generic", {})
         self.generic = generic
+        intFeatures = settings.get("intFeatures", {})
+        self.intFeatures = intFeatures
+        featureDescriptions = settings.get("featureDescriptions", {})
+        self.featureMeta = {
+            k: dict(description=v) for (k, v) in featureDescriptions.items()
+        }
 
         reportDir = f"{refDir}/report"
         appDir = f"{refDir}/app"
@@ -603,11 +622,7 @@ class XML:
                 else:
                     for (kOrig, v) in atts.items():
                         k = etree.QName(kOrig).localname
-                        kind = (
-                            "keyword"
-                            if k in keywordAtts
-                            else "rest"
-                        )
+                        kind = "keyword" if k in keywordAtts else "rest"
                         dest = analysis[kind]
 
                         if kind == "rest":
@@ -701,9 +716,7 @@ class XML:
                     )
                     infoLines += 1
                     for (val, amount) in atts[1:]:
-                        fh.write(
-                            f"""\t{'':<18} {'"':<18} {amount:>5}x {val}\n"""
-                        )
+                        fh.write(f"""\t{'':<18} {'"':<18} {amount:>5}x {val}\n""")
                         infoLines += 1
 
                 def writeTagInfo(tag, tagInfo):
