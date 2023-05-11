@@ -151,7 +151,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L1-L2841" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1-L2842" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -350,7 +350,8 @@ from .helpers import (
     CHUNK,
     PRE,
     ZWSP,
-    NEST,
+    XNEST,
+    TNEST,
     WORD,
     CHAR,
 )
@@ -1161,11 +1162,11 @@ class TEI:
 
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node):
-                qName = etree.QName(node.tag)
+            def nodeInfo(xnode):
+                qName = etree.QName(xnode.tag)
                 tag = qName.localname
                 ns = qName.namespace
-                atts = node.attrib
+                atts = xnode.attrib
 
                 tagByNs[tag][ns] += 1
 
@@ -1192,7 +1193,7 @@ class TEI:
                             for w in words:
                                 dest[tag][k][w.strip()] += 1
 
-                for child in node.iterchildren(tag=etree.Element):
+                for child in xnode.iterchildren(tag=etree.Element):
                     nodeInfo(child)
 
             nodeInfo(root)
@@ -1592,7 +1593,7 @@ class TEI:
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
-        def walkNode(cv, cur, node):
+        def walkNode(cv, cur, xnode):
             &#34;&#34;&#34;Internal function to deal with a single element.
 
             Will be called recursively.
@@ -1604,20 +1605,20 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             &#34;&#34;&#34;
-            tag = etree.QName(node.tag).localname
-            cur[NEST].append(tag)
+            tag = etree.QName(xnode.tag).localname
+            cur[XNEST].append(tag)
 
-            beforeChildren(cv, cur, node, tag)
+            beforeChildren(cv, cur, xnode, tag)
 
-            for child in node.iterchildren(tag=etree.Element):
+            for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
-            afterChildren(cv, cur, node, tag)
-            cur[NEST].pop()
-            afterTag(cv, cur, node, tag)
+            afterChildren(cv, cur, xnode, tag)
+            cur[XNEST].pop()
+            afterTag(cv, cur, xnode, tag)
 
         def isChapter(cur):
             &#34;&#34;&#34;Whether the current element counts as a chapter node.
@@ -1651,7 +1652,7 @@ class TEI:
             sectionModel = self.sectionModel
 
             if sectionModel == &#34;II&#34;:
-                nest = cur[NEST]
+                nest = cur[XNEST]
                 nNest = len(nest)
 
                 if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
@@ -1710,11 +1711,11 @@ class TEI:
             &#34;&#34;&#34;
             sectionModel = self.sectionModel
 
-            nest = cur[NEST]
+            nest = cur[XNEST]
             nNest = len(nest)
 
             if sectionModel == &#34;II&#34;:
-                meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
+                meChptChnk = isChapter(cur) and cur[XNEST][-1] not in cur[&#34;pureElems&#34;]
                 outcome = nNest &gt; 1 and (
                     meChptChnk
                     or (
@@ -1727,7 +1728,7 @@ class TEI:
                                 or nest[-3] == TEXT_ANCESTOR
                                 and nest[-2] not in TEXT_ANCESTORS
                             )
-                            and cur[NEST][-2] in cur[&#34;pureElems&#34;]
+                            and cur[XNEST][-2] in cur[&#34;pureElems&#34;]
                         )
                     )
                 )
@@ -1764,7 +1765,7 @@ class TEI:
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return len(nest) == 0 or len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
 
         def isEndInPure(cur):
@@ -1785,7 +1786,7 @@ class TEI:
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
 
         def hasMixedAncestor(cur):
@@ -1815,7 +1816,7 @@ class TEI:
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
@@ -1997,7 +1998,7 @@ class TEI:
                 cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
-        def beforeChildren(cv, cur, node, tag):
+        def beforeChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
             Parameters
@@ -2007,7 +2008,7 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -2015,7 +2016,7 @@ class TEI:
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
 
-            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -2068,7 +2069,7 @@ class TEI:
                             break
                     if match:
                         heading = etree.tostring(
-                            node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                            xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
                         ).replace(&#34;\n&#34;, &#34; &#34;)
                         value = {chapterSection: heading}
                         cv.feature(cur[CHAPTER], **value)
@@ -2104,7 +2105,7 @@ class TEI:
                 if wordAsSlot:
                     if cur[WORD]:
                         cv.link(curNode, [cur[WORD][1]])
-                cur[&#34;elems&#34;].append(curNode)
+                cur[TNEST].append(curNode)
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -2112,22 +2113,22 @@ class TEI:
                         r = makeNameLike(rValue)
                         if r:
                             cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
-            if node.text:
-                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+            if xnode.text:
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
                         console(
                             &#34;WARNING: Text material at the start of &#34;
                             f&#34;pure-content element &lt;{tag}&gt;&#34;
                         )
-                        stack = &#34;-&#34;.join(cur[NEST])
+                        stack = &#34;-&#34;.join(cur[XNEST])
                         console(f&#34;\tElement stack: {stack}&#34;)
                         console(f&#34;\tMaterial: `{textMaterial}`&#34;)
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
 
-        def afterChildren(cv, cur, node, tag):
+        def afterChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
 
             Here we make sure that the newline elements will get their last slot
@@ -2140,7 +2141,7 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -2152,7 +2153,7 @@ class TEI:
             hasFinishedWord = False
 
             if tag not in PASS_THROUGH:
-                curNode = cur[&#34;elems&#34;][-1]
+                curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
 
@@ -2191,7 +2192,7 @@ class TEI:
                             else:
                                 cv.link(prevChapter, lastSlot)
 
-                cur[&#34;elems&#34;].pop()
+                cur[TNEST].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -2204,7 +2205,7 @@ class TEI:
                         finishWord(cv, cur, None, True)
                     cv.terminate(cur[CHAPTER])
 
-        def afterTag(cv, cur, node, tag):
+        def afterTag(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
             This is the place where we proces the `tail` of an lxml node: the
@@ -2218,7 +2219,7 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -2229,23 +2230,23 @@ class TEI:
                 cur[&#34;inNote&#34;] = False
 
             if tag not in PASS_THROUGH:
-                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
                 if &#34;rend&#34; in atts:
                     rValue = atts[&#34;rend&#34;]
                     r = makeNameLike(rValue)
                     if r:
                         cur[&#34;rend&#34;][r].pop()
 
-            if node.tail:
-                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+            if xnode.tail:
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
                 if isPure(cur):
                     if tailMaterial and tailMaterial != &#34; &#34;:
-                        elem = cur[NEST][-1]
+                        elem = cur[XNEST][-1]
                         console(
                             &#34;WARNING: Text material after &#34;
                             f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                         )
-                        stack = &#34;-&#34;.join(cur[NEST])
+                        stack = &#34;-&#34;.join(cur[XNEST])
                         console(f&#34;\tElement stack: {stack}-{tag}&#34;)
                         console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
                 else:
@@ -2307,8 +2308,8 @@ class TEI:
                             root = tree.getroot()
                             cur[&#34;inHeader&#34;] = False
                             cur[&#34;inNote&#34;] = False
-                            cur[NEST] = []
-                            cur[&#34;elems&#34;] = []
+                            cur[XNEST] = []
+                            cur[TNEST] = []
                             cur[&#34;chunkNum&#34;] = 0
                             cur[&#34;prevChunk&#34;] = None
                             cur[&#34;danglingSlots&#34;] = set()
@@ -2340,8 +2341,8 @@ class TEI:
                     root = tree.getroot()
                     cur[&#34;inHeader&#34;] = False
                     cur[&#34;inNote&#34;] = False
-                    cur[NEST] = []
-                    cur[&#34;elems&#34;] = []
+                    cur[XNEST] = []
+                    cur[TNEST] = []
                     cur[&#34;chapterNum&#34;] = 0
                     cur[&#34;chunkPNum&#34;] = 0
                     cur[&#34;chunkONum&#34;] = 0
@@ -3011,7 +3012,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2827-L2837" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2828-L2838" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -3034,7 +3035,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L415-L428" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L416-L429" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3183,7 +3184,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L431-L2824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L432-L2825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3763,11 +3764,11 @@ relevant tf version:</p>
 
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node):
-                qName = etree.QName(node.tag)
+            def nodeInfo(xnode):
+                qName = etree.QName(xnode.tag)
                 tag = qName.localname
                 ns = qName.namespace
-                atts = node.attrib
+                atts = xnode.attrib
 
                 tagByNs[tag][ns] += 1
 
@@ -3794,7 +3795,7 @@ relevant tf version:</p>
                             for w in words:
                                 dest[tag][k][w.strip()] += 1
 
-                for child in node.iterchildren(tag=etree.Element):
+                for child in xnode.iterchildren(tag=etree.Element):
                     nodeInfo(child)
 
             nodeInfo(root)
@@ -4194,7 +4195,7 @@ relevant tf version:</p>
         def makeNameLike(x):
             return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
-        def walkNode(cv, cur, node):
+        def walkNode(cv, cur, xnode):
             &#34;&#34;&#34;Internal function to deal with a single element.
 
             Will be called recursively.
@@ -4206,20 +4207,20 @@ relevant tf version:</p>
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             &#34;&#34;&#34;
-            tag = etree.QName(node.tag).localname
-            cur[NEST].append(tag)
+            tag = etree.QName(xnode.tag).localname
+            cur[XNEST].append(tag)
 
-            beforeChildren(cv, cur, node, tag)
+            beforeChildren(cv, cur, xnode, tag)
 
-            for child in node.iterchildren(tag=etree.Element):
+            for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
-            afterChildren(cv, cur, node, tag)
-            cur[NEST].pop()
-            afterTag(cv, cur, node, tag)
+            afterChildren(cv, cur, xnode, tag)
+            cur[XNEST].pop()
+            afterTag(cv, cur, xnode, tag)
 
         def isChapter(cur):
             &#34;&#34;&#34;Whether the current element counts as a chapter node.
@@ -4253,7 +4254,7 @@ relevant tf version:</p>
             sectionModel = self.sectionModel
 
             if sectionModel == &#34;II&#34;:
-                nest = cur[NEST]
+                nest = cur[XNEST]
                 nNest = len(nest)
 
                 if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
@@ -4312,11 +4313,11 @@ relevant tf version:</p>
             &#34;&#34;&#34;
             sectionModel = self.sectionModel
 
-            nest = cur[NEST]
+            nest = cur[XNEST]
             nNest = len(nest)
 
             if sectionModel == &#34;II&#34;:
-                meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
+                meChptChnk = isChapter(cur) and cur[XNEST][-1] not in cur[&#34;pureElems&#34;]
                 outcome = nNest &gt; 1 and (
                     meChptChnk
                     or (
@@ -4329,7 +4330,7 @@ relevant tf version:</p>
                                 or nest[-3] == TEXT_ANCESTOR
                                 and nest[-2] not in TEXT_ANCESTORS
                             )
-                            and cur[NEST][-2] in cur[&#34;pureElems&#34;]
+                            and cur[XNEST][-2] in cur[&#34;pureElems&#34;]
                         )
                     )
                 )
@@ -4366,7 +4367,7 @@ relevant tf version:</p>
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return len(nest) == 0 or len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
 
         def isEndInPure(cur):
@@ -4387,7 +4388,7 @@ relevant tf version:</p>
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
 
         def hasMixedAncestor(cur):
@@ -4417,7 +4418,7 @@ relevant tf version:</p>
             -------
             boolean
             &#34;&#34;&#34;
-            nest = cur[NEST]
+            nest = cur[XNEST]
             return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
@@ -4599,7 +4600,7 @@ relevant tf version:</p>
                 cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
-        def beforeChildren(cv, cur, node, tag):
+        def beforeChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
             Parameters
@@ -4609,7 +4610,7 @@ relevant tf version:</p>
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -4617,7 +4618,7 @@ relevant tf version:</p>
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
 
-            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -4670,7 +4671,7 @@ relevant tf version:</p>
                             break
                     if match:
                         heading = etree.tostring(
-                            node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                            xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
                         ).replace(&#34;\n&#34;, &#34; &#34;)
                         value = {chapterSection: heading}
                         cv.feature(cur[CHAPTER], **value)
@@ -4706,7 +4707,7 @@ relevant tf version:</p>
                 if wordAsSlot:
                     if cur[WORD]:
                         cv.link(curNode, [cur[WORD][1]])
-                cur[&#34;elems&#34;].append(curNode)
+                cur[TNEST].append(curNode)
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -4714,22 +4715,22 @@ relevant tf version:</p>
                         r = makeNameLike(rValue)
                         if r:
                             cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
-            if node.text:
-                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+            if xnode.text:
+                textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
                         console(
                             &#34;WARNING: Text material at the start of &#34;
                             f&#34;pure-content element &lt;{tag}&gt;&#34;
                         )
-                        stack = &#34;-&#34;.join(cur[NEST])
+                        stack = &#34;-&#34;.join(cur[XNEST])
                         console(f&#34;\tElement stack: {stack}&#34;)
                         console(f&#34;\tMaterial: `{textMaterial}`&#34;)
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
 
-        def afterChildren(cv, cur, node, tag):
+        def afterChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
 
             Here we make sure that the newline elements will get their last slot
@@ -4742,7 +4743,7 @@ relevant tf version:</p>
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -4754,7 +4755,7 @@ relevant tf version:</p>
             hasFinishedWord = False
 
             if tag not in PASS_THROUGH:
-                curNode = cur[&#34;elems&#34;][-1]
+                curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
 
@@ -4793,7 +4794,7 @@ relevant tf version:</p>
                             else:
                                 cv.link(prevChapter, lastSlot)
 
-                cur[&#34;elems&#34;].pop()
+                cur[TNEST].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -4806,7 +4807,7 @@ relevant tf version:</p>
                         finishWord(cv, cur, None, True)
                     cv.terminate(cur[CHAPTER])
 
-        def afterTag(cv, cur, node, tag):
+        def afterTag(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
             This is the place where we proces the `tail` of an lxml node: the
@@ -4820,7 +4821,7 @@ relevant tf version:</p>
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
-            node: object
+            xnode: object
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
@@ -4831,23 +4832,23 @@ relevant tf version:</p>
                 cur[&#34;inNote&#34;] = False
 
             if tag not in PASS_THROUGH:
-                atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+                atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
                 if &#34;rend&#34; in atts:
                     rValue = atts[&#34;rend&#34;]
                     r = makeNameLike(rValue)
                     if r:
                         cur[&#34;rend&#34;][r].pop()
 
-            if node.tail:
-                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+            if xnode.tail:
+                tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
                 if isPure(cur):
                     if tailMaterial and tailMaterial != &#34; &#34;:
-                        elem = cur[NEST][-1]
+                        elem = cur[XNEST][-1]
                         console(
                             &#34;WARNING: Text material after &#34;
                             f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                         )
-                        stack = &#34;-&#34;.join(cur[NEST])
+                        stack = &#34;-&#34;.join(cur[XNEST])
                         console(f&#34;\tElement stack: {stack}-{tag}&#34;)
                         console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
                 else:
@@ -4909,8 +4910,8 @@ relevant tf version:</p>
                             root = tree.getroot()
                             cur[&#34;inHeader&#34;] = False
                             cur[&#34;inNote&#34;] = False
-                            cur[NEST] = []
-                            cur[&#34;elems&#34;] = []
+                            cur[XNEST] = []
+                            cur[TNEST] = []
                             cur[&#34;chunkNum&#34;] = 0
                             cur[&#34;prevChunk&#34;] = None
                             cur[&#34;danglingSlots&#34;] = set()
@@ -4942,8 +4943,8 @@ relevant tf version:</p>
                     root = tree.getroot()
                     cur[&#34;inHeader&#34;] = False
                     cur[&#34;inNote&#34;] = False
-                    cur[NEST] = []
-                    cur[&#34;elems&#34;] = []
+                    cur[XNEST] = []
+                    cur[TNEST] = []
                     cur[&#34;chapterNum&#34;] = 0
                     cur[&#34;chunkPNum&#34;] = 0
                     cur[&#34;chunkONum&#34;] = 0
@@ -5596,7 +5597,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L783-L799" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L784-L800" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5657,7 +5658,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2384-L2723" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2385-L2724" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -6017,7 +6018,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2727-L2760" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2728-L2761" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6082,7 +6083,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L916-L1260" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L917-L1261" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6177,11 +6178,11 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
         NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-        def nodeInfo(node):
-            qName = etree.QName(node.tag)
+        def nodeInfo(xnode):
+            qName = etree.QName(xnode.tag)
             tag = qName.localname
             ns = qName.namespace
-            atts = node.attrib
+            atts = xnode.attrib
 
             tagByNs[tag][ns] += 1
 
@@ -6208,7 +6209,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                         for w in words:
                             dest[tag][k][w.strip()] += 1
 
-            for child in node.iterchildren(tag=etree.Element):
+            for child in xnode.iterchildren(tag=etree.Element):
                 nodeInfo(child)
 
         nodeInfo(root)
@@ -6445,7 +6446,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2248-L2336" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2249-L2337" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6551,7 +6552,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L1264-L1277" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1265-L1278" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6592,7 +6593,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L1281-L2246" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1282-L2247" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -6753,7 +6754,7 @@ that has access to this data.</p>
     def makeNameLike(x):
         return NON_NAME_RE.sub(&#34;_&#34;, x).strip(&#34;_&#34;)
 
-    def walkNode(cv, cur, node):
+    def walkNode(cv, cur, xnode):
         &#34;&#34;&#34;Internal function to deal with a single element.
 
         Will be called recursively.
@@ -6765,20 +6766,20 @@ that has access to this data.</p>
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         &#34;&#34;&#34;
-        tag = etree.QName(node.tag).localname
-        cur[NEST].append(tag)
+        tag = etree.QName(xnode.tag).localname
+        cur[XNEST].append(tag)
 
-        beforeChildren(cv, cur, node, tag)
+        beforeChildren(cv, cur, xnode, tag)
 
-        for child in node.iterchildren(tag=etree.Element):
+        for child in xnode.iterchildren(tag=etree.Element):
             walkNode(cv, cur, child)
 
-        afterChildren(cv, cur, node, tag)
-        cur[NEST].pop()
-        afterTag(cv, cur, node, tag)
+        afterChildren(cv, cur, xnode, tag)
+        cur[XNEST].pop()
+        afterTag(cv, cur, xnode, tag)
 
     def isChapter(cur):
         &#34;&#34;&#34;Whether the current element counts as a chapter node.
@@ -6812,7 +6813,7 @@ that has access to this data.</p>
         sectionModel = self.sectionModel
 
         if sectionModel == &#34;II&#34;:
-            nest = cur[NEST]
+            nest = cur[XNEST]
             nNest = len(nest)
 
             if nNest &gt; 0 and nest[-1] in EMPTY_ELEMENTS:
@@ -6871,11 +6872,11 @@ that has access to this data.</p>
         &#34;&#34;&#34;
         sectionModel = self.sectionModel
 
-        nest = cur[NEST]
+        nest = cur[XNEST]
         nNest = len(nest)
 
         if sectionModel == &#34;II&#34;:
-            meChptChnk = isChapter(cur) and cur[NEST][-1] not in cur[&#34;pureElems&#34;]
+            meChptChnk = isChapter(cur) and cur[XNEST][-1] not in cur[&#34;pureElems&#34;]
             outcome = nNest &gt; 1 and (
                 meChptChnk
                 or (
@@ -6888,7 +6889,7 @@ that has access to this data.</p>
                             or nest[-3] == TEXT_ANCESTOR
                             and nest[-2] not in TEXT_ANCESTORS
                         )
-                        and cur[NEST][-2] in cur[&#34;pureElems&#34;]
+                        and cur[XNEST][-2] in cur[&#34;pureElems&#34;]
                     )
                 )
             )
@@ -6925,7 +6926,7 @@ that has access to this data.</p>
         -------
         boolean
         &#34;&#34;&#34;
-        nest = cur[NEST]
+        nest = cur[XNEST]
         return len(nest) == 0 or len(nest) &gt; 0 and nest[-1] in cur[&#34;pureElems&#34;]
 
     def isEndInPure(cur):
@@ -6946,7 +6947,7 @@ that has access to this data.</p>
         -------
         boolean
         &#34;&#34;&#34;
-        nest = cur[NEST]
+        nest = cur[XNEST]
         return len(nest) &gt; 1 and nest[-2] in cur[&#34;pureElems&#34;]
 
     def hasMixedAncestor(cur):
@@ -6976,7 +6977,7 @@ that has access to this data.</p>
         -------
         boolean
         &#34;&#34;&#34;
-        nest = cur[NEST]
+        nest = cur[XNEST]
         return any(n in cur[&#34;mixedElems&#34;] for n in nest[0:-1])
 
     def startWord(cv, cur, ch):
@@ -7158,7 +7159,7 @@ that has access to this data.</p>
             cv.feature(s, ch=spaceChar, extraspace=1)
             addSlotFeatures(cv, cur, s)
 
-    def beforeChildren(cv, cur, node, tag):
+    def beforeChildren(cv, cur, xnode, tag):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
         Parameters
@@ -7168,7 +7169,7 @@ that has access to this data.</p>
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
@@ -7176,7 +7177,7 @@ that has access to this data.</p>
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
 
-        atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+        atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
 
         if sectionModel == &#34;II&#34;:
             chapterSection = self.chapterSection
@@ -7229,7 +7230,7 @@ that has access to this data.</p>
                         break
                 if match:
                     heading = etree.tostring(
-                        node, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                        xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
                     ).replace(&#34;\n&#34;, &#34; &#34;)
                     value = {chapterSection: heading}
                     cv.feature(cur[CHAPTER], **value)
@@ -7265,7 +7266,7 @@ that has access to this data.</p>
             if wordAsSlot:
                 if cur[WORD]:
                     cv.link(curNode, [cur[WORD][1]])
-            cur[&#34;elems&#34;].append(curNode)
+            cur[TNEST].append(curNode)
             if len(atts):
                 cv.feature(curNode, **atts)
                 if &#34;rend&#34; in atts:
@@ -7273,22 +7274,22 @@ that has access to this data.</p>
                     r = makeNameLike(rValue)
                     if r:
                         cur.setdefault(&#34;rend&#34;, {}).setdefault(r, []).append(True)
-        if node.text:
-            textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.text)
+        if xnode.text:
+            textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
             if isPure(cur):
                 if textMaterial and textMaterial != &#34; &#34;:
                     console(
                         &#34;WARNING: Text material at the start of &#34;
                         f&#34;pure-content element &lt;{tag}&gt;&#34;
                     )
-                    stack = &#34;-&#34;.join(cur[NEST])
+                    stack = &#34;-&#34;.join(cur[XNEST])
                     console(f&#34;\tElement stack: {stack}&#34;)
                     console(f&#34;\tMaterial: `{textMaterial}`&#34;)
             else:
                 for ch in textMaterial:
                     addSlot(cv, cur, ch)
 
-    def afterChildren(cv, cur, node, tag):
+    def afterChildren(cv, cur, xnode, tag):
         &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
 
         Here we make sure that the newline elements will get their last slot
@@ -7301,7 +7302,7 @@ that has access to this data.</p>
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
@@ -7313,7 +7314,7 @@ that has access to this data.</p>
         hasFinishedWord = False
 
         if tag not in PASS_THROUGH:
-            curNode = cur[&#34;elems&#34;][-1]
+            curNode = cur[TNEST][-1]
             slots = cv.linked(curNode)
             empty = len(slots) == 0
 
@@ -7352,7 +7353,7 @@ that has access to this data.</p>
                         else:
                             cv.link(prevChapter, lastSlot)
 
-            cur[&#34;elems&#34;].pop()
+            cur[TNEST].pop()
             cv.terminate(curNode)
 
         if isChnk:
@@ -7365,7 +7366,7 @@ that has access to this data.</p>
                     finishWord(cv, cur, None, True)
                 cv.terminate(cur[CHAPTER])
 
-    def afterTag(cv, cur, node, tag):
+    def afterTag(cv, cur, xnode, tag):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
         This is the place where we proces the `tail` of an lxml node: the
@@ -7379,7 +7380,7 @@ that has access to this data.</p>
         cur: dict
             Various pieces of data collected during walking
             and relevant for some next steps in the walk.
-        node: object
+        xnode: object
             An lxml element node.
         tag: string
             The tag of the lxml node.
@@ -7390,23 +7391,23 @@ that has access to this data.</p>
             cur[&#34;inNote&#34;] = False
 
         if tag not in PASS_THROUGH:
-            atts = {etree.QName(k).localname: v for (k, v) in node.attrib.items()}
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
             if &#34;rend&#34; in atts:
                 rValue = atts[&#34;rend&#34;]
                 r = makeNameLike(rValue)
                 if r:
                     cur[&#34;rend&#34;][r].pop()
 
-        if node.tail:
-            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, node.tail)
+        if xnode.tail:
+            tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
             if isPure(cur):
                 if tailMaterial and tailMaterial != &#34; &#34;:
-                    elem = cur[NEST][-1]
+                    elem = cur[XNEST][-1]
                     console(
                         &#34;WARNING: Text material after &#34;
                         f&#34;&lt;{tag}&gt; in pure-content element &lt;{elem}&gt;&#34;
                     )
-                    stack = &#34;-&#34;.join(cur[NEST])
+                    stack = &#34;-&#34;.join(cur[XNEST])
                     console(f&#34;\tElement stack: {stack}-{tag}&#34;)
                     console(f&#34;\tMaterial: `{tailMaterial}`&#34;)
             else:
@@ -7468,8 +7469,8 @@ that has access to this data.</p>
                         root = tree.getroot()
                         cur[&#34;inHeader&#34;] = False
                         cur[&#34;inNote&#34;] = False
-                        cur[NEST] = []
-                        cur[&#34;elems&#34;] = []
+                        cur[XNEST] = []
+                        cur[TNEST] = []
                         cur[&#34;chunkNum&#34;] = 0
                         cur[&#34;prevChunk&#34;] = None
                         cur[&#34;danglingSlots&#34;] = set()
@@ -7501,8 +7502,8 @@ that has access to this data.</p>
                 root = tree.getroot()
                 cur[&#34;inHeader&#34;] = False
                 cur[&#34;inNote&#34;] = False
-                cur[NEST] = []
-                cur[&#34;elems&#34;] = []
+                cur[XNEST] = []
+                cur[TNEST] = []
                 cur[&#34;chapterNum&#34;] = 0
                 cur[&#34;chunkPNum&#34;] = 0
                 cur[&#34;chunkONum&#34;] = 0
@@ -7586,7 +7587,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L820-L853" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L821-L854" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -7639,7 +7640,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L801-L818" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L802-L819" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7682,7 +7683,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L855-L914" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L856-L915" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7766,7 +7767,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2338-L2380" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2339-L2381" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -7849,7 +7850,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/tei.py#L2762-L2824" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2763-L2825" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

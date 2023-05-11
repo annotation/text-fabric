@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/helpers.py#L1-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L1-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -42,7 +42,9 @@ FILE = &#34;file&#34;
 CHAPTER = &#34;chapter&#34;
 CHUNK = &#34;chunk&#34;
 
-NEST = &#34;nest&#34;
+XNEST = &#34;xnest&#34;
+TNEST = &#34;tnest&#34;
+TSIB = &#34;tsiblings&#34;
 SLOT = &#34;slot&#34;
 WORD = &#34;word&#34;
 CHAR = &#34;char&#34;
@@ -279,7 +281,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/helpers.py#L77-L134" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L79-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -349,7 +351,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/helpers.py#L35-L74" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L37-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -401,7 +403,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/280663a652f180408ec64aa4aabcf97d21ef8b0c/tf/convert/helpers.py#L137-L234" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L139-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties, rendDesc):
     if wordAsSlot:
