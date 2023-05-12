@@ -391,7 +391,6 @@ def modify(
         These nodes will be lost, together with the feature values for these nodes
         and the edges that involve these nodes.
 
-
         Once the slot type is replaced, you may want to adapt the text formats in
         the OTEXT feature. You can do so by passing appropriate values
         in the `featureMeta` argument.
@@ -1075,6 +1074,8 @@ def modify(
                 if feat in featSet:
                     # inf("original feature")
                     featObj = featSrc(feat)
+                    if feat != OSLOTS and kind == EDGE and featObj.doValues:
+                        outMeta["edgeValues"] = True
                     outMeta.update(featObj.meta)
                     if shiftNeeded:
                         outData.update(shiftFeature(kind, feat, featObj))
@@ -1165,7 +1166,8 @@ def modify(
             # have to be extended to the new slots
             # If a new slot has conflicting feature values for the old slots
             # it is linked to, the first defined feature value will be taken.
-            # For now, we do not do this for edge features.
+            # Likewise, all edge features that involve old slots
+            # have to be extended to the new slots.
 
             for (feat, featData) in nodeFeaturesOut.items():
                 if feat == OTYPE:
@@ -1188,6 +1190,74 @@ def modify(
                 if updates:
                     for (node, val) in updates.items():
                         featData[node] = val
+
+            for (feat, featData) in edgeFeaturesOut.items():
+                if feat == OSLOTS:
+                    continue
+                updates = {}
+                for (fromNode, toNodes) in featData.items():
+                    if fromNode in removeNodes:
+                        continue
+                    nTypeFrom = currentOtype[fromNode]
+                    if nTypeFrom == slotType:
+                        newFromNode = currentSlotMap[fromNode]
+                    else:
+                        newFromNode = fromNode
+                    if type(toNodes) is dict:
+                        for (toNode, value) in toNodes.items():
+                            if toNode in removeNodes:
+                                continue
+                            nTypeTo = currentOtype[toNode]
+                            if nTypeTo == slotType:
+                                newToNode = currentSlotMap[toNode]
+                            else:
+                                newToNode = toNode
+                            if nTypeFrom != slotType and nTypeTo != slotType:
+                                continue
+                            currentVals = featData.get(newFromNode, {})
+                            if newToNode not in currentVals:
+                                alreadyUpdateds = updates.get(newFromNode, {})
+
+                                if newToNode not in alreadyUpdateds:
+                                    doUpdate = True
+                                else:
+                                    alreadyVal = alreadyUpdateds[newToNode]
+                                    if alreadyVal is None:
+                                        doUpdate = value is not None
+                                    else:
+                                        doUpdate = False
+
+                                if doUpdate:
+                                    updates.setdefault(newFromNode, {})[
+                                        newToNode
+                                    ] = value
+                    else:
+                        for toNode in toNodes:
+                            if toNode in removeNodes:
+                                continue
+                            nTypeTo = currentOtype[toNode]
+                            if nTypeTo == slotType:
+                                newToNode = currentSlotMap[toNode]
+                            else:
+                                newToNode = toNode
+                            if nTypeFrom != slotType and nTypeTo != slotType:
+                                continue
+                            currentVals = featData.get(newFromNode, set())
+                            if newToNode not in currentVals:
+                                alreadyUpdateds = updates.get(newFromNode, set())
+
+                                if newToNode not in alreadyUpdateds:
+                                    updates.setdefault(newFromNode, set()).add(
+                                        newToNode
+                                    )
+                if updates:
+                    for (fromNode, toNodes) in updates.items():
+                        if type(toNodes) is dict:
+                            for (toNode, val) in toNodes.items():
+                                featData.setdefault(fromNode, {})[toNode] = val
+                        else:
+                            for toNode in toNodes:
+                                featData.setdefault(fromNode, set()).add(toNode)
 
             # link all nodes, except slot nodes and nodes of the new slot type to
             # new slots.
@@ -1258,27 +1328,27 @@ def modify(
                     continue
 
                 newFeatData = {}
-                for (node, targets) in featData.items():
-                    if node in removeNodes:
+                for (fromNode, toNodes) in featData.items():
+                    if fromNode in removeNodes:
                         continue
-                    newNode = newFromCurrent[node]
-                    if type(targets) is dict:
-                        newTargets = {}
-                        for (tNode, value) in targets.items():
-                            if tNode in removeNodes:
+                    newFromNode = newFromCurrent[fromNode]
+                    if type(toNodes) is dict:
+                        newToNodes = {}
+                        for (toNode, value) in toNodes.items():
+                            if toNode in removeNodes:
                                 continue
-                            newTNode = newFromCurrent[tNode]
-                            newTargets[newTNode] = value
+                            newTNode = newFromCurrent[toNode]
+                            newToNodes[newTNode] = value
                     else:
-                        newTargets = set()
-                        for tNode in targets:
-                            if tNode in removeNodes:
+                        newToNodes = set()
+                        for toNode in toNodes:
+                            if toNode in removeNodes:
                                 continue
-                            newTNode = newFromCurrent[tNode]
-                            newTargets.add(newTNode)
-                    if not len(newTargets):
+                            newTNode = newFromCurrent[toNode]
+                            newToNodes.add(newTNode)
+                    if not len(newToNodes):
                         continue
-                    newFeatData[newNode] = newTargets
+                    newFeatData[newFromNode] = newToNodes
 
                 if len(newFeatData):
                     edgeFeaturesOut[feat] = newFeatData

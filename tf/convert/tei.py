@@ -69,6 +69,32 @@ boolean, optional `False`
 Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.
 
+### parentEdges
+
+boolean, optional `True`
+
+Whether to create edges between nodes that correspond to XML elements and their parents.
+
+### siblingEdges
+
+boolean, optional `False`
+
+Whether to create edges between nodes that correspond to XML elements and siblings.
+Edges will be created between each sibling and its *preceding* siblings.
+If you use these edges in the binary way, you can also find the following siblings.
+The edges are labelled with the distance between the siblings, adjacent siblings
+get distance 1.
+
+!!! caution "Overwhelming space requirement"
+    If the corpus is divided into relatively few elements that each have very many
+    direct children, the number of sibling edges is comparable to the size of the
+    corpus squared. That means that the TF dataset will consist for 50-99% of
+    sibling edges!
+    An example is [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904) (Greek New
+    Testament) where each book element has all of its sentences as direct children.
+    In that dataset, the siblings would occupy 40% of the size, and we have taken care
+    not to produce sibling edges for sentences.
+
 ### sectionModel
 
 dict, optional `{}`
@@ -197,6 +223,7 @@ from .helpers import (
     ZWSP,
     XNEST,
     TNEST,
+    TSIB,
     WORD,
     CHAR,
 )
@@ -626,6 +653,8 @@ class TEI:
         schema = settings.get("schema", None)
         prelim = settings.get("prelim", True)
         wordAsSlot = settings.get("wordAsSlot", True)
+        parentEdges = settings.get("parentEdges", True)
+        siblingEdges = settings.get("siblingEdges", True)
         sectionModel = settings.get("sectionModel", {})
 
         sectionModel = checkSectionModel(sectionModel)
@@ -639,6 +668,8 @@ class TEI:
         self.schema = schema
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
+        self.parentEdges = parentEdges
+        self.siblingEdges = siblingEdges
         self.sectionModel = sectionModel["model"]
         self.sectionProperties = sectionProperties
 
@@ -1338,6 +1369,8 @@ class TEI:
         verbose = self.verbose
         teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
         transform = self.transform
@@ -1454,14 +1487,42 @@ class TEI:
                 An lxml element node.
             """
             tag = etree.QName(xnode.tag).localname
+
             cur[XNEST].append(tag)
 
-            beforeChildren(cv, cur, xnode, tag)
+            curNode = beforeChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if parentEdges:
+                    if len(cur[TNEST]):
+                        parentNode = cur[TNEST][-1]
+                        cv.edge(curNode, parentNode, parent=None)
+
+                cur[TNEST].append(curNode)
+
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        siblings = cur[TSIB][-1]
+
+                        nSiblings = len(siblings)
+                        for (i, sib) in enumerate(siblings):
+                            cv.edge(sib, curNode, sibling=nSiblings - i)
+                        siblings.append(curNode)
+
+                    cur[TSIB].append([])
 
             for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
             afterChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if len(cur[TNEST]):
+                    cur[TNEST].pop()
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        cur[TSIB].pop()
+
             cur[XNEST].pop()
             afterTag(cv, cur, xnode, tag)
 
@@ -1944,13 +2005,14 @@ class TEI:
                 cur["inNote"] = True
                 finishWord(cv, cur, None, False)
 
+            curNode = None
+
             if tag not in PASS_THROUGH:
                 cur["afterSpace"] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
                         cv.link(curNode, [cur[WORD][1]])
-                cur[TNEST].append(curNode)
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if "rend" in atts:
@@ -1972,6 +2034,8 @@ class TEI:
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
+
+            return curNode
 
         def afterChildren(cv, cur, xnode, tag):
             """Node actions after dealing with the children, but before the end tag.
@@ -2037,7 +2101,6 @@ class TEI:
                             else:
                                 cv.link(prevChapter, lastSlot)
 
-                cur[TNEST].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -2155,6 +2218,7 @@ class TEI:
                             cur["inNote"] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
+                            cur[TSIB] = []
                             cur["chunkNum"] = 0
                             cur["prevChunk"] = None
                             cur["danglingSlots"] = set()
@@ -2188,6 +2252,7 @@ class TEI:
                     cur["inNote"] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
+                    cur[TSIB] = []
                     cur["chapterNum"] = 0
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
@@ -2261,6 +2326,8 @@ class TEI:
 
         verbose = self.verbose
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
@@ -2282,6 +2349,9 @@ class TEI:
             "sectionTypes": sectionTypes,
         }
         intFeatures = {"empty", chunkSection}
+        if siblingEdges:
+            intFeatures.add("sibling")
+
         featureMeta = dict(
             str=dict(description="the text of a word"),
             after=dict(description="the text after a word till the next word"),
@@ -2299,6 +2369,17 @@ class TEI:
 
         if not wordAsSlot:
             featureMeta["ch"] = dict(description="the unicode character of a slot")
+        if parentEdges:
+            featureMeta["parent"] = dict(
+                description=("edge between a node and its parent node")
+            )
+        if siblingEdges:
+            featureMeta["sibling"] = dict(
+                description=(
+                    "edge between a node and its preceding sibling nodes; "
+                    "labelled with the distance between them"
+                )
+            )
         if sectionModel == "II":
             chapterSection = self.chapterSection
             featureMeta[chapterSection] = dict(description=f"name of {chapterSection}")
@@ -2424,13 +2505,15 @@ class TEI:
         refDir = self.refDir
         myDir = self.myDir
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
 
-        # key | parent dir | file | template based
+        # key | parentDir | file | template based
 
-        # if parent dir is a tuple, the first part is the parent of the source
-        # end the second part is the parent of the destination
+        # if parentDir is a tuple, the first part is the parentDir of the source
+        # end the second part is the parentDir of the destination
 
         itemSpecs = (
             ("about", "docs", "about.md", False),
@@ -2441,7 +2524,7 @@ class TEI:
             ("app", "app", "app.py", False),
         )
         genTasks = {
-            s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
+            s[0]: dict(parentDir=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
 
@@ -2574,6 +2657,8 @@ class TEI:
                 + tweakTrans(
                     sourceText,
                     wordAsSlot,
+                    parentEdges,
+                    siblingEdges,
                     tokenBased,
                     sectionModel,
                     sectionProperties,
@@ -2630,9 +2715,9 @@ class TEI:
             console(f"App updating {extraRep} ...")
 
         for (name, info) in genTasks.items():
-            parent = info["parent"]
+            parentDir = info["parentDir"]
             (sourceBit, targetBit) = (
-                parent if type(parent) is tuple else (parent, parent)
+                parentDir if type(parentDir) is tuple else (parentDir, parentDir)
             )
             file = info[FILE]
             fileParts = file.rsplit(".", 1)

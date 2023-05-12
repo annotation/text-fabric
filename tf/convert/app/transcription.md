@@ -19,10 +19,17 @@ In this dataset, **«slot»s** fullfill the role of slots.
 
 ## How TEI maps to TF
 
-*   Text-Fabric «slot» nodes correspond to **«slotf»** in TEI element content;
-*   Text-Fabric node types correspond to TEI element names (tags);
-*   Text-Fabric non-«slot» nodes correspond to TEI elements in the source;
+*   Text-Fabric *«slot» nodes* correspond to **«slotf»** in TEI element content;
+*   Text-Fabric *node types* correspond to TEI *element names (tags)*;
+*   Text-Fabric *non-«slot» nodes* correspond to TEI *elements in the source*;
 *   Text-Fabric *features* correspond to TEI *attributes*;
+*   Text-Fabric *edges* correspond to *relationships* between TEI elements;
+«beginParentYes»
+    *   `parent` edges correspond to TEI elements and their parent elements 
+«endParentYes»
+«beginSiblingYes»
+    *   `sibling` edges correspond to TEI elements and their sibling elements 
+«endSiblingYes»
 *   Here are the [TEI elements and attributes](elements.md) used in this corpus.
 
 «token generation»
@@ -169,6 +176,33 @@ feature | description
 
 «endSlotchar»
 «endTokenNo»
+
+## Edge features
+
+feature | description
+--- | ---«beginParentYes»
+`parent` | from a node to the node that corresponds to the parent element
+«endParentYes»«beginSiblingYes»
+`sibling` | from a node to all nodes that correspond to a preceding sibling element; the edges are labelled with the distance between the siblings; adjacent siblings have distance 1
+«endSiblingYes»
+
+Note that edges can be traversed in both directions, see the
+[docs](https://annotation.github.io/text-fabric/tf/core/edgefeature.html).
+
+«beginParentYes»
+
+* `E.parent.f(node)` finds the parent of a node
+* `E.parent.t(node)` finds the children of a node
+
+«endParentYes»
+
+«beginSiblingYes»
+
+* `E.sibling.f(node)` finds the *preceding* siblings of a node
+* `E.sibling.t(node)` finds the *succeeding* siblings of a node
+* `E.sibling.b(node)` finds *all* siblings of a node
+
+«endSiblingYes»
 
 ## Sectioning
 

@@ -136,7 +136,16 @@ def checkSectionModel(sectionModel):
     return dict(model=model, properties=properties)
 
 
-def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties, rendDesc):
+def tweakTrans(
+    template,
+    wordAsSlot,
+    parentEdges,
+    siblingEdges,
+    tokenBased,
+    sectionModel,
+    sectionProperties,
+    rendDesc,
+):
     if wordAsSlot:
         slot = WORD
         slotc = "Word"
@@ -147,6 +156,17 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
         slot = CHAR
         slotf = "characters"
         xslot = "`char` and `word`"
+
+    if parentEdges:
+        hasParent = "Yes"
+    else:
+        hasParent = "No"
+
+    if siblingEdges:
+        hasSibling = "Yes"
+    else:
+        hasSibling = "No"
+
     if tokenBased:
         slot = TOKEN
         slotc = "Token"
@@ -196,6 +216,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
     slotRemoveRe = re.compile(r"«beginSlot([^»]+)».*?«endSlot\1»", re.S)
     tokenKeepRe = re.compile(rf"«(?:begin|end)Token{hasToken}»")
     tokenRemoveRe = re.compile(r"«beginToken([^»]+)».*?«endToken\1»", re.S)
+    parentKeepRe = re.compile(rf"«(?:begin|end)Parent{hasParent}»")
+    parentRemoveRe = re.compile(r"«beginParent([^»]+)».*?«endParent\1»", re.S)
+    siblingKeepRe = re.compile(rf"«(?:begin|end)Sibling{hasSibling}»")
+    siblingRemoveRe = re.compile(r"«beginSibling([^»]+)».*?«endSibling\1»", re.S)
 
     skipVars = re.compile(r"«[^»]+»")
 
@@ -225,6 +249,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
             .replace("«chunk»", chunkSection)
         )
 
+    text = parentKeepRe.sub("", text)
+    text = parentRemoveRe.sub("", text)
+    text = siblingKeepRe.sub("", text)
+    text = siblingRemoveRe.sub("", text)
     text = tokenKeepRe.sub("", text)
     text = tokenRemoveRe.sub("", text)
     text = modelKeepRe.sub("", text)

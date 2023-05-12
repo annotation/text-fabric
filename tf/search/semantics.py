@@ -447,7 +447,7 @@ def _validation(searchExe):
     if len(hasValues):
         for (fName, wrongs) in sorted(hasValues.items()):
             searchExe.badSemantics.append(
-                (None, f'Feature "{fName}" has cannot have values:')
+                (None, f'Feature "{fName}" cannot have values:')
             )
             for (val, qs) in sorted(wrongs.items()):
                 searchExe.badSemantics.append(

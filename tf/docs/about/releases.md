@@ -10,6 +10,20 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.14
+
+2023-05-12
+
+*   TEI to TF conversion: added the options to generate edges for
+    parent and sibling relations between XML elements
+*   In `tf.dataset.modify`, when replacing a slot type by an other node type,
+    we did nothing about the edges that involved the old slots, except of course
+    the `oslots` edge.
+    Now we transfer *all* edges that involve old slots to their corresponding new slots.
+*   As a consequence, when you use the TEI converter with parent/sibling generation
+    switched on, edges that have been generated in the conversion process will
+    not be lost when you transform the TF further, e.g. by adding tokens and sentences.
+
 ### 11.4.13
 
 2023-05-11
