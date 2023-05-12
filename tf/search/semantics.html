@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/search/semantics.py#L1-L513" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/search/semantics.py#L1-L513" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Semantics of search templates
@@ -478,7 +478,7 @@ def _validation(searchExe):
     if len(hasValues):
         for (fName, wrongs) in sorted(hasValues.items()):
             searchExe.badSemantics.append(
-                (None, f&#39;Feature &#34;{fName}&#34; has cannot have values:&#39;)
+                (None, f&#39;Feature &#34;{fName}&#34; cannot have values:&#39;)
             )
             for (val, qs) in sorted(wrongs.items()):
                 searchExe.badSemantics.append(
@@ -559,7 +559,7 @@ def _validation(searchExe):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/search/semantics.py#L14-L41" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/search/semantics.py#L14-L41" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def semantics(searchExe):
     if not searchExe.good:

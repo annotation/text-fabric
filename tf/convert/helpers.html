@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L1-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/helpers.py#L1-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -166,7 +166,16 @@ def checkSectionModel(sectionModel):
     return dict(model=model, properties=properties)
 
 
-def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties, rendDesc):
+def tweakTrans(
+    template,
+    wordAsSlot,
+    parentEdges,
+    siblingEdges,
+    tokenBased,
+    sectionModel,
+    sectionProperties,
+    rendDesc,
+):
     if wordAsSlot:
         slot = WORD
         slotc = &#34;Word&#34;
@@ -177,6 +186,17 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
         slot = CHAR
         slotf = &#34;characters&#34;
         xslot = &#34;`char` and `word`&#34;
+
+    if parentEdges:
+        hasParent = &#34;Yes&#34;
+    else:
+        hasParent = &#34;No&#34;
+
+    if siblingEdges:
+        hasSibling = &#34;Yes&#34;
+    else:
+        hasSibling = &#34;No&#34;
+
     if tokenBased:
         slot = TOKEN
         slotc = &#34;Token&#34;
@@ -226,6 +246,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
     slotRemoveRe = re.compile(r&#34;«beginSlot([^»]+)».*?«endSlot\1»&#34;, re.S)
     tokenKeepRe = re.compile(rf&#34;«(?:begin|end)Token{hasToken}»&#34;)
     tokenRemoveRe = re.compile(r&#34;«beginToken([^»]+)».*?«endToken\1»&#34;, re.S)
+    parentKeepRe = re.compile(rf&#34;«(?:begin|end)Parent{hasParent}»&#34;)
+    parentRemoveRe = re.compile(r&#34;«beginParent([^»]+)».*?«endParent\1»&#34;, re.S)
+    siblingKeepRe = re.compile(rf&#34;«(?:begin|end)Sibling{hasSibling}»&#34;)
+    siblingRemoveRe = re.compile(r&#34;«beginSibling([^»]+)».*?«endSibling\1»&#34;, re.S)
 
     skipVars = re.compile(r&#34;«[^»]+»&#34;)
 
@@ -255,6 +279,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
             .replace(&#34;«chunk»&#34;, chunkSection)
         )
 
+    text = parentKeepRe.sub(&#34;&#34;, text)
+    text = parentRemoveRe.sub(&#34;&#34;, text)
+    text = siblingKeepRe.sub(&#34;&#34;, text)
+    text = siblingRemoveRe.sub(&#34;&#34;, text)
     text = tokenKeepRe.sub(&#34;&#34;, text)
     text = tokenRemoveRe.sub(&#34;&#34;, text)
     text = modelKeepRe.sub(&#34;&#34;, text)
@@ -281,7 +309,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L79-L136" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/helpers.py#L79-L136" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkSectionModel(sectionModel):
     if sectionModel is None:
@@ -351,7 +379,7 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L37-L76" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/helpers.py#L37-L76" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -396,16 +424,25 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
 </details>
 </dd>
 <dt id="tf.convert.helpers.tweakTrans"><code class="name flex">
-<span>def <span class="ident">tweakTrans</span></span>(<span>template, wordAsSlot, tokenBased, sectionModel, sectionProperties, rendDesc)</span>
+<span>def <span class="ident">tweakTrans</span></span>(<span>template, wordAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/helpers.py#L139-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/helpers.py#L139-L264" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties, rendDesc):
+<pre><code class="python">def tweakTrans(
+    template,
+    wordAsSlot,
+    parentEdges,
+    siblingEdges,
+    tokenBased,
+    sectionModel,
+    sectionProperties,
+    rendDesc,
+):
     if wordAsSlot:
         slot = WORD
         slotc = &#34;Word&#34;
@@ -416,6 +453,17 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
         slot = CHAR
         slotf = &#34;characters&#34;
         xslot = &#34;`char` and `word`&#34;
+
+    if parentEdges:
+        hasParent = &#34;Yes&#34;
+    else:
+        hasParent = &#34;No&#34;
+
+    if siblingEdges:
+        hasSibling = &#34;Yes&#34;
+    else:
+        hasSibling = &#34;No&#34;
+
     if tokenBased:
         slot = TOKEN
         slotc = &#34;Token&#34;
@@ -465,6 +513,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
     slotRemoveRe = re.compile(r&#34;«beginSlot([^»]+)».*?«endSlot\1»&#34;, re.S)
     tokenKeepRe = re.compile(rf&#34;«(?:begin|end)Token{hasToken}»&#34;)
     tokenRemoveRe = re.compile(r&#34;«beginToken([^»]+)».*?«endToken\1»&#34;, re.S)
+    parentKeepRe = re.compile(rf&#34;«(?:begin|end)Parent{hasParent}»&#34;)
+    parentRemoveRe = re.compile(r&#34;«beginParent([^»]+)».*?«endParent\1»&#34;, re.S)
+    siblingKeepRe = re.compile(rf&#34;«(?:begin|end)Sibling{hasSibling}»&#34;)
+    siblingRemoveRe = re.compile(r&#34;«beginSibling([^»]+)».*?«endSibling\1»&#34;, re.S)
 
     skipVars = re.compile(r&#34;«[^»]+»&#34;)
 
@@ -494,6 +546,10 @@ def tweakTrans(template, wordAsSlot, tokenBased, sectionModel, sectionProperties
             .replace(&#34;«chunk»&#34;, chunkSection)
         )
 
+    text = parentKeepRe.sub(&#34;&#34;, text)
+    text = parentRemoveRe.sub(&#34;&#34;, text)
+    text = siblingKeepRe.sub(&#34;&#34;, text)
+    text = siblingRemoveRe.sub(&#34;&#34;, text)
     text = tokenKeepRe.sub(&#34;&#34;, text)
     text = tokenRemoveRe.sub(&#34;&#34;, text)
     text = modelKeepRe.sub(&#34;&#34;, text)

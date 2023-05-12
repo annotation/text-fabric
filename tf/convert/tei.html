@@ -74,6 +74,27 @@ receive NLP additions later on. That version will then lose the <code>pre</code>
 <p>boolean, optional <code>False</code></p>
 <p>Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.</p>
+<h3 id="parentedges">parentEdges</h3>
+<p>boolean, optional <code>True</code></p>
+<p>Whether to create edges between nodes that correspond to XML elements and their parents.</p>
+<h3 id="siblingedges">siblingEdges</h3>
+<p>boolean, optional <code>False</code></p>
+<p>Whether to create edges between nodes that correspond to XML elements and siblings.
+Edges will be created between each sibling and its <em>preceding</em> siblings.
+If you use these edges in the binary way, you can also find the following siblings.
+The edges are labelled with the distance between the siblings, adjacent siblings
+get distance 1.</p>
+<div class="admonition caution">
+<p class="admonition-title">Overwhelming space requirement</p>
+<p>If the corpus is divided into relatively few elements that each have very many
+direct children, the number of sibling edges is comparable to the size of the
+corpus squared. That means that the TF dataset will consist for 50-99% of
+sibling edges!
+An example is <a href="https://github.com/ETCBC/nestle1904">ETCBC/nestle1904</a> (Greek New
+Testament) where each book element has all of its sentences as direct children.
+In that dataset, the siblings would occupy 40% of the size, and we have taken care
+not to produce sibling edges for sentences.</p>
+</div>
 <h3 id="sectionmodel">sectionModel</h3>
 <p>dict, optional <code>{}</code></p>
 <p>If not passed, or an empty dict, section model I is assumed.
@@ -151,7 +172,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1-L2842" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L1-L2927" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -223,6 +244,32 @@ boolean, optional `False`
 
 Whether to take words as the basic entities (slots).
 If not, the characters are taken as basic entities.
+
+### parentEdges
+
+boolean, optional `True`
+
+Whether to create edges between nodes that correspond to XML elements and their parents.
+
+### siblingEdges
+
+boolean, optional `False`
+
+Whether to create edges between nodes that correspond to XML elements and siblings.
+Edges will be created between each sibling and its *preceding* siblings.
+If you use these edges in the binary way, you can also find the following siblings.
+The edges are labelled with the distance between the siblings, adjacent siblings
+get distance 1.
+
+!!! caution &#34;Overwhelming space requirement&#34;
+    If the corpus is divided into relatively few elements that each have very many
+    direct children, the number of sibling edges is comparable to the size of the
+    corpus squared. That means that the TF dataset will consist for 50-99% of
+    sibling edges!
+    An example is [ETCBC/nestle1904](https://github.com/ETCBC/nestle1904) (Greek New
+    Testament) where each book element has all of its sentences as direct children.
+    In that dataset, the siblings would occupy 40% of the size, and we have taken care
+    not to produce sibling edges for sentences.
 
 ### sectionModel
 
@@ -352,6 +399,7 @@ from .helpers import (
     ZWSP,
     XNEST,
     TNEST,
+    TSIB,
     WORD,
     CHAR,
 )
@@ -781,6 +829,8 @@ class TEI:
         schema = settings.get(&#34;schema&#34;, None)
         prelim = settings.get(&#34;prelim&#34;, True)
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        parentEdges = settings.get(&#34;parentEdges&#34;, True)
+        siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
 
         sectionModel = checkSectionModel(sectionModel)
@@ -794,6 +844,8 @@ class TEI:
         self.schema = schema
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
+        self.parentEdges = parentEdges
+        self.siblingEdges = siblingEdges
         self.sectionModel = sectionModel[&#34;model&#34;]
         self.sectionProperties = sectionProperties
 
@@ -1493,6 +1545,8 @@ class TEI:
         verbose = self.verbose
         teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
         transform = self.transform
@@ -1609,14 +1663,42 @@ class TEI:
                 An lxml element node.
             &#34;&#34;&#34;
             tag = etree.QName(xnode.tag).localname
+
             cur[XNEST].append(tag)
 
-            beforeChildren(cv, cur, xnode, tag)
+            curNode = beforeChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if parentEdges:
+                    if len(cur[TNEST]):
+                        parentNode = cur[TNEST][-1]
+                        cv.edge(curNode, parentNode, parent=None)
+
+                cur[TNEST].append(curNode)
+
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        siblings = cur[TSIB][-1]
+
+                        nSiblings = len(siblings)
+                        for (i, sib) in enumerate(siblings):
+                            cv.edge(sib, curNode, sibling=nSiblings - i)
+                        siblings.append(curNode)
+
+                    cur[TSIB].append([])
 
             for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
             afterChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if len(cur[TNEST]):
+                    cur[TNEST].pop()
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        cur[TSIB].pop()
+
             cur[XNEST].pop()
             afterTag(cv, cur, xnode, tag)
 
@@ -2099,13 +2181,14 @@ class TEI:
                 cur[&#34;inNote&#34;] = True
                 finishWord(cv, cur, None, False)
 
+            curNode = None
+
             if tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
                         cv.link(curNode, [cur[WORD][1]])
-                cur[TNEST].append(curNode)
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -2127,6 +2210,8 @@ class TEI:
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
+
+            return curNode
 
         def afterChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -2192,7 +2277,6 @@ class TEI:
                             else:
                                 cv.link(prevChapter, lastSlot)
 
-                cur[TNEST].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -2310,6 +2394,7 @@ class TEI:
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
+                            cur[TSIB] = []
                             cur[&#34;chunkNum&#34;] = 0
                             cur[&#34;prevChunk&#34;] = None
                             cur[&#34;danglingSlots&#34;] = set()
@@ -2343,6 +2428,7 @@ class TEI:
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
+                    cur[TSIB] = []
                     cur[&#34;chapterNum&#34;] = 0
                     cur[&#34;chunkPNum&#34;] = 0
                     cur[&#34;chunkONum&#34;] = 0
@@ -2416,6 +2502,8 @@ class TEI:
 
         verbose = self.verbose
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
@@ -2437,6 +2525,9 @@ class TEI:
             &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, chunkSection}
+        if siblingEdges:
+            intFeatures.add(&#34;sibling&#34;)
+
         featureMeta = dict(
             str=dict(description=&#34;the text of a word&#34;),
             after=dict(description=&#34;the text after a word till the next word&#34;),
@@ -2454,6 +2545,17 @@ class TEI:
 
         if not wordAsSlot:
             featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
+        if parentEdges:
+            featureMeta[&#34;parent&#34;] = dict(
+                description=(&#34;edge between a node and its parent node&#34;)
+            )
+        if siblingEdges:
+            featureMeta[&#34;sibling&#34;] = dict(
+                description=(
+                    &#34;edge between a node and its preceding sibling nodes; &#34;
+                    &#34;labelled with the distance between them&#34;
+                )
+            )
         if sectionModel == &#34;II&#34;:
             chapterSection = self.chapterSection
             featureMeta[chapterSection] = dict(description=f&#34;name of {chapterSection}&#34;)
@@ -2579,13 +2681,15 @@ class TEI:
         refDir = self.refDir
         myDir = self.myDir
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
 
-        # key | parent dir | file | template based
+        # key | parentDir | file | template based
 
-        # if parent dir is a tuple, the first part is the parent of the source
-        # end the second part is the parent of the destination
+        # if parentDir is a tuple, the first part is the parentDir of the source
+        # end the second part is the parentDir of the destination
 
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
@@ -2596,7 +2700,7 @@ class TEI:
             (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
         )
         genTasks = {
-            s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
+            s[0]: dict(parentDir=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
 
@@ -2729,6 +2833,8 @@ class TEI:
                 + tweakTrans(
                     sourceText,
                     wordAsSlot,
+                    parentEdges,
+                    siblingEdges,
                     tokenBased,
                     sectionModel,
                     sectionProperties,
@@ -2785,9 +2891,9 @@ class TEI:
             console(f&#34;App updating {extraRep} ...&#34;)
 
         for (name, info) in genTasks.items():
-            parent = info[&#34;parent&#34;]
+            parentDir = info[&#34;parentDir&#34;]
             (sourceBit, targetBit) = (
-                parent if type(parent) is tuple else (parent, parent)
+                parentDir if type(parentDir) is tuple else (parentDir, parentDir)
             )
             file = info[FILE]
             fileParts = file.rsplit(&#34;.&#34;, 1)
@@ -3012,7 +3118,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2828-L2838" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2913-L2923" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -3035,7 +3141,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L416-L429" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L443-L456" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3184,7 +3290,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L432-L2825" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L459-L2910" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3383,6 +3489,8 @@ relevant tf version:</p>
         schema = settings.get(&#34;schema&#34;, None)
         prelim = settings.get(&#34;prelim&#34;, True)
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
+        parentEdges = settings.get(&#34;parentEdges&#34;, True)
+        siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
 
         sectionModel = checkSectionModel(sectionModel)
@@ -3396,6 +3504,8 @@ relevant tf version:</p>
         self.schema = schema
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
+        self.parentEdges = parentEdges
+        self.siblingEdges = siblingEdges
         self.sectionModel = sectionModel[&#34;model&#34;]
         self.sectionProperties = sectionProperties
 
@@ -4095,6 +4205,8 @@ relevant tf version:</p>
         verbose = self.verbose
         teiPath = self.teiPath
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
         transform = self.transform
@@ -4211,14 +4323,42 @@ relevant tf version:</p>
                 An lxml element node.
             &#34;&#34;&#34;
             tag = etree.QName(xnode.tag).localname
+
             cur[XNEST].append(tag)
 
-            beforeChildren(cv, cur, xnode, tag)
+            curNode = beforeChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if parentEdges:
+                    if len(cur[TNEST]):
+                        parentNode = cur[TNEST][-1]
+                        cv.edge(curNode, parentNode, parent=None)
+
+                cur[TNEST].append(curNode)
+
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        siblings = cur[TSIB][-1]
+
+                        nSiblings = len(siblings)
+                        for (i, sib) in enumerate(siblings):
+                            cv.edge(sib, curNode, sibling=nSiblings - i)
+                        siblings.append(curNode)
+
+                    cur[TSIB].append([])
 
             for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
             afterChildren(cv, cur, xnode, tag)
+
+            if curNode is not None:
+                if len(cur[TNEST]):
+                    cur[TNEST].pop()
+                if siblingEdges:
+                    if len(cur[TSIB]):
+                        cur[TSIB].pop()
+
             cur[XNEST].pop()
             afterTag(cv, cur, xnode, tag)
 
@@ -4701,13 +4841,14 @@ relevant tf version:</p>
                 cur[&#34;inNote&#34;] = True
                 finishWord(cv, cur, None, False)
 
+            curNode = None
+
             if tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
                     if cur[WORD]:
                         cv.link(curNode, [cur[WORD][1]])
-                cur[TNEST].append(curNode)
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if &#34;rend&#34; in atts:
@@ -4729,6 +4870,8 @@ relevant tf version:</p>
                 else:
                     for ch in textMaterial:
                         addSlot(cv, cur, ch)
+
+            return curNode
 
         def afterChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -4794,7 +4937,6 @@ relevant tf version:</p>
                             else:
                                 cv.link(prevChapter, lastSlot)
 
-                cur[TNEST].pop()
                 cv.terminate(curNode)
 
             if isChnk:
@@ -4912,6 +5054,7 @@ relevant tf version:</p>
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
+                            cur[TSIB] = []
                             cur[&#34;chunkNum&#34;] = 0
                             cur[&#34;prevChunk&#34;] = None
                             cur[&#34;danglingSlots&#34;] = set()
@@ -4945,6 +5088,7 @@ relevant tf version:</p>
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
+                    cur[TSIB] = []
                     cur[&#34;chapterNum&#34;] = 0
                     cur[&#34;chunkPNum&#34;] = 0
                     cur[&#34;chunkONum&#34;] = 0
@@ -5018,6 +5162,8 @@ relevant tf version:</p>
 
         verbose = self.verbose
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
@@ -5039,6 +5185,9 @@ relevant tf version:</p>
             &#34;sectionTypes&#34;: sectionTypes,
         }
         intFeatures = {&#34;empty&#34;, chunkSection}
+        if siblingEdges:
+            intFeatures.add(&#34;sibling&#34;)
+
         featureMeta = dict(
             str=dict(description=&#34;the text of a word&#34;),
             after=dict(description=&#34;the text after a word till the next word&#34;),
@@ -5056,6 +5205,17 @@ relevant tf version:</p>
 
         if not wordAsSlot:
             featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
+        if parentEdges:
+            featureMeta[&#34;parent&#34;] = dict(
+                description=(&#34;edge between a node and its parent node&#34;)
+            )
+        if siblingEdges:
+            featureMeta[&#34;sibling&#34;] = dict(
+                description=(
+                    &#34;edge between a node and its preceding sibling nodes; &#34;
+                    &#34;labelled with the distance between them&#34;
+                )
+            )
         if sectionModel == &#34;II&#34;:
             chapterSection = self.chapterSection
             featureMeta[chapterSection] = dict(description=f&#34;name of {chapterSection}&#34;)
@@ -5181,13 +5341,15 @@ relevant tf version:</p>
         refDir = self.refDir
         myDir = self.myDir
         wordAsSlot = self.wordAsSlot
+        parentEdges = self.parentEdges
+        siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
 
-        # key | parent dir | file | template based
+        # key | parentDir | file | template based
 
-        # if parent dir is a tuple, the first part is the parent of the source
-        # end the second part is the parent of the destination
+        # if parentDir is a tuple, the first part is the parentDir of the source
+        # end the second part is the parentDir of the destination
 
         itemSpecs = (
             (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
@@ -5198,7 +5360,7 @@ relevant tf version:</p>
             (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
         )
         genTasks = {
-            s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
+            s[0]: dict(parentDir=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
         }
         cssInfo = makeCssInfo()
 
@@ -5331,6 +5493,8 @@ relevant tf version:</p>
                 + tweakTrans(
                     sourceText,
                     wordAsSlot,
+                    parentEdges,
+                    siblingEdges,
                     tokenBased,
                     sectionModel,
                     sectionProperties,
@@ -5387,9 +5551,9 @@ relevant tf version:</p>
             console(f&#34;App updating {extraRep} ...&#34;)
 
         for (name, info) in genTasks.items():
-            parent = info[&#34;parent&#34;]
+            parentDir = info[&#34;parentDir&#34;]
             (sourceBit, targetBit) = (
-                parent if type(parent) is tuple else (parent, parent)
+                parentDir if type(parentDir) is tuple else (parentDir, parentDir)
             )
             file = info[FILE]
             fileParts = file.rsplit(&#34;.&#34;, 1)
@@ -5597,7 +5761,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L784-L800" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L815-L831" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5658,7 +5822,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2385-L2724" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2466-L2809" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -5702,13 +5866,15 @@ that code between automatic generation of files.</p>
     refDir = self.refDir
     myDir = self.myDir
     wordAsSlot = self.wordAsSlot
+    parentEdges = self.parentEdges
+    siblingEdges = self.siblingEdges
     sectionModel = self.sectionModel
     sectionProperties = self.sectionProperties
 
-    # key | parent dir | file | template based
+    # key | parentDir | file | template based
 
-    # if parent dir is a tuple, the first part is the parent of the source
-    # end the second part is the parent of the destination
+    # if parentDir is a tuple, the first part is the parentDir of the source
+    # end the second part is the parentDir of the destination
 
     itemSpecs = (
         (&#34;about&#34;, &#34;docs&#34;, &#34;about.md&#34;, False),
@@ -5719,7 +5885,7 @@ that code between automatic generation of files.</p>
         (&#34;app&#34;, &#34;app&#34;, &#34;app.py&#34;, False),
     )
     genTasks = {
-        s[0]: dict(parent=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
+        s[0]: dict(parentDir=s[1], file=s[2], justCopy=s[3]) for s in itemSpecs
     }
     cssInfo = makeCssInfo()
 
@@ -5852,6 +6018,8 @@ that code between automatic generation of files.</p>
             + tweakTrans(
                 sourceText,
                 wordAsSlot,
+                parentEdges,
+                siblingEdges,
                 tokenBased,
                 sectionModel,
                 sectionProperties,
@@ -5908,9 +6076,9 @@ that code between automatic generation of files.</p>
         console(f&#34;App updating {extraRep} ...&#34;)
 
     for (name, info) in genTasks.items():
-        parent = info[&#34;parent&#34;]
+        parentDir = info[&#34;parentDir&#34;]
         (sourceBit, targetBit) = (
-            parent if type(parent) is tuple else (parent, parent)
+            parentDir if type(parentDir) is tuple else (parentDir, parentDir)
         )
         file = info[FILE]
         fileParts = file.rsplit(&#34;.&#34;, 1)
@@ -6018,7 +6186,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2728-L2761" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2813-L2846" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6083,7 +6251,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L917-L1261" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L948-L1292" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6446,7 +6614,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2249-L2337" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2314-L2418" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6463,6 +6631,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     verbose = self.verbose
     wordAsSlot = self.wordAsSlot
+    parentEdges = self.parentEdges
+    siblingEdges = self.siblingEdges
     sectionModel = self.sectionModel
     tfPath = self.tfPath
     teiPath = self.teiPath
@@ -6484,6 +6654,9 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         &#34;sectionTypes&#34;: sectionTypes,
     }
     intFeatures = {&#34;empty&#34;, chunkSection}
+    if siblingEdges:
+        intFeatures.add(&#34;sibling&#34;)
+
     featureMeta = dict(
         str=dict(description=&#34;the text of a word&#34;),
         after=dict(description=&#34;the text after a word till the next word&#34;),
@@ -6501,6 +6674,17 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     if not wordAsSlot:
         featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
+    if parentEdges:
+        featureMeta[&#34;parent&#34;] = dict(
+            description=(&#34;edge between a node and its parent node&#34;)
+        )
+    if siblingEdges:
+        featureMeta[&#34;sibling&#34;] = dict(
+            description=(
+                &#34;edge between a node and its preceding sibling nodes; &#34;
+                &#34;labelled with the distance between them&#34;
+            )
+        )
     if sectionModel == &#34;II&#34;:
         chapterSection = self.chapterSection
         featureMeta[chapterSection] = dict(description=f&#34;name of {chapterSection}&#34;)
@@ -6552,7 +6736,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1265-L1278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L1296-L1309" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6593,7 +6777,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L1282-L2247" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L1313-L2312" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -6654,6 +6838,8 @@ that has access to this data.</p>
     verbose = self.verbose
     teiPath = self.teiPath
     wordAsSlot = self.wordAsSlot
+    parentEdges = self.parentEdges
+    siblingEdges = self.siblingEdges
     featureMeta = self.featureMeta
     intFeatures = self.intFeatures
     transform = self.transform
@@ -6770,14 +6956,42 @@ that has access to this data.</p>
             An lxml element node.
         &#34;&#34;&#34;
         tag = etree.QName(xnode.tag).localname
+
         cur[XNEST].append(tag)
 
-        beforeChildren(cv, cur, xnode, tag)
+        curNode = beforeChildren(cv, cur, xnode, tag)
+
+        if curNode is not None:
+            if parentEdges:
+                if len(cur[TNEST]):
+                    parentNode = cur[TNEST][-1]
+                    cv.edge(curNode, parentNode, parent=None)
+
+            cur[TNEST].append(curNode)
+
+            if siblingEdges:
+                if len(cur[TSIB]):
+                    siblings = cur[TSIB][-1]
+
+                    nSiblings = len(siblings)
+                    for (i, sib) in enumerate(siblings):
+                        cv.edge(sib, curNode, sibling=nSiblings - i)
+                    siblings.append(curNode)
+
+                cur[TSIB].append([])
 
         for child in xnode.iterchildren(tag=etree.Element):
             walkNode(cv, cur, child)
 
         afterChildren(cv, cur, xnode, tag)
+
+        if curNode is not None:
+            if len(cur[TNEST]):
+                cur[TNEST].pop()
+            if siblingEdges:
+                if len(cur[TSIB]):
+                    cur[TSIB].pop()
+
         cur[XNEST].pop()
         afterTag(cv, cur, xnode, tag)
 
@@ -7260,13 +7474,14 @@ that has access to this data.</p>
             cur[&#34;inNote&#34;] = True
             finishWord(cv, cur, None, False)
 
+        curNode = None
+
         if tag not in PASS_THROUGH:
             cur[&#34;afterSpace&#34;] = False
             curNode = cv.node(tag)
             if wordAsSlot:
                 if cur[WORD]:
                     cv.link(curNode, [cur[WORD][1]])
-            cur[TNEST].append(curNode)
             if len(atts):
                 cv.feature(curNode, **atts)
                 if &#34;rend&#34; in atts:
@@ -7288,6 +7503,8 @@ that has access to this data.</p>
             else:
                 for ch in textMaterial:
                     addSlot(cv, cur, ch)
+
+        return curNode
 
     def afterChildren(cv, cur, xnode, tag):
         &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
@@ -7353,7 +7570,6 @@ that has access to this data.</p>
                         else:
                             cv.link(prevChapter, lastSlot)
 
-            cur[TNEST].pop()
             cv.terminate(curNode)
 
         if isChnk:
@@ -7471,6 +7687,7 @@ that has access to this data.</p>
                         cur[&#34;inNote&#34;] = False
                         cur[XNEST] = []
                         cur[TNEST] = []
+                        cur[TSIB] = []
                         cur[&#34;chunkNum&#34;] = 0
                         cur[&#34;prevChunk&#34;] = None
                         cur[&#34;danglingSlots&#34;] = set()
@@ -7504,6 +7721,7 @@ that has access to this data.</p>
                 cur[&#34;inNote&#34;] = False
                 cur[XNEST] = []
                 cur[TNEST] = []
+                cur[TSIB] = []
                 cur[&#34;chapterNum&#34;] = 0
                 cur[&#34;chunkPNum&#34;] = 0
                 cur[&#34;chunkONum&#34;] = 0
@@ -7587,7 +7805,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L821-L854" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L852-L885" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -7640,7 +7858,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L802-L819" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7683,7 +7901,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L856-L915" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L887-L946" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7767,7 +7985,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2339-L2381" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2420-L2462" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -7850,7 +8068,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/9536f3bf605bfe3eef17fa6261bf00f8c0cd9319/tf/convert/tei.py#L2763-L2825" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1953f2515c56aa07435faeb06b8af65e39074940/tf/convert/tei.py#L2848-L2910" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -7984,6 +8202,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#schema">schema</a></li>
 <li><a href="#prelim">prelim</a></li>
 <li><a href="#wordasslot">wordAsSlot</a></li>
+<li><a href="#parentedges">parentEdges</a></li>
+<li><a href="#siblingedges">siblingEdges</a></li>
 <li><a href="#sectionmodel">sectionModel</a></li>
 </ul>
 </li>
