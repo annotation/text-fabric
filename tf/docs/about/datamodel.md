@@ -18,6 +18,7 @@ A Culture Novel (Culture series)
 > ... of days that are no more,
 > but which run on like a warp
 > to which the future weaves its weft.
+>
 > -- **Alastair McIntosh**.
 [Poacher's Pilgrimage](https://www.waterstones.com/book/poachers-pilgrimage/alastair-mcintosh/9781780278131):
 Introduction to a Gaelic evening prayer
