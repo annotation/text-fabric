@@ -1,5 +1,7 @@
 # Text-Fabric Data Model
 
+---
+
 > Everything about us, everything around us, everything we know and can know of
 > is composed ultimately of patterns of nothing;
 > that’s the bottom line, the final truth.
@@ -10,6 +12,17 @@
 > -- **Iain M. Banks**.
 [Consider Phlebas](https://read.amazon.com/kp/kshare?asin=B002TXZRQI&id=NpPGzf_HT5aADabyiDDSIQ&reshareId=RZ91SGMZJPWK9S1Y4EZX&reshareChannel=system):
 A Culture Novel (Culture series)
+
+---
+
+> ... of days that are no more,
+> but which run on like a warp
+> to which the future weaves its weft.
+> -- **Alastair McIntosh**.
+[Poacher's Pilgrimage](https://www.waterstones.com/book/poachers-pilgrimage/alastair-mcintosh/9781780278131):
+Introduction to a Gaelic evening prayer
+
+---
 
 ## At a glance
 
