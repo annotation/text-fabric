@@ -21,6 +21,19 @@ CHAR = "char"
 TOKEN = "token"
 
 
+PAGE_MODELS = dict(
+    I=dict(),
+    II=dict(
+        element=(str, "div"),
+        attributes=(dict, {}),
+        pbAtTop=(bool, True),
+        nodeType=(str, "page"),
+    ),
+)
+
+
+PAGE_MODEL_DEFAULT = "I"
+
 SECTION_MODELS = dict(
     I=dict(levels=(list, [FOLDER, FILE, CHUNK])),
     II=dict(
@@ -32,6 +45,88 @@ SECTION_MODELS = dict(
 
 
 SECTION_MODEL_DEFAULT = "I"
+
+
+def checkModel(kind, thisModel):
+    modelDefault = PAGE_MODEL_DEFAULT if kind == "page" else SECTION_MODEL_DEFAULT
+    modelSpecs = PAGE_MODELS if kind == "page" else SECTION_MODELS
+
+    if thisModel is None:
+        model = modelDefault
+        console(f"WARNING: No {kind} model specified. Assuming model {model}.")
+        properties = {k: v[1] for (k, v) in modelSpecs[model].items()}
+        return dict(model=model, properties=properties)
+
+    if type(thisModel) is str:
+        if thisModel in modelSpecs:
+            thisModel = dict(model=thisModel)
+        else:
+            console(f"WARNING: unknown {kind} model: {thisModel}")
+            return False
+
+    elif type(thisModel) is not dict:
+        console(f"ERROR: {kind} model must be a dict. You passed a {type(thisModel)}")
+        return False
+
+    model = thisModel.get("model", None)
+    if model is None:
+        model = modelDefault
+        console(f"WARNING: No {kind} model specified. Assuming model {model}.")
+        thisModel["model"] = model
+    if model not in modelSpecs:
+        console(f"WARNING: unknown {kind} model: {thisModel}")
+        return False
+
+    properties = {k: v for (k, v) in thisModel.items() if k != "model"}
+    modelProperties = modelSpecs[model]
+
+    good = True
+    delKeys = []
+
+    for (k, v) in properties.items():
+        if k not in modelProperties:
+            console(f"WARNING: ignoring unknown {kind} model property {k}={v}")
+            delKeys.append(k)
+        elif type(v) is not modelProperties[k][0]:
+            console(
+                f"ERROR: {kind} property {k} should have type {modelProperties[k][0]}"
+                f" but {v} has type {type(v)}"
+            )
+            good = False
+    if good:
+        for k in delKeys:
+            del properties[k]
+
+    for (k, v) in modelProperties.items():
+        if k not in properties:
+            console(
+                f"WARNING: {kind} model property {k} not specified, "
+                f"taking default {v[1]}"
+            )
+            properties[k] = v[1]
+
+    if not good:
+        return False
+
+    return dict(model=model, properties=properties)
+
+
+def matchModel(properties, tag, atts):
+    if tag == properties["element"]:
+        criticalAtts = properties["attributes"]
+        match = True
+        for (k, cVal) in criticalAtts.items():
+            aVal = atts.get(k, None)
+
+            thisNoMatch = (
+                all(aVal != cV for cV in cVal)
+                if type(cVal) in {list, tuple, set}
+                else aVal != cVal
+            )
+            if thisNoMatch:
+                match = False
+                break
+        return match
 
 
 def setUp(kind):
@@ -74,66 +169,6 @@ def setUp(kind):
         verbose=("Produce less or more progress and reporting messages", -1, 3),
     )
     return (helpText, taskSpec, taskExcluded, paramSpec, flagSpec)
-
-
-def checkSectionModel(sectionModel):
-    if sectionModel is None:
-        model = SECTION_MODEL_DEFAULT
-        console(f"WARNING: No section model specified. Assuming model {model}.")
-        properties = {k: v[1] for (k, v) in SECTION_MODELS[model].items()}
-        return dict(model=model, properties=properties)
-
-    if type(sectionModel) is str:
-        if sectionModel in SECTION_MODELS:
-            sectionModel = dict(model=sectionModel)
-        else:
-            console(f"WARNING: unknown section model: {sectionModel}")
-            return False
-
-    elif type(sectionModel) is not dict:
-        console(
-            f"ERROR: Section model must be a dict. You passed a {type(sectionModel)}"
-        )
-        return False
-
-    model = sectionModel.get("model", None)
-    if model is None:
-        model = SECTION_MODEL_DEFAULT
-        console(f"WARNING: No section model specified. Assuming model {model}.")
-        sectionModel["model"] = model
-    if model not in SECTION_MODELS:
-        console(f"WARNING: unknown section model: {sectionModel}")
-        return False
-
-    properties = {k: v for (k, v) in sectionModel.items() if k != "model"}
-    modelProperties = SECTION_MODELS[model]
-
-    good = True
-    delKeys = []
-
-    for (k, v) in properties.items():
-        if k not in modelProperties:
-            console(f"WARNING: ignoring unknown model property {k}={v}")
-            delKeys.append(k)
-        elif type(v) is not modelProperties[k][0]:
-            console(
-                f"ERROR: property {k} should have type {modelProperties[k][0]}"
-                f" but {v} has type {type(v)}"
-            )
-            good = False
-    if good:
-        for k in delKeys:
-            del properties[k]
-
-    for (k, v) in modelProperties.items():
-        if k not in properties:
-            console(f"WARNING: model property {k} not specified, taking default {v[1]}")
-            properties[k] = v[1]
-
-    if not good:
-        return False
-
-    return dict(model=model, properties=properties)
 
 
 def tweakTrans(

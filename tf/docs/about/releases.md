@@ -10,6 +10,21 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.15 (upcoming)
+
+2023-05-??
+
+*   TEI to TF conversion: added options to replace empty `<pb>` elements by
+    `<page>` elements that contain the page material.
+    Several options are available, e.g. to indicate whether the `<pb>` occur at the
+    top of their pages or at their bottom. 
+*   In pretty displays of query results, the features in the query are shown if
+    the option `show query features` is on.
+    If also the option `show standard features` is off, the standard features
+    are hidden. But what if one of those standard features has also been
+    mentioned in a query? In this case, TF used to hide that feature, but from now on
+    we show it.
+
 ### 11.4.14
 
 2023-05-12

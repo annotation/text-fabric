@@ -173,6 +173,7 @@ class CV:
     N = "node"
     T = "terminate"
     R = "resume"
+    D = "delete"
     F = "feature"
     E = "edge"
 
@@ -379,6 +380,7 @@ class CV:
         self.nodeFeatures = {}
         self.edgeFeatures = {}
         self.slotKeys = {}
+        self.discardables = set()
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -811,6 +813,37 @@ class CV:
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
+
+    def delete(self, node):
+        """**deletes** a node.
+
+            cv.deletes(n)
+
+        The node `n` will be deleted from the set of nodes that will be created.
+        This `n` must be the result of a previous `cv.node()` action.
+        sLots cannot be deleted.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by the actions `node`.
+
+        Returns
+        -------
+        None
+        """
+
+        self.stats[self.D] += 1
+        if node is not None:
+            slotType = self.slotType
+            nType = node[0]
+
+            if nType == slotType:
+                errors = self.errors
+                errors["cannot delete a slot"].append(node[1])
+                return
+
+            self.discardables.add(node)
 
     def resume(self, node):
         """**resume** a node.
@@ -1254,7 +1287,7 @@ class CV:
 
         self.stats = {
             actionType: 0
-            for actionType in (self.S, self.N, self.T, self.R, self.F, self.E)
+            for actionType in (self.S, self.N, self.T, self.R, self.D, self.F, self.E)
         }
 
         director(self)
@@ -1303,23 +1336,35 @@ class CV:
         nodes = self.nodes
         slotType = self.slotType
         oslots = self.oslots
+        discardables = self.discardables
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
 
         unlinked = {}
+        nDeleted = 0
+
+        for (nType, seq) in discardables:
+            unlinked.setdefault(nType, set()).add(seq)
+            nDeleted += 1
+            if (nType, seq) in oslots:
+                del oslots[(nType, seq)]
 
         for nType in nodeTypes:
             if nType == slotType:
                 continue
             for seq in range(1, nodeTypes[nType] + 1):
                 if (nType, seq) not in oslots:
-                    unlinked.setdefault(nType, []).append(seq)
+                    unlinked.setdefault(nType, set()).add(seq)
 
         if unlinked:
-            info("Removing unlinked nodes ... ", force=silent != DEEP)
+            info(
+                "Removing unlinked (of which {nDeleted} deleted) nodes ... ",
+                force=silent != DEEP,
+            )
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
+                seqs = sorted(seqs)
                 theseNodes = nodes[nType]
                 lSeqs = len(seqs)
                 totalRemoved += lSeqs

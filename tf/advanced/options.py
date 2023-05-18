@@ -142,6 +142,8 @@ showMath: boolean, optional False
 standardFeatures: boolean, optional True
     **interface option**
     indicates whether pretty displays should show standard features and their values.
+    If a feature is both a standard feature and it is mentioned in the last query,
+    it will still be shown if `standardFeatures` is off and `queryFeatures` is on.
 
 withLabels: boolean, optional True
     **interface option**

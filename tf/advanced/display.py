@@ -897,7 +897,7 @@ def pretty(app, n, explain=False, _asString=False, **options):
         * `condenseType`: the standard container to display nodes in;
         * `full`: whether to display a reference to the material or the material itself;
         * `extraFeatures`: additional features to  display
-        * `tupleFeatures`: additional features to  display (primarily for `export`.
+        * `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters
     ----------

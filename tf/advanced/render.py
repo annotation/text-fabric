@@ -600,7 +600,7 @@ def _getFeatures(info, n, nType):
                         isExtra
                         and not queryFeatures
                         or not isExtra
-                        and not standardFeatures
+                        and (not standardFeatures and name not in dFeatures)
                     ):
                         continue
                     nameRep = "" if isBare else f'<span class="f">{name}=</span>'
