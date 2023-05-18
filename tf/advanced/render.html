@@ -40,7 +40,7 @@ directly from an attribute in the tree.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/advanced/render.py#L1-L616" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/advanced/render.py#L1-L616" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Render
@@ -644,7 +644,7 @@ def _getFeatures(info, n, nType):
                         isExtra
                         and not queryFeatures
                         or not isExtra
-                        and not standardFeatures
+                        and (not standardFeatures and name not in dFeatures)
                     ):
                         continue
                     nameRep = &#34;&#34; if isBare else f&#39;&lt;span class=&#34;f&#34;&gt;{name}=&lt;/span&gt;&#39;
@@ -677,7 +677,7 @@ chunks/fragments, the graphics only occurs on the first fragment.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/advanced/render.py#L30-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/advanced/render.py#L30-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def render(app, isPretty, n, _inTuple, _asString, explain, **options):
     &#34;&#34;&#34;Renders a node, in plain or pretty mode.

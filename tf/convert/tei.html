@@ -95,6 +95,49 @@ Testament) where each book element has all of its sentences as direct children.
 In that dataset, the siblings would occupy 40% of the size, and we have taken care
 not to produce sibling edges for sentences.</p>
 </div>
+<h3 id="pagemodel">pageModel</h3>
+<p>dict, optional <code>False</code></p>
+<p>If not passed, or an empty dict, page model I is assumed.
+A page model must be specified with the parameters relevant for the
+model:</p>
+<pre><code>dict(
+    model=&quot;I&quot;,
+)
+</code></pre>
+<p>(model I does not require any parameters)</p>
+<p>or</p>
+<pre><code>dict(
+    model=&quot;II&quot;,
+    element=&quot;div&quot;,
+    attributes=dict(type=[&quot;original&quot;, &quot;translation&quot;]),
+    pbAtTop=True,
+    nodeType=&quot;page&quot;,
+)
+</code></pre>
+<p>For model II, the default parameters are:</p>
+<pre><code>element=&quot;div&quot;,
+pbAtTop=True,
+nodeType=&quot;page&quot;,
+attributes={},
+</code></pre>
+<p>Model I is the default, and nothing special happens to the <code>&lt;pb&gt;</code> elements.</p>
+<p>In model II the <code>&lt;pb&gt;</code> elements translate to nodes of type <code>page</code>, which span
+content, whereas the original <code>pb</code> elements just mark positions.
+Instead of <code>page</code>, you can also specify another node type by the parameter <code>element</code>.</p>
+<p>We assume that the material that the <code>&lt;pb&gt;</code> elements divide up is the material
+that corresponds to their <code>&lt;div&gt;</code> parent element. Instead of <code>&lt;div&gt;</code>,
+you can also specify another element in the parameter <code>element</code>.
+If you want to restrict the parent elements of pages, you can do so by specifying
+attributes, like <code>type="original"</code>. Then only parents that carry those attributes
+will be chopped up into pages.
+You can specify multiple values for each attribute. Elements that carry one of these
+values are candidates for having their content divided into pages.</p>
+<p>We assume that the material to be divided starts with a <code>&lt;pb&gt;</code> and we translate
+it to a page element that we close either at the next <code>&lt;pb&gt;</code> or at the end of the <code>div</code>.</p>
+<p>But if you specify <code>pbAtTop=False</code>, we assume that the <code>&lt;pb&gt;</code> marks the end of
+the corresponding page element. We start the first page at the start of the enclosing
+element. If there is material at between the last <code>&lt;pb&gt;</code> til the end of the enclosing
+element, we generate an extra page node without features.</p>
 <h3 id="sectionmodel">sectionModel</h3>
 <p>dict, optional <code>{}</code></p>
 <p>If not passed, or an empty dict, section model I is assumed.
@@ -107,18 +150,29 @@ model:</p>
     attributes=dict(rend=&quot;h3&quot;),
 )
 </code></pre>
+<p>(model I does not require the <em>element</em> and <em>attribute</em> parameters)</p>
 <p>or</p>
 <pre><code>dict(
     model=&quot;I&quot;,
     levels=[&quot;folder&quot;, &quot;file&quot;, &quot;chunk&quot;],
 )
 </code></pre>
-<p>because model I does not require the <em>attribute</em> parameter.</p>
 <p>For model II, the default parameters are:</p>
 <pre><code>element=&quot;head&quot;
 levels=[&quot;chapter&quot;, &quot;chunk&quot;],
 attributes={}
 </code></pre>
+<p>In model I, there are three section levels in total.
+The corpus is divided in folders (section level 1), files (section level 2),
+and chunks within files. The parameter <code>levels</code> allows you to choose names for the
+node types of these section levels.</p>
+<p>In model II, there are 2 section levels in total.
+The corpus consists of a single file, and section nodes will be added
+for nodes at various levels, mainly outermost <code>&lt;div&gt;</code> and <code>&lt;p&gt;</code> elements and their
+siblings of other element types.
+The section heading for the second level is taken from elements in the neighbourhood,
+whose name is given in the parameter <code>element</code>, but only if they carry some attributes,
+which can be specified in the <code>attributes</code> parameter.</p>
 <h1 id="usage">Usage</h1>
 <h2 id="commandline">Commandline</h2>
 <pre><code class="language-sh">tf-fromtei tasks flags
@@ -172,7 +226,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L1-L2927" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L1-L3091" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -271,6 +325,67 @@ get distance 1.
     In that dataset, the siblings would occupy 40% of the size, and we have taken care
     not to produce sibling edges for sentences.
 
+### pageModel
+
+dict, optional `False`
+
+If not passed, or an empty dict, page model I is assumed.
+A page model must be specified with the parameters relevant for the
+model:
+
+```
+dict(
+    model=&#34;I&#34;,
+)
+```
+
+(model I does not require any parameters)
+
+or
+
+```
+dict(
+    model=&#34;II&#34;,
+    element=&#34;div&#34;,
+    attributes=dict(type=[&#34;original&#34;, &#34;translation&#34;]),
+    pbAtTop=True,
+    nodeType=&#34;page&#34;,
+)
+```
+
+For model II, the default parameters are:
+
+```
+element=&#34;div&#34;,
+pbAtTop=True,
+nodeType=&#34;page&#34;,
+attributes={},
+```
+
+Model I is the default, and nothing special happens to the `&lt;pb&gt;` elements.
+
+In model II the `&lt;pb&gt;` elements translate to nodes of type `page`, which span
+content, whereas the original `pb` elements just mark positions.
+Instead of `page`, you can also specify another node type by the parameter `element`.
+
+We assume that the material that the `&lt;pb&gt;` elements divide up is the material
+that corresponds to their `&lt;div&gt;` parent element. Instead of `&lt;div&gt;`,
+you can also specify another element in the parameter `element`.
+If you want to restrict the parent elements of pages, you can do so by specifying
+attributes, like `type=&#34;original&#34;`. Then only parents that carry those attributes
+will be chopped up into pages.
+You can specify multiple values for each attribute. Elements that carry one of these
+values are candidates for having their content divided into pages.
+
+We assume that the material to be divided starts with a `&lt;pb&gt;` and we translate
+it to a page element that we close either at the next `&lt;pb&gt;` or at the end of the `div`.
+
+But if you specify `pbAtTop=False`, we assume that the `&lt;pb&gt;` marks the end of
+the corresponding page element. We start the first page at the start of the enclosing
+element. If there is material at between the last `&lt;pb&gt;` til the end of the enclosing
+element, we generate an extra page node without features.
+
+
 ### sectionModel
 
 dict, optional `{}`
@@ -288,6 +403,8 @@ dict(
 )
 ```
 
+(model I does not require the *element* and *attribute* parameters)
+
 or
 
 ```
@@ -297,7 +414,6 @@ dict(
 )
 ```
 
-because model I does not require the *attribute* parameter.
 
 For model II, the default parameters are:
 
@@ -306,6 +422,20 @@ element=&#34;head&#34;
 levels=[&#34;chapter&#34;, &#34;chunk&#34;],
 attributes={}
 ```
+
+In model I, there are three section levels in total.
+The corpus is divided in folders (section level 1), files (section level 2),
+and chunks within files. The parameter `levels` allows you to choose names for the
+node types of these section levels.
+
+In model II, there are 2 section levels in total.
+The corpus consists of a single file, and section nodes will be added
+for nodes at various levels, mainly outermost `&lt;div&gt;` and `&lt;p&gt;` elements and their
+siblings of other element types.
+The section heading for the second level is taken from elements in the neighbourhood,
+whose name is given in the parameter `element`, but only if they carry some attributes,
+which can be specified in the `attributes` parameter.
+
 
 # Usage
 
@@ -390,7 +520,8 @@ from lxml import etree
 from .helpers import (
     setUp,
     tweakTrans,
-    checkSectionModel,
+    checkModel,
+    matchModel,
     FOLDER,
     FILE,
     CHAPTER,
@@ -405,11 +536,10 @@ from .helpers import (
 )
 from ..parameters import BRANCH_DEFAULT_NEW
 from ..fabric import Fabric
-from ..core.helpers import console, versionSort
+from ..core.helpers import console, versionSort, mergeDict
 from ..convert.walker import CV
 from ..core.timestamp import AUTO, DEEP, TERSE
 from ..core.command import readArgs
-from ..core.helpers import mergeDict
 from ..core.files import (
     abspath,
     expanduser as ex,
@@ -831,9 +961,17 @@ class TEI:
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
+        pageModel = settings.get(&#34;pageModel&#34;, {})
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
 
-        sectionModel = checkSectionModel(sectionModel)
+        pageModel = checkModel(&#34;page&#34;, pageModel)
+        if not pageModel:
+            self.good = False
+            return
+
+        pageProperties = pageModel.get(&#34;properties&#34;, None)
+
+        sectionModel = checkModel(&#34;section&#34;, sectionModel)
         if not sectionModel:
             self.good = False
             return
@@ -846,6 +984,8 @@ class TEI:
         self.wordAsSlot = wordAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
+        self.pageModel = pageModel[&#34;model&#34;]
+        self.pageProperties = pageProperties
         self.sectionModel = sectionModel[&#34;model&#34;]
         self.sectionProperties = sectionProperties
 
@@ -1327,7 +1467,7 @@ class TEI:
                     else:
                         extraInfo = &#34;&#34;
                     fh.write(
-                        f&#34;{nl}\t{extraInfo}{tagRep:&lt;18} &#34;
+                        f&#34;{nl}\t{extraInfo:&lt;7}{tagRep:&lt;18} &#34;
                         f&#34;{attRep:&lt;18} {amount:&gt;5}x {val}\n&#34;
                     )
                     infoLines += 1
@@ -2080,6 +2220,25 @@ class TEI:
                 cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
+        def endPage(cv, cur):
+            &#34;&#34;&#34;Ends a page node.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            &#34;&#34;&#34;
+            slots = cv.linked(cur[&#34;page&#34;])
+            empty = len(slots) == 0
+            if empty:
+                lastSlot = addEmpty(cv, cur)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(lastSlot, is_note=1)
+            cv.terminate(cur[&#34;page&#34;])
+
         def beforeChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
@@ -2095,10 +2254,30 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            pageModel = self.pageModel
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+            pageType = pageProperties[&#34;nodeType&#34;]
+            sectionProperties = self.sectionProperties
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
 
             atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+            isPageContainer = pageModel == &#34;II&#34; and matchModel(
+                pageProperties, tag, atts
+            )
+            inPage = cur[&#34;inPage&#34;]
+
+            if isPageContainer:
+                cur[&#34;inPage&#34;] = True
+
+                if pbAtTop:
+                    # material before the first pb in the container is not in a page
+                    pass
+                else:
+                    # the page starts with the container
+                    cur[&#34;page&#34;] = cv.node(pageType)
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -2142,23 +2321,14 @@ class TEI:
                     value = {chunkSection: cn}
                     cv.feature(cur[CHUNK], **value)
 
-                if tag == sectionProperties[&#34;element&#34;]:
-                    criticalAtts = sectionProperties[&#34;attributes&#34;]
-                    match = True
-                    for (k, v) in criticalAtts.items():
-                        if atts.get(k, None) != v:
-                            match = False
-                            break
-                    if match:
-                        heading = etree.tostring(
-                            xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
-                        ).replace(&#34;\n&#34;, &#34; &#34;)
-                        value = {chapterSection: heading}
-                        cv.feature(cur[CHAPTER], **value)
-                        chapterNum = cur[&#34;chapterNum&#34;]
-                        console(
-                            f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
-                        )
+                if matchModel(sectionProperties, tag, atts):
+                    heading = etree.tostring(
+                        xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                    ).replace(&#34;\n&#34;, &#34; &#34;)
+                    value = {chapterSection: heading}
+                    cv.feature(cur[CHAPTER], **value)
+                    chapterNum = cur[&#34;chapterNum&#34;]
+                    console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
             else:
                 chunkSection = self.chunkSection
 
@@ -2183,7 +2353,22 @@ class TEI:
 
             curNode = None
 
-            if tag not in PASS_THROUGH:
+            if inPage and tag == &#34;pb&#34;:
+                if pbAtTop:
+                    if cur[&#34;page&#34;] is not None:
+                        endPage(cv, cur)
+                    cur[&#34;page&#34;] = cv.node(pageType)
+                    if len(atts):
+                        cv.feature(cur[&#34;page&#34;], **atts)
+                else:
+                    if cur[&#34;page&#34;] is not None:
+                        if len(cur[&#34;pageAtts&#34;]):
+                            cv.feature(cur[&#34;page&#34;], **cur[&#34;pageAtts&#34;])
+                        endPage(cv, cur)
+                    cur[&#34;page&#34;] = cv.node(pageType)
+                    cur[&#34;pageAtts&#34;] = atts
+
+            elif tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
@@ -2231,13 +2416,25 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            pageModel = self.pageModel
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
             sectionModel = self.sectionModel
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
 
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+            isPageContainer = pageModel == &#34;II&#34; and matchModel(
+                pageProperties, tag, atts
+            )
+            inPage = cur[&#34;inPage&#34;]
+
             hasFinishedWord = False
 
-            if tag not in PASS_THROUGH:
+            if inPage and tag == &#34;pb&#34;:
+                pass
+            elif tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -2288,6 +2485,16 @@ class TEI:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, True)
                     cv.terminate(cur[CHAPTER])
+            if isPageContainer:
+                if pbAtTop:
+                    # the page ends with the container
+                    if cur[&#34;page&#34;] is not None:
+                        endPage(cv, cur)
+                else:
+                    # material after the last pb is not in a page
+                    if cur[&#34;page&#34;] is not None:
+                        cv.delete(cur[&#34;page&#34;])
+                cur[&#34;inPage&#34;] = False
 
         def afterTag(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -2391,6 +2598,9 @@ class TEI:
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
                             cur[&#34;inHeader&#34;] = False
+                            cur[&#34;inPage&#34;] = False
+                            cur[&#34;page&#34;] = None
+                            cur[&#34;pageAtts&#34;] = None
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
@@ -2425,6 +2635,9 @@ class TEI:
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
                     cur[&#34;inHeader&#34;] = False
+                    cur[&#34;inPage&#34;] = False
+                    cur[&#34;page&#34;] = None
+                    cur[&#34;pageAtts&#34;] = None
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
@@ -2504,6 +2717,9 @@ class TEI:
         wordAsSlot = self.wordAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
+        pageModel = self.pageModel
+        pageProperties = self.pageProperties
+        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
@@ -2512,6 +2728,8 @@ class TEI:
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+            pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
+            console(f&#34;Page model {pageModel} with {pbRep}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -3118,7 +3336,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2913-L2923" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L3077-L3087" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -3141,7 +3359,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L443-L456" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L519-L532" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3290,7 +3508,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L459-L2910" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L535-L3074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -3491,9 +3709,17 @@ relevant tf version:</p>
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
+        pageModel = settings.get(&#34;pageModel&#34;, {})
         sectionModel = settings.get(&#34;sectionModel&#34;, {})
 
-        sectionModel = checkSectionModel(sectionModel)
+        pageModel = checkModel(&#34;page&#34;, pageModel)
+        if not pageModel:
+            self.good = False
+            return
+
+        pageProperties = pageModel.get(&#34;properties&#34;, None)
+
+        sectionModel = checkModel(&#34;section&#34;, sectionModel)
         if not sectionModel:
             self.good = False
             return
@@ -3506,6 +3732,8 @@ relevant tf version:</p>
         self.wordAsSlot = wordAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
+        self.pageModel = pageModel[&#34;model&#34;]
+        self.pageProperties = pageProperties
         self.sectionModel = sectionModel[&#34;model&#34;]
         self.sectionProperties = sectionProperties
 
@@ -3987,7 +4215,7 @@ relevant tf version:</p>
                     else:
                         extraInfo = &#34;&#34;
                     fh.write(
-                        f&#34;{nl}\t{extraInfo}{tagRep:&lt;18} &#34;
+                        f&#34;{nl}\t{extraInfo:&lt;7}{tagRep:&lt;18} &#34;
                         f&#34;{attRep:&lt;18} {amount:&gt;5}x {val}\n&#34;
                     )
                     infoLines += 1
@@ -4740,6 +4968,25 @@ relevant tf version:</p>
                 cv.feature(s, ch=spaceChar, extraspace=1)
                 addSlotFeatures(cv, cur, s)
 
+        def endPage(cv, cur):
+            &#34;&#34;&#34;Ends a page node.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            &#34;&#34;&#34;
+            slots = cv.linked(cur[&#34;page&#34;])
+            empty = len(slots) == 0
+            if empty:
+                lastSlot = addEmpty(cv, cur)
+                if cur[&#34;inNote&#34;]:
+                    cv.feature(lastSlot, is_note=1)
+            cv.terminate(cur[&#34;page&#34;])
+
         def beforeChildren(cv, cur, xnode, tag):
             &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
@@ -4755,10 +5002,30 @@ relevant tf version:</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            pageModel = self.pageModel
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+            pageType = pageProperties[&#34;nodeType&#34;]
+            sectionProperties = self.sectionProperties
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
 
             atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+            isPageContainer = pageModel == &#34;II&#34; and matchModel(
+                pageProperties, tag, atts
+            )
+            inPage = cur[&#34;inPage&#34;]
+
+            if isPageContainer:
+                cur[&#34;inPage&#34;] = True
+
+                if pbAtTop:
+                    # material before the first pb in the container is not in a page
+                    pass
+                else:
+                    # the page starts with the container
+                    cur[&#34;page&#34;] = cv.node(pageType)
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -4802,23 +5069,14 @@ relevant tf version:</p>
                     value = {chunkSection: cn}
                     cv.feature(cur[CHUNK], **value)
 
-                if tag == sectionProperties[&#34;element&#34;]:
-                    criticalAtts = sectionProperties[&#34;attributes&#34;]
-                    match = True
-                    for (k, v) in criticalAtts.items():
-                        if atts.get(k, None) != v:
-                            match = False
-                            break
-                    if match:
-                        heading = etree.tostring(
-                            xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
-                        ).replace(&#34;\n&#34;, &#34; &#34;)
-                        value = {chapterSection: heading}
-                        cv.feature(cur[CHAPTER], **value)
-                        chapterNum = cur[&#34;chapterNum&#34;]
-                        console(
-                            f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
-                        )
+                if matchModel(sectionProperties, tag, atts):
+                    heading = etree.tostring(
+                        xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                    ).replace(&#34;\n&#34;, &#34; &#34;)
+                    value = {chapterSection: heading}
+                    cv.feature(cur[CHAPTER], **value)
+                    chapterNum = cur[&#34;chapterNum&#34;]
+                    console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
             else:
                 chunkSection = self.chunkSection
 
@@ -4843,7 +5101,22 @@ relevant tf version:</p>
 
             curNode = None
 
-            if tag not in PASS_THROUGH:
+            if inPage and tag == &#34;pb&#34;:
+                if pbAtTop:
+                    if cur[&#34;page&#34;] is not None:
+                        endPage(cv, cur)
+                    cur[&#34;page&#34;] = cv.node(pageType)
+                    if len(atts):
+                        cv.feature(cur[&#34;page&#34;], **atts)
+                else:
+                    if cur[&#34;page&#34;] is not None:
+                        if len(cur[&#34;pageAtts&#34;]):
+                            cv.feature(cur[&#34;page&#34;], **cur[&#34;pageAtts&#34;])
+                        endPage(cv, cur)
+                    cur[&#34;page&#34;] = cv.node(pageType)
+                    cur[&#34;pageAtts&#34;] = atts
+
+            elif tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
                 curNode = cv.node(tag)
                 if wordAsSlot:
@@ -4891,13 +5164,25 @@ relevant tf version:</p>
             tag: string
                 The tag of the lxml node.
             &#34;&#34;&#34;
+            pageModel = self.pageModel
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
             sectionModel = self.sectionModel
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
 
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+            isPageContainer = pageModel == &#34;II&#34; and matchModel(
+                pageProperties, tag, atts
+            )
+            inPage = cur[&#34;inPage&#34;]
+
             hasFinishedWord = False
 
-            if tag not in PASS_THROUGH:
+            if inPage and tag == &#34;pb&#34;:
+                pass
+            elif tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
@@ -4948,6 +5233,16 @@ relevant tf version:</p>
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, True)
                     cv.terminate(cur[CHAPTER])
+            if isPageContainer:
+                if pbAtTop:
+                    # the page ends with the container
+                    if cur[&#34;page&#34;] is not None:
+                        endPage(cv, cur)
+                else:
+                    # material after the last pb is not in a page
+                    if cur[&#34;page&#34;] is not None:
+                        cv.delete(cur[&#34;page&#34;])
+                cur[&#34;inPage&#34;] = False
 
         def afterTag(cv, cur, xnode, tag):
             &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -5051,6 +5346,9 @@ relevant tf version:</p>
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
                             cur[&#34;inHeader&#34;] = False
+                            cur[&#34;inPage&#34;] = False
+                            cur[&#34;page&#34;] = None
+                            cur[&#34;pageAtts&#34;] = None
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
@@ -5085,6 +5383,9 @@ relevant tf version:</p>
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
                     cur[&#34;inHeader&#34;] = False
+                    cur[&#34;inPage&#34;] = False
+                    cur[&#34;page&#34;] = None
+                    cur[&#34;pageAtts&#34;] = None
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
@@ -5164,6 +5465,9 @@ relevant tf version:</p>
         wordAsSlot = self.wordAsSlot
         parentEdges = self.parentEdges
         siblingEdges = self.siblingEdges
+        pageModel = self.pageModel
+        pageProperties = self.pageProperties
+        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
         sectionModel = self.sectionModel
         tfPath = self.tfPath
         teiPath = self.teiPath
@@ -5172,6 +5476,8 @@ relevant tf version:</p>
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+            pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
+            console(f&#34;Page model {pageModel} with {pbRep}&#34;)
 
         slotType = WORD if wordAsSlot else CHAR
 
@@ -5761,7 +6067,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L815-L831" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L901-L917" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def getParser():
@@ -5822,7 +6128,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2466-L2809" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L2630-L2973" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -6186,7 +6492,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2813-L2846" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L2977-L3010" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -6251,7 +6557,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L948-L1292" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L1034-L1378" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -6459,7 +6765,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                 else:
                     extraInfo = &#34;&#34;
                 fh.write(
-                    f&#34;{nl}\t{extraInfo}{tagRep:&lt;18} &#34;
+                    f&#34;{nl}\t{extraInfo:&lt;7}{tagRep:&lt;18} &#34;
                     f&#34;{attRep:&lt;18} {amount:&gt;5}x {val}\n&#34;
                 )
                 infoLines += 1
@@ -6614,7 +6920,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2314-L2418" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L2473-L2582" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -6633,6 +6939,9 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     wordAsSlot = self.wordAsSlot
     parentEdges = self.parentEdges
     siblingEdges = self.siblingEdges
+    pageModel = self.pageModel
+    pageProperties = self.pageProperties
+    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
     sectionModel = self.sectionModel
     tfPath = self.tfPath
     teiPath = self.teiPath
@@ -6641,6 +6950,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     if verbose == 1:
         console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
+        pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
+        console(f&#34;Page model {pageModel} with {pbRep}&#34;)
 
     slotType = WORD if wordAsSlot else CHAR
 
@@ -6736,7 +7047,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L1296-L1309" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L1382-L1395" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -6777,7 +7088,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L1313-L2312" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L1399-L2471" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -7373,6 +7684,25 @@ that has access to this data.</p>
             cv.feature(s, ch=spaceChar, extraspace=1)
             addSlotFeatures(cv, cur, s)
 
+    def endPage(cv, cur):
+        &#34;&#34;&#34;Ends a page node.
+
+        Parameters
+        ----------
+        cv: object
+            The convertor object, needed to issue actions.
+        cur: dict
+            Various pieces of data collected during walking
+            and relevant for some next steps in the walk.
+        &#34;&#34;&#34;
+        slots = cv.linked(cur[&#34;page&#34;])
+        empty = len(slots) == 0
+        if empty:
+            lastSlot = addEmpty(cv, cur)
+            if cur[&#34;inNote&#34;]:
+                cv.feature(lastSlot, is_note=1)
+        cv.terminate(cur[&#34;page&#34;])
+
     def beforeChildren(cv, cur, xnode, tag):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
@@ -7388,10 +7718,30 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
+        pageModel = self.pageModel
+        pageProperties = self.pageProperties
+        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+        pageType = pageProperties[&#34;nodeType&#34;]
+        sectionProperties = self.sectionProperties
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
 
         atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+        isPageContainer = pageModel == &#34;II&#34; and matchModel(
+            pageProperties, tag, atts
+        )
+        inPage = cur[&#34;inPage&#34;]
+
+        if isPageContainer:
+            cur[&#34;inPage&#34;] = True
+
+            if pbAtTop:
+                # material before the first pb in the container is not in a page
+                pass
+            else:
+                # the page starts with the container
+                cur[&#34;page&#34;] = cv.node(pageType)
 
         if sectionModel == &#34;II&#34;:
             chapterSection = self.chapterSection
@@ -7435,23 +7785,14 @@ that has access to this data.</p>
                 value = {chunkSection: cn}
                 cv.feature(cur[CHUNK], **value)
 
-            if tag == sectionProperties[&#34;element&#34;]:
-                criticalAtts = sectionProperties[&#34;attributes&#34;]
-                match = True
-                for (k, v) in criticalAtts.items():
-                    if atts.get(k, None) != v:
-                        match = False
-                        break
-                if match:
-                    heading = etree.tostring(
-                        xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
-                    ).replace(&#34;\n&#34;, &#34; &#34;)
-                    value = {chapterSection: heading}
-                    cv.feature(cur[CHAPTER], **value)
-                    chapterNum = cur[&#34;chapterNum&#34;]
-                    console(
-                        f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False
-                    )
+            if matchModel(sectionProperties, tag, atts):
+                heading = etree.tostring(
+                    xnode, encoding=&#34;unicode&#34;, method=&#34;text&#34;, with_tail=False
+                ).replace(&#34;\n&#34;, &#34; &#34;)
+                value = {chapterSection: heading}
+                cv.feature(cur[CHAPTER], **value)
+                chapterNum = cur[&#34;chapterNum&#34;]
+                console(f&#34;\rchapter {chapterNum:&gt;4} {heading:&lt;50}&#34;, newline=False)
         else:
             chunkSection = self.chunkSection
 
@@ -7476,7 +7817,22 @@ that has access to this data.</p>
 
         curNode = None
 
-        if tag not in PASS_THROUGH:
+        if inPage and tag == &#34;pb&#34;:
+            if pbAtTop:
+                if cur[&#34;page&#34;] is not None:
+                    endPage(cv, cur)
+                cur[&#34;page&#34;] = cv.node(pageType)
+                if len(atts):
+                    cv.feature(cur[&#34;page&#34;], **atts)
+            else:
+                if cur[&#34;page&#34;] is not None:
+                    if len(cur[&#34;pageAtts&#34;]):
+                        cv.feature(cur[&#34;page&#34;], **cur[&#34;pageAtts&#34;])
+                    endPage(cv, cur)
+                cur[&#34;page&#34;] = cv.node(pageType)
+                cur[&#34;pageAtts&#34;] = atts
+
+        elif tag not in PASS_THROUGH:
             cur[&#34;afterSpace&#34;] = False
             curNode = cv.node(tag)
             if wordAsSlot:
@@ -7524,13 +7880,25 @@ that has access to this data.</p>
         tag: string
             The tag of the lxml node.
         &#34;&#34;&#34;
+        pageModel = self.pageModel
+        pageProperties = self.pageProperties
+        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
         sectionModel = self.sectionModel
         isChap = isChapter(cur)
         isChnk = isChunk(cur)
 
+        atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+        isPageContainer = pageModel == &#34;II&#34; and matchModel(
+            pageProperties, tag, atts
+        )
+        inPage = cur[&#34;inPage&#34;]
+
         hasFinishedWord = False
 
-        if tag not in PASS_THROUGH:
+        if inPage and tag == &#34;pb&#34;:
+            pass
+        elif tag not in PASS_THROUGH:
             curNode = cur[TNEST][-1]
             slots = cv.linked(curNode)
             empty = len(slots) == 0
@@ -7581,6 +7949,16 @@ that has access to this data.</p>
                 if not hasFinishedWord:
                     finishWord(cv, cur, None, True)
                 cv.terminate(cur[CHAPTER])
+        if isPageContainer:
+            if pbAtTop:
+                # the page ends with the container
+                if cur[&#34;page&#34;] is not None:
+                    endPage(cv, cur)
+            else:
+                # material after the last pb is not in a page
+                if cur[&#34;page&#34;] is not None:
+                    cv.delete(cur[&#34;page&#34;])
+            cur[&#34;inPage&#34;] = False
 
     def afterTag(cv, cur, xnode, tag):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
@@ -7684,6 +8062,9 @@ that has access to this data.</p>
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
                         cur[&#34;inHeader&#34;] = False
+                        cur[&#34;inPage&#34;] = False
+                        cur[&#34;page&#34;] = None
+                        cur[&#34;pageAtts&#34;] = None
                         cur[&#34;inNote&#34;] = False
                         cur[XNEST] = []
                         cur[TNEST] = []
@@ -7718,6 +8099,9 @@ that has access to this data.</p>
                 tree = etree.parse(text, parser)
                 root = tree.getroot()
                 cur[&#34;inHeader&#34;] = False
+                cur[&#34;inPage&#34;] = False
+                cur[&#34;page&#34;] = None
+                cur[&#34;pageAtts&#34;] = None
                 cur[&#34;inNote&#34;] = False
                 cur[XNEST] = []
                 cur[TNEST] = []
@@ -7805,7 +8189,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L852-L885" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L938-L971" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -7858,7 +8242,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L833-L850" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L919-L936" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -7901,7 +8285,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L887-L946" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L973-L1032" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -7985,7 +8369,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2420-L2462" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L2584-L2626" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -8068,7 +8452,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/tei.py#L2848-L2910" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/tei.py#L3012-L3074" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -8204,6 +8588,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#wordasslot">wordAsSlot</a></li>
 <li><a href="#parentedges">parentEdges</a></li>
 <li><a href="#siblingedges">siblingEdges</a></li>
+<li><a href="#pagemodel">pageModel</a></li>
 <li><a href="#sectionmodel">sectionModel</a></li>
 </ul>
 </li>

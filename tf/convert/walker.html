@@ -152,7 +152,7 @@ that steer the graph building:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1-L1706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1-L1751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Walker
@@ -329,6 +329,7 @@ class CV:
     N = &#34;node&#34;
     T = &#34;terminate&#34;
     R = &#34;resume&#34;
+    D = &#34;delete&#34;
     F = &#34;feature&#34;
     E = &#34;edge&#34;
 
@@ -535,6 +536,7 @@ class CV:
         self.nodeFeatures = {}
         self.edgeFeatures = {}
         self.slotKeys = {}
+        self.discardables = set()
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -967,6 +969,37 @@ class CV:
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
+
+    def delete(self, node):
+        &#34;&#34;&#34;**deletes** a node.
+
+            cv.deletes(n)
+
+        The node `n` will be deleted from the set of nodes that will be created.
+        This `n` must be the result of a previous `cv.node()` action.
+        sLots cannot be deleted.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by the actions `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.D] += 1
+        if node is not None:
+            slotType = self.slotType
+            nType = node[0]
+
+            if nType == slotType:
+                errors = self.errors
+                errors[&#34;cannot delete a slot&#34;].append(node[1])
+                return
+
+            self.discardables.add(node)
 
     def resume(self, node):
         &#34;&#34;&#34;**resume** a node.
@@ -1410,7 +1443,7 @@ class CV:
 
         self.stats = {
             actionType: 0
-            for actionType in (self.S, self.N, self.T, self.R, self.F, self.E)
+            for actionType in (self.S, self.N, self.T, self.R, self.D, self.F, self.E)
         }
 
         director(self)
@@ -1459,23 +1492,35 @@ class CV:
         nodes = self.nodes
         slotType = self.slotType
         oslots = self.oslots
+        discardables = self.discardables
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
 
         unlinked = {}
+        nDeleted = 0
+
+        for (nType, seq) in discardables:
+            unlinked.setdefault(nType, set()).add(seq)
+            nDeleted += 1
+            if (nType, seq) in oslots:
+                del oslots[(nType, seq)]
 
         for nType in nodeTypes:
             if nType == slotType:
                 continue
             for seq in range(1, nodeTypes[nType] + 1):
                 if (nType, seq) not in oslots:
-                    unlinked.setdefault(nType, []).append(seq)
+                    unlinked.setdefault(nType, set()).add(seq)
 
         if unlinked:
-            info(&#34;Removing unlinked nodes ... &#34;, force=silent != DEEP)
+            info(
+                &#34;Removing unlinked (of which {nDeleted} deleted) nodes ... &#34;,
+                force=silent != DEEP,
+            )
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
+                seqs = sorted(seqs)
                 theseNodes = nodes[nType]
                 lSeqs = len(seqs)
                 totalRemoved += lSeqs
@@ -1882,13 +1927,14 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L171-L1706" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L171-L1751" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class CV:
     S = &#34;slot&#34;
     N = &#34;node&#34;
     T = &#34;terminate&#34;
     R = &#34;resume&#34;
+    D = &#34;delete&#34;
     F = &#34;feature&#34;
     E = &#34;edge&#34;
 
@@ -2095,6 +2141,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         self.nodeFeatures = {}
         self.edgeFeatures = {}
         self.slotKeys = {}
+        self.discardables = set()
 
         indent(level=1, reset=True)
         self._prepareMeta(otext, generic)
@@ -2527,6 +2574,37 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         if node is not None:
             self.curEmbedders.discard(node)
             self._checkSecLevel(node, before=False)
+
+    def delete(self, node):
+        &#34;&#34;&#34;**deletes** a node.
+
+            cv.deletes(n)
+
+        The node `n` will be deleted from the set of nodes that will be created.
+        This `n` must be the result of a previous `cv.node()` action.
+        sLots cannot be deleted.
+
+        Parameters
+        ----------
+        node: tuple
+            A node reference, obtained by the actions `node`.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+
+        self.stats[self.D] += 1
+        if node is not None:
+            slotType = self.slotType
+            nType = node[0]
+
+            if nType == slotType:
+                errors = self.errors
+                errors[&#34;cannot delete a slot&#34;].append(node[1])
+                return
+
+            self.discardables.add(node)
 
     def resume(self, node):
         &#34;&#34;&#34;**resume** a node.
@@ -2970,7 +3048,7 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 
         self.stats = {
             actionType: 0
-            for actionType in (self.S, self.N, self.T, self.R, self.F, self.E)
+            for actionType in (self.S, self.N, self.T, self.R, self.D, self.F, self.E)
         }
 
         director(self)
@@ -3019,23 +3097,35 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
         nodes = self.nodes
         slotType = self.slotType
         oslots = self.oslots
+        discardables = self.discardables
         nodeFeatures = self.nodeFeatures
         edgeFeatures = self.edgeFeatures
 
         unlinked = {}
+        nDeleted = 0
+
+        for (nType, seq) in discardables:
+            unlinked.setdefault(nType, set()).add(seq)
+            nDeleted += 1
+            if (nType, seq) in oslots:
+                del oslots[(nType, seq)]
 
         for nType in nodeTypes:
             if nType == slotType:
                 continue
             for seq in range(1, nodeTypes[nType] + 1):
                 if (nType, seq) not in oslots:
-                    unlinked.setdefault(nType, []).append(seq)
+                    unlinked.setdefault(nType, set()).add(seq)
 
         if unlinked:
-            info(&#34;Removing unlinked nodes ... &#34;, force=silent != DEEP)
+            info(
+                &#34;Removing unlinked (of which {nDeleted} deleted) nodes ... &#34;,
+                force=silent != DEEP,
+            )
             indent(level=2)
             totalRemoved = 0
             for (nType, seqs) in unlinked.items():
+                seqs = sorted(seqs)
                 theseNodes = nodes[nType]
                 lSeqs = len(seqs)
                 totalRemoved += lSeqs
@@ -3423,6 +3513,10 @@ See <code><a title="tf.core.timestamp.Timestamp" href="../core/timestamp.html#tf
 </details>
 <h3>Class variables</h3>
 <dl>
+<dt id="tf.convert.walker.CV.D"><code class="name">var <span class="ident">D</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="tf.convert.walker.CV.E"><code class="name">var <span class="ident">E</span></code></dt>
 <dd>
 <div class="desc"></div>
@@ -3476,7 +3570,7 @@ whether a node is active.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1077-L1101" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1110-L1134" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def active(self, node):
     &#34;&#34;&#34;Returns whether a node is currently active.
@@ -3528,7 +3622,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1103-L1124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1136-L1157" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeNodes(self, nTypes=None):
     &#34;&#34;&#34;The currently active nodes, i.e. the embedders.
@@ -3574,7 +3668,7 @@ and only active nodes in these types are returned.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1126-L1140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1159-L1173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def activeTypes(self):
     &#34;&#34;&#34;The node types of the currently active nodes, i.e. the embedders.
@@ -3591,6 +3685,63 @@ and only active nodes in these types are returned.</dd>
     &#34;&#34;&#34;
 
     return {node[0] for node in self.curEmbedders}</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.walker.CV.delete"><code class="name flex">
+<span>def <span class="ident">delete</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><strong>deletes</strong> a node.</p>
+<pre><code>cv.deletes(n)
+</code></pre>
+<p>The node <code>n</code> will be deleted from the set of nodes that will be created.
+This <code>n</code> must be the result of a previous <code>cv.node()</code> action.
+sLots cannot be deleted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>node</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>A node reference, obtained by the actions <code>node</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L817-L846" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def delete(self, node):
+    &#34;&#34;&#34;**deletes** a node.
+
+        cv.deletes(n)
+
+    The node `n` will be deleted from the set of nodes that will be created.
+    This `n` must be the result of a previous `cv.node()` action.
+    sLots cannot be deleted.
+
+    Parameters
+    ----------
+    node: tuple
+        A node reference, obtained by the actions `node`.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+
+    self.stats[self.D] += 1
+    if node is not None:
+        slotType = self.slotType
+        nType = node[0]
+
+        if nType == slotType:
+            errors = self.errors
+            errors[&#34;cannot delete a slot&#34;].append(node[1])
+            return
+
+        self.discardables.add(node)</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.walker.CV.edge"><code class="name flex">
@@ -3625,7 +3776,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L941-L973" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L974-L1006" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def edge(self, nodeFrom, nodeTo, **features):
     &#34;&#34;&#34;Add **edge features**.
@@ -3688,7 +3839,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L911-L939" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L944-L972" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def feature(self, node, **features):
     &#34;&#34;&#34;Add **node features**.
@@ -3736,7 +3887,7 @@ essentially specifies a set of nodes <code>{ nodeTo }</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1063-L1075" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1096-L1108" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def features(self):
     &#34;&#34;&#34;Get the list of all features.
@@ -3782,7 +3933,7 @@ The nodes in question when retrieving the value of an edge feature.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1142-L1181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1175-L1214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, feature, *args):
     &#34;&#34;&#34;Retrieve feature values.
@@ -3852,7 +4003,7 @@ when the slots that need to be linked to it have already been created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L849-L879" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L882-L912" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def link(self, node, slots):
     &#34;&#34;&#34;Link the given, existing slots to a node.
@@ -3914,7 +4065,7 @@ to do so, you have to detect that a node is still unlinked.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L881-L909" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L914-L942" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def linked(self, node):
     &#34;&#34;&#34;Returns the slots `ss` to which a node is currently linked.
@@ -3974,7 +4125,7 @@ It will be checked whether you specify either <code>int</code> or <code>str</cod
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L1010-L1061" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1043-L1094" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def meta(self, feat, **metadata):
     &#34;&#34;&#34;Add, modify, delete metadata fields of features.
@@ -4075,7 +4226,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L712-L790" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L714-L792" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def node(self, nType, slots=None):
     &#34;&#34;&#34;Make a non-slot node and return the handle to it in `n`.
@@ -4189,7 +4340,7 @@ conditionally, using this function.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L975-L1008" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L1008-L1041" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def occurs(self, feat):
     &#34;&#34;&#34;Whether the feature `featureName` occurs in the resulting data so far.
@@ -4251,7 +4402,7 @@ No new slot will be created.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L815-L847" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L848-L880" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def resume(self, node):
     &#34;&#34;&#34;**resume** a node.
@@ -4325,7 +4476,7 @@ Just pass the tuple as a whole to actions that require a node argument.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L653-L710" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L655-L712" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def slot(self, key=None):
     &#34;&#34;&#34;Make a slot node and return the handle to it in `n`.
@@ -4412,7 +4563,7 @@ nevertheless.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L625-L651" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L627-L653" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def stop(self, msg):
     &#34;&#34;&#34;Stops the director. No further input will be read.
@@ -4465,7 +4616,7 @@ This <code>n</code> must be the result of a previous <code>cv.slot()</code> or <
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L792-L813" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L794-L815" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def terminate(self, node):
     &#34;&#34;&#34;**terminate** a node.
@@ -4578,7 +4729,7 @@ to TF.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1e1cdac3f24700a57db444644d62f4472fcf5677/tf/convert/walker.py#L257-L419" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/walker.py#L258-L421" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def walk(
     self,
@@ -4705,6 +4856,7 @@ to TF.</p>
     self.nodeFeatures = {}
     self.edgeFeatures = {}
     self.slotKeys = {}
+    self.discardables = set()
 
     indent(level=1, reset=True)
     self._prepareMeta(otext, generic)
@@ -4825,6 +4977,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.convert.walker.CV" href="#tf.convert.walker.CV">CV</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.convert.walker.CV.D" href="#tf.convert.walker.CV.D">D</a></code></li>
 <li><code><a title="tf.convert.walker.CV.E" href="#tf.convert.walker.CV.E">E</a></code></li>
 <li><code><a title="tf.convert.walker.CV.F" href="#tf.convert.walker.CV.F">F</a></code></li>
 <li><code><a title="tf.convert.walker.CV.N" href="#tf.convert.walker.CV.N">N</a></code></li>
@@ -4834,6 +4987,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.convert.walker.CV.active" href="#tf.convert.walker.CV.active">active</a></code></li>
 <li><code><a title="tf.convert.walker.CV.activeNodes" href="#tf.convert.walker.CV.activeNodes">activeNodes</a></code></li>
 <li><code><a title="tf.convert.walker.CV.activeTypes" href="#tf.convert.walker.CV.activeTypes">activeTypes</a></code></li>
+<li><code><a title="tf.convert.walker.CV.delete" href="#tf.convert.walker.CV.delete">delete</a></code></li>
 <li><code><a title="tf.convert.walker.CV.edge" href="#tf.convert.walker.CV.edge">edge</a></code></li>
 <li><code><a title="tf.convert.walker.CV.feature" href="#tf.convert.walker.CV.feature">feature</a></code></li>
 <li><code><a title="tf.convert.walker.CV.features" href="#tf.convert.walker.CV.features">features</a></code></li>
