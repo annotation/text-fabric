@@ -534,7 +534,11 @@ def makeCssInfo():
 
 class TEI:
     def __init__(
-        self, tei=PARAMS["tei"][1], tf=PARAMS["tf"][1], verbose=FLAGS["verbose"][1]
+        self,
+        tei=PARAMS["tei"][1],
+        tf=PARAMS["tf"][1],
+        verbose=FLAGS["verbose"][1],
+        custom=None,
     ):
         """Converts TEI to TF.
 
@@ -649,6 +653,35 @@ class TEI:
         Location of additional documentation.
         This can be generated or had-written material, or a mixture of the two.
 
+        ## Customization
+
+        If you need to treat elements in custom ways, you can pass custom functions
+        that will be attached to certain hooks when the converter walks through the
+        TEI source.
+
+        These hooks are:
+
+        *   `beforeTag`: just before the walker starts processing the start tag of
+            a TEI element;
+        *   `beforeChildren`: just after processing the start tag, but before processing
+            the element content (text and child elements);
+        *   `afterChildren`: just after processing the complete element content
+            (text and child elements), but before processing the end tag of the
+            TEI element;
+        *   `afterTag`: just after processing the end tag of a TEI element.
+
+        The custom functions can be passed in the optional parameter `custom`,
+        see below.
+
+        These functions will be passed the `cur` dictionary, which is guaranteed to
+        contain the following information:
+
+        *   `xnest`: the stack of xml tag names seen at this point;
+        *   `tnest`: the stack of TF nodes built at this point;
+        *   `tsiblings` (only if sibling nodes are being recorded): the list of
+            preceding TF nodes corresponding to the TEI sibling elements of the
+            current TEI element;
+
         Parameters
         ----------
         tei: string, optional ""
@@ -682,6 +715,38 @@ class TEI:
 
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
+
+        custom: dict, optional None
+            If present, the keys should be one of the names of the hooks:
+
+            *   `beforeTag`
+            *   `beforeChlidren`
+            *   `afterChlidren`
+            *   `afterTag`
+
+            and the values should be functions that take the following arguments
+
+            *   `cv`: the walker converter object;
+            *   `cur`: the dictionary with information that has gathered during the
+                conversion so far and that can be used to dump new information
+                into; it is nonlocal, i.e. all invocations of the hooks get the same
+                dictionary object passed to them;
+            *   `xnode`: the lxml node corresponding to the TEI element;
+            *   `tag`: the tag name of the element, without namespaces;
+                this is a bit redundant, because it can also be extracted from
+                the `xnode`, but it is convenient.
+            *   `atts`: the attributes (names and values) of the element,
+                without namespaces;
+                this is a bit redundant, because it can also be extracted from
+                the `xnode`, but it is convenient.
+
+            These functions should not return anything, but they can write things to
+            the `cur` dictionary.
+            And they can create slots, nodes, and terminate them, in short, they
+            can do every `cv`-based action that is needed.
+
+            You can define these functions out of this context, but it is good to know
+            what information in `cur` is guaranteed to be available.
         """
         self.good = True
 
@@ -1573,10 +1638,13 @@ class TEI:
                 An lxml element node.
             """
             tag = etree.QName(xnode.tag).localname
+            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+
+            beforeTag(cv, cur, xnode, tag, atts)
 
             cur[XNEST].append(tag)
 
-            curNode = beforeChildren(cv, cur, xnode, tag)
+            curNode = beforeChildren(cv, cur, xnode, tag, atts)
 
             if curNode is not None:
                 if parentEdges:
@@ -1600,7 +1668,7 @@ class TEI:
             for child in xnode.iterchildren(tag=etree.Element):
                 walkNode(cv, cur, child)
 
-            afterChildren(cv, cur, xnode, tag)
+            afterChildren(cv, cur, xnode, tag, atts)
 
             if curNode is not None:
                 if len(cur[TNEST]):
@@ -1610,7 +1678,7 @@ class TEI:
                         cur[TSIB].pop()
 
             cur[XNEST].pop()
-            afterTag(cv, cur, xnode, tag)
+            afterTag(cv, cur, xnode, tag, atts)
 
         def isChapter(cur):
             """Whether the current element counts as a chapter node.
@@ -2009,8 +2077,8 @@ class TEI:
                     cv.feature(lastSlot, is_note=1)
             cv.terminate(cur["page"])
 
-        def beforeChildren(cv, cur, xnode, tag):
-            """Actions before dealing with the element's children.
+        def beforeTag(cv, cur, xnode, tag, atts):
+            """Actions before dealing with the element's tag.
 
             Parameters
             ----------
@@ -2024,6 +2092,27 @@ class TEI:
             tag: string
                 The tag of the lxml node.
             """
+            beforeTagCustom = getattr(self, "beforeTagCustom", None)
+            if beforeTagCustom is not None:
+                beforeTagCustom(cv, cur, xnode, tag, atts)
+
+        def beforeChildren(cv, cur, xnode, tag, atts):
+            """Actions before dealing with the element's children.
+
+            Parameters
+            ----------
+            cv: object
+                The convertor object, needed to issue actions.
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+            xnode: object
+                An lxml element node.
+            tag: string
+                The tag of the lxml node.
+            atts: string
+                The attributes of the lxml node, with namespaces stripped.
+            """
             pageModel = self.pageModel
             pageProperties = self.pageProperties
             pbAtTop = pageProperties["pbAtTop"]
@@ -2031,8 +2120,6 @@ class TEI:
             sectionProperties = self.sectionProperties
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
-
-            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
 
             isPageContainer = pageModel == "II" and matchModel(
                 pageProperties, tag, atts
@@ -2151,6 +2238,11 @@ class TEI:
                         r = makeNameLike(rValue)
                         if r:
                             cur.setdefault("rend", {}).setdefault(r, []).append(True)
+
+            beforeChildrenCustom = getattr(self, "beforeChildrenCustom", None)
+            if beforeChildrenCustom is not None:
+                beforeChildrenCustom(cv, cur, xnode, tag, atts)
+
             if xnode.text:
                 textMaterial = WHITE_TRIM_RE.sub(" ", xnode.text)
                 if isPure(cur):
@@ -2168,7 +2260,7 @@ class TEI:
 
             return curNode
 
-        def afterChildren(cv, cur, xnode, tag):
+        def afterChildren(cv, cur, xnode, tag, atts):
             """Node actions after dealing with the children, but before the end tag.
 
             Here we make sure that the newline elements will get their last slot
@@ -2185,6 +2277,8 @@ class TEI:
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
+            atts: string
+                The attributes of the lxml node, with namespaces stripped.
             """
             pageModel = self.pageModel
             pageProperties = self.pageProperties
@@ -2193,7 +2287,9 @@ class TEI:
             isChap = isChapter(cur)
             isChnk = isChunk(cur)
 
-            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+            afterChildrenCustom = getattr(self, "afterChildrenCustom", None)
+            if afterChildrenCustom is not None:
+                afterChildrenCustom(cv, cur, xnode, tag, atts)
 
             isPageContainer = pageModel == "II" and matchModel(
                 pageProperties, tag, atts
@@ -2266,7 +2362,7 @@ class TEI:
                         cv.delete(cur["page"])
                 cur["inPage"] = False
 
-        def afterTag(cv, cur, xnode, tag):
+        def afterTag(cv, cur, xnode, tag, atts):
             """Node actions after dealing with the children and after the end tag.
 
             This is the place where we proces the `tail` of an lxml node: the
@@ -2284,6 +2380,8 @@ class TEI:
                 An lxml element node.
             tag: string
                 The tag of the lxml node.
+            atts: string
+                The attributes of the lxml node, with namespaces stripped.
             """
             if tag == TEI_HEADER:
                 cur["inHeader"] = False
@@ -2291,7 +2389,6 @@ class TEI:
                 cur["inNote"] = False
 
             if tag not in PASS_THROUGH:
-                atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
                 if "rend" in atts:
                     rValue = atts["rend"]
                     r = makeNameLike(rValue)
@@ -2313,6 +2410,10 @@ class TEI:
                 else:
                     for ch in tailMaterial:
                         addSlot(cv, cur, ch)
+
+            afterTagCustom = getattr(self, "afterTagCustom", None)
+            if afterTagCustom is not None:
+                afterTagCustom(cv, cur, xnode, tag, atts)
 
         def director(cv):
             """Director function.
