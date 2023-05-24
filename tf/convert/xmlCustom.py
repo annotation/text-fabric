@@ -139,9 +139,12 @@ def getDirector(self):
         else:
             tag = etree.QName(xnode.tag).localname
 
-        cur[XNEST].append(tag)
+        atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+        atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
 
-        beforeChildren(cv, cur, xnode, tag)
+        cur[XNEST].append((tag, atts))
+
+        beforeChildren(cv, cur, xnode, tag, atts)
 
         for child in xnode.iterchildren(
             tag=(etree.Element, etree.ProcessingInstruction)
@@ -150,9 +153,9 @@ def getDirector(self):
         ):
             walkNode(cv, cur, child)
 
-        afterChildren(cv, cur, xnode, tag)
+        afterChildren(cv, cur, xnode, tag, atts)
         cur[XNEST].pop()
-        afterTag(cv, cur, xnode, tag)
+        afterTag(cv, cur, xnode, tag, atts)
 
     def addSlot(cv, cur, ch):
         """Add a slot.
@@ -173,7 +176,7 @@ def getDirector(self):
         s = cv.slot()
         cv.feature(s, ch=ch)
 
-    def beforeChildren(cv, cur, xnode, tag):
+    def beforeChildren(cv, cur, xnode, tag, atts):
         """Actions before dealing with the element's children.
 
         Parameters
@@ -187,12 +190,12 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         """
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
             cur[TNEST].append(curNode)
-            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
-            atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
 
@@ -201,7 +204,7 @@ def getDirector(self):
             for ch in textMaterial:
                 addSlot(cv, cur, ch)
 
-    def afterChildren(cv, cur, xnode, tag):
+    def afterChildren(cv, cur, xnode, tag, atts):
         """Node actions after dealing with the children, but before the end tag.
 
         Here we make sure that the newline elements will get their last slot
@@ -218,6 +221,8 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         """
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -228,7 +233,7 @@ def getDirector(self):
 
             cv.terminate(curNode)
 
-    def afterTag(cv, cur, xnode, tag):
+    def afterTag(cv, cur, xnode, tag, atts):
         """Node actions after dealing with the children and after the end tag.
 
         This is the place where we proces the `tail` of an lxml node: the
@@ -246,6 +251,8 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         """
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(" ", xnode.tail)

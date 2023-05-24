@@ -21,6 +21,8 @@ See the app-specific tutorials via `tf.about.corpora`.
 *   TEI to TF conversion and XML to TF conversion: you can also opt in to have
     processing instructions converted. They are treated in the same way as
     empty elements.
+*   TEI to TF: added a function that can derive extra features while walking through the
+    XML from the current stack of XML elements and attributes.
 *   In pretty displays of query results, the features in the query are shown if
     the option `show query features` is on.
     If also the option `show standard features` is off, the standard features

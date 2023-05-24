@@ -443,3 +443,86 @@ def tweakTrans(
         )
 
     return text
+
+
+def lookupSource(cv, cur, specs):
+    """Looks up information from the current XML stack.
+
+    The current XML stack contains the ancestry of the current node, including
+    the current node itself.
+
+    It is a list of components, corresponding to the path from the root node to the
+    current node.
+    Each component is a tuple, consisting of the tag name and the attributes of
+    an XML node.
+
+    Against this stack a sequence of instructions, given in `specs`, is executed.
+    These instructions collect information from the stack, under certain conditions,
+    and put that information into a feature, as value for a certain node.
+
+    Here is an example of a single instruction:
+
+    Parameters
+    ----------
+    cv: object
+        The convertor object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+    specs: tuple
+        A sequence of instructions what to look for.
+        Each instruction has the following parts:
+
+        *   pathSpec
+        *   node type
+        *   featureName
+
+        The effect is:
+
+        The pathSpec is compared to the current XML stack.
+        If it matches the current node, the text content of the current node
+        will be collected and put in a feature with name `featureName`, for
+        the current TF node of type `nodeType`.
+
+        The pathSpec is a list of components.
+        The first component should match the top of the XML stack, the second
+        component the element that is below the top, etc.
+        Each component can either be a tag name, or a tuple of a tag name and
+        a dictionary of attribute values.
+    """
+    nest = cur[XNEST]
+    nNest = len(nest)
+
+    for (path, nodeType, feature) in specs:
+        nPath = len(path)
+
+        if nPath > nNest:
+            continue
+
+        ok = True
+
+        for (p, (lookForTag, lookForAtts)) in enumerate(path):
+            (compareToTag, compareToAtts) = nest[-(p + 1)]
+            ok = compareToTag == lookForTag
+
+            if not ok:
+                break
+
+            if lookForAtts is not None:
+                for (att, val) in lookForAtts.items():
+                    if att not in compareToAtts or compareToAtts[att] != val:
+                        ok = False
+                        break
+
+            if not ok:
+                break
+
+        if not ok:
+            continue
+
+        targetNode = cur[nodeType]
+        sourceNode = cur[TNEST][-1]
+        slots = cv.linked(sourceNode)
+        sourceText = "".join(cv.get("ch", ("char", slot)) for slot in slots)
+        source = {feature: sourceText}
+        cv.feature(targetNode, **source)

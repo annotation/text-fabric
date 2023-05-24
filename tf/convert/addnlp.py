@@ -141,7 +141,7 @@ PARAMS = dict(
     tokenNFeature=("The feature that will hold the sequence number of the token.", ""),
     sentenceType=("The node type for the sentences", "sentence"),
     sentenceFeatures=("", ""),
-    sentenceNFeature=("The features in the sentence output by the NLP", ""),
+    sentenceNFeature=("The features in the sentence output by the NLP", "nsent"),
 )
 """Possible parameters."""
 
