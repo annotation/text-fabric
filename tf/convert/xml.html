@@ -39,7 +39,7 @@ to TF should deal with the intention behind the elements.</p>
 </div>
 <h2 id="whitespace">Whitespace</h2>
 <p>This converter does not read schemas and has no extra knowledge about the elements.</p>
-<p>Becasue of the lack of schema information we do not know exactly which white-space
+<p>Because of the lack of schema information we do not know exactly which white-space
 is significant. The only thing we do to whitespace is to condense each stretch
 of whitespace to a single space.</p>
 <p>Whether some of these spaces around tags must be ignored is a matter of further
@@ -75,6 +75,11 @@ The key under which the source version will be inserted is <code>xmlVersion</cod
 <p>dict, optional <code>{}</code></p>
 <p>Short descriptions for the features.
 Will be included in the metadata of the feature files, after <code>@description</code>.</p>
+<h3 id="procins">procins</h3>
+<p>boolean, optional <code>False</code></p>
+<p>If True, processing instructions will be treated.
+Processing instruction <code>&lt;?foo bar="xxx"?&gt;</code> will be converted as if it were an empty
+element named <code>foo</code> with attribute <code>bar</code> with value <code>xxx</code>.</p>
 <h1 id="usage">Usage</h1>
 <h2 id="commandline">Commandline</h2>
 <pre><code class="language-sh">tf-fromxml tasks flags
@@ -125,7 +130,7 @@ conversion code is demonstrated in the Greek New Testament:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L1-L1185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L1-L1215" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # XML import
@@ -150,7 +155,7 @@ the Text-Fabric browser is instantly usable.
 
 This converter does not read schemas and has no extra knowledge about the elements.
 
-Becasue of the lack of schema information we do not know exactly which white-space
+Because of the lack of schema information we do not know exactly which white-space
 is significant. The only thing we do to whitespace is to condense each stretch
 of whitespace to a single space.
 
@@ -196,6 +201,14 @@ dict, optional `{}`
 
 Short descriptions for the features.
 Will be included in the metadata of the feature files, after `@description`.
+
+### procins
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `&lt;?foo bar=&#34;xxx&#34;?&gt;` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
 
 # Usage
 
@@ -509,6 +522,8 @@ class XML:
         self.featureMeta = {
             k: dict(description=v) for (k, v) in featureDescriptions.items()
         }
+        procins = settings.get(&#34;procins&#34;, False)
+        self.procins = procins
 
         reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
@@ -608,6 +623,9 @@ class XML:
 
         if verbose &gt;= 0:
             console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
+            console(
+                f&#34;Processing instructions will be {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+            )
 
         self.refDir = refDir
         self.xmlVersion = xmlVersion
@@ -626,8 +644,7 @@ class XML:
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
-    @staticmethod
-    def getParser():
+    def getParser(self):
         &#34;&#34;&#34;Configure the lxml parser.
 
         See [parser options](https://lxml.de/parsing.html#parser-options).
@@ -637,11 +654,13 @@ class XML:
         object
             A configured lxml parse object.
         &#34;&#34;&#34;
+        procins = self.procins
+
         return etree.XMLParser(
             remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
-            remove_pis=True,
+            remove_pis=not procins,
             huge_tree=True,
         )
 
@@ -709,6 +728,8 @@ class XML:
             return
 
         verbose = self.verbose
+        procins = self.procins
+
         trimAtts = self.trimAtts
         keywordAtts = self.keywordAtts
         renameAtts = self.renameAtts
@@ -718,6 +739,10 @@ class XML:
 
         if verbose == 1:
             console(f&#34;XML to TF checking: {ux(xmlPath)} =&gt; {ux(reportPath)}&#34;)
+        if verbose &gt;= 0:
+            console(
+                f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+            )
 
         kindLabels = dict(
             keyword=&#34;Keyword Attributes&#34;,
@@ -737,11 +762,17 @@ class XML:
         def analyse(root, analysis):
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node):
-                qName = etree.QName(node.tag)
-                tag = qName.localname
-                ns = qName.namespace
-                atts = node.attrib
+            def nodeInfo(xnode):
+                if procins and isinstance(xnode, etree._ProcessingInstruction):
+                    target = xnode.target
+                    tag = f&#34;?{target}&#34;
+                    ns = &#34;&#34;
+                else:
+                    qName = etree.QName(xnode.tag)
+                    tag = qName.localname
+                    ns = qName.namespace
+
+                atts = xnode.attrib
 
                 tagByNs[tag][ns] += 1
 
@@ -762,7 +793,11 @@ class XML:
                             for w in words:
                                 dest[tag][k][w.strip()] += 1
 
-                for child in node.iterchildren(tag=etree.Element):
+                for child in xnode.iterchildren(
+                    tag=(etree.Element, etree.ProcessingInstruction)
+                    if procins
+                    else etree.Element
+                ):
                     nodeInfo(child)
 
             nodeInfo(root)
@@ -1329,7 +1364,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L1171-L1181" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L1201-L1211" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -1469,7 +1504,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L183-L1168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L191-L1198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class XML:
     def __init__(
@@ -1671,6 +1706,8 @@ relevant tf version:</p>
         self.featureMeta = {
             k: dict(description=v) for (k, v) in featureDescriptions.items()
         }
+        procins = settings.get(&#34;procins&#34;, False)
+        self.procins = procins
 
         reportDir = f&#34;{refDir}/report&#34;
         appDir = f&#34;{refDir}/app&#34;
@@ -1770,6 +1807,9 @@ relevant tf version:</p>
 
         if verbose &gt;= 0:
             console(f&#34;TF data version is {tfVersion} ({vRep})&#34;)
+            console(
+                f&#34;Processing instructions will be {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+            )
 
         self.refDir = refDir
         self.xmlVersion = xmlVersion
@@ -1788,8 +1828,7 @@ relevant tf version:</p>
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
-    @staticmethod
-    def getParser():
+    def getParser(self):
         &#34;&#34;&#34;Configure the lxml parser.
 
         See [parser options](https://lxml.de/parsing.html#parser-options).
@@ -1799,11 +1838,13 @@ relevant tf version:</p>
         object
             A configured lxml parse object.
         &#34;&#34;&#34;
+        procins = self.procins
+
         return etree.XMLParser(
             remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
-            remove_pis=True,
+            remove_pis=not procins,
             huge_tree=True,
         )
 
@@ -1871,6 +1912,8 @@ relevant tf version:</p>
             return
 
         verbose = self.verbose
+        procins = self.procins
+
         trimAtts = self.trimAtts
         keywordAtts = self.keywordAtts
         renameAtts = self.renameAtts
@@ -1880,6 +1923,10 @@ relevant tf version:</p>
 
         if verbose == 1:
             console(f&#34;XML to TF checking: {ux(xmlPath)} =&gt; {ux(reportPath)}&#34;)
+        if verbose &gt;= 0:
+            console(
+                f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+            )
 
         kindLabels = dict(
             keyword=&#34;Keyword Attributes&#34;,
@@ -1899,11 +1946,17 @@ relevant tf version:</p>
         def analyse(root, analysis):
             NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-            def nodeInfo(node):
-                qName = etree.QName(node.tag)
-                tag = qName.localname
-                ns = qName.namespace
-                atts = node.attrib
+            def nodeInfo(xnode):
+                if procins and isinstance(xnode, etree._ProcessingInstruction):
+                    target = xnode.target
+                    tag = f&#34;?{target}&#34;
+                    ns = &#34;&#34;
+                else:
+                    qName = etree.QName(xnode.tag)
+                    tag = qName.localname
+                    ns = qName.namespace
+
+                atts = xnode.attrib
 
                 tagByNs[tag][ns] += 1
 
@@ -1924,7 +1977,11 @@ relevant tf version:</p>
                             for w in words:
                                 dest[tag][k][w.strip()] += 1
 
-                for child in node.iterchildren(tag=etree.Element):
+                for child in xnode.iterchildren(
+                    tag=(etree.Element, etree.ProcessingInstruction)
+                    if procins
+                    else etree.Element
+                ):
                     nodeInfo(child)
 
             nodeInfo(root)
@@ -2458,45 +2515,6 @@ relevant tf version:</p>
 
         return self.good</code></pre>
 </details>
-<h3>Static methods</h3>
-<dl>
-<dt id="tf.convert.xml.XML.getParser"><code class="name flex">
-<span>def <span class="ident">getParser</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Configure the lxml parser.</p>
-<p>See <a href="https://lxml.de/parsing.html#parser-options">parser options</a>.</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>object</code></dt>
-<dd>A configured lxml parse object.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L500-L517" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">@staticmethod
-def getParser():
-    &#34;&#34;&#34;Configure the lxml parser.
-
-    See [parser options](https://lxml.de/parsing.html#parser-options).
-
-    Returns
-    -------
-    object
-        A configured lxml parse object.
-    &#34;&#34;&#34;
-    return etree.XMLParser(
-        remove_blank_text=False,
-        collect_ids=False,
-        remove_comments=True,
-        remove_pis=True,
-        huge_tree=True,
-    )</code></pre>
-</details>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="tf.convert.xml.XML.appTask"><code class="name flex">
@@ -2529,7 +2547,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L844-L1071" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L874-L1101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -2777,7 +2795,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L1075-L1108" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L1105-L1138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -2840,7 +2858,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L556-L764" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L570-L794" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -2869,6 +2887,8 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
         return
 
     verbose = self.verbose
+    procins = self.procins
+
     trimAtts = self.trimAtts
     keywordAtts = self.keywordAtts
     renameAtts = self.renameAtts
@@ -2878,6 +2898,10 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     if verbose == 1:
         console(f&#34;XML to TF checking: {ux(xmlPath)} =&gt; {ux(reportPath)}&#34;)
+    if verbose &gt;= 0:
+        console(
+            f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+        )
 
     kindLabels = dict(
         keyword=&#34;Keyword Attributes&#34;,
@@ -2897,11 +2921,17 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     def analyse(root, analysis):
         NUM_RE = re.compile(r&#34;&#34;&#34;[0-9]&#34;&#34;&#34;, re.S)
 
-        def nodeInfo(node):
-            qName = etree.QName(node.tag)
-            tag = qName.localname
-            ns = qName.namespace
-            atts = node.attrib
+        def nodeInfo(xnode):
+            if procins and isinstance(xnode, etree._ProcessingInstruction):
+                target = xnode.target
+                tag = f&#34;?{target}&#34;
+                ns = &#34;&#34;
+            else:
+                qName = etree.QName(xnode.tag)
+                tag = qName.localname
+                ns = qName.namespace
+
+            atts = xnode.attrib
 
             tagByNs[tag][ns] += 1
 
@@ -2922,7 +2952,11 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                         for w in words:
                             dest[tag][k][w.strip()] += 1
 
-            for child in node.iterchildren(tag=etree.Element):
+            for child in xnode.iterchildren(
+                tag=(etree.Element, etree.ProcessingInstruction)
+                if procins
+                else etree.Element
+            ):
                 nodeInfo(child)
 
         nodeInfo(root)
@@ -3067,7 +3101,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L768-L781" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L798-L811" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -3098,7 +3132,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L783-L796" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L813-L826" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -3114,6 +3148,43 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
     silent = AUTO if verbose == 1 else TERSE if verbose == 0 else DEEP
     TF = Fabric(locations=tfPath, silent=silent)
     return CV(TF, silent=silent)</code></pre>
+</details>
+</dd>
+<dt id="tf.convert.xml.XML.getParser"><code class="name flex">
+<span>def <span class="ident">getParser</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Configure the lxml parser.</p>
+<p>See <a href="https://lxml.de/parsing.html#parser-options">parser options</a>.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>object</code></dt>
+<dd>A configured lxml parse object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L513-L531" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getParser(self):
+    &#34;&#34;&#34;Configure the lxml parser.
+
+    See [parser options](https://lxml.de/parsing.html#parser-options).
+
+    Returns
+    -------
+    object
+        A configured lxml parse object.
+    &#34;&#34;&#34;
+    procins = self.procins
+
+    return etree.XMLParser(
+        remove_blank_text=False,
+        collect_ids=False,
+        remove_comments=True,
+        remove_pis=not procins,
+        huge_tree=True,
+    )</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.xml.XML.getXML"><code class="name flex">
@@ -3132,7 +3203,7 @@ that contains the file names in that folder, sorted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L519-L554" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L533-L568" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the XML source files.
@@ -3192,7 +3263,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L798-L840" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L828-L870" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -3273,7 +3344,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xml.py#L1110-L1168" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xml.py#L1140-L1198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -3405,6 +3476,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#generic">generic</a></li>
 <li><a href="#intfeatures">intFeatures</a></li>
 <li><a href="#featuredescriptions">featureDescriptions</a></li>
+<li><a href="#procins">procins</a></li>
 </ul>
 </li>
 </ul>

@@ -98,7 +98,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L1-L1191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L1-L1194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 
@@ -189,6 +189,7 @@ import sys
 import re
 
 from .recorder import Recorder
+from .helpers import CONVERSION_METHODS, CM_NLP
 from ..advanced.app import loadApp
 from ..tools.xmlschema import Analysis
 from ..tools.myspacy import tokensAndSentences
@@ -1133,6 +1134,8 @@ class NLPipeline:
             nsent=dict(
                 valueType=&#34;int&#34;,
                 description=&#34;number of sentence in corpus&#34;,
+                conversionMethod=CM_NLP,
+                conversionCode=CONVERSION_METHODS[CM_NLP],
             ),
             otext={
                 &#34;fmt:text-orig-full&#34;: &#34;{&#34;
@@ -1323,7 +1326,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L1179-L1187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L1182-L1190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
@@ -1405,7 +1408,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L161-L1176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L162-L1179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline:
     def __init__(
@@ -2280,6 +2283,8 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
             nsent=dict(
                 valueType=&#34;int&#34;,
                 description=&#34;number of sentence in corpus&#34;,
+                conversionMethod=CM_NLP,
+                conversionCode=CONVERSION_METHODS[CM_NLP],
             ),
             otext={
                 &#34;fmt:text-orig-full&#34;: &#34;{&#34;
@@ -2434,7 +2439,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L538-L540" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L539-L541" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def lingo(*args, **kwargs):
@@ -2470,7 +2475,7 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L343-L536" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L344-L537" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self):
     &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -2692,7 +2697,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L307-L341" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L308-L342" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -2806,7 +2811,7 @@ the element in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L542-L853" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L543-L854" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(
     self,
@@ -3182,7 +3187,7 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L855-L1063" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L856-L1066" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestTokensAndSentences(self, positions, tokenStream, sentenceStream):
     &#34;&#34;&#34;Ingests a tokens and sentences in a dataset and turn the tokens into slots.
@@ -3363,6 +3368,8 @@ sentence boundaries.</p>
         nsent=dict(
             valueType=&#34;int&#34;,
             description=&#34;number of sentence in corpus&#34;,
+            conversionMethod=CM_NLP,
+            conversionCode=CONVERSION_METHODS[CM_NLP],
         ),
         otext={
             &#34;fmt:text-orig-full&#34;: &#34;{&#34;
@@ -3414,7 +3421,7 @@ If not passed, take the verbose member of this object.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L268-L305" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L269-L306" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(self, app=None, verbose=None):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -3489,7 +3496,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/addnlp.py#L1065-L1176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/addnlp.py#L1068-L1179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xmlCustom.py#L1-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L1-L319" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from lxml import etree
@@ -35,14 +35,7 @@ from io import BytesIO
 from tf.core.helpers import console
 from tf.core.files import initTree, unexpanduser as ux
 
-from tf.convert.helpers import (
-    ZWSP,
-    XNEST,
-    TNEST,
-    CHAR,
-    FOLDER,
-    FILE
-)
+from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
 
 def convertTaskDefault(self):
@@ -58,12 +51,17 @@ def convertTaskDefault(self):
     if not self.good:
         return
 
+    procins = self.procins
     verbose = self.verbose
     tfPath = self.tfPath
     xmlPath = self.xmlPath
 
     if verbose == 1:
         console(f&#34;XML to TF converting: {ux(xmlPath)} =&gt; {ux(tfPath)}&#34;)
+    if verbose &gt;= 0:
+        console(
+            f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+        )
 
     slotType = CHAR
     otext = {
@@ -75,9 +73,7 @@ def convertTaskDefault(self):
     featureMeta = dict(
         str=dict(description=&#34;the text of a word&#34;),
         after=dict(description=&#34;the text after a word till the next word&#34;),
-        empty=dict(
-            description=&#34;whether a slot has been inserted in an empty element&#34;
-        ),
+        empty=dict(description=&#34;whether a slot has been inserted in an empty element&#34;),
     )
 
     featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
@@ -133,13 +129,12 @@ def getDirector(self):
         &#34;&#34;&#34;.strip().split()
     )
 
-    # CHECKING
-
     verbose = self.verbose
     xmlPath = self.xmlPath
     featureMeta = self.featureMeta
     transform = self.transform
     renameAtts = self.renameAtts
+    procins = self.procins
 
     transformFunc = (
         (lambda x: BytesIO(x.encode(&#34;utf-8&#34;)))
@@ -168,12 +163,21 @@ def getDirector(self):
         xnode: object
             An lxml element node.
         &#34;&#34;&#34;
-        tag = etree.QName(xnode.tag).localname
+        if procins and isinstance(xnode, etree._ProcessingInstruction):
+            target = xnode.target
+            tag = f&#34;?{target}&#34;
+        else:
+            tag = etree.QName(xnode.tag).localname
+
         cur[XNEST].append(tag)
 
         beforeChildren(cv, cur, xnode, tag)
 
-        for child in xnode.iterchildren(tag=etree.Element):
+        for child in xnode.iterchildren(
+            tag=(etree.Element, etree.ProcessingInstruction)
+            if procins
+            else etree.Element
+        ):
             walkNode(cv, cur, child)
 
         afterChildren(cv, cur, xnode, tag)
@@ -215,7 +219,7 @@ def getDirector(self):
             The tag of the lxml node.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
-            curNode = cv.xnode(tag)
+            curNode = cv.node(tag)
             cur[TNEST].append(curNode)
             atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
             atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
@@ -366,7 +370,7 @@ def getDirector(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xmlCustom.py#L18-L79" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L11-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTaskDefault(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -381,12 +385,17 @@ def getDirector(self):
     if not self.good:
         return
 
+    procins = self.procins
     verbose = self.verbose
     tfPath = self.tfPath
     xmlPath = self.xmlPath
 
     if verbose == 1:
         console(f&#34;XML to TF converting: {ux(xmlPath)} =&gt; {ux(tfPath)}&#34;)
+    if verbose &gt;= 0:
+        console(
+            f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
+        )
 
     slotType = CHAR
     otext = {
@@ -398,9 +407,7 @@ def getDirector(self):
     featureMeta = dict(
         str=dict(description=&#34;the text of a word&#34;),
         after=dict(description=&#34;the text after a word till the next word&#34;),
-        empty=dict(
-            description=&#34;whether a slot has been inserted in an empty element&#34;
-        ),
+        empty=dict(description=&#34;whether a slot has been inserted in an empty element&#34;),
     )
 
     featureMeta[&#34;ch&#34;] = dict(description=&#34;the unicode character of a slot&#34;)
@@ -452,7 +459,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/xmlCustom.py#L82-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L78-L319" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -478,13 +485,12 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         &#34;&#34;&#34;.strip().split()
     )
 
-    # CHECKING
-
     verbose = self.verbose
     xmlPath = self.xmlPath
     featureMeta = self.featureMeta
     transform = self.transform
     renameAtts = self.renameAtts
+    procins = self.procins
 
     transformFunc = (
         (lambda x: BytesIO(x.encode(&#34;utf-8&#34;)))
@@ -513,12 +519,21 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         xnode: object
             An lxml element node.
         &#34;&#34;&#34;
-        tag = etree.QName(xnode.tag).localname
+        if procins and isinstance(xnode, etree._ProcessingInstruction):
+            target = xnode.target
+            tag = f&#34;?{target}&#34;
+        else:
+            tag = etree.QName(xnode.tag).localname
+
         cur[XNEST].append(tag)
 
         beforeChildren(cv, cur, xnode, tag)
 
-        for child in xnode.iterchildren(tag=etree.Element):
+        for child in xnode.iterchildren(
+            tag=(etree.Element, etree.ProcessingInstruction)
+            if procins
+            else etree.Element
+        ):
             walkNode(cv, cur, child)
 
         afterChildren(cv, cur, xnode, tag)
@@ -560,7 +575,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
             The tag of the lxml node.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
-            curNode = cv.xnode(tag)
+            curNode = cv.node(tag)
             cur[TNEST].append(curNode)
             atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
             atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}

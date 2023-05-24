@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/helpers.py#L1-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L1-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -75,6 +75,120 @@ SECTION_MODELS = dict(
 
 
 SECTION_MODEL_DEFAULT = &#34;I&#34;
+
+CM_LIT = &#34;literal&#34;
+&#34;&#34;&#34;The value is taken literally from a TEI attribute.
+
+Code `tei`, since there is a 1-1 correspondence with the TEI source.
+&#34;&#34;&#34;
+
+CM_LITP = &#34;literal-processed&#34;
+&#34;&#34;&#34;The value results from straightforward processing of material in the TEI.
+
+Code `tei`, since there is a direct correspondence with the TEI source.
+
+*Straightforward* means: by taking into account the semantics of XML.
+
+Examples:
+
+*   Generated white space based on whether elements are pure or mixed;
+*   Edges between parent and child elements, or sibling elements.
+&#34;&#34;&#34;
+
+CM_LITC = &#34;literal-composed&#34;
+&#34;&#34;&#34;The value is results from more intricate processing of material in the TEI.
+
+*More intricate means*: we derive data that goes beyond pure XML syntax.
+
+Examples:
+
+*   The values of the `rend` attributes are translated into `rend_`*value* features;
+*   Adding features `is_meta` (being inside the TEI-header) and `is_note`
+    (being inside a note);
+*   The feature that gives the content of a (character) slot;
+*   Decomposing strings into words material and after-word material.
+
+Code `tf`, since this is for the benefit of the resulting TF dataset.
+&#34;&#34;&#34;
+
+CM_PROV = &#34;provided&#34;
+&#34;&#34;&#34;The value is added by the conversion to TF w.r.t. the material in the TEI.
+
+Examples:
+
+*   Slots in empty elements, in order to anchor the element to the text sequence;
+*   Section levels, based on the folder and file that the TEI source is in;
+*   A section level within the TEI, defined from several elements and the way they
+    are nested;
+
+Code `tf`, since this is for the benefit of the resulting TF dataset.
+&#34;&#34;&#34;
+
+CM_NLP = &#34;nlp-generated&#34;
+&#34;&#34;&#34;The value is added by an NLP pipeline w.r.t. the material in the TEI.
+
+Code `nlp`, since this comes from third party software.
+
+Examples:
+
+*   The feature `nsent` which gives the sentence number in the corpus.
+    Sentences are not encoded in the TEI, but detected by an NLP program such as Spacy.
+&#34;&#34;&#34;
+
+CONVERSION_METHODS = {
+    CM_LIT: &#34;tei&#34;,
+    CM_LITP: &#34;tei&#34;,
+    CM_LITC: &#34;tf&#34;,
+    CM_PROV: &#34;tf&#34;,
+    CM_NLP: &#34;nlp&#34;,
+}
+&#34;&#34;&#34;Information about the conversion.
+
+When we produce TF features, we specify a bit of information in the feature
+metadata as how we arrived at the specific value.
+
+That information ends up in two keys:
+
+*   `conversionMethod`: with values any of:
+    *   `CM_LIT`
+    *   `CM_LITP`
+    *   `CM_LITC`
+    *   `CM_PROV`
+    *   `CM_NLP`
+*   `conversionCode`: the value is derived from `conversionMethod` by looking it
+    up in this table. These values can be used to qualify the name of the attribute
+    for further processing.
+
+    For example, if you have a feature `n` that originates literally from the TEI,
+    you could pass it on as `tei:n`.
+
+    But if you have a feature `chapter` that is provided by the conversion,
+    you could pass it on as `tf:chapter`.
+
+    This passing on is a matter of other software, that takes the generated TF as
+    input and processes it further, e.g. as annotations.
+
+!!! note &#34;More methods and codes&#34;
+
+The TEI conversion is customizable by providing your own methods to several hooks
+in the program. These hooks may generate extra features, which you can give metadata
+in the `tei.yaml` file next to the `tei.py` file where you define the custom functions.
+
+It is advised to state appropriate values for the `conversionMethod` and
+`conversionCode` fields of these features.
+
+Examples:
+
+*   A feature `country` is derived from specific elements in the TEI Header, and
+    defined for nodes of type `letter`.
+    This happens in order to support the software of Team Text that shows the
+    text on a webpage.
+
+    In such a case you could define
+
+    *   `conversionMethod=&#34;derived&#34;
+    *   `conversionCode=&#34;tt&#34;
+&#34;&#34;&#34;
 
 
 def checkModel(kind, thisModel):
@@ -193,6 +307,7 @@ def setUp(kind):
             ),
             &#34;latest&#34;,
         ),
+        &#34;procins&#34;: (&#34;Whether to treat or ignore processing instructions&#34;, False),
     }
 
     flagSpec = dict(
@@ -203,6 +318,7 @@ def setUp(kind):
 
 def tweakTrans(
     template,
+    procins,
     wordAsSlot,
     parentEdges,
     siblingEdges,
@@ -210,6 +326,7 @@ def tweakTrans(
     sectionModel,
     sectionProperties,
     rendDesc,
+    extra,
 ):
     if wordAsSlot:
         slot = WORD
@@ -250,6 +367,16 @@ def tweakTrans(
         tokenWord = &#34;word&#34;
         hasToken = &#34;No&#34;
 
+    if extra:
+        hasExtra = &#34;Yes&#34;
+    else:
+        hasExtra = &#34;No&#34;
+
+    if procins:
+        doProcins = &#34;Yes&#34;
+    else:
+        doProcins = &#34;No&#34;
+
     levelNames = sectionProperties[&#34;levels&#34;]
 
     if sectionModel == &#34;II&#34;:
@@ -285,6 +412,10 @@ def tweakTrans(
     parentRemoveRe = re.compile(r&#34;«beginParent([^»]+)».*?«endParent\1»&#34;, re.S)
     siblingKeepRe = re.compile(rf&#34;«(?:begin|end)Sibling{hasSibling}»&#34;)
     siblingRemoveRe = re.compile(r&#34;«beginSibling([^»]+)».*?«endSibling\1»&#34;, re.S)
+    extraKeepRe = re.compile(rf&#34;«(?:begin|end)Extra{hasExtra}»&#34;)
+    extraRemoveRe = re.compile(r&#34;«beginExtra([^»]+)».*?«endToken\1»&#34;, re.S)
+    procinsKeepRe = re.compile(rf&#34;«(?:begin|end)Procins{doProcins}»&#34;)
+    procinsRemoveRe = re.compile(r&#34;«beginProcins([^»]+)».*?«endToken\1»&#34;, re.S)
 
     skipVars = re.compile(r&#34;«[^»]+»&#34;)
 
@@ -298,6 +429,7 @@ def tweakTrans(
         .replace(&#34;«nLevels»&#34;, nLevels)
         .replace(&#34;«sectionModel»&#34;, sectionModel)
         .replace(&#34;«rendDesc»&#34;, rendDescStr)
+        .replace(&#34;«extraFeatures»&#34;, extra)
     )
     if sectionModel == &#34;II&#34;:
         text = (
@@ -324,14 +456,133 @@ def tweakTrans(
     text = modelRemoveRe.sub(&#34;&#34;, text)
     text = slotKeepRe.sub(&#34;&#34;, text)
     text = slotRemoveRe.sub(&#34;&#34;, text)
+    text = extraKeepRe.sub(&#34;&#34;, text)
+    text = extraRemoveRe.sub(&#34;&#34;, text)
+    text = procinsKeepRe.sub(&#34;&#34;, text)
+    text = procinsRemoveRe.sub(&#34;&#34;, text)
 
     text = skipVars.sub(&#34;&#34;, text)
+
+    if extra:
+        text += dedent(
+            f&#34;&#34;&#34;
+            # Additional features
+
+            {extra}
+            &#34;&#34;&#34;
+        )
+
     return text</code></pre>
 </details>
 </section>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="tf.convert.helpers.CM_LIT"><code class="name">var <span class="ident">CM_LIT</span></code></dt>
+<dd>
+<div class="desc"><p>The value is taken literally from a TEI attribute.</p>
+<p>Code <code>tei</code>, since there is a 1-1 correspondence with the TEI source.</p></div>
+</dd>
+<dt id="tf.convert.helpers.CM_LITC"><code class="name">var <span class="ident">CM_LITC</span></code></dt>
+<dd>
+<div class="desc"><p>The value is results from more intricate processing of material in the TEI.</p>
+<p><em>More intricate means</em>: we derive data that goes beyond pure XML syntax.</p>
+<p>Examples:</p>
+<ul>
+<li>The values of the <code>rend</code> attributes are translated into <code>rend_</code><em>value</em> features;</li>
+<li>Adding features <code>is_meta</code> (being inside the TEI-header) and <code>is_note</code>
+(being inside a note);</li>
+<li>The feature that gives the content of a (character) slot;</li>
+<li>Decomposing strings into words material and after-word material.</li>
+</ul>
+<p>Code <code><a title="tf" href="../index.html">tf</a></code>, since this is for the benefit of the resulting TF dataset.</p></div>
+</dd>
+<dt id="tf.convert.helpers.CM_LITP"><code class="name">var <span class="ident">CM_LITP</span></code></dt>
+<dd>
+<div class="desc"><p>The value results from straightforward processing of material in the TEI.</p>
+<p>Code <code>tei</code>, since there is a direct correspondence with the TEI source.</p>
+<p><em>Straightforward</em> means: by taking into account the semantics of XML.</p>
+<p>Examples:</p>
+<ul>
+<li>Generated white space based on whether elements are pure or mixed;</li>
+<li>Edges between parent and child elements, or sibling elements.</li>
+</ul></div>
+</dd>
+<dt id="tf.convert.helpers.CM_NLP"><code class="name">var <span class="ident">CM_NLP</span></code></dt>
+<dd>
+<div class="desc"><p>The value is added by an NLP pipeline w.r.t. the material in the TEI.</p>
+<p>Code <code>nlp</code>, since this comes from third party software.</p>
+<p>Examples:</p>
+<ul>
+<li>The feature <code>nsent</code> which gives the sentence number in the corpus.
+Sentences are not encoded in the TEI, but detected by an NLP program such as Spacy.</li>
+</ul></div>
+</dd>
+<dt id="tf.convert.helpers.CM_PROV"><code class="name">var <span class="ident">CM_PROV</span></code></dt>
+<dd>
+<div class="desc"><p>The value is added by the conversion to TF w.r.t. the material in the TEI.</p>
+<p>Examples:</p>
+<ul>
+<li>Slots in empty elements, in order to anchor the element to the text sequence;</li>
+<li>Section levels, based on the folder and file that the TEI source is in;</li>
+<li>A section level within the TEI, defined from several elements and the way they
+are nested;</li>
+</ul>
+<p>Code <code><a title="tf" href="../index.html">tf</a></code>, since this is for the benefit of the resulting TF dataset.</p></div>
+</dd>
+<dt id="tf.convert.helpers.CONVERSION_METHODS"><code class="name">var <span class="ident">CONVERSION_METHODS</span></code></dt>
+<dd>
+<div class="desc"><p>Information about the conversion.</p>
+<p>When we produce TF features, we specify a bit of information in the feature
+metadata as how we arrived at the specific value.</p>
+<p>That information ends up in two keys:</p>
+<ul>
+<li><code>conversionMethod</code>: with values any of:<ul>
+<li><code><a title="tf.convert.helpers.CM_LIT" href="#tf.convert.helpers.CM_LIT">CM_LIT</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_LITP" href="#tf.convert.helpers.CM_LITP">CM_LITP</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_LITC" href="#tf.convert.helpers.CM_LITC">CM_LITC</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_PROV" href="#tf.convert.helpers.CM_PROV">CM_PROV</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_NLP" href="#tf.convert.helpers.CM_NLP">CM_NLP</a></code></li>
+</ul>
+</li>
+<li>
+<p><code>conversionCode</code>: the value is derived from <code>conversionMethod</code> by looking it
+up in this table. These values can be used to qualify the name of the attribute
+for further processing.</p>
+<p>For example, if you have a feature <code>n</code> that originates literally from the TEI,
+you could pass it on as <code>tei:n</code>.</p>
+<p>But if you have a feature <code>chapter</code> that is provided by the conversion,
+you could pass it on as <code>tf:chapter</code>.</p>
+<p>This passing on is a matter of other software, that takes the generated TF as
+input and processes it further, e.g. as annotations.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">More methods and codes</p>
+</div>
+<p>The TEI conversion is customizable by providing your own methods to several hooks
+in the program. These hooks may generate extra features, which you can give metadata
+in the <code>tei.yaml</code> file next to the <code>tei.py</code> file where you define the custom functions.</p>
+<p>It is advised to state appropriate values for the <code>conversionMethod</code> and
+<code>conversionCode</code> fields of these features.</p>
+<p>Examples:</p>
+<ul>
+<li>
+<p>A feature <code>country</code> is derived from specific elements in the TEI Header, and
+defined for nodes of type <code>letter</code>.
+This happens in order to support the software of Team Text that shows the
+text on a webpage.</p>
+<p>In such a case you could define</p>
+<ul>
+<li>`conversionMethod="derived"</li>
+<li>`conversionCode="tt"</li>
+</ul>
+</li>
+</ul></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
@@ -344,7 +595,7 @@ def tweakTrans(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/helpers.py#L50-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L164-L225" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkModel(kind, thisModel):
     modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
@@ -418,7 +669,7 @@ def tweakTrans(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/helpers.py#L114-L129" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L228-L243" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -446,7 +697,7 @@ def tweakTrans(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/helpers.py#L132-L171" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L246-L286" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -482,6 +733,7 @@ def tweakTrans(
             ),
             &#34;latest&#34;,
         ),
+        &#34;procins&#34;: (&#34;Whether to treat or ignore processing instructions&#34;, False),
     }
 
     flagSpec = dict(
@@ -491,17 +743,18 @@ def tweakTrans(
 </details>
 </dd>
 <dt id="tf.convert.helpers.tweakTrans"><code class="name flex">
-<span>def <span class="ident">tweakTrans</span></span>(<span>template, wordAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc)</span>
+<span>def <span class="ident">tweakTrans</span></span>(<span>template, procins, wordAsSlot, parentEdges, siblingEdges, tokenBased, sectionModel, sectionProperties, rendDesc, extra)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/29bf1db8e14eb671f1100b7186bef0b6d29d1cb7/tf/convert/helpers.py#L174-L299" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L289-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,
+    procins,
     wordAsSlot,
     parentEdges,
     siblingEdges,
@@ -509,6 +762,7 @@ def tweakTrans(
     sectionModel,
     sectionProperties,
     rendDesc,
+    extra,
 ):
     if wordAsSlot:
         slot = WORD
@@ -549,6 +803,16 @@ def tweakTrans(
         tokenWord = &#34;word&#34;
         hasToken = &#34;No&#34;
 
+    if extra:
+        hasExtra = &#34;Yes&#34;
+    else:
+        hasExtra = &#34;No&#34;
+
+    if procins:
+        doProcins = &#34;Yes&#34;
+    else:
+        doProcins = &#34;No&#34;
+
     levelNames = sectionProperties[&#34;levels&#34;]
 
     if sectionModel == &#34;II&#34;:
@@ -584,6 +848,10 @@ def tweakTrans(
     parentRemoveRe = re.compile(r&#34;«beginParent([^»]+)».*?«endParent\1»&#34;, re.S)
     siblingKeepRe = re.compile(rf&#34;«(?:begin|end)Sibling{hasSibling}»&#34;)
     siblingRemoveRe = re.compile(r&#34;«beginSibling([^»]+)».*?«endSibling\1»&#34;, re.S)
+    extraKeepRe = re.compile(rf&#34;«(?:begin|end)Extra{hasExtra}»&#34;)
+    extraRemoveRe = re.compile(r&#34;«beginExtra([^»]+)».*?«endToken\1»&#34;, re.S)
+    procinsKeepRe = re.compile(rf&#34;«(?:begin|end)Procins{doProcins}»&#34;)
+    procinsRemoveRe = re.compile(r&#34;«beginProcins([^»]+)».*?«endToken\1»&#34;, re.S)
 
     skipVars = re.compile(r&#34;«[^»]+»&#34;)
 
@@ -597,6 +865,7 @@ def tweakTrans(
         .replace(&#34;«nLevels»&#34;, nLevels)
         .replace(&#34;«sectionModel»&#34;, sectionModel)
         .replace(&#34;«rendDesc»&#34;, rendDescStr)
+        .replace(&#34;«extraFeatures»&#34;, extra)
     )
     if sectionModel == &#34;II&#34;:
         text = (
@@ -623,8 +892,22 @@ def tweakTrans(
     text = modelRemoveRe.sub(&#34;&#34;, text)
     text = slotKeepRe.sub(&#34;&#34;, text)
     text = slotRemoveRe.sub(&#34;&#34;, text)
+    text = extraKeepRe.sub(&#34;&#34;, text)
+    text = extraRemoveRe.sub(&#34;&#34;, text)
+    text = procinsKeepRe.sub(&#34;&#34;, text)
+    text = procinsRemoveRe.sub(&#34;&#34;, text)
 
     text = skipVars.sub(&#34;&#34;, text)
+
+    if extra:
+        text += dedent(
+            f&#34;&#34;&#34;
+            # Additional features
+
+            {extra}
+            &#34;&#34;&#34;
+        )
+
     return text</code></pre>
 </details>
 </dd>
@@ -693,6 +976,16 @@ setTimeout(() => input.focus(), 100);
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="tf.convert" href="index.html">tf.convert</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="two-column">
+<li><code><a title="tf.convert.helpers.CM_LIT" href="#tf.convert.helpers.CM_LIT">CM_LIT</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_LITC" href="#tf.convert.helpers.CM_LITC">CM_LITC</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_LITP" href="#tf.convert.helpers.CM_LITP">CM_LITP</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_NLP" href="#tf.convert.helpers.CM_NLP">CM_NLP</a></code></li>
+<li><code><a title="tf.convert.helpers.CM_PROV" href="#tf.convert.helpers.CM_PROV">CM_PROV</a></code></li>
+<li><code><a title="tf.convert.helpers.CONVERSION_METHODS" href="#tf.convert.helpers.CONVERSION_METHODS">CONVERSION_METHODS</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
