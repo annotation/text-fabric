@@ -18,6 +18,9 @@ See the app-specific tutorials via `tf.about.corpora`.
     `<page>` elements that contain the page material.
     Several options are available, e.g. to indicate whether the `<pb>` occur at the
     top of their pages or at their bottom. 
+*   TEI to TF conversion and XML to TF conversion: you can also opt in to have
+    processing instructions converted. They are treated in the same way as
+    empty elements.
 *   In pretty displays of query results, the features in the query are shown if
     the option `show query features` is on.
     If also the option `show standard features` is off, the standard features

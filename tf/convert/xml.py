@@ -21,7 +21,7 @@ the Text-Fabric browser is instantly usable.
 
 This converter does not read schemas and has no extra knowledge about the elements.
 
-Becasue of the lack of schema information we do not know exactly which white-space
+Because of the lack of schema information we do not know exactly which white-space
 is significant. The only thing we do to whitespace is to condense each stretch
 of whitespace to a single space.
 
@@ -67,6 +67,14 @@ dict, optional `{}`
 
 Short descriptions for the features.
 Will be included in the metadata of the feature files, after `@description`.
+
+### procins
+
+boolean, optional `False`
+
+If True, processing instructions will be treated.
+Processing instruction `<?foo bar="xxx"?>` will be converted as if it were an empty
+element named `foo` with attribute `bar` with value `xxx`.
 
 # Usage
 
@@ -380,6 +388,8 @@ class XML:
         self.featureMeta = {
             k: dict(description=v) for (k, v) in featureDescriptions.items()
         }
+        procins = settings.get("procins", False)
+        self.procins = procins
 
         reportDir = f"{refDir}/report"
         appDir = f"{refDir}/app"
@@ -479,6 +489,9 @@ class XML:
 
         if verbose >= 0:
             console(f"TF data version is {tfVersion} ({vRep})")
+            console(
+                f"Processing instructions will be {'treated' if procins else 'ignored'}"
+            )
 
         self.refDir = refDir
         self.xmlVersion = xmlVersion
@@ -497,8 +510,7 @@ class XML:
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
 
-    @staticmethod
-    def getParser():
+    def getParser(self):
         """Configure the lxml parser.
 
         See [parser options](https://lxml.de/parsing.html#parser-options).
@@ -508,11 +520,13 @@ class XML:
         object
             A configured lxml parse object.
         """
+        procins = self.procins
+
         return etree.XMLParser(
             remove_blank_text=False,
             collect_ids=False,
             remove_comments=True,
-            remove_pis=True,
+            remove_pis=not procins,
             huge_tree=True,
         )
 
@@ -580,6 +594,8 @@ class XML:
             return
 
         verbose = self.verbose
+        procins = self.procins
+
         trimAtts = self.trimAtts
         keywordAtts = self.keywordAtts
         renameAtts = self.renameAtts
@@ -589,6 +605,10 @@ class XML:
 
         if verbose == 1:
             console(f"XML to TF checking: {ux(xmlPath)} => {ux(reportPath)}")
+        if verbose >= 0:
+            console(
+                f"Processing instructions are {'treated' if procins else 'ignored'}"
+            )
 
         kindLabels = dict(
             keyword="Keyword Attributes",
@@ -608,11 +628,17 @@ class XML:
         def analyse(root, analysis):
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
-            def nodeInfo(node):
-                qName = etree.QName(node.tag)
-                tag = qName.localname
-                ns = qName.namespace
-                atts = node.attrib
+            def nodeInfo(xnode):
+                if procins and isinstance(xnode, etree._ProcessingInstruction):
+                    target = xnode.target
+                    tag = f"?{target}"
+                    ns = ""
+                else:
+                    qName = etree.QName(xnode.tag)
+                    tag = qName.localname
+                    ns = qName.namespace
+
+                atts = xnode.attrib
 
                 tagByNs[tag][ns] += 1
 
@@ -633,7 +659,11 @@ class XML:
                             for w in words:
                                 dest[tag][k][w.strip()] += 1
 
-                for child in node.iterchildren(tag=etree.Element):
+                for child in xnode.iterchildren(
+                    tag=(etree.Element, etree.ProcessingInstruction)
+                    if procins
+                    else etree.Element
+                ):
                     nodeInfo(child)
 
             nodeInfo(root)

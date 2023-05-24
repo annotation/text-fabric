@@ -5,14 +5,7 @@ from io import BytesIO
 from tf.core.helpers import console
 from tf.core.files import initTree, unexpanduser as ux
 
-from tf.convert.helpers import (
-    ZWSP,
-    XNEST,
-    TNEST,
-    CHAR,
-    FOLDER,
-    FILE
-)
+from tf.convert.helpers import ZWSP, XNEST, TNEST, CHAR, FOLDER, FILE
 
 
 def convertTaskDefault(self):
@@ -28,12 +21,17 @@ def convertTaskDefault(self):
     if not self.good:
         return
 
+    procins = self.procins
     verbose = self.verbose
     tfPath = self.tfPath
     xmlPath = self.xmlPath
 
     if verbose == 1:
         console(f"XML to TF converting: {ux(xmlPath)} => {ux(tfPath)}")
+    if verbose >= 0:
+        console(
+            f"Processing instructions are {'treated' if procins else 'ignored'}"
+        )
 
     slotType = CHAR
     otext = {
@@ -45,9 +43,7 @@ def convertTaskDefault(self):
     featureMeta = dict(
         str=dict(description="the text of a word"),
         after=dict(description="the text after a word till the next word"),
-        empty=dict(
-            description="whether a slot has been inserted in an empty element"
-        ),
+        empty=dict(description="whether a slot has been inserted in an empty element"),
     )
 
     featureMeta["ch"] = dict(description="the unicode character of a slot")
@@ -103,13 +99,12 @@ def getDirector(self):
         """.strip().split()
     )
 
-    # CHECKING
-
     verbose = self.verbose
     xmlPath = self.xmlPath
     featureMeta = self.featureMeta
     transform = self.transform
     renameAtts = self.renameAtts
+    procins = self.procins
 
     transformFunc = (
         (lambda x: BytesIO(x.encode("utf-8")))
@@ -138,12 +133,21 @@ def getDirector(self):
         xnode: object
             An lxml element node.
         """
-        tag = etree.QName(xnode.tag).localname
+        if procins and isinstance(xnode, etree._ProcessingInstruction):
+            target = xnode.target
+            tag = f"?{target}"
+        else:
+            tag = etree.QName(xnode.tag).localname
+
         cur[XNEST].append(tag)
 
         beforeChildren(cv, cur, xnode, tag)
 
-        for child in xnode.iterchildren(tag=etree.Element):
+        for child in xnode.iterchildren(
+            tag=(etree.Element, etree.ProcessingInstruction)
+            if procins
+            else etree.Element
+        ):
             walkNode(cv, cur, child)
 
         afterChildren(cv, cur, xnode, tag)
@@ -185,7 +189,7 @@ def getDirector(self):
             The tag of the lxml node.
         """
         if tag not in PASS_THROUGH:
-            curNode = cv.xnode(tag)
+            curNode = cv.node(tag)
             cur[TNEST].append(curNode)
             atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
             atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}

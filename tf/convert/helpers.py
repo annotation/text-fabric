@@ -46,6 +46,120 @@ SECTION_MODELS = dict(
 
 SECTION_MODEL_DEFAULT = "I"
 
+CM_LIT = "literal"
+"""The value is taken literally from a TEI attribute.
+
+Code `tei`, since there is a 1-1 correspondence with the TEI source.
+"""
+
+CM_LITP = "literal-processed"
+"""The value results from straightforward processing of material in the TEI.
+
+Code `tei`, since there is a direct correspondence with the TEI source.
+
+*Straightforward* means: by taking into account the semantics of XML.
+
+Examples:
+
+*   Generated white space based on whether elements are pure or mixed;
+*   Edges between parent and child elements, or sibling elements.
+"""
+
+CM_LITC = "literal-composed"
+"""The value is results from more intricate processing of material in the TEI.
+
+*More intricate means*: we derive data that goes beyond pure XML syntax.
+
+Examples:
+
+*   The values of the `rend` attributes are translated into `rend_`*value* features;
+*   Adding features `is_meta` (being inside the TEI-header) and `is_note`
+    (being inside a note);
+*   The feature that gives the content of a (character) slot;
+*   Decomposing strings into words material and after-word material.
+
+Code `tf`, since this is for the benefit of the resulting TF dataset.
+"""
+
+CM_PROV = "provided"
+"""The value is added by the conversion to TF w.r.t. the material in the TEI.
+
+Examples:
+
+*   Slots in empty elements, in order to anchor the element to the text sequence;
+*   Section levels, based on the folder and file that the TEI source is in;
+*   A section level within the TEI, defined from several elements and the way they
+    are nested;
+
+Code `tf`, since this is for the benefit of the resulting TF dataset.
+"""
+
+CM_NLP = "nlp-generated"
+"""The value is added by an NLP pipeline w.r.t. the material in the TEI.
+
+Code `nlp`, since this comes from third party software.
+
+Examples:
+
+*   The feature `nsent` which gives the sentence number in the corpus.
+    Sentences are not encoded in the TEI, but detected by an NLP program such as Spacy.
+"""
+
+CONVERSION_METHODS = {
+    CM_LIT: "tei",
+    CM_LITP: "tei",
+    CM_LITC: "tf",
+    CM_PROV: "tf",
+    CM_NLP: "nlp",
+}
+"""Information about the conversion.
+
+When we produce TF features, we specify a bit of information in the feature
+metadata as how we arrived at the specific value.
+
+That information ends up in two keys:
+
+*   `conversionMethod`: with values any of:
+    *   `CM_LIT`
+    *   `CM_LITP`
+    *   `CM_LITC`
+    *   `CM_PROV`
+    *   `CM_NLP`
+*   `conversionCode`: the value is derived from `conversionMethod` by looking it
+    up in this table. These values can be used to qualify the name of the attribute
+    for further processing.
+
+    For example, if you have a feature `n` that originates literally from the TEI,
+    you could pass it on as `tei:n`.
+
+    But if you have a feature `chapter` that is provided by the conversion,
+    you could pass it on as `tf:chapter`.
+
+    This passing on is a matter of other software, that takes the generated TF as
+    input and processes it further, e.g. as annotations.
+
+!!! note "More methods and codes"
+
+The TEI conversion is customizable by providing your own methods to several hooks
+in the program. These hooks may generate extra features, which you can give metadata
+in the `tei.yaml` file next to the `tei.py` file where you define the custom functions.
+
+It is advised to state appropriate values for the `conversionMethod` and
+`conversionCode` fields of these features.
+
+Examples:
+
+*   A feature `country` is derived from specific elements in the TEI Header, and
+    defined for nodes of type `letter`.
+    This happens in order to support the software of Team Text that shows the
+    text on a webpage.
+
+    In such a case you could define
+
+    *   `conversionMethod="derived"
+    *   `conversionCode="tt"
+"""
+
 
 def checkModel(kind, thisModel):
     modelDefault = PAGE_MODEL_DEFAULT if kind == "page" else SECTION_MODEL_DEFAULT
@@ -163,6 +277,7 @@ def setUp(kind):
             ),
             "latest",
         ),
+        "procins": ("Whether to treat or ignore processing instructions", False),
     }
 
     flagSpec = dict(
@@ -173,6 +288,7 @@ def setUp(kind):
 
 def tweakTrans(
     template,
+    procins,
     wordAsSlot,
     parentEdges,
     siblingEdges,
@@ -180,6 +296,7 @@ def tweakTrans(
     sectionModel,
     sectionProperties,
     rendDesc,
+    extra,
 ):
     if wordAsSlot:
         slot = WORD
@@ -220,6 +337,16 @@ def tweakTrans(
         tokenWord = "word"
         hasToken = "No"
 
+    if extra:
+        hasExtra = "Yes"
+    else:
+        hasExtra = "No"
+
+    if procins:
+        doProcins = "Yes"
+    else:
+        doProcins = "No"
+
     levelNames = sectionProperties["levels"]
 
     if sectionModel == "II":
@@ -255,6 +382,10 @@ def tweakTrans(
     parentRemoveRe = re.compile(r"«beginParent([^»]+)».*?«endParent\1»", re.S)
     siblingKeepRe = re.compile(rf"«(?:begin|end)Sibling{hasSibling}»")
     siblingRemoveRe = re.compile(r"«beginSibling([^»]+)».*?«endSibling\1»", re.S)
+    extraKeepRe = re.compile(rf"«(?:begin|end)Extra{hasExtra}»")
+    extraRemoveRe = re.compile(r"«beginExtra([^»]+)».*?«endToken\1»", re.S)
+    procinsKeepRe = re.compile(rf"«(?:begin|end)Procins{doProcins}»")
+    procinsRemoveRe = re.compile(r"«beginProcins([^»]+)».*?«endToken\1»", re.S)
 
     skipVars = re.compile(r"«[^»]+»")
 
@@ -268,6 +399,7 @@ def tweakTrans(
         .replace("«nLevels»", nLevels)
         .replace("«sectionModel»", sectionModel)
         .replace("«rendDesc»", rendDescStr)
+        .replace("«extraFeatures»", extra)
     )
     if sectionModel == "II":
         text = (
@@ -294,6 +426,20 @@ def tweakTrans(
     text = modelRemoveRe.sub("", text)
     text = slotKeepRe.sub("", text)
     text = slotRemoveRe.sub("", text)
+    text = extraKeepRe.sub("", text)
+    text = extraRemoveRe.sub("", text)
+    text = procinsKeepRe.sub("", text)
+    text = procinsRemoveRe.sub("", text)
 
     text = skipVars.sub("", text)
+
+    if extra:
+        text += dedent(
+            f"""
+            # Additional features
+
+            {extra}
+            """
+        )
+
     return text

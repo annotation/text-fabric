@@ -87,6 +87,7 @@ import sys
 import re
 
 from .recorder import Recorder
+from .helpers import CONVERSION_METHODS, CM_NLP
 from ..advanced.app import loadApp
 from ..tools.xmlschema import Analysis
 from ..tools.myspacy import tokensAndSentences
@@ -1031,6 +1032,8 @@ class NLPipeline:
             nsent=dict(
                 valueType="int",
                 description="number of sentence in corpus",
+                conversionMethod=CM_NLP,
+                conversionCode=CONVERSION_METHODS[CM_NLP],
             ),
             otext={
                 "fmt:text-orig-full": "{"

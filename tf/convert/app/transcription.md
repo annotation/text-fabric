@@ -31,6 +31,21 @@ In this dataset, **«slot»s** fullfill the role of slots.
     *   `sibling` edges correspond to TEI elements and their sibling elements 
 «endSiblingYes»
 *   Here are the [TEI elements and attributes](elements.md) used in this corpus.
+«beginProcinsYes»
+*   Text-Fabric *node types* that start with a `?` correspond to TEI processing 
+    instruction with that node type as target. The attributes of the processing
+    instruction translate to TF features. As to the link to slots: it is
+    treated as if it were an empty element.
+«endProcinsYes»
+«beginProcinsNo»
+*   Processing instructions in the TEI are ignored and do not leave any trace in the
+    TF data.
+«endProcinsNo»
+
+
+The conversion may invoke custom code which may generate extra features.
+For these features, metadata may have been declared, and it will show in the
+generated documentation.
 
 «token generation»
 
@@ -203,6 +218,15 @@ Note that edges can be traversed in both directions, see the
 * `E.sibling.b(node)` finds *all* siblings of a node
 
 «endSiblingYes»
+
+## Extra features
+
+«beginExtraYes»
+«extraFeatures»
+«endExtraYes»
+«beginExtraNo»
+The conversion has not generated extra features by means of custom code.
+«endExtraNo»
 
 ## Sectioning
 
@@ -492,7 +516,12 @@ On the other hand, the resulting TF should consist of clearly demarcated node ty
 and a simple list of features. In order to make that happen, we simplify matters
 a bit.
 
-1.  Processing instructions (`<!proc a="b">`) are ignored.
+«beginProcinsYes»
+1.  Processing instructions (`<?proc a="b">`) are treated as empty elements with as tag
+    the *target* with preceding `?` and as attributes its pseudo attributes.
+«endProcinsYes»
+«beginProcinsNo»
+1.  Processing instructions (`<?proc a="b">`) are ignored.
 1.  Comments (`<!-- this is a comment -->`) are ignored.
 1.  Declarations (`<?xml ...>` `<?xml-model ...>` `<?xml-stylesheet ...>`) are
     read by the parser, but do not leave traces in the TF output.
