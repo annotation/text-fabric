@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L1-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L1-L548" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -37,6 +37,7 @@ from ..core.helpers import console
 PRE = &#34;pre&#34;
 ZWSP = &#34;\u200b&#34;  # zero-width space
 
+NODE = &#34;node&#34;
 FOLDER = &#34;folder&#34;
 FILE = &#34;file&#34;
 CHAPTER = &#34;chapter&#34;
@@ -472,7 +473,109 @@ def tweakTrans(
             &#34;&#34;&#34;
         )
 
-    return text</code></pre>
+    return text
+
+
+def lookupSource(cv, cur, specs):
+    &#34;&#34;&#34;Looks up information from the current XML stack.
+
+    The current XML stack contains the ancestry of the current node, including
+    the current node itself.
+
+    It is a list of components, corresponding to the path from the root node to the
+    current node.
+    Each component is a tuple, consisting of the tag name and the attributes of
+    an XML node.
+
+    Against this stack a sequence of instructions, given in `specs`, is executed.
+    These instructions collect information from the stack, under certain conditions,
+    and put that information into a feature, as value for a certain node.
+
+    Here is an example of a single instruction:
+
+    Parameters
+    ----------
+    cv: object
+        The convertor object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+    specs: tuple
+        A sequence of instructions what to look for.
+        Each instruction has the following parts:
+
+        *   pathSpec
+        *   node type
+        *   featureName
+
+        The effect is:
+
+        The pathSpec is compared to the current XML stack.
+        If it matches the current node, the text content of the current node or one of
+        its attributes will be collected and put in a feature with name
+        `featureName`, for the current TF node of type `nodeType`.
+
+        The pathSpec is a list of components.
+        The first component should match the top of the XML stack, the second
+        component the element that is below the top, etc.
+        Each component is a tuple of
+
+        *   a tag name;
+        *   a dictionary of attribute values;
+
+        The first component may have a tag name that has `@` plus an attribute name
+        appended to it. That means that the information will be extracted from
+        that attribute, not from the content of the element.
+    &#34;&#34;&#34;
+    nest = cur[XNEST]
+    nNest = len(nest)
+
+    for (path, nodeType, feature) in specs:
+        nPath = len(path)
+
+        if nPath &gt; nNest:
+            continue
+
+        ok = True
+        extractAttr = None
+
+        for (p, (lookForTag, lookForAtts)) in enumerate(path):
+            (compareToTag, compareToAtts) = nest[-(p + 1)]
+
+            if p == 0:
+                pieces = lookForTag.split(&#34;@&#34;, 1)
+                if len(pieces) == 2:
+                    (lookForTag, extractAttr) = pieces
+                else:
+                    extractAttr = None
+            ok = compareToTag == lookForTag
+
+            if not ok:
+                break
+
+            if lookForAtts is not None:
+                for (att, val) in lookForAtts.items():
+                    if att not in compareToAtts or compareToAtts[att] != val:
+                        ok = False
+                        break
+
+            if not ok:
+                break
+
+        if not ok:
+            continue
+
+        targetNode = cur[NODE][nodeType]
+        sourceNode = cur[TNEST][-1]
+        slots = cv.linked(sourceNode)
+        sourceText = (
+            &#34;&#34;.join(cv.get(&#34;ch&#34;, (&#34;char&#34;, slot)) for slot in slots)
+            if extractAttr is None
+            else cv.get(extractAttr, sourceNode)
+        )
+        sourceText = (sourceText or &#34;&#34;).strip()
+        source = {feature: sourceText}
+        cv.feature(targetNode, **source)</code></pre>
 </details>
 </section>
 <section>
@@ -595,7 +698,7 @@ text on a webpage.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L164-L225" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L165-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkModel(kind, thisModel):
     modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
@@ -661,6 +764,162 @@ text on a webpage.</p>
     return dict(model=model, properties=properties)</code></pre>
 </details>
 </dd>
+<dt id="tf.convert.helpers.lookupSource"><code class="name flex">
+<span>def <span class="ident">lookupSource</span></span>(<span>cv, cur, specs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Looks up information from the current XML stack.</p>
+<p>The current XML stack contains the ancestry of the current node, including
+the current node itself.</p>
+<p>It is a list of components, corresponding to the path from the root node to the
+current node.
+Each component is a tuple, consisting of the tag name and the attributes of
+an XML node.</p>
+<p>Against this stack a sequence of instructions, given in <code>specs</code>, is executed.
+These instructions collect information from the stack, under certain conditions,
+and put that information into a feature, as value for a certain node.</p>
+<p>Here is an example of a single instruction:</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cv</code></strong> :&ensp;<code>object</code></dt>
+<dd>The convertor object, needed to issue actions.</dd>
+<dt><strong><code>cur</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Various pieces of data collected during walking
+and relevant for some next steps in the walk.</dd>
+<dt><strong><code>specs</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>
+<p>A sequence of instructions what to look for.
+Each instruction has the following parts:</p>
+<ul>
+<li>pathSpec</li>
+<li>node type</li>
+<li>featureName</li>
+</ul>
+<p>The effect is:</p>
+<p>The pathSpec is compared to the current XML stack.
+If it matches the current node, the text content of the current node or one of
+its attributes will be collected and put in a feature with name
+<code>featureName</code>, for the current TF node of type <code>nodeType</code>.</p>
+<p>The pathSpec is a list of components.
+The first component should match the top of the XML stack, the second
+component the element that is below the top, etc.
+Each component is a tuple of</p>
+<ul>
+<li>a tag name;</li>
+<li>a dictionary of attribute values;</li>
+</ul>
+<p>The first component may have a tag name that has <code>@</code> plus an attribute name
+appended to it. That means that the information will be extracted from
+that attribute, not from the content of the element.</p>
+</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L449-L548" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def lookupSource(cv, cur, specs):
+    &#34;&#34;&#34;Looks up information from the current XML stack.
+
+    The current XML stack contains the ancestry of the current node, including
+    the current node itself.
+
+    It is a list of components, corresponding to the path from the root node to the
+    current node.
+    Each component is a tuple, consisting of the tag name and the attributes of
+    an XML node.
+
+    Against this stack a sequence of instructions, given in `specs`, is executed.
+    These instructions collect information from the stack, under certain conditions,
+    and put that information into a feature, as value for a certain node.
+
+    Here is an example of a single instruction:
+
+    Parameters
+    ----------
+    cv: object
+        The convertor object, needed to issue actions.
+    cur: dict
+        Various pieces of data collected during walking
+        and relevant for some next steps in the walk.
+    specs: tuple
+        A sequence of instructions what to look for.
+        Each instruction has the following parts:
+
+        *   pathSpec
+        *   node type
+        *   featureName
+
+        The effect is:
+
+        The pathSpec is compared to the current XML stack.
+        If it matches the current node, the text content of the current node or one of
+        its attributes will be collected and put in a feature with name
+        `featureName`, for the current TF node of type `nodeType`.
+
+        The pathSpec is a list of components.
+        The first component should match the top of the XML stack, the second
+        component the element that is below the top, etc.
+        Each component is a tuple of
+
+        *   a tag name;
+        *   a dictionary of attribute values;
+
+        The first component may have a tag name that has `@` plus an attribute name
+        appended to it. That means that the information will be extracted from
+        that attribute, not from the content of the element.
+    &#34;&#34;&#34;
+    nest = cur[XNEST]
+    nNest = len(nest)
+
+    for (path, nodeType, feature) in specs:
+        nPath = len(path)
+
+        if nPath &gt; nNest:
+            continue
+
+        ok = True
+        extractAttr = None
+
+        for (p, (lookForTag, lookForAtts)) in enumerate(path):
+            (compareToTag, compareToAtts) = nest[-(p + 1)]
+
+            if p == 0:
+                pieces = lookForTag.split(&#34;@&#34;, 1)
+                if len(pieces) == 2:
+                    (lookForTag, extractAttr) = pieces
+                else:
+                    extractAttr = None
+            ok = compareToTag == lookForTag
+
+            if not ok:
+                break
+
+            if lookForAtts is not None:
+                for (att, val) in lookForAtts.items():
+                    if att not in compareToAtts or compareToAtts[att] != val:
+                        ok = False
+                        break
+
+            if not ok:
+                break
+
+        if not ok:
+            continue
+
+        targetNode = cur[NODE][nodeType]
+        sourceNode = cur[TNEST][-1]
+        slots = cv.linked(sourceNode)
+        sourceText = (
+            &#34;&#34;.join(cv.get(&#34;ch&#34;, (&#34;char&#34;, slot)) for slot in slots)
+            if extractAttr is None
+            else cv.get(extractAttr, sourceNode)
+        )
+        sourceText = (sourceText or &#34;&#34;).strip()
+        source = {feature: sourceText}
+        cv.feature(targetNode, **source)</code></pre>
+</details>
+</dd>
 <dt id="tf.convert.helpers.matchModel"><code class="name flex">
 <span>def <span class="ident">matchModel</span></span>(<span>properties, tag, atts)</span>
 </code></dt>
@@ -669,7 +928,7 @@ text on a webpage.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L228-L243" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L229-L244" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -697,7 +956,7 @@ text on a webpage.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L246-L286" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L247-L287" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -750,7 +1009,7 @@ text on a webpage.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/helpers.py#L289-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/helpers.py#L290-L446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,
@@ -991,6 +1250,7 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.convert.helpers.checkModel" href="#tf.convert.helpers.checkModel">checkModel</a></code></li>
+<li><code><a title="tf.convert.helpers.lookupSource" href="#tf.convert.helpers.lookupSource">lookupSource</a></code></li>
 <li><code><a title="tf.convert.helpers.matchModel" href="#tf.convert.helpers.matchModel">matchModel</a></code></li>
 <li><code><a title="tf.convert.helpers.setUp" href="#tf.convert.helpers.setUp">setUp</a></code></li>
 <li><code><a title="tf.convert.helpers.tweakTrans" href="#tf.convert.helpers.tweakTrans">tweakTrans</a></code></li>

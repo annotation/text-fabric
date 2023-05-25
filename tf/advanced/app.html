@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L1-L694" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L1-L723" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import types
 import traceback
@@ -250,20 +250,8 @@ Most of the Text-Fabric API has not been loaded.
                 textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
-                # docs = self.api.makeAvailableIn(hoist)
+                self.hoist(hoist)
                 self.api.makeAvailableIn(hoist)
-                if silent in {VERBOSE, AUTO, TERSE}:
-                    if self.inNb:
-                        dh(
-                            &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                            + outLink(
-                                &#34;N F E L T S C TF&#34;,
-                                APIREF,
-                                title=&#34;doc&#34;,
-                                asHtml=True,
-                            )
-                            + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
-                        )
 
             silentOff = self.silentOff
             silentOff()
@@ -277,6 +265,47 @@ The app &#34;{appName}&#34; will not work!
 &#34;&#34;&#34;,
                     error=True,
                 )
+
+    def hoist(self, hoist, silent=None):
+        &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
+
+        You can use this if you have loaded a dataset without the `hoist=globals()`
+        parameter, and want to hoist the API handles in the global scope after all,
+        without loading the data.
+
+        Or, if you have multiple datasets loaded, you can switch for which dataset
+        you have the API handles in global scope.
+
+        Parameters
+        ----------
+        hoist: dict
+            A dict of variables.
+            It makes only sense if you provide `globals()` for this parameter.
+            That is the dict of global variables in the scope where you call this
+            method.
+        silent: string, optional None
+            If passed, it is the verbosity. Otherwise the verbosity will be taken
+            from `self`.
+        &#34;&#34;&#34;
+        if silent is None:
+            silent = self.silent
+
+        if self.api:
+            self.api.makeAvailableIn(hoist)
+            if silent in {VERBOSE, AUTO, TERSE}:
+                if self.inNb:
+                    dh(
+                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                        + outLink(
+                            &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
+                            APIREF,
+                            title=&#34;doc&#34;,
+                            asHtml=True,
+                        )
+                        + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
+                    )
+        else:
+            console(&#34;No api activated for this dataset. No hoisting will take place&#34;)
 
     def load(self, features, silent=SILENT_D):
         &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -782,7 +811,7 @@ Do not give warning, and do not try to load the app in the non-legacy way.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L348-L612" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L377-L641" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findApp(
     appName,
@@ -1072,7 +1101,7 @@ The default is as silent as possible.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L666-L694" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L695-L723" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(silent=DEEP):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -1136,7 +1165,7 @@ a customization of it.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L615-L663" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L644-L692" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def useApp(appName, backend):
     &#34;&#34;&#34;Make use of a corpus.
@@ -1236,7 +1265,7 @@ loading features. Used to experiment with performance.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L57-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L57-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class App:
     def __init__(
@@ -1404,20 +1433,8 @@ Most of the Text-Fabric API has not been loaded.
                 textApi(self)
             setattr(self, &#34;isLoaded&#34;, self.api.isLoaded)
             if hoist:
-                # docs = self.api.makeAvailableIn(hoist)
+                self.hoist(hoist)
                 self.api.makeAvailableIn(hoist)
-                if silent in {VERBOSE, AUTO, TERSE}:
-                    if self.inNb:
-                        dh(
-                            &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
-                            + outLink(
-                                &#34;N F E L T S C TF&#34;,
-                                APIREF,
-                                title=&#34;doc&#34;,
-                                asHtml=True,
-                            )
-                            + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
-                        )
 
             silentOff = self.silentOff
             silentOff()
@@ -1431,6 +1448,47 @@ The app &#34;{appName}&#34; will not work!
 &#34;&#34;&#34;,
                     error=True,
                 )
+
+    def hoist(self, hoist, silent=None):
+        &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
+
+        You can use this if you have loaded a dataset without the `hoist=globals()`
+        parameter, and want to hoist the API handles in the global scope after all,
+        without loading the data.
+
+        Or, if you have multiple datasets loaded, you can switch for which dataset
+        you have the API handles in global scope.
+
+        Parameters
+        ----------
+        hoist: dict
+            A dict of variables.
+            It makes only sense if you provide `globals()` for this parameter.
+            That is the dict of global variables in the scope where you call this
+            method.
+        silent: string, optional None
+            If passed, it is the verbosity. Otherwise the verbosity will be taken
+            from `self`.
+        &#34;&#34;&#34;
+        if silent is None:
+            silent = self.silent
+
+        if self.api:
+            self.api.makeAvailableIn(hoist)
+            if silent in {VERBOSE, AUTO, TERSE}:
+                if self.inNb:
+                    dh(
+                        &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                        + outLink(
+                            &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
+                            APIREF,
+                            title=&#34;doc&#34;,
+                            asHtml=True,
+                        )
+                        + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
+                    )
+        else:
+            console(&#34;No api activated for this dataset. No hoisting will take place&#34;)
 
     def load(self, features, silent=SILENT_D):
         &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1543,6 +1601,74 @@ The app &#34;{appName}&#34; will not work!
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.advanced.app.App.hoist"><code class="name flex">
+<span>def <span class="ident">hoist</span></span>(<span>self, hoist, silent=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Hoist the API handles of this TF app to the global scope.</p>
+<p>You can use this if you have loaded a dataset without the <code>hoist=globals()</code>
+parameter, and want to hoist the API handles in the global scope after all,
+without loading the data.</p>
+<p>Or, if you have multiple datasets loaded, you can switch for which dataset
+you have the API handles in global scope.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>hoist</code></strong> :&ensp;<code>dict</code></dt>
+<dd>A dict of variables.
+It makes only sense if you provide <code>globals()</code> for this parameter.
+That is the dict of global variables in the scope where you call this
+method.</dd>
+<dt><strong><code>silent</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>If passed, it is the verbosity. Otherwise the verbosity will be taken
+from <code>self</code>.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L239-L278" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def hoist(self, hoist, silent=None):
+    &#34;&#34;&#34;Hoist the API handles of this TF app to the global scope.
+
+    You can use this if you have loaded a dataset without the `hoist=globals()`
+    parameter, and want to hoist the API handles in the global scope after all,
+    without loading the data.
+
+    Or, if you have multiple datasets loaded, you can switch for which dataset
+    you have the API handles in global scope.
+
+    Parameters
+    ----------
+    hoist: dict
+        A dict of variables.
+        It makes only sense if you provide `globals()` for this parameter.
+        That is the dict of global variables in the scope where you call this
+        method.
+    silent: string, optional None
+        If passed, it is the verbosity. Otherwise the verbosity will be taken
+        from `self`.
+    &#34;&#34;&#34;
+    if silent is None:
+        silent = self.silent
+
+    if self.api:
+        self.api.makeAvailableIn(hoist)
+        if silent in {VERBOSE, AUTO, TERSE}:
+            if self.inNb:
+                dh(
+                    &#34;&lt;div&gt;&lt;b&gt;Text-Fabric API:&lt;/b&gt; names &#34;
+                    + outLink(
+                        &#34;N F E L T S C TF Fs Fall Es Eall Cs Call&#34;,
+                        APIREF,
+                        title=&#34;doc&#34;,
+                        asHtml=True,
+                    )
+                    + &#34; directly usable&lt;/div&gt;&lt;hr&gt;&#34;
+                )
+    else:
+        console(&#34;No api activated for this dataset. No hoisting will take place&#34;)</code></pre>
+</details>
+</dd>
 <dt id="tf.advanced.app.App.load"><code class="name flex">
 <span>def <span class="ident">load</span></span>(<span>self, features, silent='auto')</span>
 </code></dt>
@@ -1567,7 +1693,7 @@ without directory information and without extension.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L251-L275" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L280-L304" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def load(self, features, silent=SILENT_D):
     &#34;&#34;&#34;Loads extra features in addition to the main dataset.
@@ -1605,7 +1731,7 @@ It is called by <code>reuse</code>. Hence it needs to be present.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L277-L282" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L306-L311" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reinit(self):
     &#34;&#34;&#34;TF-Apps may override this method.
@@ -1640,7 +1766,7 @@ call <code>reuse</code> and <code><a title="tf.advanced.settings.showContext" hr
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/advanced/app.py#L284-L345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/advanced/app.py#L313-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reuse(self, hoist=False):
     &#34;&#34;&#34;Re-initialize the app.
@@ -1786,6 +1912,7 @@ setTimeout(() => input.focus(), 100);
 <h4><code><a title="tf.advanced.app.App" href="#tf.advanced.app.App">App</a></code></h4>
 <ul class="">
 <li><code><a title="tf.advanced.app.App.context" href="#tf.advanced.app.App.context">context</a></code></li>
+<li><code><a title="tf.advanced.app.App.hoist" href="#tf.advanced.app.App.hoist">hoist</a></code></li>
 <li><code><a title="tf.advanced.app.App.load" href="#tf.advanced.app.App.load">load</a></code></li>
 <li><code><a title="tf.advanced.app.App.reinit" href="#tf.advanced.app.App.reinit">reinit</a></code></li>
 <li><code><a title="tf.advanced.app.App.reuse" href="#tf.advanced.app.App.reuse">reuse</a></code></li>

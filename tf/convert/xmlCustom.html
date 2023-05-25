@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L1-L319" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/xmlCustom.py#L1-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from lxml import etree
@@ -169,9 +169,12 @@ def getDirector(self):
         else:
             tag = etree.QName(xnode.tag).localname
 
-        cur[XNEST].append(tag)
+        atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+        atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
 
-        beforeChildren(cv, cur, xnode, tag)
+        cur[XNEST].append((tag, atts))
+
+        beforeChildren(cv, cur, xnode, tag, atts)
 
         for child in xnode.iterchildren(
             tag=(etree.Element, etree.ProcessingInstruction)
@@ -180,9 +183,9 @@ def getDirector(self):
         ):
             walkNode(cv, cur, child)
 
-        afterChildren(cv, cur, xnode, tag)
+        afterChildren(cv, cur, xnode, tag, atts)
         cur[XNEST].pop()
-        afterTag(cv, cur, xnode, tag)
+        afterTag(cv, cur, xnode, tag, atts)
 
     def addSlot(cv, cur, ch):
         &#34;&#34;&#34;Add a slot.
@@ -203,7 +206,7 @@ def getDirector(self):
         s = cv.slot()
         cv.feature(s, ch=ch)
 
-    def beforeChildren(cv, cur, xnode, tag):
+    def beforeChildren(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
         Parameters
@@ -217,12 +220,12 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
             cur[TNEST].append(curNode)
-            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
-            atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
 
@@ -231,7 +234,7 @@ def getDirector(self):
             for ch in textMaterial:
                 addSlot(cv, cur, ch)
 
-    def afterChildren(cv, cur, xnode, tag):
+    def afterChildren(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
 
         Here we make sure that the newline elements will get their last slot
@@ -248,6 +251,8 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -258,7 +263,7 @@ def getDirector(self):
 
             cv.terminate(curNode)
 
-    def afterTag(cv, cur, xnode, tag):
+    def afterTag(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
         This is the place where we proces the `tail` of an lxml node: the
@@ -276,6 +281,8 @@ def getDirector(self):
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
@@ -370,7 +377,7 @@ def getDirector(self):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L11-L75" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/xmlCustom.py#L11-L75" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTaskDefault(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -459,7 +466,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/364c2dc19ad8c2d05ff318e3f1fba948f2e05c0f/tf/convert/xmlCustom.py#L78-L319" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/xmlCustom.py#L78-L326" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -525,9 +532,12 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         else:
             tag = etree.QName(xnode.tag).localname
 
-        cur[XNEST].append(tag)
+        atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
+        atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
 
-        beforeChildren(cv, cur, xnode, tag)
+        cur[XNEST].append((tag, atts))
+
+        beforeChildren(cv, cur, xnode, tag, atts)
 
         for child in xnode.iterchildren(
             tag=(etree.Element, etree.ProcessingInstruction)
@@ -536,9 +546,9 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         ):
             walkNode(cv, cur, child)
 
-        afterChildren(cv, cur, xnode, tag)
+        afterChildren(cv, cur, xnode, tag, atts)
         cur[XNEST].pop()
-        afterTag(cv, cur, xnode, tag)
+        afterTag(cv, cur, xnode, tag, atts)
 
     def addSlot(cv, cur, ch):
         &#34;&#34;&#34;Add a slot.
@@ -559,7 +569,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
         s = cv.slot()
         cv.feature(s, ch=ch)
 
-    def beforeChildren(cv, cur, xnode, tag):
+    def beforeChildren(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Actions before dealing with the element&#39;s children.
 
         Parameters
@@ -573,12 +583,12 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cv.node(tag)
             cur[TNEST].append(curNode)
-            atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
-            atts = {renameAtts.get(k, k): v for (k, v) in atts.items()}
             if len(atts):
                 cv.feature(curNode, **atts)
 
@@ -587,7 +597,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
             for ch in textMaterial:
                 addSlot(cv, cur, ch)
 
-    def afterChildren(cv, cur, xnode, tag):
+    def afterChildren(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children, but before the end tag.
 
         Here we make sure that the newline elements will get their last slot
@@ -604,6 +614,8 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if tag not in PASS_THROUGH:
             curNode = cur[TNEST].pop()
@@ -614,7 +626,7 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
 
             cv.terminate(curNode)
 
-    def afterTag(cv, cur, xnode, tag):
+    def afterTag(cv, cur, xnode, tag, atts):
         &#34;&#34;&#34;Node actions after dealing with the children and after the end tag.
 
         This is the place where we proces the `tail` of an lxml node: the
@@ -632,6 +644,8 @@ object. If you then tweak it, you can pass it to the XML() object constructor.</
             An lxml element node.
         tag: string
             The tag of the lxml node.
+        atts: dict
+            The attributes of the lxml node, possibly renamed.
         &#34;&#34;&#34;
         if xnode.tail:
             tailMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.tail)
