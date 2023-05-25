@@ -405,10 +405,8 @@ from .helpers import (
     checkModel,
     matchModel,
     lookupSource,
-    FOLDER,
+    NODE,
     FILE,
-    CHAPTER,
-    CHUNK,
     PRE,
     ZWSP,
     XNEST,
@@ -1264,6 +1262,8 @@ class TEI:
         initTree(reportPath)
         initTree(docsDir)
 
+        nProcins = 0
+
         def analyse(root, analysis):
             FORMAT_ATTS = set(
                 """
@@ -1299,10 +1299,13 @@ class TEI:
             NUM_RE = re.compile(r"""[0-9]""", re.S)
 
             def nodeInfo(xnode):
+                nonlocal nProcins
+
                 if procins and isinstance(xnode, etree._ProcessingInstruction):
                     target = xnode.target
                     tag = f"?{target}"
                     ns = ""
+                    nProcins += 1
                 else:
                     qName = etree.QName(xnode.tag)
                     tag = qName.localname
@@ -1388,6 +1391,10 @@ class TEI:
                             f"{tag:<16} : {amount:>5}x {ns}\n"
                         )
 
+            if procins:
+                plural = "" if nProcins == 1 else "s"
+                console(f"{nProcins} processing instruction{plural} encountered.")
+
             console(
                 f"{nTags} tags of which {nErrors} with multiple namespaces "
                 f"written to {errorFile}"
@@ -1416,8 +1423,11 @@ class TEI:
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
                     if tag:
-                        (typ, mixed) = elementDefs[tag]
-                        extraInfo = f"{'mixed' if mixed else 'pure '}: "
+                        if tag.startswith("?"):
+                            extraInfo = "pi"
+                        else:
+                            (typ, mixed) = elementDefs[tag]
+                            extraInfo = f"{'mixed' if mixed else 'pure '}: "
                     else:
                         extraInfo = ""
                     fh.write(
@@ -1754,6 +1764,9 @@ class TEI:
             cur: dict
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
+
+                The subdict `cur["node"]` is used to store the currently generated
+                nodes by node type.
             xnode: object
                 An lxml element node.
             """
@@ -2025,7 +2038,7 @@ class TEI:
             ch: string
                 A single character, the next slot in the result data.
             """
-            curWord = cur[WORD]
+            curWord = cur[NODE][WORD]
             if not curWord:
                 prevWord = cur["prevWord"]
                 if prevWord is not None:
@@ -2035,7 +2048,7 @@ class TEI:
                         curWord = cv.slot()
                     else:
                         curWord = cv.node(WORD)
-                    cur[WORD] = curWord
+                    cur[NODE][WORD] = curWord
                     addSlotFeatures(cv, cur, curWord)
 
             if ch is not None:
@@ -2061,12 +2074,12 @@ class TEI:
                 Whether to add a newline or space after the word.
                 That depends on whether there is a mixed ancestor.
             """
-            curWord = cur[WORD]
+            curWord = cur[NODE][WORD]
             if curWord:
                 cv.feature(curWord, str=cur["wordStr"])
                 if not wordAsSlot:
                     cv.terminate(curWord)
-                cur[WORD] = None
+                cur[NODE][WORD] = None
                 cur["wordStr"] = ""
                 cur["prevWord"] = curWord
                 cur["afterStr"] = ""
@@ -2095,7 +2108,7 @@ class TEI:
             """
             finishWord(cv, cur, None, False)
             startWord(cv, cur, ZWSP)
-            emptyNode = cur[WORD]
+            emptyNode = cur[NODE][WORD]
             cv.feature(emptyNode, empty=1)
 
             if not wordAsSlot:
@@ -2156,7 +2169,7 @@ class TEI:
                 finishWord(cv, cur, ch, False)
 
             if wordAsSlot:
-                s = cur[WORD]
+                s = cur[NODE][WORD]
             elif ch is None:
                 s = None
             else:
@@ -2198,13 +2211,16 @@ class TEI:
                 Various pieces of data collected during walking
                 and relevant for some next steps in the walk.
             """
-            slots = cv.linked(cur["page"])
+            pageProperties = self.pageProperties
+            pageType = pageProperties["nodeType"]
+
+            slots = cv.linked(cur[NODE][pageType])
             empty = len(slots) == 0
             if empty:
                 lastSlot = addEmpty(cv, cur)
                 if cur["inNote"]:
                     cv.feature(lastSlot, is_note=1)
-            cv.terminate(cur["page"])
+            cv.terminate(cur[NODE][pageType])
 
         def beforeTag(cv, cur, xnode, tag, atts):
             """Actions before dealing with the element's tag.
@@ -2244,8 +2260,8 @@ class TEI:
             """
             pageModel = self.pageModel
             pageProperties = self.pageProperties
-            pbAtTop = pageProperties["pbAtTop"]
             pageType = pageProperties["nodeType"]
+            pbAtTop = pageProperties["pbAtTop"]
             sectionProperties = self.sectionProperties
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
@@ -2263,7 +2279,7 @@ class TEI:
                     pass
                 else:
                     # the page starts with the container
-                    cur["page"] = cv.node(pageType)
+                    cur[NODE][pageType] = cv.node(pageType)
 
             if sectionModel == "II":
                 chapterSection = self.chapterSection
@@ -2271,19 +2287,19 @@ class TEI:
 
                 if isChapter(cur):
                     cur["chapterNum"] += 1
-                    cur["prevChapter"] = cur.get(CHAPTER, None)
-                    cur[CHAPTER] = cv.node(chapterSection)
+                    cur["prevChapter"] = cur[NODE].get(chapterSection, None)
+                    cur[NODE][chapterSection] = cv.node(chapterSection)
                     for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[CHAPTER], danglingSlot)
+                        cv.link(cur[NODE][chapterSection], danglingSlot)
 
                     value = {chapterSection: f"{cur['chapterNum']} {tag}"}
-                    cv.feature(cur[CHAPTER], **value)
+                    cv.feature(cur[NODE][chapterSection], **value)
                     cur["chunkPNum"] = 0
                     cur["chunkONum"] = 0
-                    cur["prevChunk"] = cur.get(CHUNK, None)
-                    cur[CHUNK] = cv.node(chunkSection)
+                    cur["prevChunk"] = cur[NODE].get(chunkSection, None)
+                    cur[NODE][chunkSection] = cv.node(chunkSection)
                     for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[CHUNK], danglingSlot)
+                        cv.link(cur[NODE][chunkSection], danglingSlot)
                     cur["danglingSlots"] = set()
                     cur["infirstChunk"] = True
 
@@ -2294,9 +2310,9 @@ class TEI:
                     if cur["infirstChunk"]:
                         cur["infirstChunk"] = False
                     else:
-                        cur[CHUNK] = cv.node(chunkSection)
+                        cur[NODE][chunkSection] = cv.node(chunkSection)
                         for danglingSlot in cur["danglingSlots"]:
-                            cv.link(cur[CHUNK], danglingSlot)
+                            cv.link(cur[NODE][chunkSection], danglingSlot)
                         cur["danglingSlots"] = set()
                     if tag == "p":
                         cur["chunkPNum"] += 1
@@ -2305,14 +2321,14 @@ class TEI:
                         cur["chunkONum"] -= 1
                         cn = cur["chunkONum"]
                     value = {chunkSection: cn}
-                    cv.feature(cur[CHUNK], **value)
+                    cv.feature(cur[NODE][chunkSection], **value)
 
                 if matchModel(sectionProperties, tag, atts):
                     heading = etree.tostring(
                         xnode, encoding="unicode", method="text", with_tail=False
                     ).replace("\n", " ")
                     value = {chapterSection: heading}
-                    cv.feature(cur[CHAPTER], **value)
+                    cv.feature(cur[NODE][chapterSection], **value)
                     chapterNum = cur["chapterNum"]
                     console(f"\rchapter {chapterNum:>4} {heading:<50}", newline=False)
             else:
@@ -2320,19 +2336,19 @@ class TEI:
 
                 if isChunk(cur):
                     cur["chunkNum"] += 1
-                    cur["prevChunk"] = cur.get(CHUNK, None)
-                    cur[CHUNK] = cv.node(chunkSection)
+                    cur["prevChunk"] = cur[NODE].get(chunkSection, None)
+                    cur[NODE][chunkSection] = cv.node(chunkSection)
                     for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[CHUNK], danglingSlot)
+                        cv.link(cur[NODE][chunkSection], danglingSlot)
                     cur["danglingSlots"] = set()
                     value = {chunkSection: cur["chunkNum"]}
-                    cv.feature(cur[CHUNK], **value)
+                    cv.feature(cur[NODE][chunkSection], **value)
 
             if tag == TEI_HEADER:
                 cur["inHeader"] = True
                 if sectionModel == "II":
                     value = {chapterSection: "TEI header"}
-                    cv.feature(cur[CHAPTER], **value)
+                    cv.feature(cur[NODE][chapterSection], **value)
             if tag in NOTE_LIKE:
                 cur["inNote"] = True
                 finishWord(cv, cur, None, False)
@@ -2341,25 +2357,26 @@ class TEI:
 
             if inPage and tag == "pb":
                 if pbAtTop:
-                    if cur["page"] is not None:
+                    if cur[NODE][pageType] is not None:
                         endPage(cv, cur)
-                    cur["page"] = cv.node(pageType)
+                    cur[NODE][pageType] = cv.node(pageType)
                     if len(atts):
-                        cv.feature(cur["page"], **atts)
+                        cv.feature(cur[NODE][pageType], **atts)
                 else:
-                    if cur["page"] is not None:
+                    if cur[NODE][pageType] is not None:
                         if len(cur["pageAtts"]):
-                            cv.feature(cur["page"], **cur["pageAtts"])
+                            cv.feature(cur[NODE][pageType], **cur["pageAtts"])
                         endPage(cv, cur)
-                    cur["page"] = cv.node(pageType)
+                    cur[NODE][pageType] = cv.node(pageType)
                     cur["pageAtts"] = atts
 
             elif tag not in PASS_THROUGH:
                 cur["afterSpace"] = False
-                curNode = cv.node(tag)
+                cur[NODE][tag] = cv.node(tag)
+                curNode = cur[NODE][tag]
                 if wordAsSlot:
-                    if cur[WORD]:
-                        cv.link(curNode, [cur[WORD][1]])
+                    if cur[NODE][WORD]:
+                        cv.link(curNode, [cur[NODE][WORD][1]])
                 if len(atts):
                     cv.feature(curNode, **atts)
                     if "rend" in atts:
@@ -2409,10 +2426,17 @@ class TEI:
             atts: string
                 The attributes of the lxml node, with namespaces stripped.
             """
+            chunkSection = self.chunkSection
+            pageProperties = self.pageProperties
+            pageType = pageProperties["nodeType"]
             pageModel = self.pageModel
             pageProperties = self.pageProperties
             pbAtTop = pageProperties["pbAtTop"]
             sectionModel = self.sectionModel
+
+            if sectionModel == "II":
+                chapterSection = self.chapterSection
+
             extraInstructions = self.extraInstructions
 
             if len(extraInstructions):
@@ -2460,14 +2484,14 @@ class TEI:
                     # take care that this empty slot falls under all sections
                     # for folders and files this is already guaranteed
                     # We need only to watch out for chapters and chunks
-                    if cur.get(CHUNK, None) is None:
+                    if cur[NODE].get(chunkSection, None) is None:
                         prevChunk = cur.get("prevChunk", None)
                         if prevChunk is None:
                             cur["danglingSlots"].add(lastSlot)
                         else:
                             cv.link(prevChunk, lastSlot)
                     if sectionModel == "II":
-                        if cur.get(CHAPTER, None) is None:
+                        if cur[NODE].get(chapterSection, None) is None:
                             prevChapter = cur.get("prevChapter", None)
                             if prevChapter is None:
                                 cur["danglingSlots"].add(lastSlot)
@@ -2479,21 +2503,21 @@ class TEI:
             if isChnk:
                 if not hasFinishedWord:
                     finishWord(cv, cur, None, True)
-                cv.terminate(cur[CHUNK])
+                cv.terminate(cur[NODE][chunkSection])
             if sectionModel == "II":
                 if isChap:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, True)
-                    cv.terminate(cur[CHAPTER])
+                    cv.terminate(cur[NODE][chapterSection])
             if isPageContainer:
                 if pbAtTop:
                     # the page ends with the container
-                    if cur["page"] is not None:
+                    if cur[NODE][pageType] is not None:
                         endPage(cv, cur)
                 else:
                     # material after the last pb is not in a page
-                    if cur["page"] is not None:
-                        cv.delete(cur["page"])
+                    if cur[NODE][pageType] is not None:
+                        cv.delete(cur[NODE][pageType])
                 cur["inPage"] = False
 
         def afterTag(cv, cur, xnode, tag, atts):
@@ -2564,6 +2588,8 @@ class TEI:
             cv: object
                 The convertor object, needed to issue actions.
             """
+            pageProperties = self.pageProperties
+            pageType = pageProperties["nodeType"]
             sectionModel = self.sectionModel
             elementDefs = self.elementDefs
 
@@ -2574,6 +2600,7 @@ class TEI:
             cur["mixedElems"] = {
                 x for (x, (typ, mixed)) in elementDefs.items() if mixed
             }
+            cur[NODE] = {}
 
             if sectionModel == "I":
                 folderSection = self.folderSection
@@ -2583,17 +2610,17 @@ class TEI:
                 for (xmlFolder, xmlFiles) in self.getXML():
                     console(f"Start folder {xmlFolder}:")
 
-                    cur[FOLDER] = cv.node(folderSection)
+                    cur[NODE][folderSection] = cv.node(folderSection)
                     value = {folderSection: xmlFolder}
-                    cv.feature(cur[FOLDER], **value)
+                    cv.feature(cur[NODE][folderSection], **value)
 
                     for xmlFile in xmlFiles:
                         i += 1
                         console(f"\r{i:>4} {xmlFile:<50}", newline=False)
 
-                        cur[fileSection] = cv.node(fileSection)
+                        cur[NODE][fileSection] = cv.node(fileSection)
                         value = {fileSection: xmlFile.removesuffix(".xml")}
-                        cv.feature(cur[fileSection], **value)
+                        cv.feature(cur[NODE][fileSection], **value)
 
                         with open(
                             f"{teiPath}/{xmlFolder}/{xmlFile}", encoding="utf8"
@@ -2602,9 +2629,10 @@ class TEI:
                             text = transformFunc(text)
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
+                            cur[NODE][pageType] = None
+                            cur[NODE][WORD] = None
                             cur["inHeader"] = False
                             cur["inPage"] = False
-                            cur["page"] = None
                             cur["pageAtts"] = None
                             cur["inNote"] = False
                             cur[XNEST] = []
@@ -2613,7 +2641,6 @@ class TEI:
                             cur["chunkNum"] = 0
                             cur["prevChunk"] = None
                             cur["danglingSlots"] = set()
-                            cur[WORD] = None
                             cur["prevWord"] = None
                             cur["wordStr"] = ""
                             cur["afterStr"] = ""
@@ -2622,11 +2649,11 @@ class TEI:
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
-                        cv.terminate(cur[fileSection])
+                        cv.terminate(cur[NODE][fileSection])
 
                     console("")
                     console(f"End   folder {xmlFolder}")
-                    cv.terminate(cur[FOLDER])
+                    cv.terminate(cur[NODE][folderSection])
 
             elif sectionModel == "II":
                 xmlFile = self.getXML()
@@ -2639,9 +2666,10 @@ class TEI:
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
+                    cur[NODE][pageType] = None
+                    cur[NODE][WORD] = None
                     cur["inHeader"] = False
                     cur["inPage"] = False
-                    cur["page"] = None
                     cur["pageAtts"] = None
                     cur["inNote"] = False
                     cur[XNEST] = []
@@ -2653,7 +2681,6 @@ class TEI:
                     cur["prevChunk"] = None
                     cur["prevChapter"] = None
                     cur["danglingSlots"] = set()
-                    cur[WORD] = None
                     cur["prevWord"] = None
                     cur["wordStr"] = ""
                     cur["afterStr"] = ""

@@ -220,20 +220,8 @@ Most of the Text-Fabric API has not been loaded.
                 textApi(self)
             setattr(self, "isLoaded", self.api.isLoaded)
             if hoist:
-                # docs = self.api.makeAvailableIn(hoist)
+                self.hoist(hoist)
                 self.api.makeAvailableIn(hoist)
-                if silent in {VERBOSE, AUTO, TERSE}:
-                    if self.inNb:
-                        dh(
-                            "<div><b>Text-Fabric API:</b> names "
-                            + outLink(
-                                "N F E L T S C TF",
-                                APIREF,
-                                title="doc",
-                                asHtml=True,
-                            )
-                            + " directly usable</div><hr>"
-                        )
 
             silentOff = self.silentOff
             silentOff()
@@ -247,6 +235,47 @@ The app "{appName}" will not work!
 """,
                     error=True,
                 )
+
+    def hoist(self, hoist, silent=None):
+        """Hoist the API handles of this TF app to the global scope.
+
+        You can use this if you have loaded a dataset without the `hoist=globals()`
+        parameter, and want to hoist the API handles in the global scope after all,
+        without loading the data.
+
+        Or, if you have multiple datasets loaded, you can switch for which dataset
+        you have the API handles in global scope.
+
+        Parameters
+        ----------
+        hoist: dict
+            A dict of variables.
+            It makes only sense if you provide `globals()` for this parameter.
+            That is the dict of global variables in the scope where you call this
+            method.
+        silent: string, optional None
+            If passed, it is the verbosity. Otherwise the verbosity will be taken
+            from `self`.
+        """
+        if silent is None:
+            silent = self.silent
+
+        if self.api:
+            self.api.makeAvailableIn(hoist)
+            if silent in {VERBOSE, AUTO, TERSE}:
+                if self.inNb:
+                    dh(
+                        "<div><b>Text-Fabric API:</b> names "
+                        + outLink(
+                            "N F E L T S C TF Fs Fall Es Eall Cs Call",
+                            APIREF,
+                            title="doc",
+                            asHtml=True,
+                        )
+                        + " directly usable</div><hr>"
+                    )
+        else:
+            console("No api activated for this dataset. No hoisting will take place")
 
     def load(self, features, silent=SILENT_D):
         """Loads extra features in addition to the main dataset.

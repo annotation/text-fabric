@@ -10,9 +10,9 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.15 (upcoming)
+### 11.4.15
 
-2023-05-??
+2023-05-25
 
 *   TEI to TF conversion: added options to replace empty `<pb>` elements by
     `<page>` elements that contain the page material.
@@ -29,6 +29,10 @@ See the app-specific tutorials via `tf.about.corpora`.
     are hidden. But what if one of those standard features has also been
     mentioned in a query? In this case, TF used to hide that feature, but from now on
     we show it.
+*   New function `A.hoist(globals())` with the same effect as the
+    parameter `hoist=globals()` in `A.use()`. Handy if you
+    have several datasets loaded in memory and want to work with them
+    alternately.
 
 ### 11.4.14
 

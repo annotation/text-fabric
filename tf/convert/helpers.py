@@ -7,6 +7,7 @@ from ..core.helpers import console
 PRE = "pre"
 ZWSP = "\u200b"  # zero-width space
 
+NODE = "node"
 FOLDER = "folder"
 FILE = "file"
 CHAPTER = "chapter"
@@ -480,15 +481,21 @@ def lookupSource(cv, cur, specs):
         The effect is:
 
         The pathSpec is compared to the current XML stack.
-        If it matches the current node, the text content of the current node
-        will be collected and put in a feature with name `featureName`, for
-        the current TF node of type `nodeType`.
+        If it matches the current node, the text content of the current node or one of
+        its attributes will be collected and put in a feature with name
+        `featureName`, for the current TF node of type `nodeType`.
 
         The pathSpec is a list of components.
         The first component should match the top of the XML stack, the second
         component the element that is below the top, etc.
-        Each component can either be a tag name, or a tuple of a tag name and
-        a dictionary of attribute values.
+        Each component is a tuple of
+
+        *   a tag name;
+        *   a dictionary of attribute values;
+
+        The first component may have a tag name that has `@` plus an attribute name
+        appended to it. That means that the information will be extracted from
+        that attribute, not from the content of the element.
     """
     nest = cur[XNEST]
     nNest = len(nest)
@@ -500,9 +507,17 @@ def lookupSource(cv, cur, specs):
             continue
 
         ok = True
+        extractAttr = None
 
         for (p, (lookForTag, lookForAtts)) in enumerate(path):
             (compareToTag, compareToAtts) = nest[-(p + 1)]
+
+            if p == 0:
+                pieces = lookForTag.split("@", 1)
+                if len(pieces) == 2:
+                    (lookForTag, extractAttr) = pieces
+                else:
+                    extractAttr = None
             ok = compareToTag == lookForTag
 
             if not ok:
@@ -520,9 +535,14 @@ def lookupSource(cv, cur, specs):
         if not ok:
             continue
 
-        targetNode = cur[nodeType]
+        targetNode = cur[NODE][nodeType]
         sourceNode = cur[TNEST][-1]
         slots = cv.linked(sourceNode)
-        sourceText = "".join(cv.get("ch", ("char", slot)) for slot in slots)
+        sourceText = (
+            "".join(cv.get("ch", ("char", slot)) for slot in slots)
+            if extractAttr is None
+            else cv.get(extractAttr, sourceNode)
+        )
+        sourceText = (sourceText or "").strip()
         source = {feature: sourceText}
         cv.feature(targetNode, **source)

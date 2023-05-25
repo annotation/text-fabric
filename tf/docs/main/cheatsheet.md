@@ -9,6 +9,13 @@ A = use('org/repo')
 :   See `tf.about.usefunc`
 
 ``` python
+A.hoist(globals())
+```
+:   Make the API handles `F`, `E`, `T`, `L` etc available in 
+    the global scope.
+:   `tf.advanced.app.App.load`
+
+``` python
 A.load(features)
 ```
 :   Load an extra bunch of features. 
