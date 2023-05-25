@@ -32,7 +32,7 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
-<h3 id="11415">11.4.15</h3>
+<h3 id="11415-16">11.4.15-16</h3>
 <p>2023-05-25</p>
 <ul>
 <li>TEI to TF conversion: added options to replace empty <code>&lt;pb&gt;</code> elements by
@@ -54,6 +54,10 @@ we show it.</li>
 parameter <code>hoist=globals()</code> in <code>A.use()</code>. Handy if you
 have several datasets loaded in memory and want to work with them
 alternately.</li>
+<li>New function <code>A.publishRelease()</code> by which you can publish a release of a TF
+dataset straight from your program or notebook, without clicking around in
+a browser. See <code><a title="tf.advanced.repo.publishRelease" href="../advanced/repo.html#tf.advanced.repo.publishRelease">publishRelease()</a></code> or the
+<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb">annotation/mondriaan</a> example.</li>
 </ul>
 <h3 id="11414">11.4.14</h3>
 <p>2023-05-12</p>
@@ -593,7 +597,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -666,7 +670,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
-<li><a href="#11415">11.4.15</a></li>
+<li><a href="#11415-16">11.4.15-16</a></li>
 <li><a href="#11414">11.4.14</a></li>
 <li><a href="#11413">11.4.13</a></li>
 <li><a href="#1141112">11.4.11,12</a></li>

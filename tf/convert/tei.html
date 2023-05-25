@@ -329,7 +329,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1-L3467" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1-L3463" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -2622,8 +2622,7 @@ class TEI:
                     cur[&#34;chapterNum&#34;] += 1
                     cur[&#34;prevChapter&#34;] = cur[NODE].get(chapterSection, None)
                     cur[NODE][chapterSection] = cv.node(chapterSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chapterSection], danglingSlot)
+                    cv.link(cur[NODE][chapterSection], cur[&#34;danglingSlots&#34;])
 
                     value = {chapterSection: f&#34;{cur[&#39;chapterNum&#39;]} {tag}&#34;}
                     cv.feature(cur[NODE][chapterSection], **value)
@@ -2631,8 +2630,7 @@ class TEI:
                     cur[&#34;chunkONum&#34;] = 0
                     cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                     cur[&#34;infirstChunk&#34;] = True
 
@@ -2644,8 +2642,7 @@ class TEI:
                         cur[&#34;infirstChunk&#34;] = False
                     else:
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                            cv.link(cur[NODE][chunkSection], danglingSlot)
+                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
                         cur[&#34;danglingSlots&#34;] = set()
                     if tag == &#34;p&#34;:
                         cur[&#34;chunkPNum&#34;] += 1
@@ -2671,8 +2668,7 @@ class TEI:
                     cur[&#34;chunkNum&#34;] += 1
                     cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                     value = {chunkSection: cur[&#34;chunkNum&#34;]}
                     cv.feature(cur[NODE][chunkSection], **value)
@@ -2722,7 +2718,7 @@ class TEI:
             if beforeChildrenCustom is not None:
                 beforeChildrenCustom(cv, cur, xnode, tag, atts)
 
-            if xnode.text:
+            if not hasattr(xnode, &#34;target&#34;) and xnode.text:
                 textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
@@ -2820,14 +2816,14 @@ class TEI:
                     if cur[NODE].get(chunkSection, None) is None:
                         prevChunk = cur.get(&#34;prevChunk&#34;, None)
                         if prevChunk is None:
-                            cur[&#34;danglingSlots&#34;].add(lastSlot)
+                            cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                         else:
                             cv.link(prevChunk, lastSlot)
                     if sectionModel == &#34;II&#34;:
                         if cur[NODE].get(chapterSection, None) is None:
                             prevChapter = cur.get(&#34;prevChapter&#34;, None)
                             if prevChapter is None:
-                                cur[&#34;danglingSlots&#34;].add(lastSlot)
+                                cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                             else:
                                 cv.link(prevChapter, lastSlot)
 
@@ -3815,7 +3811,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L3453-L3463" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L3449-L3459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -3838,7 +3834,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L635-L648" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L635-L648" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     rends = &#34;&#34;
@@ -3987,7 +3983,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L651-L3450" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L651-L3446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -5630,8 +5626,7 @@ relevant tf version:</p>
                     cur[&#34;chapterNum&#34;] += 1
                     cur[&#34;prevChapter&#34;] = cur[NODE].get(chapterSection, None)
                     cur[NODE][chapterSection] = cv.node(chapterSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chapterSection], danglingSlot)
+                    cv.link(cur[NODE][chapterSection], cur[&#34;danglingSlots&#34;])
 
                     value = {chapterSection: f&#34;{cur[&#39;chapterNum&#39;]} {tag}&#34;}
                     cv.feature(cur[NODE][chapterSection], **value)
@@ -5639,8 +5634,7 @@ relevant tf version:</p>
                     cur[&#34;chunkONum&#34;] = 0
                     cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                     cur[&#34;infirstChunk&#34;] = True
 
@@ -5652,8 +5646,7 @@ relevant tf version:</p>
                         cur[&#34;infirstChunk&#34;] = False
                     else:
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                            cv.link(cur[NODE][chunkSection], danglingSlot)
+                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
                         cur[&#34;danglingSlots&#34;] = set()
                     if tag == &#34;p&#34;:
                         cur[&#34;chunkPNum&#34;] += 1
@@ -5679,8 +5672,7 @@ relevant tf version:</p>
                     cur[&#34;chunkNum&#34;] += 1
                     cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                     value = {chunkSection: cur[&#34;chunkNum&#34;]}
                     cv.feature(cur[NODE][chunkSection], **value)
@@ -5730,7 +5722,7 @@ relevant tf version:</p>
             if beforeChildrenCustom is not None:
                 beforeChildrenCustom(cv, cur, xnode, tag, atts)
 
-            if xnode.text:
+            if not hasattr(xnode, &#34;target&#34;) and xnode.text:
                 textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
                 if isPure(cur):
                     if textMaterial and textMaterial != &#34; &#34;:
@@ -5828,14 +5820,14 @@ relevant tf version:</p>
                     if cur[NODE].get(chunkSection, None) is None:
                         prevChunk = cur.get(&#34;prevChunk&#34;, None)
                         if prevChunk is None:
-                            cur[&#34;danglingSlots&#34;].add(lastSlot)
+                            cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                         else:
                             cv.link(prevChunk, lastSlot)
                     if sectionModel == &#34;II&#34;:
                         if cur[NODE].get(chapterSection, None) is None:
                             prevChapter = cur.get(&#34;prevChapter&#34;, None)
                             if prevChapter is None:
-                                cur[&#34;danglingSlots&#34;].add(lastSlot)
+                                cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                             else:
                                 cv.link(prevChapter, lastSlot)
 
@@ -6829,7 +6821,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L2985-L3349" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L2981-L3345" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -7214,7 +7206,7 @@ There should be a valid TF dataset and app configuraiton in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L3353-L3386" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L3349-L3382" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -7279,7 +7271,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1201-L1572" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1201-L1572" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -7669,7 +7661,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L2739-L2937" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L2735-L2933" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -7885,7 +7877,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1576-L1589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1576-L1589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -7926,7 +7918,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1593-L2737" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1593-L2733" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -8627,8 +8619,7 @@ that has access to this data.</p>
                 cur[&#34;chapterNum&#34;] += 1
                 cur[&#34;prevChapter&#34;] = cur[NODE].get(chapterSection, None)
                 cur[NODE][chapterSection] = cv.node(chapterSection)
-                for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                    cv.link(cur[NODE][chapterSection], danglingSlot)
+                cv.link(cur[NODE][chapterSection], cur[&#34;danglingSlots&#34;])
 
                 value = {chapterSection: f&#34;{cur[&#39;chapterNum&#39;]} {tag}&#34;}
                 cv.feature(cur[NODE][chapterSection], **value)
@@ -8636,8 +8627,7 @@ that has access to this data.</p>
                 cur[&#34;chunkONum&#34;] = 0
                 cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                 cur[NODE][chunkSection] = cv.node(chunkSection)
-                for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                    cv.link(cur[NODE][chunkSection], danglingSlot)
+                cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                 cur[&#34;danglingSlots&#34;] = set()
                 cur[&#34;infirstChunk&#34;] = True
 
@@ -8649,8 +8639,7 @@ that has access to this data.</p>
                     cur[&#34;infirstChunk&#34;] = False
                 else:
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                 if tag == &#34;p&#34;:
                     cur[&#34;chunkPNum&#34;] += 1
@@ -8676,8 +8665,7 @@ that has access to this data.</p>
                 cur[&#34;chunkNum&#34;] += 1
                 cur[&#34;prevChunk&#34;] = cur[NODE].get(chunkSection, None)
                 cur[NODE][chunkSection] = cv.node(chunkSection)
-                for danglingSlot in cur[&#34;danglingSlots&#34;]:
-                    cv.link(cur[NODE][chunkSection], danglingSlot)
+                cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                 cur[&#34;danglingSlots&#34;] = set()
                 value = {chunkSection: cur[&#34;chunkNum&#34;]}
                 cv.feature(cur[NODE][chunkSection], **value)
@@ -8727,7 +8715,7 @@ that has access to this data.</p>
         if beforeChildrenCustom is not None:
             beforeChildrenCustom(cv, cur, xnode, tag, atts)
 
-        if xnode.text:
+        if not hasattr(xnode, &#34;target&#34;) and xnode.text:
             textMaterial = WHITE_TRIM_RE.sub(&#34; &#34;, xnode.text)
             if isPure(cur):
                 if textMaterial and textMaterial != &#34; &#34;:
@@ -8825,14 +8813,14 @@ that has access to this data.</p>
                 if cur[NODE].get(chunkSection, None) is None:
                     prevChunk = cur.get(&#34;prevChunk&#34;, None)
                     if prevChunk is None:
-                        cur[&#34;danglingSlots&#34;].add(lastSlot)
+                        cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                     else:
                         cv.link(prevChunk, lastSlot)
                 if sectionModel == &#34;II&#34;:
                     if cur[NODE].get(chapterSection, None) is None:
                         prevChapter = cur.get(&#34;prevChapter&#34;, None)
                         if prevChapter is None:
-                            cur[&#34;danglingSlots&#34;].add(lastSlot)
+                            cur[&#34;danglingSlots&#34;].add(lastSlot[1])
                         else:
                             cv.link(prevChapter, lastSlot)
 
@@ -9099,7 +9087,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1105-L1138" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1105-L1138" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -9151,7 +9139,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1066-L1084" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1066-L1084" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the lxml parser.
@@ -9189,7 +9177,7 @@ This will only happen during the <code>check</code> task.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1086-L1103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1086-L1103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getValidator(self):
     &#34;&#34;&#34;Parse the schema.
@@ -9232,7 +9220,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L1140-L1199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L1140-L1199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -9316,7 +9304,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L2939-L2981" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L2935-L2977" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -9399,7 +9387,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/convert/tei.py#L3388-L3450" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/convert/tei.py#L3384-L3446" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

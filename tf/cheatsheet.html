@@ -1155,7 +1155,7 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 <p><code><a title="tf.fabric.Fabric.collect" href="fabric.html#tf.fabric.Fabric.collect">Fabric.collect()</a></code></p>
 </dd>
 </dl>
-<h2 id="saving">Saving</h2>
+<h2 id="saving-and-publishing">Saving and Publishing</h2>
 <dl>
 <dt><pre><code class="language-python">TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
 </code></pre></dt>
@@ -1164,6 +1164,15 @@ See also <code><a title="tf.about.volumes" href="about/volumes.html">tf.about.vo
 </dd>
 <dd>
 <p><code><a title="tf.fabric.Fabric.save" href="core/fabric.html#tf.core.fabric.FabricCore.save">FabricCore.save()</a></code></p>
+</dd>
+<dt><pre><code class="language-python">A.publishRelease(increase, message=None, description=None,,...)
+</code></pre></dt>
+<dd>
+<p>Commit the dataset repo, tag it, release it, and attach the
+complete zipped data to it.</p>
+</dd>
+<dd>
+<p><code><a title="tf.advanced.repo.publishRelease" href="advanced/repo.html#tf.advanced.repo.publishRelease">publishRelease()</a></code></p>
 </dd>
 </dl>
 <hr>
@@ -1586,7 +1595,7 @@ after running an NLP pipeline (Spacy) to get them.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/cheatsheet.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: docs/main/cheatsheet.md
@@ -1689,7 +1698,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#tf-dataset">TF. Dataset</a><ul>
 <li><a href="#loading">Loading</a></li>
 <li><a href="#volumes">Volumes</a></li>
-<li><a href="#saving">Saving</a></li>
+<li><a href="#saving-and-publishing">Saving and Publishing</a></li>
 <li><a href="#house-keeping">House keeping</a></li>
 </ul>
 </li>

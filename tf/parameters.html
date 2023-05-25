@@ -28,7 +28,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/409ae3b2792052b5dcccc263b351384ce84b7bd5/tf/parameters.py#L1-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/parameters.py#L1-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Parameters
@@ -41,7 +41,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = &#39;11.4.15&#39;
+VERSION = &#39;11.4.16&#39;
 &#34;&#34;&#34;Program version.
 
 This value is under control of the update process, as run by
@@ -172,8 +172,20 @@ GL = &#34;gitlab&#34;
 URL_GH = &#34;https://github.com&#34;
 &#34;&#34;&#34;Base url of GitHub.&#34;&#34;&#34;
 
+URL_GH_API = &#34;https://api.github.com&#34;
+&#34;&#34;&#34;Base url of GitHub API.&#34;&#34;&#34;
+
+URL_GH_UPLOAD = &#34;https://uploads.github.com&#34;
+&#34;&#34;&#34;Base url of GitHub upload end point.&#34;&#34;&#34;
+
 URL_GL = &#34;https://gitlab.com&#34;
 &#34;&#34;&#34;Base url of GitLab.&#34;&#34;&#34;
+
+URL_GL_API = &#34;https://api.gitlab.com&#34;
+&#34;&#34;&#34;Base url of GitLab API.&#34;&#34;&#34;
+
+URL_GL_UPLOAD = &#34;https://uploads.gitlab.com&#34;
+&#34;&#34;&#34;Base url of GitLab upload end point.&#34;&#34;&#34;
 
 URL_NB = &#34;https://nbviewer.jupyter.org&#34;
 &#34;&#34;&#34;Base url of NB-viewer.&#34;&#34;&#34;
@@ -366,9 +378,25 @@ files, where <code>{PVN}</code> is the package version number.</p>
 <dd>
 <div class="desc"><p>Base url of GitHub.</p></div>
 </dd>
+<dt id="tf.parameters.URL_GH_API"><code class="name">var <span class="ident">URL_GH_API</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitHub API.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GH_UPLOAD"><code class="name">var <span class="ident">URL_GH_UPLOAD</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitHub upload end point.</p></div>
+</dd>
 <dt id="tf.parameters.URL_GL"><code class="name">var <span class="ident">URL_GL</span></code></dt>
 <dd>
 <div class="desc"><p>Base url of GitLab.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GL_API"><code class="name">var <span class="ident">URL_GL_API</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitLab API.</p></div>
+</dd>
+<dt id="tf.parameters.URL_GL_UPLOAD"><code class="name">var <span class="ident">URL_GL_UPLOAD</span></code></dt>
+<dd>
+<div class="desc"><p>Base url of GitLab upload end point.</p></div>
 </dd>
 <dt id="tf.parameters.URL_NB"><code class="name">var <span class="ident">URL_NB</span></code></dt>
 <dd>
@@ -500,7 +528,11 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.parameters.TRY_LIMIT_FROM" href="#tf.parameters.TRY_LIMIT_FROM">TRY_LIMIT_FROM</a></code></li>
 <li><code><a title="tf.parameters.TRY_LIMIT_TO" href="#tf.parameters.TRY_LIMIT_TO">TRY_LIMIT_TO</a></code></li>
 <li><code><a title="tf.parameters.URL_GH" href="#tf.parameters.URL_GH">URL_GH</a></code></li>
+<li><code><a title="tf.parameters.URL_GH_API" href="#tf.parameters.URL_GH_API">URL_GH_API</a></code></li>
+<li><code><a title="tf.parameters.URL_GH_UPLOAD" href="#tf.parameters.URL_GH_UPLOAD">URL_GH_UPLOAD</a></code></li>
 <li><code><a title="tf.parameters.URL_GL" href="#tf.parameters.URL_GL">URL_GL</a></code></li>
+<li><code><a title="tf.parameters.URL_GL_API" href="#tf.parameters.URL_GL_API">URL_GL_API</a></code></li>
+<li><code><a title="tf.parameters.URL_GL_UPLOAD" href="#tf.parameters.URL_GL_UPLOAD">URL_GL_UPLOAD</a></code></li>
 <li><code><a title="tf.parameters.URL_NB" href="#tf.parameters.URL_NB">URL_NB</a></code></li>
 <li><code><a title="tf.parameters.VERSION" href="#tf.parameters.VERSION">VERSION</a></code></li>
 <li><code><a title="tf.parameters.WARP" href="#tf.parameters.WARP">WARP</a></code></li>
