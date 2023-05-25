@@ -10,7 +10,7 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.15
+### 11.4.15-16
 
 2023-05-25
 
@@ -33,6 +33,11 @@ See the app-specific tutorials via `tf.about.corpora`.
     parameter `hoist=globals()` in `A.use()`. Handy if you
     have several datasets loaded in memory and want to work with them
     alternately.
+*   New function `A.publishRelease()` by which you can publish a release of a TF
+    dataset straight from your program or notebook, without clicking around in
+    a browser. See `tf.advanced.repo.publishRelease()` or the
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb) example.
+
 
 ### 11.4.14
 

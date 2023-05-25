@@ -2289,8 +2289,7 @@ class TEI:
                     cur["chapterNum"] += 1
                     cur["prevChapter"] = cur[NODE].get(chapterSection, None)
                     cur[NODE][chapterSection] = cv.node(chapterSection)
-                    for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[NODE][chapterSection], danglingSlot)
+                    cv.link(cur[NODE][chapterSection], cur["danglingSlots"])
 
                     value = {chapterSection: f"{cur['chapterNum']} {tag}"}
                     cv.feature(cur[NODE][chapterSection], **value)
@@ -2298,8 +2297,7 @@ class TEI:
                     cur["chunkONum"] = 0
                     cur["prevChunk"] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur["danglingSlots"])
                     cur["danglingSlots"] = set()
                     cur["infirstChunk"] = True
 
@@ -2311,8 +2309,7 @@ class TEI:
                         cur["infirstChunk"] = False
                     else:
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        for danglingSlot in cur["danglingSlots"]:
-                            cv.link(cur[NODE][chunkSection], danglingSlot)
+                        cv.link(cur[NODE][chunkSection], cur["danglingSlot"])
                         cur["danglingSlots"] = set()
                     if tag == "p":
                         cur["chunkPNum"] += 1
@@ -2338,8 +2335,7 @@ class TEI:
                     cur["chunkNum"] += 1
                     cur["prevChunk"] = cur[NODE].get(chunkSection, None)
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    for danglingSlot in cur["danglingSlots"]:
-                        cv.link(cur[NODE][chunkSection], danglingSlot)
+                    cv.link(cur[NODE][chunkSection], cur["danglingSlots"])
                     cur["danglingSlots"] = set()
                     value = {chunkSection: cur["chunkNum"]}
                     cv.feature(cur[NODE][chunkSection], **value)
@@ -2389,7 +2385,7 @@ class TEI:
             if beforeChildrenCustom is not None:
                 beforeChildrenCustom(cv, cur, xnode, tag, atts)
 
-            if xnode.text:
+            if not hasattr(xnode, "target") and xnode.text:
                 textMaterial = WHITE_TRIM_RE.sub(" ", xnode.text)
                 if isPure(cur):
                     if textMaterial and textMaterial != " ":
@@ -2487,14 +2483,14 @@ class TEI:
                     if cur[NODE].get(chunkSection, None) is None:
                         prevChunk = cur.get("prevChunk", None)
                         if prevChunk is None:
-                            cur["danglingSlots"].add(lastSlot)
+                            cur["danglingSlots"].add(lastSlot[1])
                         else:
                             cv.link(prevChunk, lastSlot)
                     if sectionModel == "II":
                         if cur[NODE].get(chapterSection, None) is None:
                             prevChapter = cur.get("prevChapter", None)
                             if prevChapter is None:
-                                cur["danglingSlots"].add(lastSlot)
+                                cur["danglingSlots"].add(lastSlot[1])
                             else:
                                 cv.link(prevChapter, lastSlot)
 

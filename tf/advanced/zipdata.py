@@ -194,7 +194,7 @@ def zipAll(app):
                 path,
                 arcname=internalPath,
             )
-    console(f"Result: {ux(destFile)}")
+    return ux(destFile)
 
 
 def addCheckout(path):

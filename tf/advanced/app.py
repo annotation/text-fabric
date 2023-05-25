@@ -33,7 +33,7 @@ from .sections import sectionsApi
 from .display import displayApi
 from .search import searchApi
 from .data import getModulesData
-from .repo import checkoutRepo
+from .repo import checkoutRepo, publishRelease
 
 
 # SET UP A TF API FOR AN APP
@@ -206,6 +206,7 @@ Most of the Text-Fabric API has not been loaded.
 
             zipApi(self)
             interchangeApi(self)
+            self.publishRelease = types.MethodType(publishRelease, self)
 
             featuresOnly = self.featuresOnly
 

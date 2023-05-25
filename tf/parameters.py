@@ -9,7 +9,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 
 
-VERSION = '11.4.15'
+VERSION = '11.4.16'
 """Program version.
 
 This value is under control of the update process, as run by
@@ -140,8 +140,20 @@ GL = "gitlab"
 URL_GH = "https://github.com"
 """Base url of GitHub."""
 
+URL_GH_API = "https://api.github.com"
+"""Base url of GitHub API."""
+
+URL_GH_UPLOAD = "https://uploads.github.com"
+"""Base url of GitHub upload end point."""
+
 URL_GL = "https://gitlab.com"
 """Base url of GitLab."""
+
+URL_GL_API = "https://api.gitlab.com"
+"""Base url of GitLab API."""
+
+URL_GL_UPLOAD = "https://uploads.gitlab.com"
+"""Base url of GitLab upload end point."""
 
 URL_NB = "https://nbviewer.jupyter.org"
 """Base url of NB-viewer."""

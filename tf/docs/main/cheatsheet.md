@@ -889,13 +889,21 @@ TF.collect(volumes, ...)
 :   `tf.advanced.display.export`
 :   `tf.fabric.Fabric.collect`
 
-## Saving
+## Saving and Publishing
 
 ``` python
 TF.save(nodeFeatures={}, edgeFeatures={}, metaData={},,...)
 ```
 :   Save a bunch of newly generated features to disk.
 :   `tf.fabric.Fabric.save`
+
+
+``` python
+A.publishRelease(increase, message=None, description=None,,...)
+```
+:   Commit the dataset repo, tag it, release it, and attach the
+    complete zipped data to it.
+:   `tf.advanced.repo.publishRelease`
 
 ---
 

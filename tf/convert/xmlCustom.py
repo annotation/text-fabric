@@ -199,7 +199,7 @@ def getDirector(self):
             if len(atts):
                 cv.feature(curNode, **atts)
 
-        if xnode.text:
+        if not hasattr(xnode, "target") and xnode.text:
             textMaterial = WHITE_TRIM_RE.sub(" ", xnode.text)
             for ch in textMaterial:
                 addSlot(cv, cur, ch)

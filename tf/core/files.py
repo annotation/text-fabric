@@ -1,7 +1,20 @@
 import os
 from shutil import rmtree, copytree, copy
 
-from ..parameters import ON_IPAD, GH, GL, URL_GH, URL_GL, URL_NB, ORG, REPO
+from ..parameters import (
+    ON_IPAD,
+    GH,
+    GL,
+    URL_GH,
+    URL_GH_API,
+    URL_GH_UPLOAD,
+    URL_GL,
+    URL_GL_API,
+    URL_GL_UPLOAD,
+    URL_NB,
+    ORG,
+    REPO,
+)
 
 
 def normpath(path):
@@ -205,6 +218,20 @@ def backendRep(be, kind, default=None):
 
     if kind == "url":
         return URL_GH if be == GH else URL_GL if be == GL else f"https://{be}"
+
+    if kind == "urlapi":
+        return (
+            URL_GH_API if be == GH else URL_GL_API if be == GL else f"https://api.{be}"
+        )
+
+    if kind == "urlupload":
+        return (
+            URL_GH_UPLOAD
+            if be == GH
+            else URL_GL_UPLOAD
+            if be == GL
+            else f"https://api.{be}"
+        )
 
     if kind == "urlnb":
         return f"{URL_NB}/{be}"

@@ -396,6 +396,7 @@ import io
 import re
 import base64
 from zipfile import ZipFile
+from subprocess import check_output, run
 import urllib.request as ur
 from urllib.error import HTTPError
 import ssl
@@ -457,6 +458,47 @@ def catchRemaining(e):
         console("no internet", error=True)
     else:
         console(f"unexpected error from {e.__class__.__module__}: {str(e)}")
+
+
+def getFinalUrl(url):
+    finalUrl = None
+    msg = None
+
+    try:
+        response = ur.urlopen(url)
+        finalUrl = response.geturl()
+    except HTTPError as e:
+        msg = str(e)
+
+    return (False, msg) if finalUrl is None else (True, finalUrl)
+
+
+def bumpRelease(latestR, increase):
+    if latestR:
+        console(f"Latest release = {latestR}")
+    else:
+        latestR = "v0.0.0"
+        console("No releases yet")
+
+    # bump the release version
+
+    v = ""
+    r = latestR
+
+    if latestR.startswith("v"):
+        v = "v"
+        r = latestR[1:]
+
+    parts = [int(p) for p in r.split(".")]
+    nParts = len(parts)
+    if nParts < increase:
+        for i in range(nParts, increase):
+            parts.append(0)
+    parts[increase - 1] += 1
+    parts[increase:] = []
+    newTag = f"{v}{'.'.join(str(p) for p in parts)}"
+    console(f"New release = {newTag}")
+    return newTag
 
 
 class Repo:
@@ -613,30 +655,9 @@ class Repo:
 
     def bumpRelease(self):
         increase = self.increase
-
         latestR = self.releaseOn
-        if latestR:
-            console(f"Latest release = {latestR}")
-        else:
-            latestR = "v0.0.0"
-            console("No releases yet")
 
-        # bump the release version
-
-        v = ""
-        if latestR.startswith("v"):
-            v = "v"
-            r = latestR[1:] if latestR.startswith("v") else latestR
-        parts = [int(p) for p in r.split(".")]
-        nParts = len(parts)
-        if nParts < increase:
-            for i in range(nParts, increase):
-                parts.append(0)
-        parts[increase - 1] += 1
-        parts[increase:] = []
-        newTag = f"{v}{'.'.join(str(p) for p in parts)}"
-        console(f"New release = {newTag}")
-        self.newTag = newTag
+        self.newTag = bumpRelease(latestR, increase)
         return True
 
     def makeRelease(self):
@@ -805,6 +826,136 @@ def releaseData(
 
     R = Repo(GH, org, repo, folder, version, increase, source=source, dest=dest)
     return R.newRelease()
+
+
+def publishRelease(app, increase, message=None, description=None):
+    """Publishes a new data release for a TF dataset to GitHub.
+
+    Quite a bit of work will happen.
+
+    The first stage is still off-line, in your local clone.
+
+    First of all, a new commit will be created.
+
+    !!! caution "Save everything
+        Be sure that you have saved all your open files and notebooks in this repo,
+        otherwise the current state does not end up in the release.
+
+    Then the commit will be tagged with a tag that is higher than the current
+    tag. See the `increase` parameter.
+
+    Now we go online.
+
+    The commit, with its tag are pushed to GitHub.
+
+    Subsequently, we access the new tag online and turn it into a release, with a
+    title and a description.
+
+    Finally, we zip all essential data of the TF dataset and upload it to the
+    release on GitHub.
+
+    For an example, see
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+
+    Parameters
+    ----------
+    app: object
+        A loaded TF app.
+        Only if the TF app is working with backend GitHub
+    increase: integer
+        The way in which the release version should be increased:
+
+            1 = bump major version;
+            2 = bump intermediate version;
+            3 = bump minor version
+
+    message: string, optional None
+        Commit message.
+        If None, a boiler plate text, based on the `increase` parameter, is provided.
+
+    description: string, optional None
+        Documentaiton of the release. May be a multiline (markdown) string.
+        If None, the `message` parameter will be used.
+    """
+    repoLocation = app.repoLocation
+    console(f"Working in repo {ux(repoLocation)}")
+
+    label = (
+        "major" if increase == 1 else "intermediate" if increase == 2 else "minor"
+    )
+    if message is None:
+        message = f"New {label} release"
+    if description is None:
+        description = message
+
+    console("Make a new commit ...")
+
+    run(["git", "add", "--all", "."], cwd=repoLocation)
+    run(["git", "commit", "-m", message], cwd=repoLocation)
+
+    newCommit = (
+        check_output(["git", "rev-parse", "HEAD"], cwd=repoLocation)
+        .decode("ascii")
+        .strip()
+    )
+
+    console("Compute a new tag ...")
+
+    latestTag = (
+        check_output(["git", "describe", "--tags"], cwd=repoLocation)
+        .decode("ascii")
+        .strip()
+        .split("-", 1)[0]
+    )
+    newTag = bumpRelease(latestTag, increase)
+    run(["git", "tag", "-a", newTag, "-m", message], cwd=repoLocation)
+
+    console(f"Push the repo to GitHub, including tag {newTag}")
+
+    run(["git", "push", "origin", "master", "--tags"], cwd=repoLocation)
+
+    console("Turn the tag into a release on GitHub with additional data")
+
+    ssl._create_default_https_context = ssl._create_unverified_context
+
+    backend = app.backend
+    org = app.context.org
+    repo = app.context.repo
+    bUrlApi = backendRep(backend, "urlapi")
+    bUrlUpload = backendRep(backend, "urlupload")
+
+    releasePayload = {
+        "tag_name": newTag,
+        "target_commitish": newCommit,
+        "name": newTag,
+        "body": description,
+    }
+    person = var("GHPERS")
+    headers = {
+        "Authorization": f"token {person}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+    createReleaseUrl = f"{bUrlApi}/repos/{org}/{repo}/releases"
+    response = requests.post(createReleaseUrl, json=releasePayload, headers=headers)
+
+    console("Create the zip file with the complete data")
+
+    binPath = app.zipAll()
+    binFile = baseNm(binPath)
+
+    console("Upload the zip file and attach it to the release on GitHub")
+
+    releaseId = response.json()["id"]
+    headers["Content-Type"] = "application/zip"
+    uploadUrl = (
+        f"{bUrlUpload}/repos/{org}/{repo}/releases/{releaseId}/assets?name={binFile}"
+    )
+    console(uploadUrl)
+
+    with open(ex(binPath), "rb") as file:
+        response = requests.post(uploadUrl, data=file, headers=headers)
+
+    console(f"Release {newTag} created")
 
 
 class Checkout:
@@ -1314,19 +1465,6 @@ class Checkout:
                 )
 
     @staticmethod
-    def getFinalUrl(url):
-        finalUrl = None
-        msg = None
-
-        try:
-            response = ur.urlopen(url)
-            finalUrl = response.geturl()
-        except HTTPError as e:
-            msg = str(e)
-
-        return (False, msg) if finalUrl is None else (True, finalUrl)
-
-    @staticmethod
     def retrieve(url):
         response = None
         msg = None
@@ -1359,7 +1497,7 @@ class Checkout:
             if backend == GH
             else f"{repoUrl}/-/releases/permalink/latest"
         )
-        (good, info) = self.getFinalUrl(releaseUrlPre)
+        (good, info) = getFinalUrl(releaseUrlPre)
         if not good:
             console(f"Cannot follow {releaseUrlPre}: {info}", error=True)
             return False
