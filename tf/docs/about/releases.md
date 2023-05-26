@@ -10,6 +10,14 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
+### 11.4.17 (upcoming)
+
+2023-06-??
+
+*   `tf.convert.addnlp`: if generated tokens cross element boundaries, they will be
+    split on those boundaries. These atomic tokens become the slots (type `t` by
+    default), the original tokens are added as nodes of type `token`.
+
 ### 11.4.15-16
 
 2023-05-25

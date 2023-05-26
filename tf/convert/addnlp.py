@@ -15,6 +15,17 @@ and inserted in the TF dataset as a new version.
 The original slots in the TF dataset (characters) will be discarded, because the
 new tokens will be used as slots.
 
+!!! caution "Complications"
+    It is possible that tokens cross element boundaries.
+    If we did not do anything about that, we would loose resolution, especially in the
+    case of inline formatting within tokens. We could not express that anymore.
+    That's why we split the tokens across element boundaries.
+    However, we then loose the correspondence between tokens and words.
+    To overcome that, we turn the tokens into two types:
+
+    *   atomic tokens, by default type `t`
+    *   full tokens, by default type `token`
+
 **This is work in progress. Details of the workflow may change rather often!**
 
 ## Requirements
@@ -85,6 +96,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
 import sys
 import re
+from copy import deepcopy
 
 from .recorder import Recorder
 from .helpers import CONVERSION_METHODS, CM_NLP
@@ -116,7 +128,7 @@ PARAMS = dict(
         "ch",
     ),
     removeSlotFeatures=(
-        "Discardable slot features. Will not be translated to token features",
+        "Discardable slot features. Will not be translated to atomic token features",
         "ch",
     ),
     emptyFeature=("Feature to identify empty slots.", "empty"),
@@ -128,7 +140,8 @@ PARAMS = dict(
         "These node types will be put in separate text flows in the plain text.",
         "note,orig,del",
     ),
-    tokenType=("The node type for the tokens.", "token"),
+    tkType=("The node type for the atomic tokens.", "t"),
+    tokenType=("The node type for the full tokens.", "token"),
     tokenFeatures=(
         (
             "The features in the token output by the NLP: "
@@ -136,9 +149,12 @@ PARAMS = dict(
         ),
         "str,after",
     ),
+    tokenNFeature=(
+        "The feature that will hold the sequence number of the token.",
+        "",
+    ),
     sentenceBarriers=("Elements that trigger a senetence boundary.", "div,p"),
     sentenceSkipFlow=("The flows that are not fed to sentence detection.", "orig,del"),
-    tokenNFeature=("The feature that will hold the sequence number of the token.", ""),
     sentenceType=("The node type for the sentences", "sentence"),
     sentenceFeatures=("", ""),
     sentenceNFeature=("The features in the sentence output by the NLP", "nsent"),
@@ -169,9 +185,10 @@ class NLPipeline:
         emptyFeature=PARAMS["emptyFeature"][1],
         ignoreTypes=PARAMS["ignoreTypes"][1],
         outOfFlow=PARAMS["outOfFlow"][1],
-        tokenType=PARAMS["tokenType"][1],
+        tkType=PARAMS["tkType"][1],
         tokenFeatures=PARAMS["tokenFeatures"][1],
         tokenNFeature=PARAMS["tokenNFeature"][1],
+        tokenType=PARAMS["tokenType"][1],
         sentenceBarriers=PARAMS["sentenceBarriers"][1],
         sentenceSkipFlow=PARAMS["sentenceSkipFlow"][1],
         sentenceType=PARAMS["sentenceType"][1],
@@ -200,7 +217,7 @@ class NLPipeline:
         removeSlotFeatures: "ch"
             A tuple is distilled from comma-separated values.
             The names of features defined on original slots that do not have to be
-            carried over to the new slots of type token.
+            carried over to the new slots of type of the atomic tokens.
             There should be at least one feature: the character content of the slot.
         emptyFeature: string, optional "empty"
             Name of feature that identifies the empty slots.
@@ -214,19 +231,21 @@ class NLPipeline:
         sentenceSkipFlow: string, optional "orig,del"
             A set is distilled from comma-separated values.
             The elements whose flows in the sentence stream should be ignored
+        tkType: string, optional t
+            The node type for the atomic tokens
         tokenType: string, optional token
-            The node type for the tokens
+            The node type for the full tokens
         tokenFeatures: tuple, optional ("str", "after")
             A tuple is distilled from comma-separated values.
-            The names of the features that the token stream contains.
+            The names of the features that the atomic token stream contains.
             There must be at least two features:
             the first one should give the token content, the second one the non-token
             material until the next token.
             The rest are additional features that the
             pipeline might supply.
         tokenNFeature: string, optional None
-            If not None, the name of the token feature that will hold the
-            sequence number of the token in the data stream, starting at 1.
+            If not None, the name of the atomic token feature that will hold the
+            sequence number of the atomic token in the data stream, starting at 1.
         sentenceType: string, optional sentence
             The node type for the sentences
         sentenceFeatures: tuple, optional ()
@@ -255,9 +274,10 @@ class NLPipeline:
         self.emptyFeature = makeString(emptyFeature)
         self.ignoreTypes = makeSet(ignoreTypes)
         self.outOfFlow = makeSet(outOfFlow)
-        self.tokenType = makeString(tokenType)
+        self.tkType = makeString(tkType)
         self.tokenFeatures = makeTuple(tokenFeatures)
         self.tokenNFeature = makeString(tokenNFeature)
+        self.tokenType = makeString(tokenType)
         self.sentenceBarriers = makeSet(sentenceBarriers)
         self.sentenceSkipFlow = makeSet(sentenceSkipFlow)
         self.sentenceType = makeString(sentenceType)
@@ -268,6 +288,9 @@ class NLPipeline:
 
     def loadApp(self, app=None, verbose=None):
         """Loads a given TF app or loads the TF app based on the working directory.
+
+        After loading, all slots where non-slot node boundaries occur are computed,
+        except for nodes of type word.
 
         Parameters
         ----------
@@ -280,6 +303,8 @@ class NLPipeline:
             Produce more progress and reporting messages
             If not passed, take the verbose member of this object.
         """
+        ignoreTypes = self.ignoreTypes
+
         if verbose is not None:
             self.verbose = verbose
         verbose = self.verbose
@@ -304,6 +329,29 @@ class NLPipeline:
         self.tokenFile = f"{txtDir}/tokens.tsv"
         self.sentenceFile = f"{txtDir}/sentences.tsv"
         self.textPath = f"{repoDir}/_temp/txt/plain.txt"
+
+        if verbose >= 0:
+            console("Compute element boundaries")
+
+        api = app.api
+        F = api.F
+        E = api.E
+
+        firstSlots = set()
+        lastSlots = set()
+
+        for (node, slots) in E.oslots.items():
+            if F.otype.v(node) in ignoreTypes:
+                continue
+            firstSlots.add(slots[0])
+            lastSlots.add(slots[-1])
+
+        self.firstSlots = firstSlots
+        self.lastSlots = lastSlots
+
+        if verbose >= 0:
+            console(f"{len(firstSlots):>6} start postions")
+            console(f"{len(lastSlots):>6} end postions")
 
     def getElementInfo(self, verbose=None):
         """Analyse the schema.
@@ -350,6 +398,13 @@ class NLPipeline:
 
         We separate the flows clearly in the output, so that they are discernible
         in the output of the NLP pipeline.
+
+        We also generate spurious spaces around element boundaries.
+        This will prevent tokens to span element boundaries.
+        What the tokenizer will deliver as tokens we consider atomic tokens.
+
+        Afterwards, when we collect the tokens, we will notice which tokens
+        need to be glued together into full tokens.
 
         Returns
         -------
@@ -542,7 +597,7 @@ class NLPipeline:
 
     def ingest(
         self,
-        isToken,
+        isTk,
         positions,
         stream,
         tp,
@@ -568,8 +623,8 @@ class NLPipeline:
             may have been inserted.
             Items in the stream that refer to these pieces of text will be ignored.
 
-            When items refer partly to proper corpus text and partly to convenience text,
-            they will be narrowed down to the proper text.
+            When items refer partly to proper corpus text and partly to
+            convenience text, they will be narrowed down to the proper text.
 
         !!! caution
             The plain text may exhibit another order of material than the proper corpus
@@ -584,8 +639,8 @@ class NLPipeline:
 
         Parameters
         ----------
-        isToken: boolean
-            Whether the data specifies tokens or something else.
+        isTk: boolean
+            Whether the data specifies (atomic) tokens or something else.
             Tokens are special because they are intended to become the new slot type.
         positions: list
             which slot node corresponds to which position in the plain text.
@@ -623,9 +678,14 @@ class NLPipeline:
 
             * the last node
             * the mapping of the new nodes to the slots they occupy;
-            * the data of the new feature.
+            * the data of the new features.
+
+            However, when we deliver the token results, they come in two such tuples:
+            one for the atomic tokens and one for the full tokens.
         """
         slotFeature = self.slotFeature
+        firstSlots = self.firstSlots
+        lastSlots = self.lastSlots
 
         verbose = self.verbose
         app = self.app
@@ -636,6 +696,7 @@ class NLPipeline:
         Fotypev = F.otype.v
         slotType = F.otype.slotType
         Fslotv = Fs(slotFeature).v
+
         if emptyFeature is not None:
             Femptyv = Fs(emptyFeature).v
             Femptys = Fs(emptyFeature).s
@@ -643,18 +704,24 @@ class NLPipeline:
         doN = nFeature is not None
         slotLinks = {}
         featuresData = {feat: {} for feat in features}
+
         if nFeature is not None:
             featuresData[nFeature] = {}
         if emptyFeature is not None:
             featuresData[emptyFeature] = {}
 
-        if isToken:
-            featToken = featuresData[features[0]]
-            featAfter = featuresData[features[1]]
+        if isTk:
+            tokenFeaturesData = deepcopy(featuresData)
+            featTk = featuresData[features[0]]
+            featTkAfter = featuresData[features[1]]
+            featToken = tokenFeaturesData[features[0]]
+            featTokenAfter = tokenFeaturesData[features[1]]
+            tokenLinks = {}
 
         whiteMultipleRe = re.compile(r"^[ \n]{2,}$", re.S)
 
         node = 0
+        token = 0
         itemsOutside = []
         itemsEmpty = []
 
@@ -664,28 +731,55 @@ class NLPipeline:
         )
         indent(level=True)
 
-        def addToken():
+        def addTk(last, sAfter):
             nonlocal node
-            nonlocal curSlots
-            nonlocal curValue
+            nonlocal curTkSlots
+            nonlocal curTkValue
 
             node += 1
-            slotLinks[node] = curSlots
-            featToken[node] = curValue
+            slotLinks[node] = curTkSlots
+            featTk[node] = curTkValue
+
             for (feat, val) in zip(features[2:], vals[2:]):
                 featuresData[feat][node] = val
             if doN:
                 featuresData[nFeature][node] = node
 
-            curSlots = []
-            curValue = ""
+            if last:
+                after = vals[1] if sAfter is not None else ""
+                featTkAfter[node] = after
+
+            curTkSlots = []
+            curTkValue = ""
+
+        def addToken(last, sAfter):
+            nonlocal token
+            nonlocal curTokenSlots
+            nonlocal curTokenValue
+
+            token += 1
+            tokenLinks[token] = curTokenSlots
+            featToken[token] = curTokenValue
+
+            for (feat, val) in zip(features[2:], vals[2:]):
+                tokenFeaturesData[feat][token] = val
+            if doN:
+                tokenFeaturesData[nFeature][token] = token
+
+            if last:
+                after = vals[1] if sAfter is not None else ""
+                featTokenAfter[token] = after
+
+            curTokenSlots = []
+            curTokenValue = ""
 
         def addSlot(slot):
             nonlocal node
 
             node += 1
             slotLinks[node] = [slot]
-            featToken[node] = Fslotv(slot)
+            featTk[node] = Fslotv(slot)
+
             if Femptyv(slot):
                 featuresData[emptyFeature][node] = 1
 
@@ -701,14 +795,15 @@ class NLPipeline:
 
         # First add all empty slots, provided we are doing tokens
 
-        if isToken:
+        if isTk:
             emptySlots = (
                 {s for s in Femptys(1) if Fotypev(s) == slotType}
                 if emptyFeature
                 else set()
             )
-            emptyWithinToken = 0
-            spaceWithinToken = 0
+            emptyWithinTk = 0
+            spaceWithinTk = 0
+            boundaryWithinTk = 0
 
             for slot in sorted(emptySlots):
                 addSlot(slot)
@@ -783,40 +878,62 @@ class NLPipeline:
             else:
                 mySlots = sorted(mySlots)
 
-            curValue = ""
-            curSlots = []
+            curTkValue = ""
+            curTkSlots = []
+            curTokenValue = ""
+            curTokenSlots = []
 
             nMySlots = len(mySlots)
 
-            if isToken:
+            if isTk:
                 # we might need to split tokens:
-                # at points that correspond to empty slots
-                # at spaces or newlines within the token
+                # * at points that correspond to empty slots
+                # * at spaces or newlines within the token
+                # * at places where element boundaries occur
                 # decompose it into individual characters
 
-                tokenText = "".join(Fslotv(s) for s in mySlots)
+                tkText = "".join(Fslotv(s) for s in mySlots)
 
-                if whiteMultipleRe.match(tokenText):
-                    spaceWithinToken += 1
+                if whiteMultipleRe.match(tkText):
+                    spaceWithinTk += 1
                     for slot in mySlots:
                         addSlot(slot)
-                        spaceWithinToken += 1
 
                 else:
+                    sAfter = positions[e]
+
                     for (i, slot) in enumerate(mySlots):
                         last = i == nMySlots - 1
-                        if slot in emptySlots:
-                            emptyWithinToken += 1
-                            if curValue:
-                                addToken()
-                            if last:
-                                featAfter[node] = vals[1]
+                        isStart = slot in firstSlots
+                        isEnd = slot - 1 in lastSlots
+                        isBoundary = isStart or isEnd
+                        isEmpty = slot in emptySlots
+
+                        if isEmpty:
+                            emptyWithinTk += 1
+                        if isBoundary:
+                            boundaryWithinTk += 1
+
+                        if isEmpty or isBoundary:
+                            if curTkValue:
+                                addTk(last, sAfter)
+                        if not isEmpty:
+                            value = Fslotv(slot)
+                            curTkValue += value
+                            curTkSlots.append(slot)
+
+                        if isEmpty:
+                            if curTokenValue:
+                                addToken(last, sAfter)
                         else:
-                            curValue += Fslotv(slot)
-                            curSlots.append(slot)
-                    if curValue:
-                        addToken()
-                        featAfter[node] = vals[1]
+                            value = Fslotv(slot)
+                            curTokenValue += value
+                            curTokenSlots.append(slot)
+
+                    if curTkValue:
+                        addTk(True, sAfter)
+                    if curTokenValue:
+                        addToken(True, sAfter)
             else:
                 addItem()
 
@@ -825,13 +942,17 @@ class NLPipeline:
             f"{node} {tp} nodes have values assigned for {repFeatures}",
             force=verbose >= 0,
         )
-        if isToken:
+        if isTk:
             info(
-                f"{emptyWithinToken} empty slots have split surrounding tokens",
+                f"{emptyWithinTk} empty slots have surrounding split tokens",
                 force=verbose >= 0,
             )
             info(
-                f"{spaceWithinToken} space slots have split into {slotType}s",
+                f"{spaceWithinTk} space slots have split into {slotType}s",
+                force=verbose >= 0,
+            )
+            info(
+                f"{boundaryWithinTk} slots have split around an element boundary",
                 force=verbose >= 0,
             )
 
@@ -851,15 +972,22 @@ class NLPipeline:
             indent(level=False)
 
         indent(level=False)
-        return (node, slotLinks, featuresData)
+        return (
+            (
+                (node, slotLinks, featuresData),
+                (token, tokenLinks, tokenFeaturesData),
+            )
+            if isTk
+            else (node, slotLinks, featuresData)
+        )
 
-    def ingestTokensAndSentences(self, positions, tokenStream, sentenceStream):
-        """Ingests a tokens and sentences in a dataset and turn the tokens into slots.
+    def ingestTokensAndSentences(self, positions, tkStream, sentenceStream):
+        """Ingests tokens and sentences in a dataset and turn the tokens into slots.
 
         By default:
 
-        * tokens become nodes of a new type `token`;
-        * the texts of a token ends up in the feature `str`;
+        * tokens become nodes of a new type `t`;
+        * the texts of tokens ends up in the feature `str`;
         * if there is a space after a token, it ends up in the feature `after`;
         * sentences become nodes of a new type `sentence`;
         * the sentence number ends up in the feature `nsent`.
@@ -904,7 +1032,7 @@ class NLPipeline:
         ----------
         positions: list
             which slot node corresponds to which position in the plain text.
-        tokenStream: list
+        tkStream: list
             The list of tokens as delivered by the NLP pipe.
         sentenceStream: list
             The list of sentences as delivered by the NLP pipe.
@@ -916,9 +1044,10 @@ class NLPipeline:
         """
         emptyFeature = self.emptyFeature
         removeSlotFeatures = self.removeSlotFeatures
-        tokenType = self.tokenType
+        tkType = self.tkType
         tokenFeatures = self.tokenFeatures
         tokenNFeature = self.tokenNFeature
+        tokenType = self.tokenType
         sentenceType = self.sentenceType
         sentenceFeatures = self.sentenceFeatures
         sentenceNFeature = self.sentenceNFeature
@@ -930,19 +1059,22 @@ class NLPipeline:
         verbose = self.verbose
         silent = "auto" if verbose == 1 else TERSE if verbose == 0 else DEEP
 
-        info("Ingesting tokens and sentences into the dataset ...", force=verbose >= 0)
+        info(
+            "Ingesting tokens, and sentences into the dataset ...",
+            force=verbose >= 0,
+        )
         indent(level=True)
         info("Mapping NLP data to nodes and features ...", force=verbose >= 0)
         indent(level=True)
 
-        slotLinks = {tokenType: {}, sentenceType: {}}
+        slotLinks = {tkType: {}, sentenceType: {}}
         features = {}
         lastNode = {}
 
         for feat in (*tokenFeatures, tokenNFeature):
             if feat is not None:
                 features[feat] = {}
-        lastNode[tokenType] = 0
+        lastNode[tkType] = 0
 
         canSentences = len(sentenceStream) != 0
 
@@ -952,12 +1084,12 @@ class NLPipeline:
                     features[feat] = {}
             lastNode[sentenceType] = 0
 
-        for (isToken, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty) in (
+        for (isTk, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty) in (
             (
                 True,
-                tokenStream,
+                tkStream,
                 None,
-                tokenType,
+                tkType,
                 tokenFeatures,
                 tokenNFeature,
                 False,
@@ -976,8 +1108,8 @@ class NLPipeline:
         ):
             if len(data) == 0:
                 continue
-            (node, theseSlotLinks, featuresData) = self.ingest(
-                isToken,
+            ingestResult = self.ingest(
+                isTk,
                 positions,
                 data,
                 tp,
@@ -987,6 +1119,17 @@ class NLPipeline:
                 skipBlanks=skipBlanks,
                 skipFlows=skipFlows,
             )
+            if isTk:
+                (
+                    (node, theseSlotLinks, featuresData),
+                    (token, tokenSlotLinks, tokenFeaturesData),
+                ) = ingestResult
+                lastNode[tokenType] = token
+                slotLinks[tokenType] = tokenSlotLinks
+                info(f"{lastNode[tokenType]} {tokenType}s", force=verbose >= 0)
+            else:
+                (node, theseSlotLinks, featuresData) = ingestResult
+
             lastNode[tp] = node
             slotLinks[tp] = theseSlotLinks
             for (feat, featData) in featuresData.items():
@@ -1012,14 +1155,20 @@ class NLPipeline:
         if sentenceNFeature is not None:
             allSentenceFeatures.append(sentenceNFeature)
 
-        addTypes = dict(
-            token=dict(
+        addTypes = {
+            tkType: dict(
+                nodeFrom=1,
+                nodeTo=lastNode[tkType],
+                nodeSlots=slotLinks[tkType],
+                nodeFeatures={feat: features[feat] for feat in allTokenFeatures},
+            ),
+            tokenType: dict(
                 nodeFrom=1,
                 nodeTo=lastNode[tokenType],
                 nodeSlots=slotLinks[tokenType],
-                nodeFeatures={feat: features[feat] for feat in allTokenFeatures},
-            )
-        )
+                nodeFeatures={feat: tokenFeaturesData[feat] for feat in allTokenFeatures},
+            ),
+        }
         if canSentences:
             addTypes["sentence"] = dict(
                 nodeFrom=1,
@@ -1036,11 +1185,7 @@ class NLPipeline:
                 conversionCode=CONVERSION_METHODS[CM_NLP],
             ),
             otext={
-                "fmt:text-orig-full": "{"
-                + tokenFeatures[0]
-                + "}{"
-                + tokenFeatures[1]
-                + "}"
+                "fmt:text-orig-full": "{" + tokenFeatures[0] + "}{" + tokenFeatures[1] + "}"
             },
         )
 
@@ -1051,7 +1196,7 @@ class NLPipeline:
             addTypes=addTypes,
             deleteTypes=("word",),
             featureMeta=featureMeta,
-            replaceSlotType=(tokenType, *removeSlotFeatures),
+            replaceSlotType=(tkType, *removeSlotFeatures),
             silent=silent,
         )
         info("Done", force=verbose >= 0)
@@ -1105,9 +1250,13 @@ class NLPipeline:
             Whether all tasks have executed successfully.
         """
 
-        if write is not None:
+        if write is None:
+            write = self.write
+        else:
             self.write = write
-        if verbose is not None:
+        if verbose is None:
+            verbose = self.verbose
+        else:
             self.verbose = verbose
 
         lang = self.lang
@@ -1153,6 +1302,8 @@ class NLPipeline:
                     dirMake(txtDir)
                 writeList(tokens, tokenFile, intCols=(True, True, False, False))
                 writeList(sentences, sentenceFile, intCols=(True, True, False))
+                app.info(f"Atomic tokens written to {tokenFile}", force=verbose >= 0)
+                app.info(f"Sentences written to {sentenceFile}", force=verbose >= 0)
             app.info("NLP done", force=True)
 
             result = (tokens, sentences) if self.good else False

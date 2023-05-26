@@ -311,7 +311,8 @@ def modify(
         You cannot use this function to add slots to your data set.
 
         !!! caution "existing node types"
-            It is an error if a new node type already exists in the original.
+            It is an error if a new node type already exists in the original,
+            unless that type is meant to be deleted.
 
         !!! info "nodeFeatures, edgeFeatures"
             You can add any number of features.
@@ -710,7 +711,7 @@ def modify(
                 err(f"{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_T_KEYS)}")
                 continue
 
-            if nodeType in origNodeTypes:
+            if nodeType in set(origNodeTypes) - deleteTypes:
                 err("Already occurs")
                 continue
 
@@ -753,12 +754,15 @@ def modify(
 
         (otextTypes, otextFeatures) = otextInfo()
 
-        problemTypes = addedTp & deletedTp
+        if False:
+            # it is no problem to first delete a type and then add a type with
+            # the same name (I think)
+            problemTypes = addedTp & deletedTp
 
-        if problemTypes:
-            ePrefix = "Add and then delete: "
-            eItem = "types: "
-            err(f"{_rep(problemTypes)}")
+            if problemTypes:
+                ePrefix = "Add and then delete: "
+                eItem = "types: "
+                err(f"{_rep(problemTypes)}")
 
         problemTypes = otextTypes - ((set(origNodeTypes) | addedTp) - deletedTp)
         if problemTypes:
