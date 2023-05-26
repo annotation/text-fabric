@@ -32,6 +32,13 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
+<h3 id="11417-upcoming">11.4.17 (upcoming)</h3>
+<p>2023-06-??</p>
+<ul>
+<li><code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>: if generated tokens cross element boundaries, they will be
+split on those boundaries. These atomic tokens become the slots (type <code>t</code> by
+default), the original tokens are added as nodes of type <code>token</code>.</li>
+</ul>
 <h3 id="11415-16">11.4.15-16</h3>
 <p>2023-05-25</p>
 <ul>
@@ -597,7 +604,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -670,6 +677,7 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
+<li><a href="#11417-upcoming">11.4.17 (upcoming)</a></li>
 <li><a href="#11415-16">11.4.15-16</a></li>
 <li><a href="#11414">11.4.14</a></li>
 <li><a href="#11413">11.4.13</a></li>

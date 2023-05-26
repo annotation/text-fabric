@@ -43,7 +43,7 @@ modify(
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/dataset/modify.py#L1-L1455" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/dataset/modify.py#L1-L1459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Modify
@@ -358,7 +358,8 @@ def modify(
         You cannot use this function to add slots to your data set.
 
         !!! caution &#34;existing node types&#34;
-            It is an error if a new node type already exists in the original.
+            It is an error if a new node type already exists in the original,
+            unless that type is meant to be deleted.
 
         !!! info &#34;nodeFeatures, edgeFeatures&#34;
             You can add any number of features.
@@ -757,7 +758,7 @@ def modify(
                 err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_T_KEYS)}&#34;)
                 continue
 
-            if nodeType in origNodeTypes:
+            if nodeType in set(origNodeTypes) - deleteTypes:
                 err(&#34;Already occurs&#34;)
                 continue
 
@@ -800,12 +801,15 @@ def modify(
 
         (otextTypes, otextFeatures) = otextInfo()
 
-        problemTypes = addedTp &amp; deletedTp
+        if False:
+            # it is no problem to first delete a type and then add a type with
+            # the same name (I think)
+            problemTypes = addedTp &amp; deletedTp
 
-        if problemTypes:
-            ePrefix = &#34;Add and then delete: &#34;
-            eItem = &#34;types: &#34;
-            err(f&#34;{_rep(problemTypes)}&#34;)
+            if problemTypes:
+                ePrefix = &#34;Add and then delete: &#34;
+                eItem = &#34;types: &#34;
+                err(f&#34;{_rep(problemTypes)}&#34;)
 
         problemTypes = otextTypes - ((set(origNodeTypes) | addedTp) - deletedTp)
         if problemTypes:
@@ -1715,7 +1719,8 @@ Assignments to nodes outside the boundaries will be ignored.</p>
 You cannot use this function to add slots to your data set.</p>
 <div class="admonition caution">
 <p class="admonition-title">existing node types</p>
-<p>It is an error if a new node type already exists in the original.</p>
+<p>It is an error if a new node type already exists in the original,
+unless that type is meant to be deleted.</p>
 </div>
 <div class="admonition info">
 <p class="admonition-title">nodeFeatures, edgeFeatures</p>
@@ -1823,7 +1828,7 @@ parameter will be merged into existing meta data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7b4203f6ea65079a9a0ec1407e757c2fb19d3c10/tf/dataset/modify.py#L71-L1455" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/dataset/modify.py#L71-L1459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def modify(
     location,
@@ -2068,7 +2073,8 @@ parameter will be merged into existing meta data.</p>
         You cannot use this function to add slots to your data set.
 
         !!! caution &#34;existing node types&#34;
-            It is an error if a new node type already exists in the original.
+            It is an error if a new node type already exists in the original,
+            unless that type is meant to be deleted.
 
         !!! info &#34;nodeFeatures, edgeFeatures&#34;
             You can add any number of features.
@@ -2467,7 +2473,7 @@ parameter will be merged into existing meta data.</p>
                 err(f&#34;{_rep(illegalKeys)} unrecognized, expected {_rep(ADD_T_KEYS)}&#34;)
                 continue
 
-            if nodeType in origNodeTypes:
+            if nodeType in set(origNodeTypes) - deleteTypes:
                 err(&#34;Already occurs&#34;)
                 continue
 
@@ -2510,12 +2516,15 @@ parameter will be merged into existing meta data.</p>
 
         (otextTypes, otextFeatures) = otextInfo()
 
-        problemTypes = addedTp &amp; deletedTp
+        if False:
+            # it is no problem to first delete a type and then add a type with
+            # the same name (I think)
+            problemTypes = addedTp &amp; deletedTp
 
-        if problemTypes:
-            ePrefix = &#34;Add and then delete: &#34;
-            eItem = &#34;types: &#34;
-            err(f&#34;{_rep(problemTypes)}&#34;)
+            if problemTypes:
+                ePrefix = &#34;Add and then delete: &#34;
+                eItem = &#34;types: &#34;
+                err(f&#34;{_rep(problemTypes)}&#34;)
 
         problemTypes = otextTypes - ((set(origNodeTypes) | addedTp) - deletedTp)
         if problemTypes:
