@@ -380,14 +380,11 @@ class NLPipeline:
         self.elementDefs = {}
 
         A = Analysis(verbose=verbose)
-        A.configure()
-        A.interpret()
-        if not A.good:
-            console("Could not get TEI element definitions")
-            return
+        baseSchema = A.getBaseSchema()["xsd"]
+        A.getElementInfo(baseSchema, [])
+        elementDefs = A.elementDefs
 
-        elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
-        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs.items() if mixed}
+        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed}
 
     def generatePlain(self):
         """Generates a plain text out of a data source.
@@ -399,12 +396,8 @@ class NLPipeline:
         We separate the flows clearly in the output, so that they are discernible
         in the output of the NLP pipeline.
 
-        We also generate spurious spaces around element boundaries.
-        This will prevent tokens to span element boundaries.
-        What the tokenizer will deliver as tokens we consider atomic tokens.
-
         Afterwards, when we collect the tokens, we will notice which tokens
-        need to be glued together into full tokens.
+        cross element boundaries and need to be split into atomic tokens.
 
         Returns
         -------
@@ -732,6 +725,15 @@ class NLPipeline:
         indent(level=True)
 
         def addTk(last, sAfter):
+            """Add an atomic token node to the dataset under construction.
+
+            Parameters
+            ----------
+            last: boolean
+                Whether this is the last atomic token in the full token.
+                In that case, the *after* attribute on the token data must be added
+                as a feature on this atomic token.
+            """
             nonlocal node
             nonlocal curTkSlots
             nonlocal curTkValue
@@ -793,7 +795,7 @@ class NLPipeline:
             if doN:
                 featuresData[nFeature][node] = node
 
-        # First add all empty slots, provided we are doing tokens
+        # First we identify all the empty slots, provided we are doing tokens
 
         if isTk:
             emptySlots = (
@@ -805,8 +807,8 @@ class NLPipeline:
             spaceWithinTk = 0
             boundaryWithinTk = 0
 
-            for slot in sorted(emptySlots):
-                addSlot(slot)
+            # for slot in sorted(emptySlots):
+            #    addSlot(slot)
 
         # now the data from the NLP pipeline
 
@@ -909,31 +911,46 @@ class NLPipeline:
                         isBoundary = isStart or isEnd
                         isEmpty = slot in emptySlots
 
-                        if isEmpty:
+                        if isEmpty and nMySlots > 1:
                             emptyWithinTk += 1
                         if isBoundary:
                             boundaryWithinTk += 1
 
+                        value = Fslotv(slot)
+
+                        # first we deal with atomic tokens
+
                         if isEmpty or isBoundary:
+                            # we are at a split point
+                            # emit the current token as atomic token
                             if curTkValue:
                                 addTk(last, sAfter)
-                        if not isEmpty:
-                            value = Fslotv(slot)
-                            curTkValue += value
-                            curTkSlots.append(slot)
+
+                        # now we can continue building up atomic tokens
+
+                        curTkValue += value
+                        curTkSlots.append(slot)
+
+                        if isEmpty:
+                            # after an empty token we have to split again
+                            addTk(last, sAfter)
+
+                        # secondly we deal with full tokens
 
                         if isEmpty:
                             if curTokenValue:
                                 addToken(last, sAfter)
-                        else:
-                            value = Fslotv(slot)
-                            curTokenValue += value
-                            curTokenSlots.append(slot)
+
+                        # now we can continue building up full tokens
+
+                        curTokenValue += value
+                        curTokenSlots.append(slot)
 
                     if curTkValue:
                         addTk(True, sAfter)
                     if curTokenValue:
                         addToken(True, sAfter)
+
             else:
                 addItem()
 
@@ -944,7 +961,7 @@ class NLPipeline:
         )
         if isTk:
             info(
-                f"{emptyWithinTk} empty slots have surrounding split tokens",
+                f"{emptyWithinTk} empty slots are properly contained in a token",
                 force=verbose >= 0,
             )
             info(

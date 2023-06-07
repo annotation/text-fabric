@@ -5,4 +5,5 @@ recursive-include tf/server/static *
 recursive-include tf/server/templates *
 recursive-include tf/tools/tei *
 recursive-include tf/tools/trang *
+recursive-include tf/tools/jing *
 prune */docs

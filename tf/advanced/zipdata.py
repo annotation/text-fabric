@@ -2,9 +2,9 @@ import sys
 import types
 from zipfile import ZipFile
 
-from .helpers import splitModRef, run
+from .helpers import splitModRef
 from ..parameters import ZIP_OPTIONS, RELATIVE
-from ..core.helpers import console
+from ..core.helpers import console, run
 from ..core.files import (
     normpath,
     expanduser as ex,

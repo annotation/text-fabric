@@ -9,8 +9,20 @@ dataset out of the source.
 Text-Fabric knows the TEI elements, because it will read and parse the complete
 TEI schema. From this the set of complex, mixed elements is distilled.
 
-If the TEI source conforms to a customised TEI schema, you can pass it to the TEI
-importer, and it will read it and override the generic information of the TEI elements.
+If the TEI source conforms to a customised TEI schema, it will be detected and
+the importer will read it and override the generic information of the TEI elements.
+
+It is also possible to pass a choice of template and adaptation in a processing
+instruction. This does not influence validation, but it may influence further
+processing.
+
+If the TEI consists of multiple source files, it is possible to specify different
+templates and adaptations for different files.
+
+The possible values for models, templates, and adaptations should be declared in
+the configuration file.
+For each model there should be corresponding schema in the schema directory,
+either an `.rng` or an `.xsd` file.
 
 The converter goes the extra mile: it generates a TF-app and documentation
 (an *about.md* file and a *transcription.md* file), in such a way that the Text-Fabric
@@ -150,13 +162,73 @@ The meaning is:
     The identifier of a letter; the content is taken from sourceDesc/msDesc/msIdentifier/altIdentifier/idno[type=letterId]
     ```
 
-### schema
+### models
 
-string, optional `None`
+list, optional `[]`
 
-Which XML schema to be used, if not specified we fall back on full TEI.
-If specified, leave out the `.xsd` extension. The file is relative to the
-`schema` directory.
+Which TEI-based schemas are to be used.
+For each model there should be an xsd or rng file with that name in the `schema`
+directory. The `tei_all` schema is know to Text-Fabric, no need to specify that one.
+
+We'll try a RelaxNG schema (`.rng`) first. If that exists, we use it for validation
+with *jing*, and we also convert it with trang to an xsd schema, which we use for
+analysing the schema: we want to know which elements are mixed and pure.
+
+If there is no RelaxNG schema, we try an xsd schema (`.xsd`). If that exists,
+we can do the analysis, and we will use it also for validation.
+
+!!! note "Problems with RelaxNG validation"
+    RelaxNG validation is not always reliable when performed with lxml, or any tool
+    based on libxml, for that matter. That's why we try to avoid it. Even if we
+    translate the RelaxNG schema to an xsd schema by means of trang, the resulting
+    validation is not always reliable. So we use jing to validate the RelaxNG schema.
+
+See also [jing-trang](https://code.google.com/archive/p/jing-trang/downloads).
+
+### templates
+
+list, optional `[]`
+
+Which template(s) are to be used.
+A template is just a keyword, associated with an xml file, that can be used to switch
+to a specific kind of processing, such as `letter`, `bibliolist`, `artworklist`.
+
+You may specify an element or processing instruction with an attribute
+that triggers the template for the file in which it is found.
+
+This will be retrieved from the file before XML parsing starts.
+For example,
+
+```
+    templateTrigger="?editem@template"
+```
+
+will read the file and extract the value of the `template` attribute of the `editem`
+processing instruction and use that as the template for this file.
+If no template is found in this way, the empty template is assumed.
+
+### adaptations
+
+list, optional `[]`
+
+Which adaptations(s) are to be used.
+An adaptation is just a keyword, associated with an xml file, that can be used to switch
+to a specific kind of processing.
+It is meant to trigger tweaks on top of the behaviour of a template.
+
+You may specify an element or processing instruction with an attribute
+that triggers the adaptation for the file in which it is found.
+
+This will be retrieved from the file before XML parsing starts.
+For example,
+
+```
+    adaptationTrigger="?editem@adaptation"
+```
+
+will read the file and extract the value of the `adaptation` attribute of the `editem`
+processing instruction and use that as the adaptation for this file.
+If no adaptation is found in this way, the empty adaptation is assumed.
 
 ### prelim
 
@@ -288,6 +360,15 @@ dict(
 )
 ```
 
+This section model accepts a few other parameters:
+
+```
+    backMatter="backmatter"
+```
+
+This is the name of the folder that should not be treated as an ordinary folder, but
+as the folder with the sources for the backmatter, such as references, lists, indices,
+bibliography, biographies, etc.
 
 For model II, the default parameters are:
 
@@ -392,7 +473,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.
 import sys
 import collections
 import re
-from textwrap import dedent
+from textwrap import dedent, wrap
 from io import BytesIO
 from subprocess import run
 from importlib import util
@@ -432,6 +513,7 @@ from ..core.files import (
     unexpanduser as ux,
     getLocation,
     initTree,
+    baseNm,
     dirNm,
     dirExists,
     dirContents,
@@ -653,6 +735,7 @@ class TEI:
         self,
         tei=PARAMS["tei"][1],
         tf=PARAMS["tf"][1],
+        validate=PARAMS["validate"][1],
         verbose=FLAGS["verbose"][1],
     ):
         """Converts TEI to TF.
@@ -716,10 +799,9 @@ class TEI:
 
         ### `schema`
 
-        *Location of the TEI-XML schemas against which the sources can be validated.*
+        *TEI or other XML schemas against which the sources can be validated.*
 
-        It should be an `.xsd` file, and the parameter `schema` may specify
-        its name (without extension).
+        They should be `.xsd` or `.rng` files.
 
         !!! note "Multiple `.xsd` files"
             When you started with a `.rng` file and used `tf.tools.xmlschema` to
@@ -728,11 +810,9 @@ class TEI:
             and you should pass that name. It will import the remaining `.xsd` files,
             so do not throw them away.
 
-        We use this file as custom TEI schema,
+        We use these files as custom TEI schemas,
         but to be sure, we still analyse the full TEI schema and
-        use the schema passed here as a set of overriding element definitions.
-
-        If no schema is specified, we use the *full* TEI schema.
+        use the schemas here as a set of overriding element definitions.
 
         ## Output directories
 
@@ -823,8 +903,11 @@ class TEI:
         repoDir = f"{base}/{org}/{repo}"
         refDir = f"{repoDir}{relative}"
         programDir = f"{refDir}/programs"
+        schemaDir = f"{refDir}/schema"
         convertSpec = f"{programDir}/tei.yaml"
         convertCustom = f"{programDir}/tei.py"
+
+        self.schemaDir = schemaDir
 
         settings = {}
         if fileExists(convertSpec):
@@ -885,7 +968,11 @@ class TEI:
 
         generic = settings.get("generic", {})
         extra = settings.get("extra", {})
-        schema = settings.get("schema", None)
+        models = settings.get("models", [])
+        templates = settings.get("templates", [])
+        templateTrigger = settings.get("templateTrigger", None)
+        adaptations = settings.get("adaptations", [])
+        adaptationTrigger = settings.get("adaptationTrigger", None)
         prelim = settings.get("prelim", True)
         wordAsSlot = settings.get("wordAsSlot", True)
         parentEdges = settings.get("parentEdges", True)
@@ -910,7 +997,50 @@ class TEI:
 
         self.generic = generic
         self.extra = extra
-        self.schema = schema
+        self.models = models
+        self.templates = templates
+        self.adaptations = adaptations
+
+        if templateTrigger is None:
+            self.templateAtt = None
+            self.templateTag = None
+        else:
+            (tag, att) = templateTrigger.split("@")
+            self.templateAtt = att
+            self.templateTag = tag
+
+        if adaptationTrigger is None:
+            self.adaptationAtt = None
+            self.adaptationTag = None
+        else:
+            (tag, att) = adaptationTrigger.split("@")
+            self.adaptationAtt = att
+            self.adaptationTag = tag
+
+        templateTag = self.templateTag
+        templateAtt = self.templateAtt
+        adaptationTag = self.adaptationTag
+        adaptationAtt = self.adaptationAtt
+
+        triggers = {}
+        self.triggers = triggers
+
+        for (kind, theAtt, theTag) in (
+            ("template", templateAtt, templateTag),
+            ("adaptation", adaptationAtt, adaptationTag),
+        ):
+            triggerRe = None
+
+            if theAtt is not None and theTag is not None:
+                tagPat = re.escape(theTag)
+                triggerRe = re.compile(
+                    rf"""<{tagPat}\b[^>]*?{theAtt}=['"]([^'"]+)['"]"""
+                )
+            triggers[kind] = triggerRe
+
+        self.A = Analysis(verbose=verbose)
+        self.readSchemas()
+
         self.prelim = prelim
         self.wordAsSlot = wordAsSlot
         self.parentEdges = parentEdges
@@ -1046,7 +1176,6 @@ class TEI:
         self.repo = repo
         self.relative = relative
 
-        self.schemaFile = None if schema is None else f"{refDir}/schema/{schema}.xsd"
         levelNames = sectionProperties["levels"]
         self.levelNames = levelNames
         self.chunkLevel = levelNames[-1]
@@ -1058,10 +1187,97 @@ class TEI:
             self.folderSection = levelNames[0]
             self.fileSection = levelNames[1]
             self.chunkSection = levelNames[2]
+            self.backMatter = sectionProperties.get("backMatter", None)
 
         self.verbose = verbose
+        self.validate = validate
         myDir = dirNm(abspath(__file__))
         self.myDir = myDir
+
+    def readSchemas(self):
+        schemaDir = self.schemaDir
+        models = self.models
+        A = self.A
+
+        schemaFiles = dict(rng={}, xsd={})
+        self.schemaFiles = schemaFiles
+        modelInfo = {}
+        self.modelInfo = modelInfo
+        modelXsd = {}
+        self.modelXsd = modelXsd
+        modelInv = {}
+        self.modelInv = modelInv
+
+        for model in [None] + models:
+            for kind in ("rng", "xsd"):
+                schemaFile = (
+                    A.getBaseSchema()[kind]
+                    if model is None
+                    else f"{schemaDir}/{model}.{kind}"
+                )
+                if fileExists(schemaFile):
+                    schemaFiles[kind][model] = schemaFile
+                    if (
+                        kind == "rng"
+                        or kind == "xsd"
+                        and model not in schemaFiles["rng"]
+                    ):
+                        modelInfo[model] = schemaFile
+            if model in schemaFiles["rng"] and model not in schemaFiles["xsd"]:
+                schemaFileXsd = f"{schemaDir}/{model}.xsd"
+                A.fromrelax(schemaFiles["rng"][model], schemaFileXsd)
+                schemaFiles["xsd"][model] = schemaFileXsd
+
+        baseSchema = schemaFiles["xsd"][None]
+        modelXsd[None] = baseSchema
+        modelInv[(baseSchema, None)] = None
+
+        for model in models:
+            override = schemaFiles["xsd"][model]
+            modelXsd[model] = override
+            modelInv[(baseSchema, override)] = model
+
+    def getSwitches(self, xmlPath):
+        verbose = self.verbose
+        models = self.models
+        adaptations = self.adaptations
+        templates = self.templates
+        triggers = self.triggers
+        A = self.A
+
+        text = None
+
+        found = {}
+
+        for (kind, allOfKind) in (
+            ("model", models),
+            ("adaptation", adaptations),
+            ("template", templates),
+        ):
+            if text is None:
+                with open(xmlPath, encoding="utf8") as fh:
+                    text = fh.read()
+
+            found[kind] = None
+
+            if kind == "model":
+                result = A.getModel(text)
+                if result is None or result == "tei_all":
+                    result = None
+            else:
+                triggerRe = triggers[kind]
+                if triggerRe is not None:
+
+                    match = triggerRe.search(text)
+                    result = match.group(1) if match else None
+
+            if result is not None and result not in allOfKind:
+                if verbose >= 0:
+                    console(f"unavailable {kind} {result} in {ux(xmlPath)}")
+                result = None
+            found[kind] = result
+
+        return (found["model"], found["adaptation"], found["template"])
 
     def getParser(self):
         """Configure the lxml parser.
@@ -1082,60 +1298,6 @@ class TEI:
             remove_pis=not procins,
             huge_tree=True,
         )
-
-    def getValidator(self):
-        """Parse the schema.
-
-        A parsed schema can be used for XML-validation.
-        This will only happen during the `check` task.
-
-        Returns
-        -------
-        object
-            A configured lxml schema validator.
-        """
-        schemaFile = self.schemaFile
-
-        if schemaFile is None:
-            return None
-
-        schemaDoc = etree.parse(schemaFile)
-        return etree.XMLSchema(schemaDoc)
-
-    def getElementInfo(self, verbose=None):
-        """Analyse the schema.
-
-        The XML schema has useful information about the XML elements that
-        occur in the source. Here we extract that information and make it
-        fast-accessible.
-
-        Parameters
-        ----------
-        verbose: boolean, optional None
-            Produce more progress and reporting messages
-            If not passed, take the verbose member of this object.
-
-        Returns
-        -------
-        dict
-            Keyed by element name (without namespaces), where the value
-            for each name is a tuple of booleans: whether the element is simple
-            or complex; whether the element allows mixed content or only pure content.
-        """
-        if verbose is not None:
-            self.verbose = verbose
-        verbose = self.verbose
-        schemaFile = self.schemaFile
-
-        self.elementDefs = {}
-
-        A = Analysis(verbose=verbose)
-        A.configure(override=schemaFile)
-        A.interpret()
-        if not A.good:
-            return
-
-        self.elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
 
     def getXML(self):
         """Make an inventory of the TEI source files.
@@ -1161,6 +1323,8 @@ class TEI:
             console(f"Section model {sectionModel}")
 
         if sectionModel == "I":
+            backMatter = self.backMatter
+
             IGNORE = "__ignore__"
 
             xmlFilesRaw = collections.defaultdict(list)
@@ -1181,10 +1345,22 @@ class TEI:
                                 continue
                             xmlFilesRaw[folderName].append(fileName)
 
-            xmlFiles = tuple(
-                (folderName, tuple(sorted(fileNames)))
-                for (folderName, fileNames) in sorted(xmlFilesRaw.items())
-            )
+            xmlFiles = []
+            hasBackMatter = False
+
+            for folderName in sorted(xmlFilesRaw):
+                if folderName == backMatter:
+                    hasBackMatter = True
+                else:
+                    fileNames = xmlFilesRaw[folderName]
+                    xmlFiles.append((folderName, tuple(sorted(fileNames))))
+
+            if hasBackMatter:
+                fileNames = xmlFilesRaw[backMatter]
+                xmlFiles.append((backMatter, tuple(sorted(fileNames))))
+
+            xmlFiles = tuple(xmlFiles)
+
             return xmlFiles
 
         if sectionModel == "II":
@@ -1229,6 +1405,11 @@ class TEI:
 
         verbose = self.verbose
         procins = self.procins
+        validate = self.validate
+        modelInfo = self.modelInfo
+        modelInv = self.modelInv
+        modelXsd = self.modelXsd
+        A = self.A
 
         teiPath = self.teiPath
         reportPath = self.reportPath
@@ -1241,6 +1422,7 @@ class TEI:
             console(
                 f"Processing instructions are {'treated' if procins else 'ignored'}"
             )
+            console(f"XML validation will be {'performed' if validate else 'skipped'}")
 
         kindLabels = dict(
             format="Formatting Attributes",
@@ -1253,18 +1435,23 @@ class TEI:
         analysis = {x: getStore() for x in kindLabels}
         errors = []
         tagByNs = collections.defaultdict(collections.Counter)
+        refs = collections.defaultdict(lambda: collections.Counter())
+        ids = collections.defaultdict(lambda: collections.Counter())
 
         parser = self.getParser()
-        validator = self.getValidator()
-        self.getElementInfo()
-        elementDefs = self.elementDefs
+        baseSchema = modelXsd[None]
+        overrides = [
+            override for (model, override) in modelXsd.items() if model is not None
+        ]
+        A.getElementInfo(baseSchema, overrides)
+        elementDefs = A.elementDefs
 
         initTree(reportPath)
         initTree(docsDir)
 
         nProcins = 0
 
-        def analyse(root, analysis):
+        def analyse(root, analysis, xmlFile):
             FORMAT_ATTS = set(
                 """
                 dim
@@ -1311,7 +1498,7 @@ class TEI:
                     tag = qName.localname
                     ns = qName.namespace
 
-                atts = xnode.attrib
+                atts = {etree.QName(k).localname: v for (k, v) in xnode.attrib.items()}
 
                 tagByNs[tag][ns] += 1
 
@@ -1319,8 +1506,32 @@ class TEI:
                     kind = "rest"
                     analysis[kind][tag][""][""] += 1
                 else:
-                    for (kOrig, v) in atts.items():
-                        k = etree.QName(kOrig).localname
+                    idv = atts.get("id", None)
+                    if idv is not None:
+                        ids[xmlFile][idv] += 1
+
+                    refAtt = (
+                        "target"
+                        if tag in {"ptr", "ref"}
+                        else "ref"
+                        if tag in {"rs"}
+                        else None
+                    )
+                    if refAtt is not None:
+                        refVal = atts.get(refAtt, None)
+                        if refVal is not None and not refVal.startswith("http"):
+                            for refv in refVal.split():
+                                parts = refv.split("#", 1)
+                                if len(parts) == 1:
+                                    targetFile = refv
+                                    targetId = ""
+                                else:
+                                    (targetFile, targetId) = parts
+                                if targetFile == "":
+                                    targetFile = xmlFile
+                                refs[xmlFile][(targetFile, targetId)] += 1
+
+                    for (k, v) in atts.items():
                         kind = (
                             "format"
                             if k in FORMAT_ATTS
@@ -1348,23 +1559,46 @@ class TEI:
             nodeInfo(root)
 
         def writeErrors():
+            """Write the errors to a file."""
+
             errorFile = f"{reportPath}/errors.txt"
 
             nErrors = 0
+            nFiles = 0
 
             with open(errorFile, "w", encoding="utf8") as fh:
-                for (xmlFile, lines) in errors:
-                    fh.write(f"{xmlFile}\n")
-                    for line in lines:
-                        fh.write(line)
-                        nErrors += 1
-                    fh.write("\n")
+                prevFolder = None
+                prevFile = None
 
-            console(
-                f"{nErrors} error(s) in {len(errors)} file(s) written to {errorFile}"
-                if verbose >= 0 or nErrors
-                else "Validation OK"
-            )
+                for (folder, file, line, col, kind, text) in errors:
+                    newFolder = prevFolder != folder
+                    newFile = newFolder or prevFile != file
+
+                    if newFile:
+                        nFiles += 1
+
+                    if kind == "error":
+                        nErrors += 1
+
+                    indent1 = f"{folder}\n\t" if newFolder else "\t"
+                    indent2 = f"{file}\n\t\t" if newFile else "\t"
+                    loc = f"{line or ''}:{col or ''}"
+                    text = "\n".join(wrap(text, width=80, subsequent_indent="\t\t\t"))
+                    fh.write(f"{indent1}{indent2}{loc} {kind or ''} {text}\n")
+                    prevFolder = folder
+                    prevFile = file
+
+            if nErrors:
+                console(
+                    f"{nErrors} validation error(s) in {nFiles} file(s) "
+                    f"written to {errorFile}"
+                )
+            else:
+                if verbose >= 0:
+                    if validate:
+                        console("Validation OK")
+                    else:
+                        console("No validation performed")
 
         def writeNamespaces():
             errorFile = f"{reportPath}/namespaces.txt"
@@ -1422,17 +1656,8 @@ class TEI:
                     attRep = "" if att == "" else f"{att}="
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
-                    if tag:
-                        if tag.startswith("?"):
-                            extraInfo = "pi"
-                        else:
-                            (typ, mixed) = elementDefs[tag]
-                            extraInfo = f"{'mixed' if mixed else 'pure '}: "
-                    else:
-                        extraInfo = ""
                     fh.write(
-                        f"{nl}\t{extraInfo:<7}{tagRep:<18} "
-                        f"{attRep:<18} {amount:>5}x {val}\n"
+                        f"{nl}\t{tagRep:<18} " f"{attRep:<11} {amount:>5}x {val}\n"
                     )
                     infoLines += 1
                     for (val, amount) in atts[1:]:
@@ -1458,6 +1683,194 @@ class TEI:
             if verbose >= 0:
                 console(f"{infoLines} info line(s) written to {reportFile}")
 
+        def writeElemTypes():
+            elemsCombined = {}
+
+            modelSet = set()
+
+            for (schemaOverride, eDefs) in elementDefs.items():
+                model = modelInv[schemaOverride]
+                modelSet.add(model)
+                for (tag, (typ, mixed)) in eDefs.items():
+                    elemsCombined.setdefault(tag, {}).setdefault(model, {})
+                    elemsCombined[tag][model]["typ"] = typ
+                    elemsCombined[tag][model]["mixed"] = mixed
+
+            tagReport = {}
+
+            for (tag, tagInfo) in elemsCombined.items():
+                tagLines = []
+                tagReport[tag] = tagLines
+
+                if None in tagInfo:
+                    teiInfo = tagInfo[None]
+                    teiTyp = teiInfo["typ"]
+                    teiMixed = teiInfo["mixed"]
+                    teiTypRep = "??" if teiTyp is None else typ
+                    teiMixedRep = (
+                        "??" if teiMixed is None else "mixed" if teiMixed else "pure"
+                    )
+                    mds = ["TEI"]
+
+                    for model in sorted(x for x in tagInfo if x is not None):
+                        info = tagInfo[model]
+                        typ = info["typ"]
+                        mixed = info["mixed"]
+                        if typ == teiTyp and mixed == teiMixed:
+                            mds.append(model)
+                        else:
+                            typRep = (
+                                "" if typ == teiTyp else "??" if typ is None else typ
+                            )
+                            mixedRep = (
+                                ""
+                                if mixed == teiMixed
+                                else "??"
+                                if mixed is None
+                                else "mixed"
+                                if mixed
+                                else "pure"
+                            )
+                            tagLines.append((tag, [model], typRep, mixedRep))
+                    tagLines.insert(0, (tag, mds, teiTypRep, teiMixedRep))
+                else:
+                    for model in sorted(tagInfo):
+                        info = tagInfo[model]
+                        typ = info["typ"]
+                        mixed = info["mixed"]
+                        typRep = "??" if typ is None else typ
+                        mixedRep = (
+                            "??" if mixed is None else "mixed" if mixed else "pure"
+                        )
+                        tagLines.append((tag, [model], typRep, mixedRep))
+
+            reportFile = f"{reportPath}/types.txt"
+            with open(reportFile, "w", encoding="utf8") as fh:
+                for tag in sorted(tagReport):
+                    tagLines = tagReport[tag]
+                    for (tag, mds, typ, mixed) in tagLines:
+                        model = ",".join(mds)
+                        fh.write(f"{tag:<18} {model:<18} {typ:<7} {mixed:<5}\n")
+
+            if verbose >= 0:
+                console(
+                    f"{len(elemsCombined)} tag(s) type info written to {reportFile}"
+                )
+
+        def writeIdRefs():
+            reportIdFile = f"{reportPath}/ids.txt"
+            reportRefFile = f"{reportPath}/refs.txt"
+
+            ih = open(reportIdFile, "w", encoding="utf8")
+            rh = open(reportRefFile, "w", encoding="utf8")
+
+            referencedIds = collections.Counter()
+            missingIds = set()
+            totalIds = 0
+
+            totalRefs = 0
+
+            totalResolvable = 0
+            totalDangling = 0
+
+            for (file, items) in refs.items():
+                totalRefs += len(items)
+
+                rh.write(f"{file}\n")
+
+                resolvable = 0
+                dangling = 0
+
+                for (item, n) in sorted(items.items()):
+                    (target, item) = item
+                    if target not in ids or item not in ids[target]:
+                        missingIds.add((target, item))
+                        status = "dangling"
+                        rh.write(f"\t{status:<8} {n:>5} x {target} # {item}\n")
+                        dangling += 1
+                    else:
+                        referencedIds[(target, item)] += n
+                        resolvable += 1
+
+                msgs = (
+                    f"\t{resolvable} resolvable ref(s)",
+                    f"\t{dangling} dangling ref(s)",
+                )
+                for msg in msgs:
+                    rh.write(f"{msg}\n")
+
+                totalResolvable += resolvable
+                totalDangling += dangling
+
+            if verbose >= 0:
+                console(f"{totalRefs} refs written to {reportRefFile}")
+            if verbose >= 1:
+                msgs = (
+                    f"\t{totalResolvable} resolvable ref(s)",
+                    f"\t{totalDangling} dangling ref(s)",
+                )
+                for msg in msgs:
+                    console(msg)
+
+            totalUnique = 0
+            totalMultiple = 0
+            totalReferenced = 0
+            totalUnused = 0
+
+            for (file, items) in ids.items():
+                totalIds += len(items)
+
+                ih.write(f"{file}\n")
+
+                unique = 0
+                multiple = 0
+                referenced = 0
+                unused = 0
+
+                for (item, n) in sorted(items.items()):
+                    nRefs = referencedIds.get((file, item), 0)
+
+                    if n == 1:
+                        unique += 1
+                    else:
+                        multiple += 1
+                    if nRefs == 0:
+                        unused += 1
+                    else:
+                        referenced += 1
+
+                    status1 = f"{n}x"
+                    status2 = f"{nRefs}refs"
+
+                    if n > 1 or nRefs == 0:
+                        ih.write(f"\t{status1:<8} {status2:<8} {item}\n")
+
+                msgs = (
+                    f"\t{multiple} non-unique id(s)",
+                    f"\t{unused} unused id(s)",
+                    f"\t{unique} unique id(s)",
+                    f"\t{referenced} referenced id(s)",
+                )
+                for msg in msgs:
+                    ih.write(f"{msg}\n")
+
+                totalUnique += unique
+                totalMultiple += multiple
+                totalReferenced += referenced
+                totalUnused += unused
+
+            if verbose >= 0:
+                console(f"{totalIds} ids written to {reportIdFile}")
+            if verbose >= 1:
+                msgs = (
+                    f"\t{totalMultiple} non-unique id(s)",
+                    f"\t{totalUnused} unused id(s)",
+                    f"\t{totalUnique} unique id(s)",
+                    f"\t{totalReferenced} referenced id(s)",
+                )
+                for msg in msgs:
+                    console(msg)
+
         def writeDoc():
             teiUrl = "https://tei-c.org/release/doc/tei-p5-doc/en/html"
             elUrlPrefix = f"{teiUrl}/ref-"
@@ -1482,8 +1895,8 @@ class TEI:
 
                 tableHeader = dedent(
                     """
-                    element | attribute | value | amount
-                    --- | --- | --- | ---
+                    | element | attribute | value | amount
+                    | --- | --- | --- | ---
                     """
                 )
 
@@ -1493,10 +1906,24 @@ class TEI:
                     atts = sorted(attInfo.items())
                     (val, amount) = atts[0]
                     valRep = f"`{val}`" if val else ""
-                    fh.write(f"{tagRep} | {attRep} | {valRep} | {amount}\n")
+                    fh.write(
+                        "| "
+                        + (
+                            " | ".join(
+                                str(x)
+                                for x in (
+                                    tagRep,
+                                    attRep,
+                                    valRep,
+                                    amount,
+                                )
+                            )
+                        )
+                        + "\n"
+                    )
                     for (val, amount) in atts[1:]:
                         valRep = f"`{val}`" if val else ""
-                        fh.write(f"""\u00a0| | {valRep} | {amount}\n""")
+                        fh.write(f"""| | | {valRep} | {amount}\n""")
 
                 def writeTagInfo(tag, tagInfo):
                     tags = sorted(tagInfo.items())
@@ -1517,42 +1944,38 @@ class TEI:
                 "The value '' is not accepted by the pattern '\\S+'."
             )
 
-        NS_RE = re.compile(r"""\{[^}]+}""")
-
         def doXMLFile(xmlPath):
             tree = etree.parse(xmlPath, parser)
-            if validator is not None and not validator.validate(tree):
-                theseErrors = []
-                for entry in validator.error_log:
-                    msg = entry.message
-                    msg = NS_RE.sub("", msg)
-                    if filterError(msg):
-                        continue
-                    # domain = entry.domain_name
-                    # typ = entry.type_name
-                    level = entry.level_name
-                    line = entry.line
-                    col = entry.column
-                    address = f"{line}:{col}"
-                    theseErrors.append(f"{address:<6} {level:} {msg}\n")
-                if len(theseErrors):
-                    console("ERROR\n")
-                    errors.append((xmlFile, theseErrors))
-                    self.good = False
-                return
-
             root = tree.getroot()
-            analyse(root, analysis)
+            xmlFile = baseNm(xmlPath)
+            analyse(root, analysis, xmlFile)
+
+        xmlFilesByModel = collections.defaultdict(list)
 
         if sectionModel == "I":
             i = 0
             for (xmlFolder, xmlFiles) in self.getXML():
                 console(f"Start folder {xmlFolder}:")
+                j = 0
+                cr = ""
+                nl = True
+
                 for xmlFile in xmlFiles:
                     i += 1
-                    console(f"\r{i:>4} {xmlFile:<50}", newline=False)
+                    j += 1
+                    if j > 20:
+                        cr = "\r"
+                        nl = False
                     xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
-                    doXMLFile(xmlPath)
+                    (model, adapt, tpl) = self.getSwitches(xmlPath)
+                    mdRep = model or "TEI"
+                    tplRep = tpl or ""
+                    adRep = adapt or ""
+
+                    label = f"{mdRep:<12} {tplRep:<12} {adRep:<12}"
+
+                    console(f"{cr}{i:>4} {label} {xmlFile:<50}", newline=nl)
+                    xmlFilesByModel[model].append(xmlPath)
                 console("")
                 console(f"End   folder {xmlFolder}")
 
@@ -1563,13 +1986,49 @@ class TEI:
                 return False
 
             xmlPath = f"{teiPath}/{xmlFile}"
-            doXMLFile(xmlPath)
+            (model, adapt, tpl) = self.getSwitches(xmlPath)
+            xmlFilesByModel[model].append(xmlPath)
+
+        good = True
+
+        for (model, xmlPaths) in xmlFilesByModel.items():
+            if verbose >= 0:
+                console(f"{len(xmlPaths)} {model or 'TEI'} file(s) ...")
+
+            thisGood = True
+
+            if validate:
+                console("\tValidating ...")
+                schemaFile = modelInfo.get(model, None)
+                if schemaFile is None:
+                    console(f"\t\tNo schema file for {model}")
+                    if good is not None and good is not False:
+                        good = None
+                    continue
+                (thisGood, info, theseErrors) = A.validate(schemaFile, xmlPaths)
+                for line in info:
+                    if verbose >= 0:
+                        console(f"\t\t{line}")
+
+            if thisGood:
+                if verbose >= 0:
+                    console("\tMaking inventory ...")
+                    for xmlPath in xmlPaths:
+                        doXMLFile(xmlPath)
+            else:
+                good = False
+                errors.extend(theseErrors)
+
+        if not good:
+            self.good = False
 
         console("")
-        writeReport()
-        writeDoc()
         writeErrors()
+        writeReport()
+        writeElemTypes()
+        writeDoc()
         writeNamespaces()
+        writeIdRefs()
 
     # SET UP CONVERSION
 
@@ -1656,6 +2115,10 @@ class TEI:
         intFeatures = self.intFeatures
         transform = self.transformCustom
         chunkLevel = self.chunkLevel
+        modelInv = self.modelInv
+        modelInfo = self.modelInfo
+        modelXsd = self.modelXsd
+        A = self.A
 
         transformFunc = (
             (lambda x: BytesIO(x.encode("utf-8")))
@@ -1664,7 +2127,18 @@ class TEI:
         )
 
         parser = self.getParser()
-        self.getElementInfo(verbose=-1)
+        baseSchema = modelInfo[None]
+        overrides = [
+            override for (model, override) in modelInfo.items() if model is not None
+        ]
+        baseSchema = modelXsd[None]
+        overrides = [
+            override for (model, override) in modelXsd.items() if model is not None
+        ]
+        A.getElementInfo(baseSchema, overrides, verbose=-1)
+
+        refs = collections.defaultdict(dict)
+        ids = collections.defaultdict(dict)
 
         # WALKERS
 
@@ -1731,11 +2205,10 @@ class TEI:
             witStart
             """.strip().split()
         )
-        # N.B. We will alway generate newlines at the closing tags of
-        # elements that occur in pure elements
         NEWLINE_ELEMENTS = set(
             """
             ab
+            addrLine
             cb
             l
             lb
@@ -1746,6 +2219,11 @@ class TEI:
             seg
             table
             u
+            """.strip().split()
+        )
+        CONTINUOUS_ELEMENTS = set(
+            """
+            choice
             """.strip().split()
         )
 
@@ -1813,6 +2291,31 @@ class TEI:
             afterChildren(cv, cur, xnode, tag, atts)
 
             if curNode is not None:
+                refAtt = (
+                    "target"
+                    if tag in {"ptr", "ref"}
+                    else "ref"
+                    if tag in {"rs"}
+                    else None
+                )
+                xmlFile = cur["xmlFile"]
+                if refAtt is not None:
+                    refVal = atts.get(refAtt, None)
+                    if refVal is not None and not refVal.startswith("http"):
+                        for refv in refVal.split():
+                            parts = refv.split("#", 1)
+                            if len(parts) == 1:
+                                targetFile = refv
+                                targetId = ""
+                            else:
+                                (targetFile, targetId) = parts
+                            if targetFile == "":
+                                targetFile = xmlFile
+                            refs[refAtt][(targetFile, targetId)] = curNode
+                idVal = atts.get("id", None)
+                if idVal is not None:
+                    ids[xmlFile][idVal] = curNode
+
                 if len(cur[TNEST]):
                     cur[TNEST].pop()
                 if siblingEdges:
@@ -1881,13 +2384,33 @@ class TEI:
         def isChunk(cur):
             """Whether the current element counts as a chunk node.
 
+            It depends on the section model, but also on the template.
+
+            Note that we only can have distinct templates if we deal with
+            multiple files, so only when we are in section model I.
+
             ## Model I
 
             Chunks are the lowest section level (the higher levels are folders
             and then files)
 
-            Chunks are the immediate children of the `<teiHeader>` and the `<body>`
-            elements, and a few other elements also count as chunks.
+            The default is that chunks are the immediate children of the
+            `<teiHeader>` and the `<body>`
+            elements; a few other elements also count as chunks.
+
+            But in specific templates we have different rules:
+
+            ### `bibliolist`:
+
+            *   The TEI Header is a chunk, and nothing inside the TEI header is a chunk;
+            *   Everything at level 5, except `<listBibl>` is a chunk;
+            *   The children of `<listBibl>` are chunks (the `<bibl>` elements
+                and a few others), provided they are at level 6.
+
+            ### `artworklist`
+
+            *   The TEI Header is a chunk, and nothing inside the TEI header is a chunk;
+            *   Everything at level 5 is a chunk.
 
             ## Model II
 
@@ -1915,43 +2438,81 @@ class TEI:
 
             nest = cur[XNEST]
             nNest = len(nest)
+            model = cur["model"]
+
+            if nNest == 0:
+                return False
+
+            thisTag = nest[-1][0]
 
             if sectionModel == "II":
-                meChptChnk = isChapter(cur) and nest[-1][0] not in cur["pureElems"]
-                outcome = nNest > 1 and (
-                    meChptChnk
-                    or (
-                        nest[-2][0] == TEI_HEADER
-                        or (
-                            nNest > 2
-                            and (
-                                nest[-3][0] in TEXT_ANCESTORS
-                                and nest[-1][0] not in EMPTY_ELEMENTS
-                                or nest[-3][0] == TEXT_ANCESTOR
-                                and nest[-2][0] not in TEXT_ANCESTORS
-                            )
-                            and nest[-2][0] in cur["pureElems"]
-                        )
+                if nNest == 1:
+                    outcome = False
+                else:
+                    parentTag = nest[-2][0]
+                    meChptChnk = (
+                        isChapter(cur) and thisTag not in cur["pureElems"][model]
                     )
-                )
-                if outcome:
-                    cur["chunkElems"].add(nest[-1][0])
-                return outcome
 
-            outcome = nNest > 0 and (
-                nest[-1][0] in CHUNK_ELEMS
-                or (
-                    nNest > 1
-                    and (
-                        nest[-2][0] in CHUNK_PARENTS
-                        and nest[-1][0] not in EMPTY_ELEMENTS
-                        or nest[-2][0] == TEXT_ANCESTOR
-                        and nest[-1][0] not in TEXT_ANCESTORS
-                    )
-                )
-            )
+                    if meChptChnk:
+                        outcome = True
+                    elif parentTag == TEI_HEADER:
+                        outcome = True
+                    elif nNest <= 2:
+                        outcome = False
+                    elif parentTag not in cur["pureElems"][model]:
+                        outcome = False
+                    else:
+                        grandParentTag = nest[-3][0]
+                        outcome = (
+                            grandParentTag in TEXT_ANCESTORS
+                            and thisTag not in EMPTY_ELEMENTS
+                        ) or (
+                            grandParentTag == TEXT_ANCESTOR
+                            and parentTag not in TEXT_ANCESTORS
+                        )
+
+            elif sectionModel == "I":
+                template = cur["template"]
+
+                if template == "bibliolist":
+                    if thisTag == TEI_HEADER:
+                        outcome = True
+                    elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                        outcome = False
+                    elif nNest not in {5, 6}:
+                        outcome = False
+                    else:
+                        parentTag = nest[-2][0]
+                        if nNest == 5:
+                            outcome = thisTag != "listBibl"
+                        else:
+                            outcome = parentTag == "listBibl"
+
+                elif template == "artworklist":
+                    if thisTag == TEI_HEADER:
+                        outcome = True
+                    elif any(n[0] == TEI_HEADER for n in nest[0:-1]):
+                        outcome = False
+                    else:
+                        outcome = nNest == 5
+
+                else:
+                    if thisTag in CHUNK_ELEMS:
+                        outcome = True
+                    elif nNest == 1:
+                        outcome = False
+                    else:
+                        parentTag = nest[-2][0]
+                        outcome = (
+                            parentTag in CHUNK_PARENTS and thisTag not in EMPTY_ELEMENTS
+                        ) or (
+                            parentTag == TEXT_ANCESTOR and thisTag not in TEXT_ANCESTORS
+                        )
+
             if outcome:
                 cur["chunkElems"].add(nest[-1][0])
+
             return outcome
 
         def isPure(cur):
@@ -1968,7 +2529,12 @@ class TEI:
             boolean
             """
             nest = cur[XNEST]
-            return len(nest) == 0 or len(nest) > 0 and nest[-1][0] in cur["pureElems"]
+            model = cur["model"]
+            return (
+                len(nest) == 0
+                or len(nest) > 0
+                and nest[-1][0] in cur["pureElems"][model]
+            )
 
         def isEndInPure(cur):
             """Whether the current end tag occurs in an element with pure content.
@@ -1989,7 +2555,8 @@ class TEI:
             boolean
             """
             nest = cur[XNEST]
-            return len(nest) > 1 and nest[-2][0] in cur["pureElems"]
+            model = cur["model"]
+            return len(nest) > 1 and nest[-2][0] in cur["pureElems"][model]
 
         def hasMixedAncestor(cur):
             """Whether the current tag has an ancestor with mixed content.
@@ -2019,7 +2586,27 @@ class TEI:
             boolean
             """
             nest = cur[XNEST]
-            return any(n[0] in cur["mixedElems"] for n in nest[0:-1])
+            model = cur["model"]
+            return any(n[0] in cur["mixedElems"][model] for n in nest[0:-1])
+
+        def hasContinuousAncestor(cur):
+            """Whether an ancestor tag is a continuous pure element.
+
+            A continuous pure element is an element whose child elements do not
+            imply word separation, e.g. `<choice>`.
+
+            Parameters
+            ----------
+            cur: dict
+                Various pieces of data collected during walking
+                and relevant for some next steps in the walk.
+
+            Returns
+            -------
+            boolean
+            """
+            nest = cur[XNEST]
+            return any(n[0] in CONTINUOUS_ELEMENTS for n in nest[0:-1])
 
         def startWord(cv, cur, ch):
             """Start a word node if necessary.
@@ -2054,7 +2641,7 @@ class TEI:
             if ch is not None:
                 cur["wordStr"] += ch
 
-        def finishWord(cv, cur, ch, withNewline):
+        def finishWord(cv, cur, ch, spaceChar):
             """Terminate a word node if necessary.
 
             Whenever we encounter a character, we determine
@@ -2070,9 +2657,9 @@ class TEI:
                 and relevant for some next steps in the walk.
             ch: string
                 A single character, the next slot in the result data.
-            withNewline:
-                Whether to add a newline or space after the word.
-                That depends on whether there is a mixed ancestor.
+            spaceChar: string | void
+                If None, no extra space or newline will be added.
+                Otherwise, the spaceChar (a single space or newline will be added).
             """
             curWord = cur[NODE][WORD]
             if curWord:
@@ -2086,8 +2673,7 @@ class TEI:
 
             if ch is not None:
                 cur["afterStr"] += ch
-            if withNewline:
-                spaceChar = " " if hasMixedAncestor(cur) else "\n"
+            if spaceChar is not None:
                 cur["afterStr"] = cur["afterStr"].rstrip() + spaceChar
                 if not wordAsSlot:
                     addSpace(cv, cur, spaceChar)
@@ -2106,7 +2692,7 @@ class TEI:
             node
                 The empty slot
             """
-            finishWord(cv, cur, None, False)
+            finishWord(cv, cur, None, None)
             startWord(cv, cur, ZWSP)
             emptyNode = cur[NODE][WORD]
             cv.feature(emptyNode, empty=1)
@@ -2115,7 +2701,7 @@ class TEI:
                 emptyNode = cv.slot()
                 cv.feature(emptyNode, ch=ZWSP, empty=1)
 
-            finishWord(cv, cur, None, False)
+            finishWord(cv, cur, None, None)
 
             return emptyNode
 
@@ -2166,7 +2752,7 @@ class TEI:
             if ch in {"_", None} or ch.isalnum() or ch in IN_WORD_HYPHENS:
                 startWord(cv, cur, ch)
             else:
-                finishWord(cv, cur, ch, False)
+                finishWord(cv, cur, ch, None)
 
             if wordAsSlot:
                 s = cur[NODE][WORD]
@@ -2347,7 +2933,7 @@ class TEI:
                     cv.feature(cur[NODE][chapterSection], **value)
             if tag in NOTE_LIKE:
                 cur["inNote"] = True
-                finishWord(cv, cur, None, False)
+                finishWord(cv, cur, None, None)
 
             curNode = None
 
@@ -2459,13 +3045,17 @@ class TEI:
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0
 
+                newLineTag = tag in NEWLINE_ELEMENTS
+
                 if (
-                    tag in NEWLINE_ELEMENTS
+                    newLineTag
                     or isEndInPure(cur)
+                    and not hasContinuousAncestor(cur)
                     and not empty
                     and not cur["afterSpace"]
                 ):
-                    finishWord(cv, cur, None, True)
+                    spaceChar = "\n" if newLineTag or not hasMixedAncestor(cur) else " "
+                    finishWord(cv, cur, None, spaceChar)
                     hasFinishedWord = True
 
                 slots = cv.linked(curNode)
@@ -2498,12 +3088,12 @@ class TEI:
 
             if isChnk:
                 if not hasFinishedWord:
-                    finishWord(cv, cur, None, True)
+                    finishWord(cv, cur, None, "\n")
                 cv.terminate(cur[NODE][chunkSection])
             if sectionModel == "II":
                 if isChap:
                     if not hasFinishedWord:
-                        finishWord(cv, cur, None, True)
+                        finishWord(cv, cur, None, "\n")
                     cv.terminate(cur[NODE][chapterSection])
             if isPageContainer:
                 if pbAtTop:
@@ -2587,14 +3177,21 @@ class TEI:
             pageProperties = self.pageProperties
             pageType = pageProperties["nodeType"]
             sectionModel = self.sectionModel
-            elementDefs = self.elementDefs
+            A = self.A
+            elementDefs = A.elementDefs
 
             cur = {}
             cur["pureElems"] = {
-                x for (x, (typ, mixed)) in elementDefs.items() if not mixed
+                modelInv[schemaOverride]: {
+                    x for (x, (typ, mixed)) in eDefs.items() if not mixed
+                }
+                for (schemaOverride, eDefs) in elementDefs.items()
             }
             cur["mixedElems"] = {
-                x for (x, (typ, mixed)) in elementDefs.items() if mixed
+                modelInv[schemaOverride]: {
+                    x for (x, (typ, mixed)) in eDefs.items() if mixed
+                }
+                for (schemaOverride, eDefs) in elementDefs.items()
             }
             cur[NODE] = {}
 
@@ -2610,17 +3207,41 @@ class TEI:
                     value = {folderSection: xmlFolder}
                     cv.feature(cur[NODE][folderSection], **value)
 
+                    j = 0
+                    cr = ""
+                    nl = True
+
                     for xmlFile in xmlFiles:
                         i += 1
-                        console(f"\r{i:>4} {xmlFile:<50}", newline=False)
+                        j += 1
+                        if j > 20:
+                            cr = "\r"
+                            nl = False
+
+                        cur["xmlFile"] = xmlFile
+                        xmlPath = f"{teiPath}/{xmlFolder}/{xmlFile}"
+                        (model, adapt, tpl) = self.getSwitches(xmlPath)
+                        cur["model"] = model
+                        cur["template"] = tpl
+                        cur["adaptation"] = adapt
+                        modelRep = model or "TEI"
+                        tplRep = tpl or ""
+                        adRep = adapt or ""
+                        label = f"{modelRep:<12} {adRep:<12} {tplRep:<12}"
+                        console(
+                            f"{cr}{i:>4} {label} {xmlFile:<50}",
+                            newline=nl,
+                        )
 
                         cur[NODE][fileSection] = cv.node(fileSection)
+                        ids[xmlFile][""] = cur[NODE][fileSection]
+                        if tpl:
+                            cur[NODE][tpl] = cv.node(tpl)
                         value = {fileSection: xmlFile.removesuffix(".xml")}
                         cv.feature(cur[NODE][fileSection], **value)
+                        cv.feature(cur[NODE][tpl], **value)
 
-                        with open(
-                            f"{teiPath}/{xmlFolder}/{xmlFile}", encoding="utf8"
-                        ) as fh:
+                        with open(xmlPath, encoding="utf8") as fh:
                             text = fh.read()
                             text = transformFunc(text)
                             tree = etree.parse(text, parser)
@@ -2645,6 +3266,8 @@ class TEI:
                             walkNode(cv, cur, root)
 
                         addSlot(cv, cur, None)
+                        if tpl:
+                            cv.terminate(cur[NODE][tpl])
                         cv.terminate(cur[NODE][fileSection])
 
                     console("")
@@ -2657,7 +3280,13 @@ class TEI:
                     console("No XML files found!")
                     return False
 
+                xmlPath = f"{teiPath}/{xmlFile}"
+                (cur["model"], cur["adaptation"], cur["template"]) = self.getSwitches(
+                    xmlPath
+                )
+
                 with open(f"{teiPath}/{xmlFile}", encoding="utf8") as fh:
+                    cur["xmlFile"] = xmlFile
                     text = fh.read()
                     text = transformFunc(text)
                     tree = etree.parse(text, parser)
@@ -2689,6 +3318,34 @@ class TEI:
                 addSlot(cv, cur, None)
 
             console("")
+
+            if verbose >= 0:
+                console("Resolving links into edges ...")
+
+            unresolvedRefs = {}
+            resolved = 0
+
+            for (att, attRefs) in refs.items():
+                edgeFeat = {att: None}
+                for ((targetFile, targetId), sourceNode) in attRefs.items():
+                    targetNode = ids[targetFile].get(targetId, None)
+                    if targetNode is None:
+                        unresolvedRefs.setdefault(targetFile, set()).add(
+                            f"{att}='{targetId}'"
+                        )
+                    else:
+                        cv.edge(sourceNode, targetNode, **edgeFeat)
+                        resolved += 1
+
+            if verbose >= 0:
+                console(f"\t{resolved} reference(s) resolved")
+                if unresolvedRefs:
+                    unresolved = sum(len(x) for x in unresolvedRefs.values())
+                    console(f"\t{unresolved} reference(s): could not be resolved")
+                    if verbose == 1:
+                        for (targetFile, targetIds) in sorted(unresolvedRefs.items()):
+                            examples = " ".join(sorted(targetIds)[0:3])
+                            console(f"\t\t{targetFile}: {len(targetIds)} x: {examples}")
 
             for fName in featureMeta:
                 if not cv.occurs(fName):
@@ -2869,14 +3526,14 @@ class TEI:
         self.intFeatures = intFeatures
         self.featureMeta = featureMeta
 
-        schema = self.schema
+        models = self.models
         tfVersion = self.tfVersion
         teiVersion = self.teiVersion
         generic = self.generic
         generic["sourceFormat"] = "TEI"
         generic["version"] = tfVersion
         generic["teiVersion"] = teiVersion
-        generic["schema"] = "TEI" + (f" + {schema}" if schema else "")
+        generic["schema"] = "TEI" + (" + " + (" + ".join(models))) if models else ""
         extra = self.extra
         extraInstructions = []
 
@@ -3351,7 +4008,7 @@ class TEI:
 
         It gives a shell command to start the text-fabric browser on
         the newly created corpus.
-        There should be a valid TF dataset and app configuraiton in place
+        There should be a valid TF dataset and app configuration in place
 
         Returns
         -------
@@ -3390,6 +4047,7 @@ class TEI:
         apptoken=False,
         browse=False,
         verbose=None,
+        validate=None,
     ):
         """Carry out any task, possibly modified by any flag.
 
@@ -3418,6 +4076,8 @@ class TEI:
             Whether to carry out the "browse" task"
         verbose: integer, optional -1
             Produce no (-1), some (0) or many (1) orprogress and reporting messages
+        validate: boolean, optional True
+            Whether to perform XML validation during the check task
 
         Returns
         -------
@@ -3425,7 +4085,11 @@ class TEI:
             Whether all tasks have executed successfully.
         """
         if verbose is not None:
+            verboseSav = self.verbose
             self.verbose = verbose
+
+        if validate is not None:
+            self.validate = validate
 
         if not self.good:
             return False
@@ -3443,6 +4107,8 @@ class TEI:
                 if not self.good:
                     break
 
+        if verbose is not None:
+            self.verbose = verboseSav
         return self.good
 
 

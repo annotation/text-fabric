@@ -36,16 +36,28 @@ PAGE_MODELS = dict(
 PAGE_MODEL_DEFAULT = "I"
 
 SECTION_MODELS = dict(
-    I=dict(levels=(list, [FOLDER, FILE, CHUNK])),
+    I=dict(
+        levels=(list, [FOLDER, FILE, CHUNK]),
+        backMatter=(str, "backmatter"),
+    ),
     II=dict(
         levels=(list, [CHAPTER, CHUNK]),
         element=(str, "head"),
         attributes=(dict, {}),
     ),
 )
+"""Models for sections.
+
+A section is a part of the corpus that is defined by a set of files,
+or by elements within a single TEI source file.
+
+A model
+"""
 
 
 SECTION_MODEL_DEFAULT = "I"
+"""Default model for sections.
+"""
 
 CM_LIT = "literal"
 """The value is taken literally from a TEI attribute.
@@ -279,6 +291,7 @@ def setUp(kind):
             "latest",
         ),
         "procins": ("Whether to treat or ignore processing instructions", False),
+        "validate": ("Whether to validate the XML input", True),
     }
 
     flagSpec = dict(
