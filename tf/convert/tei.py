@@ -730,6 +730,26 @@ def makeCssInfo():
     return rends
 
 
+def getRefs(tag, atts, xmlFile):
+    refAtt = "target" if tag in {"ptr", "ref"} else "ref" if tag in {"rs"} else None
+    result = []
+
+    if refAtt is not None:
+        refVal = atts.get(refAtt, None)
+        if refVal is not None and not refVal.startswith("http"):
+            for refv in refVal.split():
+                parts = refv.split("#", 1)
+                if len(parts) == 1:
+                    targetFile = refv
+                    targetId = ""
+                else:
+                    (targetFile, targetId) = parts
+                if targetFile == "":
+                    targetFile = xmlFile
+                result.append((refAtt, targetFile, targetId))
+    return result
+
+
 class TEI:
     def __init__(
         self,
@@ -1510,26 +1530,8 @@ class TEI:
                     if idv is not None:
                         ids[xmlFile][idv] += 1
 
-                    refAtt = (
-                        "target"
-                        if tag in {"ptr", "ref"}
-                        else "ref"
-                        if tag in {"rs"}
-                        else None
-                    )
-                    if refAtt is not None:
-                        refVal = atts.get(refAtt, None)
-                        if refVal is not None and not refVal.startswith("http"):
-                            for refv in refVal.split():
-                                parts = refv.split("#", 1)
-                                if len(parts) == 1:
-                                    targetFile = refv
-                                    targetId = ""
-                                else:
-                                    (targetFile, targetId) = parts
-                                if targetFile == "":
-                                    targetFile = xmlFile
-                                refs[xmlFile][(targetFile, targetId)] += 1
+                    for (refAtt, targetFile, targetId) in getRefs(tag, atts, xmlFile):
+                        refs[xmlFile][(targetFile, targetId)] += 1
 
                     for (k, v) in atts.items():
                         kind = (
@@ -1764,58 +1766,82 @@ class TEI:
             ih = open(reportIdFile, "w", encoding="utf8")
             rh = open(reportRefFile, "w", encoding="utf8")
 
-            referencedIds = collections.Counter()
+            refdIds = collections.Counter()
             missingIds = set()
-            totalIds = 0
 
             totalRefs = 0
+            totalRefsU = 0
 
             totalResolvable = 0
+            totalResolvableU = 0
             totalDangling = 0
+            totalDanglingU = 0
+
+            seenItems = set()
 
             for (file, items) in refs.items():
-                totalRefs += len(items)
-
                 rh.write(f"{file}\n")
 
                 resolvable = 0
+                resolvableU = 0
                 dangling = 0
+                danglingU = 0
 
                 for (item, n) in sorted(items.items()):
-                    (target, item) = item
-                    if target not in ids or item not in ids[target]:
-                        missingIds.add((target, item))
-                        status = "dangling"
-                        rh.write(f"\t{status:<8} {n:>5} x {target} # {item}\n")
-                        dangling += 1
+                    totalRefs += n
+
+                    if item in seenItems:
+                        newItem = False
                     else:
-                        referencedIds[(target, item)] += n
-                        resolvable += 1
+                        seenItems.add(item)
+                        newItem = True
+                        totalRefsU += 1
+
+                    (target, idv) = item
+
+                    if target not in ids or idv not in ids[target]:
+                        status = "dangling"
+                        rh.write(f"\t{status:<10} {n:>5} x {target} # {idv}\n")
+                        dangling += n
+
+                        if newItem:
+                            missingIds.add((target, idv))
+                            danglingU += 1
+                    else:
+                        resolvable += n
+                        refdIds[(target, idv)] += n
+
+                        if newItem:
+                            resolvableU += 1
 
                 msgs = (
-                    f"\t{resolvable} resolvable ref(s)",
-                    f"\t{dangling} dangling ref(s)",
+                    f"\tDangling:   {dangling:>4} x {danglingU:>4}",
+                    f"\tResolvable: {resolvable:>4} x {resolvableU:>4}",
                 )
                 for msg in msgs:
                     rh.write(f"{msg}\n")
 
                 totalResolvable += resolvable
+                totalResolvableU += resolvableU
                 totalDangling += dangling
+                totalDanglingU += danglingU
 
             if verbose >= 0:
-                console(f"{totalRefs} refs written to {reportRefFile}")
-            if verbose >= 1:
+                console(f"Refs written to {reportRefFile}")
                 msgs = (
-                    f"\t{totalResolvable} resolvable ref(s)",
-                    f"\t{totalDangling} dangling ref(s)",
+                    f"\tresolvable: {totalResolvableU:>4} in {totalResolvable:>4}",
+                    f"\tdangling:   {totalDanglingU:>4} in {totalDangling:>4}",
+                    f"\tALL:        {totalRefsU:>4} in {totalRefs:>4} ",
                 )
                 for msg in msgs:
                     console(msg)
 
-            totalUnique = 0
-            totalMultiple = 0
-            totalReferenced = 0
-            totalUnused = 0
+            totalIds = 0
+            totalIdsU = 0
+            totalIdsM = 0
+            totalIdsRefd = 0
+            totalIdsRefdU = 0
+            totalIdsUnused = 0
 
             for (file, items) in ids.items():
                 totalIds += len(items)
@@ -1824,20 +1850,23 @@ class TEI:
 
                 unique = 0
                 multiple = 0
-                referenced = 0
+                refd = 0
+                refdU = 0
                 unused = 0
 
                 for (item, n) in sorted(items.items()):
-                    nRefs = referencedIds.get((file, item), 0)
+                    nRefs = refdIds.get((file, item), 0)
 
                     if n == 1:
                         unique += 1
                     else:
                         multiple += 1
+
                     if nRefs == 0:
                         unused += 1
                     else:
-                        referenced += 1
+                        refd += nRefs
+                        refdU += 1
 
                     status1 = f"{n}x"
                     status2 = f"{nRefs}refs"
@@ -1846,27 +1875,27 @@ class TEI:
                         ih.write(f"\t{status1:<8} {status2:<8} {item}\n")
 
                 msgs = (
-                    f"\t{multiple} non-unique id(s)",
-                    f"\t{unused} unused id(s)",
-                    f"\t{unique} unique id(s)",
-                    f"\t{referenced} referenced id(s)",
+                    f"\tUnique:     {unique:>4}",
+                    f"\tNon-unique: {multiple:>4}",
+                    f"\tUnused:     {unused:>4}",
+                    f"\tReferenced: {refd:>4} x {refdU:>4}",
                 )
                 for msg in msgs:
                     ih.write(f"{msg}\n")
 
-                totalUnique += unique
-                totalMultiple += multiple
-                totalReferenced += referenced
-                totalUnused += unused
+                totalIdsU += unique
+                totalIdsM += multiple
+                totalIdsRefdU += refdU
+                totalIdsRefd += refd
+                totalIdsUnused += unused
 
             if verbose >= 0:
-                console(f"{totalIds} ids written to {reportIdFile}")
-            if verbose >= 1:
+                console(f"Ids written to {reportIdFile}")
                 msgs = (
-                    f"\t{totalMultiple} non-unique id(s)",
-                    f"\t{totalUnused} unused id(s)",
-                    f"\t{totalUnique} unique id(s)",
-                    f"\t{totalReferenced} referenced id(s)",
+                    f"\treferenced: {totalIdsRefdU:>4} by {totalIdsRefd:>4}",
+                    f"\tnon-unique: {totalIdsM:>4}",
+                    f"\tunused:     {totalIdsUnused:>4}",
+                    f"\tALL:        {totalIdsU:>4} in {totalIds:>4}",
                 )
                 for msg in msgs:
                     console(msg)
@@ -1948,6 +1977,7 @@ class TEI:
             tree = etree.parse(xmlPath, parser)
             root = tree.getroot()
             xmlFile = baseNm(xmlPath)
+            ids[xmlFile][""] = 1
             analyse(root, analysis, xmlFile)
 
         xmlFilesByModel = collections.defaultdict(list)
@@ -2291,27 +2321,11 @@ class TEI:
             afterChildren(cv, cur, xnode, tag, atts)
 
             if curNode is not None:
-                refAtt = (
-                    "target"
-                    if tag in {"ptr", "ref"}
-                    else "ref"
-                    if tag in {"rs"}
-                    else None
-                )
                 xmlFile = cur["xmlFile"]
-                if refAtt is not None:
-                    refVal = atts.get(refAtt, None)
-                    if refVal is not None and not refVal.startswith("http"):
-                        for refv in refVal.split():
-                            parts = refv.split("#", 1)
-                            if len(parts) == 1:
-                                targetFile = refv
-                                targetId = ""
-                            else:
-                                (targetFile, targetId) = parts
-                            if targetFile == "":
-                                targetFile = xmlFile
-                            refs[refAtt][(targetFile, targetId)] = curNode
+
+                for (refAtt, targetFile, targetId) in getRefs(tag, atts, xmlFile):
+                    refs[refAtt][(targetFile, targetId)] = curNode
+
                 idVal = atts.get("id", None)
                 if idVal is not None:
                     ids[xmlFile][idVal] = curNode
@@ -3326,13 +3340,13 @@ class TEI:
             resolved = 0
 
             for (att, attRefs) in refs.items():
-                edgeFeat = {att: None}
+                feature = f"link_{att}"
+                edgeFeat = {feature: None}
+
                 for ((targetFile, targetId), sourceNode) in attRefs.items():
                     targetNode = ids[targetFile].get(targetId, None)
                     if targetNode is None:
-                        unresolvedRefs.setdefault(targetFile, set()).add(
-                            f"{att}='{targetId}'"
-                        )
+                        unresolvedRefs.setdefault(targetFile, set()).add(targetId)
                     else:
                         cv.edge(sourceNode, targetNode, **edgeFeat)
                         resolved += 1
@@ -3362,6 +3376,17 @@ class TEI:
                             conversionCode=CONVERSION_METHODS[CM_LITC],
                         )
                         intFeatures.add(fName)
+                    elif fName.startswith("link_"):
+                        r = fName[5:]
+                        cv.meta(
+                            fName,
+                            description=(
+                                f"links to node identified by xml:id in attribute {r}"
+                            ),
+                            valueType="str",
+                            conversionMethod=CM_LITP,
+                            conversionCode=CONVERSION_METHODS[CM_LITP],
+                        )
                     else:
                         cv.meta(
                             fName,

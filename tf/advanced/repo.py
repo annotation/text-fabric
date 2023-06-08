@@ -893,8 +893,6 @@ def publishRelease(app, increase, message=None, description=None):
     run(["git", "add", "--all", "."], cwd=repoLocation)
     run(["git", "commit", "-m", message], cwd=repoLocation)
 
-    (good, stdOut, stdErr) = run(
-    )
     newCommit = (
         check_output(["git", "rev-parse", "HEAD"], cwd=repoLocation)
         .decode("ascii")
