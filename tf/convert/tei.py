@@ -714,7 +714,15 @@ KNOWN_RENDS = set()
 REND_DESC = {}
 
 
+REFERENCING = dict(
+    ptr="target",
+    ref="target",
+    rs="ref",
+)
+
+
 def makeCssInfo():
+    """Make the CSS info for the stylesheet."""
     rends = ""
 
     for (rend, (description, css)) in sorted(CSS_REND.items()):
@@ -731,7 +739,7 @@ def makeCssInfo():
 
 
 def getRefs(tag, atts, xmlFile):
-    refAtt = "target" if tag in {"ptr", "ref"} else "ref" if tag in {"rs"} else None
+    refAtt = REFERENCING.get(tag, None)
     result = []
 
     if refAtt is not None:
@@ -1463,7 +1471,7 @@ class TEI:
         overrides = [
             override for (model, override) in modelXsd.items() if model is not None
         ]
-        A.getElementInfo(baseSchema, overrides)
+        A.getElementInfo(baseSchema, overrides, verbose=verbose)
         elementDefs = A.elementDefs
 
         initTree(reportPath)
@@ -1801,18 +1809,19 @@ class TEI:
 
                     if target not in ids or idv not in ids[target]:
                         status = "dangling"
-                        rh.write(f"\t{status:<10} {n:>5} x {target} # {idv}\n")
                         dangling += n
 
                         if newItem:
                             missingIds.add((target, idv))
                             danglingU += 1
                     else:
+                        status = "ok"
                         resolvable += n
                         refdIds[(target, idv)] += n
 
                         if newItem:
                             resolvableU += 1
+                    rh.write(f"\t{status:<10} {n:>5} x {target} # {idv}\n")
 
                 msgs = (
                     f"\tDangling:   {dangling:>4} x {danglingU:>4}",
@@ -1869,10 +1878,10 @@ class TEI:
                         refdU += 1
 
                     status1 = f"{n}x"
-                    status2 = f"{nRefs}refs"
+                    plural = "" if nRefs == 1 else "s"
+                    status2 = f"{nRefs}ref{plural}"
 
-                    if n > 1 or nRefs == 0:
-                        ih.write(f"\t{status1:<8} {status2:<8} {item}\n")
+                    ih.write(f"\t{status1:<8} {status2:<8} {item}\n")
 
                 msgs = (
                     f"\tUnique:     {unique:>4}",
@@ -2167,7 +2176,7 @@ class TEI:
         ]
         A.getElementInfo(baseSchema, overrides, verbose=-1)
 
-        refs = collections.defaultdict(dict)
+        refs = collections.defaultdict(lambda: collections.defaultdict(set))
         ids = collections.defaultdict(dict)
 
         # WALKERS
@@ -2324,7 +2333,7 @@ class TEI:
                 xmlFile = cur["xmlFile"]
 
                 for (refAtt, targetFile, targetId) in getRefs(tag, atts, xmlFile):
-                    refs[refAtt][(targetFile, targetId)] = curNode
+                    refs[refAtt][(targetFile, targetId)].add(curNode)
 
                 idVal = atts.get("id", None)
                 if idVal is not None:
@@ -3337,25 +3346,35 @@ class TEI:
                 console("Resolving links into edges ...")
 
             unresolvedRefs = {}
+            unresolved = 0
+            unresolvedUnique = 0
             resolved = 0
+            resolvedUnique = 0
 
             for (att, attRefs) in refs.items():
                 feature = f"link_{att}"
                 edgeFeat = {feature: None}
 
-                for ((targetFile, targetId), sourceNode) in attRefs.items():
+                for ((targetFile, targetId), sourceNodes) in attRefs.items():
+                    nSourceNodes = len(sourceNodes)
                     targetNode = ids[targetFile].get(targetId, None)
                     if targetNode is None:
                         unresolvedRefs.setdefault(targetFile, set()).add(targetId)
+                        unresolvedUnique += 1
+                        unresolved += nSourceNodes
                     else:
-                        cv.edge(sourceNode, targetNode, **edgeFeat)
-                        resolved += 1
+                        for sourceNode in sourceNodes:
+                            cv.edge(sourceNode, targetNode, **edgeFeat)
+                        resolvedUnique += 1
+                        resolved += nSourceNodes
 
             if verbose >= 0:
-                console(f"\t{resolved} reference(s) resolved")
+                console(f"\t{resolvedUnique} in {resolved} reference(s) resolved")
                 if unresolvedRefs:
-                    unresolved = sum(len(x) for x in unresolvedRefs.values())
-                    console(f"\t{unresolved} reference(s): could not be resolved")
+                    console(
+                        f"\t{unresolvedUnique} in {unresolved} reference(s): "
+                        "could not be resolved"
+                    )
                     if verbose == 1:
                         for (targetFile, targetIds) in sorted(unresolvedRefs.items()):
                             examples = " ".join(sorted(targetIds)[0:3])

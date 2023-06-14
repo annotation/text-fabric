@@ -13,7 +13,31 @@ def searchApi(app):
     app.search = types.MethodType(search, app)
 
 
-def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None):
+def getQueryFeatures(exe):
+    qnodes = getattr(exe, "qnodes", [])
+    nodeMap = getattr(exe, "nodeMap", {})
+    nodeFeatures = tuple(
+        (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
+        for (i, q) in enumerate(qnodes)
+    )
+
+    qedges = getattr(exe, "qedges", [])
+    edgeMap = getattr(exe, "edgeMap", {})
+
+    edgeFeatures = set()
+
+    for (f, rela, t) in qedges:
+        edgeName = edgeMap.get(rela, (None,))[0]
+        if edgeName is not None:
+            edgeFeatures.add(edgeName)
+    edgeFeatures = tuple(sorted(edgeFeatures))
+
+    return (nodeFeatures, edgeFeatures)
+
+
+def search(
+    app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None
+):
     """Search with some high-level features.
 
     This function calls the lower level `tf.search.search.Search` facility aka `S`.
@@ -124,6 +148,7 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
             passSets[name] = s
 
     results = S.search(query, sets=passSets, shallow=shallow, limit=limit)
+
     if not shallow:
         if not sort:
             results = list(results)
@@ -144,15 +169,12 @@ def search(app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, lim
                 sortedResults = list(results)
             results = sortedResults
 
-        features = ()
+        nodeFeatures = ()
+        edgeFeatures = ()
+
         if S.exe:
-            qnodes = getattr(S.exe, "qnodes", [])
-            nodeMap = getattr(S.exe, "nodeMap", {})
-            features = tuple(
-                (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
-                for (i, q) in enumerate(qnodes)
-            )
-            app.displaySetup(tupleFeatures=features)
+            (nodeFeatures, edgeFeatures) = getQueryFeatures(S.exe)
+            app.displaySetup(tupleFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
 
     nResults = len(results)
     plural = "" if nResults == 1 else "s"
@@ -185,18 +207,28 @@ def runSearch(app, query, cache):
     if app.sets is not None:
         options["sets"] = app.sets
     (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
-    features = ()
+    nodeFeatures = ()
+    edgeFeatures = set()
+
     if exe:
-        qnodes = getattr(exe, "qnodes", [])
-        nodeMap = getattr(exe, "nodeMap", {})
-        features = tuple(
-            (i, tuple(sorted(set(q[1].keys()) | nodeMap.get(i, set()))))
-            for (i, q) in enumerate(qnodes)
-        )
+        (nodeFeatures, edgeFeatures) = getQueryFeatures(exe)
+
     queryResults = tuple(sorted(queryResults))
     (runStatus, runMessages) = wrapMessages(S._msgCache)
-    cache[cacheKey] = (queryResults, (status, runStatus), (messages, runMessages), features)
-    return (queryResults, (status, runStatus), (messages, runMessages), features)
+    cache[cacheKey] = (
+        queryResults,
+        (status, runStatus),
+        (messages, runMessages),
+        nodeFeatures,
+        edgeFeatures,
+    )
+    return (
+        queryResults,
+        (status, runStatus),
+        (messages, runMessages),
+        nodeFeatures,
+        edgeFeatures,
+    )
 
 
 def runSearchCondensed(app, query, cache, condenseType):
@@ -217,7 +249,9 @@ def runSearchCondensed(app, query, cache, condenseType):
     cacheKey = (query, True, condenseType)
     if cacheKey in cache:
         return cache[cacheKey]
-    (queryResults, status, messages, features) = runSearch(app, query, cache)
+    (queryResults, status, messages, nodeFeatures, edgeFeatures) = runSearch(
+        app, query, cache
+    )
     queryResults = condense(api, queryResults, condenseType, multiple=True)
-    cache[cacheKey] = (queryResults, status, messages, features)
-    return (queryResults, status, messages, features)
+    cache[cacheKey] = (queryResults, status, messages, nodeFeatures, edgeFeatures)
+    return (queryResults, status, messages, nodeFeatures, edgeFeatures)

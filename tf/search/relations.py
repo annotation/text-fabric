@@ -8,7 +8,7 @@ import re
 from itertools import chain
 import array
 
-from ..parameters import OTYPE, OSLOTS
+from ..parameters import OTYPE, OSLOTS, OMAP
 from ..core.helpers import makeIndex
 from ..core.timestamp import DEEP
 from .syntax import reTp
@@ -1573,7 +1573,7 @@ def basicRelations(searchExe, api):
     nodeMap = {}
 
     for efName in sorted(api.TF.featureSets["edges"]):
-        if efName == OSLOTS:
+        if efName == OSLOTS or efName.startswith(OMAP):
             continue
         r = len(relations)
 
@@ -1632,7 +1632,7 @@ def basicRelations(searchExe, api):
         if r["desc"] is not None
     )
     searchExe.relationLegend += f"""
-The warp feature "{OSLOTS}" cannot be used in searches.
+The warp feature "{OSLOTS}" and {OMAP} features cannot be used in searches.
 One of the above relations on nodes and/or slots will suit you better.
 """
     searchExe.converse = dict(

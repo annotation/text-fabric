@@ -67,6 +67,7 @@ def serveTable(web, kind, getx=None, asDict=False):
             fmt=textFormat,
             baseTypes=form["baseTypes"],
             hiddenTypes=form["hiddenTypes"],
+            edgeFeatures=form["edgeFeatures"],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -129,6 +130,7 @@ def serveQuery(web, getx, asDict=False):
                     fmt=textFormat,
                     baseTypes=form["baseTypes"],
                     hiddenTypes=form["hiddenTypes"],
+                    edgeFeatures=form["edgeFeatures"],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -194,6 +196,7 @@ def servePassage(web, getx):
         fmt=textFormat,
         baseTypes=form["baseTypes"],
         hiddenTypes=form["hiddenTypes"],
+        edgeFeatures=form["edgeFeatures"],
         getx=getx,
         **options,
     )
@@ -402,6 +405,7 @@ def serveAll(web, anything):
         ("baseTypes", "bcheck", typeCss, True),
         ("condenseType", "cradio", typeCss, False),
         ("hiddenTypes", "hcheck", typeCss, True),
+        ("edgeFeatures", "echeck", typeCss, True),
         ("textFormat", "tradio", formatCss, False),
     ):
         value = aContext.get(option, None) if resetForm else form[option]
@@ -423,6 +427,7 @@ def serveAll(web, anything):
         optionsHelp=optionsHelp,
         chooser=chooser,
         condensedOption=optionsMoved["condensed"],
+        forceEdgesOption=optionsMoved["forceEdges"],
         hideTypesOption=optionsMoved["hideTypes"],
         defaultCondenseType=defaultCondenseType,
         defaultTextFormat=defaultTextFormat,

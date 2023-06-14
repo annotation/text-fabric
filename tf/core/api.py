@@ -98,45 +98,81 @@ class Api:
         setattr(self, "AllComputeds", self.Call)
         setattr(self, "loadLog", self.isLoaded)
 
-    def Fs(self, fName):
+    def Fs(self, fName, warn=True):
         """Get the node feature sub API.
 
         If feature name is not a valid python identifier,
         or if you do not know its name in advance,
         you can not use `F.feature`, but you should use
         `Fs(feature)`.
+
+        Parameters
+        ----------
+        fName: string
+            The name of the feature.
+        warn: boolean, optional `True`
+            Whether to warn if the feature is not loaded.
+
+        Returns
+        -------
+        The feature API, or `None` if the feature is not loaded.
         """
 
         if not hasattr(self.F, fName):
-            self.TF.error(f'Node feature "{fName}" not loaded')
+            if warn:
+                self.TF.error(f'Node feature "{fName}" not loaded')
             return None
         return getattr(self.F, fName)
 
-    def Es(self, fName):
+    def Es(self, fName, warn=True):
         """Get the edge feature sub API.
 
         If feature name is not a valid python identifier,
         or if you do not know its name in advance,
         you can not use `E.feature`, but you should use
         `Es(feature)`.
+
+        Parameters
+        ----------
+        fName: string
+            The name of the feature.
+        warn: boolean, optional `True`
+            Whether to warn if the feature is not loaded.
+
+        Returns
+        -------
+        The feature API, or `None` if the feature is not loaded.
         """
 
         if not hasattr(self.E, fName):
-            self.TF.error(f'Edge feature "{fName}" not loaded')
+            if warn:
+                self.TF.error(f'Edge feature "{fName}" not loaded')
             return None
         return getattr(self.E, fName)
 
-    def Cs(self, fName):
+    def Cs(self, fName, warn=True):
         """Get the computed data sub API.
 
         If component name is not a valid python identifier,
         or if you do not know its name in advance,
         you can not use `C.component`, but you should use
         `Cs(component)`.
+
+        Parameters
+        ----------
+        fName: string
+            The name of the feature.
+        warn: boolean, optional `True`
+            Whether to warn if the feature is not loaded.
+
+        Returns
+        -------
+        The feature API, or `None` if the feature is not loaded.
         """
 
         if not hasattr(self.C, fName):
-            self.TF.error(f'Computed feature "{fName}" not loaded')
+            if warn:
+                self.TF.error(f'Computed feature "{fName}" not loaded')
             return None
         return getattr(self.C, fName)
 

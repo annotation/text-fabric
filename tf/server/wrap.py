@@ -174,7 +174,7 @@ def wrapSelect(option, allowedValues, value, group, item, multiple):
         in the right order.
     value: string | set of string
         The current value of the option. In the case of multiple values, this
-        os a set of values.
+        is a set of values.
     group: string
         An extra class name helping to group the relevant buttons together
     item: string

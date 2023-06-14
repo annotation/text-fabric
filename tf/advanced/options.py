@@ -29,6 +29,29 @@ baseTypes: string | iterable, optional None`
     Node types at the bottom of pretty displays.
     The default is app dependent, usually the slot type of the corpus.
 
+colorMap: dict, optional None
+    Which nodes of a tuple (or list of tuples) will be highlighted.
+    If `colorMap` is `None` or missing, all nodes will be highlighted with
+    the default highlight color, which is yellow.
+
+    But you can assign different colors to the members of the tuple:
+    `colorMap` must be a dictionary that maps the positions in a tuple
+    to a color.
+
+    *   If a position is not mapped, it will not be highlighted.
+    *   If it is mapped to the empty string, it gets the default highlight color.
+    *   Otherwise, it should be mapped to a string that is a valid
+        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+
+    !!! hint "color names"
+        The link above points to a series of handy color names and their previews.
+
+    !!! note "highlights takes precedence over colorMap"
+        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
+
+        If you need to micro-manage, `highlights` is your thing.
+        Whenever possible, use `colorMap`.
+
 condensed: boolean, optional False
     **interface option**
     indicates one of two modes of displaying the result list:
@@ -53,6 +76,65 @@ condenseType: string, optional None
     The type of container to be used for condensing results.
     The default is app dependent, usually `verse` or `tablet`.
 
+edgeFeatures: string | iterable, optional None
+    **interface option**
+    Edge features that will be shown on the interface, in pretty displays.
+    The selection of edge features to show will be in effect
+    if `forceEdges` is `True`.
+    Otherwise, the display of edge features depends on whether it is in the
+    `extraFeatures` or `tupleFeatures` (which will be set after a query).
+
+    The default is app dependent, it consist of all the edge features in the
+    dataset, except `oslots`.
+
+edgeHighlights: dict
+    Custom highlighting of edges.
+
+    The keys are the names of edge features. For each such key, the value is
+    a set or mapping of edges defined by that edge feature that should be highlighted.
+    Only edges that are involved in the display will be highlighted.
+
+    If the value is a set, the specified edges will be highlighted
+    with a default color (blue).
+
+    If it is a dictionary, it should map edges to colors.
+    Any color that is a valid
+    [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+    qualifies.
+
+    If you map an edge to the empty string, it will get the default highlight color.
+
+    An edge is a pair of nodes, represented as a tuple of two node numbers.
+
+    You can also map the following pseudo edges to colors:
+
+    *   `(fromNode, None)`: all outgoing edges of `fromNode`;
+    *   `(None, toNode)`: all incoming edges of `toNode`.
+
+    There are no edge highlights in plain display.
+
+end: int, optional None
+    `end` is the end point in the iterable of results.
+    If `None`, displaying will stop after the end of the iterable.
+
+extraFeatures: string | iterable, optional ()
+    A string or iterable of (node-/edge-) feature names.
+    These features will be loaded automatically.
+    In pretty displays these features will show up as `feature=value`,
+    provided the value is not `None`, or something like None.
+
+    !!! hint "Automatic loading"
+        These features will load automatically, no explicit loading is
+        necessary.
+
+    !!! hint "values from other nodes"
+        Suppose you want to display a value from a related node, e.g. a `gloss`
+        that is available on `lex` nodes but not on `word` nodes, and you
+        want to show it on the word nodes.
+        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+        look up a `lex` node from the current node (by means of `L.u(w, otype='lex')`,
+        and if it finds one, it will read the `gloss` feature from it.
+
 fmt: string, optional None
     **interface option**
     `fmt` is the text format that will be used for the representation.
@@ -61,10 +143,12 @@ fmt: string, optional None
     !!! hint "Text formats"
         Use `T.formats` to inspect what text formats are available in your corpus.
 
-hideTypes: boolean | optional True
-    **interface option**
-    If `True`, hidden types are in fact hidden, otherwise the hiding of types
-    has no effect.
+full: boolean, optional False
+    For pretty displays: indicates that the whole object should be
+    displayed, even if it is big.
+
+    !!! hint "Big objects"
+        Big objects are objects of a type that is bigger than the default condense type.
 
 hiddenTypes: string | iterable, optional None
     **interface option**
@@ -82,145 +166,16 @@ hiddenTypes: string | iterable, optional None
 
     The default is app dependent, usually the empty set.
 
-lineNumbers: boolean, optional False
+showEdges: boolean | optional True
     **interface option**
-    indicates whether line numbers should be displayed.
+    If `True`, edges are shown in pretty displays, provided they are also selected
+    in `edgeFeatures`.
+    If `False` all edges are hidden.
 
-    !!! note "source data"
-        Line numbers are with respect to the source data file that is contains the
-        origin material of the node in question, if a datasource provides
-        a feature that contains line numbers.
-
-    !!! caution "configuration"
-        Whether a corpus has line numbers, and in which feature they are stored
-        for which node types is configured in a corpus dependent app.
-
-        If the corpus has no line numbers, the default is `None`.
-
-plainGaps: boolean, optional True
+hideTypes: boolean | optional True
     **interface option**
-    indicates whether gaps types should be displayed in plain displays.
-    In pretty displays gaps are marked by dotted left-right borders of the nodes
-    around the gaps. In plain displays such borders are generally disruptive,
-    but it is possible to show them.
-
-prettyTypes: boolean, optional False
-    **interface option**
-    indicates whether node types should always be displayed in pretty displays.
-    The node type of slot nodes is never displayed.
-
-queryFeatures: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show the features
-    mentioned in the last query and their values.
-
-multiFeatures: boolean, optional False
-    **interface option**
-    indicates whether pretty displays should show all possible node features
-    provided they have a non-empty value. The feature `otype` is excluded from this.
-
-showGraphics: boolean, optional True
-    **interface option**
-    indicates whether plain and pretty displays should include associated
-    graphic elements.
-
-    !!! caution "configuration"
-        Whether a corpus has graphics for some nodetypes and how to get them is
-        configured in a corpus dependent app.
-
-        If the corpus has no graphics, the default is `None`.
-
-showMath: boolean, optional False
-    **interface option**
-    indicates whether plain and pretty displays should interpret the `$`
-    to mark mathematical formulas in TeX notation.
-
-    !!! caution "real dollars"
-        If you have a corpus where the character `$` is used in an ordinary way,
-        this option should be set to `False`.
-
-standardFeatures: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show standard features and their values.
-    If a feature is both a standard feature and it is mentioned in the last query,
-    it will still be shown if `standardFeatures` is off and `queryFeatures` is on.
-
-withLabels: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show labels.
-
-withNodes: boolean, optional False
-    **interface option**
-    indicates whether node numbers should be displayed.
-
-    !!! hint "zooming in"
-        If you are in a Jupyter notebook, you can inspect in a powerful way by
-        setting `withNodes=True`. Then every part of a pretty display shows
-        its node number, and you can use the following APIs
-        to look up all information
-        about each node that the corpus has to offer:
-
-        * **F**: `tf.core.nodefeature.NodeFeature`
-        * **E**: `tf.core.edgefeature.EdgeFeature`
-        * **L**: `tf.core.locality.Locality`
-        * **T**: `tf.core.text.Text`
-
-withTypes: boolean, optional False
-    **interface option**
-    indicates whether node types should be displayed.
-    The node type of slot nodes is never displayed.
-
-colorMap: dict, optional None
-    Which nodes of a tuple (or list of tuples) will be highlighted.
-    If `colorMap` is `None` or missing, all nodes will be highlighted with
-    the default highlight color, which is yellow.
-
-    But you can assign different colors to the members of the tuple:
-    `colorMap` must be a dictionary that maps the positions in a tuple
-    to a color.
-
-    *   If a position is not mapped, it will not be highlighted.
-    *   If it is mapped to the empty string, it gets the default highlight color.
-    *   Otherwise, it should be mapped to a string that is a valid
-        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
-
-    !!! hint "color names"
-        The link above points to a series of handy color names and their previews.
-
-    !!! note "highlights takes precedence over colorMap"
-        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
-
-        If you need to micro-manage, `highlights` is your thing.
-        Whenever possible, use `colorMap`.
-
-end: int, optional None
-    `end` is the end point in the iterable of results.
-    If `None`, displaying will stop after the end of the iterable.
-
-extraFeatures: string | iterable, optional ()
-    A string or iterable of feature names.
-    These features will be loaded automatically.
-    In pretty displays these features will show up as `feature=value`,
-    provided the value is not `None`, or something like None.
-
-    !!! hint "Automatic loading"
-        These features will load automatically, no explicit loading is
-        necessary.
-
-    !!! hint "values from other nodes"
-        Suppose you want to display a value from a related node, e.g. a `gloss`
-        that is available on `lex` nodes but not on `word` nodes, and you
-        want to show it on the word nodes.
-        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
-        look up a `lex` node from the current node (by means of `L.u(w, otype='lex')`,
-        and if it finds one, it will read the `gloss` feature from it.
-
-full: boolean, optional False
-    For pretty displays: indicates that the whole object should be
-    displayed, even if it is big.
-
-    !!! hint "Big objects"
-        Big objects are objects of a type that is bigger than the default condense type.
+    If `True`, hidden types are in fact hidden, otherwise the hiding of types
+    has no effect.
 
 highlights: dict | set, optional {}
     When nodes such as verses and sentences and lines and cases are displayed
@@ -253,6 +208,26 @@ highlights: dict | set, optional {}
         It does not harm performance if `highlights` maps
         lots of nodes outside the tuple as well.
 
+lineNumbers: boolean, optional False
+    **interface option**
+    indicates whether line numbers should be displayed.
+
+    !!! note "source data"
+        Line numbers are with respect to the source data file that is contains the
+        origin material of the node in question, if a datasource provides
+        a feature that contains line numbers.
+
+    !!! caution "configuration"
+        Whether a corpus has line numbers, and in which feature they are stored
+        for which node types is configured in a corpus dependent app.
+
+        If the corpus has no line numbers, the default is `None`.
+
+multiFeatures: boolean, optional False
+    **interface option**
+    indicates whether pretty displays should show all possible node features
+    provided they have a non-empty value. The feature `otype` is excluded from this.
+
 noneValues: set, optional None
     A set of values for which no display should be generated.
     The default set is `None` and the strings `NA`, `none`, `unknown`.
@@ -273,6 +248,43 @@ noneValues: set, optional None
         The contents of `noneValues` affect the display of
         all features, not only the custom features.
 
+plainGaps: boolean, optional True
+    **interface option**
+    indicates whether gaps types should be displayed in plain displays.
+    In pretty displays gaps are marked by dotted left-right borders of the nodes
+    around the gaps. In plain displays such borders are generally disruptive,
+    but it is possible to show them.
+
+prettyTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should always be displayed in pretty displays.
+    The node type of slot nodes is never displayed.
+
+queryFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show the features
+    mentioned in the last query and their values.
+
+showGraphics: boolean, optional True
+    **interface option**
+    indicates whether plain and pretty displays should include associated
+    graphic elements.
+
+    !!! caution "configuration"
+        Whether a corpus has graphics for some nodetypes and how to get them is
+        configured in a corpus dependent app.
+
+        If the corpus has no graphics, the default is `None`.
+
+showMath: boolean, optional False
+    **interface option**
+    indicates whether plain and pretty displays should interpret the `$`
+    to mark mathematical formulas in TeX notation.
+
+    !!! caution "real dollars"
+        If you have a corpus where the character `$` is used in an ordinary way,
+        this option should be set to `False`.
+
 skipCols: set, optional set()
     indicates columns to skip in `show()`, `table()`;
     no effect on `prettyTuple()` and `plainTuple()`.
@@ -286,6 +298,12 @@ skipCols: set, optional set()
 
     The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
+
+standardFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show standard features and their values.
+    If a feature is both a standard feature and it is mentioned in the last query,
+    it will still be shown if `standardFeatures` is off and `queryFeatures` is on.
 
 start: integer, optional None
     `start` is the starting point for displaying the iterable of results.
@@ -319,6 +337,31 @@ withPassage: boolean or set, optional True
     the value may also be a set of integers, indicating the columns whose
     nodes will be linked with a web link
     (the first column is column 1).
+
+withLabels: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show labels.
+
+withNodes: boolean, optional False
+    **interface option**
+    indicates whether node numbers should be displayed.
+
+    !!! hint "zooming in"
+        If you are in a Jupyter notebook, you can inspect in a powerful way by
+        setting `withNodes=True`. Then every part of a pretty display shows
+        its node number, and you can use the following APIs
+        to look up all information
+        about each node that the corpus has to offer:
+
+        * **F**: `tf.core.nodefeature.NodeFeature`
+        * **E**: `tf.core.edgefeature.EdgeFeature`
+        * **L**: `tf.core.locality.Locality`
+        * **T**: `tf.core.text.Text`
+
+withTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should be displayed.
+    The node type of slot nodes is never displayed.
 """
 
 from ..core.helpers import setFromValue
@@ -341,6 +384,14 @@ INTERFACE_OPTIONS = (
         "hide types",
         "Do not show the outer structure of nodes of the selected types."
         "The contents of those nodes are still shown.",
+        True,
+    ),
+    (
+        "forceEdges",
+        False,
+        "forcee",
+        "show/hide selected edge features",
+        "Show/hide edge features in pretty displays.",
         True,
     ),
     (
@@ -456,6 +507,8 @@ DISPLAY_OPTIONS = dict(
     colorMap=None,
     condensed=False,
     condenseType=None,
+    edgeFeatures=None,
+    edgeHighlights={},
     end=None,
     extraFeatures=((), {}),
     full=False,
@@ -464,6 +517,7 @@ DISPLAY_OPTIONS = dict(
     hiddenTypes=None,
     highlights={},
     noneValues={None},
+    forceEdges=False,
     skipCols=set(),
     start=None,
     suppress=set(),
@@ -574,7 +628,11 @@ class Options:
         elif option == "highlights":
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
-        elif option in {"baseTypes", "hiddenTypes"}:
+        elif option == "edgeHighlights":
+            for (edge, highlights) in value.items():
+                if highlights is not None and type(highlights) is not dict:
+                    value[edge] = {m: "" for m in highlights}
+        elif option in {"baseTypes", "hiddenTypes", "edgeFeatures"}:
             legalValues = set(allowedValues[option])
             values = setFromValue(value)
             value = {tp for tp in values if tp in legalValues}
@@ -594,17 +652,20 @@ class Options:
             if option not in current:
                 error(f'ERROR in {msg}(): unknown display option "{option}={value}"')
                 good = False
-            if option in {"baseTypes", "condenseType", "hiddenTypes"}:
+            if option in {"baseTypes", "condenseType", "hiddenTypes", "edgeFeatures"}:
                 legalValues = set(allowedValues[option])
                 if value is not None:
-                    if option in {"baseTypes", "hiddenTypes"}:
+                    if option in {"baseTypes", "hiddenTypes", "edgeFeatures"}:
                         testVal = setFromValue(value)
                         isLegal = all(v in legalValues for v in testVal)
                     else:
                         isLegal = value in legalValues
                     if not isLegal:
+                        thing = (
+                            "edge feature" if option == "edgeFeatures" else "node type"
+                        )
                         error(
-                            f'ERROR in {msg}(): illegal node type in "{option}={value}"'
+                            f'ERROR in {msg}(): illegal {thing} in "{option}={value}"'
                         )
                         legalRep = ", ".join(sorted(legalValues))
                         error(f"Legal values are: {legalRep}")
@@ -635,9 +696,7 @@ class Options:
         normOptions = {}
 
         for option in defaults:
-            value = options.get(
-                option, current.get(option, defaults[option])
-            )
+            value = options.get(option, current.get(option, defaults[option]))
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]

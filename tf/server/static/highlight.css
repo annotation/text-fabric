@@ -23,8 +23,12 @@ span.hlbx {
   padding: 4px;
   margin: 4px;
 }
+.ehl {
+  background-color: var(--ehl-strong);
+}
 
 :root {
 	--hl-strong:        hsla( 60, 100%,  70%, 0.9  );
 	--hl-rim:           hsla( 55,  80%,  50%, 1.0  );
+	--ehl-strong:       hsla(240, 100%,  70%, 0.9  );
 }

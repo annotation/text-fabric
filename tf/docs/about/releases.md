@@ -10,15 +10,25 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ## 11
 
-### 11.4.17 (upcoming)
+### 11.5
+
+#### 11.5.0 (upcoming)
 
 2023-06-??
 
+*   In pretty displays, edge features can also be displayed.
+    There are new options `forceEdges` and `edgeFeatures` to turn edge display off or
+    on, for selected features. Edge features that are mentioned in a query are
+    automatically shown.
+*   Edges can also be highlighted by passing an option `edgeHighlights` to the
+    pretty displays.
 *   `tf.convert.addnlp`: if generated tokens cross element boundaries, they will be
     split on those boundaries. These atomic tokens become the slots (type `t` by
     default), the original tokens are added as nodes of type `token`.
 
-### 11.4.15-16
+### 11.4
+
+#### 11.4.15-16
 
 2023-05-25
 
@@ -44,10 +54,11 @@ See the app-specific tutorials via `tf.about.corpora`.
 *   New function `A.publishRelease()` by which you can publish a release of a TF
     dataset straight from your program or notebook, without clicking around in
     a browser. See `tf.advanced.repo.publishRelease()` or the
-    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb) example.
+    [annotation/mondriaan](https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb)
+    example.
 
 
-### 11.4.14
+#### 11.4.14
 
 2023-05-12
 
@@ -61,13 +72,13 @@ See the app-specific tutorials via `tf.about.corpora`.
     switched on, edges that have been generated in the conversion process will
     not be lost when you transform the TF further, e.g. by adding tokens and sentences.
 
-### 11.4.13
+#### 11.4.13
 
 2023-05-11
 
 Small fixes to the XML conversion.
 
-### 11.4.11,12
+#### 11.4.11,12
 
 2023-05-10
 
@@ -82,9 +93,7 @@ Small fixes to the XML conversion.
     [lowfat.py](https://github.com/ETCBC/nestle1904/blob/master/programs/lowfat.py)
 *   You can tweak how attribute values are reported when you run preliminary checks.
 
-## 11
-
-### 11.4.10
+#### 11.4.10
 
 2023-05-09
 
@@ -96,7 +105,7 @@ Small fixes to the XML conversion.
     where we compare a minimalistic version of the BHSA with the complete BHSA.
 
 
-### 11.4.9
+#### 11.4.9
 
 2023-05-08
 
@@ -109,7 +118,7 @@ The XML converter is now easier to use:
     [Nestle1904 dataset](https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb)
     (Greek New Testament)
 
-### 11.4.8
+#### 11.4.8
 
 2023-05-08
 
@@ -134,7 +143,7 @@ The XML converter is now easier to use:
     *   Reverted back to the old way of data storage in RAM, with
         `tf.parameters.PACK_VERSION` set to `3`.
 
-### 11.4.7
+#### 11.4.7
 
 2023-05-08
 
@@ -153,7 +162,7 @@ Note, that when Text-Fabric precokputes data, it will store the results in
 `.tf/4` (`PACK_VERSION = 4`), whereas the old way's results are still in 
 `.tf/3` (`PACK_VERSION = 3`). See `tf.parameters.PACK_VERSION`.
 
-### 11.4.6
+#### 11.4.6
 
 2023-05-04
 
@@ -182,13 +191,13 @@ Note, that when Text-Fabric precokputes data, it will store the results in
 *   Merged a pull request by Cody Kingham with some helpful type annotations in
     `tf.core.fabric`.
 
-### 11.4.5
+#### 11.4.5
 
 2023-05-03
 
 Fixed a left-over bug introduced by the previous update.
 
-### 11.4.4
+#### 11.4.4
 
 2023-05-02
 
@@ -203,7 +212,7 @@ Fixed a left-over bug introduced by the previous update.
 
 *   Fixed a bug in `tf.core.files.getLocation()`
 
-### 11.4.3
+#### 11.4.3
 
 2023-05-01
 
@@ -213,7 +222,7 @@ Fixed a left-over bug introduced by the previous update.
     in a different, more efficient way that on all other features. And I forgot to
     sort the result in the `otype` case. From now on: these nodes *will* be sorted.
 
-### 11.4.2
+#### 11.4.2
 
 2023-04-26
 
@@ -261,7 +270,7 @@ can pass them arguments which are
     the latest one. But you can easily direct the converter to other versions, both
     of the TEI and the TF.
 
-### 11.4.1
+#### 11.4.1
 
 2023-04-24
 
@@ -269,7 +278,7 @@ Small fixes in the TEI conversion and the NLP pipeline integration.
 The parameters/flags for the convert steps and pipeline operations have been
 made more powerful and superfluous options have been removed.
 
-### 11.4.0
+#### 11.4.0
 
 2023-04-21
 
@@ -295,7 +304,7 @@ The following workflow is now supported by means of simple commands.
 
 ### 11.3
 
-### 11.3.1
+#### 11.3.1
 
 2023-04-11
 
@@ -343,7 +352,7 @@ The following workflow is now supported by means of simple commands.
     but replace it with a `~`. There were some cases where this escaping was
     not successfully applied, e.g. in `tf.advanced.repo`.
 
-### 11.3.0
+#### 11.3.0
 
 2023-03-23
 
@@ -372,7 +381,7 @@ The following workflow is now supported by means of simple commands.
 
 ### 11.2
 
-### 11.2.3
+#### 11.2.3
 
 2023-03-08
 
@@ -389,7 +398,7 @@ otherwise it disturbs Excel and Numbers when they read it in a tab-separated fil
 
 Other small fixes.
 
-### 11.2.2
+#### 11.2.2
 
 2023-02-22
 
@@ -400,7 +409,7 @@ It serves as a stub to start off with your own XML to TF conversion program.
 For an example how to use it, see its application to the 
 [Greek New Testament, lowfat trees](https://github.com/ETCBC/nestle1904).
 
-### 11.2.1
+#### 11.2.1
 
 2023-02-21
 
@@ -424,7 +433,7 @@ Various enhancements to the `tf.convert.tei` conversion:
 A fix of an error, spotted by Christian C. Høygaard, while loading a TF resource in
 a slightly unusual way. 
 
-### 11.2.0
+#### 11.2.0
 
 2023-02-16
 
@@ -475,7 +484,7 @@ cases, mostly having to do with on-premiss GitLab backends.
 
 ### 11.1
 
-### 11.1.4
+#### 11.1.4
 
 2023-02-12
 
@@ -490,26 +499,26 @@ Small fix for when Text-Fabric is installed without extras, just
 In that case text-fabric referred to an error class that
 was not imported. Spotted by Martijn Naaijer. Fixed.
 
-### 11.1.3
+#### 11.1.3
 
 2023-02-03
 
 In the Text-Fabric browser you can now resize the column in which you write
 your query.
 
-### 11.1.2
+#### 11.1.2
 
 2023-01-15
 
 Small fix in math display.
 
-### 11.1.1
+#### 11.1.1
 
 2023-01-13
 
 Small fixes
 
-### 11.1.0
+#### 11.1.0
 
 2023-01-12
 
@@ -525,7 +534,7 @@ It is used in the
 
 ### 11.0
 
-### 11.0.7
+#### 11.0.7
 
 2022-12-30
 
@@ -535,7 +544,7 @@ where Text-Fabric crashes if the binary data for a feature is corrupted.
 This may happen if Text-Fabric is interrupted in the precomputation stage.
 Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
 
-### 11.0.6
+#### 11.0.6
 
 2022-12-27
 
@@ -544,7 +553,7 @@ Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
   Reported by Oliver Glanz.
 
 
-### 11.0.4-5
+#### 11.0.4-5
 
 2022-12-18
 
@@ -558,7 +567,7 @@ Thanks to [Seth Howell](https://github.com/sethbam9) for reporting this.
 * In the Text-Fabric browser this header information is shown when you expand a new
   tab in the side bar: **Corpus**.
 
-### 11.0.3
+#### 11.0.3
 
 2022-12-17
 
@@ -583,7 +592,7 @@ separate from the messages, which conveys whether the query was successfull.
 Queries with informational messages and a positive status will have their results
 shown as well as their messages. 
 
-### 11.0.2
+#### 11.0.2
 
 2022-12-04
 
@@ -601,7 +610,7 @@ Normally, it replaces your home directory by `~`, but on iPad it replaces
 So if you publish notebooks made on an iPad or made on a computer,
 there is no difference in the reported file names.
 
-### 11.0.1
+#### 11.0.1
 
 2022-11-18
 
@@ -617,7 +626,7 @@ which in turns requires a Python version of at least 3.7.0.
 
 So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.
 
-### 11.0.0
+#### 11.0.0
 
 2022-11-11
 

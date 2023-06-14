@@ -11,6 +11,7 @@ from collections import namedtuple
 from itertools import chain
 from ..core.helpers import rangesFromList, console, QUAD
 from ..core.text import DEFAULT_FORMAT
+from ..parameters import OMAP
 from .highlight import getHlAtt
 from .helpers import _getLtr
 
@@ -36,7 +37,9 @@ OuterSettings = namedtuple(  # noqa: F811
     getText
     upMethod
     slotsMethod
-    lookupMethod
+    fLookupMethod
+    eLookupMethod
+    allEFeats
     browsing
     webLink
     getGraphics
@@ -61,8 +64,14 @@ __pdoc__[
     "OuterSettings.slotsMethod"
 ] = "Method to get the slots of a node: `tf.core.oslotsfeature.OslotsFeature.s`"
 __pdoc__[
-    "OuterSettings.lookupMethod"
+    "OuterSettings.fLookupMethod"
 ] = "Method to get the value of a node feature: `tf.core.api.Api.Fs`"
+__pdoc__[
+    "OuterSettings.eLookupMethod"
+] = "Method to get the value of an edge feature: `tf.core.api.Api.Es`"
+__pdoc__[
+    "OuterSettings.allEFeats"
+] = "Set of all edge features: `tf.core.api.Api.Eall(warp=False)`"
 __pdoc__[
     "OuterSettings.browsing"
 ] = "whether we work for the Text-Fabric browser or for a Jupyter notebook"
@@ -224,6 +233,8 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
     api = app.api
     N = api.N
     E = api.E
+    Es = api.Es
+    Eall = api.Eall
     F = api.F
     Fs = api.Fs
     L = api.L
@@ -280,6 +291,8 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
         upMethod,
         eOslots,
         Fs,
+        Es,
+        {e for e in Eall(warp=False) if not e.startswith(OMAP)},
         _browse,
         webLink,
         getGraphics,

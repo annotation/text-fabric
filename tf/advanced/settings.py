@@ -984,7 +984,7 @@ Default:
 import re
 import types
 
-from ..parameters import BRANCH_DEFAULT
+from ..parameters import BRANCH_DEFAULT, OMAP
 from ..core.helpers import console, mergeDictOfSets
 from ..core.files import backendRep, URL_TFDOC, prefixSlash
 from .options import INTERFACE_OPTIONS
@@ -1588,6 +1588,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     F = api.F
     T = api.T
     N = api.N
+    Eall = api.Eall
     otypeRank = N.otypeRank
     slotType = F.otype.slotType
     nTypes = F.otype.all
@@ -1609,6 +1610,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     verseRank = otypeRank[sectionTypes[-1]] if sectionTypes else None
     lexMap = {}
     baseTypes = set()
+    edgeFeatures = set()
     hiddenTypes = set()
     condenseType = None
     templates = {}
@@ -1751,6 +1753,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         baseTypes=tuple(e for e in nTypesNoLex if e not in sectionTypeSet),
         condenseType=tuple(nTypesNoLex[0:-1]),
         hiddenTypes=tuple(e for e in nTypesNoLex[0:-1] if e not in sectionTypeSet),
+        edgeFeatures=tuple(e for e in Eall(warp=False) if not e.startswith(OMAP)),
     )
 
     levelTypes = [set(), set(), set(), set(), set()]
@@ -1870,6 +1873,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
         features=features,
         featuresBare=featuresBare,
         hasGraphics=hasGraphics,
+        edgeFeatures=edgeFeatures,
         hiddenTypes=hiddenTypes,
         labels=labels,
         levels=levels,

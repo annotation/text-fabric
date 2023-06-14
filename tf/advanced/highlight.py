@@ -57,11 +57,58 @@ def getHlAtt(app, n, highlights, isSlot):
     return (hlCls, hlStyle)
 
 
+def getEdgeHlAtt(e, pair, highlights):
+    """Get the edge highlight attribute and style for an edge, only for pretty mode.
+
+    Parameters
+    ----------
+    e: str
+        The edge feature to be highlighted
+    pair: tuple
+        The *from* node of the edge to be highlighted and
+        the *to* node of the edge to be highlighted
+    highlights: dict
+        A dict or set of pairs of nodes belonging to edge feature `e` that must
+        be highlighted.
+        This function is only interested in whether the value `(f, t)` is in
+        `highlights`, and if so, what the value is (in case of a dict).
+        If given as set: use the default highlight color.
+        If given as dict: use the value as color.
+
+    Returns
+    -------
+    hlCls: str
+        Highlight attribute
+    hlStyle: str
+        Highlight color as css style
+    """
+
+    if highlights is None:
+        return ("", "")
+
+    hKey = (
+        pair
+        if pair in highlights
+        else (pair[0], None)
+        if (pair[0], None) in highlights
+        else (None, pair[1])
+        if (None, pair[1]) in highlights
+        else None
+    )
+
+    if hKey is None:
+        return ("", "")
+
+    color = highlights[hKey] if type(highlights) is dict else ""
+
+    return ("ehl", f' style="background-color: {color};" ' if color != "" else "")
+
+
 def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     """Get the highlights for a tuple of nodes.
 
     The idea is to mark the elements of a tuple of nodes with highlights,
-    respecting a given  set or dict of highlights and  a color map.
+    respecting a given set or dict of highlights and a color map.
 
     This is a bit of an intricate merging operation.
 
@@ -136,7 +183,9 @@ def getPassageHighlights(app, node, query, cache):
     if not query:
         return None
 
-    (queryResults, status, messages, features) = runSearch(app, query, cache)
+    (queryResults, status, messages, nodeFeatures, edgeFeatures) = runSearch(
+        app, query, cache
+    )
     if not status[0] or not status[1]:
         return None
 

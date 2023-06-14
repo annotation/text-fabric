@@ -479,7 +479,7 @@ def makeTfKernel(app, appName, port):
             status = True
             messages = ("", "")
             if query:
-                (results, status, messages, features) = (
+                (results, status, messages, nodeFeatures, edgeFeatures) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if condensed and condenseType
                     else runSearch(app, query, cache)
@@ -506,8 +506,8 @@ def makeTfKernel(app, appName, port):
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set()))
-            featureStr = " ".join(sorted(features))
+            nodeFeatures = set(reduce(set.union, (x[1] for x in nodeFeatures), set()))
+            featureStr = " ".join(sorted(nodeFeatures | set(edgeFeatures)))
             table = compose(
                 app,
                 allResults,
@@ -560,10 +560,14 @@ def makeTfKernel(app, appName, port):
             queryMessages = ("", "")
             features = ()
             if query:
-                (queryResults, queryStatus, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
-                (queryResultsC, queryStatusC, queryMessagesC, featuresC) = (
+                (
+                    queryResults,
+                    queryStatus,
+                    queryMessages,
+                    nodeFeatures,
+                    edgeFeatures,
+                ) = runSearch(app, query, cache)
+                (queryResultsC, queryStatusC, queryMessagesC, nodeFeaturesC, edgeFeaturesC) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if queryStatus[0] and queryStatus[1] and condensed and condenseType
                     else (None, (False, False), ("", ""), None)

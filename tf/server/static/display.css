@@ -175,6 +175,12 @@ a:hover {
     direction: ltr ! important;
     unicode-bidi: embed;
 }
+.nde, a:link.nde {
+    font-family: sans-serif;
+    color: var(--node);
+    direction: ltr ! important;
+    unicode-bidi: embed;
+}
 .lex {
   color: var(--lex-color);;
 }

@@ -23,6 +23,7 @@ directly from an attribute in the tree.
 import re
 
 from .helpers import htmlSafe, NB, dh
+from .highlight import getEdgeHlAtt
 from .unravel import _unravel
 from ..core.helpers import NBSP, htmlEsc, flattenToSet
 
@@ -55,7 +56,12 @@ def render(app, isPretty, n, _inTuple, _asString, explain, **options):
         )
         dContext.set("featuresIndirect", extraFeatures[1])
         if multiFeatures:
-            dContext.set("featuresAll", tuple(app.api.Fall(warp=False)))
+            api = app.api
+            Fall = api.Fall
+            Eall = api.Eall
+            dContext.set(
+                "featuresAll", tuple(Fall(warp=False)) + tuple(Eall(warp=False))
+            )
 
     tree = _unravel(app, isPretty, dContext, n, _inTuple=_inTuple, explain=explain)
     (chunk, info, subTrees) = tree
@@ -477,7 +483,7 @@ def _getNodePart(isPretty, info, n, outer, switched):
 
     settings = info.settings
     browsing = settings.browsing
-    lookupMethod = settings.lookupMethod
+    fLookupMethod = settings.fLookupMethod
 
     props = info.props
     nType = props.nType
@@ -498,7 +504,7 @@ def _getNodePart(isPretty, info, n, outer, switched):
     line = ""
     if lineNumbers and allowInfo:
         if lineNumberFeature:
-            line = lookupMethod(lineNumberFeature).v(n)
+            line = fLookupMethod(lineNumberFeature).v(n)
         if line:
             line = f"@{line}" if line else ""
 
@@ -513,6 +519,23 @@ def _getNodePart(isPretty, info, n, outer, switched):
     )
 
 
+def _getEdge(e, n, kv, withNodes, right, highlights):
+    (m, val) = kv if type(kv) is tuple else (kv, None)
+    pair = (n, m) if right else (m, n)
+
+    (hlCls, hlStyle) = getEdgeHlAtt(e, pair, highlights)
+
+    nodeRep = f'<span class="nde">{m}</span>' if withNodes else ""
+    valRep = "" if val is None else htmlEsc(val)
+    valSep = "" if not valRep else "="
+    plainValue = (
+        f"{nodeRep}{valSep}{valRep}→" if right else f"←{nodeRep}{valSep}{valRep}"
+    )
+    return (
+        f'<span class="{hlCls}" {hlStyle}>{plainValue}</span>' if hlCls else plainValue
+    )
+
+
 def _getFeatures(info, n, nType):
     """Feature fetcher.
 
@@ -523,6 +546,8 @@ def _getFeatures(info, n, nType):
     options = info.options
     dFeatures = options.features
     dFeaturesIndirect = options.featuresIndirect
+    edgeFeatures = options.edgeFeatures
+    forceEdges = options.forceEdges
     multiFeatures = options.multiFeatures
     if multiFeatures:
         featuresAll = options.featuresAll
@@ -531,14 +556,33 @@ def _getFeatures(info, n, nType):
     suppress = options.suppress
     noneValues = options.noneValues
     showMath = options.showMath
+    withNodes = options.withNodes
+    edgeHighlights = options.edgeHighlights
 
     settings = info.settings
     upMethod = settings.upMethod
-    lookupMethod = settings.lookupMethod
+    fLookupMethod = settings.fLookupMethod
+    eLookupMethod = settings.eLookupMethod
+    allEFeats = settings.allEFeats
 
     props = info.props
     (features, indirect) = props.features
     (featuresBare, indirectBare) = props.featuresBare
+
+    if forceEdges:
+        newDFeatures = []
+        seen = set()
+        for f in dFeatures + list(allEFeats):
+            if f in allEFeats:
+                if f in edgeFeatures:
+                    if f not in seen:
+                        newDFeatures.append(f)
+                        seen.add(f)
+                else:
+                    continue
+            else:
+                newDFeatures.append(f)
+        dFeatures = newDFeatures
 
     # a feature can be nType:feature
     # do a upMethod(n, otype=nType)[0] and take the feature from there
@@ -555,19 +599,13 @@ def _getFeatures(info, n, nType):
 
     featurePart = ""
 
-    if standardFeatures or queryFeatures or multiFeatures:
+    if standardFeatures or queryFeatures or multiFeatures or forceEdges:
         seen = set()
 
         for (i, name) in enumerate(featureList):
             if name not in suppress and name not in seen:
                 seen.add(name)
 
-                fsName = lookupMethod(name)
-                if fsName is None:
-                    continue
-                fsNamev = fsName.v
-
-                value = None
                 if (
                     name in dFeaturesIndirect
                     or name in indirectBare
@@ -584,26 +622,76 @@ def _getFeatures(info, n, nType):
                     refNode = refNode[0] if refNode else None
                 else:
                     refNode = n
-                if refNode is not None:
-                    value = fsNamev(refNode)
 
-                value = (
-                    None if value in noneValues else htmlEsc(value or "", math=showMath)
-                )
+                if refNode is not None:
+                    value = None
+
+                    if name in allEFeats:
+                        esObj = eLookupMethod(name, warn=False)
+                        valueF = esObj.f(refNode)
+                        valueT = esObj.t(refNode)
+                        eHighlights = (
+                            None
+                            if edgeHighlights is None
+                            else edgeHighlights.get(name, None)
+                        )
+                        if len(valueF):
+                            valueF = " ".join(
+                                _getEdge(
+                                    name, refNode, it, withNodes, True, eHighlights
+                                )
+                                for it in valueF
+                            )
+                        if len(valueT):
+                            valueT = " ".join(
+                                _getEdge(
+                                    name, refNode, it, withNodes, False, eHighlights
+                                )
+                                for it in valueT
+                            )
+                        value = (
+                            None
+                            if not len(valueF) and not len(valueT)
+                            else (valueF or "") + (valueT or "")
+                        )
+                    else:
+                        fsObj = fLookupMethod(name, warn=False)
+                        value = fsObj.v(refNode)
+                        if value in noneValues:
+                            value = None
+                        else:
+                            value = htmlEsc(value, math=showMath)
+
                 if value is not None:
                     value = value.replace("\n", "\\n<br>")
                     if value.endswith(" "):
                         value = value[0:-1] + NBSP
                     isBare = i < bFeatures
                     isExtra = i >= nbFeatures
-                    if not multiFeatures and (
-                        isExtra
-                        and not queryFeatures
-                        or not isExtra
-                        and (not standardFeatures and name not in dFeatures)
+                    if (
+                        not multiFeatures
+                        and not (isExtra and forceEdges and name in edgeFeatures)
+                        and (
+                            (isExtra and not queryFeatures)
+                            or (
+                                not isExtra
+                                and (not standardFeatures and name not in dFeatures)
+                            )
+                        )
                     ):
                         continue
-                    nameRep = "" if isBare else f'<span class="f">{name}=</span>'
+                    nameRep = (
+                        ""
+                        if isBare
+                        else (
+                            (
+                                f'<span class="e" edge="{name}" nd="{refNode}">'
+                                f"{name}•</span>"
+                            )
+                            if name in allEFeats
+                            else f'<span class="f">{name}=</span>'
+                        )
+                    )
                     titleRep = f'title="{name}"' if isBare else ""
                     xCls = "xft" if isExtra else ""
                     featurePart += (
