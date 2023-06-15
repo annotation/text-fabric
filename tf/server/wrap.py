@@ -4,6 +4,7 @@
 Lower level functions for wrapping TF data into actual HTML that can be served.
 """
 
+from textwrap import dedent
 import time
 import datetime
 
@@ -125,6 +126,75 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 # OPTIONS
+
+
+COLOR_DEFAULT = "#ffff00"
+
+
+def wrapColorMap(form):
+    """Wraps the color map for query result highlighting into HTML."""
+
+    desc = "Color map for query results"
+    long = dedent(
+        """
+        You can color the parts that match the individual atoms of your query with
+        different colors.
+        """
+    )
+    helpHtml = f'<p><b title="color map">{desc}</b> {long}</p>'
+
+    resetForm = form["resetForm"]
+    if resetForm:
+        colorMap = {}
+    else:
+        colorMap = form["colorMap"]
+
+    colorMapN = len(colorMap)
+
+    html = []
+    html.append(
+        dedent(
+            """
+            <details id="colormap" class="dstate">
+                <summary>highlight colors</summary>
+                <div>
+            """
+        )
+    )
+    html.append(f"""<input type="hidden" name="colormapn" value="{colorMapN}">""")
+
+    minC = """<a href="#" id="colormapmin">-</a>"""
+    plusC = """<a href="#" id="colormapplus">+</a>"""
+
+    for pos in range(1, colorMapN + 2):
+        last = pos == colorMapN
+        past = pos == colorMapN + 1
+        empty = colorMapN == 0
+
+        if past:
+            thisHtml = f"""<div>{plusC}</div>""" if empty else ""
+        else:
+            color = colorMap.get(pos, "") or COLOR_DEFAULT
+
+            thisHtml = dedent(
+                f"""
+                <div>
+                    <input
+                        type="color"
+                        class="clmap"
+                        pos="{pos}" name="colormap_{pos}"
+                        value="{color}"
+                    >
+                    {minC if last else ""}
+                    {plusC if last else ""}
+                </div>
+                """
+            )
+        html.append(thisHtml)
+
+    html.append("</div></details>")
+
+    return ("\n".join(html), "\n".join(helpHtml))
 
 
 def wrapOptions(context, form):

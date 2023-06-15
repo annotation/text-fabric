@@ -177,12 +177,37 @@ a:hover {
 }
 .nde, a:link.nde {
     font-family: sans-serif;
+    font-size: small;
     color: var(--node);
     direction: ltr ! important;
     unicode-bidi: embed;
 }
+.etf {
+    font-size: normal;
+    border-radius: 0.2rem;
+    border: 1pt solid white;
+    padding: 0 0.2rem ! important;
+    margin: 0 0.2rem ! important;
+}
+.etfx {
+    font-size: x-large;
+}
 .lex {
   color: var(--lex-color);;
+}
+#colormapplus, #colormapmin {
+  font-weight: bold;
+  border-radius: 0.1rem;
+  background-color: #eeeeff;
+  padding: 0 1rem;
+  margin: 0 1rem;
+}
+.clr {
+  font-style: italic;
+  font-size: small;
+}
+.clmap {
+  padding: 0;
 }
 .children,.children.ltr {
     display: flex;

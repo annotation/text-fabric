@@ -19,6 +19,7 @@ from ..advanced.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,
+    wrapColorMap,
     wrapOptions,
     wrapSelect,
     wrapProvenance,
@@ -59,6 +60,7 @@ def serveTable(web, kind, getx=None, asDict=False):
         options = {
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
+        options["colorMap"] = form.get("colorMap", {})
         (table, messages) = kernelApi.table(
             kind,
             task,
@@ -120,6 +122,7 @@ def serveQuery(web, getx, asDict=False):
                 for (k, v) in interfaceDefaults.items()
                 if v is not None
             }
+            options["colorMap"] = form.get("colorMap", {})
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
                     task,
@@ -186,6 +189,7 @@ def servePassage(web, getx):
     options = {
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
+    options["colorMap"] = form.get("colorMap", {})
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form["features"],
         form["query"],
@@ -413,6 +417,7 @@ def serveAll(web, anything):
         chooser[option] = options
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+    (colorMapHtml, colorMapHelp) = wrapColorMap(form)
 
     characters = kernelApi.characters(fmt=form["textFormat"])
 
@@ -420,6 +425,8 @@ def serveAll(web, anything):
         css=css,
         mathjax=mathjax,
         characters=characters,
+        colorMapHtml=colorMapHtml,
+        colorMapHelp=colorMapHelp,
         colofon=f"{appLogo}{colofon}{tfLogo}",
         header=header,
         setNames=setNameHtml,

@@ -519,6 +519,10 @@ def _getNodePart(isPretty, info, n, outer, switched):
     )
 
 
+TO_SYM = '<span class="etfx">↦</span>'
+FROM_SYM = '<span class="etfx">⇥</span>'
+
+
 def _getEdge(e, n, kv, withNodes, right, highlights):
     (m, val) = kv if type(kv) is tuple else (kv, None)
     pair = (n, m) if right else (m, n)
@@ -527,13 +531,10 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
 
     nodeRep = f'<span class="nde">{m}</span>' if withNodes else ""
     valRep = "" if val is None else htmlEsc(val)
-    valSep = "" if not valRep else "="
     plainValue = (
-        f"{nodeRep}{valSep}{valRep}→" if right else f"←{nodeRep}{valSep}{valRep}"
+        f"{valRep}{TO_SYM}{nodeRep}" if right else f"{nodeRep}{FROM_SYM}{valRep}"
     )
-    return (
-        f'<span class="{hlCls}" {hlStyle}>{plainValue}</span>' if hlCls else plainValue
-    )
+    return f'<span class="etf {hlCls}" {hlStyle}>{plainValue}</span>'
 
 
 def _getFeatures(info, n, nType):
@@ -652,7 +653,7 @@ def _getFeatures(info, n, nType):
                         value = (
                             None
                             if not len(valueF) and not len(valueT)
-                            else (valueF or "") + (valueT or "")
+                            else (valueT or "") + (valueF or "")
                         )
                     else:
                         fsObj = fLookupMethod(name, warn=False)

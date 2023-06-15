@@ -98,6 +98,17 @@ def getFormData(interfaceDefaults):
     form["sec1"] = request.form.get("sec1", "")
     form["sec2"] = request.form.get("sec2", "")
     form["s0filter"] = request.form.get("s0filter", "")
+
+    colorMap = {}
+    colorMapN = getInt(request.form.get("colormapn", ""), default=0)
+
+    for i in range(1, colorMapN + 1):
+        colorKey = f"colormap_{i}"
+        color = request.form.get(colorKey, "")
+        colorMap[i] = color
+
+    form["colorMap"] = colorMap
+
     for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
