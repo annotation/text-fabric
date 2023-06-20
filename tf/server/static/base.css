@@ -140,9 +140,69 @@ a.nd:link,a.nd:visited {
 	color: var(--gray-fore);
 } 
 
+/* JOBS */
+
+button.small.active, button.medium.active, a.medium.active, a.small.active {
+  color: var(--button-fore);
+  background-color: var(--button-back);
+}
+
+/* input type="file" control is hidden */
+#imjname {
+  display: none;
+}
+
+/* buttons and inputs for job control, im/export */
+
+#jobs {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+
+#jobaction {
+  border-radius: 0.5rem;
+  background-color: var(--ctlinp-back);
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+button.medium, a.medium {
+  border-radius: 0.3rem;
+  color: var(--inactive-fore);
+  background-color: var(--inactive-back);
+  font-size: small;
+  font-weight: medium;
+  margin: 0.1rem;
+  padding: 0.2rem;
+  border: solid 0.1rem var(--button-back);
+}
+.cntinp {
+  font-family: monospace;
+  color: var(--ctlinp-fore);
+  background-color: var(--ctlinp-back);
+  font-size: large;
+  width: 7rem;
+}
+.selinp {
+  width: 18rem;
+  font-family: monospace;
+  color: var(--ctlinp-fore);
+  background-color: var(--ctlinp-back);
+  font-size: large;
+}
+
 /* COLORS */
 
 :root {
+	--ctlinp-fore:      hsla(  0,   0%,  10%, 1    );
+	--ctlinp-back:      hsla(  0,   0%,  90%, 1    );
+	--button-fore:      hsla(  0,   0%, 100%, 1    );
+	--button-back:      hsla(  0,   0%,  20%, 1    );
+	--inactive-fore:    hsla(  0,   0%,  80%, 1    );
+	--inactive-back:    hsla(  0,   0%,  60%, 1    );
+
 	--sections-back:     hsla(210, 100%,  90%, 0.9  );
 	--tuples-back:       hsla( 90, 100%,  90%, 0.9  );
 	--query-back:        hsla( 30, 100%,  90%, 0.9  );

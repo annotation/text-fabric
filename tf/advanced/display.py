@@ -898,6 +898,7 @@ def pretty(app, n, explain=False, _asString=False, **options):
         * `full`: whether to display a reference to the material or the material itself;
         * `extraFeatures`: additional node/edge features to  display
         * `edgeFeatures`: which edge features maybe displayed
+        * `edgeHighlights`: highlight specs for edges
         * `tupleFeatures`: additional features to  display (primarily for `export`).
 
     Parameters

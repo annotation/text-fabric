@@ -5,6 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>TF {{appName}}-{{jobName}}</title>
 		<meta name="application-name" content="Text-Fabric Search Box"/>
+		<script defer src="/server/static/jquery.js"></script>
+		<script defer src="/server/static/tf3.0.js"></script>
 		<link rel="shortcut icon" href="/server/static/favicon.ico">
 		<link rel="stylesheet" href="/server/static/base.css"/>
 		<link rel="stylesheet" href="/server/static/display.css"/>
@@ -35,9 +37,6 @@
 				</div>
 				<div status="options">
 					<a href="#">Options</a>
-				</div>
-				<div status="export">
-					<a href="#">Export</a>
 				</div>
 			</div>
 			<div id="sidebarcont">
@@ -154,44 +153,6 @@
           <hr>
           {{options|safe}}
 				</div>
-				<div status="export">
-					<div>
-						<p class="ilab">Author</p>
-						<div>
-							<input
-								class="name" type="text" name="author" value="{{author}}"
-								placeholder="My Name"
-							/>
-						</div>
-						<p class="ilab">Title</p>
-						<div>
-							<input
-								class="name" type="text" name="title" value="{{title}}"
-								placeholder="Title"
-							/>
-						</div>
-						<p class="ilab">Description</p>
-						<div class="description">
-							<textarea
-								class="description" name="description"
-								placeholder="Description"
-							>{{description}}</textarea>
-						</div>
-						<p class="ilab">
-							<button
-								type="submit" formaction="/download" formtarget="_new"
-								title="download the data of this job"
-							><span class="fa fa-download"/></button>
-							<button
-								type="submit" formaction="/export" formtarget="_new"
-								title="export this job in a new tab"
-							><span class="fa fa-box-open"/></button>
-						</p>
-						<div id="queryMessagesExport" class="messages">
-							{{messages}}
-						</div>
-					</div>
-				</div>
 				<div status="help">
 					<details id="helpTf" class="help dstate">
 						<summary>Text-Fabric Browser</summary>
@@ -283,6 +244,7 @@
                around the nodes.</p>
             {{optionsHelp|safe}}
             {{colorMapHelp|safe}}
+            {{eColorMapHelp|safe}}
 					</details>
 					<details id="helpExport" class="help dstate">
 						<summary>Export</summary>
@@ -315,6 +277,84 @@
 				</div>
 			</div>
 			<div class="leftcol">
+        <div id="jobs">
+          <span>&nbsp;</span>
+          <input
+            type="file" name="imjname" id="imjname"
+            accept="application/json"
+            class="import"
+          >
+          <button
+            type="button" class="medium active" id="importj"
+            title="import job from file"
+          >↑</button>
+          <button
+            type="button" class="medium active" id="deletej"
+            title="delete current job"
+          >-</button>
+          <button
+            type="button" class="medium active" id="clearj"
+            title="clear current job"
+          >0</button>
+          <select class="selinp" id="jchange0"></select>
+          <button
+            type="button" class="medium active" id="newj"
+            title="fresh new job"
+          >+</button>
+          <button
+            type="button" class="medium active" id="renamej"
+            title="rename current job"
+          >→</button>
+          <button
+            type="button" class="medium active" id="dupj"
+            title="duplicate current job"
+          >++</button>
+          <button
+            type="button" class="medium active" id="exportj"
+            title="export job to file"
+          >↓</button>
+        </div>
+				<details id="exportmeta" class="dstate">
+          <summary>metadata ...</summary>
+					<div>
+						<p class="ilab">Author</p>
+						<div>
+							<input
+								class="name" type="text" name="author" value="{{author}}"
+								placeholder="My Name"
+							/>
+						</div>
+						<p class="ilab">Title</p>
+						<div>
+							<input
+								class="name" type="text" name="title" value="{{title}}"
+								placeholder="Title"
+							/>
+						</div>
+						<p class="ilab">Description</p>
+						<div class="description">
+							<textarea
+								class="description" name="description"
+								placeholder="Description"
+							>{{description}}</textarea>
+						</div>
+						<p class="ilab">
+							<button
+								type="submit" formaction="/download" formtarget="_new"
+								title="download the data of this job"
+							><span class="fa fa-download"/></button>
+							<button
+								type="submit" formaction="/export" formtarget="_new"
+								title="export this job in a new tab"
+							><span class="fa fa-box-open"/></button>
+						</p>
+						<div id="queryMessagesExport" class="messages">
+							{{messages}}
+						</div>
+					</div>
+				</details>
+				<hr>
+
 				<p class="ilab">
 					<button
 						id="sectionsGo" class="xl fa fa-search"
@@ -365,6 +405,8 @@
 				</div>
 
         {{colorMapHtml|safe}}
+
+        {{eColorMapHtml|safe}}
 
         {{characters|safe}}
 
@@ -461,7 +503,5 @@
 			</div>
 		</div>
 		</form>
-		<script src="/server/static/jquery.js"></script>
-		<script src="/server/static/tf3.0.js"></script>
 	</body>
 </html>

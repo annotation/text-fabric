@@ -109,6 +109,64 @@ def getFormData(interfaceDefaults):
 
     form["colorMap"] = colorMap
 
+    edgeHighlights = {}
+    eColorMapN = getInt(request.form.get("ecolormapn", ""), default=0)
+
+    for i in range(1, eColorMapN + 1):
+        color = request.form.get(f"ecolormap_{i}", "")
+        name = request.form.get(f"edge_name_{i}", "")
+        fRep = request.form.get(f"edge_from_{i}", "")
+        tRep = request.form.get(f"edge_to_{i}", "")
+        if name == "" or fRep == "" or tRep == "":
+            continue
+        f = (
+            0
+            if fRep == ""
+            else None
+            if fRep == "all"
+            else int(fRep)
+            if fRep.isdecimal()
+            else 0
+        )
+        t = (
+            0
+            if tRep == ""
+            else None
+            if tRep == "all"
+            else int(tRep)
+            if tRep.isdecimal()
+            else 0
+        )
+        edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    for i in range(1, 4):
+        color = request.form.get(f"ecolormap_new_{i}", "")
+        name = request.form.get(f"edge_name_new_{i}", "")
+        fRep = request.form.get(f"edge_from_new_{i}", "")
+        tRep = request.form.get(f"edge_to_new_{i}", "")
+        if name != "" and fRep != "" and tRep != "":
+            f = (
+                0
+                if fRep == ""
+                else None
+                if fRep == "all"
+                else int(fRep)
+                if fRep.isdecimal()
+                else 0
+            )
+            t = (
+                0
+                if tRep == ""
+                else None
+                if tRep == "all"
+                else int(tRep)
+                if tRep.isdecimal()
+                else 0
+            )
+            edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    form["edgeHighlights"] = edgeHighlights
+
     for (k, v) in interfaceDefaults.items():
         if v is None:
             continue

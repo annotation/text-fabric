@@ -17,6 +17,7 @@ from ..parameters import (
 )
 from ..advanced.options import INTERFACE_OPTIONS
 from ..core.files import backendRep
+from ..core.helpers import TO_SYM
 
 
 # NAVIGATION IN MULTIPLE ITEMS (PAGES, PASSAGES)
@@ -129,10 +130,24 @@ def passageLinks(passages, sec0Type, sec0, sec1, tillLevel):
 
 
 COLOR_DEFAULT = "#ffff00"
+E_COLOR_DEF = dict(
+    b="#ffaa00",
+    f="#aaaaff",
+    t="#ffaaaa",
+)
 
 
 def wrapColorMap(form):
-    """Wraps the color map for query result highlighting into HTML."""
+    """Wraps the color map for query result highlighting into HTML.
+
+    The color map is a dict, keyed by integers (the positions of atoms
+    iin a query template) and the values are RGB colors (as string) or the
+    empty string.
+
+    This dict is stored in `form["colorMap"]`.
+    An extra hidden input field `colormapn` helps to read this dict from the
+    other form elements.
+    """
 
     desc = "Color map for query results"
     long = dedent(
@@ -166,10 +181,11 @@ def wrapColorMap(form):
     minC = """<a href="#" id="colormapmin">-</a>"""
     plusC = """<a href="#" id="colormapplus">+</a>"""
 
+    empty = colorMapN == 0
+
     for pos in range(1, colorMapN + 2):
         last = pos == colorMapN
         past = pos == colorMapN + 1
-        empty = colorMapN == 0
 
         if past:
             thisHtml = f"""<div>{plusC}</div>""" if empty else ""
@@ -193,6 +209,113 @@ def wrapColorMap(form):
         html.append(thisHtml)
 
     html.append("</div></details>")
+
+    return ("\n".join(html), "\n".join(helpHtml))
+
+
+def wrapEColorMap(form):
+    """Wraps the edge color map for edge highlighting into HTML.
+    The edge color map is a dict, keyed by pairs of integers
+    (the nodes between which there is an edge) and values are RGB colors (as string).
+    Each of the two integers in a pair may also be None (but not both).
+    The color of `(n, None)` is used to color the outgoing edges from `n`,
+    the color of (`(None, n)` is used to color the incoming edges from `n`.
+
+    This dict is stored in `form["edgeHighlights"]`.
+    An extra hidden input field `ecolormapn` helps to read this dict from the
+    other form elements.
+    """
+
+    desc = "Edge color map"
+    long = dedent(
+        """You can click edge feature values in order to highlight some or all
+        edges to or from a node.
+        """
+    )
+    helpHtml = f'<p><b title="edge color map">{desc}</b> {long}</p>'
+
+    resetForm = form["resetForm"]
+    if resetForm:
+        edgeHighlights = {}
+    else:
+        edgeHighlights = form["edgeHighlights"]
+
+    eColorMapN = sum(len(ehl) for ehl in edgeHighlights.values())
+
+    html = []
+    html.append(
+        dedent(
+            """
+            <details id="edgefeatures" class="dstate">
+                <summary>edge highlighting</summary>
+                <table id="ecolordefs">
+            """
+        )
+    )
+    html.append(f"""<input type="hidden" name="ecolormapn" value="{eColorMapN}">""")
+
+    def sortEdges(data):
+        ((f, t), c) = data
+        node = t if f is None else f if t is None else min((f, t))
+        kind = 2 if f is not None and t is not None else 1 if f is None else 0
+        return (kind, node, c)
+
+    pos = 0
+
+    for eName in sorted(edgeHighlights):
+        edgeInfo = edgeHighlights[eName]
+
+        for ((f, t), color) in sorted(edgeInfo.items(), key=sortEdges):
+            pos += 1
+            fRep = "<i>source</i>" if f is None else f
+            fVal = "all" if f is None else f
+            tRep = "<i>target</i>" if t is None else t
+            tVal = "all" if t is None else t
+            if not color:
+                color = E_COLOR_DEF["t" if f is None else "f" if t is None else "b"]
+            thisHtml = dedent(
+                f"""
+                <tr>
+                    <td>{eName}</td>
+                    <td>
+                        <input
+                            type="color" class="eclmap"
+                            name="ecolormap_{pos}" value="{color}"
+                        >
+                    </td>
+                    <td><a href="#" pos="{pos}" class="ecolormapmin">-</a></td>
+                    <td><span>{fRep}</span></td>
+                    <td><span>{TO_SYM}</td>
+                    <td><span>{tRep}</span></td>
+                </tr>
+                <input type="hidden" name="edge_name_{pos}" value="{eName}">
+                <input type="hidden" name="edge_from_{pos}" value="{fVal}">
+                <input type="hidden" name="edge_to_{pos}" value="{tVal}">
+                """
+            )
+            html.append(thisHtml)
+
+    html.append("</table>")
+
+    newEHL = dedent(
+        f"""
+        <input type="hidden" name="ecolormap_new_1" value="{E_COLOR_DEF['b']}" >
+        <input type="hidden" name="edge_name_new_1" value="">
+        <input type="hidden" name="edge_from_new_1" value="">
+        <input type="hidden" name="edge_to_new_1" value="">
+        <input type="hidden" name="ecolormap_new_2" value="{E_COLOR_DEF['f']}" >
+        <input type="hidden" name="edge_name_new_2" value="">
+        <input type="hidden" name="edge_from_new_2" value="">
+        <input type="hidden" name="edge_to_new_2" value="">
+        <input type="hidden" name="ecolormap_new_3" value="{E_COLOR_DEF['t']}" >
+        <input type="hidden" name="edge_name_new_3" value="">
+        <input type="hidden" name="edge_from_new_3" value="">
+        <input type="hidden" name="edge_to_new_3" value="">
+        """
+    )
+    html.append(newEHL)
+
+    html.append("</details>")
 
     return ("\n".join(html), "\n".join(helpHtml))
 

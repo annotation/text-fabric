@@ -195,7 +195,7 @@ a:hover {
 .lex {
   color: var(--lex-color);;
 }
-#colormapplus, #colormapmin {
+#colormapplus, #colormapmin, .ecolormapmin {
   font-weight: bold;
   border-radius: 0.1rem;
   background-color: #eeeeff;
@@ -206,7 +206,7 @@ a:hover {
   font-style: italic;
   font-size: small;
 }
-.clmap {
+.clmap,.eclmap {
   padding: 0;
 }
 .children,.children.ltr {

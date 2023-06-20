@@ -508,7 +508,7 @@ DISPLAY_OPTIONS = dict(
     condensed=False,
     condenseType=None,
     edgeFeatures=None,
-    edgeHighlights={},
+    edgeHighlights=None,
     end=None,
     extraFeatures=((), {}),
     full=False,
@@ -629,6 +629,8 @@ class Options:
             if value is not None and type(value) is not dict:
                 value = {m: "" for m in value}
         elif option == "edgeHighlights":
+            if value is None:
+                value = {}
             for (edge, highlights) in value.items():
                 if highlights is not None and type(highlights) is not dict:
                     value[edge] = {m: "" for m in highlights}

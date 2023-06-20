@@ -21,11 +21,12 @@ directly from an attribute in the tree.
 """
 
 import re
+from textwrap import dedent
 
 from .helpers import htmlSafe, NB, dh
 from .highlight import getEdgeHlAtt
 from .unravel import _unravel
-from ..core.helpers import NBSP, htmlEsc, flattenToSet
+from ..core.helpers import NBSP, TO_SYM, FROM_SYM, htmlEsc, flattenToSet
 
 
 def render(app, isPretty, n, _inTuple, _asString, explain, **options):
@@ -519,8 +520,8 @@ def _getNodePart(isPretty, info, n, outer, switched):
     )
 
 
-TO_SYM = '<span class="etfx">↦</span>'
-FROM_SYM = '<span class="etfx">⇥</span>'
+TO_SYM_WRAPPED = f'<span class="etfx">{TO_SYM}</span>'
+FROM_SYM_WRAPPED = f'<span class="etfx">{FROM_SYM}</span>'
 
 
 def _getEdge(e, n, kv, withNodes, right, highlights):
@@ -532,9 +533,23 @@ def _getEdge(e, n, kv, withNodes, right, highlights):
     nodeRep = f'<span class="nde">{m}</span>' if withNodes else ""
     valRep = "" if val is None else htmlEsc(val)
     plainValue = (
-        f"{valRep}{TO_SYM}{nodeRep}" if right else f"{nodeRep}{FROM_SYM}{valRep}"
+        f"{valRep}{TO_SYM_WRAPPED}{nodeRep}"
+        if right
+        else f"{nodeRep}{FROM_SYM_WRAPPED}{valRep}"
     )
-    return f'<span class="etf {hlCls}" {hlStyle}>{plainValue}</span>'
+    arrow = "right" if right else "left"
+    sep = " " if hlCls else ""
+
+    return dedent(
+        f'''
+        <span
+            ef="{e}"
+            nd="{n}"
+            md="{m}"
+            arrow="{arrow}"
+            class="etf{sep}{hlCls}" {hlStyle}
+        >{plainValue}</span>
+        ''')
 
 
 def _getFeatures(info, n, nType):
@@ -664,9 +679,10 @@ def _getFeatures(info, n, nType):
                             value = htmlEsc(value, math=showMath)
 
                 if value is not None:
-                    value = value.replace("\n", "\\n<br>")
-                    if value.endswith(" "):
-                        value = value[0:-1] + NBSP
+                    if name not in allEFeats:
+                        value = value.replace("\n", "\\n<br>")
+                        if value.endswith(" "):
+                            value = value[0:-1] + NBSP
                     isBare = i < bFeatures
                     isExtra = i >= nbFeatures
                     if (

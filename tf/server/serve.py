@@ -20,6 +20,7 @@ from .wrap import (
     pageLinks,
     passageLinks,
     wrapColorMap,
+    wrapEColorMap,
     wrapOptions,
     wrapSelect,
     wrapProvenance,
@@ -61,6 +62,8 @@ def serveTable(web, kind, getx=None, asDict=False):
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
         options["colorMap"] = form.get("colorMap", {})
+        options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+
         (table, messages) = kernelApi.table(
             kind,
             task,
@@ -123,6 +126,8 @@ def serveQuery(web, getx, asDict=False):
                 if v is not None
             }
             options["colorMap"] = form.get("colorMap", {})
+            options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
                     task,
@@ -149,9 +154,6 @@ def serveQuery(web, getx, asDict=False):
 
         if status and table is not None:
             pages = pageLinks(total, form["position"])
-        # messages have already been shaped by search
-        # if messages:
-        #  messages = wrapMessages(messages)
     else:
         table = f"no {resultKind}s"
         messages = ""
@@ -162,7 +164,7 @@ def serveQuery(web, getx, asDict=False):
         table=table,
         nResults=total,
         status=status,
-        messages=messages,
+        messages=messages.strip(),
         features=features,
     )
 
@@ -190,6 +192,8 @@ def servePassage(web, getx):
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
     options["colorMap"] = form.get("colorMap", {})
+    options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form["features"],
         form["query"],
@@ -247,6 +251,8 @@ def serveExport(web):
     tuplesTable = tuplesData["table"]
     queryMessages = queryData["messages"]
     queryTable = queryData["table"]
+    console(f"{len(queryTable)=}")
+    console(f"{queryMessages=}")
 
     # maybe this is a hack. Needed to prevent appName from specified twice
 
@@ -418,6 +424,7 @@ def serveAll(web, anything):
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
     (colorMapHtml, colorMapHelp) = wrapColorMap(form)
+    (eColorMapHtml, eColorMapHelp) = wrapEColorMap(form)
 
     characters = kernelApi.characters(fmt=form["textFormat"])
 
@@ -427,6 +434,8 @@ def serveAll(web, anything):
         characters=characters,
         colorMapHtml=colorMapHtml,
         colorMapHelp=colorMapHelp,
+        eColorMapHtml=eColorMapHtml,
+        eColorMapHelp=eColorMapHelp,
         colofon=f"{appLogo}{colofon}{tfLogo}",
         header=header,
         setNames=setNameHtml,

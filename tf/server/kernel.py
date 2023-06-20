@@ -81,7 +81,7 @@ from functools import reduce
 
 from ..parameters import GH
 from ..capable import Capable
-from ..core.helpers import console
+from ..core.helpers import console, unpickle
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -265,6 +265,8 @@ def makeTfKernel(app, appName, port):
                 Additional, optional display options, see `tf.advanced.options`.
             """
 
+            unpickle(options, "edgeHighlights")
+
             app = self.app
             api = app.api
             F = api.F
@@ -390,6 +392,8 @@ def makeTfKernel(app, appName, port):
                 Additional, optional display options, see `tf.advanced.options`.
             """
 
+            unpickle(options, "edgeHighlights")
+
             app = self.app
 
             if kind == "sections":
@@ -466,6 +470,8 @@ def makeTfKernel(app, appName, port):
                 display.
                 `getx` is the identifier (section label, verse number) of the item/
             """
+
+            unpickle(options, "edgeHighlights")
 
             app = self.app
             display = app.display
@@ -567,10 +573,16 @@ def makeTfKernel(app, appName, port):
                     nodeFeatures,
                     edgeFeatures,
                 ) = runSearch(app, query, cache)
-                (queryResultsC, queryStatusC, queryMessagesC, nodeFeaturesC, edgeFeaturesC) = (
+                (
+                    queryResultsC,
+                    queryStatusC,
+                    queryMessagesC,
+                    nodeFeaturesC,
+                    edgeFeaturesC,
+                ) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if queryStatus[0] and queryStatus[1] and condensed and condenseType
-                    else (None, (False, False), ("", ""), None)
+                    else (None, (False, False), ("", ""), None, None)
                 )
 
                 queryStatus = queryStatus[0] and queryStatus[1]
@@ -611,14 +623,6 @@ def makeTfKernel(app, appName, port):
             )
 
     return TfKernel()
-    return ThreadedServer(
-        TfKernel(),
-        port=int(port),
-        protocol_config={
-            # 'allow_pickle': True,
-            # 'allow_public_attrs': True,
-        },
-    )
 
 
 # KERNEL CONNECTION
@@ -632,7 +636,13 @@ def makeTfConnection(lhost, port, timeout):
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    lhost, port, config=dict(sync_request_timeout=timeout)
+                    lhost,
+                    port,
+                    config=dict(
+                        sync_request_timeout=timeout,
+                        # allow_pickle=True,
+                        # allow_public_attrs=True,
+                    ),
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -699,10 +709,10 @@ def main(cargs=sys.argv):
         server = ThreadedServer(
             kernel,
             port=int(portKernel),
-            protocol_config={
-                # 'allow_pickle': True,
-                # 'allow_public_attrs': True,
-            },
+            protocol_config=dict(
+                # allow_pickle=True,
+                # allow_public_attrs=True,
+            ),
         )
         server.start()
 

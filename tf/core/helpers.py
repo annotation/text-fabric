@@ -5,6 +5,7 @@ import re
 from itertools import chain
 from collections import deque
 from subprocess import run as run_cmd, CalledProcessError
+import pickle
 
 
 from ..parameters import OMAP
@@ -12,6 +13,9 @@ from .files import unexpanduser as ux
 
 
 NBSP = "\u00a0"  # non-breaking space
+
+TO_SYM = '↦'
+FROM_SYM = '⇥'
 
 
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -668,3 +672,8 @@ def run(cmdline, workDir=None):
         good = False
 
     return (good, stdOut, stdErr)
+
+
+def unpickle(options, key):
+    if options.get(key, None) is not None:
+        options[key] = pickle.loads(options[key])

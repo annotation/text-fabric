@@ -6,6 +6,7 @@
 
 // character widget
 
+
 const copyChar = (el, c) => {
   for (const el of document.getElementsByClassName("ccon")) {
     el.className = "ccoff"
@@ -174,6 +175,7 @@ const getTable = (kind, subkind, m, button) => {
       storeForm()
       gotoFocus(kind)
       mathTypeset(destTable)
+      activateEdges()
     },
   })
 }
@@ -360,6 +362,7 @@ const getOpen = (kind, elem) => {
       const { table } = data
       dest.html(table)
       mathTypeset(dest)
+      activateEdges()
     },
   })
 }
@@ -417,6 +420,62 @@ const colorMap = () => {
       storeForm()
       form.submit()
   })
+}
+
+const eColorMap = () => {
+  const form = $("form")
+
+  $(".ecolormapmin")
+    .off("click")
+    .click(e => {
+      e.preventDefault()
+      const { currentTarget } = e
+      const elem = $(currentTarget)
+      const pos = elem.attr("pos")
+      $(`input[name="edge_name_${pos}"]`).val("")
+
+      storeForm()
+      form.submit()
+    })
+  $(".eclmap").change(() => {
+      storeForm()
+      form.submit()
+  })
+}
+
+const activateEdges = () => {
+  const form = $("form")
+
+  $('.etf')
+    .off("click")
+    .click(e => {
+      e.preventDefault()
+      const { currentTarget } = e
+      const elem = $(currentTarget)
+      const ef = elem.attr("ef")
+      const nd = elem.attr("nd")
+      const md = elem.attr("md")
+      const arrow = elem.attr("arrow")
+      let f
+      let t
+      if (arrow == "right") {
+        f = parseInt(nd)
+        t = parseInt(md)
+      }
+      else {
+        t = parseInt(nd)
+        f = parseInt(md)
+      }
+      for (let p = 1; p <= 3; p++) {
+        const fRep = p == 1 ? f : p == 2 ? "all" : f
+        const tRep = p == 1 ? "all" : p == 2 ? t : t
+        $(`input[name="edge_name_new_${p}"]`).val(ef)
+        $(`input[name="edge_from_new_${p}"]`).val(fRep)
+        $(`input[name="edge_to_new_${p}"]`).val(tRep)
+      }
+      storeForm()
+      form.submit()
+    })
 }
 
 /* controlling the filtering of the section list
@@ -735,17 +794,6 @@ const jobControls = () => {
   })
 }
 
-// managing form data on local storage
-
-/*
-const inspectJob = (appName, jobName) => {
-  const formKey = `tf/${appName}/${jobName}`
-  const formStr = localStorage.getItem(formKey)
-  const formObj = JSON.parse(formStr)
-  console.warn('inspect', formObj)
-}
-*/
-
 const readForm = jobContent => {
   let formObj
   if (jobContent == null) {
@@ -847,6 +895,7 @@ $(() => {
   activateTables("query", "pages")
   cradios()
   colorMap()
+  eColorMap()
   doDstate()
   reactive()
   jobOptions()
