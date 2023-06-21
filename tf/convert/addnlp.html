@@ -111,7 +111,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L1-L1345" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L1-L1362" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 
@@ -495,14 +495,11 @@ class NLPipeline:
         self.elementDefs = {}
 
         A = Analysis(verbose=verbose)
-        A.configure()
-        A.interpret()
-        if not A.good:
-            console(&#34;Could not get TEI element definitions&#34;)
-            return
+        baseSchema = A.getBaseSchema()[&#34;xsd&#34;]
+        A.getElementInfo(baseSchema, [])
+        elementDefs = A.elementDefs
 
-        elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
-        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs.items() if mixed}
+        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed}
 
     def generatePlain(self):
         &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -514,12 +511,8 @@ class NLPipeline:
         We separate the flows clearly in the output, so that they are discernible
         in the output of the NLP pipeline.
 
-        We also generate spurious spaces around element boundaries.
-        This will prevent tokens to span element boundaries.
-        What the tokenizer will deliver as tokens we consider atomic tokens.
-
         Afterwards, when we collect the tokens, we will notice which tokens
-        need to be glued together into full tokens.
+        cross element boundaries and need to be split into atomic tokens.
 
         Returns
         -------
@@ -847,6 +840,15 @@ class NLPipeline:
         indent(level=True)
 
         def addTk(last, sAfter):
+            &#34;&#34;&#34;Add an atomic token node to the dataset under construction.
+
+            Parameters
+            ----------
+            last: boolean
+                Whether this is the last atomic token in the full token.
+                In that case, the *after* attribute on the token data must be added
+                as a feature on this atomic token.
+            &#34;&#34;&#34;
             nonlocal node
             nonlocal curTkSlots
             nonlocal curTkValue
@@ -908,7 +910,7 @@ class NLPipeline:
             if doN:
                 featuresData[nFeature][node] = node
 
-        # First add all empty slots, provided we are doing tokens
+        # First we identify all the empty slots, provided we are doing tokens
 
         if isTk:
             emptySlots = (
@@ -920,8 +922,8 @@ class NLPipeline:
             spaceWithinTk = 0
             boundaryWithinTk = 0
 
-            for slot in sorted(emptySlots):
-                addSlot(slot)
+            # for slot in sorted(emptySlots):
+            #    addSlot(slot)
 
         # now the data from the NLP pipeline
 
@@ -1024,31 +1026,46 @@ class NLPipeline:
                         isBoundary = isStart or isEnd
                         isEmpty = slot in emptySlots
 
-                        if isEmpty:
+                        if isEmpty and nMySlots &gt; 1:
                             emptyWithinTk += 1
                         if isBoundary:
                             boundaryWithinTk += 1
 
+                        value = Fslotv(slot)
+
+                        # first we deal with atomic tokens
+
                         if isEmpty or isBoundary:
+                            # we are at a split point
+                            # emit the current token as atomic token
                             if curTkValue:
                                 addTk(last, sAfter)
-                        if not isEmpty:
-                            value = Fslotv(slot)
-                            curTkValue += value
-                            curTkSlots.append(slot)
+
+                        # now we can continue building up atomic tokens
+
+                        curTkValue += value
+                        curTkSlots.append(slot)
+
+                        if isEmpty:
+                            # after an empty token we have to split again
+                            addTk(last, sAfter)
+
+                        # secondly we deal with full tokens
 
                         if isEmpty:
                             if curTokenValue:
                                 addToken(last, sAfter)
-                        else:
-                            value = Fslotv(slot)
-                            curTokenValue += value
-                            curTokenSlots.append(slot)
+
+                        # now we can continue building up full tokens
+
+                        curTokenValue += value
+                        curTokenSlots.append(slot)
 
                     if curTkValue:
                         addTk(True, sAfter)
                     if curTokenValue:
                         addToken(True, sAfter)
+
             else:
                 addItem()
 
@@ -1059,7 +1076,7 @@ class NLPipeline:
         )
         if isTk:
             info(
-                f&#34;{emptyWithinTk} empty slots have surrounding split tokens&#34;,
+                f&#34;{emptyWithinTk} empty slots are properly contained in a token&#34;,
                 force=verbose &gt;= 0,
             )
             info(
@@ -1490,7 +1507,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L1333-L1341" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L1350-L1358" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
@@ -1574,7 +1591,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L178-L1330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L178-L1347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline:
     def __init__(
@@ -1781,14 +1798,11 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
         self.elementDefs = {}
 
         A = Analysis(verbose=verbose)
-        A.configure()
-        A.interpret()
-        if not A.good:
-            console(&#34;Could not get TEI element definitions&#34;)
-            return
+        baseSchema = A.getBaseSchema()[&#34;xsd&#34;]
+        A.getElementInfo(baseSchema, [])
+        elementDefs = A.elementDefs
 
-        elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
-        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs.items() if mixed}
+        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed}
 
     def generatePlain(self):
         &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -1800,12 +1814,8 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
         We separate the flows clearly in the output, so that they are discernible
         in the output of the NLP pipeline.
 
-        We also generate spurious spaces around element boundaries.
-        This will prevent tokens to span element boundaries.
-        What the tokenizer will deliver as tokens we consider atomic tokens.
-
         Afterwards, when we collect the tokens, we will notice which tokens
-        need to be glued together into full tokens.
+        cross element boundaries and need to be split into atomic tokens.
 
         Returns
         -------
@@ -2133,6 +2143,15 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
         indent(level=True)
 
         def addTk(last, sAfter):
+            &#34;&#34;&#34;Add an atomic token node to the dataset under construction.
+
+            Parameters
+            ----------
+            last: boolean
+                Whether this is the last atomic token in the full token.
+                In that case, the *after* attribute on the token data must be added
+                as a feature on this atomic token.
+            &#34;&#34;&#34;
             nonlocal node
             nonlocal curTkSlots
             nonlocal curTkValue
@@ -2194,7 +2213,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
             if doN:
                 featuresData[nFeature][node] = node
 
-        # First add all empty slots, provided we are doing tokens
+        # First we identify all the empty slots, provided we are doing tokens
 
         if isTk:
             emptySlots = (
@@ -2206,8 +2225,8 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
             spaceWithinTk = 0
             boundaryWithinTk = 0
 
-            for slot in sorted(emptySlots):
-                addSlot(slot)
+            # for slot in sorted(emptySlots):
+            #    addSlot(slot)
 
         # now the data from the NLP pipeline
 
@@ -2310,31 +2329,46 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
                         isBoundary = isStart or isEnd
                         isEmpty = slot in emptySlots
 
-                        if isEmpty:
+                        if isEmpty and nMySlots &gt; 1:
                             emptyWithinTk += 1
                         if isBoundary:
                             boundaryWithinTk += 1
 
+                        value = Fslotv(slot)
+
+                        # first we deal with atomic tokens
+
                         if isEmpty or isBoundary:
+                            # we are at a split point
+                            # emit the current token as atomic token
                             if curTkValue:
                                 addTk(last, sAfter)
-                        if not isEmpty:
-                            value = Fslotv(slot)
-                            curTkValue += value
-                            curTkSlots.append(slot)
+
+                        # now we can continue building up atomic tokens
+
+                        curTkValue += value
+                        curTkSlots.append(slot)
+
+                        if isEmpty:
+                            # after an empty token we have to split again
+                            addTk(last, sAfter)
+
+                        # secondly we deal with full tokens
 
                         if isEmpty:
                             if curTokenValue:
                                 addToken(last, sAfter)
-                        else:
-                            value = Fslotv(slot)
-                            curTokenValue += value
-                            curTokenSlots.append(slot)
+
+                        # now we can continue building up full tokens
+
+                        curTokenValue += value
+                        curTokenSlots.append(slot)
 
                     if curTkValue:
                         addTk(True, sAfter)
                     if curTokenValue:
                         addToken(True, sAfter)
+
             else:
                 addItem()
 
@@ -2345,7 +2379,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
         )
         if isTk:
             info(
-                f&#34;{emptyWithinTk} empty slots have surrounding split tokens&#34;,
+                f&#34;{emptyWithinTk} empty slots are properly contained in a token&#34;,
                 force=verbose &gt;= 0,
             )
             info(
@@ -2740,7 +2774,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L594-L596" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L587-L589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def lingo(*args, **kwargs):
@@ -2760,11 +2794,8 @@ and put at the end. Examples of such elements are notes.
 Leaving them at their original positions will interfere with sentence detection.</p>
 <p>We separate the flows clearly in the output, so that they are discernible
 in the output of the NLP pipeline.</p>
-<p>We also generate spurious spaces around element boundaries.
-This will prevent tokens to span element boundaries.
-What the tokenizer will deliver as tokens we consider atomic tokens.</p>
 <p>Afterwards, when we collect the tokens, we will notice which tokens
-need to be glued together into full tokens.</p>
+cross element boundaries and need to be split into atomic tokens.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
@@ -2781,7 +2812,7 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L392-L592" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L389-L585" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self):
     &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -2793,12 +2824,8 @@ generated text (counting from zero).</li>
     We separate the flows clearly in the output, so that they are discernible
     in the output of the NLP pipeline.
 
-    We also generate spurious spaces around element boundaries.
-    This will prevent tokens to span element boundaries.
-    What the tokenizer will deliver as tokens we consider atomic tokens.
-
     Afterwards, when we collect the tokens, we will notice which tokens
-    need to be glued together into full tokens.
+    cross element boundaries and need to be split into atomic tokens.
 
     Returns
     -------
@@ -3010,7 +3037,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L356-L390" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L356-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -3039,14 +3066,11 @@ or complex; whether the element allows mixed content or only pure content.</dd>
     self.elementDefs = {}
 
     A = Analysis(verbose=verbose)
-    A.configure()
-    A.interpret()
-    if not A.good:
-        console(&#34;Could not get TEI element definitions&#34;)
-        return
+    baseSchema = A.getBaseSchema()[&#34;xsd&#34;]
+    A.getElementInfo(baseSchema, [])
+    elementDefs = A.elementDefs
 
-    elementDefs = {name: (typ, mixed) for (name, typ, mixed) in A.getDefs()}
-    self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs.items() if mixed}</code></pre>
+    self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed}</code></pre>
 </details>
 </dd>
 <dt id="tf.convert.addnlp.NLPipeline.ingest"><code class="name flex">
@@ -3126,7 +3150,7 @@ one for the atomic tokens and one for the full tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L598-L982" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L591-L999" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(
     self,
@@ -3265,6 +3289,15 @@ one for the atomic tokens and one for the full tokens.</p>
     indent(level=True)
 
     def addTk(last, sAfter):
+        &#34;&#34;&#34;Add an atomic token node to the dataset under construction.
+
+        Parameters
+        ----------
+        last: boolean
+            Whether this is the last atomic token in the full token.
+            In that case, the *after* attribute on the token data must be added
+            as a feature on this atomic token.
+        &#34;&#34;&#34;
         nonlocal node
         nonlocal curTkSlots
         nonlocal curTkValue
@@ -3326,7 +3359,7 @@ one for the atomic tokens and one for the full tokens.</p>
         if doN:
             featuresData[nFeature][node] = node
 
-    # First add all empty slots, provided we are doing tokens
+    # First we identify all the empty slots, provided we are doing tokens
 
     if isTk:
         emptySlots = (
@@ -3338,8 +3371,8 @@ one for the atomic tokens and one for the full tokens.</p>
         spaceWithinTk = 0
         boundaryWithinTk = 0
 
-        for slot in sorted(emptySlots):
-            addSlot(slot)
+        # for slot in sorted(emptySlots):
+        #    addSlot(slot)
 
     # now the data from the NLP pipeline
 
@@ -3442,31 +3475,46 @@ one for the atomic tokens and one for the full tokens.</p>
                     isBoundary = isStart or isEnd
                     isEmpty = slot in emptySlots
 
-                    if isEmpty:
+                    if isEmpty and nMySlots &gt; 1:
                         emptyWithinTk += 1
                     if isBoundary:
                         boundaryWithinTk += 1
 
+                    value = Fslotv(slot)
+
+                    # first we deal with atomic tokens
+
                     if isEmpty or isBoundary:
+                        # we are at a split point
+                        # emit the current token as atomic token
                         if curTkValue:
                             addTk(last, sAfter)
-                    if not isEmpty:
-                        value = Fslotv(slot)
-                        curTkValue += value
-                        curTkSlots.append(slot)
+
+                    # now we can continue building up atomic tokens
+
+                    curTkValue += value
+                    curTkSlots.append(slot)
+
+                    if isEmpty:
+                        # after an empty token we have to split again
+                        addTk(last, sAfter)
+
+                    # secondly we deal with full tokens
 
                     if isEmpty:
                         if curTokenValue:
                             addToken(last, sAfter)
-                    else:
-                        value = Fslotv(slot)
-                        curTokenValue += value
-                        curTokenSlots.append(slot)
+
+                    # now we can continue building up full tokens
+
+                    curTokenValue += value
+                    curTokenSlots.append(slot)
 
                 if curTkValue:
                     addTk(True, sAfter)
                 if curTokenValue:
                     addToken(True, sAfter)
+
         else:
             addItem()
 
@@ -3477,7 +3525,7 @@ one for the atomic tokens and one for the full tokens.</p>
     )
     if isTk:
         info(
-            f&#34;{emptyWithinTk} empty slots have surrounding split tokens&#34;,
+            f&#34;{emptyWithinTk} empty slots are properly contained in a token&#34;,
             force=verbose &gt;= 0,
         )
         info(
@@ -3575,7 +3623,7 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L984-L1211" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L1001-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestTokensAndSentences(self, positions, tkStream, sentenceStream):
     &#34;&#34;&#34;Ingests tokens and sentences in a dataset and turn the tokens into slots.
@@ -3828,7 +3876,7 @@ If not passed, take the verbose member of this object.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L289-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L289-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(self, app=None, verbose=None):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -3931,7 +3979,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/addnlp.py#L1213-L1330" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/addnlp.py#L1230-L1347" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,

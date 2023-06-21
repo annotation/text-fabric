@@ -81,7 +81,7 @@ and fly swiftly through the connecting pipe.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/kernel.py#L1-L722" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/kernel.py#L1-L741" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Text-Fabric kernel
@@ -166,7 +166,7 @@ from functools import reduce
 
 from ..parameters import GH
 from ..capable import Capable
-from ..core.helpers import console
+from ..core.helpers import console, unpickle
 from ..core.timestamp import AUTO
 from ..advanced.app import findApp
 from ..advanced.highlight import getPassageHighlights
@@ -350,6 +350,8 @@ def makeTfKernel(app, appName, port):
                 Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
+            unpickle(options, &#34;edgeHighlights&#34;)
+
             app = self.app
             api = app.api
             F = api.F
@@ -359,6 +361,9 @@ def makeTfKernel(app, appName, port):
             aContext = app.context
             browseNavLevel = aContext.browseNavLevel
             browseContentPretty = aContext.browseContentPretty
+            display = app.display
+            dContext = display.distill(options)
+            colorMap = dContext.colorMap
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
@@ -404,7 +409,9 @@ def makeTfKernel(app, appName, port):
             )
 
             highlights = (
-                getPassageHighlights(app, contentNode, query, cache) if items else set()
+                getPassageHighlights(app, contentNode, query, colorMap, cache)
+                if items
+                else set()
             )
 
             passage = &#34;&#34;
@@ -474,6 +481,8 @@ def makeTfKernel(app, appName, port):
             options: dict
                 Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
+
+            unpickle(options, &#34;edgeHighlights&#34;)
 
             app = self.app
 
@@ -552,6 +561,8 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
             &#34;&#34;&#34;
 
+            unpickle(options, &#34;edgeHighlights&#34;)
+
             app = self.app
             display = app.display
             dContext = display.distill(options)
@@ -564,7 +575,7 @@ def makeTfKernel(app, appName, port):
             status = True
             messages = (&#34;&#34;, &#34;&#34;)
             if query:
-                (results, status, messages, features) = (
+                (results, status, messages, nodeFeatures, edgeFeatures) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if condensed and condenseType
                     else runSearch(app, query, cache)
@@ -591,8 +602,8 @@ def makeTfKernel(app, appName, port):
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set()))
-            featureStr = &#34; &#34;.join(sorted(features))
+            nodeFeatures = set(reduce(set.union, (x[1] for x in nodeFeatures), set()))
+            featureStr = &#34; &#34;.join(sorted(nodeFeatures | set(edgeFeatures)))
             table = compose(
                 app,
                 allResults,
@@ -645,13 +656,23 @@ def makeTfKernel(app, appName, port):
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryStatus, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
-                (queryResultsC, queryStatusC, queryMessagesC, featuresC) = (
+                (
+                    queryResults,
+                    queryStatus,
+                    queryMessages,
+                    nodeFeatures,
+                    edgeFeatures,
+                ) = runSearch(app, query, cache)
+                (
+                    queryResultsC,
+                    queryStatusC,
+                    queryMessagesC,
+                    nodeFeaturesC,
+                    edgeFeaturesC,
+                ) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if queryStatus[0] and queryStatus[1] and condensed and condenseType
-                    else (None, (False, False), (&#34;&#34;, &#34;&#34;), None)
+                    else (None, (False, False), (&#34;&#34;, &#34;&#34;), None, None)
                 )
 
                 queryStatus = queryStatus[0] and queryStatus[1]
@@ -692,14 +713,6 @@ def makeTfKernel(app, appName, port):
             )
 
     return TfKernel()
-    return ThreadedServer(
-        TfKernel(),
-        port=int(port),
-        protocol_config={
-            # &#39;allow_pickle&#39;: True,
-            # &#39;allow_public_attrs&#39;: True,
-        },
-    )
 
 
 # KERNEL CONNECTION
@@ -713,7 +726,13 @@ def makeTfConnection(lhost, port, timeout):
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    lhost, port, config=dict(sync_request_timeout=timeout)
+                    lhost,
+                    port,
+                    config=dict(
+                        sync_request_timeout=timeout,
+                        # allow_pickle=True,
+                        # allow_public_attrs=True,
+                    ),
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -780,10 +799,10 @@ def main(cargs=sys.argv):
         server = ThreadedServer(
             kernel,
             port=int(portKernel),
-            protocol_config={
-                # &#39;allow_pickle&#39;: True,
-                # &#39;allow_public_attrs&#39;: True,
-            },
+            protocol_config=dict(
+                # allow_pickle=True,
+                # allow_public_attrs=True,
+            ),
         )
         server.start()
 
@@ -822,7 +841,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/kernel.py#L645-L703" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/kernel.py#L664-L722" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argKernel(cargs)
@@ -877,10 +896,10 @@ if __name__ == &#34;__main__&#34;:
         server = ThreadedServer(
             kernel,
             port=int(portKernel),
-            protocol_config={
-                # &#39;allow_pickle&#39;: True,
-                # &#39;allow_public_attrs&#39;: True,
-            },
+            protocol_config=dict(
+                # allow_pickle=True,
+                # allow_public_attrs=True,
+            ),
         )
         server.start()</code></pre>
 </details>
@@ -893,7 +912,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/kernel.py#L623-L639" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/kernel.py#L636-L658" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfConnection(lhost, port, timeout):
     if not Cap.can(&#34;browser&#34;):
@@ -903,7 +922,13 @@ if __name__ == &#34;__main__&#34;:
         def connect(self):
             try:
                 connection = rpyc.connect(
-                    lhost, port, config=dict(sync_request_timeout=timeout)
+                    lhost,
+                    port,
+                    config=dict(
+                        sync_request_timeout=timeout,
+                        # allow_pickle=True,
+                        # allow_public_attrs=True,
+                    ),
                 )
                 self.connection = connection
             except ConnectionRefusedError as e:
@@ -922,7 +947,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/kernel.py#L108-L617" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/kernel.py#L108-L630" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeTfKernel(app, appName, port):
     if not Cap.can(&#34;browser&#34;):
@@ -1084,6 +1109,8 @@ if __name__ == &#34;__main__&#34;:
                 Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
 
+            unpickle(options, &#34;edgeHighlights&#34;)
+
             app = self.app
             api = app.api
             F = api.F
@@ -1093,6 +1120,9 @@ if __name__ == &#34;__main__&#34;:
             aContext = app.context
             browseNavLevel = aContext.browseNavLevel
             browseContentPretty = aContext.browseContentPretty
+            display = app.display
+            dContext = display.distill(options)
+            colorMap = dContext.colorMap
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
@@ -1138,7 +1168,9 @@ if __name__ == &#34;__main__&#34;:
             )
 
             highlights = (
-                getPassageHighlights(app, contentNode, query, cache) if items else set()
+                getPassageHighlights(app, contentNode, query, colorMap, cache)
+                if items
+                else set()
             )
 
             passage = &#34;&#34;
@@ -1208,6 +1240,8 @@ if __name__ == &#34;__main__&#34;:
             options: dict
                 Additional, optional display options, see `tf.advanced.options`.
             &#34;&#34;&#34;
+
+            unpickle(options, &#34;edgeHighlights&#34;)
 
             app = self.app
 
@@ -1286,6 +1320,8 @@ if __name__ == &#34;__main__&#34;:
                 `getx` is the identifier (section label, verse number) of the item/
             &#34;&#34;&#34;
 
+            unpickle(options, &#34;edgeHighlights&#34;)
+
             app = self.app
             display = app.display
             dContext = display.distill(options)
@@ -1298,7 +1334,7 @@ if __name__ == &#34;__main__&#34;:
             status = True
             messages = (&#34;&#34;, &#34;&#34;)
             if query:
-                (results, status, messages, features) = (
+                (results, status, messages, nodeFeatures, edgeFeatures) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if condensed and condenseType
                     else runSearch(app, query, cache)
@@ -1325,8 +1361,8 @@ if __name__ == &#34;__main__&#34;:
                 + tuple((i + start, r) for (i, r) in enumerate(selectedResults))
                 + afterResults
             )
-            features = set(reduce(set.union, (x[1] for x in features), set()))
-            featureStr = &#34; &#34;.join(sorted(features))
+            nodeFeatures = set(reduce(set.union, (x[1] for x in nodeFeatures), set()))
+            featureStr = &#34; &#34;.join(sorted(nodeFeatures | set(edgeFeatures)))
             table = compose(
                 app,
                 allResults,
@@ -1379,13 +1415,23 @@ if __name__ == &#34;__main__&#34;:
             queryMessages = (&#34;&#34;, &#34;&#34;)
             features = ()
             if query:
-                (queryResults, queryStatus, queryMessages, features) = runSearch(
-                    app, query, cache
-                )
-                (queryResultsC, queryStatusC, queryMessagesC, featuresC) = (
+                (
+                    queryResults,
+                    queryStatus,
+                    queryMessages,
+                    nodeFeatures,
+                    edgeFeatures,
+                ) = runSearch(app, query, cache)
+                (
+                    queryResultsC,
+                    queryStatusC,
+                    queryMessagesC,
+                    nodeFeaturesC,
+                    edgeFeaturesC,
+                ) = (
                     runSearchCondensed(app, query, cache, condenseType)
                     if queryStatus[0] and queryStatus[1] and condensed and condenseType
-                    else (None, (False, False), (&#34;&#34;, &#34;&#34;), None)
+                    else (None, (False, False), (&#34;&#34;, &#34;&#34;), None, None)
                 )
 
                 queryStatus = queryStatus[0] and queryStatus[1]
@@ -1425,15 +1471,7 @@ if __name__ == &#34;__main__&#34;:
                 pickle.dumps(queryResultsX),
             )
 
-    return TfKernel()
-    return ThreadedServer(
-        TfKernel(),
-        port=int(port),
-        protocol_config={
-            # &#39;allow_pickle&#39;: True,
-            # &#39;allow_public_attrs&#39;: True,
-        },
-    )</code></pre>
+    return TfKernel()</code></pre>
 </details>
 </dd>
 </dl>

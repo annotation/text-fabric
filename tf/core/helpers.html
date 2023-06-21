@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L1-L634" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L1-L679" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import os
 import sys
@@ -34,12 +34,18 @@ from sys import getsizeof, stderr
 import re
 from itertools import chain
 from collections import deque
+from subprocess import run as run_cmd, CalledProcessError
+import pickle
+
 
 from ..parameters import OMAP
 from .files import unexpanduser as ux
 
 
 NBSP = &#34;\u00a0&#34;  # non-breaking space
+
+TO_SYM = &#34;↦&#34;
+FROM_SYM = &#34;⇥&#34;
 
 
 LETTER = set(&#34;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&#34;)
@@ -661,7 +667,46 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
                 break
         return s
 
-    return sizeof(o)</code></pre>
+    return sizeof(o)
+
+
+def run(cmdline, workDir=None):
+    &#34;&#34;&#34;Runs a shell command and returns all relevant info.
+
+    The function runs a command line in a shell, and returns
+    whether the command was successfull, and also what the output was, separately for
+    standard error and standard output.
+
+    Parameters
+    ----------
+    cmdline:
+        The command line to execute.
+    workDir: string, optional None
+        The working directory where the command should be executed.
+        If `None` the current directory is used.
+    &#34;&#34;&#34;
+    try:
+        result = run_cmd(
+            cmdline,
+            shell=True,
+            cwd=workDir,
+            check=True,
+            capture_output=True,
+        )
+        stdOut = result.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = result.stderr.decode(&#34;utf8&#34;).strip()
+        good = True
+    except CalledProcessError as e:
+        stdOut = e.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = e.stderr.decode(&#34;utf8&#34;).strip()
+        good = False
+
+    return (good, stdOut, stdErr)
+
+
+def unpickle(options, key):
+    if options.get(key, None) is not None:
+        options[key] = pickle.loads(options[key])</code></pre>
 </details>
 </section>
 <section>
@@ -679,7 +724,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L225-L229" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L231-L235" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def camel(name):
     if not name:
@@ -696,7 +741,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L232-L240" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L238-L246" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check32():
     warn = &#34;&#34;
@@ -717,7 +762,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L254-L258" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L260-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def cleanName(name):
     clean = &#34;&#34;.join(c if c in VALID else &#34;_&#34; for c in name)
@@ -734,7 +779,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L397-L421" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L403-L427" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def collectFormats(config):
     featureSet = set()
@@ -771,7 +816,7 @@ def deepSize(o, handlers={}, verbose=False, seen=None):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L243-L251" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L249-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def console(*msg, error=False, newline=True):
     msg = &#34; &#34;.join(m if type(m) is str else repr(m) for m in msg)
@@ -799,7 +844,7 @@ To search other containers, add handlers to iterate over their contents:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L591-L634" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L597-L640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def deepSize(o, handlers={}, verbose=False, seen=None):
     &#34;&#34;&#34;Returns the approximate memory footprint an object and all of its contents.
@@ -855,7 +900,7 @@ To search other containers, add handlers to iterate over their contents:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L432-L439" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L438-L445" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def fitemize(value):
     if not value:
@@ -875,7 +920,7 @@ To search other containers, add handlers to iterate over their contents:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L267-L278" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L273-L284" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def flattenToSet(features):
     theseFeatures = set()
@@ -912,7 +957,7 @@ and the keys <code>desc</code> and <code>eg</code> deleted.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L557-L588" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L563-L594" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def formatMeta(featureMeta):
     &#34;&#34;&#34;Reorder meta data.
@@ -961,7 +1006,7 @@ that are not loaded by default.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L532-L554" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L538-L560" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAllRealFeatures(api):
     &#34;&#34;&#34;Get all config features and all loaded node and edge features.
@@ -1006,7 +1051,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L114-L140" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L120-L146" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def htmlEsc(val, math=False):
     &#34;&#34;&#34;Escape certain HTML characters by HTML entities.
@@ -1045,7 +1090,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L261-L264" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L267-L270" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isClean(name):
     if name is None or len(name) == 0 or name[0] not in LETTER:
@@ -1061,7 +1106,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L76-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L82-L87" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def isInt(val):
     try:
@@ -1079,7 +1124,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L424-L429" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L430-L435" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def itemize(string, sep=None):
     if not string:
@@ -1097,7 +1142,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L471-L481" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L477-L487" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeExamples(nodeList):
     lN = len(nodeList)
@@ -1120,7 +1165,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L365-L369" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L371-L375" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeIndex(data):
     inv = {}
@@ -1137,7 +1182,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L372-L377" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L378-L383" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverse(data):
     inverse = {}
@@ -1155,7 +1200,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L380-L385" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L386-L391" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeInverseVal(data):
     inverse = {}
@@ -1175,7 +1220,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L84-L91" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L90-L97" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mathEsc(val):
     &#34;&#34;&#34;Escape $ signs to `&lt;span&gt;$&lt;/span&gt;`.
@@ -1203,7 +1248,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L94-L111" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L100-L117" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdEsc(val, math=False):
     &#34;&#34;&#34;Escape certain markdown characters.
@@ -1243,7 +1288,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L164-L193" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L170-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mdhtmlEsc(val, math=False):
     &#34;&#34;&#34;Escape certain Markdown characters by HTML entities or span elements.
@@ -1292,7 +1337,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L514-L529" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L520-L535" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDict(source, overrides):
     &#34;&#34;&#34;Merge overrides into a source dictionary recursively.
@@ -1320,7 +1365,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L506-L511" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L512-L517" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def mergeDictOfSets(d1, d2):
     for (n, ms) in d2.items():
@@ -1338,7 +1383,7 @@ If True, <code>$</code> is not escaped, if False, it is not escaped.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L388-L394" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L394-L400" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def nbytes(by):
     units = [&#34;B&#34;, &#34;KB&#34;, &#34;MB&#34;, &#34;GB&#34;, &#34;TB&#34;]
@@ -1359,7 +1404,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L210-L222" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L216-L228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def pandasEsc(x):
     &#34;&#34;&#34;Escapes the character that will be used as the Pandas quote char.
@@ -1384,7 +1429,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L442-L445" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L448-L451" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def project(iterableOfTuples, maxDimension):
     if maxDimension == 1:
@@ -1400,7 +1445,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L318-L332" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L324-L338" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromList(nodeList):  # the list must be sorted
     curstart = None
@@ -1427,7 +1472,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L297-L315" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L303-L321" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def rangesFromSet(nodeSet):
     # ranges = []
@@ -1450,6 +1495,61 @@ Also: all tab characters will be replaced by single spaces.</p></div>
     # return ranges</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>cmdline, workDir=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Runs a shell command and returns all relevant info.</p>
+<p>The function runs a command line in a shell, and returns
+whether the command was successfull, and also what the output was, separately for
+standard error and standard output.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>cmdline:</dt>
+<dt>The command line to execute.</dt>
+<dt><strong><code>workDir</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>The working directory where the command should be executed.
+If <code>None</code> the current directory is used.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L643-L674" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def run(cmdline, workDir=None):
+    &#34;&#34;&#34;Runs a shell command and returns all relevant info.
+
+    The function runs a command line in a shell, and returns
+    whether the command was successfull, and also what the output was, separately for
+    standard error and standard output.
+
+    Parameters
+    ----------
+    cmdline:
+        The command line to execute.
+    workDir: string, optional None
+        The working directory where the command should be executed.
+        If `None` the current directory is used.
+    &#34;&#34;&#34;
+    try:
+        result = run_cmd(
+            cmdline,
+            shell=True,
+            cwd=workDir,
+            check=True,
+            capture_output=True,
+        )
+        stdOut = result.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = result.stderr.decode(&#34;utf8&#34;).strip()
+        good = True
+    except CalledProcessError as e:
+        stdOut = e.stdout.decode(&#34;utf8&#34;).strip()
+        stdErr = e.stderr.decode(&#34;utf8&#34;).strip()
+        good = False
+
+    return (good, stdOut, stdErr)</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.setFromSpec"><code class="name flex">
 <span>def <span class="ident">setFromSpec</span></span>(<span>spec)</span>
 </code></dt>
@@ -1458,7 +1558,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L281-L294" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L287-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromSpec(spec):
     covered = set()
@@ -1484,7 +1584,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L499-L503" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L505-L509" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromStr(x):
     if x is None:
@@ -1501,7 +1601,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L484-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L490-L502" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setFromValue(x, asInt=False):
     if x is None:
@@ -1526,7 +1626,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L335-L338" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L341-L344" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRanges(ranges):  # ranges must be normalized
     return &#34;,&#34;.join(
@@ -1542,7 +1642,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L341-L342" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L347-L348" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def specFromRangesLogical(ranges):  # ranges must be normalized
     return [r[0] if r[0] == r[1] else [r[0], r[1]] for r in ranges]</code></pre>
@@ -1556,7 +1656,7 @@ Also: all tab characters will be replaced by single spaces.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L351-L362" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L357-L368" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tfFromValue(val):
     valTp = type(val)
@@ -1582,7 +1682,7 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L196-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L202-L209" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tsvEsc(x):
     &#34;&#34;&#34;Escapes a double quote for strings to be included in TSV data.
@@ -1594,6 +1694,21 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
     return s if s == &#34;&#34; else f&#34;\\{s}&#34; if s[0] in {&#34;&#39;&#34;, &#39;&#34;&#39;} else s</code></pre>
 </details>
 </dd>
+<dt id="tf.core.helpers.unpickle"><code class="name flex">
+<span>def <span class="ident">unpickle</span></span>(<span>options, key)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L677-L679" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def unpickle(options, key):
+    if options.get(key, None) is not None:
+        options[key] = pickle.loads(options[key])</code></pre>
+</details>
+</dd>
 <dt id="tf.core.helpers.valueFromTf"><code class="name flex">
 <span>def <span class="ident">valueFromTf</span></span>(<span>tf)</span>
 </code></dt>
@@ -1602,7 +1717,7 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L345-L348" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L351-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def valueFromTf(tf):
     return &#34;\\&#34;.join(
@@ -1628,7 +1743,7 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L60-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L66-L79" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def var(envVar):
     &#34;&#34;&#34;Retrieves the value of an environment variable.
@@ -1654,7 +1769,7 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L49-L57" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L55-L63" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def versionSort(x):
     parts = []
@@ -1675,7 +1790,7 @@ The escaping is realized by putting a backslash at the beginning.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L448-L468" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L454-L474" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     if type(messages) is str:
@@ -1710,7 +1825,7 @@ in cases where you need them literally.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/core/helpers.py#L143-L161" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/core/helpers.py#L149-L167" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def xmlEsc(val):
     &#34;&#34;&#34;Escape certain HTML characters by XML entities.
@@ -1830,6 +1945,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.project" href="#tf.core.helpers.project">project</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromList" href="#tf.core.helpers.rangesFromList">rangesFromList</a></code></li>
 <li><code><a title="tf.core.helpers.rangesFromSet" href="#tf.core.helpers.rangesFromSet">rangesFromSet</a></code></li>
+<li><code><a title="tf.core.helpers.run" href="#tf.core.helpers.run">run</a></code></li>
 <li><code><a title="tf.core.helpers.setFromSpec" href="#tf.core.helpers.setFromSpec">setFromSpec</a></code></li>
 <li><code><a title="tf.core.helpers.setFromStr" href="#tf.core.helpers.setFromStr">setFromStr</a></code></li>
 <li><code><a title="tf.core.helpers.setFromValue" href="#tf.core.helpers.setFromValue">setFromValue</a></code></li>
@@ -1837,6 +1953,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.core.helpers.specFromRangesLogical" href="#tf.core.helpers.specFromRangesLogical">specFromRangesLogical</a></code></li>
 <li><code><a title="tf.core.helpers.tfFromValue" href="#tf.core.helpers.tfFromValue">tfFromValue</a></code></li>
 <li><code><a title="tf.core.helpers.tsvEsc" href="#tf.core.helpers.tsvEsc">tsvEsc</a></code></li>
+<li><code><a title="tf.core.helpers.unpickle" href="#tf.core.helpers.unpickle">unpickle</a></code></li>
 <li><code><a title="tf.core.helpers.valueFromTf" href="#tf.core.helpers.valueFromTf">valueFromTf</a></code></li>
 <li><code><a title="tf.core.helpers.var" href="#tf.core.helpers.var">var</a></code></li>
 <li><code><a title="tf.core.helpers.versionSort" href="#tf.core.helpers.versionSort">versionSort</a></code></li>

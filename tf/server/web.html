@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/web.py#L1-L224" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/web.py#L1-L228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -293,7 +293,11 @@ def factory(web):
 
     @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveDownloadX():
-        return serveDownload(web)
+        return serveDownload(web, False)
+
+    @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadJ():
+        return serveDownload(web, True)
 
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
@@ -352,7 +356,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/web.py#L124-L190" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/web.py#L124-L194" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -413,7 +417,11 @@ if __name__ == &#34;__main__&#34;:
 
     @app.route(&#34;/download&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveDownloadX():
-        return serveDownload(web)
+        return serveDownload(web, False)
+
+    @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveDownloadJ():
+        return serveDownload(web, True)
 
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
@@ -431,7 +439,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/web.py#L193-L220" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/web.py#L197-L224" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv):
     args = argWeb(cargs)
@@ -477,7 +485,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/web.py#L108-L121" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/web.py#L108-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, portKernel):

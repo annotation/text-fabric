@@ -51,6 +51,31 @@ to display functions</li>
 <dd><strong>interface option</strong>
 Node types at the bottom of pretty displays.
 The default is app dependent, usually the slot type of the corpus.</dd>
+<dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
+<dd>
+<p>Which nodes of a tuple (or list of tuples) will be highlighted.
+If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
+the default highlight color, which is yellow.</p>
+<p>But you can assign different colors to the members of the tuple:
+<code>colorMap</code> must be a dictionary that maps the positions in a tuple
+to a color.</p>
+<ul>
+<li>If a position is not mapped, it will not be highlighted.</li>
+<li>If it is mapped to the empty string, it gets the default highlight color.</li>
+<li>Otherwise, it should be mapped to a string that is a valid
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">color names</p>
+<p>The link above points to a series of handy color names and their previews.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">highlights takes precedence over colorMap</p>
+<p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p>
+<p>If you need to micro-manage, <code>highlights</code> is your thing.
+Whenever possible, use <code>colorMap</code>.</p>
+</div>
+</dd>
 <dt><strong><code>condensed</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p><strong>interface option</strong>
@@ -77,157 +102,44 @@ Yet one color will be chosen, and it is unpredictable which one.</p>
 <dd><strong>interface option</strong>
 The type of container to be used for condensing results.
 The default is app dependent, usually <code>verse</code> or <code>tablet</code>.</dd>
-<dt><strong><code>fmt</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dt><strong><code>edgeFeatures</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
 <dd>
 <p><strong>interface option</strong>
-<code>fmt</code> is the text format that will be used for the representation.
-E.g. <code>text-orig-full</code>.</p>
-<div class="admonition hint">
-<p class="admonition-title">Text formats</p>
-<p>Use <code>T.formats</code> to inspect what text formats are available in your corpus.</p>
-</div>
+Edge features that will be shown on the interface, in pretty displays.
+The selection of edge features to show will be in effect
+if <code>forceEdges</code> is <code>True</code>.
+Otherwise, the display of edge features depends on whether it is in the
+<code>extraFeatures</code> or <code>tupleFeatures</code> (which will be set after a query).</p>
+<p>The default is app dependent, it consist of all the edge features in the
+dataset, except <code>oslots</code>.</p>
 </dd>
-<dt><strong><code>hideTypes</code></strong> :&ensp;<code>boolean | optional True</code></dt>
-<dd><strong>interface option</strong>
-If <code>True</code>, hidden types are in fact hidden, otherwise the hiding of types
-has no effect.</dd>
-<dt><strong><code>hiddenTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
+<dt><strong><code>edgeHighlights</code></strong> :&ensp;<code>dict</code></dt>
 <dd>
-<p><strong>interface option</strong>
-Node types that will not be shown in displays.
-All node types can be hidden, except the slot type and the section types.
-Structure types can be hidden.</p>
-<div class="admonition hint">
-<p class="admonition-title">Meaning</p>
-<p>Nodes of hidden types will not be skipped, but they do not add visible
-structure to the display. The material under those nodes will still
-be displayed. For example, if the corpus has verses divided into half verses,
-and you are not interested in the half verse division, you can make
-half verses hidden. The content of the half verses is still shown,
-but the half verse division is gone.</p>
-</div>
-<p>The default is app dependent, usually the empty set.</p>
-</dd>
-<dt><strong><code>lineNumbers</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>
-<p><strong>interface option</strong>
-indicates whether line numbers should be displayed.</p>
-<div class="admonition note">
-<p class="admonition-title">source data</p>
-<p>Line numbers are with respect to the source data file that is contains the
-origin material of the node in question, if a datasource provides
-a feature that contains line numbers.</p>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">configuration</p>
-<p>Whether a corpus has line numbers, and in which feature they are stored
-for which node types is configured in a corpus dependent app.</p>
-<p>If the corpus has no line numbers, the default is <code>None</code>.</p>
-</div>
-</dd>
-<dt><strong><code>plainGaps</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd><strong>interface option</strong>
-indicates whether gaps types should be displayed in plain displays.
-In pretty displays gaps are marked by dotted left-right borders of the nodes
-around the gaps. In plain displays such borders are generally disruptive,
-but it is possible to show them.</dd>
-<dt><strong><code>prettyTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd><strong>interface option</strong>
-indicates whether node types should always be displayed in pretty displays.
-The node type of slot nodes is never displayed.</dd>
-<dt><strong><code>queryFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd><strong>interface option</strong>
-indicates whether pretty displays should show the features
-mentioned in the last query and their values.</dd>
-<dt><strong><code>multiFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd><strong>interface option</strong>
-indicates whether pretty displays should show all possible node features
-provided they have a non-empty value. The feature <code>otype</code> is excluded from this.</dd>
-<dt><strong><code>showGraphics</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd>
-<p><strong>interface option</strong>
-indicates whether plain and pretty displays should include associated
-graphic elements.</p>
-<div class="admonition caution">
-<p class="admonition-title">configuration</p>
-<p>Whether a corpus has graphics for some nodetypes and how to get them is
-configured in a corpus dependent app.</p>
-<p>If the corpus has no graphics, the default is <code>None</code>.</p>
-</div>
-</dd>
-<dt><strong><code>showMath</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>
-<p><strong>interface option</strong>
-indicates whether plain and pretty displays should interpret the <code>$</code>
-to mark mathematical formulas in TeX notation.</p>
-<div class="admonition caution">
-<p class="admonition-title">real dollars</p>
-<p>If you have a corpus where the character <code>$</code> is used in an ordinary way,
-this option should be set to <code>False</code>.</p>
-</div>
-</dd>
-<dt><strong><code>standardFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd><strong>interface option</strong>
-indicates whether pretty displays should show standard features and their values.
-If a feature is both a standard feature and it is mentioned in the last query,
-it will still be shown if <code>standardFeatures</code> is off and <code>queryFeatures</code> is on.</dd>
-<dt><strong><code>withLabels</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
-<dd><strong>interface option</strong>
-indicates whether pretty displays should show labels.</dd>
-<dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd>
-<p><strong>interface option</strong>
-indicates whether node numbers should be displayed.</p>
-<div class="admonition hint">
-<p class="admonition-title">zooming in</p>
-<p>If you are in a Jupyter notebook, you can inspect in a powerful way by
-setting <code>withNodes=True</code>. Then every part of a pretty display shows
-its node number, and you can use the following APIs
-to look up all information
-about each node that the corpus has to offer:</p>
+<p>Custom highlighting of edges.</p>
+<p>The keys are the names of edge features. For each such key, the value is
+a set or mapping of edges defined by that edge feature that should be highlighted.
+Only edges that are involved in the display will be highlighted.</p>
+<p>If the value is a set, the specified edges will be highlighted
+with a default color (blue).</p>
+<p>If it is a dictionary, it should map edges to colors.
+Any color that is a valid
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>
+qualifies.</p>
+<p>If you map an edge to the empty string, it will get the default highlight color.</p>
+<p>An edge is a pair of nodes, represented as a tuple of two node numbers.</p>
+<p>You can also map the following pseudo edges to colors:</p>
 <ul>
-<li><strong>F</strong>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
-<li><strong>E</strong>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
-<li><strong>L</strong>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
-<li><strong>T</strong>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
+<li><code>(fromNode, None)</code>: all outgoing edges of <code>fromNode</code>;</li>
+<li><code>(None, toNode)</code>: all incoming edges of <code>toNode</code>.</li>
 </ul>
-</div>
-</dd>
-<dt><strong><code>withTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
-<dd><strong>interface option</strong>
-indicates whether node types should be displayed.
-The node type of slot nodes is never displayed.</dd>
-<dt><strong><code>colorMap</code></strong> :&ensp;<code>dict</code>, optional <code>None</code></dt>
-<dd>
-<p>Which nodes of a tuple (or list of tuples) will be highlighted.
-If <code>colorMap</code> is <code>None</code> or missing, all nodes will be highlighted with
-the default highlight color, which is yellow.</p>
-<p>But you can assign different colors to the members of the tuple:
-<code>colorMap</code> must be a dictionary that maps the positions in a tuple
-to a color.</p>
-<ul>
-<li>If a position is not mapped, it will not be highlighted.</li>
-<li>If it is mapped to the empty string, it gets the default highlight color.</li>
-<li>Otherwise, it should be mapped to a string that is a valid
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">CSS color</a>.</li>
-</ul>
-<div class="admonition hint">
-<p class="admonition-title">color names</p>
-<p>The link above points to a series of handy color names and their previews.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">highlights takes precedence over colorMap</p>
-<p>If both <code>highlights</code> and <code>colorMap</code> are given, <code>colorMap</code> is ignored.</p>
-<p>If you need to micro-manage, <code>highlights</code> is your thing.
-Whenever possible, use <code>colorMap</code>.</p>
-</div>
+<p>There are no edge highlights in plain display.</p>
 </dd>
 <dt><strong><code>end</code></strong> :&ensp;<code>int</code>, optional <code>None</code></dt>
 <dd><code>end</code> is the end point in the iterable of results.
 If <code>None</code>, displaying will stop after the end of the iterable.</dd>
 <dt><strong><code>extraFeatures</code></strong> :&ensp;<code>string | iterable</code>, optional <code>()</code></dt>
 <dd>
-<p>A string or iterable of feature names.
+<p>A string or iterable of (node-/edge-) feature names.
 These features will be loaded automatically.
 In pretty displays these features will show up as <code>feature=value</code>,
 provided the value is not <code>None</code>, or something like None.</p>
@@ -246,6 +158,16 @@ look up a <code>lex</code> node from the current node (by means of <code>L.u(w, 
 and if it finds one, it will read the <code>gloss</code> feature from it.</p>
 </div>
 </dd>
+<dt><strong><code>fmt</code></strong> :&ensp;<code>string</code>, optional <code>None</code></dt>
+<dd>
+<p><strong>interface option</strong>
+<code>fmt</code> is the text format that will be used for the representation.
+E.g. <code>text-orig-full</code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Text formats</p>
+<p>Use <code>T.formats</code> to inspect what text formats are available in your corpus.</p>
+</div>
+</dd>
 <dt><strong><code>full</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
 <dd>
 <p>For pretty displays: indicates that the whole object should be
@@ -255,6 +177,32 @@ displayed, even if it is big.</p>
 <p>Big objects are objects of a type that is bigger than the default condense type.</p>
 </div>
 </dd>
+<dt><strong><code>hiddenTypes</code></strong> :&ensp;<code>string | iterable</code>, optional <code>None</code></dt>
+<dd>
+<p><strong>interface option</strong>
+Node types that will not be shown in displays.
+All node types can be hidden, except the slot type and the section types.
+Structure types can be hidden.</p>
+<div class="admonition hint">
+<p class="admonition-title">Meaning</p>
+<p>Nodes of hidden types will not be skipped, but they do not add visible
+structure to the display. The material under those nodes will still
+be displayed. For example, if the corpus has verses divided into half verses,
+and you are not interested in the half verse division, you can make
+half verses hidden. The content of the half verses is still shown,
+but the half verse division is gone.</p>
+</div>
+<p>The default is app dependent, usually the empty set.</p>
+</dd>
+<dt><strong><code>showEdges</code></strong> :&ensp;<code>boolean | optional True</code></dt>
+<dd><strong>interface option</strong>
+If <code>True</code>, edges are shown in pretty displays, provided they are also selected
+in <code>edgeFeatures</code>.
+If <code>False</code> all edges are hidden.</dd>
+<dt><strong><code>hideTypes</code></strong> :&ensp;<code>boolean | optional True</code></dt>
+<dd><strong>interface option</strong>
+If <code>True</code>, hidden types are in fact hidden, otherwise the hiding of types
+has no effect.</dd>
 <dt><strong><code>highlights</code></strong> :&ensp;<code>dict | set</code>, optional <code>{}</code></dt>
 <dd>
 <p>When nodes such as verses and sentences and lines and cases are displayed
@@ -283,6 +231,27 @@ It does not harm performance if <code>highlights</code> maps
 lots of nodes outside the tuple as well.</p>
 </div>
 </dd>
+<dt><strong><code>lineNumbers</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether line numbers should be displayed.</p>
+<div class="admonition note">
+<p class="admonition-title">source data</p>
+<p>Line numbers are with respect to the source data file that is contains the
+origin material of the node in question, if a datasource provides
+a feature that contains line numbers.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">configuration</p>
+<p>Whether a corpus has line numbers, and in which feature they are stored
+for which node types is configured in a corpus dependent app.</p>
+<p>If the corpus has no line numbers, the default is <code>None</code>.</p>
+</div>
+</dd>
+<dt><strong><code>multiFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show all possible node features
+provided they have a non-empty value. The feature <code>otype</code> is excluded from this.</dd>
 <dt><strong><code>noneValues</code></strong> :&ensp;<code>set</code>, optional <code>None</code></dt>
 <dd>
 <p>A set of values for which no display should be generated.
@@ -307,6 +276,43 @@ The contents of <code>noneValues</code> affect the display of
 all features, not only the custom features.</p>
 </div>
 </dd>
+<dt><strong><code>plainGaps</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether gaps types should be displayed in plain displays.
+In pretty displays gaps are marked by dotted left-right borders of the nodes
+around the gaps. In plain displays such borders are generally disruptive,
+but it is possible to show them.</dd>
+<dt><strong><code>prettyTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd><strong>interface option</strong>
+indicates whether node types should always be displayed in pretty displays.
+The node type of slot nodes is never displayed.</dd>
+<dt><strong><code>queryFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show the features
+mentioned in the last query and their values.</dd>
+<dt><strong><code>showGraphics</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether plain and pretty displays should include associated
+graphic elements.</p>
+<div class="admonition caution">
+<p class="admonition-title">configuration</p>
+<p>Whether a corpus has graphics for some nodetypes and how to get them is
+configured in a corpus dependent app.</p>
+<p>If the corpus has no graphics, the default is <code>None</code>.</p>
+</div>
+</dd>
+<dt><strong><code>showMath</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether plain and pretty displays should interpret the <code>$</code>
+to mark mathematical formulas in TeX notation.</p>
+<div class="admonition caution">
+<p class="admonition-title">real dollars</p>
+<p>If you have a corpus where the character <code>$</code> is used in an ordinary way,
+this option should be set to <code>False</code>.</p>
+</div>
+</dd>
 <dt><strong><code>skipCols</code></strong> :&ensp;<code>set</code>, optional <code>set()</code></dt>
 <dd>
 <p>indicates columns to skip in <code>show()</code>, <code>table()</code>;
@@ -319,6 +325,11 @@ and it does not disturb the working of <code>colorMap</code>.</p>
 <p>The value may be a space-separated string of numbers, or an iterable of integers.
 Columns start at 1.</p>
 </dd>
+<dt><strong><code>standardFeatures</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show standard features and their values.
+If a feature is both a standard feature and it is mentioned in the last query,
+it will still be shown if <code>standardFeatures</code> is off and <code>queryFeatures</code> is on.</dd>
 <dt><strong><code>start</code></strong> :&ensp;<code>integer</code>, optional <code>None</code></dt>
 <dd><code>start</code> is the starting point for displaying the iterable of results.
 (1 is the first one).
@@ -347,11 +358,37 @@ When passed with <code>table()</code>, or <code>plainTuple()</code>,
 the value may also be a set of integers, indicating the columns whose
 nodes will be linked with a web link
 (the first column is column 1).</dd>
+<dt><strong><code>withLabels</code></strong> :&ensp;<code>boolean</code>, optional <code>True</code></dt>
+<dd><strong>interface option</strong>
+indicates whether pretty displays should show labels.</dd>
+<dt><strong><code>withNodes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>
+<p><strong>interface option</strong>
+indicates whether node numbers should be displayed.</p>
+<div class="admonition hint">
+<p class="admonition-title">zooming in</p>
+<p>If you are in a Jupyter notebook, you can inspect in a powerful way by
+setting <code>withNodes=True</code>. Then every part of a pretty display shows
+its node number, and you can use the following APIs
+to look up all information
+about each node that the corpus has to offer:</p>
+<ul>
+<li><strong>F</strong>: <code><a title="tf.core.nodefeature.NodeFeature" href="../core/nodefeature.html#tf.core.nodefeature.NodeFeature">NodeFeature</a></code></li>
+<li><strong>E</strong>: <code><a title="tf.core.edgefeature.EdgeFeature" href="../core/edgefeature.html#tf.core.edgefeature.EdgeFeature">EdgeFeature</a></code></li>
+<li><strong>L</strong>: <code><a title="tf.core.locality.Locality" href="../core/locality.html#tf.core.locality.Locality">Locality</a></code></li>
+<li><strong>T</strong>: <code><a title="tf.core.text.Text" href="../core/text.html#tf.core.text.Text">Text</a></code></li>
+</ul>
+</div>
+</dd>
+<dt><strong><code>withTypes</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd><strong>interface option</strong>
+indicates whether node types should be displayed.
+The node type of slot nodes is never displayed.</dd>
 </dl>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L1-L648" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L1-L711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Display Settings.
@@ -384,6 +421,29 @@ baseTypes: string | iterable, optional None`
     Node types at the bottom of pretty displays.
     The default is app dependent, usually the slot type of the corpus.
 
+colorMap: dict, optional None
+    Which nodes of a tuple (or list of tuples) will be highlighted.
+    If `colorMap` is `None` or missing, all nodes will be highlighted with
+    the default highlight color, which is yellow.
+
+    But you can assign different colors to the members of the tuple:
+    `colorMap` must be a dictionary that maps the positions in a tuple
+    to a color.
+
+    *   If a position is not mapped, it will not be highlighted.
+    *   If it is mapped to the empty string, it gets the default highlight color.
+    *   Otherwise, it should be mapped to a string that is a valid
+        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+
+    !!! hint &#34;color names&#34;
+        The link above points to a series of handy color names and their previews.
+
+    !!! note &#34;highlights takes precedence over colorMap&#34;
+        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
+
+        If you need to micro-manage, `highlights` is your thing.
+        Whenever possible, use `colorMap`.
+
 condensed: boolean, optional False
     **interface option**
     indicates one of two modes of displaying the result list:
@@ -408,6 +468,65 @@ condenseType: string, optional None
     The type of container to be used for condensing results.
     The default is app dependent, usually `verse` or `tablet`.
 
+edgeFeatures: string | iterable, optional None
+    **interface option**
+    Edge features that will be shown on the interface, in pretty displays.
+    The selection of edge features to show will be in effect
+    if `forceEdges` is `True`.
+    Otherwise, the display of edge features depends on whether it is in the
+    `extraFeatures` or `tupleFeatures` (which will be set after a query).
+
+    The default is app dependent, it consist of all the edge features in the
+    dataset, except `oslots`.
+
+edgeHighlights: dict
+    Custom highlighting of edges.
+
+    The keys are the names of edge features. For each such key, the value is
+    a set or mapping of edges defined by that edge feature that should be highlighted.
+    Only edges that are involved in the display will be highlighted.
+
+    If the value is a set, the specified edges will be highlighted
+    with a default color (blue).
+
+    If it is a dictionary, it should map edges to colors.
+    Any color that is a valid
+    [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+    qualifies.
+
+    If you map an edge to the empty string, it will get the default highlight color.
+
+    An edge is a pair of nodes, represented as a tuple of two node numbers.
+
+    You can also map the following pseudo edges to colors:
+
+    *   `(fromNode, None)`: all outgoing edges of `fromNode`;
+    *   `(None, toNode)`: all incoming edges of `toNode`.
+
+    There are no edge highlights in plain display.
+
+end: int, optional None
+    `end` is the end point in the iterable of results.
+    If `None`, displaying will stop after the end of the iterable.
+
+extraFeatures: string | iterable, optional ()
+    A string or iterable of (node-/edge-) feature names.
+    These features will be loaded automatically.
+    In pretty displays these features will show up as `feature=value`,
+    provided the value is not `None`, or something like None.
+
+    !!! hint &#34;Automatic loading&#34;
+        These features will load automatically, no explicit loading is
+        necessary.
+
+    !!! hint &#34;values from other nodes&#34;
+        Suppose you want to display a value from a related node, e.g. a `gloss`
+        that is available on `lex` nodes but not on `word` nodes, and you
+        want to show it on the word nodes.
+        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
+        look up a `lex` node from the current node (by means of `L.u(w, otype=&#39;lex&#39;)`,
+        and if it finds one, it will read the `gloss` feature from it.
+
 fmt: string, optional None
     **interface option**
     `fmt` is the text format that will be used for the representation.
@@ -416,10 +535,12 @@ fmt: string, optional None
     !!! hint &#34;Text formats&#34;
         Use `T.formats` to inspect what text formats are available in your corpus.
 
-hideTypes: boolean | optional True
-    **interface option**
-    If `True`, hidden types are in fact hidden, otherwise the hiding of types
-    has no effect.
+full: boolean, optional False
+    For pretty displays: indicates that the whole object should be
+    displayed, even if it is big.
+
+    !!! hint &#34;Big objects&#34;
+        Big objects are objects of a type that is bigger than the default condense type.
 
 hiddenTypes: string | iterable, optional None
     **interface option**
@@ -437,145 +558,16 @@ hiddenTypes: string | iterable, optional None
 
     The default is app dependent, usually the empty set.
 
-lineNumbers: boolean, optional False
+showEdges: boolean | optional True
     **interface option**
-    indicates whether line numbers should be displayed.
+    If `True`, edges are shown in pretty displays, provided they are also selected
+    in `edgeFeatures`.
+    If `False` all edges are hidden.
 
-    !!! note &#34;source data&#34;
-        Line numbers are with respect to the source data file that is contains the
-        origin material of the node in question, if a datasource provides
-        a feature that contains line numbers.
-
-    !!! caution &#34;configuration&#34;
-        Whether a corpus has line numbers, and in which feature they are stored
-        for which node types is configured in a corpus dependent app.
-
-        If the corpus has no line numbers, the default is `None`.
-
-plainGaps: boolean, optional True
+hideTypes: boolean | optional True
     **interface option**
-    indicates whether gaps types should be displayed in plain displays.
-    In pretty displays gaps are marked by dotted left-right borders of the nodes
-    around the gaps. In plain displays such borders are generally disruptive,
-    but it is possible to show them.
-
-prettyTypes: boolean, optional False
-    **interface option**
-    indicates whether node types should always be displayed in pretty displays.
-    The node type of slot nodes is never displayed.
-
-queryFeatures: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show the features
-    mentioned in the last query and their values.
-
-multiFeatures: boolean, optional False
-    **interface option**
-    indicates whether pretty displays should show all possible node features
-    provided they have a non-empty value. The feature `otype` is excluded from this.
-
-showGraphics: boolean, optional True
-    **interface option**
-    indicates whether plain and pretty displays should include associated
-    graphic elements.
-
-    !!! caution &#34;configuration&#34;
-        Whether a corpus has graphics for some nodetypes and how to get them is
-        configured in a corpus dependent app.
-
-        If the corpus has no graphics, the default is `None`.
-
-showMath: boolean, optional False
-    **interface option**
-    indicates whether plain and pretty displays should interpret the `$`
-    to mark mathematical formulas in TeX notation.
-
-    !!! caution &#34;real dollars&#34;
-        If you have a corpus where the character `$` is used in an ordinary way,
-        this option should be set to `False`.
-
-standardFeatures: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show standard features and their values.
-    If a feature is both a standard feature and it is mentioned in the last query,
-    it will still be shown if `standardFeatures` is off and `queryFeatures` is on.
-
-withLabels: boolean, optional True
-    **interface option**
-    indicates whether pretty displays should show labels.
-
-withNodes: boolean, optional False
-    **interface option**
-    indicates whether node numbers should be displayed.
-
-    !!! hint &#34;zooming in&#34;
-        If you are in a Jupyter notebook, you can inspect in a powerful way by
-        setting `withNodes=True`. Then every part of a pretty display shows
-        its node number, and you can use the following APIs
-        to look up all information
-        about each node that the corpus has to offer:
-
-        * **F**: `tf.core.nodefeature.NodeFeature`
-        * **E**: `tf.core.edgefeature.EdgeFeature`
-        * **L**: `tf.core.locality.Locality`
-        * **T**: `tf.core.text.Text`
-
-withTypes: boolean, optional False
-    **interface option**
-    indicates whether node types should be displayed.
-    The node type of slot nodes is never displayed.
-
-colorMap: dict, optional None
-    Which nodes of a tuple (or list of tuples) will be highlighted.
-    If `colorMap` is `None` or missing, all nodes will be highlighted with
-    the default highlight color, which is yellow.
-
-    But you can assign different colors to the members of the tuple:
-    `colorMap` must be a dictionary that maps the positions in a tuple
-    to a color.
-
-    *   If a position is not mapped, it will not be highlighted.
-    *   If it is mapped to the empty string, it gets the default highlight color.
-    *   Otherwise, it should be mapped to a string that is a valid
-        [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
-
-    !!! hint &#34;color names&#34;
-        The link above points to a series of handy color names and their previews.
-
-    !!! note &#34;highlights takes precedence over colorMap&#34;
-        If both `highlights` and `colorMap` are given, `colorMap` is ignored.
-
-        If you need to micro-manage, `highlights` is your thing.
-        Whenever possible, use `colorMap`.
-
-end: int, optional None
-    `end` is the end point in the iterable of results.
-    If `None`, displaying will stop after the end of the iterable.
-
-extraFeatures: string | iterable, optional ()
-    A string or iterable of feature names.
-    These features will be loaded automatically.
-    In pretty displays these features will show up as `feature=value`,
-    provided the value is not `None`, or something like None.
-
-    !!! hint &#34;Automatic loading&#34;
-        These features will load automatically, no explicit loading is
-        necessary.
-
-    !!! hint &#34;values from other nodes&#34;
-        Suppose you want to display a value from a related node, e.g. a `gloss`
-        that is available on `lex` nodes but not on `word` nodes, and you
-        want to show it on the word nodes.
-        Then you may specifiy `lex:gloss`, meaning that Text-Fabric will
-        look up a `lex` node from the current node (by means of `L.u(w, otype=&#39;lex&#39;)`,
-        and if it finds one, it will read the `gloss` feature from it.
-
-full: boolean, optional False
-    For pretty displays: indicates that the whole object should be
-    displayed, even if it is big.
-
-    !!! hint &#34;Big objects&#34;
-        Big objects are objects of a type that is bigger than the default condense type.
+    If `True`, hidden types are in fact hidden, otherwise the hiding of types
+    has no effect.
 
 highlights: dict | set, optional {}
     When nodes such as verses and sentences and lines and cases are displayed
@@ -608,6 +600,26 @@ highlights: dict | set, optional {}
         It does not harm performance if `highlights` maps
         lots of nodes outside the tuple as well.
 
+lineNumbers: boolean, optional False
+    **interface option**
+    indicates whether line numbers should be displayed.
+
+    !!! note &#34;source data&#34;
+        Line numbers are with respect to the source data file that is contains the
+        origin material of the node in question, if a datasource provides
+        a feature that contains line numbers.
+
+    !!! caution &#34;configuration&#34;
+        Whether a corpus has line numbers, and in which feature they are stored
+        for which node types is configured in a corpus dependent app.
+
+        If the corpus has no line numbers, the default is `None`.
+
+multiFeatures: boolean, optional False
+    **interface option**
+    indicates whether pretty displays should show all possible node features
+    provided they have a non-empty value. The feature `otype` is excluded from this.
+
 noneValues: set, optional None
     A set of values for which no display should be generated.
     The default set is `None` and the strings `NA`, `none`, `unknown`.
@@ -628,6 +640,43 @@ noneValues: set, optional None
         The contents of `noneValues` affect the display of
         all features, not only the custom features.
 
+plainGaps: boolean, optional True
+    **interface option**
+    indicates whether gaps types should be displayed in plain displays.
+    In pretty displays gaps are marked by dotted left-right borders of the nodes
+    around the gaps. In plain displays such borders are generally disruptive,
+    but it is possible to show them.
+
+prettyTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should always be displayed in pretty displays.
+    The node type of slot nodes is never displayed.
+
+queryFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show the features
+    mentioned in the last query and their values.
+
+showGraphics: boolean, optional True
+    **interface option**
+    indicates whether plain and pretty displays should include associated
+    graphic elements.
+
+    !!! caution &#34;configuration&#34;
+        Whether a corpus has graphics for some nodetypes and how to get them is
+        configured in a corpus dependent app.
+
+        If the corpus has no graphics, the default is `None`.
+
+showMath: boolean, optional False
+    **interface option**
+    indicates whether plain and pretty displays should interpret the `$`
+    to mark mathematical formulas in TeX notation.
+
+    !!! caution &#34;real dollars&#34;
+        If you have a corpus where the character `$` is used in an ordinary way,
+        this option should be set to `False`.
+
 skipCols: set, optional set()
     indicates columns to skip in `show()`, `table()`;
     no effect on `prettyTuple()` and `plainTuple()`.
@@ -641,6 +690,12 @@ skipCols: set, optional set()
 
     The value may be a space-separated string of numbers, or an iterable of integers.
     Columns start at 1.
+
+standardFeatures: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show standard features and their values.
+    If a feature is both a standard feature and it is mentioned in the last query,
+    it will still be shown if `standardFeatures` is off and `queryFeatures` is on.
 
 start: integer, optional None
     `start` is the starting point for displaying the iterable of results.
@@ -674,6 +729,31 @@ withPassage: boolean or set, optional True
     the value may also be a set of integers, indicating the columns whose
     nodes will be linked with a web link
     (the first column is column 1).
+
+withLabels: boolean, optional True
+    **interface option**
+    indicates whether pretty displays should show labels.
+
+withNodes: boolean, optional False
+    **interface option**
+    indicates whether node numbers should be displayed.
+
+    !!! hint &#34;zooming in&#34;
+        If you are in a Jupyter notebook, you can inspect in a powerful way by
+        setting `withNodes=True`. Then every part of a pretty display shows
+        its node number, and you can use the following APIs
+        to look up all information
+        about each node that the corpus has to offer:
+
+        * **F**: `tf.core.nodefeature.NodeFeature`
+        * **E**: `tf.core.edgefeature.EdgeFeature`
+        * **L**: `tf.core.locality.Locality`
+        * **T**: `tf.core.text.Text`
+
+withTypes: boolean, optional False
+    **interface option**
+    indicates whether node types should be displayed.
+    The node type of slot nodes is never displayed.
 &#34;&#34;&#34;
 
 from ..core.helpers import setFromValue
@@ -694,8 +774,18 @@ INTERFACE_OPTIONS = (
         True,
         &#34;hidet&#34;,
         &#34;hide types&#34;,
-        &#34;Do not show the outer structure of nodes of the selected types.&#34;
+        &#34;Do not show the outer structure of nodes &#34;
+        &#34;of the selected types.&#34;
         &#34;The contents of those nodes are still shown.&#34;,
+        True,
+    ),
+    (
+        &#34;forceEdges&#34;,
+        False,
+        &#34;forcee&#34;,
+        &#34;show/hide the selected edge features&#34;,
+        &#34;Show selected edge features in pretty displays, hide the unselected ones. &#34;
+        &#34;If this is off, only the edge features that occur in the query are shown.&#34;,
         True,
     ),
     (
@@ -811,6 +901,8 @@ DISPLAY_OPTIONS = dict(
     colorMap=None,
     condensed=False,
     condenseType=None,
+    edgeFeatures=None,
+    edgeHighlights=None,
     end=None,
     extraFeatures=((), {}),
     full=False,
@@ -819,6 +911,7 @@ DISPLAY_OPTIONS = dict(
     hiddenTypes=None,
     highlights={},
     noneValues={None},
+    forceEdges=False,
     skipCols=set(),
     start=None,
     suppress=set(),
@@ -929,7 +1022,13 @@ class Options:
         elif option == &#34;highlights&#34;:
             if value is not None and type(value) is not dict:
                 value = {m: &#34;&#34; for m in value}
-        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+        elif option == &#34;edgeHighlights&#34;:
+            if value is None:
+                value = {}
+            for (edge, highlights) in value.items():
+                if highlights is not None and type(highlights) is not dict:
+                    value[edge] = {m: &#34;&#34; for m in highlights}
+        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
             legalValues = set(allowedValues[option])
             values = setFromValue(value)
             value = {tp for tp in values if tp in legalValues}
@@ -949,17 +1048,20 @@ class Options:
             if option not in current:
                 error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
                 good = False
-            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
                 legalValues = set(allowedValues[option])
                 if value is not None:
-                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
                         testVal = setFromValue(value)
                         isLegal = all(v in legalValues for v in testVal)
                     else:
                         isLegal = value in legalValues
                     if not isLegal:
+                        thing = (
+                            &#34;edge feature&#34; if option == &#34;edgeFeatures&#34; else &#34;node type&#34;
+                        )
                         error(
-                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                            f&#39;ERROR in {msg}(): illegal {thing} in &#34;{option}={value}&#34;&#39;
                         )
                         legalRep = &#34;, &#34;.join(sorted(legalValues))
                         error(f&#34;Legal values are: {legalRep}&#34;)
@@ -990,9 +1092,7 @@ class Options:
         normOptions = {}
 
         for option in defaults:
-            value = options.get(
-                option, current.get(option, defaults[option])
-            )
+            value = options.get(option, current.get(option, defaults[option]))
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]
@@ -1038,7 +1138,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L491-L648" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L547-L711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Options:
     def __init__(self, app):
@@ -1126,7 +1226,13 @@ browser.</li>
         elif option == &#34;highlights&#34;:
             if value is not None and type(value) is not dict:
                 value = {m: &#34;&#34; for m in value}
-        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+        elif option == &#34;edgeHighlights&#34;:
+            if value is None:
+                value = {}
+            for (edge, highlights) in value.items():
+                if highlights is not None and type(highlights) is not dict:
+                    value[edge] = {m: &#34;&#34; for m in highlights}
+        elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
             legalValues = set(allowedValues[option])
             values = setFromValue(value)
             value = {tp for tp in values if tp in legalValues}
@@ -1146,17 +1252,20 @@ browser.</li>
             if option not in current:
                 error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
                 good = False
-            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+            if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
                 legalValues = set(allowedValues[option])
                 if value is not None:
-                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                    if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
                         testVal = setFromValue(value)
                         isLegal = all(v in legalValues for v in testVal)
                     else:
                         isLegal = value in legalValues
                     if not isLegal:
+                        thing = (
+                            &#34;edge feature&#34; if option == &#34;edgeFeatures&#34; else &#34;node type&#34;
+                        )
                         error(
-                            f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                            f&#39;ERROR in {msg}(): illegal {thing} in &#34;{option}={value}&#34;&#39;
                         )
                         legalRep = &#34;, &#34;.join(sorted(legalValues))
                         error(f&#34;Legal values are: {legalRep}&#34;)
@@ -1187,9 +1296,7 @@ browser.</li>
         normOptions = {}
 
         for option in defaults:
-            value = options.get(
-                option, current.get(option, defaults[option])
-            )
+            value = options.get(option, current.get(option, defaults[option]))
             normValue = self.normalize(option, value)
             if normValue:
                 normOptions[option] = normValue[1]
@@ -1209,7 +1316,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L583-L629" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L645-L694" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def check(self, msg, options):
     app = self.app
@@ -1225,17 +1332,20 @@ browser.</li>
         if option not in current:
             error(f&#39;ERROR in {msg}(): unknown display option &#34;{option}={value}&#34;&#39;)
             good = False
-        if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;}:
+        if option in {&#34;baseTypes&#34;, &#34;condenseType&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
             legalValues = set(allowedValues[option])
             if value is not None:
-                if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+                if option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
                     testVal = setFromValue(value)
                     isLegal = all(v in legalValues for v in testVal)
                 else:
                     isLegal = value in legalValues
                 if not isLegal:
+                    thing = (
+                        &#34;edge feature&#34; if option == &#34;edgeFeatures&#34; else &#34;node type&#34;
+                    )
                     error(
-                        f&#39;ERROR in {msg}(): illegal node type in &#34;{option}={value}&#34;&#39;
+                        f&#39;ERROR in {msg}(): illegal {thing} in &#34;{option}={value}&#34;&#39;
                     )
                     legalRep = &#34;, &#34;.join(sorted(legalValues))
                     error(f&#34;Legal values are: {legalRep}&#34;)
@@ -1268,7 +1378,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L647-L648" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L710-L711" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def consume(self, options, *remove):
     return {o: options[o] for o in options if o not in remove}</code></pre>
@@ -1282,7 +1392,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L631-L645" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L696-L708" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def distill(self, options):
     defaults = self.defaults
@@ -1291,9 +1401,7 @@ browser.</li>
     normOptions = {}
 
     for option in defaults:
-        value = options.get(
-            option, current.get(option, defaults[option])
-        )
+        value = options.get(option, current.get(option, defaults[option]))
         normValue = self.normalize(option, value)
         if normValue:
             normOptions[option] = normValue[1]
@@ -1309,7 +1417,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L535-L581" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L591-L643" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def normalize(self, option, value):
     app = self.app
@@ -1353,7 +1461,13 @@ browser.</li>
     elif option == &#34;highlights&#34;:
         if value is not None and type(value) is not dict:
             value = {m: &#34;&#34; for m in value}
-    elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;}:
+    elif option == &#34;edgeHighlights&#34;:
+        if value is None:
+            value = {}
+        for (edge, highlights) in value.items():
+            if highlights is not None and type(highlights) is not dict:
+                value[edge] = {m: &#34;&#34; for m in highlights}
+    elif option in {&#34;baseTypes&#34;, &#34;hiddenTypes&#34;, &#34;edgeFeatures&#34;}:
         legalValues = set(allowedValues[option])
         values = setFromValue(value)
         value = {tp for tp in values if tp in legalValues}
@@ -1368,7 +1482,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L509-L524" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L565-L580" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def reset(self, *options):
     app = self.app
@@ -1396,7 +1510,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L526-L533" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L582-L589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setup(self, *options, **overrides):
     current = self.current
@@ -1419,7 +1533,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L477-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L533-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OptionsCurrent:
     def __init__(self, options):
@@ -1444,7 +1558,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L483-L484" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L539-L540" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v=None):
     return getattr(self, k, v)</code></pre>
@@ -1458,7 +1572,7 @@ browser.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/options.py#L486-L488" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/options.py#L542-L544" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def set(self, k, v):
     self.allKeys.add(k)

@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L1-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L1-L561" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import re
 from textwrap import dedent
@@ -66,16 +66,28 @@ PAGE_MODELS = dict(
 PAGE_MODEL_DEFAULT = &#34;I&#34;
 
 SECTION_MODELS = dict(
-    I=dict(levels=(list, [FOLDER, FILE, CHUNK])),
+    I=dict(
+        levels=(list, [FOLDER, FILE, CHUNK]),
+        backMatter=(str, &#34;backmatter&#34;),
+    ),
     II=dict(
         levels=(list, [CHAPTER, CHUNK]),
         element=(str, &#34;head&#34;),
         attributes=(dict, {}),
     ),
 )
+&#34;&#34;&#34;Models for sections.
+
+A section is a part of the corpus that is defined by a set of files,
+or by elements within a single TEI source file.
+
+A model
+&#34;&#34;&#34;
 
 
 SECTION_MODEL_DEFAULT = &#34;I&#34;
+&#34;&#34;&#34;Default model for sections.
+&#34;&#34;&#34;
 
 CM_LIT = &#34;literal&#34;
 &#34;&#34;&#34;The value is taken literally from a TEI attribute.
@@ -309,6 +321,7 @@ def setUp(kind):
             &#34;latest&#34;,
         ),
         &#34;procins&#34;: (&#34;Whether to treat or ignore processing instructions&#34;, False),
+        &#34;validate&#34;: (&#34;Whether to validate the XML input&#34;, True),
     }
 
     flagSpec = dict(
@@ -685,6 +698,17 @@ text on a webpage.</p>
 </li>
 </ul></div>
 </dd>
+<dt id="tf.convert.helpers.SECTION_MODELS"><code class="name">var <span class="ident">SECTION_MODELS</span></code></dt>
+<dd>
+<div class="desc"><p>Models for sections.</p>
+<p>A section is a part of the corpus that is defined by a set of files,
+or by elements within a single TEI source file.</p>
+<p>A model</p></div>
+</dd>
+<dt id="tf.convert.helpers.SECTION_MODEL_DEFAULT"><code class="name">var <span class="ident">SECTION_MODEL_DEFAULT</span></code></dt>
+<dd>
+<div class="desc"><p>Default model for sections.</p></div>
+</dd>
 </dl>
 </section>
 <section>
@@ -698,7 +722,7 @@ text on a webpage.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L165-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L177-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkModel(kind, thisModel):
     modelDefault = PAGE_MODEL_DEFAULT if kind == &#34;page&#34; else SECTION_MODEL_DEFAULT
@@ -816,7 +840,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L449-L548" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L462-L561" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def lookupSource(cv, cur, specs):
     &#34;&#34;&#34;Looks up information from the current XML stack.
@@ -928,7 +952,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L229-L244" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L241-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def matchModel(properties, tag, atts):
     if tag == properties[&#34;element&#34;]:
@@ -956,7 +980,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L247-L287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L259-L300" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def setUp(kind):
     helpText = f&#34;&#34;&#34;
@@ -993,6 +1017,7 @@ that attribute, not from the content of the element.</p>
             &#34;latest&#34;,
         ),
         &#34;procins&#34;: (&#34;Whether to treat or ignore processing instructions&#34;, False),
+        &#34;validate&#34;: (&#34;Whether to validate the XML input&#34;, True),
     }
 
     flagSpec = dict(
@@ -1009,7 +1034,7 @@ that attribute, not from the content of the element.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/convert/helpers.py#L290-L446" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/convert/helpers.py#L303-L459" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def tweakTrans(
     template,
@@ -1238,13 +1263,15 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><h3><a href="#header-variables">Global variables</a></h3>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="tf.convert.helpers.CM_LIT" href="#tf.convert.helpers.CM_LIT">CM_LIT</a></code></li>
 <li><code><a title="tf.convert.helpers.CM_LITC" href="#tf.convert.helpers.CM_LITC">CM_LITC</a></code></li>
 <li><code><a title="tf.convert.helpers.CM_LITP" href="#tf.convert.helpers.CM_LITP">CM_LITP</a></code></li>
 <li><code><a title="tf.convert.helpers.CM_NLP" href="#tf.convert.helpers.CM_NLP">CM_NLP</a></code></li>
 <li><code><a title="tf.convert.helpers.CM_PROV" href="#tf.convert.helpers.CM_PROV">CM_PROV</a></code></li>
 <li><code><a title="tf.convert.helpers.CONVERSION_METHODS" href="#tf.convert.helpers.CONVERSION_METHODS">CONVERSION_METHODS</a></code></li>
+<li><code><a title="tf.convert.helpers.SECTION_MODELS" href="#tf.convert.helpers.SECTION_MODELS">SECTION_MODELS</a></code></li>
+<li><code><a title="tf.convert.helpers.SECTION_MODEL_DEFAULT" href="#tf.convert.helpers.SECTION_MODEL_DEFAULT">SECTION_MODEL_DEFAULT</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>

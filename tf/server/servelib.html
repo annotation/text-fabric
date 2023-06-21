@@ -35,7 +35,7 @@ TF browser infrastructure, such as</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/servelib.py#L1-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/servelib.py#L1-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Common Server Related Functions
@@ -95,7 +95,9 @@ def getFormData(interfaceDefaults):
 
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
-    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = resetForm
+
     if jobName:
         form[&#34;jobName&#34;] = jobName
         form[&#34;loadJob&#34;] = &#34;&#34;
@@ -103,22 +105,25 @@ def getFormData(interfaceDefaults):
         form[&#34;jobName&#34;] = DEFAULT_NAME
         form[&#34;loadJob&#34;] = &#34;1&#34;
         form[&#34;resetForm&#34;] = &#34;1&#34;
+
     form[&#34;query&#34;] = request.form.get(&#34;query&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;messages&#34;] = request.form.get(&#34;messages&#34;, &#34;&#34;) or &#34;&#34;
     form[&#34;features&#34;] = request.form.get(&#34;features&#34;, &#34;&#34;) or &#34;&#34;
     form[&#34;tuples&#34;] = request.form.get(&#34;tuples&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;sections&#34;] = request.form.get(&#34;sections&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;appName&#34;] = request.form.get(&#34;appName&#34;, &#34;&#34;)
-    form[&#34;jobName&#34;] = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip() or DEFAULT_NAME
     form[&#34;side&#34;] = request.form.get(&#34;side&#34;, &#34;&#34;)
     form[&#34;dstate&#34;] = request.form.get(&#34;dstate&#34;, &#34;&#34;)
+    form[&#34;metaopen&#34;] = request.form.get(&#34;metaopen&#34;, &#34;&#34;)
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;forceEdges&#34;] = request.form.get(&#34;forceEdges&#34;, None)
     form[&#34;hideTypes&#34;] = request.form.get(&#34;hideTypes&#34;, None)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
     form[&#34;baseTypes&#34;] = tuple(request.form.getlist(&#34;baseTypes&#34;))
     form[&#34;hiddenTypes&#34;] = tuple(request.form.getlist(&#34;hiddenTypes&#34;))
+    form[&#34;edgeFeatures&#34;] = tuple(request.form.getlist(&#34;edgeFeatures&#34;))
     form[&#34;condenseType&#34;] = request.form.get(&#34;condenseType&#34;, &#34;&#34;)
     form[&#34;textFormat&#34;] = request.form.get(&#34;textFormat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
@@ -135,6 +140,88 @@ def getFormData(interfaceDefaults):
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
+
+    for k in [&#34;colormapn&#34;, &#34;ecolormapn&#34;]:
+        form[k] = request.form.get(k, &#34;&#34;)
+    colorMapN = getInt(form[&#34;colormapn&#34;], default=0)
+    eColorMapN = getInt(form[&#34;ecolormapn&#34;], default=0)
+
+    colorMap = {}
+
+    for i in range(1, colorMapN + 1):
+        colorKey = f&#34;colormap_{i}&#34;
+        form[colorKey] = request.form.get(colorKey, &#34;&#34;)
+        color = form[colorKey]
+        colorMap[i] = color
+
+    form[&#34;colorMap&#34;] = colorMap
+
+    edgeHighlights = {}
+
+    for i in range(1, eColorMapN + 1):
+        for k in [f&#34;ecolormap_{i}&#34;, f&#34;edge_name_{i}&#34;, f&#34;edge_from_{i}&#34;, f&#34;edge_to_{i}&#34;]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_{i}&#34;]
+        name = form[f&#34;edge_name_{i}&#34;]
+        fRep = form[f&#34;edge_from_{i}&#34;]
+        tRep = form[f&#34;edge_to_{i}&#34;]
+        if name == &#34;&#34; or fRep == &#34;&#34; or tRep == &#34;&#34;:
+            continue
+        f = (
+            0
+            if fRep == &#34;&#34;
+            else None
+            if fRep == &#34;any&#34;
+            else int(fRep)
+            if fRep.isdecimal()
+            else 0
+        )
+        t = (
+            0
+            if tRep == &#34;&#34;
+            else None
+            if tRep == &#34;any&#34;
+            else int(tRep)
+            if tRep.isdecimal()
+            else 0
+        )
+        edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    for i in range(1, 4):
+        for k in [
+            f&#34;ecolormap_new_{i}&#34;,
+            f&#34;edge_name_new_{i}&#34;,
+            f&#34;edge_from_new_{i}&#34;,
+            f&#34;edge_to_new_{i}&#34;,
+        ]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_new_{i}&#34;]
+        name = form[f&#34;edge_name_new_{i}&#34;]
+        fRep = form[f&#34;edge_from_new_{i}&#34;]
+        tRep = form[f&#34;edge_to_new_{i}&#34;]
+        if name != &#34;&#34; and fRep != &#34;&#34; and tRep != &#34;&#34;:
+            f = (
+                0
+                if fRep == &#34;&#34;
+                else None
+                if fRep == &#34;any&#34;
+                else int(fRep)
+                if fRep.isdecimal()
+                else 0
+            )
+            t = (
+                0
+                if tRep == &#34;&#34;
+                else None
+                if tRep == &#34;any&#34;
+                else int(tRep)
+                if tRep.isdecimal()
+                else 0
+            )
+            edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    form[&#34;edgeHighlights&#34;] = edgeHighlights
+
     for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
@@ -186,6 +273,9 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr(&#34;job.json&#34;, json.dumps(form).encode(&#34;utf8&#34;))
+        zipFile.writeStr(&#34;job.json&#34;, json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;))
         zipFile.writestr(&#34;about.md&#34;, about)
         if csvs is not None:
             for (csv, data) in csvs:
@@ -221,7 +311,7 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/servelib.py#L106-L139" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/servelib.py#L193-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getAbout(colofon, header, provenance, form):
     return f&#34;&#34;&#34;
@@ -275,7 +365,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/servelib.py#L39-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/servelib.py#L39-L190" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFormData(interfaceDefaults):
     &#34;&#34;&#34;Get form data.
@@ -297,7 +387,9 @@ but there is also a list of webapp dependent options.</p></div>
 
     form = {}
     jobName = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip()
-    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = resetForm
+
     if jobName:
         form[&#34;jobName&#34;] = jobName
         form[&#34;loadJob&#34;] = &#34;&#34;
@@ -305,22 +397,25 @@ but there is also a list of webapp dependent options.</p></div>
         form[&#34;jobName&#34;] = DEFAULT_NAME
         form[&#34;loadJob&#34;] = &#34;1&#34;
         form[&#34;resetForm&#34;] = &#34;1&#34;
+
     form[&#34;query&#34;] = request.form.get(&#34;query&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;messages&#34;] = request.form.get(&#34;messages&#34;, &#34;&#34;) or &#34;&#34;
     form[&#34;features&#34;] = request.form.get(&#34;features&#34;, &#34;&#34;) or &#34;&#34;
     form[&#34;tuples&#34;] = request.form.get(&#34;tuples&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;sections&#34;] = request.form.get(&#34;sections&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
     form[&#34;appName&#34;] = request.form.get(&#34;appName&#34;, &#34;&#34;)
-    form[&#34;jobName&#34;] = request.form.get(&#34;jobName&#34;, &#34;&#34;).strip() or DEFAULT_NAME
     form[&#34;side&#34;] = request.form.get(&#34;side&#34;, &#34;&#34;)
     form[&#34;dstate&#34;] = request.form.get(&#34;dstate&#34;, &#34;&#34;)
+    form[&#34;metaopen&#34;] = request.form.get(&#34;metaopen&#34;, &#34;&#34;)
     form[&#34;author&#34;] = request.form.get(&#34;author&#34;, &#34;&#34;).strip()
     form[&#34;title&#34;] = request.form.get(&#34;title&#34;, &#34;&#34;).strip()
     form[&#34;description&#34;] = request.form.get(&#34;description&#34;, &#34;&#34;).replace(&#34;\r&#34;, &#34;&#34;)
+    form[&#34;forceEdges&#34;] = request.form.get(&#34;forceEdges&#34;, None)
     form[&#34;hideTypes&#34;] = request.form.get(&#34;hideTypes&#34;, None)
     form[&#34;condensed&#34;] = request.form.get(&#34;condensed&#34;, &#34;&#34;)
     form[&#34;baseTypes&#34;] = tuple(request.form.getlist(&#34;baseTypes&#34;))
     form[&#34;hiddenTypes&#34;] = tuple(request.form.getlist(&#34;hiddenTypes&#34;))
+    form[&#34;edgeFeatures&#34;] = tuple(request.form.getlist(&#34;edgeFeatures&#34;))
     form[&#34;condenseType&#34;] = request.form.get(&#34;condenseType&#34;, &#34;&#34;)
     form[&#34;textFormat&#34;] = request.form.get(&#34;textFormat&#34;, &#34;&#34;)
     form[&#34;sectionsExpandAll&#34;] = request.form.get(&#34;sectionsExpandAll&#34;, &#34;&#34;)
@@ -337,6 +432,88 @@ but there is also a list of webapp dependent options.</p></div>
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;s0filter&#34;] = request.form.get(&#34;s0filter&#34;, &#34;&#34;)
+
+    for k in [&#34;colormapn&#34;, &#34;ecolormapn&#34;]:
+        form[k] = request.form.get(k, &#34;&#34;)
+    colorMapN = getInt(form[&#34;colormapn&#34;], default=0)
+    eColorMapN = getInt(form[&#34;ecolormapn&#34;], default=0)
+
+    colorMap = {}
+
+    for i in range(1, colorMapN + 1):
+        colorKey = f&#34;colormap_{i}&#34;
+        form[colorKey] = request.form.get(colorKey, &#34;&#34;)
+        color = form[colorKey]
+        colorMap[i] = color
+
+    form[&#34;colorMap&#34;] = colorMap
+
+    edgeHighlights = {}
+
+    for i in range(1, eColorMapN + 1):
+        for k in [f&#34;ecolormap_{i}&#34;, f&#34;edge_name_{i}&#34;, f&#34;edge_from_{i}&#34;, f&#34;edge_to_{i}&#34;]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_{i}&#34;]
+        name = form[f&#34;edge_name_{i}&#34;]
+        fRep = form[f&#34;edge_from_{i}&#34;]
+        tRep = form[f&#34;edge_to_{i}&#34;]
+        if name == &#34;&#34; or fRep == &#34;&#34; or tRep == &#34;&#34;:
+            continue
+        f = (
+            0
+            if fRep == &#34;&#34;
+            else None
+            if fRep == &#34;any&#34;
+            else int(fRep)
+            if fRep.isdecimal()
+            else 0
+        )
+        t = (
+            0
+            if tRep == &#34;&#34;
+            else None
+            if tRep == &#34;any&#34;
+            else int(tRep)
+            if tRep.isdecimal()
+            else 0
+        )
+        edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    for i in range(1, 4):
+        for k in [
+            f&#34;ecolormap_new_{i}&#34;,
+            f&#34;edge_name_new_{i}&#34;,
+            f&#34;edge_from_new_{i}&#34;,
+            f&#34;edge_to_new_{i}&#34;,
+        ]:
+            form[k] = request.form.get(k, &#34;&#34;)
+        color = form[f&#34;ecolormap_new_{i}&#34;]
+        name = form[f&#34;edge_name_new_{i}&#34;]
+        fRep = form[f&#34;edge_from_new_{i}&#34;]
+        tRep = form[f&#34;edge_to_new_{i}&#34;]
+        if name != &#34;&#34; and fRep != &#34;&#34; and tRep != &#34;&#34;:
+            f = (
+                0
+                if fRep == &#34;&#34;
+                else None
+                if fRep == &#34;any&#34;
+                else int(fRep)
+                if fRep.isdecimal()
+                else 0
+            )
+            t = (
+                0
+                if tRep == &#34;&#34;
+                else None
+                if tRep == &#34;any&#34;
+                else int(tRep)
+                if tRep.isdecimal()
+                else 0
+            )
+            edgeHighlights.setdefault(name, {})[(f, t)] = color
+
+    form[&#34;edgeHighlights&#34;] = edgeHighlights
+
     for (k, v) in interfaceDefaults.items():
         if v is None:
             continue
@@ -352,7 +529,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/servelib.py#L31-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/servelib.py#L31-L36" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getInt(x, default=1):
     if len(x) &gt; 15:
@@ -370,7 +547,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/servelib.py#L142-L167" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/servelib.py#L229-L257" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     appName = form[&#34;appName&#34;]
@@ -380,6 +557,9 @@ but there is also a list of webapp dependent options.</p></div>
     with ZipFile(zipBuffer, &#34;w&#34;, **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr(&#34;job.json&#34;, json.dumps(form).encode(&#34;utf8&#34;))
+        zipFile.writeStr(&#34;job.json&#34;, json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;))
         zipFile.writestr(&#34;about.md&#34;, about)
         if csvs is not None:
             for (csv, data) in csvs:

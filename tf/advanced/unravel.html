@@ -30,7 +30,7 @@ That sounds simple, but quite a few ideas have to work together to make it work.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L1-L649" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L1-L662" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Unravel
@@ -45,6 +45,7 @@ from collections import namedtuple
 from itertools import chain
 from ..core.helpers import rangesFromList, console, QUAD
 from ..core.text import DEFAULT_FORMAT
+from ..parameters import OMAP
 from .highlight import getHlAtt
 from .helpers import _getLtr
 
@@ -70,7 +71,9 @@ OuterSettings = namedtuple(  # noqa: F811
     getText
     upMethod
     slotsMethod
-    lookupMethod
+    fLookupMethod
+    eLookupMethod
+    allEFeats
     browsing
     webLink
     getGraphics
@@ -95,8 +98,14 @@ __pdoc__[
     &#34;OuterSettings.slotsMethod&#34;
 ] = &#34;Method to get the slots of a node: `tf.core.oslotsfeature.OslotsFeature.s`&#34;
 __pdoc__[
-    &#34;OuterSettings.lookupMethod&#34;
+    &#34;OuterSettings.fLookupMethod&#34;
 ] = &#34;Method to get the value of a node feature: `tf.core.api.Api.Fs`&#34;
+__pdoc__[
+    &#34;OuterSettings.eLookupMethod&#34;
+] = &#34;Method to get the value of an edge feature: `tf.core.api.Api.Es`&#34;
+__pdoc__[
+    &#34;OuterSettings.allEFeats&#34;
+] = &#34;Set of all edge features: `tf.core.api.Api.Eall(warp=False)`&#34;
 __pdoc__[
     &#34;OuterSettings.browsing&#34;
 ] = &#34;whether we work for the Text-Fabric browser or for a Jupyter notebook&#34;
@@ -258,6 +267,8 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
     api = app.api
     N = api.N
     E = api.E
+    Es = api.Es
+    Eall = api.Eall
     F = api.F
     Fs = api.Fs
     L = api.L
@@ -314,6 +325,8 @@ def _unravel(app, isPretty, options, n, _inTuple=False, explain=False):
         upMethod,
         eOslots,
         Fs,
+        Es,
+        {e for e in Eall(warp=False) if not e.startswith(OMAP)},
         _browse,
         webLink,
         getGraphics,
@@ -728,7 +741,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L176-L212" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L185-L221" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def unravel(app, n, isPlain=True, _inTuple=False, explain=False, **options):
     &#34;&#34;&#34;Unravels a node and its graph-neighbourhood into a tree of fragments.
@@ -783,7 +796,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L78-L82" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L87-L91" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NodeProps:
     &#34;&#34;&#34;Node properties during plain() or pretty().
@@ -869,14 +882,14 @@ the chunk). The top of the tree has only has options and settings.</dd>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings"><code class="flex name class">
 <span>class <span class="ident">OuterSettings</span></span>
-<span>(</span><span>slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, lookupMethod, browsing, webLink, getGraphics)</span>
+<span>(</span><span>slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, fLookupMethod, eLookupMethod, allEFeats, browsing, webLink, getGraphics)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>OuterSettings(slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, lookupMethod, browsing, webLink, getGraphics)</p></div>
+<div class="desc"><p>OuterSettings(slotType, ltr, fmt, textClsDefault, textMethod, getText, upMethod, slotsMethod, fLookupMethod, eLookupMethod, allEFeats, browsing, webLink, getGraphics)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L21-L25" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L22-L26" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class OuterSettings:
     &#34;&#34;&#34;Common properties during plain() and pretty().
@@ -890,9 +903,21 @@ the chunk). The top of the tree has only has options and settings.</dd>
 </ul>
 <h3>Instance variables</h3>
 <dl>
+<dt id="tf.advanced.unravel.OuterSettings.allEFeats"><code class="name">var <span class="ident">allEFeats</span></code></dt>
+<dd>
+<div class="desc"><p>Set of all edge features: <code>tf.core.api.Api.Eall(warp=False)</code></p></div>
+</dd>
 <dt id="tf.advanced.unravel.OuterSettings.browsing"><code class="name">var <span class="ident">browsing</span></code></dt>
 <dd>
 <div class="desc"><p>whether we work for the Text-Fabric browser or for a Jupyter notebook</p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.eLookupMethod"><code class="name">var <span class="ident">eLookupMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the value of an edge feature: <code><a title="tf.core.api.Api.Es" href="../core/api.html#tf.core.api.Api.Es">Api.Es()</a></code></p></div>
+</dd>
+<dt id="tf.advanced.unravel.OuterSettings.fLookupMethod"><code class="name">var <span class="ident">fLookupMethod</span></code></dt>
+<dd>
+<div class="desc"><p>Method to get the value of a node feature: <code><a title="tf.core.api.Api.Fs" href="../core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.fmt"><code class="name">var <span class="ident">fmt</span></code></dt>
 <dd>
@@ -905,10 +930,6 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <dt id="tf.advanced.unravel.OuterSettings.getText"><code class="name">var <span class="ident">getText</span></code></dt>
 <dd>
 <div class="desc"><p>Method to get the text for a node according to a template: <code><a title="tf.advanced.helpers.getText" href="helpers.html#tf.advanced.helpers.getText">getText()</a></code></p></div>
-</dd>
-<dt id="tf.advanced.unravel.OuterSettings.lookupMethod"><code class="name">var <span class="ident">lookupMethod</span></code></dt>
-<dd>
-<div class="desc"><p>Method to get the value of a node feature: <code><a title="tf.core.api.Api.Fs" href="../core/api.html#tf.core.api.Api.Fs">Api.Fs()</a></code></p></div>
 </dd>
 <dt id="tf.advanced.unravel.OuterSettings.ltr"><code class="name">var <span class="ident">ltr</span></code></dt>
 <dd>
@@ -950,7 +971,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L159-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L168-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TreeInfo:
     &#34;&#34;&#34;Tree properties during plain() or pretty().
@@ -978,7 +999,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L172-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L181-L182" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def get(self, k, v):
     return getattr(self, k, v)</code></pre>
@@ -992,7 +1013,7 @@ the chunk). The top of the tree has only has options and settings.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/advanced/unravel.py#L168-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/advanced/unravel.py#L177-L179" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def update(self, **specs):
     for (k, v) in specs.items():
@@ -1100,11 +1121,13 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.advanced.unravel.OuterSettings" href="#tf.advanced.unravel.OuterSettings">OuterSettings</a></code></h4>
 <ul class="two-column">
+<li><code><a title="tf.advanced.unravel.OuterSettings.allEFeats" href="#tf.advanced.unravel.OuterSettings.allEFeats">allEFeats</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.browsing" href="#tf.advanced.unravel.OuterSettings.browsing">browsing</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.eLookupMethod" href="#tf.advanced.unravel.OuterSettings.eLookupMethod">eLookupMethod</a></code></li>
+<li><code><a title="tf.advanced.unravel.OuterSettings.fLookupMethod" href="#tf.advanced.unravel.OuterSettings.fLookupMethod">fLookupMethod</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.fmt" href="#tf.advanced.unravel.OuterSettings.fmt">fmt</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.getGraphics" href="#tf.advanced.unravel.OuterSettings.getGraphics">getGraphics</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.getText" href="#tf.advanced.unravel.OuterSettings.getText">getText</a></code></li>
-<li><code><a title="tf.advanced.unravel.OuterSettings.lookupMethod" href="#tf.advanced.unravel.OuterSettings.lookupMethod">lookupMethod</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.ltr" href="#tf.advanced.unravel.OuterSettings.ltr">ltr</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.slotType" href="#tf.advanced.unravel.OuterSettings.slotType">slotType</a></code></li>
 <li><code><a title="tf.advanced.unravel.OuterSettings.slotsMethod" href="#tf.advanced.unravel.OuterSettings.slotsMethod">slotsMethod</a></code></li>

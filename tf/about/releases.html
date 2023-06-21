@@ -32,14 +32,77 @@ all possibilities.</p>
 <p>See the app-specific tutorials via <code><a title="tf.about.corpora" href="corpora.html">tf.about.corpora</a></code>.</p>
 <hr>
 <h2 id="11">11</h2>
-<h3 id="11417-upcoming">11.4.17 (upcoming)</h3>
-<p>2023-06-??</p>
+<h3 id="115">11.5</h3>
+<h4 id="1150-upcoming">11.5.0 (upcoming)</h4>
+<p>2023-06-21</p>
+<h5 id="new-features">New features</h5>
+<ul>
+<li>
+<p>Edge display in Jupyter Notebooks</p>
+<ul>
+<li>In pretty displays, edge features can be displayed, much like node features.</li>
+<li>If edges have values, you see those values, otherwise you just see an arrow,
+↦ for an outgoing error, ⇥ for an incoming error.</li>
+<li>If you switch on the display of nodes, edges will show the nodes to which
+or from which they are directed.</li>
+<li>There are new
+<a href="https://annotation.github.io/text-fabric/tf/advanced/options.html">options</a>
+<code>forceEdges</code> and <code>edgeFeatures</code> to turn edge display off or on, for
+selected features. Edge features that are mentioned in a query are
+automatically shown.</li>
+<li>Edges can also be highlighted by passing an option <code>edgeHighlights</code> to the
+pretty displays. You can specify to highlight an edge between two specific
+nodes, or all edges from a specific node or all edges to a specific node.</li>
+</ul>
+</li>
+<li>
+<p>The TF browser got some fixes and upgrades:</p>
+<ul>
+<li>
+<p>Jobs</p>
+<ul>
+<li>It is easier to manage different search jobs, the job controls are always
+visible at the top of the left column.</li>
+<li>The operations of saving a job to file and loading a job from file are
+easier accessible.</li>
+<li>The logic of clearing a job, making a new job, and starting a duplicate job
+has been fixed.</li>
+</ul>
+</li>
+<li>
+<p>Highlighting</p>
+<ul>
+<li>
+<p>You can highlight different parts of query results with different colors.
+See the control below the query template, where you can specify a color map.
+This was already possible in a Jupyter notebook.</p>
+</li>
+<li>
+<p>You can highlight edges with different colors.
+See the control below the query template, where you can specify an edge
+color map, just as in Jupyter Notebooks with <code>edgeHighlights</code>.
+Start with clicking on an edge, and then some entries will be appended
+to this map.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The sizing of the parts of the TF screen has been improved.</p>
+</li>
+<li>
+<p>The documentatation inside the TF browser has been updated.</p>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="ongoing-work-on-conversion">Ongoing work on conversion</h5>
 <ul>
 <li><code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code>: if generated tokens cross element boundaries, they will be
 split on those boundaries. These atomic tokens become the slots (type <code>t</code> by
 default), the original tokens are added as nodes of type <code>token</code>.</li>
 </ul>
-<h3 id="11415-16">11.4.15-16</h3>
+<h3 id="114">11.4</h3>
+<h4 id="11415-16">11.4.15-16</h4>
 <p>2023-05-25</p>
 <ul>
 <li>TEI to TF conversion: added options to replace empty <code>&lt;pb&gt;</code> elements by
@@ -64,9 +127,10 @@ alternately.</li>
 <li>New function <code>A.publishRelease()</code> by which you can publish a release of a TF
 dataset straight from your program or notebook, without clicking around in
 a browser. See <code><a title="tf.advanced.repo.publishRelease" href="../advanced/repo.html#tf.advanced.repo.publishRelease">publishRelease()</a></code> or the
-<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb">annotation/mondriaan</a> example.</li>
+<a href="https://nbviewer.org/github/annotation/mondriaan/blob/master/programs/publish.ipynb">annotation/mondriaan</a>
+example.</li>
 </ul>
-<h3 id="11414">11.4.14</h3>
+<h4 id="11414">11.4.14</h4>
 <p>2023-05-12</p>
 <ul>
 <li>TEI to TF conversion: added the options to generate edges for
@@ -79,10 +143,10 @@ Now we transfer <em>all</em> edges that involve old slots to their corresponding
 switched on, edges that have been generated in the conversion process will
 not be lost when you transform the TF further, e.g. by adding tokens and sentences.</li>
 </ul>
-<h3 id="11413">11.4.13</h3>
+<h4 id="11413">11.4.13</h4>
 <p>2023-05-11</p>
 <p>Small fixes to the XML conversion.</p>
-<h3 id="1141112">11.4.11,12</h3>
+<h4 id="1141112">11.4.11,12</h4>
 <p>2023-05-10</p>
 <ul>
 <li>
@@ -98,8 +162,7 @@ See this code to see how that is done:</p>
 You can tweak how attribute values are reported when you run preliminary checks.</p>
 </li>
 </ul>
-<h2 id="11_1">11</h2>
-<h3 id="11410">11.4.10</h3>
+<h4 id="11410">11.4.10</h4>
 <p>2023-05-09</p>
 <ul>
 <li>Fixed a bug in <code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> in case it is used to delete types from
@@ -109,7 +172,7 @@ Explore this in this
 <a href="https://nbviewer.org/github/ETCBC/bhsa-min/blob/master/programs/make.ipynb">notebook</a>
 where we compare a minimalistic version of the BHSA with the complete BHSA.</li>
 </ul>
-<h3 id="1149">11.4.9</h3>
+<h4 id="1149">11.4.9</h4>
 <p>2023-05-08</p>
 <p>The XML converter is now easier to use:</p>
 <ul>
@@ -120,7 +183,7 @@ easily and feed it to the converter.</li>
 <a href="https://nbviewer.org/github/ETCBC/nestle1904/blob/master/programs/tfFromLowfat.ipynb">Nestle1904 dataset</a>
 (Greek New Testament)</li>
 </ul>
-<h3 id="1148">11.4.8</h3>
+<h4 id="1148">11.4.8</h4>
 <p>2023-05-08</p>
 <ul>
 <li>
@@ -149,7 +212,7 @@ and show the message.</p>
 </ul>
 </li>
 </ul>
-<h3 id="1147">11.4.7</h3>
+<h4 id="1147">11.4.7</h4>
 <p>2023-05-08</p>
 <p>I conducted an experiment to reduce the TF memory footprint by storing a lot of
 data in numpy arrays. That resulted in a reduction from 2.5 GB to 1.65 GB for the
@@ -162,7 +225,7 @@ the reduction was not enough to prevent a crash.</p>
 <p>Note, that when Text-Fabric precokputes data, it will store the results in</p>
 <p><code>.tf/4</code> (<code>PACK_VERSION = 4</code>), whereas the old way's results are still in
 <code>.tf/3</code> (<code>PACK_VERSION = 3</code>). See <code><a title="tf.parameters.PACK_VERSION" href="../parameters.html#tf.parameters.PACK_VERSION">PACK_VERSION</a></code>.</p>
-<h3 id="1146">11.4.6</h3>
+<h4 id="1146">11.4.6</h4>
 <p>2023-05-04</p>
 <ul>
 <li><code><a title="tf.dataset.modify" href="../dataset/modify.html">tf.dataset.modify</a></code> accepts a new optional parameter with a new version for
@@ -184,10 +247,10 @@ Thanks Oliver Glanz for reporting this.</p>
 <code><a title="tf.core.fabric" href="../core/fabric.html">tf.core.fabric</a></code>.</p>
 </li>
 </ul>
-<h3 id="1145">11.4.5</h3>
+<h4 id="1145">11.4.5</h4>
 <p>2023-05-03</p>
 <p>Fixed a left-over bug introduced by the previous update.</p>
-<h3 id="1144">11.4.4</h3>
+<h4 id="1144">11.4.4</h4>
 <p>2023-05-02</p>
 <ul>
 <li>
@@ -205,7 +268,7 @@ only once for each node in the display.</p>
 <p>Fixed a bug in <code><a title="tf.core.files.getLocation" href="../core/files.html#tf.core.files.getLocation">getLocation()</a></code></p>
 </li>
 </ul>
-<h3 id="1143">11.4.3</h3>
+<h4 id="1143">11.4.3</h4>
 <p>2023-05-01</p>
 <ul>
 <li>Fix of a problem spotted by Cody Kingham: the nodes delivered by
@@ -214,7 +277,7 @@ BHSA. It turns out that I implemented the <code>s()</code> function on the featu
 in a different, more efficient way that on all other features. And I forgot to
 sort the result in the <code>otype</code> case. From now on: these nodes <em>will</em> be sorted.</li>
 </ul>
-<h3 id="1142">11.4.2</h3>
+<h4 id="1142">11.4.2</h4>
 <p>2023-04-26</p>
 <h5 id="commandline-tasks">Commandline tasks</h5>
 <p>I'am going to change the commands that Text-Fabric provides on the commandline after installing.</p>
@@ -295,12 +358,12 @@ It also autodetects the generated TF dataset versions, and by default overwrites
 the latest one. But you can easily direct the converter to other versions, both
 of the TEI and the TF.</li>
 </ul>
-<h3 id="1141">11.4.1</h3>
+<h4 id="1141">11.4.1</h4>
 <p>2023-04-24</p>
 <p>Small fixes in the TEI conversion and the NLP pipeline integration.
 The parameters/flags for the convert steps and pipeline operations have been
 made more powerful and superfluous options have been removed.</p>
-<h3 id="1140">11.4.0</h3>
+<h4 id="1140">11.4.0</h4>
 <p>2023-04-21</p>
 <p>This new version is all about using the results of NLP pipelines in the creation
 of a TF dataset.
@@ -323,7 +386,7 @@ character nodes to be discarded. This can be done in one go.</li>
 in three levels of detail.</li>
 </ul>
 <h3 id="113">11.3</h3>
-<h3 id="1131">11.3.1</h3>
+<h4 id="1131">11.3.1</h4>
 <p>2023-04-11</p>
 <ul>
 <li>
@@ -385,7 +448,7 @@ Thanks to Saulo de Oliveira Cantanhêde for reporting this.</p>
 but replace it with a <code>~</code>. There were some cases where this escaping was
 not successfully applied, e.g. in <code><a title="tf.advanced.repo" href="../advanced/repo.html">tf.advanced.repo</a></code>.</li>
 </ul>
-<h3 id="1130">11.3.0</h3>
+<h4 id="1130">11.3.0</h4>
 <p>2023-03-23</p>
 <ul>
 <li>
@@ -417,7 +480,7 @@ too many spaces in the Samaritan Pentateuch. This has been fixed.</p>
 </li>
 </ul>
 <h3 id="112">11.2</h3>
-<h3 id="1123">11.2.3</h3>
+<h4 id="1123">11.2.3</h4>
 <p>2023-03-08</p>
 <p>Improvements in the TEI to TF conversion:</p>
 <ul>
@@ -432,14 +495,14 @@ this gives a bit of a lower resolution, but data processing is much quicker;</li
 <p>Fix in <code><a title="tf.advanced.display.export" href="../advanced/display.html#tf.advanced.display.export">export()</a></code>: if a value starts with a quote, it will be preceded by a backslash,
 otherwise it disturbs Excel and Numbers when they read it in a tab-separated file.</p>
 <p>Other small fixes.</p>
-<h3 id="1122">11.2.2</h3>
+<h4 id="1122">11.2.2</h4>
 <p>2023-02-22</p>
 <p>Added <code><a title="tf.convert.xml" href="../convert/xml.html">tf.convert.xml</a></code>, a straightforward, generic XML to TF converter, obtained from
 <code><a title="tf.convert.tei" href="../convert/tei.html">tf.convert.tei</a></code> by stripping almost all intelligence from it.
 It serves as a stub to start off with your own XML to TF conversion program.</p>
 <p>For an example how to use it, see its application to the
 <a href="https://github.com/ETCBC/nestle1904">Greek New Testament, lowfat trees</a>.</p>
-<h3 id="1121">11.2.1</h3>
+<h4 id="1121">11.2.1</h4>
 <p>2023-02-21</p>
 <p>Addition to the nbconvert tool: <code><a title="tf.tools.nbconvert" href="../tools/nbconvert.html">tf.tools.nbconvert</a></code>:
 If you pass only an input dir, it creates an html index for that directory.
@@ -458,7 +521,7 @@ the root cause of this was the afore-mentioned bug in <code><a title="tf.tools.x
 </ul>
 <p>A fix of an error, spotted by Christian C. Høygaard, while loading a TF resource in
 a slightly unusual way. </p>
-<h3 id="1120">11.2.0</h3>
+<h4 id="1120">11.2.0</h4>
 <p>2023-02-16</p>
 <h4 id="new-converter-tei-to-tf">New converter: TEI to TF</h4>
 <p>This is a generic, but also somewhat dumb, converter that
@@ -488,7 +551,7 @@ to a tutorial or document served via the Pages of GitHub or GitLab.</p>
 <p>Various app-configuration improvements under the hood, solving all kinds of edge
 cases, mostly having to do with on-premiss GitLab backends.</p>
 <h3 id="111">11.1</h3>
-<h3 id="1114">11.1.4</h3>
+<h4 id="1114">11.1.4</h4>
 <p>2023-02-12</p>
 <p>Small improvement in rendering features with nodes: if a feature value ends
 with a space,
@@ -498,17 +561,17 @@ non-breaking space.</p>
 <code>pip install text-fabric</code> and not <code>pip install 'text-fabric[all]'</code></p>
 <p>In that case text-fabric referred to an error class that
 was not imported. Spotted by Martijn Naaijer. Fixed.</p>
-<h3 id="1113">11.1.3</h3>
+<h4 id="1113">11.1.3</h4>
 <p>2023-02-03</p>
 <p>In the Text-Fabric browser you can now resize the column in which you write
 your query.</p>
-<h3 id="1112">11.1.2</h3>
+<h4 id="1112">11.1.2</h4>
 <p>2023-01-15</p>
 <p>Small fix in math display.</p>
-<h3 id="1111">11.1.1</h3>
+<h4 id="1111">11.1.1</h4>
 <p>2023-01-13</p>
 <p>Small fixes</p>
-<h3 id="1110">11.1.0</h3>
+<h4 id="1110">11.1.0</h4>
 <p>2023-01-12</p>
 <p>Mathematical formulas in TeX notation are supported.
 You can configure any app by putting <code>showMath: true</code> in its
@@ -518,21 +581,21 @@ nodes in Jupyter Notebooks and in the Text-Fabric browser.</p>
 <p>It is used in the
 <a href="https://github.com/CLARIAH/descartes-tf">letters of Descartes</a>.</p>
 <h3 id="110">11.0</h3>
-<h3 id="1107">11.0.7</h3>
+<h4 id="1107">11.0.7</h4>
 <p>2022-12-30</p>
 <p>This fixes issue
 <a href="https://github.com/annotation/text-fabric/issues/78">#78</a>,
 where Text-Fabric crashes if the binary data for a feature is corrupted.
 This may happen if Text-Fabric is interrupted in the precomputation stage.
 Thanks to <a href="https://github.com/sethbam9">Seth Howell</a> for reporting this.</p>
-<h3 id="1106">11.0.6</h3>
+<h4 id="1106">11.0.6</h4>
 <p>2022-12-27</p>
 <ul>
 <li>Small fix in the TF browser (<code>prettyTuple()</code> is called with <code>sec=</code> instead of <code>seq=</code>).</li>
 <li>Fix in advanced.search.py, introduced by revisiting some code that deals with sets.
 Reported by Oliver Glanz.</li>
 </ul>
-<h3 id="1104-5">11.0.4-5</h3>
+<h4 id="1104-5">11.0.4-5</h4>
 <p>2022-12-18</p>
 <ul>
 <li>Improved display of special characters in text-fabric browser.</li>
@@ -545,7 +608,7 @@ with some statistics.</li>
 <li>In the Text-Fabric browser this header information is shown when you expand a new
 tab in the side bar: <strong>Corpus</strong>.</li>
 </ul>
-<h3 id="1103">11.0.3</h3>
+<h4 id="1103">11.0.3</h4>
 <p>2022-12-17</p>
 <p><strong>Backends</strong></p>
 <p>Small fixes for problems encountered when using gitlab backends.</p>
@@ -565,7 +628,7 @@ separate from the messages, which conveys whether the query was successfull.
 Queries with informational messages and a positive status will have their results
 shown as well as their messages. </li>
 </ul>
-<h3 id="1102">11.0.2</h3>
+<h4 id="1102">11.0.2</h4>
 <p>2022-12-04</p>
 <p>Text-Fabric will detect if it runs on an iPad.
 On an iPad the home directory <code>~</code> is not writable.
@@ -577,7 +640,7 @@ it, so that it does not reveal the location of your home directory.</p>
 <em>your home directory</em><code>/Documents</code> by <code>~</code>.</p>
 <p>So if you publish notebooks made on an iPad or made on a computer,
 there is no difference in the reported file names.</p>
-<h3 id="1101">11.0.1</h3>
+<h4 id="1101">11.0.1</h4>
 <p>2022-11-18</p>
 <p>Small fixes: the newest version of the
 <a href="https://pygithub.readthedocs.io/en/latest/introduction.html">pygithub</a>
@@ -588,7 +651,7 @@ That has been fixed. </p>
 <p>As a consequence, we require the now newest release of that module,
 which in turns requires a Python version of at least 3.7.0.</p>
 <p>So we have bumped the Python requirement for Text-Fabric from 3.6.3 to 3.7.0.</p>
-<h3 id="1100">11.0.0</h3>
+<h4 id="1100">11.0.0</h4>
 <p>2022-11-11</p>
 <p>Text-Fabric can be installed with different capabilities.</p>
 <p>On some platforms not all requirements for Text-Fabric can be met, e.g.
@@ -604,7 +667,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -677,14 +740,19 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
-<li><a href="#11417-upcoming">11.4.17 (upcoming)</a></li>
+<li><a href="#115">11.5</a><ul>
+<li><a href="#1150-upcoming">11.5.0 (upcoming)</a><ul>
+<li><a href="#new-features">New features</a></li>
+<li><a href="#ongoing-work-on-conversion">Ongoing work on conversion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#114">11.4</a><ul>
 <li><a href="#11415-16">11.4.15-16</a></li>
 <li><a href="#11414">11.4.14</a></li>
 <li><a href="#11413">11.4.13</a></li>
 <li><a href="#1141112">11.4.11,12</a></li>
-</ul>
-</li>
-<li><a href="#11_1">11</a><ul>
 <li><a href="#11410">11.4.10</a></li>
 <li><a href="#1149">11.4.9</a></li>
 <li><a href="#1148">11.4.8</a></li>
@@ -700,14 +768,18 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><a href="#1141">11.4.1</a></li>
 <li><a href="#1140">11.4.0</a></li>
-<li><a href="#113">11.3</a></li>
+</ul>
+</li>
+<li><a href="#113">11.3</a><ul>
 <li><a href="#1131">11.3.1</a></li>
 <li><a href="#1130">11.3.0</a></li>
-<li><a href="#112">11.2</a></li>
+</ul>
+</li>
+<li><a href="#112">11.2</a><ul>
 <li><a href="#1123">11.2.3</a></li>
 <li><a href="#1122">11.2.2</a></li>
 <li><a href="#1121">11.2.1</a></li>
-<li><a href="#1120">11.2.0</a><ul>
+<li><a href="#1120">11.2.0</a></li>
 <li><a href="#new-converter-tei-to-tf">New converter: TEI to TF</a></li>
 <li><a href="#new-command-line-tool-nbconvert">New command line tool: nbconvert</a></li>
 <li><a href="#new-command-line-tool-xmlschema">New command line tool: xmlschema</a></li>
@@ -715,13 +787,15 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#other-improvements">Other improvements</a></li>
 </ul>
 </li>
-<li><a href="#111">11.1</a></li>
+<li><a href="#111">11.1</a><ul>
 <li><a href="#1114">11.1.4</a></li>
 <li><a href="#1113">11.1.3</a></li>
 <li><a href="#1112">11.1.2</a></li>
 <li><a href="#1111">11.1.1</a></li>
 <li><a href="#1110">11.1.0</a></li>
-<li><a href="#110">11.0</a></li>
+</ul>
+</li>
+<li><a href="#110">11.0</a><ul>
 <li><a href="#1107">11.0.7</a></li>
 <li><a href="#1106">11.0.6</a></li>
 <li><a href="#1104-5">11.0.4-5</a></li>
@@ -729,6 +803,8 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#1102">11.0.2</a></li>
 <li><a href="#1101">11.0.1</a></li>
 <li><a href="#1100">11.0.0</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#older-releases">Older releases</a></li>

@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L1-L442" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L1-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -46,6 +46,7 @@ That dressing up is happening in this module, it has the higher level
 functions for composing tables and passages.
 &#34;&#34;&#34;
 
+import json
 import pickle
 import markdown
 from textwrap import dedent
@@ -55,11 +56,13 @@ from ..advanced.helpers import RESULT
 from .wrap import (
     pageLinks,
     passageLinks,
+    wrapColorMap,
+    wrapEColorMap,
     wrapOptions,
     wrapSelect,
     wrapProvenance,
 )
-from .servelib import getAbout, getFormData, zipTables
+from .servelib import getAbout, getFormData, zipTables, BATCH
 
 
 Cap = Capable(&#34;browser&#34;)
@@ -95,6 +98,9 @@ def serveTable(web, kind, getx=None, asDict=False):
         options = {
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
+        options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+        options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
         (table, messages) = kernelApi.table(
             kind,
             task,
@@ -103,6 +109,7 @@ def serveTable(web, kind, getx=None, asDict=False):
             fmt=textFormat,
             baseTypes=form[&#34;baseTypes&#34;],
             hiddenTypes=form[&#34;hiddenTypes&#34;],
+            edgeFeatures=form[&#34;edgeFeatures&#34;],
             getx=int(getx) if getx else None,
             **options,
         )
@@ -155,6 +162,9 @@ def serveQuery(web, getx, asDict=False):
                 for (k, v) in interfaceDefaults.items()
                 if v is not None
             }
+            options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+            options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
                     task,
@@ -165,6 +175,7 @@ def serveQuery(web, getx, asDict=False):
                     fmt=textFormat,
                     baseTypes=form[&#34;baseTypes&#34;],
                     hiddenTypes=form[&#34;hiddenTypes&#34;],
+                    edgeFeatures=form[&#34;edgeFeatures&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -180,9 +191,6 @@ def serveQuery(web, getx, asDict=False):
 
         if status and table is not None:
             pages = pageLinks(total, form[&#34;position&#34;])
-        # messages have already been shaped by search
-        # if messages:
-        #  messages = wrapMessages(messages)
     else:
         table = f&#34;no {resultKind}s&#34;
         messages = &#34;&#34;
@@ -193,7 +201,7 @@ def serveQuery(web, getx, asDict=False):
         table=table,
         nResults=total,
         status=status,
-        messages=messages,
+        messages=messages.strip(),
         features=features,
     )
 
@@ -220,6 +228,9 @@ def servePassage(web, getx):
     options = {
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
+    options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+    options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
         form[&#34;query&#34;],
@@ -230,6 +241,7 @@ def servePassage(web, getx):
         fmt=textFormat,
         baseTypes=form[&#34;baseTypes&#34;],
         hiddenTypes=form[&#34;hiddenTypes&#34;],
+        edgeFeatures=form[&#34;edgeFeatures&#34;],
         getx=getx,
         **options,
     )
@@ -304,13 +316,32 @@ def serveExport(web):
     )
 
 
-def serveDownload(web):
+def serveDownload(web, jobOnly):
     if not Cap.can(&#34;browser&#34;):
         return &#34;&#34;
 
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
+
+    if jobOnly:
+        appName = form[&#34;appName&#34;]
+        jobName = form[&#34;jobName&#34;]
+        fileName = f&#34;{appName}-{jobName}.json&#34;
+
+        headers = {
+            &#34;Expires&#34;: &#34;0&#34;,
+            &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+            &#34;Content-Type&#34;: &#34;application/json&#34;,
+            &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+            &#34;Content-Encoding&#34;: &#34;identity&#34;,
+        }
+
+        buffer = json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;)
+        return make_response(buffer, headers)
+
     kernelApi = web.kernelApi
     wildQueries = web.wildQueries
 
@@ -392,8 +423,9 @@ def serveAll(web, anything):
     allowedValues = aContext.allowedValues
     showMath = aContext.interfaceDefaults[&#34;showMath&#34;]
 
-    mathjax = dedent(
-        &#34;&#34;&#34;
+    mathjax = (
+        dedent(
+            &#34;&#34;&#34;
         &lt;script&gt;
         globalThis.MathJax = {
             tex: {
@@ -408,7 +440,10 @@ def serveAll(web, anything):
             async
         &gt;&lt;/script&gt;
         &#34;&#34;&#34;
-    ) if showMath else &#34;&#34;
+        )
+        if showMath
+        else &#34;&#34;
+    )
 
     kernelApi = web.kernelApi
 
@@ -438,6 +473,7 @@ def serveAll(web, anything):
         (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
         (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
         (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;edgeFeatures&#34;, &#34;echeck&#34;, typeCss, True),
         (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
     ):
         value = aContext.get(option, None) if resetForm else form[option]
@@ -445,6 +481,8 @@ def serveAll(web, anything):
         chooser[option] = options
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+    colorMapHtml = wrapColorMap(form)
+    eColorMapHtml = wrapEColorMap(form)
 
     characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
 
@@ -452,6 +490,8 @@ def serveAll(web, anything):
         css=css,
         mathjax=mathjax,
         characters=characters,
+        colorMapHtml=colorMapHtml,
+        eColorMapHtml=eColorMapHtml,
         colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
         header=header,
         setNames=setNameHtml,
@@ -459,6 +499,7 @@ def serveAll(web, anything):
         optionsHelp=optionsHelp,
         chooser=chooser,
         condensedOption=optionsMoved[&#34;condensed&#34;],
+        forceEdgesOption=optionsMoved[&#34;forceEdges&#34;],
         hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
         defaultCondenseType=defaultCondenseType,
         defaultTextFormat=defaultTextFormat,
@@ -466,9 +507,22 @@ def serveAll(web, anything):
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
+        author=&#34;&#34;,
+        title=&#34;&#34;,
+        description=&#34;&#34;,
+        messages=&#34;&#34;,
+        sections=&#34;&#34;,
+        tuples=&#34;&#34;,
+        query=&#34;&#34;,
+        position=1,
+        batch=BATCH,
+        passageOpened=&#34;&#34;,
+        sectionsOpened=&#34;&#34;,
+        tuplesOpened=&#34;&#34;,
+        queryOpened=&#34;&#34;,
     )
     for (k, v) in form.items():
-        if not (resetForm and k in templateData):
+        if not resetForm or k not in templateData:
             templateData[k] = v
     templateData[&#34;appName&#34;] = appName
     templateData[&#34;resetForm&#34;] = &#34;&#34;
@@ -493,7 +547,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L345-L442" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L376-L496" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
     if not Cap.can(&#34;browser&#34;):
@@ -509,8 +563,9 @@ def serveAll(web, anything):
     allowedValues = aContext.allowedValues
     showMath = aContext.interfaceDefaults[&#34;showMath&#34;]
 
-    mathjax = dedent(
-        &#34;&#34;&#34;
+    mathjax = (
+        dedent(
+            &#34;&#34;&#34;
         &lt;script&gt;
         globalThis.MathJax = {
             tex: {
@@ -525,7 +580,10 @@ def serveAll(web, anything):
             async
         &gt;&lt;/script&gt;
         &#34;&#34;&#34;
-    ) if showMath else &#34;&#34;
+        )
+        if showMath
+        else &#34;&#34;
+    )
 
     kernelApi = web.kernelApi
 
@@ -555,6 +613,7 @@ def serveAll(web, anything):
         (&#34;baseTypes&#34;, &#34;bcheck&#34;, typeCss, True),
         (&#34;condenseType&#34;, &#34;cradio&#34;, typeCss, False),
         (&#34;hiddenTypes&#34;, &#34;hcheck&#34;, typeCss, True),
+        (&#34;edgeFeatures&#34;, &#34;echeck&#34;, typeCss, True),
         (&#34;textFormat&#34;, &#34;tradio&#34;, formatCss, False),
     ):
         value = aContext.get(option, None) if resetForm else form[option]
@@ -562,6 +621,8 @@ def serveAll(web, anything):
         chooser[option] = options
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
+    colorMapHtml = wrapColorMap(form)
+    eColorMapHtml = wrapEColorMap(form)
 
     characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
 
@@ -569,6 +630,8 @@ def serveAll(web, anything):
         css=css,
         mathjax=mathjax,
         characters=characters,
+        colorMapHtml=colorMapHtml,
+        eColorMapHtml=eColorMapHtml,
         colofon=f&#34;{appLogo}{colofon}{tfLogo}&#34;,
         header=header,
         setNames=setNameHtml,
@@ -576,6 +639,7 @@ def serveAll(web, anything):
         optionsHelp=optionsHelp,
         chooser=chooser,
         condensedOption=optionsMoved[&#34;condensed&#34;],
+        forceEdgesOption=optionsMoved[&#34;forceEdges&#34;],
         hideTypesOption=optionsMoved[&#34;hideTypes&#34;],
         defaultCondenseType=defaultCondenseType,
         defaultTextFormat=defaultTextFormat,
@@ -583,9 +647,22 @@ def serveAll(web, anything):
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
+        author=&#34;&#34;,
+        title=&#34;&#34;,
+        description=&#34;&#34;,
+        messages=&#34;&#34;,
+        sections=&#34;&#34;,
+        tuples=&#34;&#34;,
+        query=&#34;&#34;,
+        position=1,
+        batch=BATCH,
+        passageOpened=&#34;&#34;,
+        sectionsOpened=&#34;&#34;,
+        tuplesOpened=&#34;&#34;,
+        queryOpened=&#34;&#34;,
     )
     for (k, v) in form.items():
-        if not (resetForm and k in templateData):
+        if not resetForm or k not in templateData:
             templateData[k] = v
     templateData[&#34;appName&#34;] = appName
     templateData[&#34;resetForm&#34;] = &#34;&#34;
@@ -596,22 +673,41 @@ def serveAll(web, anything):
 </details>
 </dd>
 <dt id="tf.server.serve.serveDownload"><code class="name flex">
-<span>def <span class="ident">serveDownload</span></span>(<span>web)</span>
+<span>def <span class="ident">serveDownload</span></span>(<span>web, jobOnly)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L271-L342" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L283-L373" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def serveDownload(web):
+<pre><code class="python">def serveDownload(web, jobOnly):
     if not Cap.can(&#34;browser&#34;):
         return &#34;&#34;
 
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
+
+    if jobOnly:
+        appName = form[&#34;appName&#34;]
+        jobName = form[&#34;jobName&#34;]
+        fileName = f&#34;{appName}-{jobName}.json&#34;
+
+        headers = {
+            &#34;Expires&#34;: &#34;0&#34;,
+            &#34;Cache-Control&#34;: &#34;no-cache, no-store, must-revalidate&#34;,
+            &#34;Content-Type&#34;: &#34;application/json&#34;,
+            &#34;Content-Disposition&#34;: f&#39;attachment; filename=&#34;{fileName}&#34;&#39;,
+            &#34;Content-Encoding&#34;: &#34;identity&#34;,
+        }
+
+        buffer = json.dumps(
+            {k: v for (k, v) in form.items() if k not in {&#34;edgeHighlights&#34;, &#34;colorMap&#34;}}
+        ).encode(&#34;utf8&#34;)
+        return make_response(buffer, headers)
+
     kernelApi = web.kernelApi
     wildQueries = web.wildQueries
 
@@ -687,7 +783,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L205-L268" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L217-L280" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
     if not Cap.can(&#34;browser&#34;):
@@ -763,7 +859,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L165-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L173-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
     if not Cap.can(&#34;browser&#34;):
@@ -787,6 +883,9 @@ def serveAll(web, anything):
     options = {
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
+    options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+    options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
         form[&#34;query&#34;],
@@ -797,6 +896,7 @@ def serveAll(web, anything):
         fmt=textFormat,
         baseTypes=form[&#34;baseTypes&#34;],
         hiddenTypes=form[&#34;hiddenTypes&#34;],
+        edgeFeatures=form[&#34;edgeFeatures&#34;],
         getx=getx,
         **options,
     )
@@ -813,7 +913,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L80-L162" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L87-L170" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
     if not Cap.can(&#34;browser&#34;):
@@ -857,6 +957,9 @@ def serveAll(web, anything):
                 for (k, v) in interfaceDefaults.items()
                 if v is not None
             }
+            options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+            options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
                     task,
@@ -867,6 +970,7 @@ def serveAll(web, anything):
                     fmt=textFormat,
                     baseTypes=form[&#34;baseTypes&#34;],
                     hiddenTypes=form[&#34;hiddenTypes&#34;],
+                    edgeFeatures=form[&#34;edgeFeatures&#34;],
                     getx=int(getx) if getx else None,
                     **options,
                 )
@@ -882,9 +986,6 @@ def serveAll(web, anything):
 
         if status and table is not None:
             pages = pageLinks(total, form[&#34;position&#34;])
-        # messages have already been shaped by search
-        # if messages:
-        #  messages = wrapMessages(messages)
     else:
         table = f&#34;no {resultKind}s&#34;
         messages = &#34;&#34;
@@ -895,7 +996,7 @@ def serveAll(web, anything):
         table=table,
         nResults=total,
         status=status,
-        messages=messages,
+        messages=messages.strip(),
         features=features,
     )</code></pre>
 </details>
@@ -908,7 +1009,7 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/70e2b58cbb0d7763d4e0652d177494890629ee95/tf/server/serve.py#L38-L77" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e835a6cc185b94e24e3c95abb763832b484dce0a/tf/server/serve.py#L41-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
     if not Cap.can(&#34;browser&#34;):
@@ -934,6 +1035,9 @@ def serveAll(web, anything):
         options = {
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
+        options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
+        options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+
         (table, messages) = kernelApi.table(
             kind,
             task,
@@ -942,6 +1046,7 @@ def serveAll(web, anything):
             fmt=textFormat,
             baseTypes=form[&#34;baseTypes&#34;],
             hiddenTypes=form[&#34;hiddenTypes&#34;],
+            edgeFeatures=form[&#34;edgeFeatures&#34;],
             getx=int(getx) if getx else None,
             **options,
         )
