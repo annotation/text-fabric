@@ -426,6 +426,7 @@ summary {
   justify-content: flex-start;
   align-items: flex-start;
   align-content: flex-start;
+  overflow: auto;
 }
 .frow {
   display: flex;

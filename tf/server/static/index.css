@@ -66,6 +66,7 @@ div.rightcolx {
 	padding-left: 8px;
 	padding-right: 4px;
 	height: 99vh;
+  min-width: 30vw;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
@@ -129,6 +130,7 @@ div.rightcolx {
 	flex: 0 0 auto;
 	background-color: var(--gray-back);
 	height: 99vh;
+  max-width: 20vw;
 	overflow-y: auto;
 }
 #sidebarcont > div {
@@ -139,8 +141,8 @@ div.rightcolx {
 	padding: 10px 6px;
 	margin: 10px 4px;
 	/*width: 20rem;*/
-  min-width: 33vw;
-  max-width: 50vw;
+  min-width: 10vw;
+  max-width: 20vw;
 }
 #sidebarcont > div.active {
 	display: block;

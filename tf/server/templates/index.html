@@ -5,8 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<title>TF {{appName}}-{{jobName}}</title>
 		<meta name="application-name" content="Text-Fabric Search Box"/>
-		<script defer src="/server/static/jquery.js"></script>
-		<script defer src="/server/static/tf3.0.js"></script>
 		<link rel="shortcut icon" href="/server/static/favicon.ico">
 		<link rel="stylesheet" href="/server/static/base.css"/>
 		<link rel="stylesheet" href="/server/static/display.css"/>
@@ -15,6 +13,8 @@
 		<link rel="stylesheet" href="/server/static/index.css"/>
 		<link rel="stylesheet" href="/server/static/fontawesome.css">
 		{{css|safe}}
+		<script defer src="/server/static/jquery.js"></script>
+		<script defer src="/server/static/tf3.0.js"></script>
     {{mathjax|safe}}
 	</head>
 	<body>
@@ -32,9 +32,6 @@
 				<div status="corpus">
 					<a href="#">Corpus</a>
 				</div>
-				<div status="jobs">
-					<a href="#">Jobs</a>
-				</div>
 				<div status="options">
 					<a href="#">Options</a>
 				</div>
@@ -43,7 +40,8 @@
 				<input type="hidden" id="side" name="side" value="{{side}}"/>
 				<div status="about">
 					<div>
-						<p><a target="_blank" href="https://github.com/annotation/text-fabric">Text-Fabric</a> is made by
+						<p><a target="_blank" href="https://github.com/annotation/text-fabric">Text-Fabric</a>
+               is made by
 						   <a target="_blank" href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
 						</p>
 					</div>
@@ -57,53 +55,6 @@
 						{{header|safe}}
 					</div>
         </div>
-				<div status="jobs">
-					<input
-						id="jobh" type="hidden" name="jobName"
-						value="{{jobName}}"
-					/>
-					<input
-						id="jobl" type="hidden" name="loadJob"
-						value="{{loadJob}}"
-					/>
-					<p class="ilab">This is job
-						<select class="" id="jchange">
-						</select>
-					</p>
-					<div>
-						<button
-							class="fa fa-plus" type="submit" id="jnew"
-							title="start a fresh job"
-						></button>
-						<button
-							class="fa fa-file-import" type="button" id="jopen"
-							title="upload a job and open it"
-						></button>
-						<button
-							class="fa fa-window-restore" type="submit"
-							formtarget="_blank"
-							title="open this job in a new tab"
-						></button>
-						<button
-							class="fa fa-edit" type="submit" id="jrename"
-							title="rename this job"
-						> </button>
-						<button
-							class="fa fa-times" type="submit" id="jclear"
-							title="reset this job to default"
-						></button>
-						<button
-							class="fa fa-trash" type="submit" id="jdelete"
-							title="delete this job"
-						></button>
-					</div>
-					<div id="jfilediv">
-						<input
-							id="jfile" type="file"
-							accept="application/json"
-						/>
-					</div>
-				</div>
 				<div status="options">
           <input type="hidden" id="resetf" name="resetForm" value="{{resetForm}}">
 					<div>
@@ -156,23 +107,18 @@
 				<div status="help">
 					<details id="helpTf" class="help dstate">
 						<summary>Text-Fabric Browser</summary>
-						<p>Explore the {{appName}} corpus.</p>
+            <p>Explore the <b>{{appName}}</b> corpus.</p>
 						<p>Use the
-							<span class="sections">{{defaultCondenseType}}-</span>,
-							<span class="tuples">node-</span>, and
-							<span class="template">search-</span> pads
+							<span class="sections">{{defaultCondenseType}}</span>,
+							<span class="tuples">node</span>, and
+							<span class="query">search</span> pads
 							to specify material of interest.</p>
 						<p>Copy individual results to the <span class="tuples">node pad</span>
 						   to compare them to each other.</p>
-						<p>Describe your study and export your work as a PDF with links
-						   to archived copies of the {{appName}} corpus and this tool.</p>
-						<p>Open <b>multiple windows and tabs</b> with this url,
-						   they all communicate with one and the same TF kernel;
-						   the lengthy data loading only happens when the TF kernel starts up,
-						   not when multiple webinterfaces communicate with the TF kernel.
-						   See <i>Jobs</i> for ways to perform other queries.</p>
-						<p>When you terminate <code>text-fabric</code> on the command line,
-						   the TF kernel will also be terminated.</p>
+            <p>Tweak the way you display your corpus and highlight your results
+               with a variety of colors.</p>
+            <p>Describe your study and export your work.</p>
+            <p>Download your query and results and metadata.</p>
 					</details>
 					<details id="helpSections" class="help dstate sections">
 						<summary>{{defaultCondenseType.capitalize()}} pad</summary>
@@ -189,22 +135,60 @@
 						<p>Enter a node or list of nodes here,
 						   such as <code>123</code> or
 						   <code>123,456,789</code>.</p>
-						<p>Copy the nodes of a result to here by clicking on
-						   the sequence number of a result in the result list.</p>
-						<p>Copy a node to here by clicking on its number
+            <p>Get nodes here by clicking on a sequence number of a result.</p>
+						<p>Get a node here by clicking on its number
 						   (when the option <i>show nodes</i> is checked).</p>
-						<p>Click <b>Go</b> to fetch the results.</p>
-						<p>The results of the nodes appear in the result list,
-						   with a negative sequence number.</p>
+						<p>Click <b>Go</b> to fetch the results, they appear with a negative
+               sequence number.</p>
 					</details>
 					<details id="helpTemplate" class="help dstate query">
 						<summary>Search Pad</summary>
-						<p>Enter a search template here.
-						   See the buttons on top for the docs.</p>
-						<p>Click <b>Go</b> to fetch the results.</p>
-						<p>The results of the search appear in the result list,
-						   with a positive sequence number.</p>
+						<p>Enter a search template here.</p>
+						<p>Click <b>Go</b> to fetch the results, they appear with a positive
+               sequence number.</p>
+            <p>If the query is not valid, you get a message why.</p>
+            <p>The <b>Corpus</b> tab contains links to relevant documentation.</p>
 					</details>
+          <details id="helpColormap" class="help dstate colormap">
+            <summary>Color map for query results</summary>
+            <p>Queries consist of several atoms: the nodes you search for.
+               The parts of the results that match these atoms can be highlighted with
+               different colors. By default, all parts get yellow highlights,
+               but you can provide a color mapping to map atom positions to
+               colors.</p>
+            <p>You find the color map under <b>query highlighting</b> under
+               the <span class="query">search</span> pad.
+               If it is empty, click the <code>+</code> button.
+               A color selector appears. You can press the <code>+</code> button
+               again to add as many color selectors as you wish. You can remove them
+               by pressing the <code>-</code> button.
+               You can select different colors in all these boxes.
+               The <i>n</i>-th atom of each query result will be highlighted in the
+               color of the <i>n</i>-th color box.</p>
+          </details>
+          <details id="helpEColormap" class="help dstate ecolormap">
+            <summary>Color map for edges</summary>
+            <p>In pretty displays, edge information may be visible, see
+               <b>show/hide selected edge features</b> under the <b>Options</b>
+               tab.</p>
+            <p>You can color edge information in order to see which nodes
+               have edges to which nodes. By default, no edges are colored, but you
+               can provide an edge color mapping.</p>
+            <p>You find the edge color map under the <b>edge highlighting</b> tab under
+               the <span class="query">search</span> pad.</p>
+            <p>If it is empty, you can add entries by clicking an edge feature
+               in a pretty display: these are marked by having the character
+               or ⇥ in ↦ them. After the click, three entries are added.</p>
+            <p>In each of these entries you see the name of the edge feature,
+               a color select box, a <code>-</code> button to remove the entry,
+               and an edge specification.</p>
+            <p>The edge specification may take three forms:</p>
+            <p><code>from</code> ↦ <code>to</code>: one edge between these nodes;</p>
+            <p><code>from</code> ↦ <i>any</i>: all edges from this node;</p>
+            <p><i>any</i> ↦ <code>to</code>: all edges to this node.</p>
+            <p>In this way you can color all edges to and from a specific node.</p>
+            <p>You can color as many edges as you want by clicking edges repeatedly.</p>
+          </details>
 					<details id="helpResults" class="help dstate">
 						<summary>Result list</summary>
 						<p>Show the text in the {{defaultTextFormat}} text format:
@@ -216,143 +200,207 @@
 						   nodes that are bigger than the condense node type,
 						   will not be expanded into pretty view. Either uncheck the 
 						   <i>condense</i> option or select a bigger condense type.</p>
-						<p>Click the <i>expand all</i> checkbox to collapse and open all results.</p>
-						<p>Click the sequence number to add the nodes in this result to the <i>node pad</i>.</p>
-						<p>Click the reference, to add it to the <i>reference pad</i>.</p>
+            <p>Click the <i>expand all</i> checkbox to collapse and open all
+               results.</p>
+            <p>Click the sequence number to add the nodes in this result to the
+               <i>node pad</i>.</p>
+            <p>Click the reference, to add it to the
+               <i>{{defaultCondenseType}}pad</i>.</p>
 						<p>Use the navigation button to walk through the results.</p>
 						<p>Results that you have expanded remain in view.</p>
-					</details>
-					<details id="helpJobs" class="help dstate">
-						<summary>Jobs</summary>
-						<p>Your job will be saved in your browser</p>
-						<p>Rename or duplicate your job, by typing a new name in the name field.</p>
-						<p>Load an other job by selecting
-						   the name under which it has been saved.
-						   This job will be loaded in a new tab.
-						   So you can work with multiple jobs in multiple tabs with only one running
-						   <code>text-fabric</code> instance.</p>
 					</details>
 					<details id="helpOptions" class="help dstate">
 						<summary>Options</summary>
 						<p><b title="fmt='text-orig-full'">Text format</b>
                Show the results in a text format of your choice: original script,
-						   transcription, or phonetic representations may be offered.</p>
+						   transcription, or phonetic representations may be offered,
+               depending on how the corpus has been created.</p>
             <p><b title="baseTypes={nodeType1, nodeType2}">Base types</b>
-               These types of nodes count as base types. The components
-               of base nodes will not be broken down in pretty displays. Highlights of base nodes
-               consist of coloured backgrounds, highlights of other nodes consist of coloured boxes
-               around the nodes.</p>
+               These types of nodes count as base types. The components of base
+               nodes will not be broken down in pretty displays. Highlights of
+               base nodes consist of coloured backgrounds, highlights of other
+               nodes consist of coloured boxes around the nodes.</p>
             {{optionsHelp|safe}}
-            {{colorMapHelp|safe}}
-            {{eColorMapHelp|safe}}
+					</details>
+					<details id="helpJobs" class="help dstate">
+						<summary>Jobs</summary>
+						<p>Your job has a name, shown at the top above the
+							<span class="sections">{{defaultCondenseType}}-</span>-pad.
+						  Your browser remembers your jobs, and you can switch between those jobs.
+              You can also export jobs as files if you need to use a job across
+              browsers, or if you want to share a job with others. And, of
+              course, you can import jobs from file.
+            </p>
+            <p><button class="medium active">↑</button>
+               <b>Import a job from a file.</b>
+               This must be a json file, preferably one saved by Text-Fabric.</p>
+            <p><button class="medium active">+</button>
+               <b>Start a new job.</b>
+               The current job will be saved, and you will be prompted for a
+               different name for the new job.</p>
+            <p><button class="medium active">++</button>
+               <b>Duplicate the current job.</b>
+               The current job will be remembered as is, and you will be prompted for
+               a different name for the duplicate job.</p>
+            <p><button class="medium active">i</button>
+               <b>Provide metadata for the job.</b>
+						   Provide your name, title, and description (markdown is supported).
+               There are some additional controls here to *export* the data of your
+               job, see <b>Export</b> below.</p>
+            <p><button class="medium active">↓</button>
+               <b>Save the current job on file.</b>
+               The file will be saved to your donwloads folder.
+               a different name for the new job.</p>
+            <p><button class="medium active">→</button>
+               <b>Rename the current job.</b>
+               You will be prompted for a new name.</p>
+            <p><button class="medium active">0</button>
+               <b>Clear the current job.</b>
+               The information of this job will be reset to the default values, but the
+               name will remain unchanged.</p>
+            <p><button class="medium active">-</button>
+               <b>Delete the current job.</b>
+               Your browser will no longer remember it.
+               After this, the default job will be selected.</p>
 					</details>
 					<details id="helpExport" class="help dstate">
 						<summary>Export</summary>
-						<p>Export your results. Provide your name, title, and description (markdown is supported).</p>
-						<p>Click <button type="button" class="fa fa-box-open"></button>.
-						   The exported page opens in a new window or tab, formatted for saving as PDF.<br>
-						   Use your browser to export this page to PDF.<br>
-						   The PDF will contain a complete description of your work, with persistent links
-						   to the corpora and the tools, with additional metadata, and with the information
+						<p>Export your results.
+               Click <button class="medium active">i</button>
+               to provide your name, title, and description (markdown is supported).</p>
+            <p>Below the metadata you entered there are two buttons:</p>
+						<p><button class="fa fa-print medium active"></button>:
+              <b>Print/PDF-friendly version</b>
+						   The exported page opens in a new window or tab, in a form that is
+               especially handy to save as PDF (from within the browser).<br>
+               The PDF will contain a complete description of your work, with
+               persistent links to the corpora and the tools, with additional
+               metadata, and with the information
 						   you specify. It reflects the results as you see them on your screen.</p>
-						<p>Click <button type="button" class="fa fa-download"></button>.
-						   Additional data will be exported as files in a subdirectory corresponding to the current job:<br>
-						   (1) a file <code>resultsx.tsv</code>
-						   with all your query results (uncondensed). <b>This file can directly be opened in Excel.</b>
+						<p><button class="fa fa-download medium active"></button>:
+               <b>Download data</b>
+               Download the data of the current job, including its results.
+               corresponding to the current job:</p>
+            <p><b>(1) a file <code>resultsx.tsv</code></b>
+               with all your query results (uncondensed).
+               <i>This file can directly be opened in Excel.</i>
 						   Every row corresponds with a result tuple of nodes.
-						   It contains result sequence number, a verse reference to where
+						   It contains result sequence number, a section reference to where
 						   the result occurs, and fields for the member nodes.
-						   Every member of the result tuple corresponds to a few columns: node number, node type, full text,
+               Every member of the result tuple corresponds to a few columns:
+               node number, node type, full text,
 						   and features that you have used in the search template for that node.<br>
-						   <b>Hint:</b> If you want to include more features, use them with a trivial condition in your template,
-						   like so: <code>fff*</code> where <code>fff</code> is the name of your feature. The <code>*</code>
-						   operator means: <i>no value restriction</i>.<br>
-						   (2) a markdown file <code>about.md</code> with the metadata and description.<br>
-						   (3) <code>.tsv</code> files corresponding to the results of the the contents of the pads: these
-						   files contain the node numbers only.<br>
-						   (4) a file <code>job.json</code> with the job information. You can import this in the job section to restore 
-							 your job, or send it to a colleague who can then run the same query.</p>
-						<p><b>Tip</b> Archive the PDF and data files in an online repository, and you can cite your work properly.</p>
+               <b>Hint:</b> If you want to include more features, use them with
+               a trivial condition in your template,
+               like so: <code>fff*</code> where <code>fff</code> is the name of
+               your feature. The <code>*</code>
+						   operator means: <i>no value restriction</i>.</p>
+            <p><b>(2) a markdown file <code>about.md</code></b>
+               with the metadata and description.</p>
+            <p><b>(3) <code>.tsv</code> files</b>
+               corresponding to the results of the the contents of the pads:
+               these files contain the node numbers only.</p>
+            <p><b>(4) a file <code>job.json</code></b>
+               with the job information, exactly as what you get when you press
+               <button class="medium active">↓</button>.</p>
+            <p><b>Tip</b> Archive the PDF and data files in an online
+               repository, and you can cite your work properly.</p>
 					</details>
 				</div>
 			</div>
 			<div class="leftcol">
         <div id="jobs">
           <span>&nbsp;</span>
+					<input
+						id="jobh" type="hidden" name="jobName"
+						value="{{jobName}}"
+					/>
+					<input
+						id="jobl" type="hidden" name="loadJob"
+						value="{{loadJob}}"
+					/>
           <input
-            type="file" name="imjname" id="imjname"
+            type="file" id="jfile"
             accept="application/json"
-            class="import"
+            style="display: none;"
           >
+					<input
+						id="jmetaopen" type="hidden" name="metaopen"
+						value="{{metaopen}}"
+					/>
           <button
-            type="button" class="medium active" id="importj"
+            type="button" class="medium active" id="jopen"
             title="import job from file"
           >↑</button>
           <button
-            type="button" class="medium active" id="deletej"
-            title="delete current job"
-          >-</button>
-          <button
-            type="button" class="medium active" id="clearj"
-            title="clear current job"
-          >0</button>
-          <select class="selinp" id="jchange0"></select>
-          <button
-            type="button" class="medium active" id="newj"
-            title="fresh new job"
+            type="submit" class="medium active" id="jnew"
+            title="start a new job"
           >+</button>
           <button
-            type="button" class="medium active" id="renamej"
+            type="submit" class="medium active" id="jdup"
+            title="duplicate current job"
+          >++</button>
+          <select class="selinp" id="jchange"></select>
+          <button
+            type="button" class="medium active" id="jmeta"
+            title="provide metadata for this job"
+          >i</button>
+          <button
+            type="submit" class="medium active" id="exportj"
+            formaction="/downloadj" formtarget="_new"
+            title="save job as file in Downloads"
+          >↓</button>
+          <button
+            type="submit" class="medium active" id="jrename"
             title="rename current job"
           >→</button>
           <button
-            type="button" class="medium active" id="dupj"
-            title="duplicate current job"
-          >++</button>
+            type="submit" class="medium active" id="jclear"
+            title="clear current job"
+          >0</button>
           <button
-            type="button" class="medium active" id="exportj"
-            title="export job to file"
-          >↓</button>
+            type="submit" class="medium active" id="jdelete"
+            title="delete current job"
+          >-</button>
         </div>
-				<details id="exportmeta" class="dstate">
-          <summary>metadata ...</summary>
-					<div>
-						<p class="ilab">Author</p>
-						<div>
-							<input
-								class="name" type="text" name="author" value="{{author}}"
-								placeholder="My Name"
-							/>
-						</div>
-						<p class="ilab">Title</p>
-						<div>
-							<input
-								class="name" type="text" name="title" value="{{title}}"
-								placeholder="Title"
-							/>
-						</div>
-						<p class="ilab">Description</p>
-						<div class="description">
-							<textarea
-								class="description" name="description"
-								placeholder="Description"
-							>{{description}}</textarea>
-						</div>
-						<p class="ilab">
-							<button
-								type="submit" formaction="/download" formtarget="_new"
-								title="download the data of this job"
-							><span class="fa fa-download"/></button>
-							<button
-								type="submit" formaction="/export" formtarget="_new"
-								title="export this job in a new tab"
-							><span class="fa fa-box-open"/></button>
-						</p>
-						<div id="queryMessagesExport" class="messages">
-							{{messages}}
-						</div>
-					</div>
-				</details>
+        <div id="exportmeta">
+          <p class="ilab">Author</p>
+          <div>
+            <input
+              class="name" type="text" name="author" value="{{author}}"
+              placeholder="My Name"
+            />
+          </div>
+          <p class="ilab">Title</p>
+          <div>
+            <input
+              class="name" type="text" name="title" value="{{title}}"
+              placeholder="Title"
+            />
+          </div>
+          <p class="ilab">Description</p>
+          <div class="description">
+            <textarea
+              class="description" name="description"
+              placeholder="Description"
+            >{{description}}</textarea>
+          </div>
+          <p class="ilab">
+            <button
+              type="submit" formaction="/download" formtarget="_new"
+              title="download all data of this job as zip file"
+              class="medium active"
+            ><span class="fa fa-download"/></button>
+            <button
+              type="submit" formaction="/export" formtarget="_new"
+              title="print-friendly version of this job"
+              class="medium active"
+            ><span class="fa fa-print"/></button>
+          </p>
+          <div id="queryMessagesExport" class="messages">
+            {{messages}}
+          </div>
+        </div>
 				<hr>
 
 				<p class="ilab">

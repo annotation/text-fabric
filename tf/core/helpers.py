@@ -14,8 +14,8 @@ from .files import unexpanduser as ux
 
 NBSP = "\u00a0"  # non-breaking space
 
-TO_SYM = '↦'
-FROM_SYM = '⇥'
+TO_SYM = "↦"
+FROM_SYM = "⇥"
 
 
 LETTER = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")

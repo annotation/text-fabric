@@ -149,15 +149,6 @@ def wrapColorMap(form):
     other form elements.
     """
 
-    desc = "Color map for query results"
-    long = dedent(
-        """
-        You can color the parts that match the individual atoms of your query with
-        different colors.
-        """
-    )
-    helpHtml = f'<p><b title="color map">{desc}</b> {long}</p>'
-
     resetForm = form["resetForm"]
     if resetForm:
         colorMap = {}
@@ -171,7 +162,7 @@ def wrapColorMap(form):
         dedent(
             """
             <details id="colormap" class="dstate">
-                <summary>highlight colors</summary>
+                <summary class="ilab">query highlighting</summary>
                 <div>
             """
         )
@@ -210,7 +201,7 @@ def wrapColorMap(form):
 
     html.append("</div></details>")
 
-    return ("\n".join(html), "\n".join(helpHtml))
+    return "\n".join(html)
 
 
 def wrapEColorMap(form):
@@ -226,14 +217,6 @@ def wrapEColorMap(form):
     other form elements.
     """
 
-    desc = "Edge color map"
-    long = dedent(
-        """You can click edge feature values in order to highlight some or all
-        edges to or from a node.
-        """
-    )
-    helpHtml = f'<p><b title="edge color map">{desc}</b> {long}</p>'
-
     resetForm = form["resetForm"]
     if resetForm:
         edgeHighlights = {}
@@ -247,7 +230,7 @@ def wrapEColorMap(form):
         dedent(
             """
             <details id="edgefeatures" class="dstate">
-                <summary>edge highlighting</summary>
+                <summary class="ilab">edge highlighting</summary>
                 <table id="ecolordefs">
             """
         )
@@ -267,16 +250,16 @@ def wrapEColorMap(form):
 
         for ((f, t), color) in sorted(edgeInfo.items(), key=sortEdges):
             pos += 1
-            fRep = "<i>source</i>" if f is None else f
-            fVal = "all" if f is None else f
-            tRep = "<i>target</i>" if t is None else t
-            tVal = "all" if t is None else t
+            fRep = "any" if f is None else f
+            fVal = "any" if f is None else f
+            tRep = "any" if t is None else t
+            tVal = "any" if t is None else t
             if not color:
                 color = E_COLOR_DEF["t" if f is None else "f" if t is None else "b"]
             thisHtml = dedent(
                 f"""
                 <tr>
-                    <td>{eName}</td>
+                    <td><span class="ctype">{eName}</span></td>
                     <td>
                         <input
                             type="color" class="eclmap"
@@ -284,9 +267,9 @@ def wrapEColorMap(form):
                         >
                     </td>
                     <td><a href="#" pos="{pos}" class="ecolormapmin">-</a></td>
-                    <td><span>{fRep}</span></td>
+                    <td><span class="nde">{fRep}</span></td>
                     <td><span>{TO_SYM}</td>
-                    <td><span>{tRep}</span></td>
+                    <td><span class="nde">{tRep}</span></td>
                 </tr>
                 <input type="hidden" name="edge_name_{pos}" value="{eName}">
                 <input type="hidden" name="edge_from_{pos}" value="{fVal}">
@@ -317,7 +300,7 @@ def wrapEColorMap(form):
 
     html.append("</details>")
 
-    return ("\n".join(html), "\n".join(helpHtml))
+    return "\n".join(html)
 
 
 def wrapOptions(context, form):

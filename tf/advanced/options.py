@@ -382,7 +382,8 @@ INTERFACE_OPTIONS = (
         True,
         "hidet",
         "hide types",
-        "Do not show the outer structure of nodes of the selected types."
+        "Do not show the outer structure of nodes "
+        "of the selected types."
         "The contents of those nodes are still shown.",
         True,
     ),
@@ -390,8 +391,9 @@ INTERFACE_OPTIONS = (
         "forceEdges",
         False,
         "forcee",
-        "show/hide selected edge features",
-        "Show/hide edge features in pretty displays.",
+        "show/hide the selected edge features",
+        "Show selected edge features in pretty displays, hide the unselected ones. "
+        "If this is off, only the edge features that occur in the query are shown.",
         True,
     ),
     (

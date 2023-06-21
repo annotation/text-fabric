@@ -60,6 +60,7 @@ div.messages {
 	justify-content: flex-start;
 	align-items: stretch;
 	width: 100%;
+  max-width: 45vw;
 }
 .eline {
 	font-size: medium;
@@ -147,17 +148,12 @@ button.small.active, button.medium.active, a.medium.active, a.small.active {
   background-color: var(--button-back);
 }
 
-/* input type="file" control is hidden */
-#imjname {
-  display: none;
-}
-
 /* buttons and inputs for job control, im/export */
 
 #jobs {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 
@@ -193,6 +189,10 @@ button.medium, a.medium {
   font-size: large;
 }
 
+#exportmeta {
+  border-radius: 0.5rem;
+  border: 0.2rem solid var(--export-border)
+}
 /* COLORS */
 
 :root {
@@ -202,6 +202,8 @@ button.medium, a.medium {
 	--button-back:      hsla(  0,   0%,  20%, 1    );
 	--inactive-fore:    hsla(  0,   0%,  80%, 1    );
 	--inactive-back:    hsla(  0,   0%,  60%, 1    );
+	--export-border:    hsla(  0,   0%,  20%, 1    );
+	--export-back:      hsla(  0,   0%,  90%, 0.9  );
 
 	--sections-back:     hsla(210, 100%,  90%, 0.9  );
 	--tuples-back:       hsla( 90, 100%,  90%, 0.9  );

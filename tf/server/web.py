@@ -180,7 +180,11 @@ def factory(web):
 
     @app.route("/download", methods=["GET", "POST"])
     def serveDownloadX():
-        return serveDownload(web)
+        return serveDownload(web, False)
+
+    @app.route("/downloadj", methods=["GET", "POST"])
+    def serveDownloadJ():
+        return serveDownload(web, True)
 
     @app.route("/", methods=["GET", "POST"])
     @app.route("/<path:anything>", methods=["GET", "POST"])

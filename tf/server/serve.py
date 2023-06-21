@@ -10,6 +10,7 @@ That dressing up is happening in this module, it has the higher level
 functions for composing tables and passages.
 """
 
+import json
 import pickle
 import markdown
 from textwrap import dedent
@@ -25,7 +26,7 @@ from .wrap import (
     wrapSelect,
     wrapProvenance,
 )
-from .servelib import getAbout, getFormData, zipTables
+from .servelib import getAbout, getFormData, zipTables, BATCH
 
 
 Cap = Capable("browser")
@@ -251,8 +252,6 @@ def serveExport(web):
     tuplesTable = tuplesData["table"]
     queryMessages = queryData["messages"]
     queryTable = queryData["table"]
-    console(f"{len(queryTable)=}")
-    console(f"{queryMessages=}")
 
     # maybe this is a hack. Needed to prevent appName from specified twice
 
@@ -281,13 +280,32 @@ def serveExport(web):
     )
 
 
-def serveDownload(web):
+def serveDownload(web, jobOnly):
     if not Cap.can("browser"):
         return ""
 
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
+
+    if jobOnly:
+        appName = form["appName"]
+        jobName = form["jobName"]
+        fileName = f"{appName}-{jobName}.json"
+
+        headers = {
+            "Expires": "0",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Content-Type": "application/json",
+            "Content-Disposition": f'attachment; filename="{fileName}"',
+            "Content-Encoding": "identity",
+        }
+
+        buffer = json.dumps(
+            {k: v for (k, v) in form.items() if k not in {"edgeHighlights", "colorMap"}}
+        ).encode("utf8")
+        return make_response(buffer, headers)
+
     kernelApi = web.kernelApi
     wildQueries = web.wildQueries
 
@@ -369,8 +387,9 @@ def serveAll(web, anything):
     allowedValues = aContext.allowedValues
     showMath = aContext.interfaceDefaults["showMath"]
 
-    mathjax = dedent(
-        """
+    mathjax = (
+        dedent(
+            """
         <script>
         globalThis.MathJax = {
             tex: {
@@ -385,7 +404,10 @@ def serveAll(web, anything):
             async
         ></script>
         """
-    ) if showMath else ""
+        )
+        if showMath
+        else ""
+    )
 
     kernelApi = web.kernelApi
 
@@ -423,8 +445,8 @@ def serveAll(web, anything):
         chooser[option] = options
 
     (options, optionsMoved, optionsHelp) = wrapOptions(aContext, form)
-    (colorMapHtml, colorMapHelp) = wrapColorMap(form)
-    (eColorMapHtml, eColorMapHelp) = wrapEColorMap(form)
+    colorMapHtml = wrapColorMap(form)
+    eColorMapHtml = wrapEColorMap(form)
 
     characters = kernelApi.characters(fmt=form["textFormat"])
 
@@ -433,9 +455,7 @@ def serveAll(web, anything):
         mathjax=mathjax,
         characters=characters,
         colorMapHtml=colorMapHtml,
-        colorMapHelp=colorMapHelp,
         eColorMapHtml=eColorMapHtml,
-        eColorMapHelp=eColorMapHelp,
         colofon=f"{appLogo}{colofon}{tfLogo}",
         header=header,
         setNames=setNameHtml,
@@ -451,9 +471,22 @@ def serveAll(web, anything):
         exampleSection=exampleSection,
         pages=pages,
         passages=passages,
+        author="",
+        title="",
+        description="",
+        messages="",
+        sections="",
+        tuples="",
+        query="",
+        position=1,
+        batch=BATCH,
+        passageOpened="",
+        sectionsOpened="",
+        tuplesOpened="",
+        queryOpened="",
     )
     for (k, v) in form.items():
-        if not (resetForm and k in templateData):
+        if not resetForm or k not in templateData:
             templateData[k] = v
     templateData["appName"] = appName
     templateData["resetForm"] = ""

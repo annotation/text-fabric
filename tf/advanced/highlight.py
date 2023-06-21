@@ -1,5 +1,3 @@
-from itertools import chain
-
 from .search import runSearch
 
 
@@ -161,7 +159,7 @@ def getTupleHighlights(api, tup, highlights, colorMap, condenseType):
     return newHighlights
 
 
-def getPassageHighlights(app, node, query, cache):
+def getPassageHighlights(app, node, query, colorMap, cache):
     """Get the highlights for a whole passage.
 
     Parameters
@@ -174,10 +172,18 @@ def getPassageHighlights(app, node, query, cache):
     query: string
         A query to run, and whose results will be highlighted (as far they occur
         in the passage)
+    colorMap: dict
+        A mapping of tuple positions to colors.
+        Member `i` of a query result should be highlighted with color `colorMap[i]`.
     cache:  dict
         A cache that holds run queries and their results.
         Useful when we browse many chapters and want to show the highlights of
         the same query.
+
+    Returns
+    -------
+    dict
+        Keys are the nodes to be highlighted, values are the highlight colors.
     """
 
     if not query:
@@ -191,8 +197,22 @@ def getPassageHighlights(app, node, query, cache):
 
     api = app.api
     L = api.L
-    passageNodes = L.d(node)
 
-    resultSet = set(chain.from_iterable(queryResults))
+    passageNodes = L.d(node)
     passageSet = set(passageNodes)
-    return resultSet & passageSet
+
+    newHighlights = {}
+
+    for tup in queryResults:
+        for (i, n) in enumerate(tup):
+            if n not in passageSet:
+                continue
+            if newHighlights.get(n, None):
+                continue
+            newHighlights[n] = (
+                colorMap[i + 1]
+                if colorMap is not None and i + 1 in colorMap
+                else ""
+            )
+
+    return newHighlights

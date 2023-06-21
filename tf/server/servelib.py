@@ -56,7 +56,9 @@ def getFormData(interfaceDefaults):
 
     form = {}
     jobName = request.form.get("jobName", "").strip()
-    form["resetForm"] = request.form.get("resetForm", "")
+    resetForm = request.form.get("resetForm", "")
+    form["resetForm"] = resetForm
+
     if jobName:
         form["jobName"] = jobName
         form["loadJob"] = ""
@@ -64,15 +66,16 @@ def getFormData(interfaceDefaults):
         form["jobName"] = DEFAULT_NAME
         form["loadJob"] = "1"
         form["resetForm"] = "1"
+
     form["query"] = request.form.get("query", "").replace("\r", "")
     form["messages"] = request.form.get("messages", "") or ""
     form["features"] = request.form.get("features", "") or ""
     form["tuples"] = request.form.get("tuples", "").replace("\r", "")
     form["sections"] = request.form.get("sections", "").replace("\r", "")
     form["appName"] = request.form.get("appName", "")
-    form["jobName"] = request.form.get("jobName", "").strip() or DEFAULT_NAME
     form["side"] = request.form.get("side", "")
     form["dstate"] = request.form.get("dstate", "")
+    form["metaopen"] = request.form.get("metaopen", "")
     form["author"] = request.form.get("author", "").strip()
     form["title"] = request.form.get("title", "").strip()
     form["description"] = request.form.get("description", "").replace("\r", "")
@@ -99,31 +102,37 @@ def getFormData(interfaceDefaults):
     form["sec2"] = request.form.get("sec2", "")
     form["s0filter"] = request.form.get("s0filter", "")
 
+    for k in ["colormapn", "ecolormapn"]:
+        form[k] = request.form.get(k, "")
+    colorMapN = getInt(form["colormapn"], default=0)
+    eColorMapN = getInt(form["ecolormapn"], default=0)
+
     colorMap = {}
-    colorMapN = getInt(request.form.get("colormapn", ""), default=0)
 
     for i in range(1, colorMapN + 1):
         colorKey = f"colormap_{i}"
-        color = request.form.get(colorKey, "")
+        form[colorKey] = request.form.get(colorKey, "")
+        color = form[colorKey]
         colorMap[i] = color
 
     form["colorMap"] = colorMap
 
     edgeHighlights = {}
-    eColorMapN = getInt(request.form.get("ecolormapn", ""), default=0)
 
     for i in range(1, eColorMapN + 1):
-        color = request.form.get(f"ecolormap_{i}", "")
-        name = request.form.get(f"edge_name_{i}", "")
-        fRep = request.form.get(f"edge_from_{i}", "")
-        tRep = request.form.get(f"edge_to_{i}", "")
+        for k in [f"ecolormap_{i}", f"edge_name_{i}", f"edge_from_{i}", f"edge_to_{i}"]:
+            form[k] = request.form.get(k, "")
+        color = form[f"ecolormap_{i}"]
+        name = form[f"edge_name_{i}"]
+        fRep = form[f"edge_from_{i}"]
+        tRep = form[f"edge_to_{i}"]
         if name == "" or fRep == "" or tRep == "":
             continue
         f = (
             0
             if fRep == ""
             else None
-            if fRep == "all"
+            if fRep == "any"
             else int(fRep)
             if fRep.isdecimal()
             else 0
@@ -132,7 +141,7 @@ def getFormData(interfaceDefaults):
             0
             if tRep == ""
             else None
-            if tRep == "all"
+            if tRep == "any"
             else int(tRep)
             if tRep.isdecimal()
             else 0
@@ -140,16 +149,23 @@ def getFormData(interfaceDefaults):
         edgeHighlights.setdefault(name, {})[(f, t)] = color
 
     for i in range(1, 4):
-        color = request.form.get(f"ecolormap_new_{i}", "")
-        name = request.form.get(f"edge_name_new_{i}", "")
-        fRep = request.form.get(f"edge_from_new_{i}", "")
-        tRep = request.form.get(f"edge_to_new_{i}", "")
+        for k in [
+            f"ecolormap_new_{i}",
+            f"edge_name_new_{i}",
+            f"edge_from_new_{i}",
+            f"edge_to_new_{i}",
+        ]:
+            form[k] = request.form.get(k, "")
+        color = form[f"ecolormap_new_{i}"]
+        name = form[f"edge_name_new_{i}"]
+        fRep = form[f"edge_from_new_{i}"]
+        tRep = form[f"edge_to_new_{i}"]
         if name != "" and fRep != "" and tRep != "":
             f = (
                 0
                 if fRep == ""
                 else None
-                if fRep == "all"
+                if fRep == "any"
                 else int(fRep)
                 if fRep.isdecimal()
                 else 0
@@ -158,7 +174,7 @@ def getFormData(interfaceDefaults):
                 0
                 if tRep == ""
                 else None
-                if tRep == "all"
+                if tRep == "any"
                 else int(tRep)
                 if tRep.isdecimal()
                 else 0
@@ -218,6 +234,9 @@ def zipTables(csvs, tupleResultsX, queryResultsX, about, form):
     with ZipFile(zipBuffer, "w", **ZIP_OPTIONS) as zipFile:
 
         zipFile.writestr("job.json", json.dumps(form).encode("utf8"))
+        zipFile.writeStr("job.json", json.dumps(
+            {k: v for (k, v) in form.items() if k not in {"edgeHighlights", "colorMap"}}
+        ).encode("utf8"))
         zipFile.writestr("about.md", about)
         if csvs is not None:
             for (csv, data) in csvs:

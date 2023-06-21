@@ -276,6 +276,9 @@ def makeTfKernel(app, appName, port):
             aContext = app.context
             browseNavLevel = aContext.browseNavLevel
             browseContentPretty = aContext.browseContentPretty
+            display = app.display
+            dContext = display.distill(options)
+            colorMap = dContext.colorMap
 
             sectionFeatureTypes = T.sectionFeatureTypes
             sec0Type = T.sectionTypes[0]
@@ -321,7 +324,9 @@ def makeTfKernel(app, appName, port):
             )
 
             highlights = (
-                getPassageHighlights(app, contentNode, query, cache) if items else set()
+                getPassageHighlights(app, contentNode, query, colorMap, cache)
+                if items
+                else set()
             )
 
             passage = ""

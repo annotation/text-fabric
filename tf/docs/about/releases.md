@@ -14,14 +14,55 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 #### 11.5.0 (upcoming)
 
-2023-06-??
+2023-06-21
 
-*   In pretty displays, edge features can also be displayed.
-    There are new options `forceEdges` and `edgeFeatures` to turn edge display off or
-    on, for selected features. Edge features that are mentioned in a query are
-    automatically shown.
-*   Edges can also be highlighted by passing an option `edgeHighlights` to the
-    pretty displays.
+##### New features
+
+*   Edge display in Jupyter Notebooks
+
+    *   In pretty displays, edge features can be displayed, much like node features.
+    *   If edges have values, you see those values, otherwise you just see an arrow,
+        ↦ for an outgoing error, ⇥ for an incoming error.
+    *   If you switch on the display of nodes, edges will show the nodes to which
+        or from which they are directed.
+    *   There are new
+        [options](https://annotation.github.io/text-fabric/tf/advanced/options.html)
+        `forceEdges` and `edgeFeatures` to turn edge display off or on, for
+        selected features. Edge features that are mentioned in a query are
+        automatically shown.
+    *   Edges can also be highlighted by passing an option `edgeHighlights` to the
+        pretty displays. You can specify to highlight an edge between two specific
+        nodes, or all edges from a specific node or all edges to a specific node.
+
+*   The TF browser got some fixes and upgrades:
+
+    *   Jobs
+
+        *   It is easier to manage different search jobs, the job controls are always 
+            visible at the top of the left column.
+        *   The operations of saving a job to file and loading a job from file are
+            easier accessible.
+        *   The logic of clearing a job, making a new job, and starting a duplicate job
+            has been fixed.
+
+    *   Highlighting
+
+        *   You can highlight different parts of query results with different colors.
+            See the control below the query template, where you can specify a color map.
+            This was already possible in a Jupyter notebook.
+
+        *   You can highlight edges with different colors.
+            See the control below the query template, where you can specify an edge
+            color map, just as in Jupyter Notebooks with `edgeHighlights`.
+            Start with clicking on an edge, and then some entries will be appended
+            to this map.
+
+    *   The sizing of the parts of the TF screen has been improved.
+
+    *   The documentatation inside the TF browser has been updated.
+
+##### Ongoing work on conversion
+
 *   `tf.convert.addnlp`: if generated tokens cross element boundaries, they will be
     split on those boundaries. These atomic tokens become the slots (type `t` by
     default), the original tokens are added as nodes of type `token`.

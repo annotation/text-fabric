@@ -467,8 +467,8 @@ const activateEdges = () => {
         f = parseInt(md)
       }
       for (let p = 1; p <= 3; p++) {
-        const fRep = p == 1 ? f : p == 2 ? "all" : f
-        const tRep = p == 1 ? "all" : p == 2 ? t : t
+        const fRep = p == 1 ? f : p == 2 ? "any" : f
+        const tRep = p == 1 ? "any" : p == 2 ? t : t
         $(`input[name="edge_name_new_${p}"]`).val(ef)
         $(`input[name="edge_from_new_${p}"]`).val(fRep)
         $(`input[name="edge_to_new_${p}"]`).val(tRep)
@@ -663,10 +663,10 @@ const verifyApp = (jobContent, app) => {
   return false
 }
 
-const suggestName = jobName => {
+const suggestName = (jobName, other) => {
   const jobs = getJobs()
   let newName = jobName
-  const resolved = s => s != "" && s != jobName && !jobs.has(s)
+  const resolved = s => s != "" && (!other || s != jobName) && !jobs.has(s)
   let cancelled = false
   while (!resolved(newName) && !cancelled) {
     while (!resolved(newName)) {
@@ -700,17 +700,24 @@ const jobControls = () => {
   const jDelete = $("#jdelete")
   const jRename = $("#jrename")
   const jNew = $("#jnew")
+  const jDup = $("#jdup")
   const jOpen = $("#jopen")
-  const jFileDiv = $("#jfilediv")
   const jFile = $("#jfile")
+  const jMeta = $("#jmeta")
   const aName = $("#appName")
+  const metaDiv = $("#exportmeta")
+  const metaOpen = $("#jmetaopen")
 
   const form = $("form")
   const jobh = $("#jobh")
-  const side = $("#side")
-  const jobPart = "jobs"
 
-  jFileDiv.hide()
+  const isOpen = metaOpen.val() == "v"
+  if (isOpen) {
+    metaDiv.show()
+  }
+  else {
+    metaDiv.hide()
+  }
 
   jChange.change(e => {
     const oldJob = jobh.val()
@@ -722,26 +729,32 @@ const jobControls = () => {
     setLastJob($("#appName").val(), newJob)
     jobh.val(e.target.value)
     readForm()
-    side.val(jobPart)
     form.submit()
   })
 
   jClear.off("click").click(() => {
-    clearForm()
-    storeForm()
-    setLastJob($("#appName").val(), $("#jobh").val())
+    const jobName = jobh.val()
+    if (confirm(`Reset job ${jobName}?`)) {
+      clearForm()
+      storeForm()
+      setLastJob($("#appName").val(), $("#jobh").val())
+      form.submit()
+    }
   })
 
   jDelete.off("click").click(() => {
-    setLastJob($("#appName").val(), "")
-    deleteForm()
-    jobh.val("")
-    clearForm()
+    const jobName = jobh.val()
+    if (confirm(`Delete job ${jobName}?`)) {
+      setLastJob($("#appName").val(), "")
+      deleteForm()
+      jobh.val("")
+      clearForm()
+    }
   })
 
   jRename.off("click").click(e => {
     const jobName = jobh.val()
-    const newName = suggestName(jobName)
+    const newName = suggestName(jobName, true)
     if (newName == null) {
       e.preventDefault()
       return
@@ -752,8 +765,9 @@ const jobControls = () => {
     setLastJob($("#appName").val(), $("#jobh").val())
   })
 
-  jOpen.off("click").click(() => {
-    jFileDiv.show()
+  jOpen.off("click").click(e => {
+    jFile.click()
+    e.preventDefault()
   })
   jFile.change(() => {
     const jobFile = jFile.prop("files")[0]
@@ -764,7 +778,7 @@ const jobControls = () => {
         e.preventDefault()
         return
       }
-      const newName = suggestName(jobContent.jobName)
+      const newName = suggestName(jobContent.jobName, false)
       if (newName == null) {
         e.preventDefault()
         return
@@ -772,7 +786,6 @@ const jobControls = () => {
       storeForm()
       jobContent["jobName"] = newName
       readForm(jobContent)
-      side.val(jobPart)
       setLastJob($("#appName").val(), $("#jobh").val())
       form.submit()
     }
@@ -781,7 +794,7 @@ const jobControls = () => {
 
   jNew.off("click").click(e => {
     const jobName = jobh.val()
-    const newName = suggestName(jobName)
+    const newName = suggestName(jobName, true)
     if (newName == null) {
       e.preventDefault()
       return
@@ -792,12 +805,32 @@ const jobControls = () => {
     setLastJob($("#appName").val(), $("#jobh").val())
     storeForm()
   })
+
+  jDup.off("click").click(e => {
+    const jobName = jobh.val()
+    const newName = suggestName(jobName, true)
+    if (newName == null) {
+      e.preventDefault()
+      return
+    }
+    storeForm()
+    jobh.val(newName)
+    setLastJob($("#appName").val(), $("#jobh").val())
+    storeForm()
+  })
+
+  jMeta.off("click").click(e => {
+    e.preventDefault()
+    metaDiv.toggle()
+    const isOpen = metaOpen.val() == "v"
+    metaOpen.val(isOpen ? "x" : "v")
+  })
 }
 
 const readForm = jobContent => {
   let formObj
+  const go = document.querySelector("form")
   if (jobContent == null) {
-    const go = document.querySelector("form")
     const formData = new FormData(go)
     const appName = formData.get("appName")
     const jobName = formData.get("jobName")
@@ -807,8 +840,14 @@ const readForm = jobContent => {
   } else {
     formObj = jobContent
   }
+  const form = $("#go")
   for (const [key, value] of Object.entries(formObj)) {
-    $(`[name="${key}"]`).val(value)
+    let iElem = $(`[name="${key}"]`)
+    if (iElem.length == 0) {
+      form.prepend(`<input type="hidden" name="${key}" value="${value}">`)
+      iElem = $(`[name="${key}"]`)
+    }
+    iElem.val(value)
   }
 }
 
@@ -886,7 +925,7 @@ const initForm = () => {
  *
  */
 
-$(() => {
+$(window).on("load", () => {
   initForm()
   sidebar()
   modes()
