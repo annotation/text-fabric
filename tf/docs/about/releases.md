@@ -12,6 +12,32 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.5
 
+#### 11.5.1
+
+2023-06-22
+
+##### New features
+
+*   New query primitive: any node: the `.`stands for any node type.
+    If you want to search for any node, regardless of its type, that has feature `xxx`
+    with value `vvv`, you can do so by means of this query:
+
+    ```
+    . xxx=vvv
+    ```
+
+##### Fixes
+
+*   The new edge display and the new query primitive revealed a few glitches in
+    displaying nodes. These have been fixed.
+
+    *   Edge features in Jupyter notebooks did not show up after a query that used them.
+    *   Results are always sorted in the canonical ordering, this was not the case in 
+        the TF browser, but it is important when you search with `.` for nodes of
+        arbitrary types.
+    *   The headings of result tables now reflect the various types that nodes can have
+        within one column.
+
 #### 11.5.0
 
 2023-06-21

@@ -47,9 +47,12 @@ def search(
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
-    It will also set the display parameter `tupleFeatures` (see below)
+    It will also set the display parameter `tupleFeatures` and `extraFeatures`
     in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
+
+    The node features used in the query go into the `tupleFeatures`, the edge
+    features go into the `extraFeatures`.
 
     Parameters
     ----------
@@ -174,7 +177,9 @@ def search(
 
         if S.exe:
             (nodeFeatures, edgeFeatures) = getQueryFeatures(S.exe)
-            app.displaySetup(tupleFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
+            app.displaySetup(
+                tupleFeatures=nodeFeatures, extraFeatures=(edgeFeatures, {})
+            )
 
     nResults = len(results)
     plural = "" if nResults == 1 else "s"
@@ -198,6 +203,8 @@ def runSearch(app, query, cache):
 
     api = app.api
     S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
     plainSearch = S.search
 
     cacheKey = (query, False)
@@ -207,13 +214,13 @@ def runSearch(app, query, cache):
     if app.sets is not None:
         options["sets"] = app.sets
     (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    queryResults = tuple(sorted(queryResults, key=sortKeyTuple))
     nodeFeatures = ()
     edgeFeatures = set()
 
     if exe:
         (nodeFeatures, edgeFeatures) = getQueryFeatures(exe)
 
-    queryResults = tuple(sorted(queryResults))
     (runStatus, runMessages) = wrapMessages(S._msgCache)
     cache[cacheKey] = (
         queryResults,

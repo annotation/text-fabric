@@ -1,3 +1,6 @@
+import collections
+from textwrap import dedent
+
 import re
 from IPython.display import display, Markdown, HTML
 
@@ -408,6 +411,49 @@ def getValue(app, n, nType, feat, suppress, math=False):
             val = modifier(n, val)
         val = val.replace("\n", "\\n")
     return f'<span title="{feat}">{val}</span>'
+
+
+def getHeaderTypes(app, tuples):
+    api = app.api
+    F = api.F
+    fOtype = F.otype.v
+
+    iTypes = collections.defaultdict(collections.Counter)
+
+    for (t, tup) in tuples:
+        if t is None:
+            continue
+        for (i, n) in enumerate(tup):
+            iTypes[i][fOtype(n)] += 1
+
+    headerTypes = {}
+
+    for (i, tpInfo) in iTypes.items():
+        nodeTypes = [
+            ti[0] for ti in sorted(tpInfo.items(), key=lambda x: (-x[1], x[0]))
+        ]
+        nTypes = len(nodeTypes)
+        head = nodeTypes[0]
+        if nTypes > 1:
+            remaining = ", ".join(nodeTypes[1:])
+            head += f' <span title="{remaining}">(+{nTypes - 1})</span>'
+        headerTypes[i] = head
+
+    return headerTypes
+
+
+def getHeaders(app, tuples):
+    headerTypes = getHeaderTypes(app, tuples)
+    headerMaterial = "</span><span>".join(
+        headerTypes.get(i, f"column {i}") for i in range(len(headerTypes))
+    )
+    return dedent(
+        f"""
+        <div class="dtheadrow">
+          <span>n</span><span>{headerMaterial}</span>
+        </div>
+        """
+    )
 
 
 # COMPOSE TABLES FOR CSV EXPORT

@@ -285,6 +285,8 @@ def _validation(searchExe):
     sets = searchExe.sets
     for (q, qdata) in enumerate(qnodes):
         otype = qdata[0]
+        if otype == ".":
+            continue
         if sets is not None and otype in sets:
             continue
         if otype not in otypes:

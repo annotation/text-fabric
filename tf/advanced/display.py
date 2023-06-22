@@ -63,7 +63,7 @@ from ..core.files import (
     SERVER_DISPLAY,
 )
 from ..core.timestamp import SILENT_D, silentConvert
-from .helpers import getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
+from .helpers import getHeaderTypes, getRowsX, tupleEnum, RESULT, dh, showDict, _getLtr
 from .condense import condense, condenseSet
 from .highlight import getTupleHighlights
 from .options import Options
@@ -445,8 +445,6 @@ def table(app, tuples, _asString=False, **options):
     inNb = app.inNb
 
     api = app.api
-    F = api.F
-    fOtypev = F.otype.v
 
     dContext = display.distill(options)
     end = dContext.end
@@ -471,9 +469,14 @@ def table(app, tuples, _asString=False, **options):
 
     newOptions = display.consume(options, "skipCols")
 
-    for (i, tup) in tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb):
+    theseTuples = tuple(tupleEnum(tuples, start, end, LIMIT_TABLE, item, inNb))
+    headerTypes = getHeaderTypes(app, theseTuples)
+
+    for (i, tup) in theseTuples:
         if one:
-            heads = '</th><th class="tf">'.join(fOtypev(n) for n in tup)
+            heads = '</th><th class="tf">'.join(
+                headerTypes.get(i, f"column {i}") for i in range(len(headerTypes))
+            )
             html.append(
                 f'<tr class="tf {ltr}">'
                 f'<th class="tf {ltr}">n{passageHead}</th>'

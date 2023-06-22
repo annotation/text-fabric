@@ -1,10 +1,16 @@
 from ..core.text import DEFAULT_FORMAT
-from .helpers import RESULT
+from .helpers import getHeaders, RESULT
 from .display import plain, plainTuple, pretty, prettyTuple
 
 
 def compose(
-    app, tuples, features, position, opened, getx=None, **options,
+    app,
+    tuples,
+    features,
+    position,
+    opened,
+    getx=None,
+    **options,
 ):
     """Takes a list of tuples and composes it into an HTML table.
 
@@ -30,8 +36,6 @@ def compose(
     condenseType = dContext.condenseType
 
     api = app.api
-    F = api.F
-    fOtype = F.otype.v
 
     item = condenseType if condensed else RESULT
 
@@ -73,13 +77,8 @@ def compose(
 
         if doHeader:
             doHeader = False
-            tuplesHtml.append(
-                f"""\
-<div class="dtheadrow">
-  <span>n</span><span>{"</span><span>".join(fOtype(n) for n in tup)}</span>
-</div>\
-"""
-            )
+            tuplesHtml.append(getHeaders(app, tuples))
+
         tuplesHtml.append(
             plainTuple(
                 app,
@@ -101,7 +100,12 @@ def compose(
 
 
 def composeT(
-    app, features, tuples, opened, getx=None, **options,
+    app,
+    features,
+    tuples,
+    opened,
+    getx=None,
+    **options,
 ):
     """Takes a list of tuples and composes it into an HTML table.
 
@@ -113,8 +117,6 @@ def composeT(
     display = app.display
 
     api = app.api
-    F = api.F
-    fOtype = F.otype.v
 
     if features:
         api.ensureLoaded(features)
@@ -155,11 +157,8 @@ def composeT(
 
         if doHeader:
             doHeader = False
-            tuplesHtml.append(
-                '<div class="dtheadrow"><span>n</span><span>'
-                + "</span><span>".join(fOtype(n) for n in tup)
-                + "</span></div>"
-            )
+            tuplesHtml.append(getHeaders(app, tuples))
+
         tuplesHtml.append(
             plainTuple(
                 app,
@@ -268,7 +267,13 @@ def composeP(
 
 
 def _plainTextSFinal(
-    app, browseNavLevel, finalSecType, sNode, opened, secFinal, **options,
+    app,
+    browseNavLevel,
+    finalSecType,
+    sNode,
+    opened,
+    secFinal,
+    **options,
 ):
     """
     Produces a single item corresponding to a section 2 level (verse) for display
@@ -307,7 +312,10 @@ def _plainTextSFinal(
     attOpen = " open " if isOpened else ""
 
     textRep = plain(
-        app, sNode, withPassage=False, **display.consume(options, "withPassage"),
+        app,
+        sNode,
+        withPassage=False,
+        **display.consume(options, "withPassage"),
     )
     html = f"""\
 <details

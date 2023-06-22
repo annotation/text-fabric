@@ -69,6 +69,8 @@ def basicRelations(searchExe, api):
     Sindex = searchExe.featureValueIndex
 
     def isSlotType(nType):
+        if nType == ".":
+            return None
         if sets is not None and nType in sets:
             if nType in setInfo:
                 return setInfo[nType]

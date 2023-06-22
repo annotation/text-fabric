@@ -24,13 +24,20 @@ from ..core.helpers import project
 def _spinAtom(searchExe, q):
     F = searchExe.api.F
     Fs = searchExe.api.Fs
+    maxNode = F.otype.maxNode
     qnodes = searchExe.qnodes
     sets = searchExe.sets
 
     (otype, features, src, quantifiers) = qnodes[q]
     featureList = sorted(features.items())
     yarn = set()
-    nodeSet = sets[otype] if sets is not None and otype in sets else F.otype.s(otype)
+    nodeSet = (
+        range(1, maxNode + 1)
+        if otype == "."
+        else sets[otype]
+        if sets is not None and otype in sets
+        else F.otype.s(otype)
+    )
     for n in nodeSet:
         good = True
         for (ft, val) in featureList:

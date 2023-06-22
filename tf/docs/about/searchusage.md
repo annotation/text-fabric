@@ -12,12 +12,13 @@ also known as *quantifiers*.
 You can query a TF corpus in the TF browser.
 
 You can also run queries on arbitrary TF corpora programmatically, e.g. in a Jupyter
-notebook, by using the `S` Api, documented here.
+notebook, by using `A.search()` or the `S` Api.
 
 ## Search primer
 
 A search template consists of a bunch of lines,
-possibly indented, that specify objects to look for. Here is a simple example:
+possibly indented, that specify objects to look for. Here is a simple example,
+not from any real corpus, so do not enter this literally:
 
 ```
 book name=Genesis|Exodus
@@ -36,7 +37,10 @@ The indentation signifies embedding, i.e. containment. The two words are
 contained in the same sentence, the sentence is contained in the chapter, the
 chapter in the book.
 
-The conditions you specify on book, chapter, word are all conditions in terms of
+The things you look for, such as `book`, `chapter`, `sentence`, `word` are nodes
+in your corpus of those node types.
+
+The conditions you specify on nodes are all conditions in terms of
 [node features](#feature-specifications).
 You can use all features in the corpus for this.
 
@@ -250,11 +254,20 @@ We have these kinds of lines in a template:
 
 ##### (simple): **indent name:otype-or-set features**
 
+The otype-or-set is either a node type that exists in your TF data set,
+or `.`, which stands for all node types together,
+or it is the name of a set that you have passed in the `sets` parameter alongside
+the query itself when you call `search` or `study`.
+
+See [*feature specifications*](#feature-specifications) below for all
+full variety of feature constraints on nodes and edges.
+
 Examples
 
 1.  `word pos=verb gender=feminine`
 2.  `vb:word pos=verb gender=feminine`
 3.  `vb pos=verb gender=feminine`
+4.  `. n=3`
 
 Notes
 
@@ -263,6 +276,8 @@ Notes
 *   The **name:** part is optional.
     If present, it defines a name for this atom that can be used
     in relational comparisons and other atoms.
+*   The query `. n=3` looks for all nodes that have a feature `n` with value `3`,
+    irrespective of the node type.
 *   The **otype-or-set** part is optional.
     If it is absent, the **name** part must be present.
 
@@ -292,13 +307,6 @@ p = pnew
     relation holds between the preceding atom and its parent.
 *   The **name:** part is optional. Exactly as in the case without relop.
 *   The **otype-or-set** part is optional. Exactly as in the case without relop.
-
-The otype-or-set is either a node type that exists in your TF data set,
-or it is the name of a set that you have passed in the `sets` parameter alongside
-the query itself when you call `search` or `study`.
-
-See [*feature specifications*](#feature-specifications) below for all
-full variety of feature constraints on nodes and edges.
 
 #### *feature* lines: **features**
 

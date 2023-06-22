@@ -469,9 +469,10 @@ def parseLine(line):
         match = opLineRe.match(escLine)
         if match:
             (indent, op) = match.groups()
-            kind = "op"
-            data = (indent, op)
-            break
+            if op != ".":
+                kind = "op"
+                data = (indent, op)
+                break
 
         match = relRe.match(escLine)
         if match:
@@ -483,7 +484,7 @@ def parseLine(line):
         matchOp = atomOpRe.match(escLine)
         if matchOp:
             (indent, op, atom, features) = matchOp.groups()
-        else:
+        if matchOp and op == "." or not matchOp:
             match = atomRe.match(escLine)
             if match:
                 op = None
