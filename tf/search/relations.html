@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/search/relations.py#L1-L1812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/search/relations.py#L1-L1814" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Search by relational patterns between nodes
@@ -100,6 +100,8 @@ def basicRelations(searchExe, api):
     Sindex = searchExe.featureValueIndex
 
     def isSlotType(nType):
+        if nType == &#34;.&#34;:
+            return None
         if sets is not None and nType in sets:
             if nType in setInfo:
                 return setInfo[nType]
@@ -1858,7 +1860,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/search/relations.py#L1689-L1757" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/search/relations.py#L1691-L1759" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_F_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1939,7 +1941,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/search/relations.py#L1646-L1686" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/search/relations.py#L1648-L1688" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_K_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -1992,7 +1994,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/search/relations.py#L1760-L1812" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/search/relations.py#L1762-L1814" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def add_V_Relations(searchExe, varRels):
     relations = searchExe.relations
@@ -2057,7 +2059,7 @@ def add_V_Relations(searchExe, varRels):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/search/relations.py#L53-L1643" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/search/relations.py#L53-L1645" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def basicRelations(searchExe, api):
     C = api.C
@@ -2078,6 +2080,8 @@ def add_V_Relations(searchExe, varRels):
     Sindex = searchExe.featureValueIndex
 
     def isSlotType(nType):
+        if nType == &#34;.&#34;:
+            return None
         if sets is not None and nType in sets:
             if nType in setInfo:
                 return setInfo[nType]

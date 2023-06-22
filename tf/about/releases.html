@@ -33,9 +33,35 @@ all possibilities.</p>
 <hr>
 <h2 id="11">11</h2>
 <h3 id="115">11.5</h3>
+<h4 id="1151">11.5.1</h4>
+<p>2023-06-22</p>
+<h5 id="new-features">New features</h5>
+<ul>
+<li>
+<p>New query primitive: any node: the <code>.</code>stands for any node type.
+If you want to search for any node, regardless of its type, that has feature <code>xxx</code>
+with value <code>vvv</code>, you can do so by means of this query:</p>
+<p><code>. xxx=vvv</code></p>
+</li>
+</ul>
+<h5 id="fixes">Fixes</h5>
+<ul>
+<li>
+<p>The new edge display and the new query primitive revealed a few glitches in
+displaying nodes. These have been fixed.</p>
+<ul>
+<li>Edge features in Jupyter notebooks did not show up after a query that used them.</li>
+<li>Results are always sorted in the canonical ordering, this was not the case in
+the TF browser, but it is important when you search with <code>.</code> for nodes of
+arbitrary types.</li>
+<li>The headings of result tables now reflect the various types that nodes can have
+within one column.</li>
+</ul>
+</li>
+</ul>
 <h4 id="1150">11.5.0</h4>
 <p>2023-06-21</p>
-<h5 id="new-features">New features</h5>
+<h5 id="new-features_1">New features</h5>
 <ul>
 <li>
 <p>Edge display in Jupyter Notebooks</p>
@@ -667,7 +693,7 @@ if it asked to do tasks for which it lacks the capabilities.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -741,8 +767,13 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#11">11</a><ul>
 <li><a href="#115">11.5</a><ul>
-<li><a href="#1150">11.5.0</a><ul>
+<li><a href="#1151">11.5.1</a><ul>
 <li><a href="#new-features">New features</a></li>
+<li><a href="#fixes">Fixes</a></li>
+</ul>
+</li>
+<li><a href="#1150">11.5.0</a><ul>
+<li><a href="#new-features_1">New features</a></li>
 <li><a href="#ongoing-work-on-conversion">Ongoing work on conversion</a></li>
 </ul>
 </li>

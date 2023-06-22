@@ -32,10 +32,11 @@ in your data set. The structure you are interested in has to be written as a
 also known as <em>quantifiers</em>.</p>
 <p>You can query a TF corpus in the TF browser.</p>
 <p>You can also run queries on arbitrary TF corpora programmatically, e.g. in a Jupyter
-notebook, by using the <code>S</code> Api, documented here.</p>
+notebook, by using <code>A.search()</code> or the <code>S</code> Api.</p>
 <h2 id="search-primer">Search primer</h2>
 <p>A search template consists of a bunch of lines,
-possibly indented, that specify objects to look for. Here is a simple example:</p>
+possibly indented, that specify objects to look for. Here is a simple example,
+not from any real corpus, so do not enter this literally:</p>
 <pre><code>book name=Genesis|Exodus
    chapter number=2
       sentence
@@ -49,7 +50,9 @@ singular.</p>
 <p>The indentation signifies embedding, i.e. containment. The two words are
 contained in the same sentence, the sentence is contained in the chapter, the
 chapter in the book.</p>
-<p>The conditions you specify on book, chapter, word are all conditions in terms of
+<p>The things you look for, such as <code>book</code>, <code>chapter</code>, <code>sentence</code>, <code>word</code> are nodes
+in your corpus of those node types.</p>
+<p>The conditions you specify on nodes are all conditions in terms of
 <a href="#feature-specifications">node features</a>.
 You can use all features in the corpus for this.</p>
 <p>The order of the two words is immaterial. If there are cases where the verb
@@ -199,11 +202,18 @@ consist of verbs only:</p>
 </ul>
 <h4 id="atom-lines"><em>atom</em> lines</h4>
 <h5 id="simple-indent-nameotype-or-set-features">(simple): <strong>indent name:otype-or-set features</strong></h5>
+<p>The otype-or-set is either a node type that exists in your TF data set,
+or <code>.</code>, which stands for all node types together,
+or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
+the query itself when you call <code>search</code> or <code>study</code>.</p>
+<p>See <a href="#feature-specifications"><em>feature specifications</em></a> below for all
+full variety of feature constraints on nodes and edges.</p>
 <p>Examples</p>
 <ol>
 <li><code>word pos=verb gender=feminine</code></li>
 <li><code>vb:word pos=verb gender=feminine</code></li>
 <li><code>vb pos=verb gender=feminine</code></li>
+<li><code>. n=3</code></li>
 </ol>
 <p>Notes</p>
 <ul>
@@ -212,6 +222,8 @@ characters, where tabs count for just 1. <strong>Avoid tabs!</strong>.</li>
 <li>The <strong>name:</strong> part is optional.
 If present, it defines a name for this atom that can be used
 in relational comparisons and other atoms.</li>
+<li>The query <code>. n=3</code> looks for all nodes that have a feature <code>n</code> with value <code>3</code>,
+irrespective of the node type.</li>
 <li>The <strong>otype-or-set</strong> part is optional.
 If it is absent, the <strong>name</strong> part must be present.</li>
 </ul>
@@ -236,11 +248,6 @@ relation holds between the preceding atom and its parent.</li>
 <li>The <strong>name:</strong> part is optional. Exactly as in the case without relop.</li>
 <li>The <strong>otype-or-set</strong> part is optional. Exactly as in the case without relop.</li>
 </ul>
-<p>The otype-or-set is either a node type that exists in your TF data set,
-or it is the name of a set that you have passed in the <code>sets</code> parameter alongside
-the query itself when you call <code>search</code> or <code>study</code>.</p>
-<p>See <a href="#feature-specifications"><em>feature specifications</em></a> below for all
-full variety of feature constraints on nodes and edges.</p>
 <h4 id="feature-lines-features"><em>feature</em> lines: <strong>features</strong></h4>
 <p>Indent is not significant. Continuation of feature constraints after a
 preceding atom line or other feature line. This way you can divide lengthy
@@ -762,7 +769,7 @@ fclause
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/about/searchusage.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/searchusage.md

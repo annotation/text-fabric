@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L1-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L1-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Calls from the advanced API to the Search API.
@@ -78,9 +78,12 @@ def search(
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
-    It will also set the display parameter `tupleFeatures` (see below)
+    It will also set the display parameter `tupleFeatures` and `extraFeatures`
     in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
+
+    The node features used in the query go into the `tupleFeatures`, the edge
+    features go into the `extraFeatures`.
 
     Parameters
     ----------
@@ -205,7 +208,9 @@ def search(
 
         if S.exe:
             (nodeFeatures, edgeFeatures) = getQueryFeatures(S.exe)
-            app.displaySetup(tupleFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
+            app.displaySetup(
+                tupleFeatures=nodeFeatures, extraFeatures=(edgeFeatures, {})
+            )
 
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
@@ -229,6 +234,8 @@ def runSearch(app, query, cache):
 
     api = app.api
     S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
     plainSearch = S.search
 
     cacheKey = (query, False)
@@ -238,13 +245,13 @@ def runSearch(app, query, cache):
     if app.sets is not None:
         options[&#34;sets&#34;] = app.sets
     (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    queryResults = tuple(sorted(queryResults, key=sortKeyTuple))
     nodeFeatures = ()
     edgeFeatures = set()
 
     if exe:
         (nodeFeatures, edgeFeatures) = getQueryFeatures(exe)
 
-    queryResults = tuple(sorted(queryResults))
     (runStatus, runMessages) = wrapMessages(S._msgCache)
     cache[cacheKey] = (
         queryResults,
@@ -303,7 +310,7 @@ def runSearchCondensed(app, query, cache, condenseType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L16-L35" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L16-L35" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getQueryFeatures(exe):
     qnodes = getattr(exe, &#34;qnodes&#34;, [])
@@ -343,7 +350,7 @@ and returned.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L187-L231" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L192-L238" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearch(app, query, cache):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -359,6 +366,8 @@ and returned.</p>
 
     api = app.api
     S = api.S
+    N = api.N
+    sortKeyTuple = N.sortKeyTuple
     plainSearch = S.search
 
     cacheKey = (query, False)
@@ -368,13 +377,13 @@ and returned.</p>
     if app.sets is not None:
         options[&#34;sets&#34;] = app.sets
     (queryResults, status, messages, exe) = plainSearch(query, here=False, **options)
+    queryResults = tuple(sorted(queryResults, key=sortKeyTuple))
     nodeFeatures = ()
     edgeFeatures = set()
 
     if exe:
         (nodeFeatures, edgeFeatures) = getQueryFeatures(exe)
 
-    queryResults = tuple(sorted(queryResults))
     (runStatus, runMessages) = wrapMessages(S._msgCache)
     cache[cacheKey] = (
         queryResults,
@@ -410,7 +419,7 @@ Then it condenses the results, puts them in the <em>cache</em>, and returns them
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L234-L257" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L241-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def runSearchCondensed(app, query, cache, condenseType):
     &#34;&#34;&#34;A wrapper around the generic search interface of TF.
@@ -449,9 +458,11 @@ one by one, the <code>A</code> version collects all results and sorts them in th
 canonical order (<code><a title="tf.core.nodes" href="../core/nodes.html">tf.core.nodes</a></code>).
 (but you can change the sorting, see the <code>sort</code> parameter).
 It then reports the number of results.</p>
-<p>It will also set the display parameter <code>tupleFeatures</code> (see below)
+<p>It will also set the display parameter <code>tupleFeatures</code> and <code>extraFeatures</code>
 in such a way that subsequent calls to <code><a title="tf.advanced.display.export" href="display.html#tf.advanced.display.export">export()</a></code> emit
 the features that have been used in the query.</p>
+<p>The node features used in the query go into the <code>tupleFeatures</code>, the edge
+features go into the <code>extraFeatures</code>.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>query</code></strong> :&ensp;<code>dict</code></dt>
@@ -525,7 +536,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L38-L184" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L38-L189" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def search(
     app, query, silent=SILENT_D, sets=None, shallow=False, sort=True, limit=None
@@ -539,9 +550,12 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
     (but you can change the sorting, see the `sort` parameter).
     It then reports the number of results.
 
-    It will also set the display parameter `tupleFeatures` (see below)
+    It will also set the display parameter `tupleFeatures` and `extraFeatures`
     in such a way that subsequent calls to `tf.advanced.display.export` emit
     the features that have been used in the query.
+
+    The node features used in the query go into the `tupleFeatures`, the edge
+    features go into the `extraFeatures`.
 
     Parameters
     ----------
@@ -666,7 +680,9 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 
         if S.exe:
             (nodeFeatures, edgeFeatures) = getQueryFeatures(S.exe)
-            app.displaySetup(tupleFeatures=nodeFeatures, edgeFeatures=edgeFeatures)
+            app.displaySetup(
+                tupleFeatures=nodeFeatures, extraFeatures=(edgeFeatures, {})
+            )
 
     nResults = len(results)
     plural = &#34;&#34; if nResults == 1 else &#34;s&#34;
@@ -684,7 +700,7 @@ Web apps can better use <code><a title="tf.advanced.search.runSearch" href="#tf.
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/513ee9bd998cbd250529a733cfe8c887d4fb1361/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/search.py#L12-L13" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def searchApi(app):
     app.search = types.MethodType(search, app)</code></pre>
