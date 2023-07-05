@@ -192,7 +192,7 @@ def main(cargs=sys.argv[1:]):
 
     (portWeb, cargs) = (cargs[0], cargs[1:])
 
-    appSpecs = argApp(cargs)
+    appSpecs = argApp(cargs, False)
 
     if not appSpecs:
         console("No TF dataset specified")

@@ -72,7 +72,7 @@ from platform import system
 from ..core.helpers import console
 from ..parameters import BANNER, PROTOCOL, HOST
 
-from .command import argNoweb, argParam, getPort
+from .command import argNoweb, argApp, argParam, getPort
 
 
 HELP = """
@@ -141,6 +141,11 @@ def main(cargs=sys.argv[1:]):
         console(HELP)
         return
     if len(cargs) >= 1 and any(arg == "-v" for arg in cargs):
+        return
+
+    details = argApp(cargs, True)
+    if details is None or len(details) == 0 or not details[0]:
+        console("No corpus found")
         return
 
     portWeb = getPort(argParam(cargs))

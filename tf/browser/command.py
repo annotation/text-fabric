@@ -11,11 +11,11 @@ from ..core.files import getLocation
 
 
 def getPort(details):
-    portOffset = crc32(",".join(details).encode("utf8")) % 10000
+    portOffset = crc32(",".join(str(d) for d in details).encode("utf8")) % 10000
     return PORT_BASE + portOffset
 
 
-def argApp(cargs):
+def argApp(cargs, simple):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
     backend = _argCollect("backend", cargs)
     checkout = _argCollect("checkout", cargs)
@@ -31,6 +31,9 @@ def argApp(cargs):
         appName = f"{org}/{repo}{relative}"
         checkoutApp = "clone"
         checkout = "clone"
+
+    if simple:
+        return (org, repo, relative)
 
     locations = _argCollect("locations", cargs)
     modules = _argCollect("modules", cargs)
