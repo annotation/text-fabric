@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/command.py#L1-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/command.py#L1-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Command line argument processing
@@ -41,8 +41,8 @@ from ..core.files import getLocation
 # COMMAND LINE ARGS
 
 
-def getPort(details):
-    portOffset = crc32(&#34;,&#34;.join(str(d) for d in details).encode(&#34;utf8&#34;)) % 10000
+def getPort(slug):
+    portOffset = crc32(slug.encode(&#34;utf8&#34;)) % 10000
     return PORT_BASE + portOffset
 
 
@@ -64,7 +64,7 @@ def argApp(cargs, simple):
         checkout = &#34;clone&#34;
 
     if simple:
-        return (org, repo, relative)
+        return appName
 
     locations = _argCollect(&#34;locations&#34;, cargs)
     modules = _argCollect(&#34;modules&#34;, cargs)
@@ -149,7 +149,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/command.py#L18-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/command.py#L18-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argApp(cargs, simple):
     (appName, checkoutApp, dataLoc) = argParam(cargs)
@@ -169,7 +169,7 @@ def argParam(cargs):
         checkout = &#34;clone&#34;
 
     if simple:
-        return (org, repo, relative)
+        return appName
 
     locations = _argCollect(&#34;locations&#34;, cargs)
     modules = _argCollect(&#34;modules&#34;, cargs)
@@ -203,7 +203,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/command.py#L62-L66" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/command.py#L62-L66" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argNoweb(cargs):
     for arg in cargs:
@@ -220,7 +220,7 @@ def argParam(cargs):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/command.py#L76-L103" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/command.py#L76-L103" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def argParam(cargs):
     appName = None
@@ -253,17 +253,17 @@ def argParam(cargs):
 </details>
 </dd>
 <dt id="tf.browser.command.getPort"><code class="name flex">
-<span>def <span class="ident">getPort</span></span>(<span>details)</span>
+<span>def <span class="ident">getPort</span></span>(<span>slug)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/command.py#L13-L15" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/command.py#L13-L15" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getPort(details):
-    portOffset = crc32(&#34;,&#34;.join(str(d) for d in details).encode(&#34;utf8&#34;)) % 10000
+<pre><code class="python">def getPort(slug):
+    portOffset = crc32(slug.encode(&#34;utf8&#34;)) % 10000
     return PORT_BASE + portOffset</code></pre>
 </details>
 </dd>
