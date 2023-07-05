@@ -73,6 +73,7 @@ from ..core.helpers import console
 from ..parameters import BANNER, PROTOCOL, HOST
 
 from .command import argNoweb, argApp, getPort
+from .web import TF_DONE, TF_ERROR
 
 
 HELP = """
@@ -161,6 +162,16 @@ def main(cargs=sys.argv[1:]):
         bufsize=0,
         encoding="utf8",
     )
+    console("Loading TF corpus data. Please wait ...")
+    for line in processWeb.stdout:
+        sys.stdout.write(line)
+        if line.rstrip() == TF_ERROR:
+            return
+        if line.rstrip() == TF_DONE:
+            break
+
+    sleep(1)
+    stopped = processWeb.poll()
 
     if not noweb:
         sleep(2)

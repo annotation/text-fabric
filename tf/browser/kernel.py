@@ -14,7 +14,6 @@ for a webserver.
 
 from functools import reduce
 
-from ..core.helpers import console
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
 from ..advanced.helpers import getRowsX
@@ -22,15 +21,11 @@ from ..advanced.tables import compose, composeP, composeT
 from .servelib import batchAround
 
 
-TF_ERROR = "Could not set up TF"
-
-
 # KERNEL CREATION
 
 
 def makeTfKernel(app, appName):
     if not app.api:
-        console(f"{TF_ERROR}")
         return False
 
     TF = app.api.TF

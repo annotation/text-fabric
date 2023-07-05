@@ -100,6 +100,8 @@ from .serve import (
     serveAll,
 )
 
+TF_DONE = "TF setup done."
+TF_ERROR = "Could not set up TF"
 
 MY_DIR = dirNm(abspath(__file__))
 
@@ -188,6 +190,7 @@ def factory(web):
 def main(cargs=sys.argv[1:]):
     if len(cargs) == 0:
         console("No port number specified")
+        console(f"{TF_ERROR}")
         return
 
     (portWeb, cargs) = (cargs[0], cargs[1:])
@@ -232,10 +235,12 @@ def main(cargs=sys.argv[1:]):
         version=version,
     )
     if app is None:
+        console(f"{TF_ERROR}")
         return
 
     try:
         web = Web(makeTfKernel(app, appName))
+        console(f"{TF_DONE}")
 
         webapp = factory(web)
         run_simple(
@@ -247,6 +252,7 @@ def main(cargs=sys.argv[1:]):
         )
     except OSError as e:
         console(str(e))
+        console(f"{TF_ERROR}")
         return 1
 
     return 0

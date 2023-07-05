@@ -403,8 +403,8 @@ import ssl
 
 import requests
 from requests import exceptions as requestsExceptions
-from github import Github, GithubException, UnknownObjectException
-from gitlab import Gitlab, GitlabGetError
+# from github import Github, GithubException, UnknownObjectException
+# from gitlab import Gitlab, GitlabGetError
 
 from ..parameters import (
     GH,
@@ -434,8 +434,15 @@ from ..core.files import (
     chDir,
 )
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
+from ..capable import Capable
 from .helpers import dh, runsInNotebook
 from .zipdata import zipData
+
+Cap = Capable("github", "gitlab")
+(Github, GithubException, UnknownObjectException) = Cap.loadFrom(
+    "github", "Github", "GithubException", "UnknownObjectException"
+)
+(Gitlab, GitlabGetError) = Cap.loadFrom("gitlab", "Gitlab", "GitlabGetError")
 
 ConnectionError = requestsExceptions.ConnectionError if requestsExceptions else None
 
@@ -589,6 +596,12 @@ class Repo:
                 error=True,
             )
             return None
+
+        backendTech = backendRep(backend, "tech")
+
+        if not Cap.can(backendTech):
+            self.conn = None
+            return
 
         if not conn:
             ghPerson = var("GHPERS")
@@ -1100,6 +1113,12 @@ class Checkout:
         backend = self.backend
 
         self.canDownloadSubfolders = False
+
+        backendTech = backendRep(backend, "tech")
+
+        if not Cap.can(backendTech):
+            self.conn = None
+            return None
 
         if onGithub:
             person = var("GHPERS")
