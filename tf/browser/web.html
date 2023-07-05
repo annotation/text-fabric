@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e4191ae3e7bbe8c426b07012cac4e759f5b02de6/tf/browser/web.py#L1-L256" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/web.py#L1-L256" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -305,7 +305,7 @@ def main(cargs=sys.argv[1:]):
 
     (portWeb, cargs) = (cargs[0], cargs[1:])
 
-    appSpecs = argApp(cargs)
+    appSpecs = argApp(cargs, False)
 
     if not appSpecs:
         console(&#34;No TF dataset specified&#34;)
@@ -384,7 +384,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e4191ae3e7bbe8c426b07012cac4e759f5b02de6/tf/browser/web.py#L115-L185" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/web.py#L115-L185" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -467,7 +467,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e4191ae3e7bbe8c426b07012cac4e759f5b02de6/tf/browser/web.py#L188-L252" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/web.py#L188-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     if len(cargs) == 0:
@@ -476,7 +476,7 @@ if __name__ == &#34;__main__&#34;:
 
     (portWeb, cargs) = (cargs[0], cargs[1:])
 
-    appSpecs = argApp(cargs)
+    appSpecs = argApp(cargs, False)
 
     if not appSpecs:
         console(&#34;No TF dataset specified&#34;)
@@ -550,7 +550,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e4191ae3e7bbe8c426b07012cac4e759f5b02de6/tf/browser/web.py#L107-L112" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6310061455e134284620aa6fc96bac824b060408/tf/browser/web.py#L107-L112" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
