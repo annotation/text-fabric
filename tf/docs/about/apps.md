@@ -26,7 +26,7 @@ Each TF-*app* consists of a folder with these items, all optional:
 ### static
 
 A folder with styles, fonts and logos, to be used by web servers such as the the
-text-fabric browser, see `tf.server.web`.
+text-fabric browser, see `tf.browser.web`.
 
 In particular, `display.css` contains additional styles used for pretty displays.
 These styles will be programmatically combined with other styles,

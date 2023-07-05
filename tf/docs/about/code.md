@@ -47,7 +47,7 @@ corpus data and displaying corpus materials in useful ways.
 
 ## Web interface
 
-(`tf.server`) TF contains a browser interface for interacting
+(`tf.browser`) TF contains a browser interface for interacting
 with your corpus without programming.
 
 The web interface lets you fire queries (search templates) to TF and interact
@@ -57,8 +57,8 @@ with the results:
 * condensing results to verious container types;
 * exporting results as PDF and CSV.
 
-This interface be served by a local web server provided with data from a TF kernel.
-(`tf.server.start`, `tf.server.kernel` and `tf.server.web`).
+This interface be served by a local web server provided with data from a TF app.
+(`tf.browser.start`, `tf.browser.kernel` and `tf.browser.web`).
 
 ## Volumes and collections
 

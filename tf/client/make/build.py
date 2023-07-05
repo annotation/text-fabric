@@ -54,6 +54,7 @@ import yaml
 import json
 import webbrowser
 
+from textwrap import dedent
 from datetime import datetime as dt
 from subprocess import Popen, PIPE
 from time import sleep
@@ -63,7 +64,7 @@ from importlib import util
 # from tf.fabric import Fabric
 from tf.app import use
 from tf.fabric import Fabric
-from tf.server.command import getPort
+from tf.browser.command import getPort
 from tf.core.helpers import specFromRanges, rangesFromSet
 from tf.core.files import (
     LS,
@@ -932,12 +933,14 @@ class Make:
 
         content = {module: getJSModule(module) for module in modules}
 
-        header = """\
-/*eslint-env jquery*/
-/* global configData */
-/* global corpusData */
+        header = dedent(
+            """
+            /*eslint-env jquery*/
+            /* global configData */
+            /* global corpusData */
 
-    """
+            """
+        )
         combined = (
             header
             + content[C.jsDefs]
@@ -979,10 +982,12 @@ class Make:
             html = []
             for (thisClient, desc) in clients.items():
                 html.append(
-                    f"""
-<dt><a href="{thisClient}/index.html">{thisClient}</a></dt>
-<dd>{desc}</dd>
-"""
+                    dedent(
+                        f"""
+                        <dt><a href="{thisClient}/index.html">{thisClient}</a></dt>
+                        <dd>{desc}</dd>
+                        """
+                    )
                 )
 
             htmlIndex = htmlIndex.replace("«clients»", "".join(html))
@@ -1176,16 +1181,18 @@ class Make:
             self.adjustDebug()
 
     def serve(self):
+        dataset = self.dataset
+        client = self.client
         C = self.C
         chDir(C.siteDir)
-        port = getPort(portBase=8000)
+        port = getPort((dataset, client))
         if port is None:
             print("Cannot find a free port between 8000 and 8100")
             return
 
         console(f"HTTP serving files in {C.siteDir} on port {port}")
         server = Popen(
-            ["python3", "-m", "http.server", str(port)],
+            ["python3", "-m", "http.browser", str(port)],
             stdout=PIPE,
             bufsize=1,
             encoding="utf-8",

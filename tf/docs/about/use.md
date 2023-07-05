@@ -11,7 +11,7 @@ The basic command to start the TF-browser (`tf.about.browser`) is:
 text-fabric org/repo
 ```
 
-(More details in `tf.server.start`).
+(More details in `tf.browser.start`).
 
 Then your browser will open and there you'll find links to further help.
 

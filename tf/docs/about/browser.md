@@ -71,31 +71,10 @@ Your session (aka *job*) will be saved in your browser,
 under the name *app*`-default`,
 or another name if you rename, duplicate, import or create new sessions.
 
-After you have issued the `text-fabric` command, a *TF kernel* is started for you.
-This is a process that holds all the data and can deliver it to other processes,
-such as your web browser.
-
-As long as you leave the TF kernel on, you have instant access to your corpus.
-
-You can open other browsers and windows and tabs with the same url,
-and they will load quickly,
-without the long wait you experienced when the TF kernel was loading.
-
 ## Shut down
 
-You can close the TF kernel and web server by pressing Ctrl-C in the terminal
+You can close the web server by pressing Ctrl-C in the terminal
 or command prompt where you have started `text-fabric`.
-It will prompt you to ask if you really want to shut down the kernel.
-If you leave it on, a next TF browser session will connect to it, which is quicker
-than to start up a fresh kernel.
-
-You can also manually clean up TF related processes:
-
-    text-fabric app -k
-
-Or, if you have also processes running for other apps:
-
-    text-fabric -k 
 
 ## Work with exported results
 

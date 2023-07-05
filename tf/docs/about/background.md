@@ -27,7 +27,7 @@ Text-Fabric will auto-load it for them.
 Text-Fabric can be used to construct websites,
 for example [SHEBANQ](https://shebanq.ancient-data.org).
 In the case of SHEBANQ, data has been converted to mysql databases.
-However, with the built-in TF kernel] (`tf.server.kernel`),
+However, with the built-in TF kernel] (`tf.browser.kernel`),
 it is also possible to use TF itself as a database to
 serve multiple connections and requests.
 

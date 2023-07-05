@@ -33,13 +33,11 @@ programs, such as Text-Fabric, to process the same data.
 * [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 """
 
+import pandas
+
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
-from ..capable import Capable
-
-Cap = Capable("pandas")
-pandas = Cap.load("pandas")
 
 HELP = """
 Transforms TF dataset into Pandas
@@ -127,21 +125,6 @@ def exportPandas(app, inTypes=None, exportDir=None):
         The directory to which the Pandas file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     """
-
-    if not Cap.can("pandas"):
-        app.error(
-            "Cannot export to Pandas because python modules "
-            "pandas and/or pyarrow are not installed",
-            tm=False,
-        )
-        app.info("Do: `pip install pandas pyarrow` and try again", tm=False)
-        app.info(
-            "Alternatively, install text-fabric with the pandas capability "
-            "by doing any of:", tm=False
-        )
-        app.info("pip install text-fabric[pandas]", tm=False)
-        app.info("pip install text-fabric[all]", tm=False)
-        return
 
     api = app.api
     Eall = api.Eall

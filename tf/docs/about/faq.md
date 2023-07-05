@@ -132,7 +132,7 @@ Do not remove references to Python `2.*`, but only outdated Python `3.*` version
 ### Internal Server Error!
 
 When the TF browser opens with an Internal Server error, the most likely reason is that
-the TF kernel has not started up without errors.
+the TF webserver has not started up without errors.
 
 Look back at the terminal or command prompt where you started `text-fabric`.
 

@@ -14,20 +14,12 @@ pip install jupyterlab
 To get text-fabric, you can either fire up a terminal and say:
 
 ``` sh
-pip install 'text-fabric[all]'
+pip install text-fabric
 ```
 
 or fire up a Jupyter Notebook (`jupyter lab`)
 
 and in a cell say
-
-``` sh
-!pip install 'text-fabric[all]'
-```
-
-If you are in a notebook on an iPad, you can not install the full text-fabric.
-The iPad cannot install the libraries needed for the Text-Fabric browser.
-To install a reduced text-fabric, say
 
 ``` sh
 !pip install text-fabric
@@ -132,29 +124,3 @@ If you get tired of this, you can add this to your `.bashrc` file:
 PATH="~/.local/bin:${PATH}"
 export PATH
 ```
-    
-#### Note on `[all]`
-
-Text-Fabric has some special capabilities:
-
-* `browser`: the Text-Fabric browser, which runs a local webserver which lets you
-  have a browse and search experience in a local web environment;
-* `github` and `gitlab`: repository backends from which Text-Fabric can load
-  corpus data on-demand.
-* `pandas`: for exporting a dataset to Pandas.
-
-You can install Text-Fabric with a selection of capabilities:
-
-* `pip install 'text-fabric'` *without additional capabilities*
-* `pip install 'text-fabric[all]'` *with all additional capabilities*
-* `pip install 'text-fabric[github]'` *with a github backend*
-* `pip install 'text-fabric[gitlab]'` *with a gitlab backend*
-* `pip install 'text-fabric[browser]'` *with the text-fabric browser enabled*
-* `pip install 'text-fabric[pandas]'` *with pandas export enabled*
-* `pip install 'text-fabric[github,browser]'` *with the selected extras*
-* `pip install 'text-fabric[github,gitlab]'` *with the selected extras*
-
-Even if Text-Fabric is not installed with certain capabilities,
-it will have those capabilities if the required modules are installed.
-To see which modules are required for which extras, consult
-[setup.cfg](https://github.com/annotation/text-fabric/blob/master/setup.cfg).

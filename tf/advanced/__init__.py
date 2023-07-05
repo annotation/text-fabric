@@ -6,10 +6,7 @@ and can display materials of their corpus in an intuitive way.
 
 There are many scenarios in which you can work with the advanced API:
 in a Python script or in a notebook or in the TF-browser.
-If you `tf.server.start` the TF browser, a `tf.server.kernel` process is started
-that holds the TF data.
-Then a `tf.server.web` server is started that communicates with the kernel,
-much like how webserver communicates with a database.
+If you `tf.browser.start` the TF browser, a `tf.browser.web` server is started.
 
 The advanced API supports all these scenarios and is divided into these parts:
 

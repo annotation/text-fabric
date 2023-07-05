@@ -1217,7 +1217,7 @@ tf {org}/{repo}
 text-fabric {org}/{repo}
 ```
 :   Starts the text-fabric browser for the corpus in *org*/*repo*.
-:   `tf.server.start`
+:   `tf.browser.start`
 
 ``` sh
 tf-zipall

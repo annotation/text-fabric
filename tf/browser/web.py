@@ -9,14 +9,14 @@ in which you can enter a search template and view the results.
 This is realized by a web app based on
 [Flask](http://flask.pocoo.org/docs/1.0/).
 
-This web app connects to the `tf.server.kernel` and merges the retrieved data
-into a set of
+This web app initializes by loading a TF corpus from which it obtains data.
+In repsonse to requests, it merges the retrieved data into a set of
 [templates](https://github.com/annotation/text-fabric/tree/master/tf/server/views).
 
 ## Start up
 
-TF kernel, web server and browser page are started
-up by means of a script called `text-fabric`, which will be installed in an executable
+Web server and browser page are started
+up by means of a script called `tf` or `text-fabric`, which will be installed in an executable
 directory by the `pip` installer.
 
 ## Routes
@@ -79,16 +79,19 @@ browsers, not even Edge.
 """
 
 import sys
-import pickle
 
-from ..capable import Capable
-from ..parameters import HOST
+from flask import Flask, send_file
+from werkzeug.serving import run_simple
+
+from ..parameters import HOST, GH
 from ..core.helpers import console
 from ..core.files import abspath, fileExists, dirNm
-from ..server.kernel import makeTfConnection
-from .command import argWeb
+from ..core.timestamp import AUTO
+from ..advanced.app import findApp
+
+from .command import argApp
+from .kernel import makeTfKernel
 from .serve import (
-    TIMEOUT,
     serveTable,
     serveQuery,
     servePassage,
@@ -100,24 +103,13 @@ from .serve import (
 
 MY_DIR = dirNm(abspath(__file__))
 
-Cap = Capable("browser")
-(Flask, send_file) = Cap.loadFrom("flask", "Flask", "send_file")
-run_simple = Cap.loadFrom("werkzeug.serving", "run_simple")
-
 
 class Web:
-    def __init__(self, portKernel):
-        TF = makeTfConnection(HOST, int(portKernel), TIMEOUT)
-        kernelApi = TF.connect()
-        if type(kernelApi) is str:
-            console(f"Could not connect to {HOST}:{portKernel}")
-            console(kernelApi)
-        else:
-            self.kernelApi = kernelApi
-
-            self.context = pickle.loads(kernelApi.context())
-
-            self.wildQueries = set()
+    def __init__(self, kernelApi):
+        self.kernelApi = kernelApi
+        app = kernelApi.app
+        self.context = app.context
+        self.wildQueries = set()
 
 
 def factory(web):
@@ -193,20 +185,57 @@ def factory(web):
     return app
 
 
-def main(cargs=sys.argv):
-    args = argWeb(cargs)
-    if not args:
+def main(cargs=sys.argv[1:]):
+    if len(cargs) == 0:
+        console("No port number specified")
         return
 
-    if not Cap.can("browser"):
+    (portWeb, cargs) = (cargs[0], cargs[1:])
+
+    appSpecs = argApp(cargs)
+
+    if not appSpecs:
+        console("No TF dataset specified")
         return
 
-    (dataSource, portKernel, portWeb) = args
+    backend = appSpecs.get("backend", GH) or GH
+    appName = appSpecs["appName"]
+    checkout = appSpecs["checkout"]
+    checkoutApp = appSpecs["checkoutApp"]
+    dataLoc = appSpecs["dataLoc"]
+    moduleRefs = appSpecs["moduleRefs"]
+    locations = appSpecs["locations"]
+    modules = appSpecs["modules"]
+    setFile = appSpecs["setFile"]
+    version = appSpecs["version"]
+
+    if checkout is None:
+        checkout = ""
+
+    versionRep = "" if version is None else f" version {version}"
+    console(
+        f"Setting up TF browser for {appName} {moduleRefs or ''} "
+        f"{setFile or ''}{versionRep}"
+    )
+    app = findApp(
+        appName,
+        checkoutApp,
+        dataLoc,
+        backend,
+        True,
+        silent=AUTO,
+        checkout=checkout,
+        mod=moduleRefs,
+        locations=locations,
+        modules=modules,
+        setFile=setFile,
+        version=version,
+    )
+    if app is None:
+        return
 
     try:
-        web = Web(portKernel)
-        if not hasattr(web, "kernelApi"):
-            return 1
+        web = Web(makeTfKernel(app, appName))
 
         webapp = factory(web)
         run_simple(

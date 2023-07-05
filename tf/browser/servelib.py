@@ -6,21 +6,17 @@
 Here are functions that are being used by various parts of the
 TF browser infrastructure, such as
 
-* `tf.server.kernel`
-* `tf.server.web`
-* `tf.server.start`
+* `tf.browser.web`
+* `tf.browser.start`
 """
 
 import json
 from io import BytesIO
 from zipfile import ZipFile
 
-from ..capable import Capable
+from flask import request
+
 from ..parameters import ZIP_OPTIONS
-
-
-Cap = Capable("browser")
-request = Cap.loadFrom("flask", "request")
 
 
 DEFAULT_NAME = "default"
@@ -34,6 +30,18 @@ def getInt(x, default=1):
     if not x.isdecimal():
         return default
     return int(x)
+
+
+def batchAround(nResults, position, batch):
+    halfBatch = int((batch + 1) / 2)
+    left = min(max(position - halfBatch, 1), nResults)
+    right = max(min(position + halfBatch, nResults), 1)
+    discrepancy = batch - (right - left + 1)
+    if discrepancy != 0:
+        right += discrepancy
+    if right > nResults:
+        right = nResults
+    return (left, right)
 
 
 def getFormData(interfaceDefaults):
@@ -50,9 +58,6 @@ def getFormData(interfaceDefaults):
     Most of the data has a known function to the web server,
     but there is also a list of webapp dependent options.
     """
-
-    if not Cap.can("browser"):
-        return {}
 
     form = {}
     jobName = request.form.get("jobName", "").strip()

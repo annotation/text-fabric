@@ -1,10 +1,10 @@
 [console_scripts]
 addnlp = tf.convert.addnlp:main
 nbconvert = tf.tools.nbconvert:main
-text-fabric = tf.server.start:main
+text-fabric = tf.browser.start:main
 text-fabric-make = tf.client.make.build:main
 text-fabric-zip = tf.advanced.zipdata:main
-tf = tf.server.start:main
+tf = tf.browser.start:main
 tf-addnlp = tf.convert.addnlp:main
 tf-fromtei = tf.convert.tei:main
 tf-fromxml = tf.convert.xml:main

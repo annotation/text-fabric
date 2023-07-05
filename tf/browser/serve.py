@@ -11,12 +11,14 @@ functions for composing tables and passages.
 """
 
 import json
-import pickle
 import markdown
 from textwrap import dedent
-from ..capable import Capable
+
+from flask import jsonify, redirect, render_template, make_response
+
 from ..core.helpers import console, wrapMessages
 from ..advanced.helpers import RESULT
+from ..advanced.text import specialCharacters
 from .wrap import (
     pageLinks,
     passageLinks,
@@ -29,19 +31,10 @@ from .wrap import (
 from .servelib import getAbout, getFormData, zipTables, BATCH
 
 
-Cap = Capable("browser")
-(jsonify, redirect, render_template, make_response) = Cap.loadFrom(
-    "flask", "jsonify", "redirect", "render_template", "make_response"
-)
-
-
 TIMEOUT = 180
 
 
 def serveTable(web, kind, getx=None, asDict=False):
-    if not Cap.can("browser"):
-        return ""
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -63,7 +56,7 @@ def serveTable(web, kind, getx=None, asDict=False):
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
         options["colorMap"] = form.get("colorMap", {})
-        options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+        options["edgeHighlights"] = form.get("edgeHighlights", {})
 
         (table, messages) = kernelApi.table(
             kind,
@@ -85,9 +78,6 @@ def serveTable(web, kind, getx=None, asDict=False):
 
 
 def serveQuery(web, getx, asDict=False):
-    if not Cap.can("browser"):
-        return ""
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -127,7 +117,7 @@ def serveQuery(web, getx, asDict=False):
                 if v is not None
             }
             options["colorMap"] = form.get("colorMap", {})
-            options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+            options["edgeHighlights"] = form.get("edgeHighlights", {})
 
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
@@ -171,9 +161,6 @@ def serveQuery(web, getx, asDict=False):
 
 
 def servePassage(web, getx):
-    if not Cap.can("browser"):
-        return ""
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -193,7 +180,7 @@ def servePassage(web, getx):
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
     options["colorMap"] = form.get("colorMap", {})
-    options["edgeHighlights"] = pickle.dumps(form.get("edgeHighlights", {}))
+    options["edgeHighlights"] = form.get("edgeHighlights", {})
 
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form["features"],
@@ -209,19 +196,16 @@ def servePassage(web, getx):
         getx=getx,
         **options,
     )
-    passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
     return jsonify(table=table, passages=passages)
 
 
 def serveExport(web):
-    if not Cap.can("browser"):
-        return ""
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     sectionsData = serveTable(web, "sections", None, asDict=True)
     tuplesData = serveTable(web, "tuples", None, asDict=True)
@@ -229,7 +213,7 @@ def serveExport(web):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -281,9 +265,6 @@ def serveExport(web):
 
 
 def serveDownload(web, jobOnly):
-    if not Cap.can("browser"):
-        return ""
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
@@ -307,6 +288,7 @@ def serveDownload(web, jobOnly):
         return make_response(buffer, headers)
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
     wildQueries = web.wildQueries
 
     task = form["query"]
@@ -352,14 +334,11 @@ def serveDownload(web, jobOnly):
         redirect("/")
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    csvs = pickle.loads(csvs)
-    tupleResultsX = pickle.loads(tupleResultsX)
-    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(colofon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
@@ -374,9 +353,6 @@ def serveDownload(web, jobOnly):
 
 
 def serveAll(web, anything):
-    if not Cap.can("browser"):
-        return ""
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
@@ -410,6 +386,7 @@ def serveAll(web, anything):
     )
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     form = getFormData(interfaceDefaults)
     resetForm = form["resetForm"]
@@ -417,7 +394,7 @@ def serveAll(web, anything):
     pages = ""
     passages = ""
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -448,7 +425,7 @@ def serveAll(web, anything):
     colorMapHtml = wrapColorMap(form)
     eColorMapHtml = wrapEColorMap(form)
 
-    characters = kernelApi.characters(fmt=form["textFormat"])
+    characters = specialCharacters(app, fmt=form["textFormat"], _browse=True)
 
     templateData = dict(
         css=css,

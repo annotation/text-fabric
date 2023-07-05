@@ -5,7 +5,6 @@ import re
 from itertools import chain
 from collections import deque
 from subprocess import run as run_cmd, CalledProcessError
-import pickle
 
 
 from ..parameters import OMAP
@@ -672,8 +671,3 @@ def run(cmdline, workDir=None):
         good = False
 
     return (good, stdOut, stdErr)
-
-
-def unpickle(options, key):
-    if options.get(key, None) is not None:
-        options[key] = pickle.loads(options[key])

@@ -1,115 +1,34 @@
 """
 # Text-Fabric kernel
 
-Text-Fabric can be used as a service.
-The full API of Text-Fabric needs a lot of memory, which makes it unusably for
-rapid successions of loading and unloading, like when used in a web server context.
-
-However, you can start TF as a service process,
-after which many clients can connect to it,
-all looking at the same (read-only) data. We call this a **TF kernel**.
-
-The API that the TF kernel offers is limited,
-it is primarily template search that is offered.
-see *Kernel API* below.
-
-## Start
-
-You can run the TF kernel as follows:
-
-```sh
-python -m tf.server.kernel ddd
-```
-
-where `ddd` points to a corpus, see `tf.app.use`.
-
-!!! example
-    See the
-    [start-up script](https://github.com/annotation/text-fabric/blob/master/tf/server/start.py)
-    of the text-fabric browser.
-
-## Connect
-
-The TF kernel can be connected by an other Python program as follows:
-
-```python
-from tf.server.kernel import makeTfConnection
-TF = makeTfConnection(lhost, port)
-api = TF.connect()
-```
-
-After this, `api` can be used to obtain information from the TF kernel.
-
-See the web server of the text-fabric browser, `tf.server.web`.
+This is a set of higher level methods by which the TF browser can obtain chunks
+of TF data for display on the website.
 
 ## Kernel API
 
 The API of the TF kernel is created by the function `makeTfKernel`.
 
-It returns a class `TfKernel` with a number of exposed methods
-that can be called by other programs.
-
-For the machinery of interprocess communication we rely on the
-[rpyc](https://github.com/tomerfiliba/rpyc) module.
-See especially the docs on
-[services](https://rpyc.readthedocs.io/en/latest/docs/services.html#services).
-
-!!! explanation "Shadow objects"
-    The way rpyc works in the case of data transmission has a pitfall.
-    When a service returns a Python object to the client, it
-    does not return the object itself, but only a shadow object
-    so called *netref* objects. This strategy is called
-    [boxing](https://rpyc.readthedocs.io/en/latest/docs/theory.html#boxing).
-    To the client the shadow object looks like the real thing,
-    but when the client needs to access members, they will be fetched
-    on the fly.
-
-    This is a performance problem when the service sends a big list or dict,
-    and the client iterates over all its items. Each item will be fetched in
-    a separate interprocess call, which causes an enormous overhead.
-
-    Boxing only happens for mutable objects. And here lies the work-around:
-
-    The service must send big chunks of data as immutable objects,
-    such as tuples. They are sent within a single interprocess call,
-    and fly swiftly through the connecting pipe.
+It returns a class `TfKernel` with a number of methods that are useful
+for a webserver.
 """
 
-import sys
-import pickle
 from functools import reduce
 
-from ..parameters import GH
-from ..capable import Capable
-from ..core.helpers import console, unpickle
-from ..core.timestamp import AUTO
-from ..advanced.app import findApp
+from ..core.helpers import console
 from ..advanced.highlight import getPassageHighlights
 from ..advanced.search import runSearch, runSearchCondensed
 from ..advanced.helpers import getRowsX
 from ..advanced.tables import compose, composeP, composeT
-from ..advanced.text import specialCharacters
-
-from .command import argKernel
+from .servelib import batchAround
 
 
-Cap = Capable("browser")
-rpyc = Cap.load("rpyc")
-ThreadedServer = Cap.loadFrom("rpyc", "ThreadedServer")
-
-
-TF_DONE = "TF setup done."
 TF_ERROR = "Could not set up TF"
 
 
 # KERNEL CREATION
 
 
-def makeTfKernel(app, appName, port):
-    if not Cap.can("browser"):
-        console(f"{TF_ERROR}")
-        return False
-
+def makeTfKernel(app, appName):
     if not app.api:
         console(f"{TF_ERROR}")
         return False
@@ -120,49 +39,12 @@ def makeTfKernel(app, appName, port):
 
     reset()
     cache = {}
-    console(f"{TF_DONE}\nKernel listening at port {port}")
 
-    class TfKernel(rpyc.Service):
-        def on_connect(self, conn):
+    class TfKernel:
+        def __init__(self):
             self.app = app
-            pass
 
-        def on_disconnect(self, conn):
-            self.app = None
-            pass
-
-        def exposed_monitor(self):
-            """A utility function that spits out some information from the kernel
-            to the outside world.
-
-            At this moment it is only used for debugging, but later it can be useful
-            to monitor the kernel or manage it while it remains running.
-            """
-
-            app = self.app
-            api = app.api
-            S = api.S
-
-            searchExe = getattr(S, "exe", None)
-            if searchExe:
-                searchExe = searchExe.outerTemplate
-
-            _msgCache = cache(_asString=True)
-
-            data = dict(searchExe=searchExe, _msgCache=_msgCache)
-            return data
-
-        def exposed_header(self):
-            """Fetches all the stuff to create a header.
-
-            This is shown after loading a data set.
-            It contains links to data and documentation of the data source.
-            """
-
-            app = self.app
-            return app.header()
-
-        def exposed_provenance(self):
+        def provenance(self):
             """Fetches provenance metadata to be shown on exported data pages."""
 
             app = self.app
@@ -182,11 +64,11 @@ def makeTfKernel(app, appName, port):
             )
             return (appProvenance, app.provenance)
 
-        def exposed_setNames(self):
-            """Gets the names of the custom sets that the kernel has loaded.
+        def setNames(self):
+            """Gets the names of the custom sets that the app has loaded.
 
-            The kernel can load additional sets of data triggered by the
-            `--sets=` command line argument with which the kernel
+            The app can load additional sets of data triggered by the
+            `--sets=` command line argument with which the app
             was started.
 
             A web server kan use this informatiomn to write out provenance info.
@@ -199,26 +81,13 @@ def makeTfKernel(app, appName, port):
                 else ()
             )
 
-        def exposed_css(self):
+        def css(self):
             """Delivers the CSS code to be inserted on the browser page."""
 
             app = self.app
             return f'<style type="text/css">{app.loadCss()}</style>'
 
-        def exposed_characters(self, fmt=None):
-            """Delivers the HTML for a widget of hard-to-type characters."""
-
-            app = self.app
-            return specialCharacters(app, fmt=fmt, _browse=True)
-
-        def exposed_context(self):
-            """Fetches the TF app context settings for the corpus."""
-
-            app = self.app
-
-            return pickle.dumps(app.context)
-
-        def exposed_passage(
+        def passage(
             self,
             features,
             query,
@@ -264,8 +133,6 @@ def makeTfKernel(app, appName, port):
             options: dict
                 Additional, optional display options, see `tf.advanced.options`.
             """
-
-            unpickle(options, "edgeHighlights")
 
             app = self.app
             api = app.api
@@ -345,9 +212,9 @@ def makeTfKernel(app, appName, port):
                     **options,
                 )
 
-            return (passage, sec0Type, pickle.dumps((sec0s, sec1s)), browseNavLevel)
+            return (passage, sec0Type, (sec0s, sec1s), browseNavLevel)
 
-        def exposed_rawSearch(self, query):
+        def rawSearch(self, query):
             app = self.app
             rawSearch = app.api.S.search
 
@@ -360,7 +227,7 @@ def makeTfKernel(app, appName, port):
                 # console(f'{len(results)} results')
             return (results, messages)
 
-        def exposed_table(
+        def table(
             self,
             kind,
             task,
@@ -397,8 +264,6 @@ def makeTfKernel(app, appName, port):
                 Additional, optional display options, see `tf.advanced.options`.
             """
 
-            unpickle(options, "edgeHighlights")
-
             app = self.app
 
             if kind == "sections":
@@ -433,7 +298,7 @@ def makeTfKernel(app, appName, port):
             table = composeT(app, features, allResults, opened, getx=getx, **options)
             return (table, messages)
 
-        def exposed_search(
+        def search(
             self,
             query,
             batch,
@@ -476,8 +341,6 @@ def makeTfKernel(app, appName, port):
                 `getx` is the identifier (section label, verse number) of the item/
             """
 
-            unpickle(options, "edgeHighlights")
-
             app = self.app
             display = app.display
             dContext = display.distill(options)
@@ -501,7 +364,7 @@ def makeTfKernel(app, appName, port):
                     results = ()
                 total += len(results)
 
-            (start, end) = _batchAround(total, position, batch)
+            (start, end) = batchAround(total, position, batch)
 
             selectedResults = results[start - 1 : end]
             opened = set(opened)
@@ -531,7 +394,7 @@ def makeTfKernel(app, appName, port):
             )
             return (table, status, " ".join(messages), featureStr, start, total)
 
-        def exposed_csvs(self, query, tuples, sections, **options):
+        def csvs(self, query, tuples, sections, **options):
             """Gets query results etc. in plain csv format.
 
             The query results, tuples, and sections are retrieved, as in
@@ -622,120 +485,9 @@ def makeTfKernel(app, appName, port):
             return (
                 queryStatus,
                 " ".join(queryMessages[0]),
-                pickle.dumps(csvs),
-                pickle.dumps(tupleResultsX),
-                pickle.dumps(queryResultsX),
+                csvs,
+                tupleResultsX,
+                queryResultsX,
             )
 
     return TfKernel()
-
-
-# KERNEL CONNECTION
-
-
-def makeTfConnection(lhost, port, timeout):
-    if not Cap.can("browser"):
-        return None
-
-    class TfConnection:
-        def connect(self):
-            try:
-                connection = rpyc.connect(
-                    lhost,
-                    port,
-                    config=dict(
-                        sync_request_timeout=timeout,
-                        # allow_pickle=True,
-                        # allow_public_attrs=True,
-                    ),
-                )
-                self.connection = connection
-            except ConnectionRefusedError as e:
-                self.connection = None
-                return str(e)
-            return connection.root
-
-    return TfConnection()
-
-
-# TOP LEVEL
-
-
-def main(cargs=sys.argv):
-    args = argKernel(cargs)
-    if not args:
-        console(f"{TF_ERROR}")
-        return
-
-    if not Cap.can("browser"):
-        console(f"{TF_ERROR}")
-        return
-
-    (dataSource, portKernel) = args
-    backend = dataSource.get("backend", GH) or GH
-    appName = dataSource["appName"]
-    checkout = dataSource["checkout"]
-    checkoutApp = dataSource["checkoutApp"]
-    dataLoc = dataSource["dataLoc"]
-    moduleRefs = dataSource["moduleRefs"]
-    locations = dataSource["locations"]
-    modules = dataSource["modules"]
-    setFile = dataSource["setFile"]
-    version = dataSource["version"]
-
-    if checkout is None:
-        checkout = ""
-
-    versionRep = "" if version is None else f" version {version}"
-    console(
-        f"Setting up TF kernel for {appName} {moduleRefs or ''} "
-        f"{setFile or ''}{versionRep}"
-    )
-    app = findApp(
-        appName,
-        checkoutApp,
-        dataLoc,
-        backend,
-        True,
-        silent=AUTO,
-        checkout=checkout,
-        mod=moduleRefs,
-        locations=locations,
-        modules=modules,
-        setFile=setFile,
-        version=version,
-    )
-    if app is None:
-        console(f"{TF_ERROR}")
-        return
-
-    kernel = makeTfKernel(app, appName, portKernel)
-    if kernel:
-        server = ThreadedServer(
-            kernel,
-            port=int(portKernel),
-            protocol_config=dict(
-                # allow_pickle=True,
-                # allow_public_attrs=True,
-            ),
-        )
-        server.start()
-
-
-# LOWER LEVEL
-
-
-def _batchAround(nResults, position, batch):
-    halfBatch = int((batch + 1) / 2)
-    left = min(max(position - halfBatch, 1), nResults)
-    right = max(min(position + halfBatch, nResults), 1)
-    discrepancy = batch - (right - left + 1)
-    if discrepancy != 0:
-        right += discrepancy
-    if right > nResults:
-        right = nResults
-    return (left, right)
-
-
-if __name__ == "__main__":
-    main()

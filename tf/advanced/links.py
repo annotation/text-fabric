@@ -26,7 +26,7 @@ from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
 from .helpers import dh, showDict
 from .settings import showContext
-from ..server.wrap import wrapProvenance
+from ..browser.wrap import wrapProvenance
 
 
 UNSUPPORTED = ""
