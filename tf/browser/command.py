@@ -10,8 +10,8 @@ from ..core.files import getLocation
 # COMMAND LINE ARGS
 
 
-def getPort(details):
-    portOffset = crc32(",".join(str(d) for d in details).encode("utf8")) % 10000
+def getPort(slug):
+    portOffset = crc32(slug.encode("utf8")) % 10000
     return PORT_BASE + portOffset
 
 
@@ -33,7 +33,7 @@ def argApp(cargs, simple):
         checkout = "clone"
 
     if simple:
-        return (org, repo, relative)
+        return appName
 
     locations = _argCollect("locations", cargs)
     modules = _argCollect("modules", cargs)
