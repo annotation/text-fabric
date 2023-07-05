@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/find.py#L1-L213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/find.py#L1-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">import sys
 from importlib import util
@@ -122,12 +122,6 @@ def findAppConfig(
     else:
         cfg[&#34;provenanceSpec&#34;][&#34;relative&#34;] = prefixSlash(relative)
 
-    if fileExists(cssPath):
-        with open(cssPath, encoding=&#34;utf8&#34;) as fh:
-            cfg[&#34;css&#34;] = fh.read()
-    else:
-        cfg[&#34;css&#34;] = &#34;&#34;
-
     cfg[&#34;local&#34;] = local
     cfg[&#34;localDir&#34;] = getLocalDir(backend, cfg, local, version)
 
@@ -178,6 +172,13 @@ Hint:
             )
 
     cfg[&#34;isCompatible&#34;] = isCompatible
+
+    if fileExists(cssPath):
+        with open(cssPath, encoding=&#34;utf8&#34;) as fh:
+            cfg[&#34;css&#34;] = fh.read()
+    else:
+        cfg[&#34;css&#34;] = &#34;&#34;
+
     return cfg
 
 
@@ -267,7 +268,7 @@ Otherwise we return <code>None</code>.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/find.py#L154-L186" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/find.py#L155-L187" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppClass(appName, appPath):
     &#34;&#34;&#34;Find the class definition of an app.
@@ -322,7 +323,7 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/find.py#L20-L151" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/find.py#L20-L152" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def findAppConfig(
     appName,
@@ -399,12 +400,6 @@ conclude that this is an older app, not compatible with TF v8 or higher.</p>
     else:
         cfg[&#34;provenanceSpec&#34;][&#34;relative&#34;] = prefixSlash(relative)
 
-    if fileExists(cssPath):
-        with open(cssPath, encoding=&#34;utf8&#34;) as fh:
-            cfg[&#34;css&#34;] = fh.read()
-    else:
-        cfg[&#34;css&#34;] = &#34;&#34;
-
     cfg[&#34;local&#34;] = local
     cfg[&#34;localDir&#34;] = getLocalDir(backend, cfg, local, version)
 
@@ -455,6 +450,13 @@ Hint:
             )
 
     cfg[&#34;isCompatible&#34;] = isCompatible
+
+    if fileExists(cssPath):
+        with open(cssPath, encoding=&#34;utf8&#34;) as fh:
+            cfg[&#34;css&#34;] = fh.read()
+    else:
+        cfg[&#34;css&#34;] = &#34;&#34;
+
     return cfg</code></pre>
 </details>
 </dd>
@@ -474,7 +476,7 @@ of which only the <code>appName</code> and the <code>appPath</code> are used.</d
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/find.py#L189-L213" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/find.py#L190-L214" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadModule(moduleName, *args):
     &#34;&#34;&#34;Load a module dynamically, by name.

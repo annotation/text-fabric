@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.server.serve API documentation</title>
+<title>tf.browser.serve API documentation</title>
 <meta name="description" content="Dress TF nodes up for serving on the web …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -20,7 +20,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.server.serve</code></h1>
+<h1 class="title">Module <code>tf.browser.serve</code></h1>
 </header>
 <section id="section-intro">
 <h1 id="dress-tf-nodes-up-for-serving-on-the-web">Dress TF nodes up for serving on the web</h1>
@@ -32,7 +32,7 @@ functions for composing tables and passages.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L1-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L1-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Dress TF nodes up for serving on the web
@@ -47,12 +47,14 @@ functions for composing tables and passages.
 &#34;&#34;&#34;
 
 import json
-import pickle
 import markdown
 from textwrap import dedent
-from ..capable import Capable
+
+from flask import jsonify, redirect, render_template, make_response
+
 from ..core.helpers import console, wrapMessages
 from ..advanced.helpers import RESULT
+from ..advanced.text import specialCharacters
 from .wrap import (
     pageLinks,
     passageLinks,
@@ -65,19 +67,10 @@ from .wrap import (
 from .servelib import getAbout, getFormData, zipTables, BATCH
 
 
-Cap = Capable(&#34;browser&#34;)
-(jsonify, redirect, render_template, make_response) = Cap.loadFrom(
-    &#34;flask&#34;, &#34;jsonify&#34;, &#34;redirect&#34;, &#34;render_template&#34;, &#34;make_response&#34;
-)
-
-
 TIMEOUT = 180
 
 
 def serveTable(web, kind, getx=None, asDict=False):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -99,7 +92,7 @@ def serveTable(web, kind, getx=None, asDict=False):
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
         options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-        options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+        options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
         (table, messages) = kernelApi.table(
             kind,
@@ -121,9 +114,6 @@ def serveTable(web, kind, getx=None, asDict=False):
 
 
 def serveQuery(web, getx, asDict=False):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -163,7 +153,7 @@ def serveQuery(web, getx, asDict=False):
                 if v is not None
             }
             options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-            options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+            options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
@@ -207,9 +197,6 @@ def serveQuery(web, getx, asDict=False):
 
 
 def servePassage(web, getx):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -229,7 +216,7 @@ def servePassage(web, getx):
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
     options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-    options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+    options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
@@ -245,19 +232,16 @@ def servePassage(web, getx):
         getx=getx,
         **options,
     )
-    passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
     return jsonify(table=table, passages=passages)
 
 
 def serveExport(web):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     sectionsData = serveTable(web, &#34;sections&#34;, None, asDict=True)
     tuplesData = serveTable(web, &#34;tuples&#34;, None, asDict=True)
@@ -265,7 +249,7 @@ def serveExport(web):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -317,9 +301,6 @@ def serveExport(web):
 
 
 def serveDownload(web, jobOnly):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
@@ -343,6 +324,7 @@ def serveDownload(web, jobOnly):
         return make_response(buffer, headers)
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
     wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
@@ -388,14 +370,11 @@ def serveDownload(web, jobOnly):
         redirect(&#34;/&#34;)
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    csvs = pickle.loads(csvs)
-    tupleResultsX = pickle.loads(tupleResultsX)
-    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(colofon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
@@ -410,9 +389,6 @@ def serveDownload(web, jobOnly):
 
 
 def serveAll(web, anything):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
@@ -446,6 +422,7 @@ def serveAll(web, anything):
     )
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     form = getFormData(interfaceDefaults)
     resetForm = form[&#34;resetForm&#34;]
@@ -453,7 +430,7 @@ def serveAll(web, anything):
     pages = &#34;&#34;
     passages = &#34;&#34;
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -484,7 +461,7 @@ def serveAll(web, anything):
     colorMapHtml = wrapColorMap(form)
     eColorMapHtml = wrapEColorMap(form)
 
-    characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
+    characters = specialCharacters(app, fmt=form[&#34;textFormat&#34;], _browse=True)
 
     templateData = dict(
         css=css,
@@ -539,7 +516,7 @@ def serveAll(web, anything):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.server.serve.serveAll"><code class="name flex">
+<dt id="tf.browser.serve.serveAll"><code class="name flex">
 <span>def <span class="ident">serveAll</span></span>(<span>web, anything)</span>
 </code></dt>
 <dd>
@@ -547,12 +524,9 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L376-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L355-L473" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveAll(web, anything):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
@@ -586,6 +560,7 @@ def serveAll(web, anything):
     )
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     form = getFormData(interfaceDefaults)
     resetForm = form[&#34;resetForm&#34;]
@@ -593,7 +568,7 @@ def serveAll(web, anything):
     pages = &#34;&#34;
     passages = &#34;&#34;
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -624,7 +599,7 @@ def serveAll(web, anything):
     colorMapHtml = wrapColorMap(form)
     eColorMapHtml = wrapEColorMap(form)
 
-    characters = kernelApi.characters(fmt=form[&#34;textFormat&#34;])
+    characters = specialCharacters(app, fmt=form[&#34;textFormat&#34;], _browse=True)
 
     templateData = dict(
         css=css,
@@ -672,7 +647,7 @@ def serveAll(web, anything):
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.server.serve.serveDownload"><code class="name flex">
+<dt id="tf.browser.serve.serveDownload"><code class="name flex">
 <span>def <span class="ident">serveDownload</span></span>(<span>web, jobOnly)</span>
 </code></dt>
 <dd>
@@ -680,12 +655,9 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L283-L373" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L267-L352" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveDownload(web, jobOnly):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     form = getFormData(interfaceDefaults)
@@ -709,6 +681,7 @@ def serveAll(web, anything):
         return make_response(buffer, headers)
 
     kernelApi = web.kernelApi
+    app = kernelApi.app
     wildQueries = web.wildQueries
 
     task = form[&#34;query&#34;]
@@ -754,14 +727,11 @@ def serveAll(web, anything):
         redirect(&#34;/&#34;)
         return jsonify(status=queryStatus, messages=queryMessages)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
     (provenanceHtml, provenanceMd) = wrapProvenance(form, provenance, setNames)
 
-    csvs = pickle.loads(csvs)
-    tupleResultsX = pickle.loads(tupleResultsX)
-    queryResultsX = pickle.loads(queryResultsX)
     about = getAbout(colofon, header, provenanceMd, form)
     (fileName, zipBuffer) = zipTables(csvs, tupleResultsX, queryResultsX, about, form)
 
@@ -775,7 +745,7 @@ def serveAll(web, anything):
     return make_response(zipBuffer, headers)</code></pre>
 </details>
 </dd>
-<dt id="tf.server.serve.serveExport"><code class="name flex">
+<dt id="tf.browser.serve.serveExport"><code class="name flex">
 <span>def <span class="ident">serveExport</span></span>(<span>web)</span>
 </code></dt>
 <dd>
@@ -783,16 +753,14 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L217-L280" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L203-L264" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveExport(web):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
     appName = aContext.appName
     kernelApi = web.kernelApi
+    app = kernelApi.app
 
     sectionsData = serveTable(web, &#34;sections&#34;, None, asDict=True)
     tuplesData = serveTable(web, &#34;tuples&#34;, None, asDict=True)
@@ -800,7 +768,7 @@ def serveAll(web, anything):
 
     form = getFormData(interfaceDefaults)
 
-    (colofon, header, appLogo, tfLogo) = kernelApi.header()
+    (colofon, header, appLogo, tfLogo) = app.header()
     css = kernelApi.css()
     provenance = kernelApi.provenance()
     setNames = kernelApi.setNames()
@@ -851,7 +819,7 @@ def serveAll(web, anything):
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.server.serve.servePassage"><code class="name flex">
+<dt id="tf.browser.serve.servePassage"><code class="name flex">
 <span>def <span class="ident">servePassage</span></span>(<span>web, getx)</span>
 </code></dt>
 <dd>
@@ -859,12 +827,9 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L173-L214" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L163-L200" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def servePassage(web, getx):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -884,7 +849,7 @@ def serveAll(web, anything):
         k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
     }
     options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-    options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+    options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
     (table, sec0Type, passages, browseNavLevel) = kernelApi.passage(
         form[&#34;features&#34;],
@@ -900,12 +865,11 @@ def serveAll(web, anything):
         getx=getx,
         **options,
     )
-    passages = pickle.loads(passages)
     passages = passageLinks(passages, sec0Type, sec0, sec1, browseNavLevel)
     return jsonify(table=table, passages=passages)</code></pre>
 </details>
 </dd>
-<dt id="tf.server.serve.serveQuery"><code class="name flex">
+<dt id="tf.browser.serve.serveQuery"><code class="name flex">
 <span>def <span class="ident">serveQuery</span></span>(<span>web, getx, asDict=False)</span>
 </code></dt>
 <dd>
@@ -913,12 +877,9 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L87-L170" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L80-L160" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveQuery(web, getx, asDict=False):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -958,7 +919,7 @@ def serveAll(web, anything):
                 if v is not None
             }
             options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-            options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+            options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
             try:
                 (table, status, messages, features, start, total) = kernelApi.search(
@@ -1001,7 +962,7 @@ def serveAll(web, anything):
     )</code></pre>
 </details>
 </dd>
-<dt id="tf.server.serve.serveTable"><code class="name flex">
+<dt id="tf.browser.serve.serveTable"><code class="name flex">
 <span>def <span class="ident">serveTable</span></span>(<span>web, kind, getx=None, asDict=False)</span>
 </code></dt>
 <dd>
@@ -1009,12 +970,9 @@ def serveAll(web, anything):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/server/serve.py#L41-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/browser/serve.py#L37-L77" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveTable(web, kind, getx=None, asDict=False):
-    if not Cap.can(&#34;browser&#34;):
-        return &#34;&#34;
-
     kernelApi = web.kernelApi
     aContext = web.context
     interfaceDefaults = aContext.interfaceDefaults
@@ -1036,7 +994,7 @@ def serveAll(web, anything):
             k: form.get(k, v) for (k, v) in interfaceDefaults.items() if v is not None
         }
         options[&#34;colorMap&#34;] = form.get(&#34;colorMap&#34;, {})
-        options[&#34;edgeHighlights&#34;] = pickle.dumps(form.get(&#34;edgeHighlights&#34;, {}))
+        options[&#34;edgeHighlights&#34;] = form.get(&#34;edgeHighlights&#34;, {})
 
         (table, messages) = kernelApi.table(
             kind,
@@ -1123,17 +1081,17 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.server" href="index.html">tf.server</a></code></li>
+<li><code><a title="tf.browser" href="index.html">tf.browser</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="tf.server.serve.serveAll" href="#tf.server.serve.serveAll">serveAll</a></code></li>
-<li><code><a title="tf.server.serve.serveDownload" href="#tf.server.serve.serveDownload">serveDownload</a></code></li>
-<li><code><a title="tf.server.serve.serveExport" href="#tf.server.serve.serveExport">serveExport</a></code></li>
-<li><code><a title="tf.server.serve.servePassage" href="#tf.server.serve.servePassage">servePassage</a></code></li>
-<li><code><a title="tf.server.serve.serveQuery" href="#tf.server.serve.serveQuery">serveQuery</a></code></li>
-<li><code><a title="tf.server.serve.serveTable" href="#tf.server.serve.serveTable">serveTable</a></code></li>
+<li><code><a title="tf.browser.serve.serveAll" href="#tf.browser.serve.serveAll">serveAll</a></code></li>
+<li><code><a title="tf.browser.serve.serveDownload" href="#tf.browser.serve.serveDownload">serveDownload</a></code></li>
+<li><code><a title="tf.browser.serve.serveExport" href="#tf.browser.serve.serveExport">serveExport</a></code></li>
+<li><code><a title="tf.browser.serve.servePassage" href="#tf.browser.serve.servePassage">servePassage</a></code></li>
+<li><code><a title="tf.browser.serve.serveQuery" href="#tf.browser.serve.serveQuery">serveQuery</a></code></li>
+<li><code><a title="tf.browser.serve.serveTable" href="#tf.browser.serve.serveTable">serveTable</a></code></li>
 </ul>
 </li>
 </ul>

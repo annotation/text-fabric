@@ -31,15 +31,10 @@ fire up a terminal (= command prompt) and say</p>
 <pre><code class="language-sh">pip install jupyterlab
 </code></pre>
 <p>To get text-fabric, you can either fire up a terminal and say:</p>
-<pre><code class="language-sh">pip install 'text-fabric[all]'
+<pre><code class="language-sh">pip install text-fabric
 </code></pre>
 <p>or fire up a Jupyter Notebook (<code>jupyter lab</code>)</p>
 <p>and in a cell say</p>
-<pre><code class="language-sh">!pip install 'text-fabric[all]'
-</code></pre>
-<p>If you are in a notebook on an iPad, you can not install the full text-fabric.
-The iPad cannot install the libraries needed for the Text-Fabric browser.
-To install a reduced text-fabric, say</p>
 <pre><code class="language-sh">!pip install text-fabric
 </code></pre>
 <p>Now restart this notebook by clicking the circular arrow in the toolbar:</p>
@@ -104,34 +99,10 @@ If you get tired of this, you can add this to your <code>.bashrc</code> file:</p
 <pre><code class="language-sh">PATH=&quot;~/.local/bin:${PATH}&quot;
 export PATH
 </code></pre>
-<h4 id="note-on-all">Note on <code>[all]</code></h4>
-<p>Text-Fabric has some special capabilities:</p>
-<ul>
-<li><code>browser</code>: the Text-Fabric browser, which runs a local webserver which lets you
-have a browse and search experience in a local web environment;</li>
-<li><code>github</code> and <code>gitlab</code>: repository backends from which Text-Fabric can load
-corpus data on-demand.</li>
-<li><code>pandas</code>: for exporting a dataset to Pandas.</li>
-</ul>
-<p>You can install Text-Fabric with a selection of capabilities:</p>
-<ul>
-<li><code>pip install 'text-fabric'</code> <em>without additional capabilities</em></li>
-<li><code>pip install 'text-fabric[all]'</code> <em>with all additional capabilities</em></li>
-<li><code>pip install 'text-fabric[github]'</code> <em>with a github backend</em></li>
-<li><code>pip install 'text-fabric[gitlab]'</code> <em>with a gitlab backend</em></li>
-<li><code>pip install 'text-fabric[browser]'</code> <em>with the text-fabric browser enabled</em></li>
-<li><code>pip install 'text-fabric[pandas]'</code> <em>with pandas export enabled</em></li>
-<li><code>pip install 'text-fabric[github,browser]'</code> <em>with the selected extras</em></li>
-<li><code>pip install 'text-fabric[github,gitlab]'</code> <em>with the selected extras</em></li>
-</ul>
-<p>Even if Text-Fabric is not installed with certain capabilities,
-it will have those capabilities if the required modules are installed.
-To see which modules are required for which extras, consult
-<a href="https://github.com/annotation/text-fabric/blob/master/setup.cfg">setup.cfg</a>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/about/install.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/install.md
@@ -208,7 +179,6 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#work-with-text-fabric">Work with Text-Fabric</a></li>
 <li><a href="#text-fabric-browser">Text-Fabric browser</a><ul>
 <li><a href="#note-for-linux-users">Note for Linux users</a></li>
-<li><a href="#note-on-all">Note on [all]</a></li>
 </ul>
 </li>
 </ul>

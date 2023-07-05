@@ -56,7 +56,7 @@ programs, such as Text-Fabric, to process the same data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/convert/pandas.py#L1-L308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/convert/pandas.py#L1-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Export a TF dataset to a Pandas dataframe.
@@ -93,13 +93,11 @@ programs, such as Text-Fabric, to process the same data.
 * [Ferdinand Huyck](https://nbviewer.org/github/CLARIAH/wp6-ferdinandhuyck/blob/main/tutorial/export.ipynb)
 &#34;&#34;&#34;
 
+import pandas
+
 from ..parameters import OTYPE, OSLOTS
 from ..core.files import TEMP_DIR, unexpanduser as ux, expandDir, dirMake
 from ..core.helpers import fitemize, pandasEsc, PANDAS_QUOTE, PANDAS_ESCAPE
-from ..capable import Capable
-
-Cap = Capable(&#34;pandas&#34;)
-pandas = Cap.load(&#34;pandas&#34;)
 
 HELP = &#34;&#34;&#34;
 Transforms TF dataset into Pandas
@@ -187,21 +185,6 @@ def exportPandas(app, inTypes=None, exportDir=None):
         The directory to which the Pandas file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     &#34;&#34;&#34;
-
-    if not Cap.can(&#34;pandas&#34;):
-        app.error(
-            &#34;Cannot export to Pandas because python modules &#34;
-            &#34;pandas and/or pyarrow are not installed&#34;,
-            tm=False,
-        )
-        app.info(&#34;Do: `pip install pandas pyarrow` and try again&#34;, tm=False)
-        app.info(
-            &#34;Alternatively, install text-fabric with the pandas capability &#34;
-            &#34;by doing any of:&#34;, tm=False
-        )
-        app.info(&#34;pip install text-fabric[pandas]&#34;, tm=False)
-        app.info(&#34;pip install text-fabric[all]&#34;, tm=False)
-        return
 
     api = app.api
     Eall = api.Eall
@@ -447,7 +430,7 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/convert/pandas.py#L53-L308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/convert/pandas.py#L51-L291" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def exportPandas(app, inTypes=None, exportDir=None):
     &#34;&#34;&#34;Export a currently loaded TF dataset to Pandas.
@@ -526,21 +509,6 @@ If <code>None</code>, it is the <code>/pandas</code> directory in the repo of th
         The directory to which the Pandas file will be exported.
         If `None`, it is the `/pandas` directory in the repo of the app.
     &#34;&#34;&#34;
-
-    if not Cap.can(&#34;pandas&#34;):
-        app.error(
-            &#34;Cannot export to Pandas because python modules &#34;
-            &#34;pandas and/or pyarrow are not installed&#34;,
-            tm=False,
-        )
-        app.info(&#34;Do: `pip install pandas pyarrow` and try again&#34;, tm=False)
-        app.info(
-            &#34;Alternatively, install text-fabric with the pandas capability &#34;
-            &#34;by doing any of:&#34;, tm=False
-        )
-        app.info(&#34;pip install text-fabric[pandas]&#34;, tm=False)
-        app.info(&#34;pip install text-fabric[all]&#34;, tm=False)
-        return
 
     api = app.api
     Eall = api.Eall

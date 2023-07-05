@@ -26,7 +26,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/condense.py#L1-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/condense.py#L1-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def condense(api, tuples, condenseType, multiple=False):
     F = api.F
@@ -46,8 +46,9 @@
 
     if not multiple:
         tuples = (tuples,)
+
     for tup in tuples:
-        for n in tup:
+        for (i, n) in enumerate(tup):
             nType = fOtype(n)
             if nType == condenseType:
                 containers.setdefault(n, set())
@@ -129,7 +130,7 @@ def condenseSet(api, tup, condenseType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/condense.py#L1-L44" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/condense.py#L1-L45" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def condense(api, tuples, condenseType, multiple=False):
     F = api.F
@@ -149,8 +150,9 @@ def condenseSet(api, tup, condenseType):
 
     if not multiple:
         tuples = (tuples,)
+
     for tup in tuples:
-        for n in tup:
+        for (i, n) in enumerate(tup):
             nType = fOtype(n)
             if nType == condenseType:
                 containers.setdefault(n, set())
@@ -185,7 +187,7 @@ def condenseSet(api, tup, condenseType):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/advanced/condense.py#L47-L84" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/advanced/condense.py#L48-L85" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def condenseSet(api, tup, condenseType):
     F = api.F

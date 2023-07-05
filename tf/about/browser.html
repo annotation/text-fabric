@@ -85,25 +85,9 @@ See <code><a title="tf.search.search.Search.search" href="../search/search.html#
 <p>Your session (aka <em>job</em>) will be saved in your browser,
 under the name <em>app</em><code>-default</code>,
 or another name if you rename, duplicate, import or create new sessions.</p>
-<p>After you have issued the <code>text-fabric</code> command, a <em>TF kernel</em> is started for you.
-This is a process that holds all the data and can deliver it to other processes,
-such as your web browser.</p>
-<p>As long as you leave the TF kernel on, you have instant access to your corpus.</p>
-<p>You can open other browsers and windows and tabs with the same url,
-and they will load quickly,
-without the long wait you experienced when the TF kernel was loading.</p>
 <h2 id="shut-down">Shut down</h2>
-<p>You can close the TF kernel and web server by pressing Ctrl-C in the terminal
-or command prompt where you have started <code>text-fabric</code>.
-It will prompt you to ask if you really want to shut down the kernel.
-If you leave it on, a next TF browser session will connect to it, which is quicker
-than to start up a fresh kernel.</p>
-<p>You can also manually clean up TF related processes:</p>
-<pre><code>text-fabric app -k
-</code></pre>
-<p>Or, if you have also processes running for other apps:</p>
-<pre><code>text-fabric -k
-</code></pre>
+<p>You can close the web server by pressing Ctrl-C in the terminal
+or command prompt where you have started <code>text-fabric</code>.</p>
 <h2 id="work-with-exported-results">Work with exported results</h2>
 <p>You can export your results to CSV files which you can process with various tools,
 including your own.</p>
@@ -185,7 +169,7 @@ That is unpleasant.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/1f950b456c55ca5312396d12555903e82d741332/tf/about/browser.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ad300d0e9c7a3949f6ee3ae90d4635ca9810ed85/tf/about/browser.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/browser.md
