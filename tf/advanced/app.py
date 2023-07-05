@@ -110,15 +110,12 @@ class App:
 
         self.context = None
         """Result of interpreting all configuration options in `config.yaml`.
-
-        See Also
-        --------
-        tf.advanced.settings.showContext
         """
 
         self.inNb = runsInNotebook()
 
         mergeDict(cfg, configOverrides)
+        self.cfgSpecs = cfg
 
         for (key, value) in dict(
             isCompatible=cfg.get("isCompatible", None),
@@ -330,7 +327,7 @@ The app "{appName}" will not work!
         !!! hint "the effect of the config settings"
             If you are developing a TF app and need to see the effects of
             the configuration settings in detail, you can conveniently
-            call `reuse` and `tf.advanced.settings.showContext` in tandem.
+            call `reuse`.
         """
 
         backend = self.backend

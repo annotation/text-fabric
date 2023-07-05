@@ -994,6 +994,7 @@ from .helpers import (
     showDict,
     ORIG,
     NORMAL,
+    dh,
 )
 
 
@@ -1888,7 +1889,7 @@ def getTypeDefaults(app, cfg, dKey, withApi):
     )
 
 
-def showContext(app, *keys):
+def showContext(app, *keys, withComputed=True, asHtml=False):
     """Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
 
     The context is the result of computing sensible defaults for the corpus
@@ -1899,6 +1900,10 @@ def showContext(app, *keys):
     keys: iterable of string
         For each key passed to this function, the information for that key
         will be displayed. If no keys are passed, all keys will be displayed.
+    withComputed: boolean, optional False
+        If True, presents also the computed list of application settings.
+    asHtml: boolean, optional False
+        If True, return the resulting HTML rather than displaying it.
 
     Returns
     -------
@@ -1912,7 +1917,26 @@ def showContext(app, *keys):
     """
 
     inNb = app.inNb
-    showDict(f"<b>{(app.appName)}</b> <i>app context</i>", app.specs, inNb, *keys)
+
+    result = []
+
+    for (kind, data) in (
+        ("specified", app.cfgSpecs),
+        ("computed", app.specs),
+    ):
+        if kind == "computed" and not withComputed:
+            continue
+        result.append(showDict(f"<b>{kind}</b>", data, True, False))
+
+    result = "\n".join(result)
+
+    if asHtml:
+        return result
+
+    if inNb:
+        dh(result)
+    else:
+        console(result)
 
 
 def getLevel(defaultLevel, givenInfo, isVerse):

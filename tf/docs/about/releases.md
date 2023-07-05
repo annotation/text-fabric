@@ -12,6 +12,19 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 11.5
 
+#### 11.5.2
+
+2023-06-?? (Upcoming)
+
+*   Header. After loading a dataset, a header is shown with shows all kinds of
+    information about the corpus. But so far, it did not show the TF app settings.
+    Now they are included in the header. There are two kinds: the explicitly given
+    settings and the derived and computed settings.
+    The latter ones will be suppressed when loading a dataset in a Jupyter notebook,
+    because these settings can become quite big. You can still get them with
+    `A.showContext()`. In the TF browser they will be always included, you find it in
+    the *Corpus* tab.
+
 #### 11.5.1
 
 2023-06-22

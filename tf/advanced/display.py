@@ -137,10 +137,11 @@ def displayShow(app, *options):
     """
 
     inNb = app.inNb
+    _browse = app._browse
     display = app.display
     display.setup()
     data = display.current
-    showDict("<b>current display options</b>", data, inNb, *options)
+    return showDict("<b>current display options</b>", data, _browse, inNb, *options)
 
 
 def displaySetup(app, **options):

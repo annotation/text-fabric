@@ -16,8 +16,9 @@ def condense(api, tuples, condenseType, multiple=False):
 
     if not multiple:
         tuples = (tuples,)
+
     for tup in tuples:
-        for n in tup:
+        for (i, n) in enumerate(tup):
             nType = fOtype(n)
             if nType == condenseType:
                 containers.setdefault(n, set())

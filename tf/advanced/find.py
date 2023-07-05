@@ -92,12 +92,6 @@ def findAppConfig(
     else:
         cfg["provenanceSpec"]["relative"] = prefixSlash(relative)
 
-    if fileExists(cssPath):
-        with open(cssPath, encoding="utf8") as fh:
-            cfg["css"] = fh.read()
-    else:
-        cfg["css"] = ""
-
     cfg["local"] = local
     cfg["localDir"] = getLocalDir(backend, cfg, local, version)
 
@@ -148,6 +142,13 @@ Hint:
             )
 
     cfg["isCompatible"] = isCompatible
+
+    if fileExists(cssPath):
+        with open(cssPath, encoding="utf8") as fh:
+            cfg["css"] = fh.read()
+    else:
+        cfg["css"] = ""
+
     return cfg
 
 

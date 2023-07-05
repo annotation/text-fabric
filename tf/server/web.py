@@ -115,8 +115,7 @@ class Web:
         else:
             self.kernelApi = kernelApi
 
-            context = pickle.loads(kernelApi.context())
-            self.context = context
+            self.context = pickle.loads(kernelApi.context())
 
             self.wildQueries = set()
 

@@ -24,7 +24,8 @@ from ..core.files import (
 )
 from ..core.timestamp import SILENT_D, AUTO, TERSE, VERBOSE, silentConvert
 from .repo import Checkout
-from .helpers import dh
+from .helpers import dh, showDict
+from .settings import showContext
 from ..server.wrap import wrapProvenance
 
 
@@ -204,8 +205,9 @@ def header(app, allMeta=False):
     tfsLink = app.tfsLink
     tfLink = app.tfLink
     tutLink = app.tutLink
+    _browse = app._browse
 
-    if app._browse:
+    if _browse:
         colofon = dedent(
             f"""
             <div class="hdlinks">
@@ -221,8 +223,10 @@ def header(app, allMeta=False):
         colofon = ""
 
     nodeInfo = _nodeTypeInfo(app)
-    featureInfo = _featuresPerModule(app, allMeta=allMeta or app._browse)
-    if inNb or app._browse:
+    featureInfo = _featuresPerModule(app, allMeta=allMeta or _browse)
+    settingInfo = showContext(app, withComputed=_browse, asHtml=True)
+
+    if inNb or _browse:
         tfLine = ", ".join(x for x in (tfLink, appLink, tfsLink) if x)
         dataLine = ", ".join(x for x in (dataLink, charLink, featureLink) if x)
         setLine = (
@@ -237,6 +241,7 @@ def header(app, allMeta=False):
             {nodeInfo}
             <b>Sets:</b> {setLine}<br>
             <b>Features:</b><br>{featureInfo}
+            <b>Settings:</b><br>{settingInfo}
             """
         )
         if inNb:
@@ -858,6 +863,38 @@ def _featuresPerModule(app, allMeta=False):
         else:
             output += "\n"
     return output
+
+
+def _getSettings(app, inNb):
+    """Shows the *context* of the app `tf.advanced.app.App.context` in a pretty way.
+
+    The context is the result of computing sensible defaults for the corpus
+    combined with configuration settings in the app's `config.yaml`.
+
+    But we also list the configuration settings.
+
+    Returns
+    -------
+    html
+        An expandable list of the key-value pair for the requested keys.
+
+    See Also
+    --------
+    tf.advanced.app.App.reuse
+    tf.advanced.settings: options allowed in `config.yaml`
+    """
+
+    result = []
+
+    for (kind, data) in (
+        ("<b>specified</b>", app.cfgSpecs),
+        ("<b>computed</b>", app.specs),
+    ):
+        if kind == "computed" and inNb:
+            continue
+        result.append(showDict(f"<b>{kind}</b>", data, True, False))
+
+    return "\n".join(result)
 
 
 def provenanceLink(
