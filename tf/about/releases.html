@@ -33,7 +33,7 @@ all possibilities.</p>
 <hr>
 <h2 id="12">12</h2>
 <h3 id="120">12.0</h3>
-<h4 id="1200-3">12.0.0-3</h4>
+<h4 id="1200-4">12.0.0-4</h4>
 <p>2023-07-05</p>
 <h5 id="simplification">Simplification</h5>
 <ul>
@@ -43,20 +43,19 @@ TF corpus data. Instead, the webserver (flask) loads the corpus itself.
 This will restrict the usage of the TF browser to local-single-user scenarios.</p>
 </li>
 <li>
-<p>Text-Fabric no longer exposes multiple installation options, such as</p>
+<p>Text-Fabric no longer exposes the installation options <code>[browser, pandas]</code></p>
 <p><code>pip install 'text-fabric[browser]'
-pip install 'text-fabric[all]'</code></p>
-<p>Instead, we are back to a single</p>
-<p><code>pip install text-fabric</code></p>
-<p>for everything, except Pandas.
-If you work with Pandas (like exporting to Pandas) you have to install it yourself:</p>
+pip install 'text-fabric[pandas]'</code></p>
+<p>If you work with Pandas (like exporting to Pandas) you have to install it yourself:</p>
 <p><code>pip install pandas pyarrow</code></p>
+<p>The TF browser is always supported.</p>
 <p>The reason to have these distinct capabilities was that there are python libraries
 involved that do not install on the iPad.
 The simplification of the TF browser makes it possible to be no longer dependent
 on these modules.</p>
-<p>Hence, TF can be installed on the iPad, and the TF browser works there as well,
-and also the autoloading of data from GitHub/GitLab.</p>
+<p>Hence, TF can be installed on the iPad, although the
+TF browser works is not working there yet.
+But the autoloading of data from GitHub/GitLab works.</p>
 </li>
 </ul>
 <h5 id="minor-things">Minor things</h5>
@@ -76,7 +75,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3f12ed87f6209ca93e7ae1b2399ded7bd1f6c212/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -150,7 +149,7 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#120">12.0</a><ul>
-<li><a href="#1200-3">12.0.0-3</a><ul>
+<li><a href="#1200-4">12.0.0-4</a><ul>
 <li><a href="#simplification">Simplification</a></li>
 <li><a href="#minor-things">Minor things</a></li>
 </ul>

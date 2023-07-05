@@ -77,7 +77,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/start.py#L1-L191" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3f12ed87f6209ca93e7ae1b2399ded7bd1f6c212/tf/browser/start.py#L1-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -154,6 +154,7 @@ from ..core.helpers import console
 from ..parameters import BANNER, PROTOCOL, HOST
 
 from .command import argNoweb, argApp, getPort
+from .web import TF_DONE, TF_ERROR
 
 
 HELP = &#34;&#34;&#34;
@@ -242,6 +243,16 @@ def main(cargs=sys.argv[1:]):
         bufsize=0,
         encoding=&#34;utf8&#34;,
     )
+    console(&#34;Loading TF corpus data. Please wait ...&#34;)
+    for line in processWeb.stdout:
+        sys.stdout.write(line)
+        if line.rstrip() == TF_ERROR:
+            return
+        if line.rstrip() == TF_DONE:
+            break
+
+    sleep(1)
+    stopped = processWeb.poll()
 
     if not noweb:
         sleep(2)
@@ -287,7 +298,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/e43ae3cc1c7c4c34ba5b6bff2b6707c04b2c2f5e/tf/browser/start.py#L136-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3f12ed87f6209ca93e7ae1b2399ded7bd1f6c212/tf/browser/start.py#L137-L198" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -317,6 +328,16 @@ if __name__ == &#34;__main__&#34;:
         bufsize=0,
         encoding=&#34;utf8&#34;,
     )
+    console(&#34;Loading TF corpus data. Please wait ...&#34;)
+    for line in processWeb.stdout:
+        sys.stdout.write(line)
+        if line.rstrip() == TF_ERROR:
+            return
+        if line.rstrip() == TF_DONE:
+            break
+
+    sleep(1)
+    stopped = processWeb.poll()
 
     if not noweb:
         sleep(2)
