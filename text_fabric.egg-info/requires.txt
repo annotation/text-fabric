@@ -4,5 +4,13 @@ ipython
 lxml
 pyyaml>=5.3
 flask
+
+[all]
 pygithub>=1.57
+python-gitlab>=3.5.0
+
+[github]
+pygithub>=1.57
+
+[gitlab]
 python-gitlab>=3.5.0

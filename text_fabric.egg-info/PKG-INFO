@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: text-fabric
-Version: 12.0.3
+Version: 12.0.4
 Summary: Processor and browser for annotated text corpora
 Home-page: https://github.com/annotation/text-fabric
 Author: Dirk Roorda
@@ -30,6 +30,9 @@ Classifier: Topic :: Text Processing :: Filters
 Classifier: Topic :: Text Processing :: Linguistic
 Classifier: Topic :: Text Processing :: Markup
 Requires-Python: >=3.9.0
+Provides-Extra: github
+Provides-Extra: gitlab
+Provides-Extra: all
 License-File: LICENSE
 
 file README.md
