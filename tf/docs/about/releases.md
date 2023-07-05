@@ -22,33 +22,29 @@ See the app-specific tutorials via `tf.about.corpora`.
     TF corpus data. Instead, the webserver (flask) loads the corpus itself.
     This will restrict the usage of the TF browser to local-single-user scenarios.
 
-*   Text-Fabric no longer exposes multiple installation options, such as
+*   Text-Fabric no longer exposes the installation options `[browser, pandas]`
 
     ```
     pip install 'text-fabric[browser]'
-    pip install 'text-fabric[all]'
+    pip install 'text-fabric[pandas]'
     ```
 
-    Instead, we are back to a single
-
-    ```
-    pip install text-fabric
-    ```
-
-    for everything, except Pandas.
     If you work with Pandas (like exporting to Pandas) you have to install it yourself:
 
     ```
     pip install pandas pyarrow
     ```
 
+    The TF browser is always supported.
+
     The reason to have these distinct capabilities was that there are python libraries 
     involved that do not install on the iPad.
     The simplification of the TF browser makes it possible to be no longer dependent
     on these modules.
 
-    Hence, TF can be installed on the iPad, and the TF browser works there as well,
-    and also the autoloading of data from GitHub/GitLab.
+    Hence, TF can be installed on the iPad, although the
+    TF browser works is not working there yet.
+    But the autoloading of data from GitHub/GitLab works.
 
 
 ##### Minor things
