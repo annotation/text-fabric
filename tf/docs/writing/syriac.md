@@ -3,8 +3,8 @@
 <style>
 @font-face {
 	font-family: "Estrangelo Edessa";
-	src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SyrCOMEdessa.otf?raw=true');
-	src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
+	src: url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.otf?raw=true');
+	src: url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
 }
 </style>
 <style>

@@ -3,8 +3,8 @@
 <style type="text/css">
 @font-face {
 	font-family: "Ezra SIL";
-	src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SILEOT.ttf?raw=true');
-	src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SILEOT.woff?raw=true') format('woff');
+	src: url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.ttf?raw=true');
+	src: url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.woff?raw=true') format('woff');
 }
 </style>
 <style type="text/css">

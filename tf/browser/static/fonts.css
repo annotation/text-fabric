@@ -1,29 +1,29 @@
 @font-face {
   font-family: "Gentium Plus";
   src: local('Gentium Plus'), local('GentiumPlus'),
-    url('/server/static/fonts/GentiumPlus-R.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/GentiumPlus-R.woff?raw=true') format('woff');
+    url('/browser/static/fonts/GentiumPlus-R.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/GentiumPlus-R.woff?raw=true') format('woff');
 }
 
 @font-face {
   font-family: "Ezra SIL";
   src: local('Ezra SIL'), local('EzraSIL'),
-    url('/server/static/fonts/SILEOT.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SILEOT.woff?raw=true') format('woff');
+    url('/browser/static/fonts/SILEOT.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SILEOT.woff?raw=true') format('woff');
 }
 
 @font-face {
   font-family: "SBL Hebrew";
   src: local('SBL Hebrew'), local('SBLHebrew'),
-    url('/server/static/fonts/SBL_Hbrw.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SBL_Hbrw.woff?raw=true') format('woff');
+    url('/browser/static/fonts/SBL_Hbrw.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SBL_Hbrw.woff?raw=true') format('woff');
 }
 
 @font-face {
   font-family: "Estrangelo Edessa";
   src: local('Estrangelo Edessa'), local('EstrangeloEdessa');
-    url('/server/static/fonts/SyrCOMEdessa.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
+    url('/browser/static/fonts/SyrCOMEdessa.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SyrCOMEdessa.woff?raw=true') format('woff');
 }
 
 @font-face {
@@ -31,8 +31,8 @@
   font-style: normal;
   font-weight: 400;
   src: local('Amiri Quran'), local('AmiriQuran'),
-    url('/server/static/fonts/AmiriQuran.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff?raw=true') format('woff');
+    url('/browser/static/fonts/AmiriQuran.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff?raw=true') format('woff');
 }
 
 @font-face {
@@ -40,20 +40,20 @@
   font-style: normal;
   font-weight: 400;
   src: local('Amiri Quran Colored'), local('AmiriQuranColored'),
-    url('/server/static/fonts/AmiriQuranColored.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuranColored.woff?raw=true') format('woff');
+    url('/browser/static/fonts/AmiriQuranColored.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuranColored.woff?raw=true') format('woff');
 }
 
 @font-face {
   font-family: "Santakku";
   src: local('Santakku'),
-    url('/server/static/fonts/Santakku.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/Santakku.woff?raw=true') format('woff');
+    url('/browser/static/fonts/Santakku.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/Santakku.woff?raw=true') format('woff');
 }
 
 @font-face {
   font-family: "SantakkuM";
   src: local('SantakkuM'),
-    url('/server/static/fonts/SantakkuM.woff') format('woff'),
-    url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/SantakkuM.woff?raw=true') format('woff');
+    url('/browser/static/fonts/SantakkuM.woff') format('woff'),
+    url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/SantakkuM.woff?raw=true') format('woff');
 }

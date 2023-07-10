@@ -3,9 +3,9 @@
 <style>
 @font-face {
     font-family: AmiriQuran;
-    src: url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff2') format('woff2'),
-         url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.woff') format('woff'),
-	       url('https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts/AmiriQuran.ttf')  format('truetype');
+    src: url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff2') format('woff2'),
+         url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.woff') format('woff'),
+	       url('https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts/AmiriQuran.ttf')  format('truetype');
 }
 </style>
 <style>

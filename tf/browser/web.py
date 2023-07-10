@@ -11,7 +11,7 @@ This is realized by a web app based on
 
 This web app initializes by loading a TF corpus from which it obtains data.
 In repsonse to requests, it merges the retrieved data into a set of
-[templates](https://github.com/annotation/text-fabric/tree/master/tf/server/views).
+[templates](https://github.com/annotation/text-fabric/tree/master/tf/browser/views).
 
 ## Start up
 
@@ -25,7 +25,7 @@ There are 4 kinds of routes in the web app:
 
 url pattern | effect
 --- | ---
-`/server/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/server/static)
+`/browser/static/...` | serves a static file from the server-wide [static folder](https://github.com/annotation/text-fabric/tree/master/tf/browser/static)
 `/data/static/...` | serves a static file from the app specific static folder
 `/local/static/...` | serves a static file from a local directory specified by the app
 anything else | submits the form with user data and return the processed request
@@ -33,7 +33,7 @@ anything else | submits the form with user data and return the processed request
 ## Templates
 
 There are two templates in
-[views](https://github.com/annotation/text-fabric/tree/master/tf/server/views)
+[views](https://github.com/annotation/text-fabric/tree/master/tf/browser/views)
 :
 
 * *index*: the normal template for returning responses
@@ -54,17 +54,17 @@ There are several sources of CSS formatting:
 
 * the CSS loaded from the app dependent extraApi, used
   for pretty displays;
-* [index.css](https://github.com/annotation/text-fabric/blob/master/tf/server/static/index.css):
+* [index.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/index.css):
   the formatting of the *index* web page with which the user interacts;
-* [export.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/export.css)
+* [export.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/export.css)
   the formatting of the export page;
-* [base.css](https://github.com/annotation/text-fabric/blob/master/tf/server/views/base.css)
+* [base.css](https://github.com/annotation/text-fabric/blob/master/tf/browser/views/base.css)
   shared formatting between the index and export pages.
 
 ## Javascript
 
 We use a
-[modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/server/static/tf.js)
+[modest amount of Javascript](https://github.com/annotation/text-fabric/blob/master/tf/browser/static/tf.js)
 on top of
 [JQuery](https://api.jquery.com).
 
@@ -120,7 +120,7 @@ def factory(web):
     appPath = aContext.appPath
     localDir = aContext.localDir
 
-    @app.route("/server/static/<path:filepath>")
+    @app.route("/browser/static/<path:filepath>")
     def serveStatic(filepath):
         theFile = f"{MY_DIR}/static/{filepath}"
         return send_file(theFile) if fileExists(theFile) else ""

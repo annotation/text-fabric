@@ -66,7 +66,7 @@ def makeTfKernel(app, appName):
             `--sets=` command line argument with which the app
             was started.
 
-            A web server kan use this informatiomn to write out provenance info.
+            A web server kan use this information to write out provenance info.
             """
 
             app = self.app

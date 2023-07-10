@@ -375,7 +375,7 @@ def serveAll(web, anything):
         };
         </script>
         <script
-            src="/server/static/mathjax/tex-chtml.js"
+            src="/browser/static/mathjax/tex-chtml.js"
             id="MathJax-script"
             async
         ></script>

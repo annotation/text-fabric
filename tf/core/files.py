@@ -293,7 +293,7 @@ APP_APP = "app"
 APP_DISPLAY = "static/display.css"
 """Relative path of the css file of a TF app."""
 
-SERVER_DISPLAY_BASE = "/server/static"
+SERVER_DISPLAY_BASE = "/browser/static"
 """Base of server css files."""
 
 SERVER_DISPLAY = ("fonts.css", "display.css", "highlight.css")

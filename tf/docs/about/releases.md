@@ -12,6 +12,13 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ### 12.0
 
+#### 12.0.5
+
+2023-07-10
+
+Fixed references to static files that still went to `/server` instead of `/browser`.
+This has to do with the new approach to the Text-Fabric browser.
+
 #### 12.0.0-4
 
 2023-07-05

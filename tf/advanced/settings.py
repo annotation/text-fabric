@@ -1032,7 +1032,7 @@ WRITING_DEFAULTS[""] = dict(
 )
 
 FONT_BASE = (
-    "https://github.com/annotation/text-fabric/blob/master/tf/server/static/fonts"
+    "https://github.com/annotation/text-fabric/blob/master/tf/browser/static/fonts"
 )
 
 METHOD = "method"
