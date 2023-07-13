@@ -111,7 +111,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L1-L1362" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L1-L1369" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Add data from an NLP pipeline.
 
@@ -1386,10 +1386,14 @@ class NLPipeline:
             write = self.write
         else:
             self.write = write
-        if verbose is None:
-            verbose = self.verbose
-        else:
-            self.verbose = verbose
+
+        verboseGiven = verbose
+
+        if verboseGiven is not None:
+            verboseSav = self.verbose
+            self.verbose = verboseGiven
+
+        verbose = self.verbose
 
         lang = self.lang
 
@@ -1453,6 +1457,9 @@ class NLPipeline:
 
             result = newVersion if self.good else False
 
+        if verboseGiven is not None:
+            self.verbose = verboseSav
+
         if type(result) is bool:
             if not result:
                 return False
@@ -1507,7 +1514,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L1350-L1358" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L1357-L1365" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(&#34;tf-addnlp&#34;, HELP, TASKS, PARAMS, FLAGS)
@@ -1591,7 +1598,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L178-L1347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L178-L1354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class NLPipeline:
     def __init__(
@@ -2689,10 +2696,14 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
             write = self.write
         else:
             self.write = write
-        if verbose is None:
-            verbose = self.verbose
-        else:
-            self.verbose = verbose
+
+        verboseGiven = verbose
+
+        if verboseGiven is not None:
+            verboseSav = self.verbose
+            self.verbose = verboseGiven
+
+        verbose = self.verbose
 
         lang = self.lang
 
@@ -2756,6 +2767,9 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 
             result = newVersion if self.good else False
 
+        if verboseGiven is not None:
+            self.verbose = verboseSav
+
         if type(result) is bool:
             if not result:
                 return False
@@ -2774,7 +2788,7 @@ sequence number of the sentence in the data stream, starting at 1.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L587-L589" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L587-L589" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">@staticmethod
 def lingo(*args, **kwargs):
@@ -2812,7 +2826,7 @@ generated text (counting from zero).</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L389-L585" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L389-L585" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def generatePlain(self):
     &#34;&#34;&#34;Generates a plain text out of a data source.
@@ -3037,7 +3051,7 @@ or complex; whether the element allows mixed content or only pure content.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L356-L387" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L356-L387" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getElementInfo(self, verbose=None):
     &#34;&#34;&#34;Analyse the schema.
@@ -3150,7 +3164,7 @@ one for the atomic tokens and one for the full tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L591-L999" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L591-L999" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingest(
     self,
@@ -3623,7 +3637,7 @@ sentence boundaries.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L1001-L1228" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L1001-L1228" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def ingestTokensAndSentences(self, positions, tkStream, sentenceStream):
     &#34;&#34;&#34;Ingests tokens and sentences in a dataset and turn the tokens into slots.
@@ -3876,7 +3890,7 @@ If not passed, take the verbose member of this object.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L289-L354" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L289-L354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadApp(self, app=None, verbose=None):
     &#34;&#34;&#34;Loads a given TF app or loads the TF app based on the working directory.
@@ -3979,7 +3993,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/addnlp.py#L1230-L1347" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/addnlp.py#L1230-L1354" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
@@ -4025,10 +4039,14 @@ will not be executed.</p>
         write = self.write
     else:
         self.write = write
-    if verbose is None:
-        verbose = self.verbose
-    else:
-        self.verbose = verbose
+
+    verboseGiven = verbose
+
+    if verboseGiven is not None:
+        verboseSav = self.verbose
+        self.verbose = verboseGiven
+
+    verbose = self.verbose
 
     lang = self.lang
 
@@ -4091,6 +4109,9 @@ will not be executed.</p>
         newVersion = self.ingestTokensAndSentences(positions, tokens, sentences)
 
         result = newVersion if self.good else False
+
+    if verboseGiven is not None:
+        self.verbose = verboseSav
 
     if type(result) is bool:
         if not result:

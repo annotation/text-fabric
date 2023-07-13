@@ -306,12 +306,16 @@ model:</p>
     levels=[&quot;folder&quot;, &quot;file&quot;, &quot;chunk&quot;],
 )
 </code></pre>
-<p>This section model accepts a few other parameters:</p>
+<p>This section model (I) accepts a few other parameters:</p>
 <pre><code>    backMatter=&quot;backmatter&quot;
 </code></pre>
 <p>This is the name of the folder that should not be treated as an ordinary folder, but
 as the folder with the sources for the backmatter, such as references, lists, indices,
 bibliography, biographies, etc.</p>
+<pre><code>    drillDownDivs=True
+</code></pre>
+<p>Whether the chunks are the immediate children of <code>body</code> elements, or whether
+we should drill through all intervening <code>div</code> levels.</p>
 <p>For model II, the default parameters are:</p>
 <pre><code>element=&quot;head&quot;
 levels=[&quot;chapter&quot;, &quot;chunk&quot;],
@@ -386,7 +390,7 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1-L4173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1-L4234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # TEI import
@@ -750,7 +754,7 @@ dict(
 )
 ```
 
-This section model accepts a few other parameters:
+This section model (I) accepts a few other parameters:
 
 ```
     backMatter=&#34;backmatter&#34;
@@ -759,6 +763,13 @@ This section model accepts a few other parameters:
 This is the name of the folder that should not be treated as an ordinary folder, but
 as the folder with the sources for the backmatter, such as references, lists, indices,
 bibliography, biographies, etc.
+
+```
+    drillDownDivs=True
+```
+
+Whether the chunks are the immediate children of `body` elements, or whether
+we should drill through all intervening `div` levels.
 
 For model II, the default parameters are:
 
@@ -1395,23 +1406,32 @@ class TEI:
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
-        pageModel = settings.get(&#34;pageModel&#34;, {})
-        sectionModel = settings.get(&#34;sectionModel&#34;, {})
         procins = settings.get(&#34;procins&#34;, False)
 
+        pageModel = settings.get(&#34;pageModel&#34;, {})
         pageModel = checkModel(&#34;page&#34;, pageModel)
         if not pageModel:
             self.good = False
             return
 
+        makePageElems = pageModel[&#34;model&#34;] == &#34;II&#34;
         pageProperties = pageModel.get(&#34;properties&#34;, None)
+        pageModel = pageModel[&#34;model&#34;]
 
+        self.makePageElems = makePageElems
+        self.pageModel = pageModel
+        self.pageProperties = pageProperties
+
+        sectionModel = settings.get(&#34;sectionModel&#34;, {})
         sectionModel = checkModel(&#34;section&#34;, sectionModel)
         if not sectionModel:
             self.good = False
             return
 
         sectionProperties = sectionModel.get(&#34;properties&#34;, None)
+        sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionModel = sectionModel
+        self.sectionProperties = sectionProperties
 
         self.generic = generic
         self.extra = extra
@@ -1463,10 +1483,6 @@ class TEI:
         self.wordAsSlot = wordAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
-        self.pageModel = pageModel[&#34;model&#34;]
-        self.pageProperties = pageProperties
-        self.sectionModel = sectionModel[&#34;model&#34;]
-        self.sectionProperties = sectionProperties
         self.procins = procins
 
         reportDir = f&#34;{refDir}/report&#34;
@@ -1598,7 +1614,7 @@ class TEI:
         self.levelNames = levelNames
         self.chunkLevel = levelNames[-1]
 
-        if self.sectionModel == &#34;II&#34;:
+        if sectionModel == &#34;II&#34;:
             self.chapterSection = levelNames[0]
             self.chunkSection = levelNames[1]
         else:
@@ -1606,6 +1622,157 @@ class TEI:
             self.fileSection = levelNames[1]
             self.chunkSection = levelNames[2]
             self.backMatter = sectionProperties.get(&#34;backMatter&#34;, None)
+
+        chunkSection = self.chunkSection
+        intFeatures = {&#34;empty&#34;, chunkSection}
+        self.intFeatures = intFeatures
+
+        if siblingEdges:
+            intFeatures.add(&#34;sibling&#34;)
+
+        slotType = WORD if wordAsSlot else CHAR
+        self.slotType = slotType
+
+        sectionFeatures = &#34;,&#34;.join(levelNames)
+        sectionTypes = &#34;,&#34;.join(levelNames)
+
+        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: textFeatures,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
+        }
+        self.otext = otext
+
+        featureMeta = dict(
+            str=dict(
+                description=&#34;the text of a word or token&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            after=dict(
+                description=&#34;the text after a word till the next word&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            empty=dict(
+                description=&#34;whether a slot has been inserted in an empty element&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            ),
+            is_meta=dict(
+                description=&#34;whether a slot or word is in the teiHeader element&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            is_note=dict(
+                description=&#34;whether a slot or word is in the note element&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+        )
+        if not wordAsSlot:
+            featureMeta[&#34;extraspace&#34;] = dict(
+                description=(
+                    &#34;whether a space has been added after a character, &#34;
+                    &#34;when it is in the direct child of a pure XML element&#34;
+                ),
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+            featureMeta[&#34;ch&#34;] = dict(
+                description=&#34;the unicode character of a slot&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            )
+        if parentEdges:
+            featureMeta[&#34;parent&#34;] = dict(
+                description=&#34;edge between a node and its parent node&#34;,
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+        if siblingEdges:
+            featureMeta[&#34;sibling&#34;] = dict(
+                description=(
+                    &#34;edge between a node and its preceding sibling nodes; &#34;
+                    &#34;labelled with the distance between them&#34;
+                ),
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+        featureMeta[chunkSection] = dict(
+            description=f&#34;number of a {chunkSection} within a document&#34;,
+            conversionMethod=CM_PROV,
+            conversionCode=CONVERSION_METHODS[CM_PROV],
+        )
+
+        if sectionModel == &#34;II&#34;:
+            chapterSection = self.chapterSection
+            featureMeta[chapterSection] = dict(
+                description=f&#34;name of {chapterSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+        else:
+            folderSection = self.folderSection
+            fileSection = self.fileSection
+            featureMeta[folderSection] = dict(
+                description=f&#34;name of source {folderSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+            featureMeta[fileSection] = dict(
+                description=f&#34;name of source {fileSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+
+        self.featureMeta = featureMeta
+
+        generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
+        generic[&#34;version&#34;] = tfVersion
+        generic[&#34;teiVersion&#34;] = teiVersion
+        generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
+
+        extraInstructions = []
+
+        for (feat, featSpecs) in extra.items():
+            featMeta = featSpecs.get(&#34;meta&#34;, {})
+            if &#34;valueType&#34; in featMeta:
+                if featMeta[&#34;valueType&#34;] == &#34;int&#34;:
+                    intFeatures.add(feat)
+                del featMeta[&#34;valueType&#34;]
+
+            featPath = featSpecs.get(&#34;path&#34;, None)
+            featPathRep = &#34;&#34; if featPath is None else &#34;the content is taken from &#34;
+            featPathLogical = []
+
+            sep = &#34;&#34;
+            for comp in reversed(featPath):
+                if type(comp) is str:
+                    featPathRep += f&#34;{sep}{comp}&#34;
+                    featPathLogical.append((comp, None))
+                else:
+                    for (tag, atts) in comp.items():
+                        # there is only one item in this dict
+                        featPathRep += f&#34;{sep}{tag}[&#34;
+                        featPathRep += &#34;,&#34;.join(
+                            f&#34;{att}={v}&#34; for (att, v) in sorted(atts.items())
+                        )
+                        featPathRep += &#34;]&#34;
+                        featPathLogical.append((tag, atts))
+                sep = &#34;/&#34;
+
+            featureMeta[feat] = {
+                k: v.replace(&#34;«base»&#34;, featPathRep) for (k, v) in featMeta.items()
+            }
+            nodeType = featSpecs.get(&#34;nodeType&#34;, None)
+            if nodeType is not None and featPath:
+                extraInstructions.append(
+                    (list(reversed(featPathLogical)), nodeType, feat)
+                )
+
+        self.extraInstructions = tuple(extraInstructions)
 
         self.verbose = verbose
         self.validate = validate
@@ -1683,6 +1850,7 @@ class TEI:
                 if result is None or result == &#34;tei_all&#34;:
                     result = None
             else:
+                result = None
                 triggerRe = triggers[kind]
                 if triggerRe is not None:
 
@@ -2439,14 +2607,14 @@ class TEI:
                     if verbose &gt;= 0:
                         console(f&#34;\t\t{line}&#34;)
 
-            if thisGood:
-                if verbose &gt;= 0:
-                    console(&#34;\tMaking inventory ...&#34;)
-                    for xmlPath in xmlPaths:
-                        doXMLFile(xmlPath)
-            else:
+            if not thisGood:
                 good = False
                 errors.extend(theseErrors)
+
+            if verbose &gt;= 0:
+                console(&#34;\tMaking inventory ...&#34;)
+            for xmlPath in xmlPaths:
+                doXMLFile(xmlPath)
 
         if not good:
             self.good = False
@@ -2542,7 +2710,7 @@ class TEI:
         siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
-        transform = self.transformCustom
+        transform = getattr(self, &#34;transformCustom&#34;, None)
         chunkLevel = self.chunkLevel
         modelInv = self.modelInv
         modelInfo = self.modelInfo
@@ -2552,7 +2720,7 @@ class TEI:
         transformFunc = (
             (lambda x: BytesIO(x.encode(&#34;utf-8&#34;)))
             if transform is None
-            else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+            else lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;))
         )
 
         parser = self.getParser()
@@ -2811,6 +2979,10 @@ class TEI:
             `&lt;teiHeader&gt;` and the `&lt;body&gt;`
             elements; a few other elements also count as chunks.
 
+            However, if `drillDownDivs` is True and if the chunk appears to be
+            a `&lt;div&gt;` element, we drill further down, until we arrive at a
+            non-`&lt;div&gt;` element.
+
             But in specific templates we have different rules:
 
             ### `bibliolist`:
@@ -2916,12 +3088,34 @@ class TEI:
                     elif nNest == 1:
                         outcome = False
                     else:
+                        sectionProperties = self.sectionProperties
+                        drillDownDivs = sectionProperties[&#34;drillDownDivs&#34;]
+
                         parentTag = nest[-2][0]
-                        outcome = (
-                            parentTag in CHUNK_PARENTS and thisTag not in EMPTY_ELEMENTS
-                        ) or (
-                            parentTag == TEXT_ANCESTOR and thisTag not in TEXT_ANCESTORS
-                        )
+                        if drillDownDivs:
+                            if thisTag == &#34;div&#34;:
+                                outcome = False
+                            else:
+                                dParentTag = None
+                                for ancestor in reversed(nest[0:-1]):
+                                    if ancestor[0] != &#34;div&#34;:
+                                        dParentTag = ancestor[0]
+                                        break
+                                outcome = (
+                                    dParentTag in CHUNK_PARENTS
+                                    and thisTag not in EMPTY_ELEMENTS
+                                ) or (
+                                    dParentTag == TEXT_ANCESTOR
+                                    and thisTag not in TEXT_ANCESTORS
+                                )
+                        else:
+                            outcome = (
+                                parentTag in CHUNK_PARENTS
+                                and thisTag not in EMPTY_ELEMENTS
+                            ) or (
+                                parentTag == TEXT_ANCESTOR
+                                and thisTag not in TEXT_ANCESTORS
+                            )
 
             if outcome:
                 cur[&#34;chunkElems&#34;].add(nest[-1][0])
@@ -3257,28 +3451,29 @@ class TEI:
             atts: string
                 The attributes of the lxml node, with namespaces stripped.
             &#34;&#34;&#34;
-            pageModel = self.pageModel
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
-            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-            sectionProperties = self.sectionProperties
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+                isPageContainer = makePageElems and matchModel(
+                    pageProperties, tag, atts
+                )
+                inPage = cur[&#34;inPage&#34;]
+
+                if isPageContainer:
+                    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+                    cur[&#34;inPage&#34;] = True
+
+                    if pbAtTop:
+                        # material before the first pb in the container is not in a page
+                        pass
+                    else:
+                        # the page starts with the container
+                        cur[NODE][pageType] = cv.node(pageType)
+
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
-
-            isPageContainer = pageModel == &#34;II&#34; and matchModel(
-                pageProperties, tag, atts
-            )
-            inPage = cur[&#34;inPage&#34;]
-
-            if isPageContainer:
-                cur[&#34;inPage&#34;] = True
-
-                if pbAtTop:
-                    # material before the first pb in the container is not in a page
-                    pass
-                else:
-                    # the page starts with the container
-                    cur[NODE][pageType] = cv.node(pageType)
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -3308,7 +3503,7 @@ class TEI:
                         cur[&#34;infirstChunk&#34;] = False
                     else:
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
+                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                         cur[&#34;danglingSlots&#34;] = set()
                     if tag == &#34;p&#34;:
                         cur[&#34;chunkPNum&#34;] += 1
@@ -3350,20 +3545,21 @@ class TEI:
 
             curNode = None
 
-            if inPage and tag == &#34;pb&#34;:
-                if pbAtTop:
-                    if cur[NODE][pageType] is not None:
-                        endPage(cv, cur)
-                    cur[NODE][pageType] = cv.node(pageType)
-                    if len(atts):
-                        cv.feature(cur[NODE][pageType], **atts)
-                else:
-                    if cur[NODE][pageType] is not None:
-                        if len(cur[&#34;pageAtts&#34;]):
-                            cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
-                        endPage(cv, cur)
-                    cur[NODE][pageType] = cv.node(pageType)
-                    cur[&#34;pageAtts&#34;] = atts
+            if makePageElems:
+                if inPage and tag == &#34;pb&#34;:
+                    if pbAtTop:
+                        if cur[NODE][pageType] is not None:
+                            endPage(cv, cur)
+                        cur[NODE][pageType] = cv.node(pageType)
+                        if len(atts):
+                            cv.feature(cur[NODE][pageType], **atts)
+                    else:
+                        if cur[NODE][pageType] is not None:
+                            if len(cur[&#34;pageAtts&#34;]):
+                                cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
+                            endPage(cv, cur)
+                        cur[NODE][pageType] = cv.node(pageType)
+                        cur[&#34;pageAtts&#34;] = atts
 
             elif tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
@@ -3422,11 +3618,13 @@ class TEI:
                 The attributes of the lxml node, with namespaces stripped.
             &#34;&#34;&#34;
             chunkSection = self.chunkSection
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
-            pageModel = self.pageModel
-            pageProperties = self.pageProperties
-            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+                pageProperties = self.pageProperties
+
             sectionModel = self.sectionModel
 
             if sectionModel == &#34;II&#34;:
@@ -3444,14 +3642,13 @@ class TEI:
             if afterChildrenCustom is not None:
                 afterChildrenCustom(cv, cur, xnode, tag, atts)
 
-            isPageContainer = pageModel == &#34;II&#34; and matchModel(
-                pageProperties, tag, atts
-            )
-            inPage = cur[&#34;inPage&#34;]
+            if makePageElems:
+                isPageContainer = matchModel(pageProperties, tag, atts)
+                inPage = cur[&#34;inPage&#34;]
 
             hasFinishedWord = False
 
-            if inPage and tag == &#34;pb&#34;:
+            if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
             elif tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
@@ -3508,7 +3705,8 @@ class TEI:
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, &#34;\n&#34;)
                     cv.terminate(cur[NODE][chapterSection])
-            if isPageContainer:
+            if makePageElems and isPageContainer:
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                 if pbAtTop:
                     # the page ends with the container
                     if cur[NODE][pageType] is not None:
@@ -3587,8 +3785,12 @@ class TEI:
             cv: object
                 The convertor object, needed to issue actions.
             &#34;&#34;&#34;
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+
             sectionModel = self.sectionModel
             A = self.A
             elementDefs = A.elementDefs
@@ -3648,22 +3850,26 @@ class TEI:
 
                         cur[NODE][fileSection] = cv.node(fileSection)
                         ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
-                        if tpl:
-                            cur[NODE][tpl] = cv.node(tpl)
                         value = {fileSection: xmlFile.removesuffix(&#34;.xml&#34;)}
                         cv.feature(cur[NODE][fileSection], **value)
-                        cv.feature(cur[NODE][tpl], **value)
+                        if tpl:
+                            cur[NODE][tpl] = cv.node(tpl)
+                            cv.feature(cur[NODE][tpl], **value)
 
                         with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
                             text = fh.read()
-                            text = transformFunc(text)
+                            if transformFunc is not None:
+                                text = transformFunc(text)
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
-                            cur[NODE][pageType] = None
+
+                            if makePageElems:
+                                cur[NODE][pageType] = None
+                                cur[&#34;inPage&#34;] = False
+                                cur[&#34;pageAtts&#34;] = None
+
                             cur[NODE][WORD] = None
                             cur[&#34;inHeader&#34;] = False
-                            cur[&#34;inPage&#34;] = False
-                            cur[&#34;pageAtts&#34;] = None
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
@@ -3701,14 +3907,18 @@ class TEI:
                 with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                     cur[&#34;xmlFile&#34;] = xmlFile
                     text = fh.read()
-                    text = transformFunc(text)
+                    if transformFunc is not None:
+                        text = transformFunc(text)
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
-                    cur[NODE][pageType] = None
+
+                    if makePageElems:
+                        cur[NODE][pageType] = None
+                        cur[&#34;inPage&#34;] = False
+                        cur[&#34;pageAtts&#34;] = None
+
                     cur[NODE][WORD] = None
                     cur[&#34;inHeader&#34;] = False
-                    cur[&#34;inPage&#34;] = False
-                    cur[&#34;pageAtts&#34;] = None
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
@@ -3838,176 +4048,33 @@ class TEI:
 
         procins = self.procins
         verbose = self.verbose
-        wordAsSlot = self.wordAsSlot
-        parentEdges = self.parentEdges
-        siblingEdges = self.siblingEdges
+        slotType = self.slotType
+        generic = self.generic
+        otext = self.otext
+        featureMeta = self.featureMeta
+        makePageElems = self.makePageElems
         pageModel = self.pageModel
-        pageProperties = self.pageProperties
-        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-        sectionModel = self.sectionModel
+        intFeatures = self.intFeatures
+
+        if makePageElems:
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
+
         tfPath = self.tfPath
         teiPath = self.teiPath
-        chunkSection = self.chunkSection
-        levelNames = self.levelNames
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
-            pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
-            console(f&#34;Page model {pageModel} with {pbRep}&#34;)
+            if makePageElems:
+                pbRep = (
+                    f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
+                    &#34;of the page&#34;
+                )
+                console(f&#34;Page model {pageModel}{pbRep}&#34;)
         if verbose &gt;= 0:
             console(
                 f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
             )
-
-        slotType = WORD if wordAsSlot else CHAR
-
-        sectionFeatures = &#34;,&#34;.join(levelNames)
-        sectionTypes = &#34;,&#34;.join(levelNames)
-
-        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
-        otext = {
-            &#34;fmt:text-orig-full&#34;: textFeatures,
-            &#34;sectionFeatures&#34;: sectionFeatures,
-            &#34;sectionTypes&#34;: sectionTypes,
-        }
-        intFeatures = {&#34;empty&#34;, chunkSection}
-        if siblingEdges:
-            intFeatures.add(&#34;sibling&#34;)
-
-        featureMeta = dict(
-            str=dict(
-                description=&#34;the text of a word or token&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            after=dict(
-                description=&#34;the text after a word till the next word&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            empty=dict(
-                description=&#34;whether a slot has been inserted in an empty element&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            ),
-            is_meta=dict(
-                description=&#34;whether a slot or word is in the teiHeader element&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            is_note=dict(
-                description=&#34;whether a slot or word is in the note element&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-        )
-        if not wordAsSlot:
-            featureMeta[&#34;extraspace&#34;] = dict(
-                description=(
-                    &#34;whether a space has been added after a character, &#34;
-                    &#34;when it is in the direct child of a pure XML element&#34;
-                ),
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-            featureMeta[&#34;ch&#34;] = dict(
-                description=&#34;the unicode character of a slot&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            )
-        if parentEdges:
-            featureMeta[&#34;parent&#34;] = dict(
-                description=&#34;edge between a node and its parent node&#34;,
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-        if siblingEdges:
-            featureMeta[&#34;sibling&#34;] = dict(
-                description=(
-                    &#34;edge between a node and its preceding sibling nodes; &#34;
-                    &#34;labelled with the distance between them&#34;
-                ),
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-        featureMeta[chunkSection] = dict(
-            description=f&#34;number of a {chunkSection} within a document&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        )
-
-        if sectionModel == &#34;II&#34;:
-            chapterSection = self.chapterSection
-            featureMeta[chapterSection] = dict(
-                description=f&#34;name of {chapterSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-        else:
-            folderSection = self.folderSection
-            fileSection = self.fileSection
-            featureMeta[folderSection] = dict(
-                description=f&#34;name of source {folderSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-            featureMeta[fileSection] = dict(
-                description=f&#34;name of source {fileSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-
-        self.intFeatures = intFeatures
-        self.featureMeta = featureMeta
-
-        models = self.models
-        tfVersion = self.tfVersion
-        teiVersion = self.teiVersion
-        generic = self.generic
-        generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
-        generic[&#34;version&#34;] = tfVersion
-        generic[&#34;teiVersion&#34;] = teiVersion
-        generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
-        extra = self.extra
-        extraInstructions = []
-
-        for (feat, featSpecs) in extra.items():
-            featMeta = featSpecs.get(&#34;meta&#34;, {})
-            if &#34;valueType&#34; in featMeta:
-                if featMeta[&#34;valueType&#34;] == &#34;int&#34;:
-                    intFeatures.add(feat)
-                del featMeta[&#34;valueType&#34;]
-
-            featPath = featSpecs.get(&#34;path&#34;, None)
-            featPathRep = &#34;&#34; if featPath is None else &#34;the content is taken from &#34;
-            featPathLogical = []
-
-            sep = &#34;&#34;
-            for comp in reversed(featPath):
-                if type(comp) is str:
-                    featPathRep += f&#34;{sep}{comp}&#34;
-                    featPathLogical.append((comp, None))
-                else:
-                    for (tag, atts) in comp.items():
-                        # there is only one item in this dict
-                        featPathRep += f&#34;{sep}{tag}[&#34;
-                        featPathRep += &#34;,&#34;.join(
-                            f&#34;{att}={v}&#34; for (att, v) in sorted(atts.items())
-                        )
-                        featPathRep += &#34;]&#34;
-                        featPathLogical.append((tag, atts))
-                sep = &#34;/&#34;
-
-            featureMeta[feat] = {
-                k: v.replace(&#34;«base»&#34;, featPathRep) for (k, v) in featMeta.items()
-            }
-            nodeType = featSpecs.get(&#34;nodeType&#34;, None)
-            if nodeType is not None and featPath:
-                extraInstructions.append(
-                    (list(reversed(featPathLogical)), nodeType, feat)
-                )
-
-        self.extraInstructions = tuple(extraInstructions)
 
         initTree(tfPath, fresh=True, gentle=True)
 
@@ -4116,6 +4183,7 @@ class TEI:
         siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
+        tfVersion = self.tfVersion
 
         # key | parentDir | file | template based
 
@@ -4135,7 +4203,6 @@ class TEI:
         }
         cssInfo = makeCssInfo()
 
-        tfVersion = self.tfVersion
         version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
 
         def createConfig(sourceText, customText):
@@ -4149,9 +4216,7 @@ class TEI:
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
             customSettings = (
-                {}
-                if customText is None
-                else yaml.load(customText, Loader=yaml.FullLoader)
+                {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
             )
 
             mergeDict(settings, customSettings)
@@ -4578,7 +4643,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L741-L758" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L748-L765" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getRefs(tag, atts, xmlFile):
     refAtt = REFERENCING.get(tag, None)
@@ -4608,7 +4673,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L4159-L4169" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L4220-L4230" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main():
     (good, tasks, params, flags) = readArgs(
@@ -4631,7 +4696,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L724-L738" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L731-L745" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def makeCssInfo():
     &#34;&#34;&#34;Make the CSS info for the stylesheet.&#34;&#34;&#34;
@@ -4779,7 +4844,7 @@ relevant tf version:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L761-L4156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L768-L4217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class TEI:
     def __init__(
@@ -5028,23 +5093,32 @@ relevant tf version:</p>
         wordAsSlot = settings.get(&#34;wordAsSlot&#34;, True)
         parentEdges = settings.get(&#34;parentEdges&#34;, True)
         siblingEdges = settings.get(&#34;siblingEdges&#34;, True)
-        pageModel = settings.get(&#34;pageModel&#34;, {})
-        sectionModel = settings.get(&#34;sectionModel&#34;, {})
         procins = settings.get(&#34;procins&#34;, False)
 
+        pageModel = settings.get(&#34;pageModel&#34;, {})
         pageModel = checkModel(&#34;page&#34;, pageModel)
         if not pageModel:
             self.good = False
             return
 
+        makePageElems = pageModel[&#34;model&#34;] == &#34;II&#34;
         pageProperties = pageModel.get(&#34;properties&#34;, None)
+        pageModel = pageModel[&#34;model&#34;]
 
+        self.makePageElems = makePageElems
+        self.pageModel = pageModel
+        self.pageProperties = pageProperties
+
+        sectionModel = settings.get(&#34;sectionModel&#34;, {})
         sectionModel = checkModel(&#34;section&#34;, sectionModel)
         if not sectionModel:
             self.good = False
             return
 
         sectionProperties = sectionModel.get(&#34;properties&#34;, None)
+        sectionModel = sectionModel[&#34;model&#34;]
+        self.sectionModel = sectionModel
+        self.sectionProperties = sectionProperties
 
         self.generic = generic
         self.extra = extra
@@ -5096,10 +5170,6 @@ relevant tf version:</p>
         self.wordAsSlot = wordAsSlot
         self.parentEdges = parentEdges
         self.siblingEdges = siblingEdges
-        self.pageModel = pageModel[&#34;model&#34;]
-        self.pageProperties = pageProperties
-        self.sectionModel = sectionModel[&#34;model&#34;]
-        self.sectionProperties = sectionProperties
         self.procins = procins
 
         reportDir = f&#34;{refDir}/report&#34;
@@ -5231,7 +5301,7 @@ relevant tf version:</p>
         self.levelNames = levelNames
         self.chunkLevel = levelNames[-1]
 
-        if self.sectionModel == &#34;II&#34;:
+        if sectionModel == &#34;II&#34;:
             self.chapterSection = levelNames[0]
             self.chunkSection = levelNames[1]
         else:
@@ -5239,6 +5309,157 @@ relevant tf version:</p>
             self.fileSection = levelNames[1]
             self.chunkSection = levelNames[2]
             self.backMatter = sectionProperties.get(&#34;backMatter&#34;, None)
+
+        chunkSection = self.chunkSection
+        intFeatures = {&#34;empty&#34;, chunkSection}
+        self.intFeatures = intFeatures
+
+        if siblingEdges:
+            intFeatures.add(&#34;sibling&#34;)
+
+        slotType = WORD if wordAsSlot else CHAR
+        self.slotType = slotType
+
+        sectionFeatures = &#34;,&#34;.join(levelNames)
+        sectionTypes = &#34;,&#34;.join(levelNames)
+
+        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
+        otext = {
+            &#34;fmt:text-orig-full&#34;: textFeatures,
+            &#34;sectionFeatures&#34;: sectionFeatures,
+            &#34;sectionTypes&#34;: sectionTypes,
+        }
+        self.otext = otext
+
+        featureMeta = dict(
+            str=dict(
+                description=&#34;the text of a word or token&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            after=dict(
+                description=&#34;the text after a word till the next word&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            empty=dict(
+                description=&#34;whether a slot has been inserted in an empty element&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            ),
+            is_meta=dict(
+                description=&#34;whether a slot or word is in the teiHeader element&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+            is_note=dict(
+                description=&#34;whether a slot or word is in the note element&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            ),
+        )
+        if not wordAsSlot:
+            featureMeta[&#34;extraspace&#34;] = dict(
+                description=(
+                    &#34;whether a space has been added after a character, &#34;
+                    &#34;when it is in the direct child of a pure XML element&#34;
+                ),
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+            featureMeta[&#34;ch&#34;] = dict(
+                description=&#34;the unicode character of a slot&#34;,
+                conversionMethod=CM_LITC,
+                conversionCode=CONVERSION_METHODS[CM_LITC],
+            )
+        if parentEdges:
+            featureMeta[&#34;parent&#34;] = dict(
+                description=&#34;edge between a node and its parent node&#34;,
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+        if siblingEdges:
+            featureMeta[&#34;sibling&#34;] = dict(
+                description=(
+                    &#34;edge between a node and its preceding sibling nodes; &#34;
+                    &#34;labelled with the distance between them&#34;
+                ),
+                conversionMethod=CM_LITP,
+                conversionCode=CONVERSION_METHODS[CM_LITP],
+            )
+        featureMeta[chunkSection] = dict(
+            description=f&#34;number of a {chunkSection} within a document&#34;,
+            conversionMethod=CM_PROV,
+            conversionCode=CONVERSION_METHODS[CM_PROV],
+        )
+
+        if sectionModel == &#34;II&#34;:
+            chapterSection = self.chapterSection
+            featureMeta[chapterSection] = dict(
+                description=f&#34;name of {chapterSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+        else:
+            folderSection = self.folderSection
+            fileSection = self.fileSection
+            featureMeta[folderSection] = dict(
+                description=f&#34;name of source {folderSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+            featureMeta[fileSection] = dict(
+                description=f&#34;name of source {fileSection}&#34;,
+                conversionMethod=CM_PROV,
+                conversionCode=CONVERSION_METHODS[CM_PROV],
+            )
+
+        self.featureMeta = featureMeta
+
+        generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
+        generic[&#34;version&#34;] = tfVersion
+        generic[&#34;teiVersion&#34;] = teiVersion
+        generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
+
+        extraInstructions = []
+
+        for (feat, featSpecs) in extra.items():
+            featMeta = featSpecs.get(&#34;meta&#34;, {})
+            if &#34;valueType&#34; in featMeta:
+                if featMeta[&#34;valueType&#34;] == &#34;int&#34;:
+                    intFeatures.add(feat)
+                del featMeta[&#34;valueType&#34;]
+
+            featPath = featSpecs.get(&#34;path&#34;, None)
+            featPathRep = &#34;&#34; if featPath is None else &#34;the content is taken from &#34;
+            featPathLogical = []
+
+            sep = &#34;&#34;
+            for comp in reversed(featPath):
+                if type(comp) is str:
+                    featPathRep += f&#34;{sep}{comp}&#34;
+                    featPathLogical.append((comp, None))
+                else:
+                    for (tag, atts) in comp.items():
+                        # there is only one item in this dict
+                        featPathRep += f&#34;{sep}{tag}[&#34;
+                        featPathRep += &#34;,&#34;.join(
+                            f&#34;{att}={v}&#34; for (att, v) in sorted(atts.items())
+                        )
+                        featPathRep += &#34;]&#34;
+                        featPathLogical.append((tag, atts))
+                sep = &#34;/&#34;
+
+            featureMeta[feat] = {
+                k: v.replace(&#34;«base»&#34;, featPathRep) for (k, v) in featMeta.items()
+            }
+            nodeType = featSpecs.get(&#34;nodeType&#34;, None)
+            if nodeType is not None and featPath:
+                extraInstructions.append(
+                    (list(reversed(featPathLogical)), nodeType, feat)
+                )
+
+        self.extraInstructions = tuple(extraInstructions)
 
         self.verbose = verbose
         self.validate = validate
@@ -5316,6 +5537,7 @@ relevant tf version:</p>
                 if result is None or result == &#34;tei_all&#34;:
                     result = None
             else:
+                result = None
                 triggerRe = triggers[kind]
                 if triggerRe is not None:
 
@@ -6072,14 +6294,14 @@ relevant tf version:</p>
                     if verbose &gt;= 0:
                         console(f&#34;\t\t{line}&#34;)
 
-            if thisGood:
-                if verbose &gt;= 0:
-                    console(&#34;\tMaking inventory ...&#34;)
-                    for xmlPath in xmlPaths:
-                        doXMLFile(xmlPath)
-            else:
+            if not thisGood:
                 good = False
                 errors.extend(theseErrors)
+
+            if verbose &gt;= 0:
+                console(&#34;\tMaking inventory ...&#34;)
+            for xmlPath in xmlPaths:
+                doXMLFile(xmlPath)
 
         if not good:
             self.good = False
@@ -6175,7 +6397,7 @@ relevant tf version:</p>
         siblingEdges = self.siblingEdges
         featureMeta = self.featureMeta
         intFeatures = self.intFeatures
-        transform = self.transformCustom
+        transform = getattr(self, &#34;transformCustom&#34;, None)
         chunkLevel = self.chunkLevel
         modelInv = self.modelInv
         modelInfo = self.modelInfo
@@ -6185,7 +6407,7 @@ relevant tf version:</p>
         transformFunc = (
             (lambda x: BytesIO(x.encode(&#34;utf-8&#34;)))
             if transform is None
-            else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+            else lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;))
         )
 
         parser = self.getParser()
@@ -6444,6 +6666,10 @@ relevant tf version:</p>
             `&lt;teiHeader&gt;` and the `&lt;body&gt;`
             elements; a few other elements also count as chunks.
 
+            However, if `drillDownDivs` is True and if the chunk appears to be
+            a `&lt;div&gt;` element, we drill further down, until we arrive at a
+            non-`&lt;div&gt;` element.
+
             But in specific templates we have different rules:
 
             ### `bibliolist`:
@@ -6549,12 +6775,34 @@ relevant tf version:</p>
                     elif nNest == 1:
                         outcome = False
                     else:
+                        sectionProperties = self.sectionProperties
+                        drillDownDivs = sectionProperties[&#34;drillDownDivs&#34;]
+
                         parentTag = nest[-2][0]
-                        outcome = (
-                            parentTag in CHUNK_PARENTS and thisTag not in EMPTY_ELEMENTS
-                        ) or (
-                            parentTag == TEXT_ANCESTOR and thisTag not in TEXT_ANCESTORS
-                        )
+                        if drillDownDivs:
+                            if thisTag == &#34;div&#34;:
+                                outcome = False
+                            else:
+                                dParentTag = None
+                                for ancestor in reversed(nest[0:-1]):
+                                    if ancestor[0] != &#34;div&#34;:
+                                        dParentTag = ancestor[0]
+                                        break
+                                outcome = (
+                                    dParentTag in CHUNK_PARENTS
+                                    and thisTag not in EMPTY_ELEMENTS
+                                ) or (
+                                    dParentTag == TEXT_ANCESTOR
+                                    and thisTag not in TEXT_ANCESTORS
+                                )
+                        else:
+                            outcome = (
+                                parentTag in CHUNK_PARENTS
+                                and thisTag not in EMPTY_ELEMENTS
+                            ) or (
+                                parentTag == TEXT_ANCESTOR
+                                and thisTag not in TEXT_ANCESTORS
+                            )
 
             if outcome:
                 cur[&#34;chunkElems&#34;].add(nest[-1][0])
@@ -6890,28 +7138,29 @@ relevant tf version:</p>
             atts: string
                 The attributes of the lxml node, with namespaces stripped.
             &#34;&#34;&#34;
-            pageModel = self.pageModel
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
-            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-            sectionProperties = self.sectionProperties
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+                isPageContainer = makePageElems and matchModel(
+                    pageProperties, tag, atts
+                )
+                inPage = cur[&#34;inPage&#34;]
+
+                if isPageContainer:
+                    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+                    cur[&#34;inPage&#34;] = True
+
+                    if pbAtTop:
+                        # material before the first pb in the container is not in a page
+                        pass
+                    else:
+                        # the page starts with the container
+                        cur[NODE][pageType] = cv.node(pageType)
+
             sectionModel = self.sectionModel
             sectionProperties = self.sectionProperties
-
-            isPageContainer = pageModel == &#34;II&#34; and matchModel(
-                pageProperties, tag, atts
-            )
-            inPage = cur[&#34;inPage&#34;]
-
-            if isPageContainer:
-                cur[&#34;inPage&#34;] = True
-
-                if pbAtTop:
-                    # material before the first pb in the container is not in a page
-                    pass
-                else:
-                    # the page starts with the container
-                    cur[NODE][pageType] = cv.node(pageType)
 
             if sectionModel == &#34;II&#34;:
                 chapterSection = self.chapterSection
@@ -6941,7 +7190,7 @@ relevant tf version:</p>
                         cur[&#34;infirstChunk&#34;] = False
                     else:
                         cur[NODE][chunkSection] = cv.node(chunkSection)
-                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
+                        cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                         cur[&#34;danglingSlots&#34;] = set()
                     if tag == &#34;p&#34;:
                         cur[&#34;chunkPNum&#34;] += 1
@@ -6983,20 +7232,21 @@ relevant tf version:</p>
 
             curNode = None
 
-            if inPage and tag == &#34;pb&#34;:
-                if pbAtTop:
-                    if cur[NODE][pageType] is not None:
-                        endPage(cv, cur)
-                    cur[NODE][pageType] = cv.node(pageType)
-                    if len(atts):
-                        cv.feature(cur[NODE][pageType], **atts)
-                else:
-                    if cur[NODE][pageType] is not None:
-                        if len(cur[&#34;pageAtts&#34;]):
-                            cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
-                        endPage(cv, cur)
-                    cur[NODE][pageType] = cv.node(pageType)
-                    cur[&#34;pageAtts&#34;] = atts
+            if makePageElems:
+                if inPage and tag == &#34;pb&#34;:
+                    if pbAtTop:
+                        if cur[NODE][pageType] is not None:
+                            endPage(cv, cur)
+                        cur[NODE][pageType] = cv.node(pageType)
+                        if len(atts):
+                            cv.feature(cur[NODE][pageType], **atts)
+                    else:
+                        if cur[NODE][pageType] is not None:
+                            if len(cur[&#34;pageAtts&#34;]):
+                                cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
+                            endPage(cv, cur)
+                        cur[NODE][pageType] = cv.node(pageType)
+                        cur[&#34;pageAtts&#34;] = atts
 
             elif tag not in PASS_THROUGH:
                 cur[&#34;afterSpace&#34;] = False
@@ -7055,11 +7305,13 @@ relevant tf version:</p>
                 The attributes of the lxml node, with namespaces stripped.
             &#34;&#34;&#34;
             chunkSection = self.chunkSection
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
-            pageModel = self.pageModel
-            pageProperties = self.pageProperties
-            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+                pageProperties = self.pageProperties
+
             sectionModel = self.sectionModel
 
             if sectionModel == &#34;II&#34;:
@@ -7077,14 +7329,13 @@ relevant tf version:</p>
             if afterChildrenCustom is not None:
                 afterChildrenCustom(cv, cur, xnode, tag, atts)
 
-            isPageContainer = pageModel == &#34;II&#34; and matchModel(
-                pageProperties, tag, atts
-            )
-            inPage = cur[&#34;inPage&#34;]
+            if makePageElems:
+                isPageContainer = matchModel(pageProperties, tag, atts)
+                inPage = cur[&#34;inPage&#34;]
 
             hasFinishedWord = False
 
-            if inPage and tag == &#34;pb&#34;:
+            if makePageElems and inPage and tag == &#34;pb&#34;:
                 pass
             elif tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
@@ -7141,7 +7392,8 @@ relevant tf version:</p>
                     if not hasFinishedWord:
                         finishWord(cv, cur, None, &#34;\n&#34;)
                     cv.terminate(cur[NODE][chapterSection])
-            if isPageContainer:
+            if makePageElems and isPageContainer:
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
                 if pbAtTop:
                     # the page ends with the container
                     if cur[NODE][pageType] is not None:
@@ -7220,8 +7472,12 @@ relevant tf version:</p>
             cv: object
                 The convertor object, needed to issue actions.
             &#34;&#34;&#34;
-            pageProperties = self.pageProperties
-            pageType = pageProperties[&#34;nodeType&#34;]
+            makePageElems = self.makePageElems
+
+            if makePageElems:
+                pageProperties = self.pageProperties
+                pageType = pageProperties[&#34;nodeType&#34;]
+
             sectionModel = self.sectionModel
             A = self.A
             elementDefs = A.elementDefs
@@ -7281,22 +7537,26 @@ relevant tf version:</p>
 
                         cur[NODE][fileSection] = cv.node(fileSection)
                         ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
-                        if tpl:
-                            cur[NODE][tpl] = cv.node(tpl)
                         value = {fileSection: xmlFile.removesuffix(&#34;.xml&#34;)}
                         cv.feature(cur[NODE][fileSection], **value)
-                        cv.feature(cur[NODE][tpl], **value)
+                        if tpl:
+                            cur[NODE][tpl] = cv.node(tpl)
+                            cv.feature(cur[NODE][tpl], **value)
 
                         with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
                             text = fh.read()
-                            text = transformFunc(text)
+                            if transformFunc is not None:
+                                text = transformFunc(text)
                             tree = etree.parse(text, parser)
                             root = tree.getroot()
-                            cur[NODE][pageType] = None
+
+                            if makePageElems:
+                                cur[NODE][pageType] = None
+                                cur[&#34;inPage&#34;] = False
+                                cur[&#34;pageAtts&#34;] = None
+
                             cur[NODE][WORD] = None
                             cur[&#34;inHeader&#34;] = False
-                            cur[&#34;inPage&#34;] = False
-                            cur[&#34;pageAtts&#34;] = None
                             cur[&#34;inNote&#34;] = False
                             cur[XNEST] = []
                             cur[TNEST] = []
@@ -7334,14 +7594,18 @@ relevant tf version:</p>
                 with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                     cur[&#34;xmlFile&#34;] = xmlFile
                     text = fh.read()
-                    text = transformFunc(text)
+                    if transformFunc is not None:
+                        text = transformFunc(text)
                     tree = etree.parse(text, parser)
                     root = tree.getroot()
-                    cur[NODE][pageType] = None
+
+                    if makePageElems:
+                        cur[NODE][pageType] = None
+                        cur[&#34;inPage&#34;] = False
+                        cur[&#34;pageAtts&#34;] = None
+
                     cur[NODE][WORD] = None
                     cur[&#34;inHeader&#34;] = False
-                    cur[&#34;inPage&#34;] = False
-                    cur[&#34;pageAtts&#34;] = None
                     cur[&#34;inNote&#34;] = False
                     cur[XNEST] = []
                     cur[TNEST] = []
@@ -7471,176 +7735,33 @@ relevant tf version:</p>
 
         procins = self.procins
         verbose = self.verbose
-        wordAsSlot = self.wordAsSlot
-        parentEdges = self.parentEdges
-        siblingEdges = self.siblingEdges
+        slotType = self.slotType
+        generic = self.generic
+        otext = self.otext
+        featureMeta = self.featureMeta
+        makePageElems = self.makePageElems
         pageModel = self.pageModel
-        pageProperties = self.pageProperties
-        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-        sectionModel = self.sectionModel
+        intFeatures = self.intFeatures
+
+        if makePageElems:
+            pageProperties = self.pageProperties
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
+
         tfPath = self.tfPath
         teiPath = self.teiPath
-        chunkSection = self.chunkSection
-        levelNames = self.levelNames
 
         if verbose == 1:
             console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
-            pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
-            console(f&#34;Page model {pageModel} with {pbRep}&#34;)
+            if makePageElems:
+                pbRep = (
+                    f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
+                    &#34;of the page&#34;
+                )
+                console(f&#34;Page model {pageModel}{pbRep}&#34;)
         if verbose &gt;= 0:
             console(
                 f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
             )
-
-        slotType = WORD if wordAsSlot else CHAR
-
-        sectionFeatures = &#34;,&#34;.join(levelNames)
-        sectionTypes = &#34;,&#34;.join(levelNames)
-
-        textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
-        otext = {
-            &#34;fmt:text-orig-full&#34;: textFeatures,
-            &#34;sectionFeatures&#34;: sectionFeatures,
-            &#34;sectionTypes&#34;: sectionTypes,
-        }
-        intFeatures = {&#34;empty&#34;, chunkSection}
-        if siblingEdges:
-            intFeatures.add(&#34;sibling&#34;)
-
-        featureMeta = dict(
-            str=dict(
-                description=&#34;the text of a word or token&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            after=dict(
-                description=&#34;the text after a word till the next word&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            empty=dict(
-                description=&#34;whether a slot has been inserted in an empty element&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            ),
-            is_meta=dict(
-                description=&#34;whether a slot or word is in the teiHeader element&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-            is_note=dict(
-                description=&#34;whether a slot or word is in the note element&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            ),
-        )
-        if not wordAsSlot:
-            featureMeta[&#34;extraspace&#34;] = dict(
-                description=(
-                    &#34;whether a space has been added after a character, &#34;
-                    &#34;when it is in the direct child of a pure XML element&#34;
-                ),
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-            featureMeta[&#34;ch&#34;] = dict(
-                description=&#34;the unicode character of a slot&#34;,
-                conversionMethod=CM_LITC,
-                conversionCode=CONVERSION_METHODS[CM_LITC],
-            )
-        if parentEdges:
-            featureMeta[&#34;parent&#34;] = dict(
-                description=&#34;edge between a node and its parent node&#34;,
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-        if siblingEdges:
-            featureMeta[&#34;sibling&#34;] = dict(
-                description=(
-                    &#34;edge between a node and its preceding sibling nodes; &#34;
-                    &#34;labelled with the distance between them&#34;
-                ),
-                conversionMethod=CM_LITP,
-                conversionCode=CONVERSION_METHODS[CM_LITP],
-            )
-        featureMeta[chunkSection] = dict(
-            description=f&#34;number of a {chunkSection} within a document&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        )
-
-        if sectionModel == &#34;II&#34;:
-            chapterSection = self.chapterSection
-            featureMeta[chapterSection] = dict(
-                description=f&#34;name of {chapterSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-        else:
-            folderSection = self.folderSection
-            fileSection = self.fileSection
-            featureMeta[folderSection] = dict(
-                description=f&#34;name of source {folderSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-            featureMeta[fileSection] = dict(
-                description=f&#34;name of source {fileSection}&#34;,
-                conversionMethod=CM_PROV,
-                conversionCode=CONVERSION_METHODS[CM_PROV],
-            )
-
-        self.intFeatures = intFeatures
-        self.featureMeta = featureMeta
-
-        models = self.models
-        tfVersion = self.tfVersion
-        teiVersion = self.teiVersion
-        generic = self.generic
-        generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
-        generic[&#34;version&#34;] = tfVersion
-        generic[&#34;teiVersion&#34;] = teiVersion
-        generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
-        extra = self.extra
-        extraInstructions = []
-
-        for (feat, featSpecs) in extra.items():
-            featMeta = featSpecs.get(&#34;meta&#34;, {})
-            if &#34;valueType&#34; in featMeta:
-                if featMeta[&#34;valueType&#34;] == &#34;int&#34;:
-                    intFeatures.add(feat)
-                del featMeta[&#34;valueType&#34;]
-
-            featPath = featSpecs.get(&#34;path&#34;, None)
-            featPathRep = &#34;&#34; if featPath is None else &#34;the content is taken from &#34;
-            featPathLogical = []
-
-            sep = &#34;&#34;
-            for comp in reversed(featPath):
-                if type(comp) is str:
-                    featPathRep += f&#34;{sep}{comp}&#34;
-                    featPathLogical.append((comp, None))
-                else:
-                    for (tag, atts) in comp.items():
-                        # there is only one item in this dict
-                        featPathRep += f&#34;{sep}{tag}[&#34;
-                        featPathRep += &#34;,&#34;.join(
-                            f&#34;{att}={v}&#34; for (att, v) in sorted(atts.items())
-                        )
-                        featPathRep += &#34;]&#34;
-                        featPathLogical.append((tag, atts))
-                sep = &#34;/&#34;
-
-            featureMeta[feat] = {
-                k: v.replace(&#34;«base»&#34;, featPathRep) for (k, v) in featMeta.items()
-            }
-            nodeType = featSpecs.get(&#34;nodeType&#34;, None)
-            if nodeType is not None and featPath:
-                extraInstructions.append(
-                    (list(reversed(featPathLogical)), nodeType, feat)
-                )
-
-        self.extraInstructions = tuple(extraInstructions)
 
         initTree(tfPath, fresh=True, gentle=True)
 
@@ -7749,6 +7870,7 @@ relevant tf version:</p>
         siblingEdges = self.siblingEdges
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
+        tfVersion = self.tfVersion
 
         # key | parentDir | file | template based
 
@@ -7768,7 +7890,6 @@ relevant tf version:</p>
         }
         cssInfo = makeCssInfo()
 
-        tfVersion = self.tfVersion
         version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
 
         def createConfig(sourceText, customText):
@@ -7782,9 +7903,7 @@ relevant tf version:</p>
                     del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
             customSettings = (
-                {}
-                if customText is None
-                else yaml.load(customText, Loader=yaml.FullLoader)
+                {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
             )
 
             mergeDict(settings, customSettings)
@@ -8217,7 +8336,7 @@ that code between automatic generation of files.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L3682-L4046" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L3745-L4107" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def appTask(self, tokenBased=False):
     &#34;&#34;&#34;Implementation of the &#34;app&#34; task.
@@ -8266,6 +8385,7 @@ that code between automatic generation of files.</p>
     siblingEdges = self.siblingEdges
     sectionModel = self.sectionModel
     sectionProperties = self.sectionProperties
+    tfVersion = self.tfVersion
 
     # key | parentDir | file | template based
 
@@ -8285,7 +8405,6 @@ that code between automatic generation of files.</p>
     }
     cssInfo = makeCssInfo()
 
-    tfVersion = self.tfVersion
     version = tfVersion.removesuffix(PRE) if tokenBased else tfVersion
 
     def createConfig(sourceText, customText):
@@ -8299,9 +8418,7 @@ that code between automatic generation of files.</p>
                 del settings[&#34;typeDisplay&#34;][&#34;word&#34;]
 
         customSettings = (
-            {}
-            if customText is None
-            else yaml.load(customText, Loader=yaml.FullLoader)
+            {} if not customText else yaml.load(customText, Loader=yaml.FullLoader)
         )
 
         mergeDict(settings, customSettings)
@@ -8602,7 +8719,7 @@ There should be a valid TF dataset and app configuration in place</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L4050-L4083" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L4111-L4144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def browseTask(self):
     &#34;&#34;&#34;Implementation of the &#34;browse&#34; task.
@@ -8667,7 +8784,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1405-L2070" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1569-L2234" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def checkTask(self):
     &#34;&#34;&#34;Implementation of the &#34;check&#34; task.
@@ -9316,14 +9433,14 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
                 if verbose &gt;= 0:
                     console(f&#34;\t\t{line}&#34;)
 
-        if thisGood:
-            if verbose &gt;= 0:
-                console(&#34;\tMaking inventory ...&#34;)
-                for xmlPath in xmlPaths:
-                    doXMLFile(xmlPath)
-        else:
+        if not thisGood:
             good = False
             errors.extend(theseErrors)
+
+        if verbose &gt;= 0:
+            console(&#34;\tMaking inventory ...&#34;)
+        for xmlPath in xmlPaths:
+            doXMLFile(xmlPath)
 
     if not good:
         self.good = False
@@ -9351,7 +9468,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L3436-L3634" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L3642-L3697" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def convertTask(self):
     &#34;&#34;&#34;Implementation of the &#34;convert&#34; task.
@@ -9368,176 +9485,33 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 
     procins = self.procins
     verbose = self.verbose
-    wordAsSlot = self.wordAsSlot
-    parentEdges = self.parentEdges
-    siblingEdges = self.siblingEdges
+    slotType = self.slotType
+    generic = self.generic
+    otext = self.otext
+    featureMeta = self.featureMeta
+    makePageElems = self.makePageElems
     pageModel = self.pageModel
-    pageProperties = self.pageProperties
-    pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-    sectionModel = self.sectionModel
+    intFeatures = self.intFeatures
+
+    if makePageElems:
+        pageProperties = self.pageProperties
+        pbAtTop = pageProperties[&#34;pbAtTop&#34;] if makePageElems else None
+
     tfPath = self.tfPath
     teiPath = self.teiPath
-    chunkSection = self.chunkSection
-    levelNames = self.levelNames
 
     if verbose == 1:
         console(f&#34;TEI to TF converting: {ux(teiPath)} =&gt; {ux(tfPath)}&#34;)
-        pbRep = f&#34;pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;} of the page&#34;
-        console(f&#34;Page model {pageModel} with {pbRep}&#34;)
+        if makePageElems:
+            pbRep = (
+                f&#34; with pb elements at the {&#39;top&#39; if pbAtTop else &#39;bottom&#39;}&#34;
+                &#34;of the page&#34;
+            )
+            console(f&#34;Page model {pageModel}{pbRep}&#34;)
     if verbose &gt;= 0:
         console(
             f&#34;Processing instructions are {&#39;treated&#39; if procins else &#39;ignored&#39;}&#34;
         )
-
-    slotType = WORD if wordAsSlot else CHAR
-
-    sectionFeatures = &#34;,&#34;.join(levelNames)
-    sectionTypes = &#34;,&#34;.join(levelNames)
-
-    textFeatures = &#34;{str}{after}&#34; if wordAsSlot else &#34;{ch}&#34;
-    otext = {
-        &#34;fmt:text-orig-full&#34;: textFeatures,
-        &#34;sectionFeatures&#34;: sectionFeatures,
-        &#34;sectionTypes&#34;: sectionTypes,
-    }
-    intFeatures = {&#34;empty&#34;, chunkSection}
-    if siblingEdges:
-        intFeatures.add(&#34;sibling&#34;)
-
-    featureMeta = dict(
-        str=dict(
-            description=&#34;the text of a word or token&#34;,
-            conversionMethod=CM_LITC,
-            conversionCode=CONVERSION_METHODS[CM_LITC],
-        ),
-        after=dict(
-            description=&#34;the text after a word till the next word&#34;,
-            conversionMethod=CM_LITC,
-            conversionCode=CONVERSION_METHODS[CM_LITC],
-        ),
-        empty=dict(
-            description=&#34;whether a slot has been inserted in an empty element&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        ),
-        is_meta=dict(
-            description=&#34;whether a slot or word is in the teiHeader element&#34;,
-            conversionMethod=CM_LITC,
-            conversionCode=CONVERSION_METHODS[CM_LITC],
-        ),
-        is_note=dict(
-            description=&#34;whether a slot or word is in the note element&#34;,
-            conversionMethod=CM_LITC,
-            conversionCode=CONVERSION_METHODS[CM_LITC],
-        ),
-    )
-    if not wordAsSlot:
-        featureMeta[&#34;extraspace&#34;] = dict(
-            description=(
-                &#34;whether a space has been added after a character, &#34;
-                &#34;when it is in the direct child of a pure XML element&#34;
-            ),
-            conversionMethod=CM_LITP,
-            conversionCode=CONVERSION_METHODS[CM_LITP],
-        )
-        featureMeta[&#34;ch&#34;] = dict(
-            description=&#34;the unicode character of a slot&#34;,
-            conversionMethod=CM_LITC,
-            conversionCode=CONVERSION_METHODS[CM_LITC],
-        )
-    if parentEdges:
-        featureMeta[&#34;parent&#34;] = dict(
-            description=&#34;edge between a node and its parent node&#34;,
-            conversionMethod=CM_LITP,
-            conversionCode=CONVERSION_METHODS[CM_LITP],
-        )
-    if siblingEdges:
-        featureMeta[&#34;sibling&#34;] = dict(
-            description=(
-                &#34;edge between a node and its preceding sibling nodes; &#34;
-                &#34;labelled with the distance between them&#34;
-            ),
-            conversionMethod=CM_LITP,
-            conversionCode=CONVERSION_METHODS[CM_LITP],
-        )
-    featureMeta[chunkSection] = dict(
-        description=f&#34;number of a {chunkSection} within a document&#34;,
-        conversionMethod=CM_PROV,
-        conversionCode=CONVERSION_METHODS[CM_PROV],
-    )
-
-    if sectionModel == &#34;II&#34;:
-        chapterSection = self.chapterSection
-        featureMeta[chapterSection] = dict(
-            description=f&#34;name of {chapterSection}&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        )
-    else:
-        folderSection = self.folderSection
-        fileSection = self.fileSection
-        featureMeta[folderSection] = dict(
-            description=f&#34;name of source {folderSection}&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        )
-        featureMeta[fileSection] = dict(
-            description=f&#34;name of source {fileSection}&#34;,
-            conversionMethod=CM_PROV,
-            conversionCode=CONVERSION_METHODS[CM_PROV],
-        )
-
-    self.intFeatures = intFeatures
-    self.featureMeta = featureMeta
-
-    models = self.models
-    tfVersion = self.tfVersion
-    teiVersion = self.teiVersion
-    generic = self.generic
-    generic[&#34;sourceFormat&#34;] = &#34;TEI&#34;
-    generic[&#34;version&#34;] = tfVersion
-    generic[&#34;teiVersion&#34;] = teiVersion
-    generic[&#34;schema&#34;] = &#34;TEI&#34; + (&#34; + &#34; + (&#34; + &#34;.join(models))) if models else &#34;&#34;
-    extra = self.extra
-    extraInstructions = []
-
-    for (feat, featSpecs) in extra.items():
-        featMeta = featSpecs.get(&#34;meta&#34;, {})
-        if &#34;valueType&#34; in featMeta:
-            if featMeta[&#34;valueType&#34;] == &#34;int&#34;:
-                intFeatures.add(feat)
-            del featMeta[&#34;valueType&#34;]
-
-        featPath = featSpecs.get(&#34;path&#34;, None)
-        featPathRep = &#34;&#34; if featPath is None else &#34;the content is taken from &#34;
-        featPathLogical = []
-
-        sep = &#34;&#34;
-        for comp in reversed(featPath):
-            if type(comp) is str:
-                featPathRep += f&#34;{sep}{comp}&#34;
-                featPathLogical.append((comp, None))
-            else:
-                for (tag, atts) in comp.items():
-                    # there is only one item in this dict
-                    featPathRep += f&#34;{sep}{tag}[&#34;
-                    featPathRep += &#34;,&#34;.join(
-                        f&#34;{att}={v}&#34; for (att, v) in sorted(atts.items())
-                    )
-                    featPathRep += &#34;]&#34;
-                    featPathLogical.append((tag, atts))
-            sep = &#34;/&#34;
-
-        featureMeta[feat] = {
-            k: v.replace(&#34;«base»&#34;, featPathRep) for (k, v) in featMeta.items()
-        }
-        nodeType = featSpecs.get(&#34;nodeType&#34;, None)
-        if nodeType is not None and featPath:
-            extraInstructions.append(
-                (list(reversed(featPathLogical)), nodeType, feat)
-            )
-
-    self.extraInstructions = tuple(extraInstructions)
 
     initTree(tfPath, fresh=True, gentle=True)
 
@@ -9567,7 +9541,7 @@ ids or keywords, are reduced to the value <code>x</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L2074-L2087" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L2238-L2251" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getConverter(self):
     &#34;&#34;&#34;Initializes a converter.
@@ -9608,7 +9582,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L2091-L3434" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L2255-L3640" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getDirector(self):
     &#34;&#34;&#34;Factory for the director function.
@@ -9674,7 +9648,7 @@ that has access to this data.</p>
     siblingEdges = self.siblingEdges
     featureMeta = self.featureMeta
     intFeatures = self.intFeatures
-    transform = self.transformCustom
+    transform = getattr(self, &#34;transformCustom&#34;, None)
     chunkLevel = self.chunkLevel
     modelInv = self.modelInv
     modelInfo = self.modelInfo
@@ -9684,7 +9658,7 @@ that has access to this data.</p>
     transformFunc = (
         (lambda x: BytesIO(x.encode(&#34;utf-8&#34;)))
         if transform is None
-        else (lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;)))
+        else lambda x: BytesIO(transform(x).encode(&#34;utf-8&#34;))
     )
 
     parser = self.getParser()
@@ -9943,6 +9917,10 @@ that has access to this data.</p>
         `&lt;teiHeader&gt;` and the `&lt;body&gt;`
         elements; a few other elements also count as chunks.
 
+        However, if `drillDownDivs` is True and if the chunk appears to be
+        a `&lt;div&gt;` element, we drill further down, until we arrive at a
+        non-`&lt;div&gt;` element.
+
         But in specific templates we have different rules:
 
         ### `bibliolist`:
@@ -10048,12 +10026,34 @@ that has access to this data.</p>
                 elif nNest == 1:
                     outcome = False
                 else:
+                    sectionProperties = self.sectionProperties
+                    drillDownDivs = sectionProperties[&#34;drillDownDivs&#34;]
+
                     parentTag = nest[-2][0]
-                    outcome = (
-                        parentTag in CHUNK_PARENTS and thisTag not in EMPTY_ELEMENTS
-                    ) or (
-                        parentTag == TEXT_ANCESTOR and thisTag not in TEXT_ANCESTORS
-                    )
+                    if drillDownDivs:
+                        if thisTag == &#34;div&#34;:
+                            outcome = False
+                        else:
+                            dParentTag = None
+                            for ancestor in reversed(nest[0:-1]):
+                                if ancestor[0] != &#34;div&#34;:
+                                    dParentTag = ancestor[0]
+                                    break
+                            outcome = (
+                                dParentTag in CHUNK_PARENTS
+                                and thisTag not in EMPTY_ELEMENTS
+                            ) or (
+                                dParentTag == TEXT_ANCESTOR
+                                and thisTag not in TEXT_ANCESTORS
+                            )
+                    else:
+                        outcome = (
+                            parentTag in CHUNK_PARENTS
+                            and thisTag not in EMPTY_ELEMENTS
+                        ) or (
+                            parentTag == TEXT_ANCESTOR
+                            and thisTag not in TEXT_ANCESTORS
+                        )
 
         if outcome:
             cur[&#34;chunkElems&#34;].add(nest[-1][0])
@@ -10389,28 +10389,29 @@ that has access to this data.</p>
         atts: string
             The attributes of the lxml node, with namespaces stripped.
         &#34;&#34;&#34;
-        pageModel = self.pageModel
-        pageProperties = self.pageProperties
-        pageType = pageProperties[&#34;nodeType&#34;]
-        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
-        sectionProperties = self.sectionProperties
+        makePageElems = self.makePageElems
+
+        if makePageElems:
+            pageProperties = self.pageProperties
+            pageType = pageProperties[&#34;nodeType&#34;]
+            isPageContainer = makePageElems and matchModel(
+                pageProperties, tag, atts
+            )
+            inPage = cur[&#34;inPage&#34;]
+
+            if isPageContainer:
+                pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+                cur[&#34;inPage&#34;] = True
+
+                if pbAtTop:
+                    # material before the first pb in the container is not in a page
+                    pass
+                else:
+                    # the page starts with the container
+                    cur[NODE][pageType] = cv.node(pageType)
+
         sectionModel = self.sectionModel
         sectionProperties = self.sectionProperties
-
-        isPageContainer = pageModel == &#34;II&#34; and matchModel(
-            pageProperties, tag, atts
-        )
-        inPage = cur[&#34;inPage&#34;]
-
-        if isPageContainer:
-            cur[&#34;inPage&#34;] = True
-
-            if pbAtTop:
-                # material before the first pb in the container is not in a page
-                pass
-            else:
-                # the page starts with the container
-                cur[NODE][pageType] = cv.node(pageType)
 
         if sectionModel == &#34;II&#34;:
             chapterSection = self.chapterSection
@@ -10440,7 +10441,7 @@ that has access to this data.</p>
                     cur[&#34;infirstChunk&#34;] = False
                 else:
                     cur[NODE][chunkSection] = cv.node(chunkSection)
-                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlot&#34;])
+                    cv.link(cur[NODE][chunkSection], cur[&#34;danglingSlots&#34;])
                     cur[&#34;danglingSlots&#34;] = set()
                 if tag == &#34;p&#34;:
                     cur[&#34;chunkPNum&#34;] += 1
@@ -10482,20 +10483,21 @@ that has access to this data.</p>
 
         curNode = None
 
-        if inPage and tag == &#34;pb&#34;:
-            if pbAtTop:
-                if cur[NODE][pageType] is not None:
-                    endPage(cv, cur)
-                cur[NODE][pageType] = cv.node(pageType)
-                if len(atts):
-                    cv.feature(cur[NODE][pageType], **atts)
-            else:
-                if cur[NODE][pageType] is not None:
-                    if len(cur[&#34;pageAtts&#34;]):
-                        cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
-                    endPage(cv, cur)
-                cur[NODE][pageType] = cv.node(pageType)
-                cur[&#34;pageAtts&#34;] = atts
+        if makePageElems:
+            if inPage and tag == &#34;pb&#34;:
+                if pbAtTop:
+                    if cur[NODE][pageType] is not None:
+                        endPage(cv, cur)
+                    cur[NODE][pageType] = cv.node(pageType)
+                    if len(atts):
+                        cv.feature(cur[NODE][pageType], **atts)
+                else:
+                    if cur[NODE][pageType] is not None:
+                        if len(cur[&#34;pageAtts&#34;]):
+                            cv.feature(cur[NODE][pageType], **cur[&#34;pageAtts&#34;])
+                        endPage(cv, cur)
+                    cur[NODE][pageType] = cv.node(pageType)
+                    cur[&#34;pageAtts&#34;] = atts
 
         elif tag not in PASS_THROUGH:
             cur[&#34;afterSpace&#34;] = False
@@ -10554,11 +10556,13 @@ that has access to this data.</p>
             The attributes of the lxml node, with namespaces stripped.
         &#34;&#34;&#34;
         chunkSection = self.chunkSection
-        pageProperties = self.pageProperties
-        pageType = pageProperties[&#34;nodeType&#34;]
-        pageModel = self.pageModel
-        pageProperties = self.pageProperties
-        pbAtTop = pageProperties[&#34;pbAtTop&#34;]
+        makePageElems = self.makePageElems
+
+        if makePageElems:
+            pageProperties = self.pageProperties
+            pageType = pageProperties[&#34;nodeType&#34;]
+            pageProperties = self.pageProperties
+
         sectionModel = self.sectionModel
 
         if sectionModel == &#34;II&#34;:
@@ -10576,14 +10580,13 @@ that has access to this data.</p>
         if afterChildrenCustom is not None:
             afterChildrenCustom(cv, cur, xnode, tag, atts)
 
-        isPageContainer = pageModel == &#34;II&#34; and matchModel(
-            pageProperties, tag, atts
-        )
-        inPage = cur[&#34;inPage&#34;]
+        if makePageElems:
+            isPageContainer = matchModel(pageProperties, tag, atts)
+            inPage = cur[&#34;inPage&#34;]
 
         hasFinishedWord = False
 
-        if inPage and tag == &#34;pb&#34;:
+        if makePageElems and inPage and tag == &#34;pb&#34;:
             pass
         elif tag not in PASS_THROUGH:
             curNode = cur[TNEST][-1]
@@ -10640,7 +10643,8 @@ that has access to this data.</p>
                 if not hasFinishedWord:
                     finishWord(cv, cur, None, &#34;\n&#34;)
                 cv.terminate(cur[NODE][chapterSection])
-        if isPageContainer:
+        if makePageElems and isPageContainer:
+            pbAtTop = pageProperties[&#34;pbAtTop&#34;]
             if pbAtTop:
                 # the page ends with the container
                 if cur[NODE][pageType] is not None:
@@ -10719,8 +10723,12 @@ that has access to this data.</p>
         cv: object
             The convertor object, needed to issue actions.
         &#34;&#34;&#34;
-        pageProperties = self.pageProperties
-        pageType = pageProperties[&#34;nodeType&#34;]
+        makePageElems = self.makePageElems
+
+        if makePageElems:
+            pageProperties = self.pageProperties
+            pageType = pageProperties[&#34;nodeType&#34;]
+
         sectionModel = self.sectionModel
         A = self.A
         elementDefs = A.elementDefs
@@ -10780,22 +10788,26 @@ that has access to this data.</p>
 
                     cur[NODE][fileSection] = cv.node(fileSection)
                     ids[xmlFile][&#34;&#34;] = cur[NODE][fileSection]
-                    if tpl:
-                        cur[NODE][tpl] = cv.node(tpl)
                     value = {fileSection: xmlFile.removesuffix(&#34;.xml&#34;)}
                     cv.feature(cur[NODE][fileSection], **value)
-                    cv.feature(cur[NODE][tpl], **value)
+                    if tpl:
+                        cur[NODE][tpl] = cv.node(tpl)
+                        cv.feature(cur[NODE][tpl], **value)
 
                     with open(xmlPath, encoding=&#34;utf8&#34;) as fh:
                         text = fh.read()
-                        text = transformFunc(text)
+                        if transformFunc is not None:
+                            text = transformFunc(text)
                         tree = etree.parse(text, parser)
                         root = tree.getroot()
-                        cur[NODE][pageType] = None
+
+                        if makePageElems:
+                            cur[NODE][pageType] = None
+                            cur[&#34;inPage&#34;] = False
+                            cur[&#34;pageAtts&#34;] = None
+
                         cur[NODE][WORD] = None
                         cur[&#34;inHeader&#34;] = False
-                        cur[&#34;inPage&#34;] = False
-                        cur[&#34;pageAtts&#34;] = None
                         cur[&#34;inNote&#34;] = False
                         cur[XNEST] = []
                         cur[TNEST] = []
@@ -10833,14 +10845,18 @@ that has access to this data.</p>
             with open(f&#34;{teiPath}/{xmlFile}&#34;, encoding=&#34;utf8&#34;) as fh:
                 cur[&#34;xmlFile&#34;] = xmlFile
                 text = fh.read()
-                text = transformFunc(text)
+                if transformFunc is not None:
+                    text = transformFunc(text)
                 tree = etree.parse(text, parser)
                 root = tree.getroot()
-                cur[NODE][pageType] = None
+
+                if makePageElems:
+                    cur[NODE][pageType] = None
+                    cur[&#34;inPage&#34;] = False
+                    cur[&#34;pageAtts&#34;] = None
+
                 cur[NODE][WORD] = None
                 cur[&#34;inHeader&#34;] = False
-                cur[&#34;inPage&#34;] = False
-                cur[&#34;pageAtts&#34;] = None
                 cur[&#34;inNote&#34;] = False
                 cur[XNEST] = []
                 cur[TNEST] = []
@@ -10970,7 +10986,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1310-L1328" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1474-L1492" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getParser(self):
     &#34;&#34;&#34;Configure the lxml parser.
@@ -11001,7 +11017,7 @@ that has access to this data.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1268-L1308" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1431-L1472" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSwitches(self, xmlPath):
     verbose = self.verbose
@@ -11031,6 +11047,7 @@ that has access to this data.</p>
             if result is None or result == &#34;tei_all&#34;:
                 result = None
         else:
+            result = None
             triggerRe = triggers[kind]
             if triggerRe is not None:
 
@@ -11067,7 +11084,7 @@ that contains the file names in that folder, sorted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1330-L1403" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1494-L1567" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getXML(self):
     &#34;&#34;&#34;Make an inventory of the TEI source files.
@@ -11165,7 +11182,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L3636-L3678" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L3699-L3741" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadTask(self):
     &#34;&#34;&#34;Implementation of the &#34;load&#34; task.
@@ -11220,7 +11237,7 @@ the results of which will be cached in the invisible <code>.<a title="tf" href="
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L1225-L1266" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L1388-L1429" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def readSchemas(self):
     schemaDir = self.schemaDir
@@ -11304,7 +11321,7 @@ will not be executed.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/66bdbe2b70f6b53fd3e917da798e25c67fafc6a3/tf/convert/tei.py#L4085-L4156" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/convert/tei.py#L4146-L4217" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def task(
     self,
