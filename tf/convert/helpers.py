@@ -38,6 +38,7 @@ PAGE_MODEL_DEFAULT = "I"
 SECTION_MODELS = dict(
     I=dict(
         levels=(list, [FOLDER, FILE, CHUNK]),
+        drillDownDivs=(bool, True),
         backMatter=(str, "backmatter"),
     ),
     II=dict(
@@ -290,7 +291,6 @@ def setUp(kind):
             ),
             "latest",
         ),
-        "procins": ("Whether to treat or ignore processing instructions", False),
         "validate": ("Whether to validate the XML input", True),
     }
 

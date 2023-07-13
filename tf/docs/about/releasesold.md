@@ -224,7 +224,7 @@ the reduction was not enough to prevent a crash.
 
 You can install this version and see for yourself.
 
-Note, that when Text-Fabric precokputes data, it will store the results in
+Note, that when Text-Fabric precomputes data, it will store the results in
 
 `.tf/4` (`PACK_VERSION = 4`), whereas the old way's results are still in 
 `.tf/3` (`PACK_VERSION = 3`). See `tf.parameters.PACK_VERSION`.

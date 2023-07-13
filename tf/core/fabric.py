@@ -628,7 +628,7 @@ class FabricCore:
             But you can override it:
 
             If you pass `location=something`, TF will save in `something/mod`,
-            where `mod` is the last meber of the `modules` parameter of TF.
+            where `mod` is the last member of the `modules` parameter of TF.
 
         module: dict
             This is an additional way of overriding the default location

@@ -8,9 +8,23 @@ See the app-specific tutorials via `tf.about.corpora`.
 
 ---
 
+**The TEI converter is still in active development.
+If you need the latest version, clone the Text-Fabric repo
+and in its top-level directory run the command:**
+
+```
+pip install -e .
+```
+
 ## 12
 
 ### 12.0
+
+#### 12.0.6 (upcoming)
+
+2023-07-??
+
+Fixes in the TEI converter.
 
 #### 12.0.5
 

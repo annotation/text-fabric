@@ -1271,10 +1271,14 @@ class NLPipeline:
             write = self.write
         else:
             self.write = write
-        if verbose is None:
-            verbose = self.verbose
-        else:
-            self.verbose = verbose
+
+        verboseGiven = verbose
+
+        if verboseGiven is not None:
+            verboseSav = self.verbose
+            self.verbose = verboseGiven
+
+        verbose = self.verbose
 
         lang = self.lang
 
@@ -1337,6 +1341,9 @@ class NLPipeline:
             newVersion = self.ingestTokensAndSentences(positions, tokens, sentences)
 
             result = newVersion if self.good else False
+
+        if verboseGiven is not None:
+            self.verbose = verboseSav
 
         if type(result) is bool:
             if not result:

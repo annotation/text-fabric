@@ -182,7 +182,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     **Novum Testamentum Syriace**,
     Hannes Vlaardingerbroek, Dirk Roorda
 
-## [KNAW/Huygens](https://gitlab.huc.knaw.nl/tt)
+## [KNAW/Huygens](https://github.com/HuygensING)
 
 [hermans/works](https://gitlab.huc.knaw.nl/hermans/works)
 :   *Dutch*
@@ -202,11 +202,21 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
 [mondriaan/letters](https://git.diginfra.nl/mondriaan/letters)
 :   *Dutch*
-    Letters of Piet Mondriaan. , 1892-1923.
+    Letters of Piet Mondriaan , 1892-1923.
     Straight conversion from TEI to Text-Fabric,
-    Peter Boot et al, Dirk Roorda
+    Peter Boot et al., Dirk Roorda
 
     ** Work in progress, not yet public*.*
+
+    *with tokens and sentences from Spacy woven in*
+
+[HuygensING/suriano](https://github.com/HuygensING/suriano)
+:   *Italian*
+    Correspondence of Christofforo Suriano , 1616-1623.
+    Straight conversion from TEI to Text-Fabric,
+    Nina Lamal et al., Dirk Roorda
+
+    ** Work in progress*.*
 
     *with tokens and sentences from Spacy woven in*
 
