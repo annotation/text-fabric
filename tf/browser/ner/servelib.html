@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.volumes API documentation</title>
-<meta name="description" content="Volume operations …" />
+<title>tf.browser.ner.servelib API documentation</title>
+<meta name="description" content="Auxiliary functions for serving the web page." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -20,63 +20,114 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.volumes</code></h1>
+<h1 class="title">Module <code>tf.browser.ner.servelib</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="volume-operations">Volume operations</h1>
-<p>This package contains functions to support works and their volumes in TF.</p>
-<p>There are the following basic operations:</p>
-<ul>
-<li>Collect, see <code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code>, (collect several volumes into one work)</li>
-<li>Extract, see <code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code>, (extract volumes from a work)</li>
-</ul>
+<p>Auxiliary functions for serving the web page.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/volumes/__init__.py#L1-L15" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/servelib.py#L1-L33" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-# Volume operations
-
-This package contains functions to support works and their volumes in TF.
-
-There are the following basic operations:
-
-* Collect, see `tf.volumes.collect`, (collect several volumes into one work)
-* Extract, see `tf.volumes.extract`, (extract volumes from a work)
-
+<pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
 &#34;&#34;&#34;
 
+from flask import request
 
-from .collect import collect
-from .extract import extract, getVolumes</code></pre>
+
+def getFormData():
+    &#34;&#34;&#34;Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of webapp dependent options.
+    &#34;&#34;&#34;
+
+    form = {}
+    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = resetForm
+
+    form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
+    form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
+    form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
+    form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
+    form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
+    form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+
+    return form</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></dt>
+<dt id="tf.browser.ner.servelib.getFormData"><code class="name flex">
+<span>def <span class="ident">getFormData</span></span>(<span>)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Collect …</p></div>
-</dd>
-<dt><code class="name"><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></dt>
-<dd>
-<div class="desc"><p>Extract …</p></div>
+<div class="desc"><p>Get form data.</p>
+<p>The TF browser user interacts with the web app by clicking and typing,
+as a result of which a HTML form gets filled in.
+This form as regularly submitted to the web server with a request
+for a new incarnation of the page: a response.</p>
+<p>The values that come with a request, must be peeled out of the form,
+and stored as logical values.</p>
+<p>Most of the data has a known function to the web server,
+but there is also a list of webapp dependent options.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/servelib.py#L7-L33" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getFormData():
+    &#34;&#34;&#34;Get form data.
+
+    The TF browser user interacts with the web app by clicking and typing,
+    as a result of which a HTML form gets filled in.
+    This form as regularly submitted to the web server with a request
+    for a new incarnation of the page: a response.
+
+    The values that come with a request, must be peeled out of the form,
+    and stored as logical values.
+
+    Most of the data has a known function to the web server,
+    but there is also a list of webapp dependent options.
+    &#34;&#34;&#34;
+
+    form = {}
+    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    form[&#34;resetForm&#34;] = resetForm
+
+    form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
+    form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
+    form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
+    form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
+    form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
+    form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+
+    return form</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 <section>
 </section>
-<section>
-</section>
-<section>
-</section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../tf/index.html">tf home</a> -
-<a href="../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../../tf/index.html">tf home</a> -
+<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -112,7 +163,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -126,20 +177,17 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#volume-operations">Volume operations</a></li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf" href="../index.html">tf</a></code></li>
+<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></li>
-<li><code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.ner.servelib.getFormData" href="#tf.browser.ner.servelib.getFormData">getFormData</a></code></li>
 </ul>
 </li>
 </ul>
@@ -147,7 +195,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

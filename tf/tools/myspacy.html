@@ -36,7 +36,7 @@ language modules.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L1-L287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L1-L374" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Get words and tokens from a plain text with the help of Spacy.
 
@@ -95,7 +95,7 @@ xx ent_wiki multi-language
 
 
 class Spacy:
-    def __init__(self, lang=None):
+    def __init__(self, lang=None, parser=False):
         &#34;&#34;&#34;Sets up an NLP (Natural Language Processing) pipeline.
 
         The pipeline is tied to a particular language model, which you can pass
@@ -175,9 +175,12 @@ class Spacy:
                 else:
                     continue
 
+        console(f&#34;NLP with language model {targetLang} {parser=}&#34;)
+
         if loaded:
             try:
-                nlp.disable_pipe(&#34;parser&#34;)
+                if not parser:
+                    nlp.disable_pipe(&#34;parser&#34;)
                 nlp.disable_pipe(&#34;sentencizer&#34;)
             except Exception:
                 pass
@@ -187,6 +190,29 @@ class Spacy:
             except Exception:
                 self.canSentence = False
                 console(&#34;This language does not support sentence boundary detection&#34;)
+
+            if parser:
+                try:
+                    nlp.enable_pipe(&#34;tagger&#34;)
+                    self.canTag = True
+                    console(&#34;This language supports tagging&#34;)
+                except Exception:
+                    self.canTag = False
+                    console(&#34;This language does not supports tagging&#34;)
+                try:
+                    nlp.enable_pipe(&#34;morphologizer&#34;)
+                    self.canMorph = True
+                    console(&#34;This language supports morphologizing&#34;)
+                except Exception:
+                    self.canMorph = False
+                    console(&#34;This language does not supports morphologizing&#34;)
+                try:
+                    nlp.enable_pipe(&#34;lemmatizer&#34;)
+                    self.canLemma = True
+                    console(&#34;This language supports lemmatizing&#34;)
+                except Exception:
+                    self.canLemma = False
+                    console(&#34;This language does not supports lemmatizing&#34;)
         else:
             console(&#34;Cannot load (language data) to get Spacy working&#34;)
             nlp = None
@@ -242,17 +268,27 @@ class Spacy:
             All tokens as tuples.
         &#34;&#34;&#34;
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
 
+        canTag = self.canTag
+        canMorph = self.canMorph
+        canLemma = self.canLemma
+
         result = []
+
         for token in doc:
             start = token.idx
             text = token.text
             space = token.whitespace_
             end = start + len(text)
-            result.append((start, end, text, space))
+
+            pos = token.pos_ if canMorph else token.tag_ if canTag else None
+            morph = str(token.morph) if canMorph else None
+            lemma = token.lemma_.strip().lower() if canLemma else None
+            result.append((start, end, text, space, pos, morph, lemma))
+
         return result
 
     def getSentences(self):
@@ -272,7 +308,7 @@ class Spacy:
             All sentences as tuples.
         &#34;&#34;&#34;
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
 
@@ -299,11 +335,48 @@ class Spacy:
             text = spuriousNlBefore.sub(r&#34;\1&#34;, text)
             text = spuriousNlAfter.sub(r&#34;\1&#34;, text)
             result.append((sentStart, sentEnd, text))
+
+        return result
+
+    def getEntities(self):
+        &#34;&#34;&#34;Get the resulting named entities.
+
+        A named entity is represented as a tuple consisting of
+
+        *   *start*: first character position that the entity occupies in the text.
+            Character positions start at 0.
+        *   *end*: last character position that the entity occupies in the text
+            *plus one*.
+        *   *text*: text of the entity.
+        *   *kind*: kind of the entity.
+
+        Returns
+        -------
+        list
+            All entities as tuples.
+        &#34;&#34;&#34;
+        doc = self.doc
+        if doc is None:
+            console(&#34;No results available from the NLP pipeline&#34;)
+            return []
+
+        if not hasattr(doc, &#34;ents&#34;):
+            console(&#34;No entity results available from the NLP pipeline&#34;)
+            return []
+
+        result = []
+
+        for ent in doc.ents:
+            start = ent.start_char
+            end = ent.end_char
+            text = ent.text
+            kind = ent.label_
+            result.append((start, end, text, kind))
+
         return result
 
 
-# def tokensAndSentences(text, langmodel=&#34;en_core_web_sm&#34;):
-def tokensAndSentences(text, lang=&#34;en&#34;):
+def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
     &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
 
     Parameters
@@ -313,18 +386,32 @@ def tokensAndSentences(text, lang=&#34;en&#34;):
     lang: string, optional en
         The language to be used; its model should be installed; see
         `tf.tools.myspacy` for how to get language models.
+    ner: boolean, optional False
+        Whether to include named entities in the output.
+    parser: boolean, optional False
+        Whether to run the NLP parser.
 
     Returns
     -------
     tuple
         `tokens`: the token list as tuples
         `sentences`: the sentence list as tuples
+        `entities`: the entity list as tuples, only if `ner=True`
 
-        Both tokens and sentences are tuples (start, end, text).
+        Tokens are tuples (start, end, text, after).
+
+        Sentences are tuples (start, end, text).
+
+        Entities are tuples (start, end, text, kind).
     &#34;&#34;&#34;
-    S = Spacy(lang=lang)
+    S = Spacy(lang=lang, parser=parser)
     S.read(text)
-    return (S.getTokens(), S.getSentences())</code></pre>
+
+    tokens = S.getTokens()
+    sentences = S.getSentences()
+    entities = S.getEntities() if ner else None
+
+    return tuple(x for x in (tokens, sentences, entities) if x is not None)</code></pre>
 </details>
 </section>
 <section>
@@ -341,8 +428,8 @@ def tokensAndSentences(text, lang=&#34;en&#34;):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.tools.myspacy.tokensAndSentences"><code class="name flex">
-<span>def <span class="ident">tokensAndSentences</span></span>(<span>text, lang='en')</span>
+<dt id="tf.tools.myspacy.nlpOutput"><code class="name flex">
+<span>def <span class="ident">nlpOutput</span></span>(<span>text, lang='en', ner=False, parser=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Runs the Spacy NLP pipeline and delivers the results.</p>
@@ -353,22 +440,29 @@ def tokensAndSentences(text, lang=&#34;en&#34;):
 <dt><strong><code>lang</code></strong> :&ensp;<code>string</code>, optional <code>en</code></dt>
 <dd>The language to be used; its model should be installed; see
 <code><a title="tf.tools.myspacy" href="#tf.tools.myspacy">tf.tools.myspacy</a></code> for how to get language models.</dd>
+<dt><strong><code>ner</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to include named entities in the output.</dd>
+<dt><strong><code>parser</code></strong> :&ensp;<code>boolean</code>, optional <code>False</code></dt>
+<dd>Whether to run the NLP parser.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>tuple</code></dt>
 <dd>
 <p><code>tokens</code>: the token list as tuples
-<code>sentences</code>: the sentence list as tuples</p>
-<p>Both tokens and sentences are tuples (start, end, text).</p>
+<code>sentences</code>: the sentence list as tuples
+<code>entities</code>: the entity list as tuples, only if <code>ner=True</code></p>
+<p>Tokens are tuples (start, end, text, after).</p>
+<p>Sentences are tuples (start, end, text).</p>
+<p>Entities are tuples (start, end, text, kind).</p>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L266-L287" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L339-L374" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tokensAndSentences(text, lang=&#34;en&#34;):
+<pre><code class="python">def nlpOutput(text, lang=&#34;en&#34;, ner=False, parser=False):
     &#34;&#34;&#34;Runs the Spacy NLP pipeline and delivers the results.
 
     Parameters
@@ -378,18 +472,32 @@ def tokensAndSentences(text, lang=&#34;en&#34;):
     lang: string, optional en
         The language to be used; its model should be installed; see
         `tf.tools.myspacy` for how to get language models.
+    ner: boolean, optional False
+        Whether to include named entities in the output.
+    parser: boolean, optional False
+        Whether to run the NLP parser.
 
     Returns
     -------
     tuple
         `tokens`: the token list as tuples
         `sentences`: the sentence list as tuples
+        `entities`: the entity list as tuples, only if `ner=True`
 
-        Both tokens and sentences are tuples (start, end, text).
+        Tokens are tuples (start, end, text, after).
+
+        Sentences are tuples (start, end, text).
+
+        Entities are tuples (start, end, text, kind).
     &#34;&#34;&#34;
-    S = Spacy(lang=lang)
+    S = Spacy(lang=lang, parser=parser)
     S.read(text)
-    return (S.getTokens(), S.getSentences())</code></pre>
+
+    tokens = S.getTokens()
+    sentences = S.getSentences()
+    entities = S.getEntities() if ner else None
+
+    return tuple(x for x in (tokens, sentences, entities) if x is not None)</code></pre>
 </details>
 </dd>
 </dl>
@@ -399,7 +507,7 @@ def tokensAndSentences(text, lang=&#34;en&#34;):
 <dl>
 <dt id="tf.tools.myspacy.Spacy"><code class="flex name class">
 <span>class <span class="ident">Spacy</span></span>
-<span>(</span><span>lang=None)</span>
+<span>(</span><span>lang=None, parser=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Sets up an NLP (Natural Language Processing) pipeline.</p>
@@ -422,10 +530,10 @@ called <code>xx</code>.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L57-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L57-L336" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Spacy:
-    def __init__(self, lang=None):
+    def __init__(self, lang=None, parser=False):
         &#34;&#34;&#34;Sets up an NLP (Natural Language Processing) pipeline.
 
         The pipeline is tied to a particular language model, which you can pass
@@ -505,9 +613,12 @@ called <code>xx</code>.</p>
                 else:
                     continue
 
+        console(f&#34;NLP with language model {targetLang} {parser=}&#34;)
+
         if loaded:
             try:
-                nlp.disable_pipe(&#34;parser&#34;)
+                if not parser:
+                    nlp.disable_pipe(&#34;parser&#34;)
                 nlp.disable_pipe(&#34;sentencizer&#34;)
             except Exception:
                 pass
@@ -517,6 +628,29 @@ called <code>xx</code>.</p>
             except Exception:
                 self.canSentence = False
                 console(&#34;This language does not support sentence boundary detection&#34;)
+
+            if parser:
+                try:
+                    nlp.enable_pipe(&#34;tagger&#34;)
+                    self.canTag = True
+                    console(&#34;This language supports tagging&#34;)
+                except Exception:
+                    self.canTag = False
+                    console(&#34;This language does not supports tagging&#34;)
+                try:
+                    nlp.enable_pipe(&#34;morphologizer&#34;)
+                    self.canMorph = True
+                    console(&#34;This language supports morphologizing&#34;)
+                except Exception:
+                    self.canMorph = False
+                    console(&#34;This language does not supports morphologizing&#34;)
+                try:
+                    nlp.enable_pipe(&#34;lemmatizer&#34;)
+                    self.canLemma = True
+                    console(&#34;This language supports lemmatizing&#34;)
+                except Exception:
+                    self.canLemma = False
+                    console(&#34;This language does not supports lemmatizing&#34;)
         else:
             console(&#34;Cannot load (language data) to get Spacy working&#34;)
             nlp = None
@@ -572,17 +706,27 @@ called <code>xx</code>.</p>
             All tokens as tuples.
         &#34;&#34;&#34;
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
 
+        canTag = self.canTag
+        canMorph = self.canMorph
+        canLemma = self.canLemma
+
         result = []
+
         for token in doc:
             start = token.idx
             text = token.text
             space = token.whitespace_
             end = start + len(text)
-            result.append((start, end, text, space))
+
+            pos = token.pos_ if canMorph else token.tag_ if canTag else None
+            morph = str(token.morph) if canMorph else None
+            lemma = token.lemma_.strip().lower() if canLemma else None
+            result.append((start, end, text, space, pos, morph, lemma))
+
         return result
 
     def getSentences(self):
@@ -602,7 +746,7 @@ called <code>xx</code>.</p>
             All sentences as tuples.
         &#34;&#34;&#34;
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console(&#34;No results available from the NLP pipeline&#34;)
             return []
 
@@ -629,10 +773,110 @@ called <code>xx</code>.</p>
             text = spuriousNlBefore.sub(r&#34;\1&#34;, text)
             text = spuriousNlAfter.sub(r&#34;\1&#34;, text)
             result.append((sentStart, sentEnd, text))
+
+        return result
+
+    def getEntities(self):
+        &#34;&#34;&#34;Get the resulting named entities.
+
+        A named entity is represented as a tuple consisting of
+
+        *   *start*: first character position that the entity occupies in the text.
+            Character positions start at 0.
+        *   *end*: last character position that the entity occupies in the text
+            *plus one*.
+        *   *text*: text of the entity.
+        *   *kind*: kind of the entity.
+
+        Returns
+        -------
+        list
+            All entities as tuples.
+        &#34;&#34;&#34;
+        doc = self.doc
+        if doc is None:
+            console(&#34;No results available from the NLP pipeline&#34;)
+            return []
+
+        if not hasattr(doc, &#34;ents&#34;):
+            console(&#34;No entity results available from the NLP pipeline&#34;)
+            return []
+
+        result = []
+
+        for ent in doc.ents:
+            start = ent.start_char
+            end = ent.end_char
+            text = ent.text
+            kind = ent.label_
+            result.append((start, end, text, kind))
+
         return result</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="tf.tools.myspacy.Spacy.getEntities"><code class="name flex">
+<span>def <span class="ident">getEntities</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the resulting named entities.</p>
+<p>A named entity is represented as a tuple consisting of</p>
+<ul>
+<li><em>start</em>: first character position that the entity occupies in the text.
+Character positions start at 0.</li>
+<li><em>end</em>: last character position that the entity occupies in the text
+<em>plus one</em>.</li>
+<li><em>text</em>: text of the entity.</li>
+<li><em>kind</em>: kind of the entity.</li>
+</ul>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>All entities as tuples.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L301-L336" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getEntities(self):
+    &#34;&#34;&#34;Get the resulting named entities.
+
+    A named entity is represented as a tuple consisting of
+
+    *   *start*: first character position that the entity occupies in the text.
+        Character positions start at 0.
+    *   *end*: last character position that the entity occupies in the text
+        *plus one*.
+    *   *text*: text of the entity.
+    *   *kind*: kind of the entity.
+
+    Returns
+    -------
+    list
+        All entities as tuples.
+    &#34;&#34;&#34;
+    doc = self.doc
+    if doc is None:
+        console(&#34;No results available from the NLP pipeline&#34;)
+        return []
+
+    if not hasattr(doc, &#34;ents&#34;):
+        console(&#34;No entity results available from the NLP pipeline&#34;)
+        return []
+
+    result = []
+
+    for ent in doc.ents:
+        start = ent.start_char
+        end = ent.end_char
+        text = ent.text
+        kind = ent.label_
+        result.append((start, end, text, kind))
+
+    return result</code></pre>
+</details>
+</dd>
 <dt id="tf.tools.myspacy.Spacy.getSentences"><code class="name flex">
 <span>def <span class="ident">getSentences</span></span>(<span>self)</span>
 </code></dt>
@@ -654,7 +898,7 @@ Character positions start at 0.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L218-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L254-L299" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getSentences(self):
     &#34;&#34;&#34;Get the resulting sentences.
@@ -673,7 +917,7 @@ Character positions start at 0.</li>
         All sentences as tuples.
     &#34;&#34;&#34;
     doc = self.doc
-    if self.doc is None:
+    if doc is None:
         console(&#34;No results available from the NLP pipeline&#34;)
         return []
 
@@ -700,6 +944,7 @@ Character positions start at 0.</li>
         text = spuriousNlBefore.sub(r&#34;\1&#34;, text)
         text = spuriousNlAfter.sub(r&#34;\1&#34;, text)
         result.append((sentStart, sentEnd, text))
+
     return result</code></pre>
 </details>
 </dd>
@@ -732,7 +977,7 @@ where the tokens themselves are, and spaces do nto belong to the tokens.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L180-L216" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L206-L252" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getTokens(self):
     &#34;&#34;&#34;Get the resulting tokens.
@@ -759,17 +1004,27 @@ where the tokens themselves are, and spaces do nto belong to the tokens.</p>
         All tokens as tuples.
     &#34;&#34;&#34;
     doc = self.doc
-    if self.doc is None:
+    if doc is None:
         console(&#34;No results available from the NLP pipeline&#34;)
         return []
 
+    canTag = self.canTag
+    canMorph = self.canMorph
+    canLemma = self.canLemma
+
     result = []
+
     for token in doc:
         start = token.idx
         text = token.text
         space = token.whitespace_
         end = start + len(text)
-        result.append((start, end, text, space))
+
+        pos = token.pos_ if canMorph else token.tag_ if canTag else None
+        morph = str(token.morph) if canMorph else None
+        lemma = token.lemma_.strip().lower() if canLemma else None
+        result.append((start, end, text, space, pos, morph, lemma))
+
     return result</code></pre>
 </details>
 </dd>
@@ -789,7 +1044,7 @@ words on a decent laptop.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/tools/myspacy.py#L157-L178" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/tools/myspacy.py#L183-L204" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def read(self, text):
     &#34;&#34;&#34;Process a plain text.
@@ -889,7 +1144,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.tools.myspacy.tokensAndSentences" href="#tf.tools.myspacy.tokensAndSentences">tokensAndSentences</a></code></li>
+<li><code><a title="tf.tools.myspacy.nlpOutput" href="#tf.tools.myspacy.nlpOutput">nlpOutput</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -897,6 +1152,7 @@ setTimeout(() => input.focus(), 100);
 <li>
 <h4><code><a title="tf.tools.myspacy.Spacy" href="#tf.tools.myspacy.Spacy">Spacy</a></code></h4>
 <ul class="">
+<li><code><a title="tf.tools.myspacy.Spacy.getEntities" href="#tf.tools.myspacy.Spacy.getEntities">getEntities</a></code></li>
 <li><code><a title="tf.tools.myspacy.Spacy.getSentences" href="#tf.tools.myspacy.Spacy.getSentences">getSentences</a></code></li>
 <li><code><a title="tf.tools.myspacy.Spacy.getTokens" href="#tf.tools.myspacy.Spacy.getTokens">getTokens</a></code></li>
 <li><code><a title="tf.tools.myspacy.Spacy.read" href="#tf.tools.myspacy.Spacy.read">read</a></code></li>

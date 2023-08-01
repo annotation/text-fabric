@@ -38,9 +38,28 @@ and in its top-level directory run the command:</strong></p>
 </code></pre>
 <h2 id="12">12</h2>
 <h3 id="120">12.0</h3>
-<h4 id="1206-upcoming">12.0.6 (upcoming)</h4>
-<p>2023-07-??</p>
-<p>Fixes in the TEI converter.</p>
+<h4 id="121-upcoming">12.1 (upcoming)</h4>
+<p>2023-08-??</p>
+<h5 id="new-stuff">New stuff</h5>
+<ul>
+<li>
+<p>In <code><a title="tf.convert.addnlp" href="../convert/addnlp.html">tf.convert.addnlp</a></code> we can now extract more NLP information besides tokens
+and sentences: part-of-speech, morphological tagging, lemmatisation, named
+entity recognititon</p>
+</li>
+<li>
+<p>In the Text-Fabric browser there will be a new tab in the vertical sidebar:
+<strong>Annotate</strong>, which will give access to manual annotation tools. I'm developing
+the first one, a tool to annotate named entities efficiently.</p>
+<p>These tools will let you save your work as files on your own computer, maybe even
+feature files, so that you can explore the result by means of queries in the
+text-fabric browser as you go.</p>
+</li>
+</ul>
+<h5 id="fixes">Fixes</h5>
+<ul>
+<li>in the TEI converter.</li>
+</ul>
 <h4 id="1205">12.0.5</h4>
 <p>2023-07-10</p>
 <p>Fixed references to static files that still went to <code>/server</code> instead of <code>/browser</code>.
@@ -87,7 +106,7 @@ the <em>Corpus</em> tab.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/about/releases.py#L1-L3" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 .. include:: ../docs/about/releases.md
@@ -161,7 +180,11 @@ setTimeout(() => input.focus(), 100);
 <li><a href="#release-notes">Release notes</a><ul>
 <li><a href="#12">12</a><ul>
 <li><a href="#120">12.0</a><ul>
-<li><a href="#1206-upcoming">12.0.6 (upcoming)</a></li>
+<li><a href="#121-upcoming">12.1 (upcoming)</a><ul>
+<li><a href="#new-stuff">New stuff</a></li>
+<li><a href="#fixes">Fixes</a></li>
+</ul>
+</li>
 <li><a href="#1205">12.0.5</a></li>
 <li><a href="#1200-4">12.0.0-4</a><ul>
 <li><a href="#simplification">Simplification</a></li>

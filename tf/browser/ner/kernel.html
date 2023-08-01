@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.volumes API documentation</title>
-<meta name="description" content="Volume operations …" />
+<title>tf.browser.ner.kernel API documentation</title>
+<meta name="description" content="TF backend processing …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -20,63 +20,173 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.volumes</code></h1>
+<h1 class="title">Module <code>tf.browser.ner.kernel</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="volume-operations">Volume operations</h1>
-<p>This package contains functions to support works and their volumes in TF.</p>
-<p>There are the following basic operations:</p>
-<ul>
-<li>Collect, see <code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code>, (collect several volumes into one work)</li>
-<li>Extract, see <code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code>, (extract volumes from a work)</li>
-</ul>
+<p>TF backend processing.</p>
+<p>This module is for functions that extract data from the corpus
+and put it in various dedicated data structures.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/volumes/__init__.py#L1-L15" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L1-L53" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-# Volume operations
+<pre><code class="python">&#34;&#34;&#34;TF backend processing.
 
-This package contains functions to support works and their volumes in TF.
-
-There are the following basic operations:
-
-* Collect, see `tf.volumes.collect`, (collect several volumes into one work)
-* Extract, see `tf.volumes.extract`, (extract volumes from a work)
-
+This module is for functions that extract data from the corpus
+and put it in various dedicated data structures.
 &#34;&#34;&#34;
 
+from .tables import composeE
 
-from .collect import collect
-from .extract import extract, getVolumes</code></pre>
+
+def entities(app, sortKey, sortDir):
+    &#34;&#34;&#34;Retrieves the entities and puts them in a table.
+
+    app: object
+        The TF app of the corpus in question.
+    sortKey: string
+        Indicator of how the table is sorted.
+    sortDir:
+        Indicator of the direction of the sorting.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+
+    entities = {}
+
+    for e in F.otype.s(&#34;ent&#34;):
+        txt = T.text(e)
+        kind = F.kind.v(e)
+        entities.setdefault((kind, txt), []).append(e)
+
+    return composeE(app, entities, sortKey, sortDir)
+
+
+def entityKinds(app):
+    &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
+
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></dt>
+<dt id="tf.browser.ner.kernel.entities"><code class="name flex">
+<span>def <span class="ident">entities</span></span>(<span>app, sortKey, sortDir)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Collect …</p></div>
+<div class="desc"><p>Retrieves the entities and puts them in a table.</p>
+<p>app: object
+The TF app of the corpus in question.
+sortKey: string
+Indicator of how the table is sorted.
+sortDir:
+Indicator of the direction of the sorting.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>HTML string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L10-L36" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def entities(app, sortKey, sortDir):
+    &#34;&#34;&#34;Retrieves the entities and puts them in a table.
+
+    app: object
+        The TF app of the corpus in question.
+    sortKey: string
+        Indicator of how the table is sorted.
+    sortDir:
+        Indicator of the direction of the sorting.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+    T = api.T
+
+    entities = {}
+
+    for e in F.otype.s(&#34;ent&#34;):
+        txt = T.text(e)
+        kind = F.kind.v(e)
+        entities.setdefault((kind, txt), []).append(e)
+
+    return composeE(app, entities, sortKey, sortDir)</code></pre>
+</details>
 </dd>
-<dt><code class="name"><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></dt>
+<dt id="tf.browser.ner.kernel.entityKinds"><code class="name flex">
+<span>def <span class="ident">entityKinds</span></span>(<span>app)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Extract …</p></div>
+<div class="desc"><p>Retrieves a frequency list of entities and presents it.</p>
+<p>app: object
+The TF app of the corpus in question.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>HTML string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L39-L53" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def entityKinds(app):
+    &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
+
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 <section>
 </section>
-<section>
-</section>
-<section>
-</section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../tf/index.html">tf home</a> -
-<a href="../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../../tf/index.html">tf home</a> -
+<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -112,7 +222,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -126,20 +236,18 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#volume-operations">Volume operations</a></li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf" href="../index.html">tf</a></code></li>
+<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></li>
-<li><code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.ner.kernel.entities" href="#tf.browser.ner.kernel.entities">entities</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.entityKinds" href="#tf.browser.ner.kernel.entityKinds">entityKinds</a></code></li>
 </ul>
 </li>
 </ul>
@@ -147,7 +255,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

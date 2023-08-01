@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.volumes API documentation</title>
-<meta name="description" content="Volume operations …" />
+<title>tf.browser.ner.serve API documentation</title>
+<meta name="description" content="Main controller for Flask …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -20,63 +20,158 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tf.volumes</code></h1>
+<h1 class="title">Module <code>tf.browser.ner.serve</code></h1>
 </header>
 <section id="section-intro">
-<h1 id="volume-operations">Volume operations</h1>
-<p>This package contains functions to support works and their volumes in TF.</p>
-<p>There are the following basic operations:</p>
-<ul>
-<li>Collect, see <code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code>, (collect several volumes into one work)</li>
-<li>Extract, see <code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code>, (extract volumes from a work)</li>
-</ul>
+<p>Main controller for Flask</p>
+<p>This module contains the main controller that Flask invokes when serving
+the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/volumes/__init__.py#L1-L15" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/serve.py#L1-L59" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-# Volume operations
+<pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
-This package contains functions to support works and their volumes in TF.
-
-There are the following basic operations:
-
-* Collect, see `tf.volumes.collect`, (collect several volumes into one work)
-* Extract, see `tf.volumes.extract`, (extract volumes from a work)
-
+This module contains the main controller that Flask invokes when serving
+the annotation tool.
 &#34;&#34;&#34;
 
+from flask import render_template
 
-from .collect import collect
-from .extract import extract, getVolumes</code></pre>
+from .servelib import getFormData
+from .kernel import entities, entityKinds
+from .wrap import wrapEntityHeaders, wrapEntityKinds
+
+
+def serveNer(web):
+    &#34;&#34;&#34;Serves the NE annotation tool.
+
+    Parameters
+    ----------
+    web: object
+        The flask web app
+    &#34;&#34;&#34;
+
+    aContext = web.context
+    appName = aContext.appName
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    form = getFormData()
+    resetForm = form[&#34;resetForm&#34;]
+
+    css = kernelApi.css()
+
+    templateData = {}
+
+    for (k, v) in form.items():
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+
+    sortKey = None
+    sortDir = None
+
+    for key in (&#34;freqsort&#34;, &#34;kindsort&#34;, &#34;etxtsort&#34;):
+        currentState = templateData[key]
+        if currentState:
+            sortDir = &#34;u&#34; if currentState == &#34;d&#34; else &#34;d&#34;
+            sortKey = key
+            break
+
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
+    templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
+
+    return render_template(
+        &#34;ner.html&#34;,
+        css=css,
+        **templateData,
+    )</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></dt>
+<dt id="tf.browser.ner.serve.serveNer"><code class="name flex">
+<span>def <span class="ident">serveNer</span></span>(<span>web)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Collect …</p></div>
-</dd>
-<dt><code class="name"><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></dt>
-<dd>
-<div class="desc"><p>Extract …</p></div>
+<div class="desc"><p>Serves the NE annotation tool.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
+<dd>The flask web app</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/serve.py#L14-L59" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def serveNer(web):
+    &#34;&#34;&#34;Serves the NE annotation tool.
+
+    Parameters
+    ----------
+    web: object
+        The flask web app
+    &#34;&#34;&#34;
+
+    aContext = web.context
+    appName = aContext.appName
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+
+    form = getFormData()
+    resetForm = form[&#34;resetForm&#34;]
+
+    css = kernelApi.css()
+
+    templateData = {}
+
+    for (k, v) in form.items():
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+
+    sortKey = None
+    sortDir = None
+
+    for key in (&#34;freqsort&#34;, &#34;kindsort&#34;, &#34;etxtsort&#34;):
+        currentState = templateData[key]
+        if currentState:
+            sortDir = &#34;u&#34; if currentState == &#34;d&#34; else &#34;d&#34;
+            sortKey = key
+            break
+
+    templateData[&#34;appName&#34;] = appName
+    templateData[&#34;resetForm&#34;] = &#34;&#34;
+    templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
+    templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
+
+    return render_template(
+        &#34;ner.html&#34;,
+        css=css,
+        **templateData,
+    )</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 <section>
 </section>
-<section>
-</section>
-<section>
-</section>
 </article>
 <nav id="sidebar">
-<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../tf/images/tf-small.png" alt="annotation"></a></p>
-<p><a href="../../tf/index.html">tf home</a> -
-<a href="../../tf/cheatsheet.html">cheat sheet</a> -
-<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
+<p><a href="https://github.com/annotation" title="annotation on GitHub"><img src="../../../tf/images/tf-small.png" alt="annotation"></a></p>
+<p><a href="../../../tf/index.html">tf home</a> -
+<a href="../../../tf/cheatsheet.html">cheat sheet</a> -
+<a href="https://github.com/annotation/text-fabric" title="GitHub repo"><img src="../../../tf/images/GitHub_Logo.png" alt="GitHub" width="50"></a></p>
 </p>
 <form>
 <input id="lunr-search" name="q" placeholder="🔎 Search ..." aria-label="Search"
@@ -112,7 +207,7 @@ const query = new URL(window.location).searchParams.get('q');
 if (query)
 search(query);
 function search(query) {
-const url = '../../doc-search.html#' + encodeURIComponent(query);
+const url = '../../../doc-search.html#' + encodeURIComponent(query);
 new tingle.modal({
 cssClass: ['modal-dialog'],
 onClose: () => {
@@ -126,20 +221,17 @@ setTimeout(() => input.focus(), 100);
 </script>
 <h1>Index</h1>
 <div class="toc">
-<ul>
-<li><a href="#volume-operations">Volume operations</a></li>
-</ul>
+<ul></ul>
 </div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf" href="../index.html">tf</a></code></li>
+<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="tf.volumes.collect" href="collect.html">tf.volumes.collect</a></code></li>
-<li><code><a title="tf.volumes.extract" href="extract.html">tf.volumes.extract</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.ner.serve.serveNer" href="#tf.browser.ner.serve.serveNer">serveNer</a></code></li>
 </ul>
 </li>
 </ul>
@@ -147,7 +239,7 @@ setTimeout(() => input.focus(), 100);
 </main>
 <footer id="footer">
 <a href="https://pure.knaw.nl/portal/en/persons/dirk-roorda">Dirk Roorda</a>
-<a href="https://huc.knaw.nl"><img alt="HuC" src="../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
+<a href="https://huc.knaw.nl"><img alt="HuC" src="../../../tf/images/huc.png" width="200" alt="Humanities Cluster"></a>
 <p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>

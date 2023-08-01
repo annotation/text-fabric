@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/browser/web.py#L1-L262" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/web.py#L1-L276" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -212,6 +212,7 @@ from .serve import (
     serveDownload,
     serveAll,
 )
+from .ner.serve import serveNer
 
 TF_DONE = &#34;TF setup done.&#34;
 TF_ERROR = &#34;Could not set up TF&#34;
@@ -292,6 +293,10 @@ def factory(web):
     def serveDownloadJ():
         return serveDownload(web, True)
 
+    @app.route(&#34;/ner&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveNerX():
+        return serveNer(web)
+
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveAllX(anything=None):
@@ -301,14 +306,23 @@ def factory(web):
 
 
 def main(cargs=sys.argv[1:]):
-    if len(cargs) == 0:
+    args = []
+    debug = False
+
+    for arg in cargs:
+        if arg == &#34;debug&#34;:
+            debug = True
+        else:
+            args.append(arg)
+
+    if len(args) == 0:
         console(&#34;No port number specified&#34;)
         console(f&#34;{TF_ERROR}&#34;)
         return
 
-    (portWeb, cargs) = (cargs[0], cargs[1:])
+    (portWeb, args) = (args[0], args[1:])
 
-    appSpecs = argApp(cargs, False)
+    appSpecs = argApp(args, False)
 
     if not appSpecs:
         console(&#34;No TF dataset specified&#34;)
@@ -360,7 +374,7 @@ def main(cargs=sys.argv[1:]):
             HOST,
             int(portWeb),
             webapp,
-            use_reloader=False,
+            use_reloader=debug,
             use_debugger=False,
         )
     except OSError as e:
@@ -390,7 +404,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/browser/web.py#L117-L187" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/web.py#L118-L192" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
@@ -457,6 +471,10 @@ if __name__ == &#34;__main__&#34;:
     def serveDownloadJ():
         return serveDownload(web, True)
 
+    @app.route(&#34;/ner&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveNerX():
+        return serveNer(web)
+
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveAllX(anything=None):
@@ -473,17 +491,26 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/browser/web.py#L190-L258" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/web.py#L195-L272" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
-    if len(cargs) == 0:
+    args = []
+    debug = False
+
+    for arg in cargs:
+        if arg == &#34;debug&#34;:
+            debug = True
+        else:
+            args.append(arg)
+
+    if len(args) == 0:
         console(&#34;No port number specified&#34;)
         console(f&#34;{TF_ERROR}&#34;)
         return
 
-    (portWeb, cargs) = (cargs[0], cargs[1:])
+    (portWeb, args) = (args[0], args[1:])
 
-    appSpecs = argApp(cargs, False)
+    appSpecs = argApp(args, False)
 
     if not appSpecs:
         console(&#34;No TF dataset specified&#34;)
@@ -535,7 +562,7 @@ if __name__ == &#34;__main__&#34;:
             HOST,
             int(portWeb),
             webapp,
-            use_reloader=False,
+            use_reloader=debug,
             use_debugger=False,
         )
     except OSError as e:
@@ -560,7 +587,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/7cc5f763d88f2f57de2d54b95107d2c7d37f362f/tf/browser/web.py#L109-L114" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/web.py#L110-L115" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
