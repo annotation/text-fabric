@@ -7,10 +7,10 @@ really hard to build token detection and sentence boundary detection into the
 conversion program.
 
 There is a better way.
-You can use this module to have tokens and sentences detected by NLP pipelines
+You can use this module to have tokens, sentences and entities detected by NLP pipelines
 (currently only Spacy is supported).
-These tokens and sentences will then be transformed to nodes and attributes
-and inserted in the TF dataset as a new version.
+The NLP output will then be transformed to nodes and attributes and inserted in
+the TF dataset as a new version.
 
 The original slots in the TF dataset (characters) will be discarded, because the
 new tokens will be used as slots.
@@ -96,13 +96,14 @@ corpus of 14 letter by the Dutch artist Piet Mondriaan.
 
 import sys
 import re
-from copy import deepcopy
+
+# from copy import deepcopy
 
 from .recorder import Recorder
 from .helpers import CONVERSION_METHODS, CM_NLP
 from ..advanced.app import loadApp
 from ..tools.xmlschema import Analysis
-from ..tools.myspacy import tokensAndSentences
+from ..tools.myspacy import nlpOutput
 from ..dataset import modify
 from ..core.helpers import console
 from ..core.files import initTree, dirMake, dirExists
@@ -147,7 +148,7 @@ PARAMS = dict(
             "The features in the token output by the NLP: "
             "1: token content; 2: space after the token (if any), ..."
         ),
-        "str,after",
+        "str,after,pos,morph,lemma",
     ),
     tokenNFeature=(
         "The feature that will hold the sequence number of the token.",
@@ -157,11 +158,28 @@ PARAMS = dict(
     sentenceSkipFlow=("The flows that are not fed to sentence detection.", "orig,del"),
     sentenceType=("The node type for the sentences", "sentence"),
     sentenceFeatures=("", ""),
-    sentenceNFeature=("The features in the sentence output by the NLP", "nsent"),
+    sentenceNFeature=(
+        "The feature that will hold the sequence number of the sentence",
+        "nsent",
+    ),
+    entityType=("The node type for the entities.", "ent"),
+    entityFeatures=(
+        (
+            "The features in the entity output by the NLP: "
+            "1: entity content; 2: entity kind, ..."
+        ),
+        "estr,kind",
+    ),
+    entityNFeature=(
+        "The feature that will hold the sequence number of the entity",
+        "",
+    ),
 )
 """Possible parameters."""
 
 FLAGS = dict(
+    ner=("Whether to do named entity recognition during NLP", False, 2),
+    parser=("Whether to run the NLP parser", False, 2),
     write=(
         (
             "whether to write the generated files "
@@ -194,6 +212,11 @@ class NLPipeline:
         sentenceType=PARAMS["sentenceType"][1],
         sentenceFeatures=PARAMS["sentenceFeatures"][1],
         sentenceNFeature=PARAMS["sentenceNFeature"][1],
+        entityType=PARAMS["entityType"][1],
+        entityFeatures=PARAMS["entityFeatures"][1],
+        entityNFeature=PARAMS["entityNFeature"][1],
+        ner=FLAGS["ner"][1],
+        parser=FLAGS["parser"][1],
         verbose=FLAGS["verbose"][1],
         write=FLAGS["write"][1],
     ):
@@ -241,8 +264,7 @@ class NLPipeline:
             There must be at least two features:
             the first one should give the token content, the second one the non-token
             material until the next token.
-            The rest are additional features that the
-            pipeline might supply.
+            The rest are additional features that the pipeline might supply.
         tokenNFeature: string, optional None
             If not None, the name of the atomic token feature that will hold the
             sequence number of the atomic token in the data stream, starting at 1.
@@ -254,6 +276,22 @@ class NLPipeline:
         sentenceNFeature: string, optional nsent
             If not None, the name of the sentence feature that will hold the
             sequence number of the sentence in the data stream, starting at 1.
+        ner: boolean, optional False
+            Whether to perform named entity recognition during NLP processing.
+        parser: boolean, optional False
+            Whether to run the NLP parser.
+        entityType: string, optional ent
+            The node type for the full entities
+        entityFeatures: tuple, optional ("str", "kind")
+            A tuple is distilled from comma-separated values.
+            The names of the features that the entity stream contains.
+            There must be at least two features:
+            the first one should give the entity content, the second one the entity
+            kind (or label).
+            The rest are additional features that the pipeline might supply.
+        entityNFeature: string, optional None
+            If not None, the name of the entity feature that will hold the
+            sequence number of the entity in the data stream, starting at 1.
 
         """
 
@@ -283,6 +321,11 @@ class NLPipeline:
         self.sentenceType = makeString(sentenceType)
         self.sentenceFeatures = makeTuple(sentenceFeatures)
         self.sentenceNFeature = makeString(sentenceNFeature)
+        self.entityType = makeString(entityType)
+        self.entityFeatures = makeTuple(entityFeatures)
+        self.entityNFeature = makeString(entityNFeature)
+        self.ner = ner
+        self.parser = parser
         self.verbose = verbose
         self.write = write
 
@@ -328,6 +371,7 @@ class NLPipeline:
         self.txtDir = txtDir
         self.tokenFile = f"{txtDir}/tokens.tsv"
         self.sentenceFile = f"{txtDir}/sentences.tsv"
+        self.entityFile = f"{txtDir}/entities.tsv"
         self.textPath = f"{repoDir}/_temp/txt/plain.txt"
 
         if verbose >= 0:
@@ -384,7 +428,9 @@ class NLPipeline:
         A.getElementInfo(baseSchema, [])
         elementDefs = A.elementDefs
 
-        self.mixedTypes = {x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed}
+        self.mixedTypes = {
+            x for (x, (typ, mixed)) in elementDefs[(baseSchema, None)].items() if mixed
+        }
 
     def generatePlain(self):
         """Generates a plain text out of a data source.
@@ -586,11 +632,12 @@ class NLPipeline:
 
     @staticmethod
     def lingo(*args, **kwargs):
-        return tokensAndSentences(*args, **kwargs)
+        return nlpOutput(*args, **kwargs)
 
     def ingest(
         self,
         isTk,
+        isEnt,
         positions,
         stream,
         tp,
@@ -635,6 +682,10 @@ class NLPipeline:
         isTk: boolean
             Whether the data specifies (atomic) tokens or something else.
             Tokens are special because they are intended to become the new slot type.
+        isEnt: boolean
+            Whether the data specifies entities or something else.
+            Entities are special because they come with a text string which may contain
+            generated text that must be stripped.
         positions: list
             which slot node corresponds to which position in the plain text.
 
@@ -643,7 +694,7 @@ class NLPipeline:
 
             *   *start*: a start number (char pos in the plain text, starting at `0`)
             *   *end*: an end number (char pos in tghe plain text plus one)
-            *   *value*: a value for feature assignment
+            *   *values*: values for feature assignment
 
         tp: string
             The type of the nodes that will be generated.
@@ -696,7 +747,11 @@ class NLPipeline:
 
         doN = nFeature is not None
         slotLinks = {}
-        featuresData = {feat: {} for feat in features}
+        if isTk:
+            featuresData = {feat: {} for feat in features[0:2]}
+            tokenFeaturesData = {feat: {} for feat in features}
+        else:
+            featuresData = {feat: {} for feat in features}
 
         if nFeature is not None:
             featuresData[nFeature] = {}
@@ -704,12 +759,14 @@ class NLPipeline:
             featuresData[emptyFeature] = {}
 
         if isTk:
-            tokenFeaturesData = deepcopy(featuresData)
             featTk = featuresData[features[0]]
             featTkAfter = featuresData[features[1]]
             featToken = tokenFeaturesData[features[0]]
             featTokenAfter = tokenFeaturesData[features[1]]
             tokenLinks = {}
+
+        if isEnt:
+            featEnt = featuresData[features[0]]
 
         whiteMultipleRe = re.compile(r"^[ \n]{2,}$", re.S)
 
@@ -723,6 +780,8 @@ class NLPipeline:
             force=verbose >= 0,
         )
         indent(level=True)
+
+        numRe = re.compile(r"[0-9]")
 
         def addTk(last, sAfter):
             """Add an atomic token node to the dataset under construction.
@@ -742,10 +801,10 @@ class NLPipeline:
             slotLinks[node] = curTkSlots
             featTk[node] = curTkValue
 
-            for (feat, val) in zip(features[2:], vals[2:]):
-                featuresData[feat][node] = val
-            if doN:
-                featuresData[nFeature][node] = node
+            # for (feat, val) in zip(features[2:], vals[2:]):
+            #     featuresData[feat][node] = val
+            # if doN:
+            #     featuresData[nFeature][node] = node
 
             if last:
                 after = vals[1] if sAfter is not None else ""
@@ -784,6 +843,21 @@ class NLPipeline:
 
             if Femptyv(slot):
                 featuresData[emptyFeature][node] = 1
+
+        def addEnt(myText):
+            nonlocal node
+
+            if numRe.search(myText):
+                return
+
+            node += 1
+            slotLinks[node] = mySlots
+            featEnt[node] = myText
+
+            for (feat, val) in zip(features[1:], vals[1:]):
+                featuresData[feat][node] = val.replace("\n", " ").strip()
+            if doN:
+                featuresData[nFeature][node] = node
 
         def addItem():
             nonlocal node
@@ -951,8 +1025,13 @@ class NLPipeline:
                     if curTokenValue:
                         addToken(True, sAfter)
 
+            elif isEnt:
+                myText = "".join(Fslotv(s) for s in mySlots)
+                if myText:
+                    addEnt(myText)
             else:
-                addItem()
+                if nMySlots:
+                    addItem()
 
         repFeatures = ", ".join(features + ((nFeature,) if doN else ()))
         info(
@@ -974,6 +1053,7 @@ class NLPipeline:
             )
 
         tasks = [("Items contained in extra generated text", itemsOutside)]
+
         if skipBlanks:
             tasks.append(("Items with empty final text", itemsEmpty))
 
@@ -998,8 +1078,8 @@ class NLPipeline:
             else (node, slotLinks, featuresData)
         )
 
-    def ingestTokensAndSentences(self, positions, tkStream, sentenceStream):
-        """Ingests tokens and sentences in a dataset and turn the tokens into slots.
+    def ingestNlpOutput(self, positions, tkStream, sentenceStream, entityStream):
+        """Ingests nlp output such as tokens in a dataset. Tokens become the new slots.
 
         By default:
 
@@ -1008,18 +1088,23 @@ class NLPipeline:
         * if there is a space after a token, it ends up in the feature `after`;
         * sentences become nodes of a new type `sentence`;
         * the sentence number ends up in the feature `nsent`.
-        * tokens become the new slots.
+        * token nodes become the new slots.
+        * entities become noes of a new type `ent`;
+        * the texts of the entities end up in feature `str`;
+        * the labels of the entities end up in feature `kind`;
+        * entity nodes are linked to the tokens they occupy.
 
-        But this function can also be adapted to token and sentence streams that
-        have additional names and values, see below.
+        But this function can also be adapted to token, sentence, and entity streams
+        that have additional names and values, see below.
 
-        The streams of tokens and sentences may contain more fields.
-        In the parameters `tokenFeatures` and `sentenceFeatures` you may pass the
-        feature names for the data in those fields.
+        The streams of NLP output may contain more fields.
+        In the parameters `tokenFeatures`, `sentenceFeatures` and `entityFeatures`
+        you may pass the feature names for the data in those fields.
 
         When the streams are read, for each feature name in the `tokenFeatures`
-        (resp. `sentenceFeatures`) the corresponding field in the stream will be
-        read, and the value found there will be assigned to that feature.
+        (resp. `sentenceFeatures`, `entityFeatures`)) the corresponding field
+        in the stream will be read, and the value found there will be assigned
+        to that feature.
 
         If there are more fields in the stream than there are declared in the
         `tokenFeatures` (resp. `sentenceFeatures`) parameter, these extra fields will
@@ -1031,13 +1116,13 @@ class NLPipeline:
         filled with the node numbers of the newly generated nodes.
 
         !!! hint "Look at the defaults"
-            The default `tokenFeatures=("str", "after", None)` specifies that two
+            The default `tokenFeatures=("str", "after")` specifies that two
             fields from the tokenstream will be read, and those values will be assigned
             to features `str` and `after`.
             There will be no field with the node itself in it.
 
-            The default `sentenceFeatures=("nsent",)` specifies that no field from the
-            tokenstream will be read, but that there will be a feature `nsent` that
+            The default `sentenceFeatures=()` specifies that no field from the
+            tokenstream will be read. But that there is a feature `nsent` that
             has the node of each sentence as value.
 
         We have to ignore the sentence boundaries in some flows,
@@ -1057,7 +1142,7 @@ class NLPipeline:
         Returns
         -------
         string
-            The new version number of the data that contains the tokens and sentences.
+            The new version number of the data that contains the NLP output..
         """
         emptyFeature = self.emptyFeature
         removeSlotFeatures = self.removeSlotFeatures
@@ -1069,6 +1154,10 @@ class NLPipeline:
         sentenceFeatures = self.sentenceFeatures
         sentenceNFeature = self.sentenceNFeature
         sentenceSkipFlow = self.sentenceSkipFlow
+        entityType = self.entityType
+        entityFeatures = self.entityFeatures
+        entityNFeature = self.entityNFeature
+        ner = self.ner
 
         app = self.app
         info = app.info
@@ -1077,7 +1166,7 @@ class NLPipeline:
         silent = "auto" if verbose == 1 else TERSE if verbose == 0 else DEEP
 
         info(
-            "Ingesting tokens, and sentences into the dataset ...",
+            "Ingesting NLP output into the dataset ...",
             force=verbose >= 0,
         )
         indent(level=True)
@@ -1096,14 +1185,21 @@ class NLPipeline:
         canSentences = len(sentenceStream) != 0
 
         if canSentences:
-            for feat in sentenceFeatures:
+            for feat in (*sentenceFeatures, sentenceNFeature):
                 if feat is not None:
                     features[feat] = {}
             lastNode[sentenceType] = 0
 
-        for (isTk, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty) in (
+        if ner:
+            for feat in (*entityFeatures, entityNFeature):
+                if feat is not None:
+                    features[feat] = {}
+                lastNode[entityType] = 0
+
+        for (isTk, isEnt, data, skipFlows, tp, feats, nFeat, skipBlanks, thisEmpty) in (
             (
                 True,
+                False,
                 tkStream,
                 None,
                 tkType,
@@ -1114,6 +1210,7 @@ class NLPipeline:
             ),
             (
                 False,
+                False,
                 sentenceStream,
                 sentenceSkipFlow,
                 sentenceType,
@@ -1122,11 +1219,23 @@ class NLPipeline:
                 True,
                 None,
             ),
+            (
+                False,
+                True,
+                entityStream,
+                None,
+                entityType,
+                entityFeatures,
+                entityNFeature,
+                True,
+                None,
+            ),
         ):
             if len(data) == 0:
                 continue
             ingestResult = self.ingest(
                 isTk,
+                isEnt,
                 positions,
                 data,
                 tp,
@@ -1172,6 +1281,10 @@ class NLPipeline:
         if sentenceNFeature is not None:
             allSentenceFeatures.append(sentenceNFeature)
 
+        allEntityFeatures = list(entityFeatures)
+        if entityNFeature is not None:
+            allEntityFeatures.append(entityNFeature)
+
         addTypes = {
             tkType: dict(
                 nodeFrom=1,
@@ -1183,28 +1296,50 @@ class NLPipeline:
                 nodeFrom=1,
                 nodeTo=lastNode[tokenType],
                 nodeSlots=slotLinks[tokenType],
-                nodeFeatures={feat: tokenFeaturesData[feat] for feat in allTokenFeatures},
+                nodeFeatures={
+                    feat: tokenFeaturesData[feat] for feat in allTokenFeatures
+                },
             ),
         }
         if canSentences:
-            addTypes["sentence"] = dict(
+            addTypes[sentenceType] = dict(
                 nodeFrom=1,
                 nodeTo=lastNode[sentenceType],
                 nodeSlots=slotLinks[sentenceType],
                 nodeFeatures={feat: features[feat] for feat in allSentenceFeatures},
             )
 
+        if ner:
+            addTypes[entityType] = dict(
+                nodeFrom=1,
+                nodeTo=lastNode[entityType],
+                nodeSlots=slotLinks[entityType],
+                nodeFeatures={feat: features[feat] for feat in allEntityFeatures},
+            )
+
         featureMeta = dict(
-            nsent=dict(
-                valueType="int",
-                description="number of sentence in corpus",
-                conversionMethod=CM_NLP,
-                conversionCode=CONVERSION_METHODS[CM_NLP],
-            ),
             otext={
-                "fmt:text-orig-full": "{" + tokenFeatures[0] + "}{" + tokenFeatures[1] + "}"
+                "fmt:text-orig-full": "{"
+                + tokenFeatures[0]
+                + "}{"
+                + tokenFeatures[1]
+                + "}"
             },
         )
+        if canSentences:
+            featureMeta[sentenceNFeature] = dict(
+                valueType="int",
+                description="number of sentences in corpus",
+                conversionMethod=CM_NLP,
+                conversionCode=CONVERSION_METHODS[CM_NLP],
+            )
+        if ner and entityNFeature:
+            featureMeta[entityNFeature] = dict(
+                valueType="int",
+                description="number of entity in corpus",
+                conversionMethod=CM_NLP,
+                conversionCode=CONVERSION_METHODS[CM_NLP],
+            )
 
         modify(
             origTf,
@@ -1281,6 +1416,8 @@ class NLPipeline:
         verbose = self.verbose
 
         lang = self.lang
+        parser = self.parser
+        ner = self.ner
 
         silent = TERSE if verbose == 1 else DEEP
 
@@ -1295,6 +1432,7 @@ class NLPipeline:
         textPath = self.textPath
         tokenFile = self.tokenFile
         sentenceFile = self.sentenceFile
+        entityFile = self.entityFile
 
         app.indent(reset=True)
 
@@ -1302,6 +1440,8 @@ class NLPipeline:
         positions = kwargs.get("positions", None)
         tokens = kwargs.get("tokens", None)
         sentences = kwargs.get("sentences", None)
+        if ner:
+            entities = kwargs.get("entities", None)
 
         result = False
 
@@ -1317,17 +1457,31 @@ class NLPipeline:
                 text = rec.text()
                 positions = rec.positions()
 
-            (tokens, sentences) = self.lingo(text, lang=lang)
+            nlpData = self.lingo(text, lang=lang, ner=ner, parser=parser)
+            (tokens, sentences) = nlpData[0:2]
+            entities = nlpData[2] if ner else None
+
             if write:
                 if not dirExists(txtDir):
                     dirMake(txtDir)
-                writeList(tokens, tokenFile, intCols=(True, True, False, False))
+                writeList(
+                    tokens,
+                    tokenFile,
+                    intCols=(True, True, False, False, False, False, False),
+                )
                 writeList(sentences, sentenceFile, intCols=(True, True, False))
-                app.info(f"Atomic tokens written to {tokenFile}", force=verbose >= 0)
+                app.info(f"Tokens written to {tokenFile}", force=verbose >= 0)
                 app.info(f"Sentences written to {sentenceFile}", force=verbose >= 0)
+                if ner:
+                    writeList(entities, entityFile, intCols=(True, True, False, False))
+                    app.info(f"Entities written to {entityFile}", force=verbose >= 0)
             app.info("NLP done", force=True)
 
-            result = (tokens, sentences) if self.good else False
+            result = (
+                tuple(x for x in (tokens, sentences, entities) if x is not None)
+                if self.good
+                else False
+            )
 
         if ingest and self.good:
             if positions is None:
@@ -1338,7 +1492,12 @@ class NLPipeline:
             if tokens is None or sentences is None:
                 tokens = readList(tokenFile)
                 sentences = readList(sentenceFile)
-            newVersion = self.ingestTokensAndSentences(positions, tokens, sentences)
+            if ner and entities is None:
+                entities = readList(entityFile)
+
+            newVersion = self.ingestNlpOutput(
+                positions, tokens, sentences, entities if ner else None
+            )
 
             result = newVersion if self.good else False
 

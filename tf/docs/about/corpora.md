@@ -38,7 +38,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     converted from TEI in the Oxford Text Archive,
     Dirk Roorda
 
-    *with tokens and sentences from Spacy woven in*
+    *with NLP output from Spacy woven in*
 
 [annotation/mondriaan](https://github.com/annotation/mondriaan)
 :   *english*
@@ -47,7 +47,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     converted from TEI from the Huygens Institute, together with RKD and HuC;
     many people involved
 
-    *with tokens and sentences from Spacy woven in*
+    *with NLP output from Spacy woven in*
 
 ## [Cambridge Semitics Lab](https://github.com/CambridgeSemiticsLab)
 
@@ -104,7 +104,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
     From [DBNL](https://www.dbnl.org/tekst/lenn006lotg01_01/), TEI-Lite;
     Dirk Roorda (converter TEI to TF), see also `tf.convert.tei`
 
-    *with tokens and sentences from Spacy woven in*
+    *with NLP output from Spacy woven in*
 
 [CLARIAH/wp6-missieven](https://github.com/CLARIAH/wp6-missieven)
 :   *Dutch* 
@@ -208,7 +208,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     ** Work in progress, not yet public*.*
 
-    *with tokens and sentences from Spacy woven in*
+    *with NLP output from Spacy woven in*
 
 [HuygensING/suriano](https://github.com/HuygensING/suriano)
 :   *Italian*
@@ -218,7 +218,7 @@ Since everybody can put a Text-Fabric corpus on GitHub/GitLab, the list may not 
 
     ** Work in progress*.*
 
-    *with tokens and sentences from Spacy woven in*
+    *with NLP output from Spacy woven in*
 
 ## [NINO Cuneiform](https://github.com/Nino-cunei)
 

@@ -1,0 +1,40 @@
+/* COLORS */
+
+:root {
+	--ctlinp-fore:      hsla(  0,   0%,  10%, 1    );
+	--ctlinp-back:      hsla(  0,   0%,  90%, 1    );
+	--button-fore:      hsla(  0,   0%, 100%, 1    );
+	--button-back:      hsla(  0,   0%,  20%, 1    );
+	--inactive-fore:    hsla(  0,   0%,  80%, 1    );
+	--inactive-back:    hsla(  0,   0%,  60%, 1    );
+	--export-border:    hsla(  0,   0%,  20%, 1    );
+	--export-back:      hsla(  0,   0%,  90%, 0.9  );
+
+	--sections-back:     hsla(210, 100%,  90%, 0.9  );
+	--tuples-back:       hsla( 90, 100%,  90%, 0.9  );
+	--query-back:        hsla( 30, 100%,  90%, 0.9  );
+	--query-fore:        hsla( 30, 100%,  30%, 1.0  );
+	--light-back:        hsla(  0, 100%, 100%, 0.9  );
+	--light-rim:         hsla(  0, 100%, 100%, 0.5  );
+	--haze-back:         hsla(  0, 100%,  98%, 0.9  );
+	--red-haze-back:     hsla(  0, 100%,  90%, 0.9  );
+	--red-haze-fore:     hsla(  0,  40%,  20%, 1.0  );
+	--blue-haze-back:    hsla(240, 100%,  97%, 0.9  );
+	--blue-haze-fore:    hsla(240, 100%,  60%, 1.0  );
+	--marine-haze-back:  hsla(180, 100%,  97%, 0.9  );
+	--paper-back:        hsla( 50,  45%,  90%, 0.8  );
+	--paper-fore:        hsla(240, 100%,  40%, 1.0  );
+	--gold-haze-back:    hsla( 45, 100%,  87%, 0.9  );
+	--gold-mist-back:    hsla( 45, 100%,  70%, 0.9  );
+	--gold-back:         hsla( 45, 100%,  50%, 0.9  );
+	--grey-back:         hsla(  0,   0%,  93%, 0.9  );
+	--grey-rim:          hsla(  0,   0%,  80%, 0.5  );
+	--gray-back:         hsla(  0,   0%,  85%, 0.9  );
+	--gray-rim:          hsla(  0,   0%,  70%, 0.5  );
+	--gray-fore:         hsla(  0,   0%,  40%, 1.0  );
+	--fog-back:          hsla(  0,   0%,  73%, 0.9  );
+	--fog-rim:           hsla(  0,   0%,  60%, 0.5  );
+	--fog-fore:          hsla(  0,   0%,  40%, 1.0  );
+	--dark-back:         hsla(  0,   0%,   0%, 0.9  );
+	--dark-fore:         hsla(  0, 100%, 100%, 1.0  );
+}

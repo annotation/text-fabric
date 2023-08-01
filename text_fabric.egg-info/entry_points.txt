@@ -6,6 +6,7 @@ text-fabric-make = tf.client.make.build:main
 text-fabric-zip = tf.advanced.zipdata:main
 tf = tf.browser.start:main
 tf-addnlp = tf.convert.addnlp:main
+tf-annotator = tf.annotator.start:main
 tf-fromtei = tf.convert.tei:main
 tf-fromxml = tf.convert.xml:main
 tf-make = tf.client.make.build:main

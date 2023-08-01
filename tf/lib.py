@@ -18,7 +18,7 @@ def writeList(data, dest, intCols=None):
     as string values in tab separated lines, with newlines and tabs
     escaped with backslashes.
 
-    The first line has a tab-separated values that are either the
+    The first line consists of tab-separated values that are either the
     string `str` or the string `int`, indicating the type of values of the
     corresponding column.
     values are supposed to be integers.

@@ -515,7 +515,7 @@ def modify(
         return (ensureTypes, ensureFeatures)
 
     def allInt(values):
-        return all(isInt(v) for v in values)
+        return all(isInt(v) for v in values) and any(True for v in values)
 
     def prepare():
         nonlocal api

@@ -369,7 +369,7 @@ def tfFromValue(val):
 
 def makeIndex(data):
     inv = {}
-    for (n, m) in data.items():
+    for n, m in data.items():
         inv.setdefault(m, set()).add(n)
     return inv
 
@@ -385,7 +385,7 @@ def makeInverse(data):
 def makeInverseVal(data):
     inverse = {}
     for n in data:
-        for (m, val) in data[n].items():
+        for m, val in data[n].items():
             inverse.setdefault(m, {})[n] = val
     return inverse
 
@@ -420,7 +420,7 @@ def collectFormats(config):
         return (tpl, rtpl, tuple(features))
 
     formats = {}
-    for (fmt, tpl) in sorted(config.items()):
+    for fmt, tpl in sorted(config.items()):
         if fmt.startswith("fmt:"):
             formats[fmt[4:]] = collectFormat(tpl)
     return (formats, sorted(featureSet))
@@ -509,7 +509,7 @@ def setFromStr(x):
 
 
 def mergeDictOfSets(d1, d2):
-    for (n, ms) in d2.items():
+    for n, ms in d2.items():
         if n in d1:
             d1[n] |= ms
         else:
@@ -527,7 +527,7 @@ def mergeDict(source, overrides):
         The overrides, itself a dictionary.
     """
 
-    for (k, v) in overrides.items():
+    for k, v in overrides.items():
         if k in source and type(source[k]) is dict:
             mergeDict(source[k], v)
         else:
@@ -548,7 +548,7 @@ def getAllRealFeatures(api):
     TF = api.TF
     allFeatures = set()
 
-    for (feat, fObj) in TF.features.items():
+    for feat, fObj in TF.features.items():
         if fObj.method:
             continue
         if fObj.isConfig:
@@ -577,9 +577,9 @@ def formatMeta(featureMeta):
     """
 
     result = {}
-    for (f, meta) in featureMeta.items():
+    for f, meta in featureMeta.items():
         fmeta = {}
-        for (k, v) in meta.items():
+        for k, v in meta.items():
             if k == "eg" and "desc" in meta:
                 continue
             if k == "desc":

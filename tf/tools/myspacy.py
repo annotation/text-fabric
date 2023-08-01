@@ -55,7 +55,7 @@ xx ent_wiki multi-language
 
 
 class Spacy:
-    def __init__(self, lang=None):
+    def __init__(self, lang=None, parser=False):
         """Sets up an NLP (Natural Language Processing) pipeline.
 
         The pipeline is tied to a particular language model, which you can pass
@@ -135,9 +135,12 @@ class Spacy:
                 else:
                     continue
 
+        console(f"NLP with language model {targetLang} {parser=}")
+
         if loaded:
             try:
-                nlp.disable_pipe("parser")
+                if not parser:
+                    nlp.disable_pipe("parser")
                 nlp.disable_pipe("sentencizer")
             except Exception:
                 pass
@@ -147,6 +150,29 @@ class Spacy:
             except Exception:
                 self.canSentence = False
                 console("This language does not support sentence boundary detection")
+
+            if parser:
+                try:
+                    nlp.enable_pipe("tagger")
+                    self.canTag = True
+                    console("This language supports tagging")
+                except Exception:
+                    self.canTag = False
+                    console("This language does not supports tagging")
+                try:
+                    nlp.enable_pipe("morphologizer")
+                    self.canMorph = True
+                    console("This language supports morphologizing")
+                except Exception:
+                    self.canMorph = False
+                    console("This language does not supports morphologizing")
+                try:
+                    nlp.enable_pipe("lemmatizer")
+                    self.canLemma = True
+                    console("This language supports lemmatizing")
+                except Exception:
+                    self.canLemma = False
+                    console("This language does not supports lemmatizing")
         else:
             console("Cannot load (language data) to get Spacy working")
             nlp = None
@@ -202,17 +228,27 @@ class Spacy:
             All tokens as tuples.
         """
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console("No results available from the NLP pipeline")
             return []
 
+        canTag = self.canTag
+        canMorph = self.canMorph
+        canLemma = self.canLemma
+
         result = []
+
         for token in doc:
             start = token.idx
             text = token.text
             space = token.whitespace_
             end = start + len(text)
-            result.append((start, end, text, space))
+
+            pos = token.pos_ if canMorph else token.tag_ if canTag else None
+            morph = str(token.morph) if canMorph else None
+            lemma = token.lemma_.strip().lower() if canLemma else None
+            result.append((start, end, text, space, pos, morph, lemma))
+
         return result
 
     def getSentences(self):
@@ -232,7 +268,7 @@ class Spacy:
             All sentences as tuples.
         """
         doc = self.doc
-        if self.doc is None:
+        if doc is None:
             console("No results available from the NLP pipeline")
             return []
 
@@ -259,11 +295,48 @@ class Spacy:
             text = spuriousNlBefore.sub(r"\1", text)
             text = spuriousNlAfter.sub(r"\1", text)
             result.append((sentStart, sentEnd, text))
+
+        return result
+
+    def getEntities(self):
+        """Get the resulting named entities.
+
+        A named entity is represented as a tuple consisting of
+
+        *   *start*: first character position that the entity occupies in the text.
+            Character positions start at 0.
+        *   *end*: last character position that the entity occupies in the text
+            *plus one*.
+        *   *text*: text of the entity.
+        *   *kind*: kind of the entity.
+
+        Returns
+        -------
+        list
+            All entities as tuples.
+        """
+        doc = self.doc
+        if doc is None:
+            console("No results available from the NLP pipeline")
+            return []
+
+        if not hasattr(doc, "ents"):
+            console("No entity results available from the NLP pipeline")
+            return []
+
+        result = []
+
+        for ent in doc.ents:
+            start = ent.start_char
+            end = ent.end_char
+            text = ent.text
+            kind = ent.label_
+            result.append((start, end, text, kind))
+
         return result
 
 
-# def tokensAndSentences(text, langmodel="en_core_web_sm"):
-def tokensAndSentences(text, lang="en"):
+def nlpOutput(text, lang="en", ner=False, parser=False):
     """Runs the Spacy NLP pipeline and delivers the results.
 
     Parameters
@@ -273,15 +346,29 @@ def tokensAndSentences(text, lang="en"):
     lang: string, optional en
         The language to be used; its model should be installed; see
         `tf.tools.myspacy` for how to get language models.
+    ner: boolean, optional False
+        Whether to include named entities in the output.
+    parser: boolean, optional False
+        Whether to run the NLP parser.
 
     Returns
     -------
     tuple
         `tokens`: the token list as tuples
         `sentences`: the sentence list as tuples
+        `entities`: the entity list as tuples, only if `ner=True`
 
-        Both tokens and sentences are tuples (start, end, text).
+        Tokens are tuples (start, end, text, after).
+
+        Sentences are tuples (start, end, text).
+
+        Entities are tuples (start, end, text, kind).
     """
-    S = Spacy(lang=lang)
+    S = Spacy(lang=lang, parser=parser)
     S.read(text)
-    return (S.getTokens(), S.getSentences())
+
+    tokens = S.getTokens()
+    sentences = S.getSentences()
+    entities = S.getEntities() if ner else None
+
+    return tuple(x for x in (tokens, sentences, entities) if x is not None)

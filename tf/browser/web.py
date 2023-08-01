@@ -99,6 +99,7 @@ from .serve import (
     serveDownload,
     serveAll,
 )
+from .ner.serve import serveNer
 
 TF_DONE = "TF setup done."
 TF_ERROR = "Could not set up TF"
@@ -179,6 +180,10 @@ def factory(web):
     def serveDownloadJ():
         return serveDownload(web, True)
 
+    @app.route("/ner", methods=["GET", "POST"])
+    def serveNerX():
+        return serveNer(web)
+
     @app.route("/", methods=["GET", "POST"])
     @app.route("/<path:anything>", methods=["GET", "POST"])
     def serveAllX(anything=None):
@@ -188,14 +193,23 @@ def factory(web):
 
 
 def main(cargs=sys.argv[1:]):
-    if len(cargs) == 0:
+    args = []
+    debug = False
+
+    for arg in cargs:
+        if arg == "debug":
+            debug = True
+        else:
+            args.append(arg)
+
+    if len(args) == 0:
         console("No port number specified")
         console(f"{TF_ERROR}")
         return
 
-    (portWeb, cargs) = (cargs[0], cargs[1:])
+    (portWeb, args) = (args[0], args[1:])
 
-    appSpecs = argApp(cargs, False)
+    appSpecs = argApp(args, False)
 
     if not appSpecs:
         console("No TF dataset specified")
@@ -247,7 +261,7 @@ def main(cargs=sys.argv[1:]):
             HOST,
             int(portWeb),
             webapp,
-            use_reloader=False,
+            use_reloader=debug,
             use_debugger=False,
         )
     except OSError as e:

@@ -1092,7 +1092,7 @@ from tf.convert.addnlp import addTokensAndSentences
 ``` python
 newVersion = addTokensAndSenteces(A)
 ```
-:   add tokens and sentences from NLP tool Spacy to an existing
+:   add NLP output from Spacy to an existing
     TF dataset. See the docs how this is broken down in separate
     steps.
 :   `tf.convert.addnlp`
@@ -1269,6 +1269,6 @@ tf-fromtei
 tf-addnlp
 addnlp
 ```
-:   When run in the repo of a TF dataset, it adds tokens and sentences to it
-    after running an NLP pipeline (Spacy) to get them.
+:   When run in the repo of a TF dataset, it adds NLP output to it
+    after running Spacy to get them.
 :   `tf.convert.addnlp`

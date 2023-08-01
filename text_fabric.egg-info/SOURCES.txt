@@ -346,9 +346,15 @@ tf/browser/servelib.py
 tf/browser/start.py
 tf/browser/web.py
 tf/browser/wrap.py
+tf/browser/ner/kernel.py
+tf/browser/ner/serve.py
+tf/browser/ner/servelib.py
+tf/browser/ner/tables.py
+tf/browser/ner/wrap.py
 tf/browser/static/.DS_Store
 tf/browser/static/base.css
 tf/browser/static/chars.js
+tf/browser/static/colors.css
 tf/browser/static/dans.png
 tf/browser/static/display.css
 tf/browser/static/export.css
@@ -360,6 +366,8 @@ tf/browser/static/huc.png
 tf/browser/static/icon.png
 tf/browser/static/index.css
 tf/browser/static/jquery.js
+tf/browser/static/ner.css
+tf/browser/static/ner.js
 tf/browser/static/tf3.0.js
 tf/browser/static/fonts/.DS_Store
 tf/browser/static/fonts/AmiriQuran.ttf
@@ -477,6 +485,7 @@ tf/browser/static/mathjax/ui/.DS_Store
 tf/browser/static/mathjax/ui/lazy.js
 tf/browser/templates/export.html
 tf/browser/templates/index.html
+tf/browser/templates/ner.html
 tf/client/__init__.py
 tf/client/make/__init__.py
 tf/client/make/build-notebook.ipynb
@@ -555,6 +564,7 @@ tf/core/data.py
 tf/core/edgefeature.py
 tf/core/fabric.py
 tf/core/files.py
+tf/core/generic.py
 tf/core/helpers.py
 tf/core/locality.py
 tf/core/nodefeature.py

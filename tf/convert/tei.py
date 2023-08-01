@@ -4007,7 +4007,7 @@ class TEI:
                 )
             )
 
-        extraRep = " with tokens and sentences " if tokenBased else ""
+        extraRep = " with NLP output " if tokenBased else ""
 
         if verbose >= 0:
             console(f"App updating {extraRep} ...")

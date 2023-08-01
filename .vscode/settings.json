@@ -1,0 +1,18 @@
+{
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.linting.flake8Args": [
+        "--append-config",
+        "/Users/me/.config/flake8"
+    ],
+    "flake8.args": [
+        "--append-config",
+        "/Users/me/.config/flake8"
+    ],
+    "flake8.severity": {
+        "I": "Error",
+        "W": "Error"
+    },
+    "python.linting.flake8CategorySeverity.W": "Error",
+    "python.languageServer": "None"
+}
