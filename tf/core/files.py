@@ -241,6 +241,27 @@ def backendRep(be, kind, default=None):
     return None
 
 
+def annotateDir(app, tool):
+    """Return the working directory for a specific annotation tool.
+
+    This directory is located under `~/text-fabric-data/local`
+
+    Parameters
+    ----------
+    app: object
+        the Text-Fabric app
+    tool: string
+        The name of the annotation tool
+
+    Returns
+    -------
+    str
+        The path of the working directory for that tool and that corpus
+    """
+    appName = app.context.appName
+    return f"{_homeDir}/text-fabric-data/local/{appName}/{tool}"
+
+
 URL_TFDOC = f"https://{ORG}.{backendRep(GH, 'pages')}/{REPO}/tf"
 """Base url of the online Text-Fabric documentation."""
 
@@ -478,6 +499,17 @@ def dirRemove(path):
     """Removes a directory if it exists as directory."""
     if dirExists(path):
         rmtree(path)
+
+
+def dirMove(pathSrc, pathDst):
+    """Moves a directory if it exists as directory.
+
+    Refuses the operation in the target exists.
+    """
+    if not dirExists(pathSrc) or dirExists(pathDst):
+        return False
+    os.rename(pathSrc, pathDst)
+    return True
 
 
 def dirCopy(pathSrc, pathDst):

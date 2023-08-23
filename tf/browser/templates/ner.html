@@ -26,6 +26,8 @@
         <div id="sidebarcont">
           <h1>{{appName}}</h1>
           <h2>Named Entity Editing</h2>
+          {{messages|safe}}
+          {{annoSets|safe}}
         </div>
         <div class="leftcol">
           <h1>Entities</h1>
@@ -44,6 +46,7 @@
         </div>
         <div class="rightcol">
           <h1>Sentences</h1>
+          {{sentences|safe}}
         </div>
       </div>
     </form>

@@ -3,6 +3,8 @@
 
 from flask import request
 
+from ...core.files import dirContents
+
 
 def getFormData():
     """Get form data.
@@ -26,8 +28,28 @@ def getFormData():
     form["sec0"] = request.form.get("sec0", "")
     form["sec1"] = request.form.get("sec1", "")
     form["sec2"] = request.form.get("sec2", "")
+    form["annoset"] = request.form.get("annoset", "")
+    form["rannoset"] = request.form.get("rannoset", "")
+    form["dannoset"] = request.form.get("dannoset", "")
     form["freqsort"] = request.form.get("freqsort", "")
     form["kindsort"] = request.form.get("kindsort", "")
     form["etxtsort"] = request.form.get("etxtsort", "")
 
     return form
+
+
+def annoSets(annoDir):
+    """Get the existing annotation sets.
+
+    Parameters
+    ----------
+    annoDir: string
+        The directory under which the distinct annotation sets can be found.
+        The names of these subdirectories are the names of the annotation sets.
+
+    Returns
+    -------
+    set
+        The annotation sets, sorted by name.
+    """
+    return set(dirContents(annoDir)[1])

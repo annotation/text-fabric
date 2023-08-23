@@ -56,3 +56,36 @@ def composeE(app, entities, sortKey, sortDir):
         html.append(item)
 
     return "\n".join(html)
+
+
+def composeS(app, sentences):
+    """Compose a table of sentences.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    html string
+        The finished HTML of the table, ready to put into the Flask template.
+    """
+
+    api = app.api
+    L = api.L
+    F = api.F
+
+    html = []
+
+    for s in sentences:
+        html.append("""<div>""")
+
+        for t in L.d(s, otype="t"):
+            text = F.str.v(t)
+            after = F.after.v(t)
+            html.append(f"""<span>{text}</span>{after}""")
+
+        html.append("""</div>""")
+
+    return "".join(html)

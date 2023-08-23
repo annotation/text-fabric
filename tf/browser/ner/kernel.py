@@ -4,12 +4,14 @@ This module is for functions that extract data from the corpus
 and put it in various dedicated data structures.
 """
 
-from .tables import composeE
+from .tables import composeE, composeS
 
 
 def entities(app, sortKey, sortDir):
     """Retrieves the entities and puts them in a table.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
     sortKey: string
@@ -39,6 +41,8 @@ def entities(app, sortKey, sortDir):
 def entityKinds(app):
     """Retrieves a frequency list of entities and presents it.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
 
@@ -51,3 +55,24 @@ def entityKinds(app):
     F = api.F
 
     return sorted(F.kind.freqList(nodeTypes={"ent"}))
+
+
+def sentences(app):
+    """Retrieves all sentences in the corpus and presents them in a table.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    HTML string
+    """
+
+    api = app.api
+    F = api.F
+
+    sentences = F.otype.s("sentence")
+
+    return composeS(app, sentences)
