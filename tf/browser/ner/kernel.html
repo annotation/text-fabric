@@ -29,7 +29,7 @@ and put it in various dedicated data structures.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L1-L53" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L1-L78" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;TF backend processing.
 
@@ -37,12 +37,14 @@ This module is for functions that extract data from the corpus
 and put it in various dedicated data structures.
 &#34;&#34;&#34;
 
-from .tables import composeE
+from .tables import composeE, composeS
 
 
 def entities(app, sortKey, sortDir):
     &#34;&#34;&#34;Retrieves the entities and puts them in a table.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
     sortKey: string
@@ -72,6 +74,8 @@ def entities(app, sortKey, sortDir):
 def entityKinds(app):
     &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
 
@@ -83,7 +87,28 @@ def entityKinds(app):
     api = app.api
     F = api.F
 
-    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))</code></pre>
+    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+
+
+def sentences(app):
+    &#34;&#34;&#34;Retrieves all sentences in the corpus and presents them in a table.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    sentences = F.otype.s(&#34;sentence&#34;)
+
+    return composeS(app, sentences)</code></pre>
 </details>
 </section>
 <section>
@@ -98,11 +123,14 @@ def entityKinds(app):
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves the entities and puts them in a table.</p>
-<p>app: object
-The TF app of the corpus in question.
-sortKey: string
-Indicator of how the table is sorted.
-sortDir:
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The TF app of the corpus in question.</dd>
+<dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code></dt>
+<dd>Indicator of how the table is sorted.</dd>
+</dl>
+<p>sortDir:
 Indicator of the direction of the sorting.</p>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -112,11 +140,13 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L10-L36" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L10-L38" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entities(app, sortKey, sortDir):
     &#34;&#34;&#34;Retrieves the entities and puts them in a table.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
     sortKey: string
@@ -148,8 +178,11 @@ Indicator of the direction of the sorting.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves a frequency list of entities and presents it.</p>
-<p>app: object
-The TF app of the corpus in question.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The TF app of the corpus in question.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>HTML string</code></dt>
@@ -158,11 +191,13 @@ The TF app of the corpus in question.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/kernel.py#L39-L53" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L41-L57" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def entityKinds(app):
     &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
 
+    Parameters
+    ----------
     app: object
         The TF app of the corpus in question.
 
@@ -175,6 +210,47 @@ The TF app of the corpus in question.</p>
     F = api.F
 
     return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.sentences"><code class="name flex">
+<span>def <span class="ident">sentences</span></span>(<span>app)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves all sentences in the corpus and presents them in a table.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The TF app of the corpus in question.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>HTML string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L60-L78" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def sentences(app):
+    &#34;&#34;&#34;Retrieves all sentences in the corpus and presents them in a table.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    sentences = F.otype.s(&#34;sentence&#34;)
+
+    return composeS(app, sentences)</code></pre>
 </details>
 </dd>
 </dl>
@@ -248,6 +324,7 @@ setTimeout(() => input.focus(), 100);
 <ul class="">
 <li><code><a title="tf.browser.ner.kernel.entities" href="#tf.browser.ner.kernel.entities">entities</a></code></li>
 <li><code><a title="tf.browser.ner.kernel.entityKinds" href="#tf.browser.ner.kernel.entityKinds">entityKinds</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.sentences" href="#tf.browser.ner.kernel.sentences">sentences</a></code></li>
 </ul>
 </li>
 </ul>

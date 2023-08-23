@@ -29,7 +29,7 @@ the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/serve.py#L1-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/serve.py#L1-L100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -39,9 +39,12 @@ the annotation tool.
 
 from flask import render_template
 
-from .servelib import getFormData
-from .kernel import entities, entityKinds
-from .wrap import wrapEntityHeaders, wrapEntityKinds
+from ...core.helpers import console
+from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
+
+from .servelib import getFormData, annoSets
+from .kernel import entities, entityKinds, sentences
+from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
 
 
 def serveNer(web):
@@ -54,9 +57,13 @@ def serveNer(web):
     &#34;&#34;&#34;
 
     aContext = web.context
-    appName = aContext.appName
+    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
     kernelApi = web.kernelApi
     app = kernelApi.app
+
+    annoDir = annotateDir(app, &#34;ner&#34;)
+    initTree(annoDir, fresh=False)
+    sets = annoSets(annoDir)
 
     form = getFormData()
     resetForm = form[&#34;resetForm&#34;]
@@ -64,10 +71,42 @@ def serveNer(web):
     css = kernelApi.css()
 
     templateData = {}
+    messages = []
 
     for (k, v) in form.items():
         if not resetForm or k not in templateData:
             templateData[k] = v
+
+    chosenAnnoSet = templateData[&#34;annoset&#34;]
+    renamedAnnoSet = templateData[&#34;rannoset&#34;]
+    deleteAnnoSet = templateData[&#34;dannoset&#34;]
+    console(f&#34;{deleteAnnoSet=}&#34;)
+
+    if deleteAnnoSet:
+        annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
+        dirRemove(annoPath)
+        if dirExists(annoPath):
+            messages.append(
+                (&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;)
+            )
+        else:
+            chosenAnnoSet = &#34;&#34;
+            sets -= {deleteAnnoSet}
+
+    if renamedAnnoSet and chosenAnnoSet:
+        if not dirMove(f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{renamedAnnoSet}&#34;):
+            messages.append(
+                (&#34;error&#34;, f&#34;&#34;&#34;Could not rename {chosenAnnoSet} to {renamedAnnoSet}&#34;&#34;&#34;)
+            )
+        else:
+            sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
+            chosenAnnoSet = renamedAnnoSet
+
+    if chosenAnnoSet and chosenAnnoSet not in sets:
+        initTree(f&#34;{annoDir}/{chosenAnnoSet}&#34;, fresh=False)
+        sets += {chosenAnnoSet}
+
+    templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
     sortKey = None
     sortDir = None
@@ -84,6 +123,8 @@ def serveNer(web):
     templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
     templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
+    templateData[&#34;sentences&#34;] = sentences(app)
+    templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(
         &#34;ner.html&#34;,
@@ -112,7 +153,7 @@ def serveNer(web):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/serve.py#L14-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/serve.py#L17-L100" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     &#34;&#34;&#34;Serves the NE annotation tool.
@@ -124,9 +165,13 @@ def serveNer(web):
     &#34;&#34;&#34;
 
     aContext = web.context
-    appName = aContext.appName
+    appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
     kernelApi = web.kernelApi
     app = kernelApi.app
+
+    annoDir = annotateDir(app, &#34;ner&#34;)
+    initTree(annoDir, fresh=False)
+    sets = annoSets(annoDir)
 
     form = getFormData()
     resetForm = form[&#34;resetForm&#34;]
@@ -134,10 +179,42 @@ def serveNer(web):
     css = kernelApi.css()
 
     templateData = {}
+    messages = []
 
     for (k, v) in form.items():
         if not resetForm or k not in templateData:
             templateData[k] = v
+
+    chosenAnnoSet = templateData[&#34;annoset&#34;]
+    renamedAnnoSet = templateData[&#34;rannoset&#34;]
+    deleteAnnoSet = templateData[&#34;dannoset&#34;]
+    console(f&#34;{deleteAnnoSet=}&#34;)
+
+    if deleteAnnoSet:
+        annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
+        dirRemove(annoPath)
+        if dirExists(annoPath):
+            messages.append(
+                (&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;)
+            )
+        else:
+            chosenAnnoSet = &#34;&#34;
+            sets -= {deleteAnnoSet}
+
+    if renamedAnnoSet and chosenAnnoSet:
+        if not dirMove(f&#34;{annoDir}/{chosenAnnoSet}&#34;, f&#34;{annoDir}/{renamedAnnoSet}&#34;):
+            messages.append(
+                (&#34;error&#34;, f&#34;&#34;&#34;Could not rename {chosenAnnoSet} to {renamedAnnoSet}&#34;&#34;&#34;)
+            )
+        else:
+            sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
+            chosenAnnoSet = renamedAnnoSet
+
+    if chosenAnnoSet and chosenAnnoSet not in sets:
+        initTree(f&#34;{annoDir}/{chosenAnnoSet}&#34;, fresh=False)
+        sets += {chosenAnnoSet}
+
+    templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
     sortKey = None
     sortDir = None
@@ -154,6 +231,8 @@ def serveNer(web):
     templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
     templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
+    templateData[&#34;sentences&#34;] = sentences(app)
+    templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(
         &#34;ner.html&#34;,

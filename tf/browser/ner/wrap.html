@@ -27,12 +27,112 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/wrap.py#L1-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L1-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 &#34;&#34;&#34;
 
 from textwrap import dedent
+
+
+def wrapMessages(messages):
+    &#34;&#34;&#34;HTML for messages.
+    &#34;&#34;&#34;
+    html = []
+    html.append(&#34;&lt;p&gt;&#34;)
+
+    for (kind, text) in messages:
+        html.append(f&#34;&#34;&#34;&lt;span class=&#34;{kind}&#34;&gt;{text}&lt;/span&gt;&lt;br&gt;&#34;&#34;&#34;)
+
+    html.append(&#34;&lt;/p&gt;&#34;)
+    return &#34;\n&#34;.join(html)
+
+
+def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
+    &#34;&#34;&#34;HTML for the annoset chooser.
+
+    It is a list of buttons, each corresponding to an existing annoset.
+    A click on the button selects that annoset.
+    There is also a control to delete the annoset.
+
+    Apart from these buttons there is a button to switch to the entities that are
+    present in the TF dataset as nodes of type &#34;ent&#34; with corresponding features.
+
+    Finally, it is possible to create a new, empty annoset.
+
+    Parameters
+    ----------
+    chosenAnnoSet: string
+        The name of the chosen annoset.
+        If empty, it refers to the entities already present in the dataset as TF nodes
+        and features.
+    annoSets: list
+        The list of existing annosets.
+    &#34;&#34;&#34;
+    html = []
+
+    html.append(
+        dedent(
+            f&#34;&#34;&#34;
+            &lt;input
+                type=&#34;hidden&#34;
+                name=&#34;annoset&#34;
+                value=&#34;{chosenAnnoSet}&#34;
+                id=&#34;annoseth&#34;
+            &gt;&lt;input
+                type=&#34;hidden&#34;
+                name=&#34;rannoset&#34;
+                value=&#34;&#34;
+                id=&#34;rannoseth&#34;
+            &gt;&#34;&#34;&#34;
+        )
+    )
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;button
+                type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;anew&#34;
+                title=&#34;create a new annotation set&#34;
+            &gt;+&lt;/button&gt;
+            &#34;&#34;&#34;
+        )
+    )
+    html.append(&#34;&#34;&#34;&lt;select class=&#34;selinp&#34; id=&#34;achange&#34;&gt;&#34;&#34;&#34;)
+
+    for annoSet in [&#34;&#34;] + sorted(annoSets):
+        selected = &#34;SELECTED&#34; if annoSet == chosenAnnoSet else &#34;&#34;
+        rep = &#34;generated entities&#34; if annoSet == &#34;&#34; else annoSet
+        html.append(f&#34;&#34;&#34;&lt;option value=&#34;{annoSet}&#34; {selected}&gt;{rep}&lt;/option&gt;&#34;&#34;&#34;)
+
+    html.append(&#34;&#34;&#34;&lt;/select&gt;&#34;&#34;&#34;)
+
+    if chosenAnnoSet:
+        html.append(
+            dedent(
+                &#34;&#34;&#34;
+                &lt;input
+                    type=&#34;hidden&#34;
+                    name=&#34;dannoset&#34;
+                    value=&#34;&#34;
+                    id=&#34;dannoseth&#34;
+                &gt;&lt;button
+                    type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;arename&#34;
+                    title=&#34;rename current annotation set&#34;
+                &gt;→&lt;/button&gt;
+                &#34;&#34;&#34;
+            )
+        )
+        html.append(
+            dedent(
+                &#34;&#34;&#34;
+                &lt;button
+                    type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;adelete&#34;
+                    title=&#34;delete current annotation set&#34;
+                &gt;-&lt;/button&gt;
+                &#34;&#34;&#34;
+            )
+        )
+    return &#34;\n&#34;.join(html)
 
 
 def wrapEntityHeaders(sortKey, sortDir):
@@ -111,6 +211,118 @@ def wrapEntityKinds(kinds):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.browser.ner.wrap.wrapAnnoSets"><code class="name flex">
+<span>def <span class="ident">wrapAnnoSets</span></span>(<span>annoDir, chosenAnnoSet, annoSets)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>HTML for the annoset chooser.</p>
+<p>It is a list of buttons, each corresponding to an existing annoset.
+A click on the button selects that annoset.
+There is also a control to delete the annoset.</p>
+<p>Apart from these buttons there is a button to switch to the entities that are
+present in the TF dataset as nodes of type "ent" with corresponding features.</p>
+<p>Finally, it is possible to create a new, empty annoset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>chosenAnnoSet</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the chosen annoset.
+If empty, it refers to the entities already present in the dataset as TF nodes
+and features.</dd>
+<dt><strong><code>annoSets</code></strong> :&ensp;<code>list</code></dt>
+<dd>The list of existing annosets.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
+    &#34;&#34;&#34;HTML for the annoset chooser.
+
+    It is a list of buttons, each corresponding to an existing annoset.
+    A click on the button selects that annoset.
+    There is also a control to delete the annoset.
+
+    Apart from these buttons there is a button to switch to the entities that are
+    present in the TF dataset as nodes of type &#34;ent&#34; with corresponding features.
+
+    Finally, it is possible to create a new, empty annoset.
+
+    Parameters
+    ----------
+    chosenAnnoSet: string
+        The name of the chosen annoset.
+        If empty, it refers to the entities already present in the dataset as TF nodes
+        and features.
+    annoSets: list
+        The list of existing annosets.
+    &#34;&#34;&#34;
+    html = []
+
+    html.append(
+        dedent(
+            f&#34;&#34;&#34;
+            &lt;input
+                type=&#34;hidden&#34;
+                name=&#34;annoset&#34;
+                value=&#34;{chosenAnnoSet}&#34;
+                id=&#34;annoseth&#34;
+            &gt;&lt;input
+                type=&#34;hidden&#34;
+                name=&#34;rannoset&#34;
+                value=&#34;&#34;
+                id=&#34;rannoseth&#34;
+            &gt;&#34;&#34;&#34;
+        )
+    )
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;button
+                type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;anew&#34;
+                title=&#34;create a new annotation set&#34;
+            &gt;+&lt;/button&gt;
+            &#34;&#34;&#34;
+        )
+    )
+    html.append(&#34;&#34;&#34;&lt;select class=&#34;selinp&#34; id=&#34;achange&#34;&gt;&#34;&#34;&#34;)
+
+    for annoSet in [&#34;&#34;] + sorted(annoSets):
+        selected = &#34;SELECTED&#34; if annoSet == chosenAnnoSet else &#34;&#34;
+        rep = &#34;generated entities&#34; if annoSet == &#34;&#34; else annoSet
+        html.append(f&#34;&#34;&#34;&lt;option value=&#34;{annoSet}&#34; {selected}&gt;{rep}&lt;/option&gt;&#34;&#34;&#34;)
+
+    html.append(&#34;&#34;&#34;&lt;/select&gt;&#34;&#34;&#34;)
+
+    if chosenAnnoSet:
+        html.append(
+            dedent(
+                &#34;&#34;&#34;
+                &lt;input
+                    type=&#34;hidden&#34;
+                    name=&#34;dannoset&#34;
+                    value=&#34;&#34;
+                    id=&#34;dannoseth&#34;
+                &gt;&lt;button
+                    type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;arename&#34;
+                    title=&#34;rename current annotation set&#34;
+                &gt;→&lt;/button&gt;
+                &#34;&#34;&#34;
+            )
+        )
+        html.append(
+            dedent(
+                &#34;&#34;&#34;
+                &lt;button
+                    type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;adelete&#34;
+                    title=&#34;delete current annotation set&#34;
+                &gt;-&lt;/button&gt;
+                &#34;&#34;&#34;
+            )
+        )
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.wrap.wrapEntityHeaders"><code class="name flex">
 <span>def <span class="ident">wrapEntityHeaders</span></span>(<span>sortKey, sortDir)</span>
 </code></dt>
@@ -132,7 +344,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/wrap.py#L7-L44" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(sortKey, sortDir):
     &#34;&#34;&#34;HTML for the header of the entity table.
@@ -192,7 +404,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/6d6e5aee830129b7e449cd0593805f9973adb982/tf/browser/ner/wrap.py#L47-L73" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L147-L173" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityKinds(kinds):
     &#34;&#34;&#34;HTML for the kinds of entities.
@@ -221,6 +433,29 @@ Indicator of the direction of the sorting.</p>
 
     html.append(&#34;&lt;/span&gt;&lt;br&gt;\n&#34;)
     return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.wrap.wrapMessages"><code class="name flex">
+<span>def <span class="ident">wrapMessages</span></span>(<span>messages)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>HTML for messages.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapMessages(messages):
+    &#34;&#34;&#34;HTML for messages.
+    &#34;&#34;&#34;
+    html = []
+    html.append(&#34;&lt;p&gt;&#34;)
+
+    for (kind, text) in messages:
+        html.append(f&#34;&#34;&#34;&lt;span class=&#34;{kind}&#34;&gt;{text}&lt;/span&gt;&lt;br&gt;&#34;&#34;&#34;)
+
+    html.append(&#34;&lt;/p&gt;&#34;)
+    return &#34;\n&#34;.join(html)</code></pre>
 </details>
 </dd>
 </dl>
@@ -292,8 +527,10 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="tf.browser.ner.wrap.wrapAnnoSets" href="#tf.browser.ner.wrap.wrapAnnoSets">wrapAnnoSets</a></code></li>
 <li><code><a title="tf.browser.ner.wrap.wrapEntityHeaders" href="#tf.browser.ner.wrap.wrapEntityHeaders">wrapEntityHeaders</a></code></li>
 <li><code><a title="tf.browser.ner.wrap.wrapEntityKinds" href="#tf.browser.ner.wrap.wrapEntityKinds">wrapEntityKinds</a></code></li>
+<li><code><a title="tf.browser.ner.wrap.wrapMessages" href="#tf.browser.ner.wrap.wrapMessages">wrapMessages</a></code></li>
 </ul>
 </li>
 </ul>

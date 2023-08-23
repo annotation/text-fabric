@@ -1895,6 +1895,12 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.core.files.annotateDir",
+"url":31,
+"doc":"Return the working directory for a specific annotation tool. This directory is located under  ~/text-fabric-data/local Parameters      app: object the Text-Fabric app tool: string The name of the annotation tool Returns    - str The path of the working directory for that tool and that corpus",
+"func":1
+},
+{
 "ref":"tf.core.files.URL_TFDOC",
 "url":31,
 "doc":"Base url of the online Text-Fabric documentation."
@@ -2066,6 +2072,12 @@ INDEX=[
 "ref":"tf.core.files.dirRemove",
 "url":31,
 "doc":"Removes a directory if it exists as directory.",
+"func":1
+},
+{
+"ref":"tf.core.files.dirMove",
+"url":31,
+"doc":"Moves a directory if it exists as directory. Refuses the operation in the target exists.",
 "func":1
 },
 {
@@ -3848,13 +3860,19 @@ INDEX=[
 {
 "ref":"tf.browser.ner.kernel.entities",
 "url":93,
-"doc":"Retrieves the entities and puts them in a table. app: object The TF app of the corpus in question. sortKey: string Indicator of how the table is sorted. sortDir: Indicator of the direction of the sorting. Returns    - HTML string",
+"doc":"Retrieves the entities and puts them in a table. Parameters      app: object The TF app of the corpus in question. sortKey: string Indicator of how the table is sorted. sortDir: Indicator of the direction of the sorting. Returns    - HTML string",
 "func":1
 },
 {
 "ref":"tf.browser.ner.kernel.entityKinds",
 "url":93,
-"doc":"Retrieves a frequency list of entities and presents it. app: object The TF app of the corpus in question. Returns    - HTML string",
+"doc":"Retrieves a frequency list of entities and presents it. Parameters      app: object The TF app of the corpus in question. Returns    - HTML string",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.sentences",
+"url":93,
+"doc":"Retrieves all sentences in the corpus and presents them in a table. Parameters      app: object The TF app of the corpus in question. Returns    - HTML string",
 "func":1
 },
 {
@@ -3866,6 +3884,12 @@ INDEX=[
 "ref":"tf.browser.ner.servelib.getFormData",
 "url":94,
 "doc":"Get form data. The TF browser user interacts with the web app by clicking and typing, as a result of which a HTML form gets filled in. This form as regularly submitted to the web server with a request for a new incarnation of the page: a response. The values that come with a request, must be peeled out of the form, and stored as logical values. Most of the data has a known function to the web server, but there is also a list of webapp dependent options.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.servelib.annoSets",
+"url":94,
+"doc":"Get the existing annotation sets. Parameters      annoDir: string The directory under which the distinct annotation sets can be found. The names of these subdirectories are the names of the annotation sets. Returns    - set The annotation sets, sorted by name.",
 "func":1
 },
 {
@@ -3891,9 +3915,27 @@ INDEX=[
 "func":1
 },
 {
+"ref":"tf.browser.ner.tables.composeS",
+"url":96,
+"doc":"Compose a table of sentences. Parameters      app: object The TF app of the corpus in question. Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
+"func":1
+},
+{
 "ref":"tf.browser.ner.wrap",
 "url":97,
 "doc":"Wraps various pieces into HTML."
+},
+{
+"ref":"tf.browser.ner.wrap.wrapMessages",
+"url":97,
+"doc":"HTML for messages.",
+"func":1
+},
+{
+"ref":"tf.browser.ner.wrap.wrapAnnoSets",
+"url":97,
+"doc":"HTML for the annoset chooser. It is a list of buttons, each corresponding to an existing annoset. A click on the button selects that annoset. There is also a control to delete the annoset. Apart from these buttons there is a button to switch to the entities that are present in the TF dataset as nodes of type \"ent\" with corresponding features. Finally, it is possible to create a new, empty annoset. Parameters      chosenAnnoSet: string The name of the chosen annoset. If empty, it refers to the entities already present in the dataset as TF nodes and features. annoSets: list The list of existing annosets.",
+"func":1
 },
 {
 "ref":"tf.browser.ner.wrap.wrapEntityHeaders",
