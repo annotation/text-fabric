@@ -7,14 +7,14 @@
 		<meta name="application-name" content="Text-Fabric Named Entities"/>
 		<link rel="shortcut icon" href="/browser/static/favicon.ico">
 		<link rel="stylesheet" href="/browser/static/colors.css"/>
-		<link rel="stylesheet" href="/browser/static/ner.css"/>
 		<link rel="stylesheet" href="/browser/static/display.css"/>
 		<link rel="stylesheet" href="/browser/static/highlight.css"/>
     <link rel="stylesheet" href="/browser/static/fonts.css"/>
 		<link rel="stylesheet" href="/browser/static/index.css"/>
+		<link rel="stylesheet" href="/ner/static/index.css"/>
     {{css|safe}}
 		<script defer src="/browser/static/jquery.js"></script>
-		<script defer src="/browser/static/ner.js"></script>
+		<script defer src="/ner/static/tool.js"></script>
 	</head>
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
@@ -45,8 +45,14 @@
           </div>
         </div>
         <div class="rightcol">
-          <h1>Sentences</h1>
-          {{sentences|safe}}
+          <div id="query">
+            <h1>Sentences</h1>
+            <b>Query:</b> {{query|safe}}
+            <hr>
+          </div>
+          <div id="sentences">
+            {{sentences|safe}}
+          </div>
         </div>
       </div>
     </form>

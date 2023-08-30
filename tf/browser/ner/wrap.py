@@ -144,13 +144,14 @@ def wrapEntityHeaders(sortKey, sortDir):
     return "".join(html)
 
 
-def wrapEntityKinds(kinds):
+def wrapEntityKinds(setData):
     """HTML for the kinds of entities.
 
     Parameters
     ----------
-    kinds: tuple of tuples
-        Frequency list of entity kinds
+    setData: dict
+        The entity data for the chosen set. We only need the member `entityKindFreq`,
+        which is a tuple of tuples representing the frequency list of entity kinds.
 
     Returns
     -------
@@ -158,7 +159,7 @@ def wrapEntityKinds(kinds):
     """
     html = []
 
-    for (kind, freq) in kinds:
+    for (kind, freq) in setData.entityKindFreq:
         html.append(
             dedent(
                 f"""

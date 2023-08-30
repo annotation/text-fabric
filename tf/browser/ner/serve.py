@@ -6,11 +6,11 @@ the annotation tool.
 
 from flask import render_template
 
-from ...core.helpers import console
 from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
 
 from .servelib import getFormData, annoSets
-from .kernel import entities, entityKinds, sentences
+from .kernel import loadData
+from .tables import composeE, composeS, composeQ
 from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
 
 
@@ -32,7 +32,7 @@ def serveNer(web):
     initTree(annoDir, fresh=False)
     sets = annoSets(annoDir)
 
-    form = getFormData()
+    form = getFormData(web)
     resetForm = form["resetForm"]
 
     css = kernelApi.css()
@@ -47,15 +47,12 @@ def serveNer(web):
     chosenAnnoSet = templateData["annoset"]
     renamedAnnoSet = templateData["rannoset"]
     deleteAnnoSet = templateData["dannoset"]
-    console(f"{deleteAnnoSet=}")
 
     if deleteAnnoSet:
         annoPath = f"{annoDir}/{deleteAnnoSet}"
         dirRemove(annoPath)
         if dirExists(annoPath):
-            messages.append(
-                ("error", f"""Could not remove {deleteAnnoSet}""")
-            )
+            messages.append(("error", f"""Could not remove {deleteAnnoSet}"""))
         else:
             chosenAnnoSet = ""
             sets -= {deleteAnnoSet}
@@ -75,6 +72,9 @@ def serveNer(web):
 
     templateData["annoSets"] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
+    loadData(web, chosenAnnoSet)
+    setData = web.toolData.ner.sets[chosenAnnoSet]
+
     sortKey = None
     sortDir = None
 
@@ -85,16 +85,20 @@ def serveNer(web):
             sortKey = key
             break
 
+    tSelectStart = templateData["tselectstart"]
+    tSelectEnd = templateData["tselectend"]
+
     templateData["appName"] = appName
     templateData["resetForm"] = ""
-    templateData["entities"] = entities(app, sortKey, sortDir)
-    templateData["entitykinds"] = wrapEntityKinds(entityKinds(app))
+    templateData["entities"] = composeE(app, setData, sortKey, sortDir)
+    templateData["entitykinds"] = wrapEntityKinds(setData)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
-    templateData["sentences"] = sentences(app)
+    templateData["query"] = composeQ(app, tSelectStart, tSelectEnd)
+    templateData["sentences"] = composeS(app, setData, tSelectStart, tSelectEnd)
     templateData["messages"] = wrapMessages(messages)
 
     return render_template(
-        "ner.html",
+        "ner/index.html",
         css=css,
         **templateData,
     )

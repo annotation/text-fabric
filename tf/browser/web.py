@@ -99,7 +99,11 @@ from .serve import (
     serveDownload,
     serveAll,
 )
-from .ner.serve import serveNer
+
+# Here we import additional annotation tools
+from .ner.web import factory as nerFactory
+# End of importing additional annotation tools
+
 
 TF_DONE = "TF setup done."
 TF_ERROR = "Could not set up TF"
@@ -109,14 +113,24 @@ MY_DIR = dirNm(abspath(__file__))
 
 class Web:
     def __init__(self, kernelApi):
+        self.debug = False
         self.kernelApi = kernelApi
         app = kernelApi.app
         self.context = app.context
         self.wildQueries = set()
 
+    def console(self, msg):
+        if self.debug:
+            console(msg)
+
 
 def factory(web):
     app = Flask(__name__)
+
+    # Here we add the annotation tools as blue prints
+    app.register_blueprint(nerFactory(web))
+    # End of adding annotation tools
+
     aContext = web.context
     appPath = aContext.appPath
     localDir = aContext.localDir
@@ -179,10 +193,6 @@ def factory(web):
     @app.route("/downloadj", methods=["GET", "POST"])
     def serveDownloadJ():
         return serveDownload(web, True)
-
-    @app.route("/ner", methods=["GET", "POST"])
-    def serveNerX():
-        return serveNer(web)
 
     @app.route("/", methods=["GET", "POST"])
     @app.route("/<path:anything>", methods=["GET", "POST"])
@@ -257,6 +267,9 @@ def main(cargs=sys.argv[1:]):
         console(f"{TF_DONE}")
 
         webapp = factory(web)
+        if debug:
+            webapp.config['TEMPLATES_AUTO_RELOAD'] = True
+        web.debug = debug
         run_simple(
             HOST,
             int(portWeb),

@@ -1,0 +1,114 @@
+/* OVERALL */
+
+body,td {
+	font-family: sans-serif;
+}
+a:link, a:visited {
+	text-decoration: None;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+/* OUTPUTS */
+
+div.messages {
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	width: 100%;
+  max-width: 45vw;
+}
+.eline {
+	font-size: medium;
+	color: var(--red-haze-fore);
+	background-color: var(--red-haze-back);
+}
+.tline {
+	font-size: large;
+	font-family: monospace;
+	color: var(-query-fore);
+	background-color: var(--query-back);
+	white-space: pre;
+}
+
+/* RIGHT-COL: TABLES */
+
+div.table {
+	width: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+}
+
+div.pretty {
+	width: 100%;
+	margin: 4px 0 10px 0;
+	background-color: var(--haze-back);
+}
+
+code.w {
+  white-space: pre;
+}
+
+#query {
+  height: 8rem;
+  overflow: auto;
+}
+
+#sentences {
+  height: calc(100vh - 10rem);
+  overflow: auto;
+}
+
+span.queried,#qWordShow>span {
+  border: 1pt solid black;
+  border-radius: 0.2rem;
+  background-color: yellow;
+  padding: 0 0.3rem;
+}
+
+#queryFilter {
+  display: none;
+}
+#queryWords {
+  font-weight: bold;
+}
+
+div.s {
+  padding: 0.2rem 0.1rem;
+  border-bottom: 2pt solid #eeeeee;
+  margin-bottom: 0.2rem;
+}
+
+span.ei {
+  border-radius: 0.2rem;
+  background-color: orange;
+}
+span.es,span.ee {
+  font-size: small;
+  font-weight: bold;
+  color: blue;
+}
+span.es > span.n {
+  font-family: monospace;
+  color: #aaaaaa;
+}
+span.es {
+  border-radius: 0.4em;
+  border-left: 4pt solid blue;
+  padding-left: 0.1em;
+  margin-left: 0.2em;
+}
+span.ee {
+  border-radius: 0.4em;
+  border-right: 4pt solid blue;
+  padding-right: 0.1em;
+  margin-right: 0.2em;
+}
+

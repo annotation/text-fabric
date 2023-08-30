@@ -6,7 +6,7 @@ from flask import request
 from ...core.files import dirContents
 
 
-def getFormData():
+def getFormData(web):
     """Get form data.
 
     The TF browser user interacts with the web app by clicking and typing,
@@ -34,6 +34,10 @@ def getFormData():
     form["freqsort"] = request.form.get("freqsort", "")
     form["kindsort"] = request.form.get("kindsort", "")
     form["etxtsort"] = request.form.get("etxtsort", "")
+    tSelectStart = request.form.get("tselectstart", "")
+    form["tselectstart"] = int(tSelectStart) if tSelectStart else None
+    tSelectEnd = request.form.get("tselectend", "")
+    form["tselectend"] = int(tSelectEnd) if tSelectEnd else None
 
     return form
 
