@@ -29,7 +29,7 @@ the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/serve.py#L1-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/serve.py#L1-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -39,11 +39,11 @@ the annotation tool.
 
 from flask import render_template
 
-from ...core.helpers import console
 from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
 
 from .servelib import getFormData, annoSets
-from .kernel import entities, entityKinds, sentences
+from .kernel import loadData
+from .tables import composeE, composeS, composeQ
 from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
 
 
@@ -65,7 +65,7 @@ def serveNer(web):
     initTree(annoDir, fresh=False)
     sets = annoSets(annoDir)
 
-    form = getFormData()
+    form = getFormData(web)
     resetForm = form[&#34;resetForm&#34;]
 
     css = kernelApi.css()
@@ -80,15 +80,12 @@ def serveNer(web):
     chosenAnnoSet = templateData[&#34;annoset&#34;]
     renamedAnnoSet = templateData[&#34;rannoset&#34;]
     deleteAnnoSet = templateData[&#34;dannoset&#34;]
-    console(f&#34;{deleteAnnoSet=}&#34;)
 
     if deleteAnnoSet:
         annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
         dirRemove(annoPath)
         if dirExists(annoPath):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;)
-            )
+            messages.append((&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;))
         else:
             chosenAnnoSet = &#34;&#34;
             sets -= {deleteAnnoSet}
@@ -108,6 +105,9 @@ def serveNer(web):
 
     templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
+    loadData(web, chosenAnnoSet)
+    setData = web.toolData.ner.sets[chosenAnnoSet]
+
     sortKey = None
     sortDir = None
 
@@ -118,16 +118,20 @@ def serveNer(web):
             sortKey = key
             break
 
+    tSelectStart = templateData[&#34;tselectstart&#34;]
+    tSelectEnd = templateData[&#34;tselectend&#34;]
+
     templateData[&#34;appName&#34;] = appName
     templateData[&#34;resetForm&#34;] = &#34;&#34;
-    templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
-    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
+    templateData[&#34;entities&#34;] = composeE(app, setData, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(setData)
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
-    templateData[&#34;sentences&#34;] = sentences(app)
+    templateData[&#34;query&#34;] = composeQ(app, tSelectStart, tSelectEnd)
+    templateData[&#34;sentences&#34;] = composeS(app, setData, tSelectStart, tSelectEnd)
     templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(
-        &#34;ner.html&#34;,
+        &#34;ner/index.html&#34;,
         css=css,
         **templateData,
     )</code></pre>
@@ -153,7 +157,7 @@ def serveNer(web):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/serve.py#L17-L100" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/serve.py#L17-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     &#34;&#34;&#34;Serves the NE annotation tool.
@@ -173,7 +177,7 @@ def serveNer(web):
     initTree(annoDir, fresh=False)
     sets = annoSets(annoDir)
 
-    form = getFormData()
+    form = getFormData(web)
     resetForm = form[&#34;resetForm&#34;]
 
     css = kernelApi.css()
@@ -188,15 +192,12 @@ def serveNer(web):
     chosenAnnoSet = templateData[&#34;annoset&#34;]
     renamedAnnoSet = templateData[&#34;rannoset&#34;]
     deleteAnnoSet = templateData[&#34;dannoset&#34;]
-    console(f&#34;{deleteAnnoSet=}&#34;)
 
     if deleteAnnoSet:
         annoPath = f&#34;{annoDir}/{deleteAnnoSet}&#34;
         dirRemove(annoPath)
         if dirExists(annoPath):
-            messages.append(
-                (&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;)
-            )
+            messages.append((&#34;error&#34;, f&#34;&#34;&#34;Could not remove {deleteAnnoSet}&#34;&#34;&#34;))
         else:
             chosenAnnoSet = &#34;&#34;
             sets -= {deleteAnnoSet}
@@ -216,6 +217,9 @@ def serveNer(web):
 
     templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
+    loadData(web, chosenAnnoSet)
+    setData = web.toolData.ner.sets[chosenAnnoSet]
+
     sortKey = None
     sortDir = None
 
@@ -226,16 +230,20 @@ def serveNer(web):
             sortKey = key
             break
 
+    tSelectStart = templateData[&#34;tselectstart&#34;]
+    tSelectEnd = templateData[&#34;tselectend&#34;]
+
     templateData[&#34;appName&#34;] = appName
     templateData[&#34;resetForm&#34;] = &#34;&#34;
-    templateData[&#34;entities&#34;] = entities(app, sortKey, sortDir)
-    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(entityKinds(app))
+    templateData[&#34;entities&#34;] = composeE(app, setData, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(setData)
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
-    templateData[&#34;sentences&#34;] = sentences(app)
+    templateData[&#34;query&#34;] = composeQ(app, tSelectStart, tSelectEnd)
+    templateData[&#34;sentences&#34;] = composeS(app, setData, tSelectStart, tSelectEnd)
     templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(
-        &#34;ner.html&#34;,
+        &#34;ner/index.html&#34;,
         css=css,
         **templateData,
     )</code></pre>

@@ -27,22 +27,24 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/tables.py#L1-L91" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/tables.py#L1-L248" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Module to compose tables of result data.
 &#34;&#34;&#34;
 
+from textwrap import dedent
 
-def composeE(app, entities, sortKey, sortDir):
+
+def composeE(app, setData, sortKey, sortDir):
     &#34;&#34;&#34;Compose a table of entities with selection and sort controls.
 
     Parameters
     ----------
     app: object
         The TF app of the corpus in question.
-    entities: dict
-        The entities as already present in the dataset, usually the result of the
-        NLP pipeline.
+    setData: dict
+        The entity data of the chosen set.
+        We only need the `entitiesByKind` member.
     sortKey: string
         Indicates how to sort the table:
 
@@ -64,7 +66,7 @@ def composeE(app, entities, sortKey, sortDir):
 
     html = []
 
-    entries = entities.items()
+    entries = setData.entitiesByKind.items()
     if sortKey == &#34;freqsort&#34;:
         if sortDir == &#34;u&#34;:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
@@ -89,13 +91,63 @@ def composeE(app, entities, sortKey, sortDir):
     return &#34;\n&#34;.join(html)
 
 
-def composeS(app, sentences):
+def tokenMatch(L, F, s, words):
+    nWords = len(words)
+
+    sTokens = {t: F.str.v(t) or &#34;&#34; for t in L.d(s, otype=&#34;t&#34;)}
+    matches = set()
+
+    if nWords:
+        sWords = set(sTokens.values())
+
+        if any(w not in sWords for w in words):
+            return None
+
+        nSTokens = len(sTokens)
+
+        for (i, (t, w)) in enumerate(sTokens.items()):
+            if w != words[0]:
+                continue
+            if nSTokens &lt; i + nWords:
+                return None
+
+            match = True
+
+            for (j, w) in enumerate(words[1:]):
+                if sTokens[t + j + 1] != w:
+                    match = False
+                    break
+
+            if match:
+                matches |= set(range(t, t + nWords))
+
+        if len(matches) == 0:
+            return None
+
+    return (sTokens, matches)
+
+
+def composeS(app, setData, tokenStart, tokenEnd):
     &#34;&#34;&#34;Compose a table of sentences.
+
+    Will filter the sentences by tokens if the `tokens` parameter is not None.
+    In that case, `tokens` should be an array of slots.
+    All sentences that contain the words of those slots will show up,
+    all other sentences will be left out.
+    The matching slots will be highlighted.
 
     Parameters
     ----------
     app: object
         The TF app of the corpus in question.
+
+    setData: dict
+        The entity data of the chosen set.
+
+    tokenStart, tokenEnd: int or None
+        Specify the start slot number and the end slot number of a sequence of tokens.
+        Only sentences that contain this token sentence will be passed through,
+        all other sentences will be filtered out.
 
     Returns
     -------
@@ -108,18 +160,123 @@ def composeS(app, sentences):
     F = api.F
 
     html = []
+    words = []
 
-    for s in sentences:
-        html.append(&#34;&#34;&#34;&lt;div&gt;&#34;&#34;&#34;)
+    if tokenStart and tokenEnd:
+        for t in range(tokenStart, tokenEnd + 1):
+            words.append(F.str.v(t) or &#34;&#34;)
 
-        for t in L.d(s, otype=&#34;t&#34;):
-            text = F.str.v(t)
-            after = F.after.v(t)
-            html.append(f&#34;&#34;&#34;&lt;span&gt;{text}&lt;/span&gt;{after}&#34;&#34;&#34;)
+    entitiesSlotIndex = setData.entitiesSlotIndex
 
-        html.append(&#34;&#34;&#34;&lt;/div&gt;&#34;&#34;&#34;)
+    for s in setData.sentences:
+        result = tokenMatch(L, F, s, words)
+        if result is None:
+            continue
 
-    return &#34;&#34;.join(html)</code></pre>
+        (sTokens, matches) = result
+        ht = []
+
+        for (t, w) in sTokens.items():
+            queried = &#39;class=&#34;queried&#34;&#39; if t in matches else &#34;&#34;
+            after = F.after.v(t) or &#34;&#34;
+            info = entitiesSlotIndex.get(t, None)
+            inEntity = False
+
+            if info is not None:
+                inEntity = True
+                for item in info:
+                    if item is not None:
+                        (status, kind, freq) = item
+                        if status:
+                            ht.append(
+                                dedent(
+                                    f&#34;&#34;&#34;
+                                    &lt;span class=&#34;es&#34;
+                                    &gt;{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                    &gt;&lt;/span&gt;&#34;&#34;&#34;
+                                )
+                            )
+            inside = &#39;class=&#34;ei&#34;&#39; if inEntity else &#34;&#34;
+            ht.append(f&#34;&#34;&#34;&lt;span {queried} {inside} t=&#34;{t}&#34;&gt;{w}&lt;/span&gt;{after}&#34;&#34;&#34;)
+
+            if info is not None:
+                for item in info:
+                    if item is not None:
+                        (status, kind, freq) = item
+                        if not status:
+                            ht.append(
+                                dedent(
+                                    f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{kind}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;
+                                )
+                            )
+
+        ht = &#34;&#34;.join(ht)
+        html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
+
+    return &#34;&#34;.join(html)
+
+
+def composeQ(app, tokenStart, tokenEnd):
+    &#34;&#34;&#34;HTML for the query tokens.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    tokenStart, tokenEnd: int or None
+        Specify the start slot number and the end slot number of a sequence of tokens.
+        Only sentences that contain this token sentence will be passed through,
+        all other sentences will be filtered out.
+
+    Returns
+    -------
+    html string
+        The finished HTML of the query parameters
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    html = []
+
+    wordHtml = (
+        &#34; &#34;.join(
+            f&#34;&#34;&#34;&lt;span&gt;{F.str.v(t) or &#34;&#34;}&lt;/span&gt; &#34;&#34;&#34;
+            for t in range(tokenStart, tokenEnd + 1)
+        )
+        if tokenStart and tokenEnd
+        else &#34;&#34;
+    )
+
+    html.append(
+        dedent(
+            f&#34;&#34;&#34;
+            &lt;input type=&#34;hidden&#34;
+                name=&#34;tselectstart&#34;
+                id=&#34;tSelectStart&#34;
+                value=&#34;{tokenStart or &#34;&#34;}&#34;
+            &gt;
+            &lt;input type=&#34;hidden&#34;
+                name=&#34;tselectend&#34;
+                id=&#34;tSelectEnd&#34;
+                value=&#34;{tokenEnd or &#34;&#34;}&#34;
+            &gt;
+            &lt;span id=&#34;qWordShow&#34;&gt;{wordHtml}&lt;/span&gt;
+            &#34;&#34;&#34;
+        )
+    )
+
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;queryFilter&#34;&gt;filter&lt;/button&gt;
+            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;clear&lt;/button&gt;
+            &#34;&#34;&#34;
+        )
+    )
+
+    return &#34;\n&#34;.join(html)</code></pre>
 </details>
 </section>
 <section>
@@ -130,7 +287,7 @@ def composeS(app, sentences):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.tables.composeE"><code class="name flex">
-<span>def <span class="ident">composeE</span></span>(<span>app, entities, sortKey, sortDir)</span>
+<span>def <span class="ident">composeE</span></span>(<span>app, setData, sortKey, sortDir)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compose a table of entities with selection and sort controls.</p>
@@ -138,9 +295,9 @@ def composeS(app, sentences):
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>The TF app of the corpus in question.</dd>
-<dt><strong><code>entities</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The entities as already present in the dataset, usually the result of the
-NLP pipeline.</dd>
+<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The entity data of the chosen set.
+We only need the <code>entitiesByKind</code> member.</dd>
 <dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code></dt>
 <dd>
 <p>Indicates how to sort the table:</p>
@@ -167,18 +324,18 @@ NLP pipeline.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/tables.py#L5-L58" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/tables.py#L7-L60" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeE(app, entities, sortKey, sortDir):
+<pre><code class="python">def composeE(app, setData, sortKey, sortDir):
     &#34;&#34;&#34;Compose a table of entities with selection and sort controls.
 
     Parameters
     ----------
     app: object
         The TF app of the corpus in question.
-    entities: dict
-        The entities as already present in the dataset, usually the result of the
-        NLP pipeline.
+    setData: dict
+        The entity data of the chosen set.
+        We only need the `entitiesByKind` member.
     sortKey: string
         Indicates how to sort the table:
 
@@ -200,7 +357,7 @@ NLP pipeline.</dd>
 
     html = []
 
-    entries = entities.items()
+    entries = setData.entitiesByKind.items()
     if sortKey == &#34;freqsort&#34;:
         if sortDir == &#34;u&#34;:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
@@ -225,15 +382,113 @@ NLP pipeline.</dd>
     return &#34;\n&#34;.join(html)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.tables.composeS"><code class="name flex">
-<span>def <span class="ident">composeS</span></span>(<span>app, sentences)</span>
+<dt id="tf.browser.ner.tables.composeQ"><code class="name flex">
+<span>def <span class="ident">composeQ</span></span>(<span>app, tokenStart, tokenEnd)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Compose a table of sentences.</p>
+<div class="desc"><p>HTML for the query tokens.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
 <dd>The TF app of the corpus in question.</dd>
+<dt><strong><code>tokenStart</code></strong>, <strong><code>tokenEnd</code></strong> :&ensp;<code>int</code> or <code>None</code></dt>
+<dd>Specify the start slot number and the end slot number of a sequence of tokens.
+Only sentences that contain this token sentence will be passed through,
+all other sentences will be filtered out.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>html string</code></dt>
+<dd>The finished HTML of the query parameters</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/tables.py#L188-L248" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def composeQ(app, tokenStart, tokenEnd):
+    &#34;&#34;&#34;HTML for the query tokens.
+
+    Parameters
+    ----------
+    app: object
+        The TF app of the corpus in question.
+
+    tokenStart, tokenEnd: int or None
+        Specify the start slot number and the end slot number of a sequence of tokens.
+        Only sentences that contain this token sentence will be passed through,
+        all other sentences will be filtered out.
+
+    Returns
+    -------
+    html string
+        The finished HTML of the query parameters
+    &#34;&#34;&#34;
+
+    api = app.api
+    F = api.F
+
+    html = []
+
+    wordHtml = (
+        &#34; &#34;.join(
+            f&#34;&#34;&#34;&lt;span&gt;{F.str.v(t) or &#34;&#34;}&lt;/span&gt; &#34;&#34;&#34;
+            for t in range(tokenStart, tokenEnd + 1)
+        )
+        if tokenStart and tokenEnd
+        else &#34;&#34;
+    )
+
+    html.append(
+        dedent(
+            f&#34;&#34;&#34;
+            &lt;input type=&#34;hidden&#34;
+                name=&#34;tselectstart&#34;
+                id=&#34;tSelectStart&#34;
+                value=&#34;{tokenStart or &#34;&#34;}&#34;
+            &gt;
+            &lt;input type=&#34;hidden&#34;
+                name=&#34;tselectend&#34;
+                id=&#34;tSelectEnd&#34;
+                value=&#34;{tokenEnd or &#34;&#34;}&#34;
+            &gt;
+            &lt;span id=&#34;qWordShow&#34;&gt;{wordHtml}&lt;/span&gt;
+            &#34;&#34;&#34;
+        )
+    )
+
+    html.append(
+        dedent(
+            &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;queryFilter&#34;&gt;filter&lt;/button&gt;
+            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;clear&lt;/button&gt;
+            &#34;&#34;&#34;
+        )
+    )
+
+    return &#34;\n&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.tables.composeS"><code class="name flex">
+<span>def <span class="ident">composeS</span></span>(<span>app, setData, tokenStart, tokenEnd)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compose a table of sentences.</p>
+<p>Will filter the sentences by tokens if the <code>tokens</code> parameter is not None.
+In that case, <code>tokens</code> should be an array of slots.
+All sentences that contain the words of those slots will show up,
+all other sentences will be left out.
+The matching slots will be highlighted.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
+<dd>The TF app of the corpus in question.</dd>
+<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The entity data of the chosen set.</dd>
+<dt><strong><code>tokenStart</code></strong>, <strong><code>tokenEnd</code></strong> :&ensp;<code>int</code> or <code>None</code></dt>
+<dd>Specify the start slot number and the end slot number of a sequence of tokens.
+Only sentences that contain this token sentence will be passed through,
+all other sentences will be filtered out.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -243,15 +498,29 @@ NLP pipeline.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/tables.py#L61-L91" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/tables.py#L99-L185" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeS(app, sentences):
+<pre><code class="python">def composeS(app, setData, tokenStart, tokenEnd):
     &#34;&#34;&#34;Compose a table of sentences.
+
+    Will filter the sentences by tokens if the `tokens` parameter is not None.
+    In that case, `tokens` should be an array of slots.
+    All sentences that contain the words of those slots will show up,
+    all other sentences will be left out.
+    The matching slots will be highlighted.
 
     Parameters
     ----------
     app: object
         The TF app of the corpus in question.
+
+    setData: dict
+        The entity data of the chosen set.
+
+    tokenStart, tokenEnd: int or None
+        Specify the start slot number and the end slot number of a sequence of tokens.
+        Only sentences that contain this token sentence will be passed through,
+        all other sentences will be filtered out.
 
     Returns
     -------
@@ -264,18 +533,106 @@ NLP pipeline.</dd>
     F = api.F
 
     html = []
+    words = []
 
-    for s in sentences:
-        html.append(&#34;&#34;&#34;&lt;div&gt;&#34;&#34;&#34;)
+    if tokenStart and tokenEnd:
+        for t in range(tokenStart, tokenEnd + 1):
+            words.append(F.str.v(t) or &#34;&#34;)
 
-        for t in L.d(s, otype=&#34;t&#34;):
-            text = F.str.v(t)
-            after = F.after.v(t)
-            html.append(f&#34;&#34;&#34;&lt;span&gt;{text}&lt;/span&gt;{after}&#34;&#34;&#34;)
+    entitiesSlotIndex = setData.entitiesSlotIndex
 
-        html.append(&#34;&#34;&#34;&lt;/div&gt;&#34;&#34;&#34;)
+    for s in setData.sentences:
+        result = tokenMatch(L, F, s, words)
+        if result is None:
+            continue
+
+        (sTokens, matches) = result
+        ht = []
+
+        for (t, w) in sTokens.items():
+            queried = &#39;class=&#34;queried&#34;&#39; if t in matches else &#34;&#34;
+            after = F.after.v(t) or &#34;&#34;
+            info = entitiesSlotIndex.get(t, None)
+            inEntity = False
+
+            if info is not None:
+                inEntity = True
+                for item in info:
+                    if item is not None:
+                        (status, kind, freq) = item
+                        if status:
+                            ht.append(
+                                dedent(
+                                    f&#34;&#34;&#34;
+                                    &lt;span class=&#34;es&#34;
+                                    &gt;{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                    &gt;&lt;/span&gt;&#34;&#34;&#34;
+                                )
+                            )
+            inside = &#39;class=&#34;ei&#34;&#39; if inEntity else &#34;&#34;
+            ht.append(f&#34;&#34;&#34;&lt;span {queried} {inside} t=&#34;{t}&#34;&gt;{w}&lt;/span&gt;{after}&#34;&#34;&#34;)
+
+            if info is not None:
+                for item in info:
+                    if item is not None:
+                        (status, kind, freq) = item
+                        if not status:
+                            ht.append(
+                                dedent(
+                                    f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{kind}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;
+                                )
+                            )
+
+        ht = &#34;&#34;.join(ht)
+        html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
 
     return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.tables.tokenMatch"><code class="name flex">
+<span>def <span class="ident">tokenMatch</span></span>(<span>L, F, s, words)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/tables.py#L63-L96" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def tokenMatch(L, F, s, words):
+    nWords = len(words)
+
+    sTokens = {t: F.str.v(t) or &#34;&#34; for t in L.d(s, otype=&#34;t&#34;)}
+    matches = set()
+
+    if nWords:
+        sWords = set(sTokens.values())
+
+        if any(w not in sWords for w in words):
+            return None
+
+        nSTokens = len(sTokens)
+
+        for (i, (t, w)) in enumerate(sTokens.items()):
+            if w != words[0]:
+                continue
+            if nSTokens &lt; i + nWords:
+                return None
+
+            match = True
+
+            for (j, w) in enumerate(words[1:]):
+                if sTokens[t + j + 1] != w:
+                    match = False
+                    break
+
+            if match:
+                matches |= set(range(t, t + nWords))
+
+        if len(matches) == 0:
+            return None
+
+    return (sTokens, matches)</code></pre>
 </details>
 </dd>
 </dl>
@@ -348,7 +705,9 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.browser.ner.tables.composeE" href="#tf.browser.ner.tables.composeE">composeE</a></code></li>
+<li><code><a title="tf.browser.ner.tables.composeQ" href="#tf.browser.ner.tables.composeQ">composeQ</a></code></li>
 <li><code><a title="tf.browser.ner.tables.composeS" href="#tf.browser.ner.tables.composeS">composeS</a></code></li>
+<li><code><a title="tf.browser.ner.tables.tokenMatch" href="#tf.browser.ner.tables.tokenMatch">tokenMatch</a></code></li>
 </ul>
 </li>
 </ul>

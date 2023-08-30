@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>tf.browser.ner API documentation</title>
+<title>tf.browser.ner.web API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -20,42 +20,80 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Namespace <code>tf.browser.ner</code></h1>
+<h1 class="title">Module <code>tf.browser.ner.web</code></h1>
 </header>
 <section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/web.py#L1-L26" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">from flask import Blueprint, send_file
+
+from ...core.files import abspath, fileExists, dirNm
+from .serve import serveNer
+
+MY_DIR = dirNm(abspath(__file__))
+
+
+def factory(web):
+    app = Blueprint(
+        &#34;ner&#34;,
+        __name__,
+        url_prefix=&#34;/ner&#34;,
+        template_folder=&#34;templates&#34;,
+    )
+
+    @app.route(&#34;/static/&lt;path:filepath&gt;&#34;)
+    def serveStatic(filepath):
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/index&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveNerX():
+        return serveNer(web)
+
+    return app</code></pre>
+</details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="tf.browser.ner.kernel" href="kernel.html">tf.browser.ner.kernel</a></code></dt>
-<dd>
-<div class="desc"><p>TF backend processing …</p></div>
-</dd>
-<dt><code class="name"><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code></dt>
-<dd>
-<div class="desc"><p>Main controller for Flask …</p></div>
-</dd>
-<dt><code class="name"><a title="tf.browser.ner.servelib" href="servelib.html">tf.browser.ner.servelib</a></code></dt>
-<dd>
-<div class="desc"><p>Auxiliary functions for serving the web page.</p></div>
-</dd>
-<dt><code class="name"><a title="tf.browser.ner.tables" href="tables.html">tf.browser.ner.tables</a></code></dt>
-<dd>
-<div class="desc"><p>Module to compose tables of result data.</p></div>
-</dd>
-<dt><code class="name"><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code></dt>
+<dt id="tf.browser.ner.web.factory"><code class="name flex">
+<span>def <span class="ident">factory</span></span>(<span>web)</span>
+</code></dt>
 <dd>
 <div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="tf.browser.ner.wrap" href="wrap.html">tf.browser.ner.wrap</a></code></dt>
-<dd>
-<div class="desc"><p>Wraps various pieces into HTML.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/web.py#L9-L26" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def factory(web):
+    app = Blueprint(
+        &#34;ner&#34;,
+        __name__,
+        url_prefix=&#34;/ner&#34;,
+        template_folder=&#34;templates&#34;,
+    )
+
+    @app.route(&#34;/static/&lt;path:filepath&gt;&#34;)
+    def serveStatic(filepath):
+        theFile = f&#34;{MY_DIR}/static/{filepath}&#34;
+        return send_file(theFile) if fileExists(theFile) else &#34;&#34;
+
+    @app.route(&#34;/index&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
+    def serveNerX():
+        return serveNer(web)
+
+    return app</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -119,17 +157,12 @@ setTimeout(() => input.focus(), 100);
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="tf.browser" href="../index.html">tf.browser</a></code></li>
+<li><code><a title="tf.browser.ner" href="index.html">tf.browser.ner</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="tf.browser.ner.kernel" href="kernel.html">tf.browser.ner.kernel</a></code></li>
-<li><code><a title="tf.browser.ner.serve" href="serve.html">tf.browser.ner.serve</a></code></li>
-<li><code><a title="tf.browser.ner.servelib" href="servelib.html">tf.browser.ner.servelib</a></code></li>
-<li><code><a title="tf.browser.ner.tables" href="tables.html">tf.browser.ner.tables</a></code></li>
-<li><code><a title="tf.browser.ner.web" href="web.html">tf.browser.ner.web</a></code></li>
-<li><code><a title="tf.browser.ner.wrap" href="wrap.html">tf.browser.ner.wrap</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="tf.browser.ner.web.factory" href="#tf.browser.ner.web.factory">factory</a></code></li>
 </ul>
 </li>
 </ul>

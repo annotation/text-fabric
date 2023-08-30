@@ -109,7 +109,7 @@ browsers, not even Edge.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/web.py#L1-L276" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/web.py#L1-L289" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Web interface
@@ -212,7 +212,11 @@ from .serve import (
     serveDownload,
     serveAll,
 )
-from .ner.serve import serveNer
+
+# Here we import additional annotation tools
+from .ner.web import factory as nerFactory
+# End of importing additional annotation tools
+
 
 TF_DONE = &#34;TF setup done.&#34;
 TF_ERROR = &#34;Could not set up TF&#34;
@@ -222,14 +226,24 @@ MY_DIR = dirNm(abspath(__file__))
 
 class Web:
     def __init__(self, kernelApi):
+        self.debug = False
         self.kernelApi = kernelApi
         app = kernelApi.app
         self.context = app.context
         self.wildQueries = set()
 
+    def console(self, msg):
+        if self.debug:
+            console(msg)
+
 
 def factory(web):
     app = Flask(__name__)
+
+    # Here we add the annotation tools as blue prints
+    app.register_blueprint(nerFactory(web))
+    # End of adding annotation tools
+
     aContext = web.context
     appPath = aContext.appPath
     localDir = aContext.localDir
@@ -292,10 +306,6 @@ def factory(web):
     @app.route(&#34;/downloadj&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveDownloadJ():
         return serveDownload(web, True)
-
-    @app.route(&#34;/ner&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveNerX():
-        return serveNer(web)
 
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
@@ -370,6 +380,9 @@ def main(cargs=sys.argv[1:]):
         console(f&#34;{TF_DONE}&#34;)
 
         webapp = factory(web)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
         run_simple(
             HOST,
             int(portWeb),
@@ -404,10 +417,15 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/web.py#L118-L192" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/web.py#L127-L202" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def factory(web):
     app = Flask(__name__)
+
+    # Here we add the annotation tools as blue prints
+    app.register_blueprint(nerFactory(web))
+    # End of adding annotation tools
+
     aContext = web.context
     appPath = aContext.appPath
     localDir = aContext.localDir
@@ -471,10 +489,6 @@ if __name__ == &#34;__main__&#34;:
     def serveDownloadJ():
         return serveDownload(web, True)
 
-    @app.route(&#34;/ner&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
-    def serveNerX():
-        return serveNer(web)
-
     @app.route(&#34;/&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     @app.route(&#34;/&lt;path:anything&gt;&#34;, methods=[&#34;GET&#34;, &#34;POST&#34;])
     def serveAllX(anything=None):
@@ -491,7 +505,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/web.py#L195-L272" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/web.py#L205-L285" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     args = []
@@ -558,6 +572,9 @@ if __name__ == &#34;__main__&#34;:
         console(f&#34;{TF_DONE}&#34;)
 
         webapp = factory(web)
+        if debug:
+            webapp.config[&#39;TEMPLATES_AUTO_RELOAD&#39;] = True
+        web.debug = debug
         run_simple(
             HOST,
             int(portWeb),
@@ -587,15 +604,38 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/web.py#L110-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/web.py#L114-L124" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">class Web:
     def __init__(self, kernelApi):
+        self.debug = False
         self.kernelApi = kernelApi
         app = kernelApi.app
         self.context = app.context
-        self.wildQueries = set()</code></pre>
+        self.wildQueries = set()
+
+    def console(self, msg):
+        if self.debug:
+            console(msg)</code></pre>
 </details>
+<h3>Methods</h3>
+<dl>
+<dt id="tf.browser.web.Web.console"><code class="name flex">
+<span>def <span class="ident">console</span></span>(<span>self, msg)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/web.py#L122-L124" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def console(self, msg):
+    if self.debug:
+        console(msg)</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -682,6 +722,9 @@ setTimeout(() => input.focus(), 100);
 <ul>
 <li>
 <h4><code><a title="tf.browser.web.Web" href="#tf.browser.web.Web">Web</a></code></h4>
+<ul class="">
+<li><code><a title="tf.browser.web.Web.console" href="#tf.browser.web.Web.console">console</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

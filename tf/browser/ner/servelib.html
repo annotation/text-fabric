@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/servelib.py#L1-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L1-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
 &#34;&#34;&#34;
@@ -37,7 +37,7 @@ from flask import request
 from ...core.files import dirContents
 
 
-def getFormData():
+def getFormData(web):
     &#34;&#34;&#34;Get form data.
 
     The TF browser user interacts with the web app by clicking and typing,
@@ -65,6 +65,10 @@ def getFormData():
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+    tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
+    form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
+    tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)
+    form[&#34;tselectend&#34;] = int(tSelectEnd) if tSelectEnd else None
 
     return form
 
@@ -112,7 +116,7 @@ The names of these subdirectories are the names of the annotation sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/servelib.py#L41-L55" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L45-L59" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annoSets(annoDir):
     &#34;&#34;&#34;Get the existing annotation sets.
@@ -132,7 +136,7 @@ The names of these subdirectories are the names of the annotation sets.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.servelib.getFormData"><code class="name flex">
-<span>def <span class="ident">getFormData</span></span>(<span>)</span>
+<span>def <span class="ident">getFormData</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get form data.</p>
@@ -147,9 +151,9 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/servelib.py#L9-L38" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L9-L42" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def getFormData():
+<pre><code class="python">def getFormData(web):
     &#34;&#34;&#34;Get form data.
 
     The TF browser user interacts with the web app by clicking and typing,
@@ -177,6 +181,10 @@ but there is also a list of webapp dependent options.</p></div>
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+    tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
+    form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
+    tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)
+    form[&#34;tselectend&#34;] = int(tSelectEnd) if tSelectEnd else None
 
     return form</code></pre>
 </details>

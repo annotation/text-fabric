@@ -29,7 +29,7 @@ and put it in various dedicated data structures.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L1-L78" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/kernel.py#L1-L236" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;TF backend processing.
 
@@ -37,78 +37,236 @@ This module is for functions that extract data from the corpus
 and put it in various dedicated data structures.
 &#34;&#34;&#34;
 
-from .tables import composeE, composeS
+import collections
+import re
+from datetime import datetime
+
+from ...core.generic import AttrDict
+from ...core.files import mTime, fileExists, annotateDir
+
+WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
 
 
-def entities(app, sortKey, sortDir):
-    &#34;&#34;&#34;Retrieves the entities and puts them in a table.
+def loadData(web, annoSet):
+    &#34;&#34;&#34;Loads data of the given annotation set from disk into memory.
+
+    The data of an annotation set consists of:
+
+    *   a list of entities, each entity specifies a kind and a list of slots
+        that are part of the entity.
+
+    If `annoSet` is empty, the annotation data is already in the TF data, and we do not
+    do anything.
+
+    After loading we process the data into a sligthly other shape:
+
+    *   a dictionary keyed by pairs of kind and text and valued by the sequence numbers
+        of the entities that have that kind and text
+    *   a frequency list of the entity kinds
+    *   a frequency list of the entity texts
+    *   a dictionary, keyed by slot number, and valued by the following information:
+        *   If the slot is outside any entity, it is not in the dictionary
+        *   Otherwise, the value is a list of items, each item holds information
+            about a specific entity wrt to that slot:
+        *   If an entity starts or ends there, the item is a tuple
+            (status, kind, number of occurrences)
+        *   If the slot is inside an entity, the item is True
+
+    We try to be lazy. We only load data from disk if the data is not already in memory,
+    or the data on disk has been updated since the last load.
+
+    Likewise, we only process the data if the data has been loaded again.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
-    sortKey: string
-        Indicator of how the table is sorted.
-    sortDir:
-        Indicator of the direction of the sorting.
+    web: object
+        The web application object, which has a handle to the TF app object.
+
+    annoSet: string
+        The name of the annotation set whose data should be loaded.
+        If empty, we use entity data that is already present in the TF data source.
+        We do not have to load that, but we do the processing, if the processed data
+        is not yet available.
+        We consider this static data.
 
     Returns
     -------
-    HTML string
-    &#34;&#34;&#34;
+    void
+        The resulting data is stored on the `web` object, under the key `toolData`
+        and then under the key `ner` and then `sets` and then the name of the
+        annotation set.
 
+        For each set we produce the keys:
+
+        *   `dateLoaded`: datetime when the data was last loaded from disk
+        *   `dateProcessed`: datetime when the data was last processed
+        *   `entities`: the list of entities as loaded from a tsv file
+        *   `entitiesByKind`: the dictionary of entities by kind, text as a result
+            of processing;
+        *   `entityKindFreq`: the frequency list of entity kinds as a result of processing
+        *   `entityTextFreq`: the frequency list of entity texts as a result
+            of processing
+        *   `entitiesSlot`: the index of entities by slot
+    &#34;&#34;&#34;
+    if not hasattr(web, &#34;toolData&#34;):
+        setattr(web, &#34;toolData&#34;, AttrDict())
+
+    toolData = web.toolData
+
+    if &#34;ner&#34; not in toolData:
+        toolData.ner = AttrDict()
+
+    nerData = toolData.ner
+
+    if &#34;sets&#34; not in nerData:
+        nerData.sets = AttrDict()
+
+    setsData = nerData.sets
+
+    if annoSet not in setsData:
+        setsData[annoSet] = AttrDict()
+
+    setData = setsData[annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     F = api.F
     T = api.T
+    L = api.L
 
-    entities = {}
+    annoDir = annotateDir(app, &#34;ner&#34;)
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
 
-    for e in F.otype.s(&#34;ent&#34;):
-        txt = T.text(e)
-        kind = F.kind.v(e)
-        entities.setdefault((kind, txt), []).append(e)
+    # load sentence nodes
 
-    return composeE(app, entities, sortKey, sortDir)
+    if &#34;sentences&#34; not in setData:
+        setData.sentences = F.otype.s(&#34;sentence&#34;)
 
+    # loading stage (only for real annosets)
 
-def entityKinds(app):
-    &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
+    changed = False
 
-    Parameters
-    ----------
-    app: object
-        The TF app of the corpus in question.
+    if annoSet:
+        if (
+            &#34;entities&#34; not in setData
+            or &#34;dateLoaded&#34; not in setData
+            or (len(setData.entities) &gt; 0 and not fileExists(dataFile))
+            or (fileExists(dataFile) and setData.dateLoaded &lt; mTime(dataFile))
+        ):
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; START&#34;)
+            changed = True
+            entities = []
 
-    Returns
-    -------
-    HTML string
-    &#34;&#34;&#34;
+            if fileExists(dataFile):
+                with open(dataFile) as df:
+                    for line in df:
+                        entities.append(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
 
-    api = app.api
-    F = api.F
+            setData.entities = entities
+            setData.dateLoaded = datetime.utcnow()
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
 
-    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+    # processing stage (a bit different for annoset == &#34;&#34;)
 
+    if annoSet:
+        if (
+            changed
+            or &#34;dateProcessed&#34; not in setData
+            or &#34;entitiesByKind&#34; not in setData
+            or &#34;entityKindFreq&#34; not in setData
+            or &#34;entityText&#34; not in setData
+            or &#34;entityTextFreq&#34; not in setData
+            or &#34;entitiesSlotIndex&#34; not in setData
+            or setData.dateProcessed &lt; setData.dateLoaded
+        ):
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+            entitiesByKind = {}
+            entityText = {}
+            entityKindFreq = collections.Counter()
+            entityTextFreq = collections.Counter()
+            entitiesSlotIndex = {}
 
-def sentences(app):
-    &#34;&#34;&#34;Retrieves all sentences in the corpus and presents them in a table.
+            for (e, eData) in enumerate(setData.entities):
+                (kind, *slots) = eData
+                txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+                entityText[e] = txt
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+                entityKindFreq[kind] += 1
+                entityTextFreq[txt] += 1
 
-    Parameters
-    ----------
-    app: object
-        The TF app of the corpus in question.
+            for (e, eData) in enumerate(setData.entities):
+                (kind, *slots) = eData
+                firstSlot = slots[0]
+                lastSlot = slots[-1]
+                txt = entityText[e]
+                textFreq = entityTextFreq[txt]
 
-    Returns
-    -------
-    HTML string
-    &#34;&#34;&#34;
+                for slot in slots:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [slot == firstSlot, kind, textFreq]
+                        if slot == firstSlot or slot == lastSlot
+                        else None
+                    )
 
-    api = app.api
-    F = api.F
+            setData.entityText = entityText
+            setData.entitiesByKind = entitiesByKind
+            setData.entityKindFreq = sorted(entityKindFreq.items())
+            setData.entityTextFreq = entityTextFreq
+            setData.entitiesSlotIndex = entitiesSlotIndex
+            setData.dateProcessed = datetime.utcnow()
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)
+    else:
+        if (
+            &#34;dateProcessed&#34; not in setData
+            or &#34;entitiesByKind&#34; not in setData
+            or &#34;entityKindFreq&#34; not in setData
+            or &#34;entityText&#34; not in setData
+            or &#34;entityTextFreq&#34; not in setData
+            or &#34;entitiesSlotIndex&#34; not in setData
+        ):
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+            entitiesByKind = {}
+            entityText = {}
+            entityTextFreq = collections.Counter()
+            entitiesSlotIndex = {}
 
-    sentences = F.otype.s(&#34;sentence&#34;)
+            for e in F.otype.s(&#34;ent&#34;):
+                kind = F.kind.v(e)
+                txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+                entityText[e] = txt
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+                entityTextFreq[txt] += 1
 
-    return composeS(app, sentences)</code></pre>
+            for e in F.otype.s(&#34;ent&#34;):
+                slots = L.d(e, otype=&#34;t&#34;)
+                firstSlot = slots[0]
+                lastSlot = slots[-1]
+                txt = entityText[e]
+                textFreq = entityTextFreq[txt]
+
+                for slot in slots:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [slot == firstSlot, kind, textFreq]
+                        if slot == firstSlot or slot == lastSlot
+                        else None
+                    )
+
+            entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+
+            setData.entityText = entityText
+            setData.entitiesByKind = entitiesByKind
+            setData.entityKindFreq = entityKindFreq
+            setData.entityTextFreq = entityTextFreq
+            setData.dateProcessed = datetime.utcnow()
+            setData.entitiesSlotIndex = entitiesSlotIndex
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -118,139 +276,294 @@ def sentences(app):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tf.browser.ner.kernel.entities"><code class="name flex">
-<span>def <span class="ident">entities</span></span>(<span>app, sortKey, sortDir)</span>
+<dt id="tf.browser.ner.kernel.loadData"><code class="name flex">
+<span>def <span class="ident">loadData</span></span>(<span>web, annoSet)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Retrieves the entities and puts them in a table.</p>
+<div class="desc"><p>Loads data of the given annotation set from disk into memory.</p>
+<p>The data of an annotation set consists of:</p>
+<ul>
+<li>a list of entities, each entity specifies a kind and a list of slots
+that are part of the entity.</li>
+</ul>
+<p>If <code>annoSet</code> is empty, the annotation data is already in the TF data, and we do not
+do anything.</p>
+<p>After loading we process the data into a sligthly other shape:</p>
+<ul>
+<li>a dictionary keyed by pairs of kind and text and valued by the sequence numbers
+of the entities that have that kind and text</li>
+<li>a frequency list of the entity kinds</li>
+<li>a frequency list of the entity texts</li>
+<li>a dictionary, keyed by slot number, and valued by the following information:<ul>
+<li>If the slot is outside any entity, it is not in the dictionary</li>
+<li>Otherwise, the value is a list of items, each item holds information
+about a specific entity wrt to that slot:</li>
+<li>If an entity starts or ends there, the item is a tuple
+(status, kind, number of occurrences)</li>
+<li>If the slot is inside an entity, the item is True</li>
+</ul>
+</li>
+</ul>
+<p>We try to be lazy. We only load data from disk if the data is not already in memory,
+or the data on disk has been updated since the last load.</p>
+<p>Likewise, we only process the data if the data has been loaded again.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
-<dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code></dt>
-<dd>Indicator of how the table is sorted.</dd>
+<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
+<dd>The web application object, which has a handle to the TF app object.</dd>
+<dt><strong><code>annoSet</code></strong> :&ensp;<code>string</code></dt>
+<dd>The name of the annotation set whose data should be loaded.
+If empty, we use entity data that is already present in the TF data source.
+We do not have to load that, but we do the processing, if the processed data
+is not yet available.
+We consider this static data.</dd>
 </dl>
-<p>sortDir:
-Indicator of the direction of the sorting.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>HTML string</code></dt>
-<dd>&nbsp;</dd>
+<dt><code>void</code></dt>
+<dd>
+<p>The resulting data is stored on the <code>web</code> object, under the key <code>toolData</code>
+and then under the key <code>ner</code> and then <code>sets</code> and then the name of the
+annotation set.</p>
+<p>For each set we produce the keys:</p>
+<ul>
+<li><code>dateLoaded</code>: datetime when the data was last loaded from disk</li>
+<li><code>dateProcessed</code>: datetime when the data was last processed</li>
+<li><code>entities</code>: the list of entities as loaded from a tsv file</li>
+<li><code>entitiesByKind</code>: the dictionary of entities by kind, text as a result
+of processing;</li>
+<li><code>entityKindFreq</code>: the frequency list of entity kinds as a result of processing</li>
+<li><code>entityTextFreq</code>: the frequency list of entity texts as a result
+of processing</li>
+<li><code>entitiesSlot</code>: the index of entities by slot</li>
+</ul>
+</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L10-L38" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/kernel.py#L17-L236" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def entities(app, sortKey, sortDir):
-    &#34;&#34;&#34;Retrieves the entities and puts them in a table.
+<pre><code class="python">def loadData(web, annoSet):
+    &#34;&#34;&#34;Loads data of the given annotation set from disk into memory.
+
+    The data of an annotation set consists of:
+
+    *   a list of entities, each entity specifies a kind and a list of slots
+        that are part of the entity.
+
+    If `annoSet` is empty, the annotation data is already in the TF data, and we do not
+    do anything.
+
+    After loading we process the data into a sligthly other shape:
+
+    *   a dictionary keyed by pairs of kind and text and valued by the sequence numbers
+        of the entities that have that kind and text
+    *   a frequency list of the entity kinds
+    *   a frequency list of the entity texts
+    *   a dictionary, keyed by slot number, and valued by the following information:
+        *   If the slot is outside any entity, it is not in the dictionary
+        *   Otherwise, the value is a list of items, each item holds information
+            about a specific entity wrt to that slot:
+        *   If an entity starts or ends there, the item is a tuple
+            (status, kind, number of occurrences)
+        *   If the slot is inside an entity, the item is True
+
+    We try to be lazy. We only load data from disk if the data is not already in memory,
+    or the data on disk has been updated since the last load.
+
+    Likewise, we only process the data if the data has been loaded again.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
-    sortKey: string
-        Indicator of how the table is sorted.
-    sortDir:
-        Indicator of the direction of the sorting.
+    web: object
+        The web application object, which has a handle to the TF app object.
+
+    annoSet: string
+        The name of the annotation set whose data should be loaded.
+        If empty, we use entity data that is already present in the TF data source.
+        We do not have to load that, but we do the processing, if the processed data
+        is not yet available.
+        We consider this static data.
 
     Returns
     -------
-    HTML string
-    &#34;&#34;&#34;
+    void
+        The resulting data is stored on the `web` object, under the key `toolData`
+        and then under the key `ner` and then `sets` and then the name of the
+        annotation set.
 
+        For each set we produce the keys:
+
+        *   `dateLoaded`: datetime when the data was last loaded from disk
+        *   `dateProcessed`: datetime when the data was last processed
+        *   `entities`: the list of entities as loaded from a tsv file
+        *   `entitiesByKind`: the dictionary of entities by kind, text as a result
+            of processing;
+        *   `entityKindFreq`: the frequency list of entity kinds as a result of processing
+        *   `entityTextFreq`: the frequency list of entity texts as a result
+            of processing
+        *   `entitiesSlot`: the index of entities by slot
+    &#34;&#34;&#34;
+    if not hasattr(web, &#34;toolData&#34;):
+        setattr(web, &#34;toolData&#34;, AttrDict())
+
+    toolData = web.toolData
+
+    if &#34;ner&#34; not in toolData:
+        toolData.ner = AttrDict()
+
+    nerData = toolData.ner
+
+    if &#34;sets&#34; not in nerData:
+        nerData.sets = AttrDict()
+
+    setsData = nerData.sets
+
+    if annoSet not in setsData:
+        setsData[annoSet] = AttrDict()
+
+    setData = setsData[annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     F = api.F
     T = api.T
+    L = api.L
 
-    entities = {}
+    annoDir = annotateDir(app, &#34;ner&#34;)
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
 
-    for e in F.otype.s(&#34;ent&#34;):
-        txt = T.text(e)
-        kind = F.kind.v(e)
-        entities.setdefault((kind, txt), []).append(e)
+    # load sentence nodes
 
-    return composeE(app, entities, sortKey, sortDir)</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.kernel.entityKinds"><code class="name flex">
-<span>def <span class="ident">entityKinds</span></span>(<span>app)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Retrieves a frequency list of entities and presents it.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>HTML string</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L41-L57" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def entityKinds(app):
-    &#34;&#34;&#34;Retrieves a frequency list of entities and presents it.
+    if &#34;sentences&#34; not in setData:
+        setData.sentences = F.otype.s(&#34;sentence&#34;)
 
-    Parameters
-    ----------
-    app: object
-        The TF app of the corpus in question.
+    # loading stage (only for real annosets)
 
-    Returns
-    -------
-    HTML string
-    &#34;&#34;&#34;
+    changed = False
 
-    api = app.api
-    F = api.F
+    if annoSet:
+        if (
+            &#34;entities&#34; not in setData
+            or &#34;dateLoaded&#34; not in setData
+            or (len(setData.entities) &gt; 0 and not fileExists(dataFile))
+            or (fileExists(dataFile) and setData.dateLoaded &lt; mTime(dataFile))
+        ):
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; START&#34;)
+            changed = True
+            entities = []
 
-    return sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))</code></pre>
-</details>
-</dd>
-<dt id="tf.browser.ner.kernel.sentences"><code class="name flex">
-<span>def <span class="ident">sentences</span></span>(<span>app)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Retrieves all sentences in the corpus and presents them in a table.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>HTML string</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/kernel.py#L60-L78" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def sentences(app):
-    &#34;&#34;&#34;Retrieves all sentences in the corpus and presents them in a table.
+            if fileExists(dataFile):
+                with open(dataFile) as df:
+                    for line in df:
+                        entities.append(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
 
-    Parameters
-    ----------
-    app: object
-        The TF app of the corpus in question.
+            setData.entities = entities
+            setData.dateLoaded = datetime.utcnow()
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
 
-    Returns
-    -------
-    HTML string
-    &#34;&#34;&#34;
+    # processing stage (a bit different for annoset == &#34;&#34;)
 
-    api = app.api
-    F = api.F
+    if annoSet:
+        if (
+            changed
+            or &#34;dateProcessed&#34; not in setData
+            or &#34;entitiesByKind&#34; not in setData
+            or &#34;entityKindFreq&#34; not in setData
+            or &#34;entityText&#34; not in setData
+            or &#34;entityTextFreq&#34; not in setData
+            or &#34;entitiesSlotIndex&#34; not in setData
+            or setData.dateProcessed &lt; setData.dateLoaded
+        ):
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+            entitiesByKind = {}
+            entityText = {}
+            entityKindFreq = collections.Counter()
+            entityTextFreq = collections.Counter()
+            entitiesSlotIndex = {}
 
-    sentences = F.otype.s(&#34;sentence&#34;)
+            for (e, eData) in enumerate(setData.entities):
+                (kind, *slots) = eData
+                txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+                entityText[e] = txt
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+                entityKindFreq[kind] += 1
+                entityTextFreq[txt] += 1
 
-    return composeS(app, sentences)</code></pre>
+            for (e, eData) in enumerate(setData.entities):
+                (kind, *slots) = eData
+                firstSlot = slots[0]
+                lastSlot = slots[-1]
+                txt = entityText[e]
+                textFreq = entityTextFreq[txt]
+
+                for slot in slots:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [slot == firstSlot, kind, textFreq]
+                        if slot == firstSlot or slot == lastSlot
+                        else None
+                    )
+
+            setData.entityText = entityText
+            setData.entitiesByKind = entitiesByKind
+            setData.entityKindFreq = sorted(entityKindFreq.items())
+            setData.entityTextFreq = entityTextFreq
+            setData.entitiesSlotIndex = entitiesSlotIndex
+            setData.dateProcessed = datetime.utcnow()
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)
+    else:
+        if (
+            &#34;dateProcessed&#34; not in setData
+            or &#34;entitiesByKind&#34; not in setData
+            or &#34;entityKindFreq&#34; not in setData
+            or &#34;entityText&#34; not in setData
+            or &#34;entityTextFreq&#34; not in setData
+            or &#34;entitiesSlotIndex&#34; not in setData
+        ):
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+            entitiesByKind = {}
+            entityText = {}
+            entityTextFreq = collections.Counter()
+            entitiesSlotIndex = {}
+
+            for e in F.otype.s(&#34;ent&#34;):
+                kind = F.kind.v(e)
+                txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+                entityText[e] = txt
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+                entityTextFreq[txt] += 1
+
+            for e in F.otype.s(&#34;ent&#34;):
+                slots = L.d(e, otype=&#34;t&#34;)
+                firstSlot = slots[0]
+                lastSlot = slots[-1]
+                txt = entityText[e]
+                textFreq = entityTextFreq[txt]
+
+                for slot in slots:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [slot == firstSlot, kind, textFreq]
+                        if slot == firstSlot or slot == lastSlot
+                        else None
+                    )
+
+            entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+
+            setData.entityText = entityText
+            setData.entitiesByKind = entitiesByKind
+            setData.entityKindFreq = entityKindFreq
+            setData.entityTextFreq = entityTextFreq
+            setData.dateProcessed = datetime.utcnow()
+            setData.entitiesSlotIndex = entitiesSlotIndex
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+        else:
+            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -322,9 +635,7 @@ setTimeout(() => input.focus(), 100);
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tf.browser.ner.kernel.entities" href="#tf.browser.ner.kernel.entities">entities</a></code></li>
-<li><code><a title="tf.browser.ner.kernel.entityKinds" href="#tf.browser.ner.kernel.entityKinds">entityKinds</a></code></li>
-<li><code><a title="tf.browser.ner.kernel.sentences" href="#tf.browser.ner.kernel.sentences">sentences</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.loadData" href="#tf.browser.ner.kernel.loadData">loadData</a></code></li>
 </ul>
 </li>
 </ul>

@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L1-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/wrap.py#L1-L174" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 &#34;&#34;&#34;
@@ -175,13 +175,14 @@ def wrapEntityHeaders(sortKey, sortDir):
     return &#34;&#34;.join(html)
 
 
-def wrapEntityKinds(kinds):
+def wrapEntityKinds(setData):
     &#34;&#34;&#34;HTML for the kinds of entities.
 
     Parameters
     ----------
-    kinds: tuple of tuples
-        Frequency list of entity kinds
+    setData: dict
+        The entity data for the chosen set. We only need the member `entityKindFreq`,
+        which is a tuple of tuples representing the frequency list of entity kinds.
 
     Returns
     -------
@@ -189,7 +190,7 @@ def wrapEntityKinds(kinds):
     &#34;&#34;&#34;
     html = []
 
-    for (kind, freq) in kinds:
+    for (kind, freq) in setData.entityKindFreq:
         html.append(
             dedent(
                 f&#34;&#34;&#34;
@@ -234,7 +235,7 @@ and features.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     &#34;&#34;&#34;HTML for the annoset chooser.
@@ -344,7 +345,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(sortKey, sortDir):
     &#34;&#34;&#34;HTML for the header of the entity table.
@@ -387,14 +388,15 @@ Indicator of the direction of the sorting.</p>
 </details>
 </dd>
 <dt id="tf.browser.ner.wrap.wrapEntityKinds"><code class="name flex">
-<span>def <span class="ident">wrapEntityKinds</span></span>(<span>kinds)</span>
+<span>def <span class="ident">wrapEntityKinds</span></span>(<span>setData)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the kinds of entities.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>kinds</code></strong> :&ensp;<code>tuple</code> of <code>tuples</code></dt>
-<dd>Frequency list of entity kinds</dd>
+<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The entity data for the chosen set. We only need the member <code>entityKindFreq</code>,
+which is a tuple of tuples representing the frequency list of entity kinds.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -404,15 +406,16 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L147-L173" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/wrap.py#L147-L174" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def wrapEntityKinds(kinds):
+<pre><code class="python">def wrapEntityKinds(setData):
     &#34;&#34;&#34;HTML for the kinds of entities.
 
     Parameters
     ----------
-    kinds: tuple of tuples
-        Frequency list of entity kinds
+    setData: dict
+        The entity data for the chosen set. We only need the member `entityKindFreq`,
+        which is a tuple of tuples representing the frequency list of entity kinds.
 
     Returns
     -------
@@ -420,7 +423,7 @@ Indicator of the direction of the sorting.</p>
     &#34;&#34;&#34;
     html = []
 
-    for (kind, freq) in kinds:
+    for (kind, freq) in setData.entityKindFreq:
         html.append(
             dedent(
                 f&#34;&#34;&#34;
@@ -443,7 +446,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/f99f8484c646d0e3780dfa7d50050983f7967051/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     &#34;&#34;&#34;HTML for messages.
