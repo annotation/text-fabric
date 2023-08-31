@@ -34,6 +34,7 @@ def getFormData(web):
     form["freqsort"] = request.form.get("freqsort", "")
     form["kindsort"] = request.form.get("kindsort", "")
     form["etxtsort"] = request.form.get("etxtsort", "")
+    form["sfind"] = request.form.get("sfind", "")
     tSelectStart = request.form.get("tselectstart", "")
     form["tselectstart"] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get("tselectend", "")

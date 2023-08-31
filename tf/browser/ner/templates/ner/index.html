@@ -20,10 +20,10 @@
 		<form id="go" method="post" enctype="multipart/form-data">
       <input type="hidden" id="resetf" name="resetForm" value="{{resetForm}}">
       <input type="hidden" id="appName" name="appName" value="{{appName}}"/>
-      <p><a href="/">back to TF browser</a></p>
       <hr/>
       <div class="page">
         <div id="sidebarcont">
+          <p><a href="/">back to TF browser</a></p>
           <h1>{{appName}}</h1>
           <h2>Named Entity Editing</h2>
           {{messages|safe}}
@@ -47,7 +47,8 @@
         <div class="rightcol">
           <div id="query">
             <h1>Sentences</h1>
-            <b>Query:</b> {{query|safe}}
+            <p><b>Find:</b> {{find|safe}} {{findStat|safe}} {{findCtrl|safe}}</p>
+            <p><b>Query:</b> {{query|safe}} {{queryStat|safe}} {{queryCtrl|safe}}</p>
             <hr>
           </div>
           <div id="sentences">

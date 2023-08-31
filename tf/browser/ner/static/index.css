@@ -57,19 +57,25 @@ code.w {
 }
 
 #query {
-  height: 8rem;
+  height: 12rem;
   overflow: auto;
 }
 
 #sentences {
-  height: calc(100vh - 10rem);
+  height: calc(100vh - 14rem);
   overflow: auto;
+  padding-left: 2rem;
 }
 
 span.queried,#qWordShow>span {
   border: 1pt solid black;
   border-radius: 0.2rem;
   background-color: yellow;
+  padding: 0 0.3rem;
+}
+span.found {
+  background-color: aquamarine;
+  border-radius: 0.2rem;
   padding: 0 0.3rem;
 }
 
@@ -110,5 +116,29 @@ span.ee {
   border-right: 4pt solid blue;
   padding-right: 0.1em;
   margin-right: 0.2em;
+}
+span.sh {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: small;
+  color: #bbbbbb;
+  margin-left: -2rem;
+}
+#sFind {
+  font-family: monospace;
+  font-size: large;
+  background-color: aquamarine;
+}
+.error {
+  font-weight: bold;
+  background-color: #ffaaaa;
+}
+span.stat {
+  font-family: monospace;
+  font-weight: bold;
+  color: #0000bb;
+  border-radius: 0.2rem;
+  padding: 0.4rem 0.4rem;
+  border: 2pt solid #eeeeff;
 }
 

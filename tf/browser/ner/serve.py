@@ -85,6 +85,7 @@ def serveNer(web):
             sortKey = key
             break
 
+    sFind = templateData["sfind"]
     tSelectStart = templateData["tselectstart"]
     tSelectEnd = templateData["tselectend"]
 
@@ -93,8 +94,18 @@ def serveNer(web):
     templateData["entities"] = composeE(app, setData, sortKey, sortDir)
     templateData["entitykinds"] = wrapEntityKinds(setData)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
-    templateData["query"] = composeQ(app, tSelectStart, tSelectEnd)
-    templateData["sentences"] = composeS(app, setData, tSelectStart, tSelectEnd)
+    (
+        sFindRe,
+        templateData["find"],
+        templateData["findCtrl"],
+        templateData["query"],
+        templateData["queryCtrl"],
+    ) = composeQ(app, sFind, tSelectStart, tSelectEnd)
+    (
+        templateData["findStat"],
+        templateData["queryStat"],
+        templateData["sentences"],
+    ) = composeS(app, setData, sFindRe, tSelectStart, tSelectEnd)
     templateData["messages"] = wrapMessages(messages)
 
     return render_template(
