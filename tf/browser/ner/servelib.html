@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L1-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/servelib.py#L1-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
 &#34;&#34;&#34;
@@ -65,6 +65,7 @@ def getFormData(web):
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+    form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
     tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
     form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)
@@ -116,7 +117,7 @@ The names of these subdirectories are the names of the annotation sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L45-L59" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/servelib.py#L46-L60" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annoSets(annoDir):
     &#34;&#34;&#34;Get the existing annotation sets.
@@ -151,7 +152,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/ce3eadd9c62d7871af2a4eb6bf9dfc3118886de7/tf/browser/ner/servelib.py#L9-L42" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/servelib.py#L9-L43" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFormData(web):
     &#34;&#34;&#34;Get form data.
@@ -181,6 +182,7 @@ but there is also a list of webapp dependent options.</p></div>
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
+    form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
     tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
     form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)

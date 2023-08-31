@@ -3923,13 +3923,13 @@ INDEX=[
 {
 "ref":"tf.browser.ner.tables.tokenMatch",
 "url":97,
-"doc":"",
+"doc":"Checks whether a sentence matches a sequence of words. When we do the checking, we ignore empty words in the sentence. Parameters      L, F, T: object The TF APIs  F and  L for feature lookup and level-switching, and text extraction s: integer The node of the sentence in question words: list of string The sequence of words that must be matched. They are all non-empty.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.tables.composeS",
 "url":97,
-"doc":"Compose a table of sentences. Will filter the sentences by tokens if the  tokens parameter is not None. In that case,  tokens should be an array of slots. All sentences that contain the words of those slots will show up, all other sentences will be left out. The matching slots will be highlighted. Parameters      app: object The TF app of the corpus in question. setData: dict The entity data of the chosen set. tokenStart, tokenEnd: int or None Specify the start slot number and the end slot number of a sequence of tokens. Only sentences that contain this token sentence will be passed through, all other sentences will be filtered out. Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
+"doc":"Compose a table of sentences. Will filter the sentences by tokens if the  tokenStart and  tokenEnd parameters are both filled in. In that case, we look up the text between those tokens and including. All sentences that contain that text of those slots will show up, all other sentences will be left out. The matching slots will be highlighted. Parameters      app: object The TF app of the corpus in question. setData: dict The entity data of the chosen set. findPattern: string A search string that filters the sentences, before applying the search for a word sequence. tokenStart, tokenEnd: int or None Specify the start slot number and the end slot number of a sequence of tokens. Only sentences that contain this token sentence will be passed through, all other sentences will be filtered out. Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
 "func":1
 },
 {
