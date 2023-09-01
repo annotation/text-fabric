@@ -25,8 +25,12 @@ def serveNer(web):
 
     aContext = web.context
     appName = aContext.appName.replace("/", " / ")
+
     kernelApi = web.kernelApi
     app = kernelApi.app
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, "ner")
     initTree(annoDir, fresh=False)
@@ -72,8 +76,8 @@ def serveNer(web):
 
     templateData["annoSets"] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
-    loadData(web, chosenAnnoSet)
-    setData = web.toolData.ner.sets[chosenAnnoSet]
+    web.annoSet = chosenAnnoSet
+    loadData(web)
 
     sortKey = None
     sortDir = None
@@ -86,13 +90,15 @@ def serveNer(web):
             break
 
     sFind = templateData["sfind"]
+    activeEntity = templateData["activeentity"]
     tSelectStart = templateData["tselectstart"]
     tSelectEnd = templateData["tselectend"]
 
     templateData["appName"] = appName
+    templateData["slotType"] = slotType
     templateData["resetForm"] = ""
-    templateData["entities"] = composeE(app, setData, sortKey, sortDir)
-    templateData["entitykinds"] = wrapEntityKinds(setData)
+    templateData["entities"] = composeE(web, activeEntity, sortKey, sortDir)
+    templateData["entitykinds"] = wrapEntityKinds(web)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
     (
         sFindRe,
@@ -100,12 +106,12 @@ def serveNer(web):
         templateData["findCtrl"],
         templateData["query"],
         templateData["queryCtrl"],
-    ) = composeQ(app, sFind, tSelectStart, tSelectEnd)
+    ) = composeQ(web, sFind, tSelectStart, tSelectEnd)
     (
         templateData["findStat"],
         templateData["queryStat"],
         templateData["sentences"],
-    ) = composeS(app, setData, sFindRe, tSelectStart, tSelectEnd)
+    ) = composeS(web, sFindRe, tSelectStart, tSelectEnd)
     templateData["messages"] = wrapMessages(messages)
 
     return render_template(

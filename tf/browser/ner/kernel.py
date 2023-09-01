@@ -14,13 +14,13 @@ from ...core.files import mTime, fileExists, annotateDir
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 
 
-def loadData(web, annoSet):
+def loadData(web):
     """Loads data of the given annotation set from disk into memory.
 
     The data of an annotation set consists of:
 
-    *   a list of entities, each entity specifies a kind and a list of slots
-        that are part of the entity.
+    *   a dict of entities, keyed by slots or line numbers;
+        each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
     do anything.
@@ -48,13 +48,6 @@ def loadData(web, annoSet):
     ----------
     web: object
         The web application object, which has a handle to the TF app object.
-
-    annoSet: string
-        The name of the annotation set whose data should be loaded.
-        If empty, we use entity data that is already present in the TF data source.
-        We do not have to load that, but we do the processing, if the processed data
-        is not yet available.
-        We consider this static data.
 
     Returns
     -------
@@ -90,6 +83,8 @@ def loadData(web, annoSet):
 
     setsData = nerData.sets
 
+    annoSet = web.annoSet
+
     if annoSet not in setsData:
         setsData[annoSet] = AttrDict()
 
@@ -101,6 +96,7 @@ def loadData(web, annoSet):
     F = api.F
     T = api.T
     L = api.L
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, "ner")
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
@@ -123,114 +119,108 @@ def loadData(web, annoSet):
         ):
             web.console(f"LOAD '{annoSet}' START")
             changed = True
-            entities = []
+            entities = {}
 
             if fileExists(dataFile):
                 with open(dataFile) as df:
-                    for line in df:
-                        entities.append(line.rstrip("\n").split("\t"))
+                    for (e, line) in enumerate(df):
+                        entities[e] = line.rstrip("\n").split("\t")
 
             setData.entities = entities
             setData.dateLoaded = datetime.utcnow()
             web.console(f"LOAD '{annoSet}' DONE")
         else:
             web.console(f"LOAD '{annoSet}' REUSED")
+    else:
+        if "entities" not in setData:
+            setData.entities = {
+                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s("ent")
+            }
 
     # processing stage (a bit different for annoset == "")
 
-    if annoSet:
-        if (
-            changed
-            or "dateProcessed" not in setData
-            or "entitiesByKind" not in setData
-            or "entityKindFreq" not in setData
-            or "entityText" not in setData
-            or "entityTextFreq" not in setData
-            or "entitiesSlotIndex" not in setData
-            or setData.dateProcessed < setData.dateLoaded
-        ):
-            web.console(f"PROCESS '{annoSet}' START")
-            entitiesByKind = {}
-            entityText = {}
-            entityKindFreq = collections.Counter()
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
+    entitiesByKind = {}
+    entityText = {}
+    entityTextFreq = collections.Counter()
+    entitiesSlotIndex = {}
 
-            for (e, eData) in enumerate(setData.entities):
+    dateLoaded = setData.dateLoaded
+    dateProcessed = setData.dateProcessed
+
+    def addToIndex(e, kind, slots):
+        firstSlot = slots[0]
+        lastSlot = slots[-1]
+        txt = entityText[e]
+        textFreq = entityTextFreq[txt]
+
+        for slot in slots:
+            isFirst = slot == firstSlot
+            isLast = slot == lastSlot
+            if isFirst or isLast:
+                if isFirst:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [True, kind, textFreq]
+                    )
+                if isLast:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [False, kind, textFreq]
+                    )
+            else:
+                entitiesSlotIndex.setdefault(slot, []).append(None)
+
+    if (
+        changed
+        or "dateProcessed" not in setData
+        or "entitiesByKind" not in setData
+        or "entityKindFreq" not in setData
+        or "entityText" not in setData
+        or "entityTextFreq" not in setData
+        or "entitiesSlotIndex" not in setData
+        or dateLoaded is not None and dateProcessed < dateLoaded
+    ):
+        web.console(f"PROCESS '{annoSet}' START")
+
+        if annoSet:
+            entityKindFreq = collections.Counter()
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
                 txt = WHITE_RE.sub(" ", T.text(slots).strip())
+
                 entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityKindFreq[kind] += 1
                 entityTextFreq[txt] += 1
 
-            for (e, eData) in enumerate(setData.entities):
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
-
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
             setData.entityKindFreq = sorted(entityKindFreq.items())
-            setData.entityTextFreq = entityTextFreq
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            setData.dateProcessed = datetime.utcnow()
-            web.console(f"PROCESS '{annoSet}' DONE")
         else:
-            web.console(f"PROCESS '{annoSet}' REUSED")
-    else:
-        if (
-            "dateProcessed" not in setData
-            or "entitiesByKind" not in setData
-            or "entityKindFreq" not in setData
-            or "entityText" not in setData
-            or "entityTextFreq" not in setData
-            or "entitiesSlotIndex" not in setData
-        ):
-            web.console(f"PROCESS '{annoSet}' START")
-            entitiesByKind = {}
-            entityText = {}
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
-
             for e in F.otype.s("ent"):
                 kind = F.kind.v(e)
                 txt = WHITE_RE.sub(" ", T.text(e).strip())
+
                 entityText[e] = txt
                 entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityTextFreq[txt] += 1
 
             for e in F.otype.s("ent"):
-                slots = L.d(e, otype="t")
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                kind = F.kind.v(e)
+                slots = L.d(e, otype=slotType)
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
+            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={"ent"}))
 
-            entityKindFreq = sorted(F.kind.freqList(nodeTypes={"ent"}))
+        setData.entityText = entityText
+        setData.entitiesByKind = entitiesByKind
+        setData.entityTextFreq = entityTextFreq
+        setData.entitiesSlotIndex = entitiesSlotIndex
+        setData.dateProcessed = datetime.utcnow()
 
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
-            setData.entityKindFreq = entityKindFreq
-            setData.entityTextFreq = entityTextFreq
-            setData.dateProcessed = datetime.utcnow()
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            web.console(f"PROCESS '{annoSet}' DONE")
-        else:
-            web.console(f"PROCESS '{annoSet}' REUSED")
+        web.console(f"PROCESS '{annoSet}' DONE")
+
+    else:
+        web.console(f"PROCESS '{annoSet}' REUSED")

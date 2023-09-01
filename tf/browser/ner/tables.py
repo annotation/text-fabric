@@ -5,16 +5,13 @@ import re
 from textwrap import dedent
 
 
-def composeE(app, setData, sortKey, sortDir):
+def composeE(web, activeEntity, sortKey, sortDir):
     """Compose a table of entities with selection and sort controls.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
-    setData: dict
-        The entity data of the chosen set.
-        We only need the `entitiesByKind` member.
+    web: object
+        The web app object
     sortKey: string
         Indicates how to sort the table:
 
@@ -34,9 +31,13 @@ def composeE(app, setData, sortKey, sortDir):
         The finished HTML of the table, ready to put into the Flask template.
     """
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
     html = []
 
+    entities = setData.entities
     entries = setData.entitiesByKind.items()
+
     if sortKey == "freqsort":
         if sortDir == "u":
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
@@ -51,17 +52,29 @@ def composeE(app, setData, sortKey, sortDir):
         if sortDir == "d":
             entries = reversed(entries)
 
-    for ((kind, txt), es) in entries:
+    for (i, ((kind, txt), es)) in enumerate(entries):
         x = len(es)
-        item = (
-            f"""<span><code class="w">{x:>5}</code> x <b>{kind}</b> {txt}</span><br>"""
+        e1 = es[0]
+        ent1 = entities[e1]
+        (eFirst, eLast) = (ent1[1], ent1[-1])
+
+        active = " queried " if activeEntity is not None and i == activeEntity else ""
+
+        item = dedent(
+            f"""
+            <p class="e {active}" enm="{i}" tstart="{eFirst}" tend="{eLast}">
+                <code class="w">{x:>5}</code>
+                x
+                <b>{kind}</b>
+                <span class="et">{txt}</span>
+            </p>"""
         )
         html.append(item)
 
     return "\n".join(html)
 
 
-def tokenMatch(L, F, T, s, findPatternRe, words):
+def tokenMatch(L, F, T, s, sFindPatternRe, words):
     """Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
@@ -74,17 +87,20 @@ def tokenMatch(L, F, T, s, findPatternRe, words):
     s: integer
         The node of the sentence in question
     words: list of string
-        The sequence of words that must be matched. They are all non-empty.
+        The sequence of words that must be matched. They are all non-empty and stripped
+        from white space.
     """
     nWords = len(words)
 
     positions = set()
 
-    if findPatternRe:
+    fits = None
+
+    if sFindPatternRe:
         fits = False
         sText = T.text(s)
 
-        for match in findPatternRe.finditer(sText):
+        for match in sFindPatternRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
@@ -124,7 +140,7 @@ def tokenMatch(L, F, T, s, findPatternRe, words):
     return (fits, (sTokensAll, matches, positions))
 
 
-def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
+def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
     """Compose a table of sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -136,13 +152,10 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
-    setData: dict
-        The entity data of the chosen set.
-
-    findPattern: string
+    sFindPattern: string
         A search string that filters the sentences, before applying the search
         for a word sequence.
 
@@ -157,6 +170,10 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
         The finished HTML of the table, ready to put into the Flask template.
     """
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     L = api.L
     F = api.F
@@ -167,7 +184,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
     if tokenStart and tokenEnd:
         for t in range(tokenStart, tokenEnd + 1):
-            word = F.str.v(t)
+            word = (F.str.v(t) or "").strip()
             if word:
                 words.append(word)
 
@@ -178,7 +195,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
     nTotal = 0
 
     for s in setData.sentences:
-        (fits, result) = tokenMatch(L, F, T, s, findPatternRe, words)
+        (fits, result) = tokenMatch(L, F, T, s, sFindPatternRe, words)
         if fits:
             nFind += 1
 
@@ -187,7 +204,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
         nQuery += 1
 
-        if not fits:
+        if fits is not None and not fits:
             continue
 
         nTotal += 1
@@ -219,7 +236,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
                                 dedent(
                                     f"""
                                     <span class="es"
-                                    >{kind} <span class="n">{freq}</span
+                                    >[{kind} <span class="n">{freq}</span
                                     ></span>"""
                                 )
                             )
@@ -227,22 +244,20 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
             ht.append(f"""<span {hlClass} {inside} t="{t}">{w}</span>{after}""")
 
             if info is not None:
-                for item in info:
+                for item in reversed(info):
                     if item is not None:
                         (status, kind, freq) = item
                         if not status:
-                            ht.append(
-                                dedent(f"""<span class="ee">{kind}</span></span>""")
-                            )
+                            ht.append(dedent("""<span class="ee">]</span>"""))
 
             charPos += lenWa
 
         ht = "".join(ht)
         html.append(f"""<div class="s">{ht}</div>""")
 
-    findStat = f"""<span class="stat">{nFind}</span>""" if findPatternRe else ""
+    findStat = f"""<span class="stat">{nFind}</span>""" if sFindPatternRe else ""
     if tokenStart and tokenEnd:
-        n = f"{nTotal} of {nQuery}" if findPatternRe else f"{nQuery}"
+        n = f"{nTotal} of {nQuery}" if sFindPatternRe else f"{nQuery}"
         queryStat = f"""<span class="stat">{n}</span>"""
     else:
         queryStat = ""
@@ -250,13 +265,13 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
     return (findStat, queryStat, "".join(html))
 
 
-def composeQ(app, findPattern, tokenStart, tokenEnd):
+def composeQ(web, sFindPattern, tokenStart, tokenEnd):
     """HTML for the query tokens.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
     tokenStart, tokenEnd: int or None
         Specify the start slot number and the end slot number of a sequence of tokens.
@@ -269,18 +284,20 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
         The finished HTML of the query parameters
     """
 
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     F = api.F
 
     html = []
 
-    findPattern = (findPattern or "").strip()
-    findPatternRe = None
+    sFindPattern = (sFindPattern or "").strip()
+    sFindPatternRe = None
     errorMsg = ""
 
-    if findPattern:
+    if sFindPattern:
         try:
-            findPatternRe = re.compile(findPattern)
+            sFindPatternRe = re.compile(sFindPattern)
         except Exception as e:
             errorMsg = str(e)
 
@@ -290,35 +307,34 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
             <input type="text"
                 name="sfind"
                 id="sFind"
-                value="{findPattern}"
+                value="{sFindPattern}"
             >
             """
         )
     )
 
-    findCtrl = (
-        dedent(
+    findCtrl = dedent(
+        """
+            <button type="submit" id="findClear">✖️</button>
             """
-            <button type="submit" id="findClear">clear</button>
-            """
-        )
     )
 
     if errorMsg:
-        html.append("""</p><p class="error">{errorMsg}""")
+        html.append(f"""<span class="error">{errorMsg}</span>""")
 
     findHtml = "\n".join(html)
 
     html = []
 
-    wordHtml = (
-        " ".join(
-            f"""<span>{F.str.v(t) or ""}</span> """
+    words = (
+        [
+            f"""{F.str.v(t) or ""}{F.after.v(t) or ""}""".strip()
             for t in range(tokenStart, tokenEnd + 1)
-        )
+        ]
         if tokenStart and tokenEnd
-        else ""
+        else []
     )
+    wordHtml = " ".join(f"""<span>{w}</span>""" for w in words if w)
 
     html.append(
         dedent(
@@ -338,14 +354,11 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
         )
     )
 
-    queryCtrl = (
-        dedent(
+    queryCtrl = dedent(
+        """
+            <button type="submit" id="queryClear">✖️</button>
             """
-            <button type="submit" id="queryClear">clear</button>
-            <button type="submit" id="queryFilter">filter</button>
-            """
-        )
     )
 
     queryHtml = "\n".join(html)
-    return (findPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)
+    return (sFindPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)

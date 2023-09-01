@@ -57,24 +57,23 @@ code.w {
 }
 
 #query {
-  height: 12rem;
+  height: 10rem;
   overflow: auto;
 }
 
 #sentences {
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 12rem);
   overflow: auto;
   padding-left: 2rem;
 }
 
-span.queried,#qWordShow>span {
-  border: 1pt solid black;
+p.queried,span.queried,#qWordShow>span {
   border-radius: 0.2rem;
   background-color: yellow;
   padding: 0 0.3rem;
 }
 span.found {
-  background-color: aquamarine;
+  background-color: #aaddff;
   border-radius: 0.2rem;
   padding: 0 0.3rem;
 }
@@ -90,30 +89,23 @@ div.s {
   padding: 0.2rem 0.1rem;
   border-bottom: 2pt solid #eeeeee;
   margin-bottom: 0.2rem;
+  line-height: 150%;
 }
 
 span.ei {
-  border-radius: 0.2rem;
-  background-color: orange;
+  border-bottom: 0.3rem solid orange;
 }
 span.es,span.ee {
-  font-size: small;
-  font-weight: bold;
-  color: blue;
-}
-span.es > span.n {
   font-family: monospace;
+  font-size: x-small;
+  font-weight: bold;
   color: #aaaaaa;
 }
 span.es {
-  border-radius: 0.4em;
-  border-left: 4pt solid blue;
   padding-left: 0.1em;
   margin-left: 0.2em;
 }
 span.ee {
-  border-radius: 0.4em;
-  border-right: 4pt solid blue;
   padding-right: 0.1em;
   margin-right: 0.2em;
 }
@@ -124,10 +116,10 @@ span.sh {
   color: #bbbbbb;
   margin-left: -2rem;
 }
-#sFind {
+#sFind,#eFind {
   font-family: monospace;
   font-size: large;
-  background-color: aquamarine;
+  background-color: #aaddff;
 }
 .error {
   font-weight: bold;
@@ -140,5 +132,8 @@ span.stat {
   border-radius: 0.2rem;
   padding: 0.4rem 0.4rem;
   border: 2pt solid #eeeeff;
+}
+p.e {
+  margin: 0.1rem 0;
 }
 

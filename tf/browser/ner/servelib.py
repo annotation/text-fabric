@@ -22,6 +22,7 @@ def getFormData(web):
     """
 
     form = {}
+
     resetForm = request.form.get("resetForm", "")
     form["resetForm"] = resetForm
 
@@ -35,6 +36,9 @@ def getFormData(web):
     form["kindsort"] = request.form.get("kindsort", "")
     form["etxtsort"] = request.form.get("etxtsort", "")
     form["sfind"] = request.form.get("sfind", "")
+    activeEntity = request.form.get("activeentity", "")
+    form["activeentity"] = int(activeEntity) if activeEntity else None
+    form["efind"] = request.form.get("efind", "")
     tSelectStart = request.form.get("tselectstart", "")
     form["tselectstart"] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get("tselectend", "")

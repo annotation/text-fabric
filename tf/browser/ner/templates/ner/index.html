@@ -20,6 +20,7 @@
 		<form id="go" method="post" enctype="multipart/form-data">
       <input type="hidden" id="resetf" name="resetForm" value="{{resetForm}}">
       <input type="hidden" id="appName" name="appName" value="{{appName}}"/>
+      <input type="hidden" id="slotType" name="slotType" value="{{slotType}}"/>
       <hr/>
       <div class="page">
         <div id="sidebarcont">
@@ -33,6 +34,15 @@
           <h1>Entities</h1>
           {{entitykinds|safe}}
           {{entityheaders|safe}}
+          <p><input type="text" name="efind" id="eFind" value="{{efind}}">
+              <span class="stat" id="nEntityEntries"></span>
+              <button type="button" id="entityClear">✖️</button>
+              <input type="hidden"
+                     id="activeEntity"
+                     name="activeentity"
+                     value="{{activeentity or ''}}"
+              >
+          </p>
           {{entities|safe}}
         </div>
         <div class="midcol">
@@ -46,9 +56,17 @@
         </div>
         <div class="rightcol">
           <div id="query">
-            <h1>Sentences</h1>
-            <p><b>Find:</b> {{find|safe}} {{findStat|safe}} {{findCtrl|safe}}</p>
-            <p><b>Query:</b> {{query|safe}} {{queryStat|safe}} {{queryCtrl|safe}}</p>
+            <h1>Sentences
+            </h1>
+            <p>
+              <span class="widget">
+                {{find|safe}} {{findStat|safe}} {{findCtrl|safe}}
+              </span>
+              <span class="widget">
+                {{query|safe}} {{queryStat|safe}} {{queryCtrl|safe}}
+              </span>
+              <button type="submit" id="queryFilter">🔎</button>
+            </p>
             <hr>
           </div>
           <div id="sentences">

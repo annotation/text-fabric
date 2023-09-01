@@ -144,7 +144,7 @@ def wrapEntityHeaders(sortKey, sortDir):
     return "".join(html)
 
 
-def wrapEntityKinds(setData):
+def wrapEntityKinds(web):
     """HTML for the kinds of entities.
 
     Parameters
@@ -157,6 +157,8 @@ def wrapEntityKinds(setData):
     -------
     HTML string
     """
+
+    setData = web.toolData.ner.sets[web.annoSet]
     html = []
 
     for (kind, freq) in setData.entityKindFreq:
