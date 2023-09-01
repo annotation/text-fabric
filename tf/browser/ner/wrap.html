@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/wrap.py#L1-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L1-L176" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 &#34;&#34;&#34;
@@ -175,7 +175,7 @@ def wrapEntityHeaders(sortKey, sortDir):
     return &#34;&#34;.join(html)
 
 
-def wrapEntityKinds(setData):
+def wrapEntityKinds(web):
     &#34;&#34;&#34;HTML for the kinds of entities.
 
     Parameters
@@ -188,6 +188,8 @@ def wrapEntityKinds(setData):
     -------
     HTML string
     &#34;&#34;&#34;
+
+    setData = web.toolData.ner.sets[web.annoSet]
     html = []
 
     for (kind, freq) in setData.entityKindFreq:
@@ -235,7 +237,7 @@ and features.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     &#34;&#34;&#34;HTML for the annoset chooser.
@@ -345,7 +347,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(sortKey, sortDir):
     &#34;&#34;&#34;HTML for the header of the entity table.
@@ -388,7 +390,7 @@ Indicator of the direction of the sorting.</p>
 </details>
 </dd>
 <dt id="tf.browser.ner.wrap.wrapEntityKinds"><code class="name flex">
-<span>def <span class="ident">wrapEntityKinds</span></span>(<span>setData)</span>
+<span>def <span class="ident">wrapEntityKinds</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the kinds of entities.</p>
@@ -406,9 +408,9 @@ which is a tuple of tuples representing the frequency list of entity kinds.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/wrap.py#L147-L174" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L147-L176" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def wrapEntityKinds(setData):
+<pre><code class="python">def wrapEntityKinds(web):
     &#34;&#34;&#34;HTML for the kinds of entities.
 
     Parameters
@@ -421,6 +423,8 @@ which is a tuple of tuples representing the frequency list of entity kinds.</dd>
     -------
     HTML string
     &#34;&#34;&#34;
+
+    setData = web.toolData.ner.sets[web.annoSet]
     html = []
 
     for (kind, freq) in setData.entityKindFreq:
@@ -446,7 +450,7 @@ which is a tuple of tuples representing the frequency list of entity kinds.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
     &#34;&#34;&#34;HTML for messages.

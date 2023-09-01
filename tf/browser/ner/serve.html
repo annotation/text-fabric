@@ -29,7 +29,7 @@ the annotation tool.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/serve.py#L1-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/serve.py#L1-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Main controller for Flask
 
@@ -58,8 +58,12 @@ def serveNer(web):
 
     aContext = web.context
     appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
+
     kernelApi = web.kernelApi
     app = kernelApi.app
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, &#34;ner&#34;)
     initTree(annoDir, fresh=False)
@@ -105,8 +109,8 @@ def serveNer(web):
 
     templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
-    loadData(web, chosenAnnoSet)
-    setData = web.toolData.ner.sets[chosenAnnoSet]
+    web.annoSet = chosenAnnoSet
+    loadData(web)
 
     sortKey = None
     sortDir = None
@@ -119,13 +123,15 @@ def serveNer(web):
             break
 
     sFind = templateData[&#34;sfind&#34;]
+    activeEntity = templateData[&#34;activeentity&#34;]
     tSelectStart = templateData[&#34;tselectstart&#34;]
     tSelectEnd = templateData[&#34;tselectend&#34;]
 
     templateData[&#34;appName&#34;] = appName
+    templateData[&#34;slotType&#34;] = slotType
     templateData[&#34;resetForm&#34;] = &#34;&#34;
-    templateData[&#34;entities&#34;] = composeE(app, setData, sortKey, sortDir)
-    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(setData)
+    templateData[&#34;entities&#34;] = composeE(web, activeEntity, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(web)
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
     (
         sFindRe,
@@ -133,12 +139,12 @@ def serveNer(web):
         templateData[&#34;findCtrl&#34;],
         templateData[&#34;query&#34;],
         templateData[&#34;queryCtrl&#34;],
-    ) = composeQ(app, sFind, tSelectStart, tSelectEnd)
+    ) = composeQ(web, sFind, tSelectStart, tSelectEnd)
     (
         templateData[&#34;findStat&#34;],
         templateData[&#34;queryStat&#34;],
         templateData[&#34;sentences&#34;],
-    ) = composeS(app, setData, sFindRe, tSelectStart, tSelectEnd)
+    ) = composeS(web, sFindRe, tSelectStart, tSelectEnd)
     templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(
@@ -168,7 +174,7 @@ def serveNer(web):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/serve.py#L17-L115" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/serve.py#L17-L121" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def serveNer(web):
     &#34;&#34;&#34;Serves the NE annotation tool.
@@ -181,8 +187,12 @@ def serveNer(web):
 
     aContext = web.context
     appName = aContext.appName.replace(&#34;/&#34;, &#34; / &#34;)
+
     kernelApi = web.kernelApi
     app = kernelApi.app
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, &#34;ner&#34;)
     initTree(annoDir, fresh=False)
@@ -228,8 +238,8 @@ def serveNer(web):
 
     templateData[&#34;annoSets&#34;] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
-    loadData(web, chosenAnnoSet)
-    setData = web.toolData.ner.sets[chosenAnnoSet]
+    web.annoSet = chosenAnnoSet
+    loadData(web)
 
     sortKey = None
     sortDir = None
@@ -242,13 +252,15 @@ def serveNer(web):
             break
 
     sFind = templateData[&#34;sfind&#34;]
+    activeEntity = templateData[&#34;activeentity&#34;]
     tSelectStart = templateData[&#34;tselectstart&#34;]
     tSelectEnd = templateData[&#34;tselectend&#34;]
 
     templateData[&#34;appName&#34;] = appName
+    templateData[&#34;slotType&#34;] = slotType
     templateData[&#34;resetForm&#34;] = &#34;&#34;
-    templateData[&#34;entities&#34;] = composeE(app, setData, sortKey, sortDir)
-    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(setData)
+    templateData[&#34;entities&#34;] = composeE(web, activeEntity, sortKey, sortDir)
+    templateData[&#34;entitykinds&#34;] = wrapEntityKinds(web)
     templateData[&#34;entityheaders&#34;] = wrapEntityHeaders(sortKey, sortDir)
     (
         sFindRe,
@@ -256,12 +268,12 @@ def serveNer(web):
         templateData[&#34;findCtrl&#34;],
         templateData[&#34;query&#34;],
         templateData[&#34;queryCtrl&#34;],
-    ) = composeQ(app, sFind, tSelectStart, tSelectEnd)
+    ) = composeQ(web, sFind, tSelectStart, tSelectEnd)
     (
         templateData[&#34;findStat&#34;],
         templateData[&#34;queryStat&#34;],
         templateData[&#34;sentences&#34;],
-    ) = composeS(app, setData, sFindRe, tSelectStart, tSelectEnd)
+    ) = composeS(web, sFindRe, tSelectStart, tSelectEnd)
     templateData[&#34;messages&#34;] = wrapMessages(messages)
 
     return render_template(

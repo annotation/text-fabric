@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/tables.py#L1-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/tables.py#L1-L364" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Module to compose tables of result data.
 &#34;&#34;&#34;
@@ -36,16 +36,13 @@ import re
 from textwrap import dedent
 
 
-def composeE(app, setData, sortKey, sortDir):
+def composeE(web, activeEntity, sortKey, sortDir):
     &#34;&#34;&#34;Compose a table of entities with selection and sort controls.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
-    setData: dict
-        The entity data of the chosen set.
-        We only need the `entitiesByKind` member.
+    web: object
+        The web app object
     sortKey: string
         Indicates how to sort the table:
 
@@ -65,9 +62,13 @@ def composeE(app, setData, sortKey, sortDir):
         The finished HTML of the table, ready to put into the Flask template.
     &#34;&#34;&#34;
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
     html = []
 
+    entities = setData.entities
     entries = setData.entitiesByKind.items()
+
     if sortKey == &#34;freqsort&#34;:
         if sortDir == &#34;u&#34;:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
@@ -82,17 +83,29 @@ def composeE(app, setData, sortKey, sortDir):
         if sortDir == &#34;d&#34;:
             entries = reversed(entries)
 
-    for ((kind, txt), es) in entries:
+    for (i, ((kind, txt), es)) in enumerate(entries):
         x = len(es)
-        item = (
-            f&#34;&#34;&#34;&lt;span&gt;&lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt; x &lt;b&gt;{kind}&lt;/b&gt; {txt}&lt;/span&gt;&lt;br&gt;&#34;&#34;&#34;
+        e1 = es[0]
+        ent1 = entities[e1]
+        (eFirst, eLast) = (ent1[1], ent1[-1])
+
+        active = &#34; queried &#34; if activeEntity is not None and i == activeEntity else &#34;&#34;
+
+        item = dedent(
+            f&#34;&#34;&#34;
+            &lt;p class=&#34;e {active}&#34; enm=&#34;{i}&#34; tstart=&#34;{eFirst}&#34; tend=&#34;{eLast}&#34;&gt;
+                &lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt;
+                x
+                &lt;b&gt;{kind}&lt;/b&gt;
+                &lt;span class=&#34;et&#34;&gt;{txt}&lt;/span&gt;
+            &lt;/p&gt;&#34;&#34;&#34;
         )
         html.append(item)
 
     return &#34;\n&#34;.join(html)
 
 
-def tokenMatch(L, F, T, s, findPatternRe, words):
+def tokenMatch(L, F, T, s, sFindPatternRe, words):
     &#34;&#34;&#34;Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
@@ -105,17 +118,20 @@ def tokenMatch(L, F, T, s, findPatternRe, words):
     s: integer
         The node of the sentence in question
     words: list of string
-        The sequence of words that must be matched. They are all non-empty.
+        The sequence of words that must be matched. They are all non-empty and stripped
+        from white space.
     &#34;&#34;&#34;
     nWords = len(words)
 
     positions = set()
 
-    if findPatternRe:
+    fits = None
+
+    if sFindPatternRe:
         fits = False
         sText = T.text(s)
 
-        for match in findPatternRe.finditer(sText):
+        for match in sFindPatternRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 
@@ -155,7 +171,7 @@ def tokenMatch(L, F, T, s, findPatternRe, words):
     return (fits, (sTokensAll, matches, positions))
 
 
-def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
+def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
     &#34;&#34;&#34;Compose a table of sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -167,13 +183,10 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
-    setData: dict
-        The entity data of the chosen set.
-
-    findPattern: string
+    sFindPattern: string
         A search string that filters the sentences, before applying the search
         for a word sequence.
 
@@ -188,6 +201,10 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
         The finished HTML of the table, ready to put into the Flask template.
     &#34;&#34;&#34;
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     L = api.L
     F = api.F
@@ -198,7 +215,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
     if tokenStart and tokenEnd:
         for t in range(tokenStart, tokenEnd + 1):
-            word = F.str.v(t)
+            word = (F.str.v(t) or &#34;&#34;).strip()
             if word:
                 words.append(word)
 
@@ -209,7 +226,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
     nTotal = 0
 
     for s in setData.sentences:
-        (fits, result) = tokenMatch(L, F, T, s, findPatternRe, words)
+        (fits, result) = tokenMatch(L, F, T, s, sFindPatternRe, words)
         if fits:
             nFind += 1
 
@@ -218,7 +235,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
 
         nQuery += 1
 
-        if not fits:
+        if fits is not None and not fits:
             continue
 
         nTotal += 1
@@ -250,7 +267,7 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
                                 dedent(
                                     f&#34;&#34;&#34;
                                     &lt;span class=&#34;es&#34;
-                                    &gt;{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                    &gt;[{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
                                     &gt;&lt;/span&gt;&#34;&#34;&#34;
                                 )
                             )
@@ -258,22 +275,20 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
             ht.append(f&#34;&#34;&#34;&lt;span {hlClass} {inside} t=&#34;{t}&#34;&gt;{w}&lt;/span&gt;{after}&#34;&#34;&#34;)
 
             if info is not None:
-                for item in info:
+                for item in reversed(info):
                     if item is not None:
                         (status, kind, freq) = item
                         if not status:
-                            ht.append(
-                                dedent(f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{kind}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;)
-                            )
+                            ht.append(dedent(&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;]&lt;/span&gt;&#34;&#34;&#34;))
 
             charPos += lenWa
 
         ht = &#34;&#34;.join(ht)
         html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
 
-    findStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{nFind}&lt;/span&gt;&#34;&#34;&#34; if findPatternRe else &#34;&#34;
+    findStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{nFind}&lt;/span&gt;&#34;&#34;&#34; if sFindPatternRe else &#34;&#34;
     if tokenStart and tokenEnd:
-        n = f&#34;{nTotal} of {nQuery}&#34; if findPatternRe else f&#34;{nQuery}&#34;
+        n = f&#34;{nTotal} of {nQuery}&#34; if sFindPatternRe else f&#34;{nQuery}&#34;
         queryStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{n}&lt;/span&gt;&#34;&#34;&#34;
     else:
         queryStat = &#34;&#34;
@@ -281,13 +296,13 @@ def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
     return (findStat, queryStat, &#34;&#34;.join(html))
 
 
-def composeQ(app, findPattern, tokenStart, tokenEnd):
+def composeQ(web, sFindPattern, tokenStart, tokenEnd):
     &#34;&#34;&#34;HTML for the query tokens.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
     tokenStart, tokenEnd: int or None
         Specify the start slot number and the end slot number of a sequence of tokens.
@@ -300,18 +315,20 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
         The finished HTML of the query parameters
     &#34;&#34;&#34;
 
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     F = api.F
 
     html = []
 
-    findPattern = (findPattern or &#34;&#34;).strip()
-    findPatternRe = None
+    sFindPattern = (sFindPattern or &#34;&#34;).strip()
+    sFindPatternRe = None
     errorMsg = &#34;&#34;
 
-    if findPattern:
+    if sFindPattern:
         try:
-            findPatternRe = re.compile(findPattern)
+            sFindPatternRe = re.compile(sFindPattern)
         except Exception as e:
             errorMsg = str(e)
 
@@ -321,35 +338,34 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
             &lt;input type=&#34;text&#34;
                 name=&#34;sfind&#34;
                 id=&#34;sFind&#34;
-                value=&#34;{findPattern}&#34;
+                value=&#34;{sFindPattern}&#34;
             &gt;
             &#34;&#34;&#34;
         )
     )
 
-    findCtrl = (
-        dedent(
+    findCtrl = dedent(
+        &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;findClear&#34;&gt;✖️&lt;/button&gt;
             &#34;&#34;&#34;
-            &lt;button type=&#34;submit&#34; id=&#34;findClear&#34;&gt;clear&lt;/button&gt;
-            &#34;&#34;&#34;
-        )
     )
 
     if errorMsg:
-        html.append(&#34;&#34;&#34;&lt;/p&gt;&lt;p class=&#34;error&#34;&gt;{errorMsg}&#34;&#34;&#34;)
+        html.append(f&#34;&#34;&#34;&lt;span class=&#34;error&#34;&gt;{errorMsg}&lt;/span&gt;&#34;&#34;&#34;)
 
     findHtml = &#34;\n&#34;.join(html)
 
     html = []
 
-    wordHtml = (
-        &#34; &#34;.join(
-            f&#34;&#34;&#34;&lt;span&gt;{F.str.v(t) or &#34;&#34;}&lt;/span&gt; &#34;&#34;&#34;
+    words = (
+        [
+            f&#34;&#34;&#34;{F.str.v(t) or &#34;&#34;}{F.after.v(t) or &#34;&#34;}&#34;&#34;&#34;.strip()
             for t in range(tokenStart, tokenEnd + 1)
-        )
+        ]
         if tokenStart and tokenEnd
-        else &#34;&#34;
+        else []
     )
+    wordHtml = &#34; &#34;.join(f&#34;&#34;&#34;&lt;span&gt;{w}&lt;/span&gt;&#34;&#34;&#34; for w in words if w)
 
     html.append(
         dedent(
@@ -369,17 +385,14 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
         )
     )
 
-    queryCtrl = (
-        dedent(
+    queryCtrl = dedent(
+        &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;✖️&lt;/button&gt;
             &#34;&#34;&#34;
-            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;clear&lt;/button&gt;
-            &lt;button type=&#34;submit&#34; id=&#34;queryFilter&#34;&gt;filter&lt;/button&gt;
-            &#34;&#34;&#34;
-        )
     )
 
     queryHtml = &#34;\n&#34;.join(html)
-    return (findPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)</code></pre>
+    return (sFindPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)</code></pre>
 </details>
 </section>
 <section>
@@ -390,17 +403,14 @@ def composeQ(app, findPattern, tokenStart, tokenEnd):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.tables.composeE"><code class="name flex">
-<span>def <span class="ident">composeE</span></span>(<span>app, setData, sortKey, sortDir)</span>
+<span>def <span class="ident">composeE</span></span>(<span>web, activeEntity, sortKey, sortDir)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compose a table of entities with selection and sort controls.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
-<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The entity data of the chosen set.
-We only need the <code>entitiesByKind</code> member.</dd>
+<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
+<dd>The web app object</dd>
 <dt><strong><code>sortKey</code></strong> :&ensp;<code>string</code></dt>
 <dd>
 <p>Indicates how to sort the table:</p>
@@ -427,18 +437,15 @@ We only need the <code>entitiesByKind</code> member.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/tables.py#L8-L61" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/tables.py#L8-L74" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeE(app, setData, sortKey, sortDir):
+<pre><code class="python">def composeE(web, activeEntity, sortKey, sortDir):
     &#34;&#34;&#34;Compose a table of entities with selection and sort controls.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
-    setData: dict
-        The entity data of the chosen set.
-        We only need the `entitiesByKind` member.
+    web: object
+        The web app object
     sortKey: string
         Indicates how to sort the table:
 
@@ -458,9 +465,13 @@ We only need the <code>entitiesByKind</code> member.</dd>
         The finished HTML of the table, ready to put into the Flask template.
     &#34;&#34;&#34;
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
     html = []
 
+    entities = setData.entities
     entries = setData.entitiesByKind.items()
+
     if sortKey == &#34;freqsort&#34;:
         if sortDir == &#34;u&#34;:
             entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
@@ -475,10 +486,22 @@ We only need the <code>entitiesByKind</code> member.</dd>
         if sortDir == &#34;d&#34;:
             entries = reversed(entries)
 
-    for ((kind, txt), es) in entries:
+    for (i, ((kind, txt), es)) in enumerate(entries):
         x = len(es)
-        item = (
-            f&#34;&#34;&#34;&lt;span&gt;&lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt; x &lt;b&gt;{kind}&lt;/b&gt; {txt}&lt;/span&gt;&lt;br&gt;&#34;&#34;&#34;
+        e1 = es[0]
+        ent1 = entities[e1]
+        (eFirst, eLast) = (ent1[1], ent1[-1])
+
+        active = &#34; queried &#34; if activeEntity is not None and i == activeEntity else &#34;&#34;
+
+        item = dedent(
+            f&#34;&#34;&#34;
+            &lt;p class=&#34;e {active}&#34; enm=&#34;{i}&#34; tstart=&#34;{eFirst}&#34; tend=&#34;{eLast}&#34;&gt;
+                &lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt;
+                x
+                &lt;b&gt;{kind}&lt;/b&gt;
+                &lt;span class=&#34;et&#34;&gt;{txt}&lt;/span&gt;
+            &lt;/p&gt;&#34;&#34;&#34;
         )
         html.append(item)
 
@@ -486,14 +509,14 @@ We only need the <code>entitiesByKind</code> member.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.composeQ"><code class="name flex">
-<span>def <span class="ident">composeQ</span></span>(<span>app, findPattern, tokenStart, tokenEnd)</span>
+<span>def <span class="ident">composeQ</span></span>(<span>web, sFindPattern, tokenStart, tokenEnd)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>HTML for the query tokens.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
+<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
+<dd>The web app object</dd>
 <dt><strong><code>tokenStart</code></strong>, <strong><code>tokenEnd</code></strong> :&ensp;<code>int</code> or <code>None</code></dt>
 <dd>Specify the start slot number and the end slot number of a sequence of tokens.
 Only sentences that contain this token sentence will be passed through,
@@ -507,15 +530,15 @@ all other sentences will be filtered out.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/tables.py#L253-L351" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/tables.py#L268-L364" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeQ(app, findPattern, tokenStart, tokenEnd):
+<pre><code class="python">def composeQ(web, sFindPattern, tokenStart, tokenEnd):
     &#34;&#34;&#34;HTML for the query tokens.
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
     tokenStart, tokenEnd: int or None
         Specify the start slot number and the end slot number of a sequence of tokens.
@@ -528,18 +551,20 @@ all other sentences will be filtered out.</dd>
         The finished HTML of the query parameters
     &#34;&#34;&#34;
 
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     F = api.F
 
     html = []
 
-    findPattern = (findPattern or &#34;&#34;).strip()
-    findPatternRe = None
+    sFindPattern = (sFindPattern or &#34;&#34;).strip()
+    sFindPatternRe = None
     errorMsg = &#34;&#34;
 
-    if findPattern:
+    if sFindPattern:
         try:
-            findPatternRe = re.compile(findPattern)
+            sFindPatternRe = re.compile(sFindPattern)
         except Exception as e:
             errorMsg = str(e)
 
@@ -549,35 +574,34 @@ all other sentences will be filtered out.</dd>
             &lt;input type=&#34;text&#34;
                 name=&#34;sfind&#34;
                 id=&#34;sFind&#34;
-                value=&#34;{findPattern}&#34;
+                value=&#34;{sFindPattern}&#34;
             &gt;
             &#34;&#34;&#34;
         )
     )
 
-    findCtrl = (
-        dedent(
+    findCtrl = dedent(
+        &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;findClear&#34;&gt;✖️&lt;/button&gt;
             &#34;&#34;&#34;
-            &lt;button type=&#34;submit&#34; id=&#34;findClear&#34;&gt;clear&lt;/button&gt;
-            &#34;&#34;&#34;
-        )
     )
 
     if errorMsg:
-        html.append(&#34;&#34;&#34;&lt;/p&gt;&lt;p class=&#34;error&#34;&gt;{errorMsg}&#34;&#34;&#34;)
+        html.append(f&#34;&#34;&#34;&lt;span class=&#34;error&#34;&gt;{errorMsg}&lt;/span&gt;&#34;&#34;&#34;)
 
     findHtml = &#34;\n&#34;.join(html)
 
     html = []
 
-    wordHtml = (
-        &#34; &#34;.join(
-            f&#34;&#34;&#34;&lt;span&gt;{F.str.v(t) or &#34;&#34;}&lt;/span&gt; &#34;&#34;&#34;
+    words = (
+        [
+            f&#34;&#34;&#34;{F.str.v(t) or &#34;&#34;}{F.after.v(t) or &#34;&#34;}&#34;&#34;&#34;.strip()
             for t in range(tokenStart, tokenEnd + 1)
-        )
+        ]
         if tokenStart and tokenEnd
-        else &#34;&#34;
+        else []
     )
+    wordHtml = &#34; &#34;.join(f&#34;&#34;&#34;&lt;span&gt;{w}&lt;/span&gt;&#34;&#34;&#34; for w in words if w)
 
     html.append(
         dedent(
@@ -597,21 +621,18 @@ all other sentences will be filtered out.</dd>
         )
     )
 
-    queryCtrl = (
-        dedent(
+    queryCtrl = dedent(
+        &#34;&#34;&#34;
+            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;✖️&lt;/button&gt;
             &#34;&#34;&#34;
-            &lt;button type=&#34;submit&#34; id=&#34;queryClear&#34;&gt;clear&lt;/button&gt;
-            &lt;button type=&#34;submit&#34; id=&#34;queryFilter&#34;&gt;filter&lt;/button&gt;
-            &#34;&#34;&#34;
-        )
     )
 
     queryHtml = &#34;\n&#34;.join(html)
-    return (findPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)</code></pre>
+    return (sFindPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)</code></pre>
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.composeS"><code class="name flex">
-<span>def <span class="ident">composeS</span></span>(<span>app, setData, findPatternRe, tokenStart, tokenEnd)</span>
+<span>def <span class="ident">composeS</span></span>(<span>web, sFindPatternRe, tokenStart, tokenEnd)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Compose a table of sentences.</p>
@@ -623,11 +644,9 @@ all other sentences will be left out.
 The matching slots will be highlighted.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>app</code></strong> :&ensp;<code>object</code></dt>
-<dd>The TF app of the corpus in question.</dd>
-<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The entity data of the chosen set.</dd>
-<dt><strong><code>findPattern</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
+<dd>The web app object</dd>
+<dt><strong><code>sFindPattern</code></strong> :&ensp;<code>string</code></dt>
 <dd>A search string that filters the sentences, before applying the search
 for a word sequence.</dd>
 <dt><strong><code>tokenStart</code></strong>, <strong><code>tokenEnd</code></strong> :&ensp;<code>int</code> or <code>None</code></dt>
@@ -643,9 +662,9 @@ all other sentences will be filtered out.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/tables.py#L127-L250" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/tables.py#L143-L265" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeS(app, setData, findPatternRe, tokenStart, tokenEnd):
+<pre><code class="python">def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
     &#34;&#34;&#34;Compose a table of sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -657,13 +676,10 @@ all other sentences will be filtered out.</dd>
 
     Parameters
     ----------
-    app: object
-        The TF app of the corpus in question.
+    web: object
+        The web app object
 
-    setData: dict
-        The entity data of the chosen set.
-
-    findPattern: string
+    sFindPattern: string
         A search string that filters the sentences, before applying the search
         for a word sequence.
 
@@ -678,6 +694,10 @@ all other sentences will be filtered out.</dd>
         The finished HTML of the table, ready to put into the Flask template.
     &#34;&#34;&#34;
 
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
     api = app.api
     L = api.L
     F = api.F
@@ -688,7 +708,7 @@ all other sentences will be filtered out.</dd>
 
     if tokenStart and tokenEnd:
         for t in range(tokenStart, tokenEnd + 1):
-            word = F.str.v(t)
+            word = (F.str.v(t) or &#34;&#34;).strip()
             if word:
                 words.append(word)
 
@@ -699,7 +719,7 @@ all other sentences will be filtered out.</dd>
     nTotal = 0
 
     for s in setData.sentences:
-        (fits, result) = tokenMatch(L, F, T, s, findPatternRe, words)
+        (fits, result) = tokenMatch(L, F, T, s, sFindPatternRe, words)
         if fits:
             nFind += 1
 
@@ -708,7 +728,7 @@ all other sentences will be filtered out.</dd>
 
         nQuery += 1
 
-        if not fits:
+        if fits is not None and not fits:
             continue
 
         nTotal += 1
@@ -740,7 +760,7 @@ all other sentences will be filtered out.</dd>
                                 dedent(
                                     f&#34;&#34;&#34;
                                     &lt;span class=&#34;es&#34;
-                                    &gt;{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                    &gt;[{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
                                     &gt;&lt;/span&gt;&#34;&#34;&#34;
                                 )
                             )
@@ -748,22 +768,20 @@ all other sentences will be filtered out.</dd>
             ht.append(f&#34;&#34;&#34;&lt;span {hlClass} {inside} t=&#34;{t}&#34;&gt;{w}&lt;/span&gt;{after}&#34;&#34;&#34;)
 
             if info is not None:
-                for item in info:
+                for item in reversed(info):
                     if item is not None:
                         (status, kind, freq) = item
                         if not status:
-                            ht.append(
-                                dedent(f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{kind}&lt;/span&gt;&lt;/span&gt;&#34;&#34;&#34;)
-                            )
+                            ht.append(dedent(&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;]&lt;/span&gt;&#34;&#34;&#34;))
 
             charPos += lenWa
 
         ht = &#34;&#34;.join(ht)
         html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
 
-    findStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{nFind}&lt;/span&gt;&#34;&#34;&#34; if findPatternRe else &#34;&#34;
+    findStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{nFind}&lt;/span&gt;&#34;&#34;&#34; if sFindPatternRe else &#34;&#34;
     if tokenStart and tokenEnd:
-        n = f&#34;{nTotal} of {nQuery}&#34; if findPatternRe else f&#34;{nQuery}&#34;
+        n = f&#34;{nTotal} of {nQuery}&#34; if sFindPatternRe else f&#34;{nQuery}&#34;
         queryStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{n}&lt;/span&gt;&#34;&#34;&#34;
     else:
         queryStat = &#34;&#34;
@@ -772,7 +790,7 @@ all other sentences will be filtered out.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.tokenMatch"><code class="name flex">
-<span>def <span class="ident">tokenMatch</span></span>(<span>L, F, T, s, findPatternRe, words)</span>
+<span>def <span class="ident">tokenMatch</span></span>(<span>L, F, T, s, sFindPatternRe, words)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks whether a sentence matches a sequence of words.</p>
@@ -785,14 +803,15 @@ extraction</dd>
 <dt><strong><code>s</code></strong> :&ensp;<code>integer</code></dt>
 <dd>The node of the sentence in question</dd>
 <dt><strong><code>words</code></strong> :&ensp;<code>list</code> of <code>string</code></dt>
-<dd>The sequence of words that must be matched. They are all non-empty.</dd>
+<dd>The sequence of words that must be matched. They are all non-empty and stripped
+from white space.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/tables.py#L64-L124" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/tables.py#L77-L140" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def tokenMatch(L, F, T, s, findPatternRe, words):
+<pre><code class="python">def tokenMatch(L, F, T, s, sFindPatternRe, words):
     &#34;&#34;&#34;Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
@@ -805,17 +824,20 @@ extraction</dd>
     s: integer
         The node of the sentence in question
     words: list of string
-        The sequence of words that must be matched. They are all non-empty.
+        The sequence of words that must be matched. They are all non-empty and stripped
+        from white space.
     &#34;&#34;&#34;
     nWords = len(words)
 
     positions = set()
 
-    if findPatternRe:
+    fits = None
+
+    if sFindPatternRe:
         fits = False
         sText = T.text(s)
 
-        for match in findPatternRe.finditer(sText):
+        for match in sFindPatternRe.finditer(sText):
             positions |= set(range(match.start(), match.end()))
             fits = True
 

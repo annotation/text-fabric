@@ -29,7 +29,7 @@ and put it in various dedicated data structures.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/kernel.py#L1-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/kernel.py#L1-L226" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;TF backend processing.
 
@@ -47,13 +47,13 @@ from ...core.files import mTime, fileExists, annotateDir
 WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
 
 
-def loadData(web, annoSet):
+def loadData(web):
     &#34;&#34;&#34;Loads data of the given annotation set from disk into memory.
 
     The data of an annotation set consists of:
 
-    *   a list of entities, each entity specifies a kind and a list of slots
-        that are part of the entity.
+    *   a dict of entities, keyed by slots or line numbers;
+        each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
     do anything.
@@ -81,13 +81,6 @@ def loadData(web, annoSet):
     ----------
     web: object
         The web application object, which has a handle to the TF app object.
-
-    annoSet: string
-        The name of the annotation set whose data should be loaded.
-        If empty, we use entity data that is already present in the TF data source.
-        We do not have to load that, but we do the processing, if the processed data
-        is not yet available.
-        We consider this static data.
 
     Returns
     -------
@@ -123,6 +116,8 @@ def loadData(web, annoSet):
 
     setsData = nerData.sets
 
+    annoSet = web.annoSet
+
     if annoSet not in setsData:
         setsData[annoSet] = AttrDict()
 
@@ -134,6 +129,7 @@ def loadData(web, annoSet):
     F = api.F
     T = api.T
     L = api.L
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, &#34;ner&#34;)
     dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -156,117 +152,111 @@ def loadData(web, annoSet):
         ):
             web.console(f&#34;LOAD &#39;{annoSet}&#39; START&#34;)
             changed = True
-            entities = []
+            entities = {}
 
             if fileExists(dataFile):
                 with open(dataFile) as df:
-                    for line in df:
-                        entities.append(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+                    for (e, line) in enumerate(df):
+                        entities[e] = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
 
             setData.entities = entities
             setData.dateLoaded = datetime.utcnow()
             web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
         else:
             web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
+    else:
+        if &#34;entities&#34; not in setData:
+            setData.entities = {
+                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s(&#34;ent&#34;)
+            }
 
     # processing stage (a bit different for annoset == &#34;&#34;)
 
-    if annoSet:
-        if (
-            changed
-            or &#34;dateProcessed&#34; not in setData
-            or &#34;entitiesByKind&#34; not in setData
-            or &#34;entityKindFreq&#34; not in setData
-            or &#34;entityText&#34; not in setData
-            or &#34;entityTextFreq&#34; not in setData
-            or &#34;entitiesSlotIndex&#34; not in setData
-            or setData.dateProcessed &lt; setData.dateLoaded
-        ):
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
-            entitiesByKind = {}
-            entityText = {}
-            entityKindFreq = collections.Counter()
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
+    entitiesByKind = {}
+    entityText = {}
+    entityTextFreq = collections.Counter()
+    entitiesSlotIndex = {}
 
-            for (e, eData) in enumerate(setData.entities):
+    dateLoaded = setData.dateLoaded
+    dateProcessed = setData.dateProcessed
+
+    def addToIndex(e, kind, slots):
+        firstSlot = slots[0]
+        lastSlot = slots[-1]
+        txt = entityText[e]
+        textFreq = entityTextFreq[txt]
+
+        for slot in slots:
+            isFirst = slot == firstSlot
+            isLast = slot == lastSlot
+            if isFirst or isLast:
+                if isFirst:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [True, kind, textFreq]
+                    )
+                if isLast:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [False, kind, textFreq]
+                    )
+            else:
+                entitiesSlotIndex.setdefault(slot, []).append(None)
+
+    if (
+        changed
+        or &#34;dateProcessed&#34; not in setData
+        or &#34;entitiesByKind&#34; not in setData
+        or &#34;entityKindFreq&#34; not in setData
+        or &#34;entityText&#34; not in setData
+        or &#34;entityTextFreq&#34; not in setData
+        or &#34;entitiesSlotIndex&#34; not in setData
+        or dateLoaded is not None and dateProcessed &lt; dateLoaded
+    ):
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+
+        if annoSet:
+            entityKindFreq = collections.Counter()
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
                 txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+
                 entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityKindFreq[kind] += 1
                 entityTextFreq[txt] += 1
 
-            for (e, eData) in enumerate(setData.entities):
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
-
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
             setData.entityKindFreq = sorted(entityKindFreq.items())
-            setData.entityTextFreq = entityTextFreq
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            setData.dateProcessed = datetime.utcnow()
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
         else:
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)
-    else:
-        if (
-            &#34;dateProcessed&#34; not in setData
-            or &#34;entitiesByKind&#34; not in setData
-            or &#34;entityKindFreq&#34; not in setData
-            or &#34;entityText&#34; not in setData
-            or &#34;entityTextFreq&#34; not in setData
-            or &#34;entitiesSlotIndex&#34; not in setData
-        ):
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
-            entitiesByKind = {}
-            entityText = {}
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
-
             for e in F.otype.s(&#34;ent&#34;):
                 kind = F.kind.v(e)
                 txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+
                 entityText[e] = txt
                 entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityTextFreq[txt] += 1
 
             for e in F.otype.s(&#34;ent&#34;):
-                slots = L.d(e, otype=&#34;t&#34;)
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                kind = F.kind.v(e)
+                slots = L.d(e, otype=slotType)
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
+            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
 
-            entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+        setData.entityText = entityText
+        setData.entitiesByKind = entitiesByKind
+        setData.entityTextFreq = entityTextFreq
+        setData.entitiesSlotIndex = entitiesSlotIndex
+        setData.dateProcessed = datetime.utcnow()
 
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
-            setData.entityKindFreq = entityKindFreq
-            setData.entityTextFreq = entityTextFreq
-            setData.dateProcessed = datetime.utcnow()
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
-        else:
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+
+    else:
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -277,14 +267,14 @@ def loadData(web, annoSet):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="tf.browser.ner.kernel.loadData"><code class="name flex">
-<span>def <span class="ident">loadData</span></span>(<span>web, annoSet)</span>
+<span>def <span class="ident">loadData</span></span>(<span>web)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Loads data of the given annotation set from disk into memory.</p>
 <p>The data of an annotation set consists of:</p>
 <ul>
-<li>a list of entities, each entity specifies a kind and a list of slots
-that are part of the entity.</li>
+<li>a dict of entities, keyed by slots or line numbers;
+each entity specifies a kind and a list of slots that are part of the entity.</li>
 </ul>
 <p>If <code>annoSet</code> is empty, the annotation data is already in the TF data, and we do not
 do anything.</p>
@@ -311,12 +301,6 @@ or the data on disk has been updated since the last load.</p>
 <dl>
 <dt><strong><code>web</code></strong> :&ensp;<code>object</code></dt>
 <dd>The web application object, which has a handle to the TF app object.</dd>
-<dt><strong><code>annoSet</code></strong> :&ensp;<code>string</code></dt>
-<dd>The name of the annotation set whose data should be loaded.
-If empty, we use entity data that is already present in the TF data source.
-We do not have to load that, but we do the processing, if the processed data
-is not yet available.
-We consider this static data.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -342,15 +326,15 @@ of processing</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/5e66ca44110b4d30b0b49d15da9a231ee94b67a1/tf/browser/ner/kernel.py#L17-L236" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/kernel.py#L17-L226" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def loadData(web, annoSet):
+<pre><code class="python">def loadData(web):
     &#34;&#34;&#34;Loads data of the given annotation set from disk into memory.
 
     The data of an annotation set consists of:
 
-    *   a list of entities, each entity specifies a kind and a list of slots
-        that are part of the entity.
+    *   a dict of entities, keyed by slots or line numbers;
+        each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
     do anything.
@@ -378,13 +362,6 @@ of processing</li>
     ----------
     web: object
         The web application object, which has a handle to the TF app object.
-
-    annoSet: string
-        The name of the annotation set whose data should be loaded.
-        If empty, we use entity data that is already present in the TF data source.
-        We do not have to load that, but we do the processing, if the processed data
-        is not yet available.
-        We consider this static data.
 
     Returns
     -------
@@ -420,6 +397,8 @@ of processing</li>
 
     setsData = nerData.sets
 
+    annoSet = web.annoSet
+
     if annoSet not in setsData:
         setsData[annoSet] = AttrDict()
 
@@ -431,6 +410,7 @@ of processing</li>
     F = api.F
     T = api.T
     L = api.L
+    slotType = F.otype.slotType
 
     annoDir = annotateDir(app, &#34;ner&#34;)
     dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
@@ -453,117 +433,111 @@ of processing</li>
         ):
             web.console(f&#34;LOAD &#39;{annoSet}&#39; START&#34;)
             changed = True
-            entities = []
+            entities = {}
 
             if fileExists(dataFile):
                 with open(dataFile) as df:
-                    for line in df:
-                        entities.append(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+                    for (e, line) in enumerate(df):
+                        entities[e] = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
 
             setData.entities = entities
             setData.dateLoaded = datetime.utcnow()
             web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
         else:
             web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
+    else:
+        if &#34;entities&#34; not in setData:
+            setData.entities = {
+                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s(&#34;ent&#34;)
+            }
 
     # processing stage (a bit different for annoset == &#34;&#34;)
 
-    if annoSet:
-        if (
-            changed
-            or &#34;dateProcessed&#34; not in setData
-            or &#34;entitiesByKind&#34; not in setData
-            or &#34;entityKindFreq&#34; not in setData
-            or &#34;entityText&#34; not in setData
-            or &#34;entityTextFreq&#34; not in setData
-            or &#34;entitiesSlotIndex&#34; not in setData
-            or setData.dateProcessed &lt; setData.dateLoaded
-        ):
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
-            entitiesByKind = {}
-            entityText = {}
-            entityKindFreq = collections.Counter()
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
+    entitiesByKind = {}
+    entityText = {}
+    entityTextFreq = collections.Counter()
+    entitiesSlotIndex = {}
 
-            for (e, eData) in enumerate(setData.entities):
+    dateLoaded = setData.dateLoaded
+    dateProcessed = setData.dateProcessed
+
+    def addToIndex(e, kind, slots):
+        firstSlot = slots[0]
+        lastSlot = slots[-1]
+        txt = entityText[e]
+        textFreq = entityTextFreq[txt]
+
+        for slot in slots:
+            isFirst = slot == firstSlot
+            isLast = slot == lastSlot
+            if isFirst or isLast:
+                if isFirst:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [True, kind, textFreq]
+                    )
+                if isLast:
+                    entitiesSlotIndex.setdefault(slot, []).append(
+                        [False, kind, textFreq]
+                    )
+            else:
+                entitiesSlotIndex.setdefault(slot, []).append(None)
+
+    if (
+        changed
+        or &#34;dateProcessed&#34; not in setData
+        or &#34;entitiesByKind&#34; not in setData
+        or &#34;entityKindFreq&#34; not in setData
+        or &#34;entityText&#34; not in setData
+        or &#34;entityTextFreq&#34; not in setData
+        or &#34;entitiesSlotIndex&#34; not in setData
+        or dateLoaded is not None and dateProcessed &lt; dateLoaded
+    ):
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
+
+        if annoSet:
+            entityKindFreq = collections.Counter()
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
                 txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+
                 entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityKindFreq[kind] += 1
                 entityTextFreq[txt] += 1
 
-            for (e, eData) in enumerate(setData.entities):
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+
+            for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
-
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
             setData.entityKindFreq = sorted(entityKindFreq.items())
-            setData.entityTextFreq = entityTextFreq
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            setData.dateProcessed = datetime.utcnow()
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
         else:
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)
-    else:
-        if (
-            &#34;dateProcessed&#34; not in setData
-            or &#34;entitiesByKind&#34; not in setData
-            or &#34;entityKindFreq&#34; not in setData
-            or &#34;entityText&#34; not in setData
-            or &#34;entityTextFreq&#34; not in setData
-            or &#34;entitiesSlotIndex&#34; not in setData
-        ):
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
-            entitiesByKind = {}
-            entityText = {}
-            entityTextFreq = collections.Counter()
-            entitiesSlotIndex = {}
-
             for e in F.otype.s(&#34;ent&#34;):
                 kind = F.kind.v(e)
                 txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+
                 entityText[e] = txt
                 entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityTextFreq[txt] += 1
 
             for e in F.otype.s(&#34;ent&#34;):
-                slots = L.d(e, otype=&#34;t&#34;)
-                firstSlot = slots[0]
-                lastSlot = slots[-1]
-                txt = entityText[e]
-                textFreq = entityTextFreq[txt]
+                kind = F.kind.v(e)
+                slots = L.d(e, otype=slotType)
+                addToIndex(e, kind, slots)
 
-                for slot in slots:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [slot == firstSlot, kind, textFreq]
-                        if slot == firstSlot or slot == lastSlot
-                        else None
-                    )
+            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
 
-            entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
+        setData.entityText = entityText
+        setData.entitiesByKind = entitiesByKind
+        setData.entityTextFreq = entityTextFreq
+        setData.entitiesSlotIndex = entitiesSlotIndex
+        setData.dateProcessed = datetime.utcnow()
 
-            setData.entityText = entityText
-            setData.entitiesByKind = entitiesByKind
-            setData.entityKindFreq = entityKindFreq
-            setData.entityTextFreq = entityTextFreq
-            setData.dateProcessed = datetime.utcnow()
-            setData.entitiesSlotIndex = entitiesSlotIndex
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
-        else:
-            web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
+
+    else:
+        web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
 </details>
 </dd>
 </dl>
