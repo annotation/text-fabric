@@ -70,7 +70,7 @@ export class SearchProvider {
      *
      * a. add the CSS class "waiting" to some elements
      * b. run the function in question
-     * c. remove the CSS class "waiting" from thiose elements
+     * c. remove the CSS class "waiting" from those elements
      *
      * However, when we implement this straightforwardly and synchronously,
      * we do not see any effect, because the browser does not take the trouble

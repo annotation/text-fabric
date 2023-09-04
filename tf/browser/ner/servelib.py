@@ -36,6 +36,7 @@ def getFormData(web):
     form["kindsort"] = request.form.get("kindsort", "")
     form["etxtsort"] = request.form.get("etxtsort", "")
     form["sfind"] = request.form.get("sfind", "")
+    form["sfinderror"] = request.form.get("sfinderror", "")
     activeEntity = request.form.get("activeentity", "")
     form["activeentity"] = int(activeEntity) if activeEntity else None
     form["efind"] = request.form.get("efind", "")
@@ -43,6 +44,12 @@ def getFormData(web):
     form["tselectstart"] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get("tselectend", "")
     form["tselectend"] = int(tSelectEnd) if tSelectEnd else None
+    eKindButton = request.form.get("ekindbutton", "")
+    eKindSave = request.form.get("ekindsave", "")
+    eKindX = request.form.get("ekindx", "")
+    selEKind = eKindX if eKindSave else eKindButton
+    form["selEKind"] = selEKind
+    form["saveVisible"] = request.form.get("savevisible", "a")
 
     return form
 

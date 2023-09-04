@@ -4,13 +4,15 @@ This module contains the main controller that Flask invokes when serving
 the annotation tool.
 """
 
+import re
+
 from flask import render_template
 
 from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
 
 from .servelib import getFormData, annoSets
 from .kernel import loadData
-from .tables import composeE, composeS, composeQ
+from .tables import composeE, composeS, composeQ, saveEntity, filterS, composeStat
 from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
 
 
@@ -77,6 +79,7 @@ def serveNer(web):
     templateData["annoSets"] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
     web.annoSet = chosenAnnoSet
+
     loadData(web)
 
     sortKey = None
@@ -90,28 +93,61 @@ def serveNer(web):
             break
 
     sFind = templateData["sfind"]
+    sFind = (sFind or "").strip()
+    sFindRe = None
+    errorMsg = ""
+
+    if sFind:
+        try:
+            sFindRe = re.compile(sFind)
+        except Exception as e:
+            errorMsg = str(e)
+
+    templateData["sFindError"] = errorMsg
+
     activeEntity = templateData["activeentity"]
-    tSelectStart = templateData["tselectstart"]
-    tSelectEnd = templateData["tselectend"]
 
     templateData["appName"] = appName
     templateData["slotType"] = slotType
     templateData["resetForm"] = ""
+    tSelectStart = templateData["tselectstart"]
+    tSelectEnd = templateData["tselectend"]
+    saveVisible = templateData["saveVisible"]
+
+    (sentences, nFind, nVisible, nQuery) = filterS(
+        web, sFindRe, tSelectStart, tSelectEnd
+    )
+
+    (
+        templateData["query"],
+        templateData["queryCtrl"],
+        templateData["editCtrl"],
+    ) = composeQ(web, sFind, tSelectStart, tSelectEnd, nQuery, nVisible, saveVisible)
+
+    selEKind = templateData["selEKind"]
+
+    if selEKind and tSelectStart and tSelectEnd:
+        saveSentences = (
+            filterS(web, None, tSelectStart, tSelectEnd)[0]
+            if sFindRe and saveVisible == "a"
+            else sentences
+        )
+        saveEntity(web, selEKind, saveSentences)
+        (sentences, nFind, nVisible, nQuery) = filterS(
+            web, sFindRe, tSelectStart, tSelectEnd
+        )
+
     templateData["entities"] = composeE(web, activeEntity, sortKey, sortDir)
     templateData["entitykinds"] = wrapEntityKinds(web)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
-    (
-        sFindRe,
-        templateData["find"],
-        templateData["findCtrl"],
-        templateData["query"],
-        templateData["queryCtrl"],
-    ) = composeQ(web, sFind, tSelectStart, tSelectEnd)
-    (
-        templateData["findStat"],
-        templateData["queryStat"],
-        templateData["sentences"],
-    ) = composeS(web, sFindRe, tSelectStart, tSelectEnd)
+
+    (templateData["findStat"], templateData["queryStat"]) = composeStat(
+        web, nFind, nVisible, nQuery, sFindRe is not None, tSelectStart and tSelectEnd
+    )
+
+    web.console("start compose sentences")
+    templateData["sentences"] = composeS(web, sentences)
+    web.console("end compose sentences")
     templateData["messages"] = wrapMessages(messages)
 
     return render_template(

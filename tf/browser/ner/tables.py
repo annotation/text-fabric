@@ -1,8 +1,10 @@
 """Module to compose tables of result data.
 """
 
-import re
+from itertools import chain
 from textwrap import dedent
+
+from .kernel import mergeEntities
 
 
 def composeE(web, activeEntity, sortKey, sortDir):
@@ -107,7 +109,7 @@ def tokenMatch(L, F, T, s, sFindPatternRe, words):
     sTokensAll = [(t, F.str.v(t)) or "" for t in L.d(s, otype="t")]
     sTokens = [x for x in sTokensAll if x[1].strip()]
 
-    matches = set()
+    matches = []
 
     if nWords:
         sWords = {w for (t, w) in sTokens}
@@ -132,7 +134,7 @@ def tokenMatch(L, F, T, s, sFindPatternRe, words):
 
             if match:
                 lastT = sTokens[i + nWords - 1][0]
-                matches |= set(range(t, lastT + 1))
+                matches.append(list(range(t, lastT + 1)))
 
         if len(matches) == 0:
             return (fits, None)
@@ -140,8 +142,8 @@ def tokenMatch(L, F, T, s, sFindPatternRe, words):
     return (fits, (sTokensAll, matches, positions))
 
 
-def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
-    """Compose a table of sentences.
+def filterS(web, sFindPatternRe, tokenStart, tokenEnd):
+    """Filter the sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
     are both filled in.
@@ -166,8 +168,13 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
 
     Returns
     -------
-    html string
-        The finished HTML of the table, ready to put into the Flask template.
+    list of tuples
+        For each sentence that passes the filter, a tuple with the following
+        members is added to the list:
+
+        *   tokens: the tokens of the sentence
+        *   matches: the match positions of the found text
+        *   positions: the token positions where a targeted token sequence starts
     """
 
     setData = web.toolData.ner.sets[web.annoSet]
@@ -179,7 +186,7 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
     F = api.F
     T = api.T
 
-    html = []
+    results = []
     words = []
 
     if tokenStart and tokenEnd:
@@ -188,11 +195,9 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
             if word:
                 words.append(word)
 
-    entitiesSlotIndex = setData.entitiesSlotIndex
-
     nFind = 0
     nQuery = 0
-    nTotal = 0
+    nVisible = 0
 
     for s in setData.sentences:
         (fits, result) = tokenMatch(L, F, T, s, sFindPatternRe, words)
@@ -207,22 +212,86 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
         if fits is not None and not fits:
             continue
 
-        nTotal += 1
+        nVisible += 1
 
-        (sTokens, matches, positions) = result
+        results.append((s, *result))
+
+    return (results, nFind, nVisible, nQuery)
+
+
+def saveEntity(web, kind, sentences):
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    oldEntities = setData.entities
+    oldEntitySet = oldEntities.values()
+    newEntities = []
+
+    for (s, sTokens, allMatches, positions) in sentences:
+        for matches in allMatches:
+            data = (kind, *matches)
+            if data not in oldEntitySet:
+                newEntities.append(data)
+
+    if len(newEntities):
+        mergeEntities(web, newEntities)
+
+
+def composeStat(web, nFind, nVisible, nQuery, hasPattern, hasQuery):
+    findStat = f"""<span class="stat">{nFind}</span>""" if hasPattern else ""
+
+    if hasQuery:
+        n = f"{nVisible} of {nQuery}" if hasPattern else f"{nQuery}"
+        queryStat = f"""<span class="stat">{n}</span>"""
+    else:
+        queryStat = ""
+
+    return (findStat, queryStat)
+
+
+def composeS(web, sentences):
+    """Compose a table of sentences.
+
+    In that case, we look up the text between those tokens and including.
+    All sentences that contain that text of those slots will show up,
+    all other sentences will be left out.
+    The matching slots will be highlighted.
+
+    Parameters
+    ----------
+    web: object
+        The web app object
+
+    Returns
+    -------
+    html string
+        The finished HTML of the table, ready to put into the Flask template.
+    """
+
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    api = app.api
+    F = api.F
+
+    entitiesSlotIndex = setData.entitiesSlotIndex
+
+    html = []
+
+    for (s, sTokens, matches, positions) in sentences:
         ht = []
         ht.append(f"""<span class="sh">{app.sectionStrFromNode(s)}</span> """)
 
         charPos = 0
+        allMatches = set(chain.from_iterable(matches))
 
         for (t, w) in sTokens:
             after = F.after.v(t) or ""
             lenW = len(w)
             lenWa = len(w) + len(after)
             found = any(charPos + i in positions for i in range(lenW))
-            queried = t in matches
+            queried = t in allMatches
             hlClasses = (" found " if found else "") + (" queried " if queried else "")
-            hlClass = f""" class="{hlClasses}" """ if hlClasses else ""
             info = entitiesSlotIndex.get(t, None)
             inEntity = False
 
@@ -240,8 +309,10 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
                                     ></span>"""
                                 )
                             )
-            inside = 'class="ei"' if inEntity else ""
-            ht.append(f"""<span {hlClass} {inside} t="{t}">{w}</span>{after}""")
+
+            hlClasses += " ei " if inEntity else ""
+            hlClass = f""" class="{hlClasses}" """ if hlClasses else ""
+            ht.append(f"""<span {hlClass} t="{t}">{w}</span>{after}""")
 
             if info is not None:
                 for item in reversed(info):
@@ -255,18 +326,11 @@ def composeS(web, sFindPatternRe, tokenStart, tokenEnd):
         ht = "".join(ht)
         html.append(f"""<div class="s">{ht}</div>""")
 
-    findStat = f"""<span class="stat">{nFind}</span>""" if sFindPatternRe else ""
-    if tokenStart and tokenEnd:
-        n = f"{nTotal} of {nQuery}" if sFindPatternRe else f"{nQuery}"
-        queryStat = f"""<span class="stat">{n}</span>"""
-    else:
-        queryStat = ""
-
-    return (findStat, queryStat, "".join(html))
+    return "".join(html)
 
 
-def composeQ(web, sFindPattern, tokenStart, tokenEnd):
-    """HTML for the query tokens.
+def composeQ(web, sFind, tokenStart, tokenEnd, nQuery, nVisible, saveVisible):
+    """HTML for the query line.
 
     Parameters
     ----------
@@ -288,41 +352,6 @@ def composeQ(web, sFindPattern, tokenStart, tokenEnd):
     app = kernelApi.app
     api = app.api
     F = api.F
-
-    html = []
-
-    sFindPattern = (sFindPattern or "").strip()
-    sFindPatternRe = None
-    errorMsg = ""
-
-    if sFindPattern:
-        try:
-            sFindPatternRe = re.compile(sFindPattern)
-        except Exception as e:
-            errorMsg = str(e)
-
-    html.append(
-        dedent(
-            f"""
-            <input type="text"
-                name="sfind"
-                id="sFind"
-                value="{sFindPattern}"
-            >
-            """
-        )
-    )
-
-    findCtrl = dedent(
-        """
-            <button type="submit" id="findClear">✖️</button>
-            """
-    )
-
-    if errorMsg:
-        html.append(f"""<span class="error">{errorMsg}</span>""")
-
-    findHtml = "\n".join(html)
 
     html = []
 
@@ -360,5 +389,66 @@ def composeQ(web, sFindPattern, tokenStart, tokenEnd):
             """
     )
 
+    annoSet = web.annoSet
+    editCtrl = ""
+
+    if annoSet:
+        setData = web.toolData.ner.sets[annoSet]
+        kinds = sorted(x[0] for x in setData.entityKindFreq)
+        editHtml = []
+
+        web.console(f"composeQ {saveVisible=}")
+        editHtml.append(
+            dedent(
+                f"""
+                 Save result as entity
+                <button type="button"
+                    id="saveVisibleX"
+                    nv="{nVisible}"
+                    na="{nQuery}"
+                >
+                </button>
+                <input type="hidden"
+                    id="saveVisible"
+                    name="savevisible"
+                    value="{saveVisible}"
+                >
+                of existing kind
+                """
+            )
+        )
+        for kind in kinds:
+            editHtml.append(
+                dedent(
+                    f"""
+                    <button type="submit"
+                        name="ekindbutton"
+                        value="{kind}"
+                        class="ekind"
+                    >
+                        {kind}
+                    </button>
+                    """
+                )
+            )
+
+        editHtml.append(
+            dedent(
+                """
+                or new kind
+                <input type="text" id="eKindX" name="ekindx" value="">
+                <button type="submit"
+                    id="eKindSave"
+                    name="ekindsave"
+                    value="v"
+                >
+                    ✅
+                </button>
+                """
+            )
+        )
+
+        editCtrl = " ".join(editHtml)
+
     queryHtml = "\n".join(html)
-    return (sFindPatternRe, findHtml, findCtrl, queryHtml, queryCtrl)
+    return (queryHtml, queryCtrl, editCtrl)

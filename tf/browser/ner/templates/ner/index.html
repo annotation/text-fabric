@@ -23,14 +23,14 @@
       <input type="hidden" id="slotType" name="slotType" value="{{slotType}}"/>
       <hr/>
       <div class="page">
-        <div id="sidebarcont">
+        <div id="col1">
           <p><a href="/">back to TF browser</a></p>
           <h1>{{appName}}</h1>
           <h2>Named Entity Editing</h2>
           {{messages|safe}}
           {{annoSets|safe}}
         </div>
-        <div class="leftcol">
+        <div id="col2">
           <h1>Entities</h1>
           {{entitykinds|safe}}
           {{entityheaders|safe}}
@@ -45,27 +45,24 @@
           </p>
           {{entities|safe}}
         </div>
-        <div class="midcol">
-          <h1>Passages</h1>
-          <input type="hidden" name="sec0" id="sec0" value="{{sec0}}"/>
-          <input type="hidden" name="sec1" id="sec1" value="{{sec1}}"/>
-          <input type="hidden" name="sec2" id="sec2" value="{{sec2}}"/>
-          <div id="passages" class="passages">
-            {{passages|safe}}
-          </div>
-        </div>
-        <div class="rightcol">
+        <div id="col3">
           <div id="query">
             <h1>Sentences
             </h1>
             <p>
               <span class="widget">
-                {{find|safe}} {{findStat|safe}} {{findCtrl|safe}}
+                <input type="text" name="sfind" id="sFind" value="{{sfind}}">
+                <button type="submit" id="findClear">✖️</button>
+                <span id="sFindError" class="error">{{sFindError}}</span>
+                {{find|safe}} {{findStat|safe}}
               </span>
               <span class="widget">
                 {{query|safe}} {{queryStat|safe}} {{queryCtrl|safe}}
               </span>
               <button type="submit" id="queryFilter">🔎</button>
+            </p>
+            <p id="editCtrl">
+              {{editCtrl|safe}}
             </p>
             <hr>
           </div>

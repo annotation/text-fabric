@@ -13,6 +13,39 @@ a:link, a:visited {
 	box-sizing: border-box;
 }
 
+/* COLUMNS */
+
+#col1 {
+	flex: 0 0 auto;
+	background-color: var(--gray-back);
+	height: 99vh;
+  width: 20vw;
+	overflow-y: auto;
+}
+#col2 {
+	flex: 1 0 auto;
+	border-right: 1pt solid var(--fog-rim);
+	padding-left: 4px;
+	padding-right: 8px;
+	height: 99vh;
+  width: 20vw;
+	overflow: auto;
+  resize: horizontal;
+	-webkit-overflow-scrolling: touch;
+}
+#col3 {
+	flex: 10 2 50%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	border-left: 1pt solid var(--fog-rim);
+	padding-left: 8px;
+	padding-right: 4px;
+	width: 48vh;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
 /* OUTPUTS */
 
 div.messages {
@@ -57,12 +90,12 @@ code.w {
 }
 
 #query {
-  height: 10rem;
+  height: 12rem;
   overflow: auto;
 }
 
 #sentences {
-  height: calc(100vh - 12rem);
+  height: calc(100vh - 13rem);
   overflow: auto;
   padding-left: 2rem;
 }
@@ -93,13 +126,13 @@ div.s {
 }
 
 span.ei {
-  border-bottom: 0.3rem solid orange;
+  border-bottom: 0.3rem solid orange ! important;
 }
 span.es,span.ee {
   font-family: monospace;
   font-size: x-small;
   font-weight: bold;
-  color: #aaaaaa;
+  color: #aaaaff;
 }
 span.es {
   padding-left: 0.1em;
@@ -135,5 +168,20 @@ span.stat {
 }
 p.e {
   margin: 0.1rem 0;
+}
+button.ekind {
+  font-family: monospace;
+  font-size: medium;
+  font-weight: bold;
+  color: #aaaaff;
+  background-color: white;
+  border: 1pt solid #8888ff;
+}
+#eKindX {
+  font-family: monospace;
+  font-size: medium;
+  font-weight: bold;
+  color: #8888ff;
+  background-color: white;
 }
 

@@ -155,17 +155,25 @@ const entityControls = () => {
 }
 
 const tokenControls = () => {
+  const annoseth = $("#annoseth")
   const tokens = $("span[t]")
   const findBox = $("#sFind")
   const findClear = $("#findClear")
+  const findError = $("#sFindError")
   const tSelectStart = $("#tSelectStart")
   const tSelectEnd = $("#tSelectEnd")
   const qWordShow = $("#qWordShow")
   const queryFilter = $("#queryFilter")
   const queryClear = $("#queryClear")
+  const editCtrl = $("#editCtrl")
+  const saveVisibleX = $("#saveVisibleX")
+  const saveVisible = $("#saveVisible")
   const tSelectStartVal = tSelectStart.val()
   const tSelectEndVal = tSelectEnd.val()
   const activeEntity = $("#activeEntity")
+  const isRealAnnoSet = annoseth.val() != ""
+
+  let upToDate = true
   let tSelectRange = []
 
   const tSelectInit = () => {
@@ -186,16 +194,46 @@ const tokenControls = () => {
     }
     const hasQuery = tSelectRange.length
     const hasFind = findBox.val().length
+    const findErrorStr = findError.html().length
+
+    if (findErrorStr) {
+      findError.show()
+    }
+    else {
+      findError.hide()
+    }
+
+    const setQueryControls = onoff => {
+      if (onoff) {
+        queryClear.show()
+        if (isRealAnnoSet && upToDate) {
+          editCtrl.show()
+        }
+      }
+      else {
+        queryClear.hide()
+        editCtrl.hide()
+      }
+    }
+
 
     if (hasFind || hasQuery) {
-      queryFilter.show()
+      if (upToDate) {
+        if (isRealAnnoSet) {
+          editCtrl.show()
+        }
+      }
+      else {
+        queryFilter.show()
+        editCtrl.hide()
+      }
       if (hasFind) {
         findClear.show()
       } else {
         findClear.hide()
       }
       if (hasQuery) {
-        queryClear.show()
+        setQueryControls(true)
         if (update) {
           for (let t = tSelectRange[0]; t <= tSelectRange[1]; t++) {
             const elem = $(`span[t="${t}"]`)
@@ -205,12 +243,12 @@ const tokenControls = () => {
           }
         }
       } else {
-        queryClear.hide()
+        setQueryControls(false)
       }
     } else {
       findClear.hide()
       queryFilter.hide()
-      queryClear.hide()
+      setQueryControls(false)
     }
   }
 
@@ -219,6 +257,8 @@ const tokenControls = () => {
 
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
+    upToDate = false
+    editCtrl.hide()
     if (pat.length) {
       findClear.show()
       queryFilter.show()
@@ -234,12 +274,33 @@ const tokenControls = () => {
     findBox.val("")
   })
 
+  const setSaveVisible = val => {
+    const nv = saveVisibleX.attr("nv")
+    const na = saveVisibleX.attr("na")
+    saveVisible.val(val)
+    if (val == "a") {
+      saveVisibleX.html(`- all occurrences (${na}) -`)
+    }
+    else {
+      saveVisibleX.html(`- only visible ones (${nv}) -`)
+    }
+  }
+
+  setSaveVisible(saveVisible.val())
+
+  saveVisibleX.off("click").click(() => {
+    const newVal = saveVisible.val() == "a" ? "v" : "a"
+    setSaveVisible(newVal)
+  })
+
   tokens.off("click").click(e => {
     e.preventDefault()
     const { currentTarget } = e
     const elem = $(currentTarget)
     const tWord = elem.attr("t")
     const tWordInt = parseInt(tWord)
+    upToDate = false
+    editCtrl.hide()
     if (tSelectRange.length == 0) {
       tSelectRange = [tWordInt, tWordInt]
     } else if (tSelectRange.length == 2) {

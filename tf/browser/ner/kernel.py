@@ -6,7 +6,7 @@ and put it in various dedicated data structures.
 
 import collections
 import re
-from datetime import datetime
+import time
 
 from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
@@ -14,12 +14,27 @@ from ...core.files import mTime, fileExists, annotateDir
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 
 
+def mergeEntities(web, newEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, "ner")
+
+    dataFile = f"{annoDir}/{annoSet}/entities.tsv"
+
+    for entity in newEntities:
+        with open(dataFile, "a") as fh:
+            fh.write("\t".join(str(x) for x in entity) + "\n")
+
+    loadData(web)
+
+
 def loadData(web):
     """Loads data of the given annotation set from disk into memory.
 
     The data of an annotation set consists of:
 
-    *   a dict of entities, keyed by slots or line numbers;
+    *   a dict of entities, keyed by nodes or line numbers;
         each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
@@ -124,10 +139,11 @@ def loadData(web):
             if fileExists(dataFile):
                 with open(dataFile) as df:
                     for (e, line) in enumerate(df):
-                        entities[e] = line.rstrip("\n").split("\t")
+                        fields = tuple(line.rstrip("\n").split("\t"))
+                        entities[e] = (fields[0], *(int(f) for f in fields[1:]))
 
             setData.entities = entities
-            setData.dateLoaded = datetime.utcnow()
+            setData.dateLoaded = time.time()
             web.console(f"LOAD '{annoSet}' DONE")
         else:
             web.console(f"LOAD '{annoSet}' REUSED")
@@ -218,7 +234,7 @@ def loadData(web):
         setData.entitiesByKind = entitiesByKind
         setData.entityTextFreq = entityTextFreq
         setData.entitiesSlotIndex = entitiesSlotIndex
-        setData.dateProcessed = datetime.utcnow()
+        setData.dateProcessed = time.time()
 
         web.console(f"PROCESS '{annoSet}' DONE")
 
