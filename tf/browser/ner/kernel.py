@@ -29,6 +29,32 @@ def mergeEntities(web, newEntities):
     loadData(web)
 
 
+def weedEntities(web, delEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, "ner")
+
+    dataFile = f"{annoDir}/{annoSet}/entities.tsv"
+
+    newEntities = []
+
+    with open(dataFile) as fh:
+        for line in fh:
+            fields = tuple(line.rstrip("\n").split("\t"))
+            kind = fields[0]
+            matches = tuple(int(f) for f in fields[1:])
+            data = (kind, *matches)
+            if data in delEntities:
+                continue
+            newEntities.append(line)
+
+    with open(dataFile, "w") as fh:
+        fh.write("".join(newEntities))
+
+    loadData(web)
+
+
 def loadData(web):
     """Loads data of the given annotation set from disk into memory.
 
@@ -76,11 +102,14 @@ def loadData(web):
         *   `dateLoaded`: datetime when the data was last loaded from disk
         *   `dateProcessed`: datetime when the data was last processed
         *   `entities`: the list of entities as loaded from a tsv file
-        *   `entitiesByKind`: the dictionary of entities by kind, text as a result
-            of processing;
-        *   `entityKindFreq`: the frequency list of entity kinds as a result of processing
-        *   `entityTextFreq`: the frequency list of entity texts as a result
-            of processing
+
+        We then process this into the following data structures:
+
+        *   `entitiesByKind`: the dictionary of entities by kind
+        *   `entityKindFreq`: the frequency list of entity kinds
+        *   `entityTextFreq`: the frequency list of entity texts
+        *   `entityTextKind`: the set of kinds that the entities with a given text may
+            have
         *   `entitiesSlot`: the index of entities by slot
     """
     if not hasattr(web, "toolData"):
@@ -158,6 +187,7 @@ def loadData(web):
     entitiesByKind = {}
     entityText = {}
     entityTextFreq = collections.Counter()
+    entityTextKind = collections.defaultdict(set)
     entitiesSlotIndex = {}
 
     dateLoaded = setData.dateLoaded
@@ -191,6 +221,7 @@ def loadData(web):
         or "entityKindFreq" not in setData
         or "entityText" not in setData
         or "entityTextFreq" not in setData
+        or "entityTextKind" not in setData
         or "entitiesSlotIndex" not in setData
         or dateLoaded is not None and dateProcessed < dateLoaded
     ):
@@ -206,6 +237,7 @@ def loadData(web):
                 entityText[e] = txt
                 entityKindFreq[kind] += 1
                 entityTextFreq[txt] += 1
+                entityTextKind[txt].add(kind)
 
                 entitiesByKind.setdefault((kind, txt), []).append(e)
 
@@ -222,6 +254,7 @@ def loadData(web):
                 entityText[e] = txt
                 entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityTextFreq[txt] += 1
+                entityTextKind[txt].add(kind)
 
             for e in F.otype.s("ent"):
                 kind = F.kind.v(e)
@@ -233,6 +266,7 @@ def loadData(web):
         setData.entityText = entityText
         setData.entitiesByKind = entitiesByKind
         setData.entityTextFreq = entityTextFreq
+        setData.entityTextKind = entityTextKind
         setData.entitiesSlotIndex = entitiesSlotIndex
         setData.dateProcessed = time.time()
 

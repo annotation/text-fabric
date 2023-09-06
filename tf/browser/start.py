@@ -178,9 +178,10 @@ def main(cargs=sys.argv[1:]):
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
             console("Opening corpus in browser")
-            webbrowser.open(
+            controller = webbrowser.get("chrome")
+            controller.open(
                 f"{PROTOCOL}{HOST}:{portWeb}",
-                new=2,
+                new=0,
                 autoraise=True,
             )
 

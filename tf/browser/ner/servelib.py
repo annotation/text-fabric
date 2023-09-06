@@ -44,12 +44,16 @@ def getFormData(web):
     form["tselectstart"] = int(tSelectStart) if tSelectStart else None
     tSelectEnd = request.form.get("tselectend", "")
     form["tselectend"] = int(tSelectEnd) if tSelectEnd else None
-    eKindButton = request.form.get("ekindbutton", "")
+    form["eKindSelect"] = request.form.get("ekindselect", "")
+    eKindPButton = request.form.get("ekindpbutton", "")
+    eKindXButton = request.form.get("ekindxbutton", "")
     eKindSave = request.form.get("ekindsave", "")
-    eKindX = request.form.get("ekindx", "")
-    selEKind = eKindX if eKindSave else eKindButton
+    eKindV = request.form.get("ekindv", "")
+    selEKind = eKindV if eKindSave else eKindPButton
     form["selEKind"] = selEKind
+    form["delEKind"] = eKindXButton
     form["saveVisible"] = request.form.get("savevisible", "a")
+    web.console(f"{eKindXButton=}")
 
     return form
 

@@ -140,38 +140,54 @@ const entityControls = () => {
     show()
   })
 
-  entities.off("click").click(e => {
-    e.preventDefault()
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const tStart = elem.attr("tstart")
-    const tEnd = elem.attr("tend")
-    const enm = elem.attr("enm")
-    tSelectStart.val(tStart)
-    tSelectEnd.val(tEnd)
-    activeEntity.val(enm)
-    form.submit()
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }
+
+  const entityListening = entries => {
+    entries.forEach(entry => {
+      const e = entry.target
+      const elem = $(e)
+      elem.off("click").click(e => {
+        e.preventDefault()
+        const { currentTarget } = e
+        const elem = $(currentTarget)
+        const tStart = elem.attr("tstart")
+        const tEnd = elem.attr("tend")
+        const enm = elem.attr("enm")
+        tSelectStart.val(tStart)
+        tSelectEnd.val(tEnd)
+        activeEntity.val(enm)
+        form.submit()
+      })
+    })
+  }
+
+  const observer = new IntersectionObserver(entityListening, options)
+  entities.each((i, elem) => {
+    observer.observe(elem)
   })
+
 }
 
 const tokenControls = () => {
-  const annoseth = $("#annoseth")
-  const tokens = $("span[t]")
+  const sentences = $("div.s")
   const findBox = $("#sFind")
   const findClear = $("#findClear")
   const findError = $("#sFindError")
   const tSelectStart = $("#tSelectStart")
   const tSelectEnd = $("#tSelectEnd")
   const qWordShow = $("#qWordShow")
-  const queryFilter = $("#queryFilter")
+  const lookupf = $("#lookupf")
+  const lookupq = $("#lookupq")
   const queryClear = $("#queryClear")
-  const editCtrl = $("#editCtrl")
   const saveVisibleX = $("#saveVisibleX")
   const saveVisible = $("#saveVisible")
   const tSelectStartVal = tSelectStart.val()
   const tSelectEndVal = tSelectEnd.val()
   const activeEntity = $("#activeEntity")
-  const isRealAnnoSet = annoseth.val() != ""
 
   let upToDate = true
   let tSelectRange = []
@@ -198,34 +214,26 @@ const tokenControls = () => {
 
     if (findErrorStr) {
       findError.show()
-    }
-    else {
+    } else {
       findError.hide()
     }
 
     const setQueryControls = onoff => {
       if (onoff) {
         queryClear.show()
-        if (isRealAnnoSet && upToDate) {
-          editCtrl.show()
-        }
-      }
-      else {
+      } else {
         queryClear.hide()
-        editCtrl.hide()
       }
     }
 
-
     if (hasFind || hasQuery) {
-      if (upToDate) {
-        if (isRealAnnoSet) {
-          editCtrl.show()
+      if (!upToDate) {
+        if (hasFind) {
+          lookupf.show()
         }
-      }
-      else {
-        queryFilter.show()
-        editCtrl.hide()
+        if (hasQuery) {
+          lookupq.show()
+        }
       }
       if (hasFind) {
         findClear.show()
@@ -247,7 +255,8 @@ const tokenControls = () => {
       }
     } else {
       findClear.hide()
-      queryFilter.hide()
+      lookupf.hide()
+      lookupq.hide()
       setQueryControls(false)
     }
   }
@@ -258,14 +267,13 @@ const tokenControls = () => {
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
     upToDate = false
-    editCtrl.hide()
     if (pat.length) {
       findClear.show()
-      queryFilter.show()
+      lookupf.show()
     } else {
       findClear.hide()
       if (tSelectRange.length == 0) {
-        queryFilter.hide()
+        lookupf.hide()
       }
     }
   })
@@ -280,8 +288,7 @@ const tokenControls = () => {
     saveVisible.val(val)
     if (val == "a") {
       saveVisibleX.html(`- all occurrences (${na}) -`)
-    }
-    else {
+    } else {
       saveVisibleX.html(`- only visible ones (${nv}) -`)
     }
   }
@@ -293,36 +300,53 @@ const tokenControls = () => {
     setSaveVisible(newVal)
   })
 
-  tokens.off("click").click(e => {
-    e.preventDefault()
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const tWord = elem.attr("t")
-    const tWordInt = parseInt(tWord)
-    upToDate = false
-    editCtrl.hide()
-    if (tSelectRange.length == 0) {
-      tSelectRange = [tWordInt, tWordInt]
-    } else if (tSelectRange.length == 2) {
-      const start = tSelectRange[0]
-      const end = tSelectRange[1]
-      if (tWordInt < start - 5 || tWordInt > end + 5) {
-        tSelectRange = [tWordInt, tWordInt]
-      } else if (tWordInt <= start) {
-        tSelectRange = [tWordInt, tSelectRange[1]]
-      } else if (tWordInt >= end) {
-        tSelectRange = [tSelectRange[0], tWordInt]
-      } else if (end - tWordInt <= tWordInt - start) {
-        tSelectRange = [tSelectRange[0], tWordInt]
-      } else {
-        tSelectRange = [tWordInt, tSelectRange[1]]
-      }
-    }
-    tSelectStart.val(`${tSelectRange[0]}`)
-    tSelectEnd.val(`${tSelectRange[1]}`)
-    activeEntity.val("")
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }
 
-    presentQueryControls(true)
+  const tokenListening = entries => {
+    entries.forEach(entry => {
+      const e = entry.target
+      const elem = $(e)
+      const tokens = elem.find("span[t]")
+      tokens.off("click").click(e => {
+        e.preventDefault()
+        const { currentTarget } = e
+        const elem = $(currentTarget)
+        const tWord = elem.attr("t")
+        const tWordInt = parseInt(tWord)
+        upToDate = false
+        if (tSelectRange.length == 0) {
+          tSelectRange = [tWordInt, tWordInt]
+        } else if (tSelectRange.length == 2) {
+          const start = tSelectRange[0]
+          const end = tSelectRange[1]
+          if (tWordInt < start - 5 || tWordInt > end + 5) {
+            tSelectRange = [tWordInt, tWordInt]
+          } else if (tWordInt <= start) {
+            tSelectRange = [tWordInt, tSelectRange[1]]
+          } else if (tWordInt >= end) {
+            tSelectRange = [tSelectRange[0], tWordInt]
+          } else if (end - tWordInt <= tWordInt - start) {
+            tSelectRange = [tSelectRange[0], tWordInt]
+          } else {
+            tSelectRange = [tWordInt, tSelectRange[1]]
+          }
+        }
+        tSelectStart.val(`${tSelectRange[0]}`)
+        tSelectEnd.val(`${tSelectRange[1]}`)
+        activeEntity.val("")
+
+        presentQueryControls(true)
+      })
+    })
+  }
+
+  const observer = new IntersectionObserver(tokenListening, options)
+  sentences.each((i, elem) => {
+    observer.observe(elem)
   })
 
   queryClear.off("click").click(() => {

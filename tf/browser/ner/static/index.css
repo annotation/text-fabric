@@ -13,6 +13,11 @@ a:link, a:visited {
 	box-sizing: border-box;
 }
 
+:root {
+  --sent-header-height: 20rem;
+  --ent-header-height: 20rem;
+}
+
 /* COLUMNS */
 
 #col1 {
@@ -89,13 +94,22 @@ code.w {
   white-space: pre;
 }
 
-#query {
-  height: 12rem;
+#entitiesq {
+  height: var(--ent-header-height);
+  overflow: auto;
+}
+
+#entities {
+  height: calc(99vh - var(--ent-header-height) - 1.5rem);
+  overflow: auto;
+}
+#sentencesq {
+  height: var(--sent-header-height);
   overflow: auto;
 }
 
 #sentences {
-  height: calc(100vh - 13rem);
+  height: calc(99vh - var(--sent-header-height) - 1.5rem);
   overflow: auto;
   padding-left: 2rem;
 }
@@ -111,7 +125,7 @@ span.found {
   padding: 0 0.3rem;
 }
 
-#queryFilter {
+#lookupf,#lookupq {
   display: none;
 }
 #queryWords {
@@ -123,6 +137,8 @@ div.s {
   border-bottom: 2pt solid #eeeeee;
   margin-bottom: 0.2rem;
   line-height: 150%;
+  content-visible: auto;
+  contain-intrinsic-size: 1rem 2rem;
 }
 
 span.ei {
@@ -168,16 +184,46 @@ span.stat {
 }
 p.e {
   margin: 0.1rem 0;
+  content-visible: auto;
+  contain-intrinsic-size: 1rem 1rem;
 }
-button.ekind {
+span.ekindw {
+  border-radius: 0.5rem;
+  border: 2pt solid #aaaaff;
+  background-color: white;
+  padding: 0.3rem;
+  margin: 0.1rem 0.5rem;
+}
+span.ekindw.active {
+  border: 0;
+  background-color: #aaaaff;
+}
+
+button.ekindsel {
   font-family: monospace;
-  font-size: medium;
+  font-size: large;
   font-weight: bold;
   color: #aaaaff;
   background-color: white;
-  border: 1pt solid #8888ff;
 }
-#eKindX {
+button.ekindsel.active {
+  color: white;
+  background-color: #aaaaff;
+}
+
+button.ekindmin,button.ekindplus {
+  font-size: small;
+  color: black;
+  border: 0;
+  padding: 0 0.3rem;
+}
+button.ekindmin {
+  background-color: #ffaaaa;
+}
+button.ekindplus {
+  background-color: #aaffaa;
+}
+#eKindV {
   font-family: monospace;
   font-size: medium;
   font-weight: bold;

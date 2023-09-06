@@ -4,7 +4,7 @@
 from itertools import chain
 from textwrap import dedent
 
-from .kernel import mergeEntities
+from .kernel import mergeEntities, weedEntities, WHITE_RE
 
 
 def composeE(web, activeEntity, sortKey, sortDir):
@@ -189,7 +189,9 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd):
     results = []
     words = []
 
-    if tokenStart and tokenEnd:
+    hasEntity = tokenStart and tokenEnd
+
+    if hasEntity:
         for t in range(tokenStart, tokenEnd + 1):
             word = (F.str.v(t) or "").strip()
             if word:
@@ -236,8 +238,29 @@ def saveEntity(web, kind, sentences):
         mergeEntities(web, newEntities)
 
 
-def composeStat(web, nFind, nVisible, nQuery, hasPattern, hasQuery):
-    findStat = f"""<span class="stat">{nFind}</span>""" if hasPattern else ""
+def delEntity(web, kind, sentences):
+    setData = web.toolData.ner.sets[web.annoSet]
+
+    oldEntities = setData.entities
+    oldEntitySet = [x for x in oldEntities.values() if x[0] == kind]
+    delEntities = set()
+
+    for (s, sTokens, allMatches, positions) in sentences:
+        for matches in allMatches:
+            data = (kind, *matches)
+            if data in oldEntitySet:
+                delEntities.add(data)
+
+    if len(delEntities):
+        weedEntities(web, delEntities)
+
+
+def composeStat(web, nSent, nFind, nVisible, nQuery, hasPattern, hasQuery):
+    if hasPattern:
+        n = f"""{nFind} of {nSent}"""
+    else:
+        n = nSent
+    findStat = f"""<span class="stat">{n}</span>"""
 
     if hasQuery:
         n = f"{nVisible} of {nQuery}" if hasPattern else f"{nQuery}"
@@ -329,7 +352,19 @@ def composeS(web, sentences):
     return "".join(html)
 
 
-def composeQ(web, sFind, tokenStart, tokenEnd, nQuery, nVisible, saveVisible):
+def composeQ(
+    web,
+    sFind,
+    sFindRe,
+    sFindError,
+    tokenStart,
+    tokenEnd,
+    eKindSelect,
+    nFind,
+    nQuery,
+    nVisible,
+    saveVisible,
+):
     """HTML for the query line.
 
     Parameters
@@ -352,6 +387,13 @@ def composeQ(web, sFind, tokenStart, tokenEnd, nQuery, nVisible, saveVisible):
     app = kernelApi.app
     api = app.api
     F = api.F
+    T = api.T
+
+    annoSet = web.annoSet
+    setData = web.toolData.ner.sets[annoSet]
+    nSent = len(setData.sentences)
+
+    hasEntity = tokenStart and tokenEnd
 
     html = []
 
@@ -360,95 +402,186 @@ def composeQ(web, sFind, tokenStart, tokenEnd, nQuery, nVisible, saveVisible):
             f"""{F.str.v(t) or ""}{F.after.v(t) or ""}""".strip()
             for t in range(tokenStart, tokenEnd + 1)
         ]
-        if tokenStart and tokenEnd
+        if hasEntity
         else []
     )
     wordHtml = " ".join(f"""<span>{w}</span>""" for w in words if w)
 
+    (findStat, queryStat) = composeStat(
+        web, nSent, nFind, nVisible, nQuery, sFindRe is not None, hasEntity
+    )
+
     html.append(
         dedent(
             f"""
-            <input type="hidden"
-                name="tselectstart"
-                id="tSelectStart"
-                value="{tokenStart or ""}"
-            >
-            <input type="hidden"
-                name="tselectend"
-                id="tSelectEnd"
-                value="{tokenEnd or ""}"
-            >
-            <span id="qWordShow">{wordHtml}</span>
+            <p>
+                <b>Filter:</b>
+                <input type="text" name="sfind" id="sFind" value="{sFind}">
+                {findStat}
+                <button type="submit" id="findClear">✖️</button>
+                <span id="sFindError" class="error">{sFindError}</span>
+                <button type="submit" id="lookupf">🔎</button>
+            </p>
             """
         )
     )
 
-    queryCtrl = dedent(
-        """
-            <button type="submit" id="queryClear">✖️</button>
+    html.append(
+        dedent(
+            f"""
+            <p>
+                <b>Entity:</b>
+                <input type="hidden"
+                    name="tselectstart"
+                    id="tSelectStart"
+                    value="{tokenStart or ""}"
+                >
+                <input type="hidden"
+                    name="tselectend"
+                    id="tSelectEnd"
+                    value="{tokenEnd or ""}"
+                >
+                <span id="qWordShow">{wordHtml}</span>
+                {queryStat}
+                <button type="submit" id="queryClear">✖️</button>
+                <button type="submit" id="lookupq">🔎</button>
+            </p>
             """
+        )
     )
 
-    annoSet = web.annoSet
-    editCtrl = ""
-
     if annoSet:
-        setData = web.toolData.ner.sets[annoSet]
-        kinds = sorted(x[0] for x in setData.entityKindFreq)
-        editHtml = []
+        if hasEntity:
+            html.append(
+                dedent(
+                    f"""
+                    <p>
+                        <b>scope</b>
+                        <button type="button"
+                            id="saveVisibleX"
+                            nv="{nVisible}"
+                            na="{nQuery}"
+                        >
+                        </button>
+                        <input type="hidden"
+                            id="saveVisible"
+                            name="savevisible"
+                            value="{saveVisible}"
+                        >
+                    </p>
+                    """
+                )
+            )
 
-        web.console(f"composeQ {saveVisible=}")
-        editHtml.append(
+    txt = (
+        WHITE_RE.sub(" ", T.text(range(tokenStart, tokenEnd + 1)).strip())
+        if hasEntity
+        else ""
+    )
+    allKinds = sorted(x[0] for x in setData.entityKindFreq)
+    kinds = set(setData.entityTextKind[txt])
+
+    html.append(
+        dedent(
+            """
+            <p><b>Entity kind:</b>
+            """
+        )
+    )
+    for kind in allKinds:
+        selectable = kind in kinds
+        active = " active " if selectable and eKindSelect == kind else ""
+
+        html.append(
             dedent(
                 f"""
-                 Save result as entity
-                <button type="button"
-                    id="saveVisibleX"
-                    nv="{nVisible}"
-                    na="{nQuery}"
-                >
-                </button>
-                <input type="hidden"
-                    id="saveVisible"
-                    name="savevisible"
-                    value="{saveVisible}"
-                >
-                of existing kind
+                <span class="ekindw {active}">
                 """
             )
         )
-        for kind in kinds:
-            editHtml.append(
+        if annoSet and hasEntity:
+            if selectable:
+                html.append(
+                    dedent(
+                        f"""
+                        <button type="submit"
+                            name="ekindxbutton"
+                            value="{kind}"
+                            class="ekindmin"
+                        >
+                            -
+                        </button>
+                        """
+                    )
+                )
+        html.append(
+            dedent(
+                f"""
+                <button type="submit"
+                    name="ekindselect"
+                    value="{kind}"
+                    class="ekindsel {active}"
+                >
+                    {kind}
+                </button>
+                """
+                if selectable
+                else f"""
+                <span
+                    class="ekindsel"
+                >
+                    {kind}
+                </span>
+                """
+            )
+        )
+        if annoSet and hasEntity:
+            html.append(
                 dedent(
                     f"""
                     <button type="submit"
-                        name="ekindbutton"
+                        name="ekindpbutton"
                         value="{kind}"
-                        class="ekind"
+                        class="ekindplus"
                     >
-                        {kind}
+                        +
                     </button>
                     """
                 )
             )
 
-        editHtml.append(
+        html.append(
             dedent(
                 """
-                or new kind
-                <input type="text" id="eKindX" name="ekindx" value="">
+                </span>
+                """
+            )
+        )
+
+    if annoSet and hasEntity:
+        html.append(
+            dedent(
+                """
+                <input type="text" id="eKindV" name="ekindv" value="">
                 <button type="submit"
                     id="eKindSave"
                     name="ekindsave"
                     value="v"
+                    class="ekindplus"
                 >
-                    ✅
+                    +
                 </button>
                 """
             )
         )
 
-        editCtrl = " ".join(editHtml)
+    html.append(
+        dedent(
+            """
+            </p>
+            """
+        )
+    )
 
-    queryHtml = "\n".join(html)
-    return (queryHtml, queryCtrl, editCtrl)
+    html = "\n".join(html)
+    return html

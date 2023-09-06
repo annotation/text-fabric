@@ -12,7 +12,14 @@ from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
 
 from .servelib import getFormData, annoSets
 from .kernel import loadData
-from .tables import composeE, composeS, composeQ, saveEntity, filterS, composeStat
+from .tables import (
+    composeE,
+    composeS,
+    composeQ,
+    saveEntity,
+    delEntity,
+    filterS,
+)
 from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
 
 
@@ -25,6 +32,7 @@ def serveNer(web):
         The flask web app
     """
 
+    web.console("START controller")
     aContext = web.context
     appName = aContext.appName.replace("/", " / ")
 
@@ -50,6 +58,7 @@ def serveNer(web):
         if not resetForm or k not in templateData:
             templateData[k] = v
 
+    eKindSelect = templateData["eKindSelect"]
     chosenAnnoSet = templateData["annoset"]
     renamedAnnoSet = templateData["rannoset"]
     deleteAnnoSet = templateData["dannoset"]
@@ -103,8 +112,6 @@ def serveNer(web):
         except Exception as e:
             errorMsg = str(e)
 
-    templateData["sFindError"] = errorMsg
-
     activeEntity = templateData["activeentity"]
 
     templateData["appName"] = appName
@@ -114,44 +121,57 @@ def serveNer(web):
     tSelectEnd = templateData["tselectend"]
     saveVisible = templateData["saveVisible"]
 
+    selEKind = templateData["selEKind"]
+    delEKind = templateData["delEKind"]
+
     (sentences, nFind, nVisible, nQuery) = filterS(
         web, sFindRe, tSelectStart, tSelectEnd
     )
 
-    (
-        templateData["query"],
-        templateData["queryCtrl"],
-        templateData["editCtrl"],
-    ) = composeQ(web, sFind, tSelectStart, tSelectEnd, nQuery, nVisible, saveVisible)
-
-    selEKind = templateData["selEKind"]
-
-    if selEKind and tSelectStart and tSelectEnd:
+    if (selEKind or delEKind) and tSelectStart and tSelectEnd:
         saveSentences = (
             filterS(web, None, tSelectStart, tSelectEnd)[0]
             if sFindRe and saveVisible == "a"
             else sentences
         )
-        saveEntity(web, selEKind, saveSentences)
-        (sentences, nFind, nVisible, nQuery) = filterS(
-            web, sFindRe, tSelectStart, tSelectEnd
-        )
+        if selEKind or delEKind:
+            if selEKind:
+                saveEntity(web, selEKind, saveSentences)
+            if delEKind:
+                delEntity(web, delEKind, saveSentences)
+            (sentences, nFind, nVisible, nQuery) = filterS(
+                web, sFindRe, tSelectStart, tSelectEnd
+            )
+
+    templateData["q"] = composeQ(
+        web,
+        sFind,
+        sFindRe,
+        errorMsg,
+        tSelectStart,
+        tSelectEnd,
+        eKindSelect,
+        nFind,
+        nQuery,
+        nVisible,
+        saveVisible,
+    )
 
     templateData["entities"] = composeE(web, activeEntity, sortKey, sortDir)
     templateData["entitykinds"] = wrapEntityKinds(web)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
-
-    (templateData["findStat"], templateData["queryStat"]) = composeStat(
-        web, nFind, nVisible, nQuery, sFindRe is not None, tSelectStart and tSelectEnd
-    )
 
     web.console("start compose sentences")
     templateData["sentences"] = composeS(web, sentences)
     web.console("end compose sentences")
     templateData["messages"] = wrapMessages(messages)
 
-    return render_template(
+    result = render_template(
         "ner/index.html",
         css=css,
         **templateData,
     )
+    web.console("END controller")
+    with open("/Users/me/Downloads/test.html", "w") as fh:
+        fh.write(result)
+    return result
