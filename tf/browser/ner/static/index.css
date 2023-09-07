@@ -177,10 +177,8 @@ span.sh {
 span.stat {
   font-family: monospace;
   font-weight: bold;
+  font-size: small;
   color: #0000bb;
-  border-radius: 0.2rem;
-  padding: 0.4rem 0.4rem;
-  border: 2pt solid #eeeeff;
 }
 p.e {
   margin: 0.1rem 0;
@@ -210,6 +208,10 @@ button.ekindsel.active {
   color: white;
   background-color: #aaaaff;
 }
+#scopeFiltered.active,#scopeAll.active {
+  color: white;
+  background-color: black;
+}
 
 button.ekindmin,button.ekindplus {
   font-size: small;
@@ -229,5 +231,10 @@ button.ekindplus {
   font-weight: bold;
   color: #8888ff;
   background-color: white;
+}
+.report {
+  font-family: monospace;
+  color: #ffddbb;
+  background-color: #333333;
 }
 

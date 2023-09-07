@@ -87,6 +87,7 @@ const entityControls = () => {
   const tSelectStart = $("#tSelectStart")
   const tSelectEnd = $("#tSelectEnd")
   const activeEntity = $("#activeEntity")
+  const activeKind = $("#activeKind")
 
   const showAll = () => {
     entities.each((i, elem) => {
@@ -156,10 +157,12 @@ const entityControls = () => {
         const elem = $(currentTarget)
         const tStart = elem.attr("tstart")
         const tEnd = elem.attr("tend")
+        const kind = elem.attr("kind")
         const enm = elem.attr("enm")
         tSelectStart.val(tStart)
         tSelectEnd.val(tEnd)
         activeEntity.val(enm)
+        activeKind.val(kind)
         form.submit()
       })
     })
@@ -183,11 +186,13 @@ const tokenControls = () => {
   const lookupf = $("#lookupf")
   const lookupq = $("#lookupq")
   const queryClear = $("#queryClear")
-  const saveVisibleX = $("#saveVisibleX")
-  const saveVisible = $("#saveVisible")
+  const scope = $("#scope")
+  const scopeFiltered = $("#scopeFiltered")
+  const scopeAll = $("#scopeAll")
   const tSelectStartVal = tSelectStart.val()
   const tSelectEndVal = tSelectEnd.val()
   const activeEntity = $("#activeEntity")
+  const activeKind = $("#activeKind")
 
   let upToDate = true
   let tSelectRange = []
@@ -282,22 +287,24 @@ const tokenControls = () => {
     findBox.val("")
   })
 
-  const setSaveVisible = val => {
-    const nv = saveVisibleX.attr("nv")
-    const na = saveVisibleX.attr("na")
-    saveVisible.val(val)
+  const setScope = val => {
+    scope.val(val)
     if (val == "a") {
-      saveVisibleX.html(`- all occurrences (${na}) -`)
+      scopeAll.addClass("active")
+      scopeFiltered.removeClass("active")
     } else {
-      saveVisibleX.html(`- only visible ones (${nv}) -`)
+      scopeFiltered.addClass("active")
+      scopeAll.removeClass("active")
     }
   }
 
-  setSaveVisible(saveVisible.val())
+  setScope(scope.val())
 
-  saveVisibleX.off("click").click(() => {
-    const newVal = saveVisible.val() == "a" ? "v" : "a"
-    setSaveVisible(newVal)
+  scopeFiltered.off("click").click(() => {
+    setScope("f")
+  })
+  scopeAll.off("click").click(() => {
+    setScope("a")
   })
 
   const options = {
@@ -355,6 +362,7 @@ const tokenControls = () => {
     tSelectEnd.val("")
     qWordShow.html("")
     activeEntity.val("")
+    activeKind.val("")
   })
 }
 

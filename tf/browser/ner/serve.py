@@ -113,34 +113,39 @@ def serveNer(web):
             errorMsg = str(e)
 
     activeEntity = templateData["activeentity"]
+    activeKind = templateData["activekind"]
 
     templateData["appName"] = appName
     templateData["slotType"] = slotType
     templateData["resetForm"] = ""
     tSelectStart = templateData["tselectstart"]
     tSelectEnd = templateData["tselectend"]
-    saveVisible = templateData["saveVisible"]
+    scope = templateData["scope"]
 
-    selEKind = templateData["selEKind"]
+    savEKind = templateData["savEKind"]
     delEKind = templateData["delEKind"]
 
-    (sentences, nFind, nVisible, nQuery) = filterS(
-        web, sFindRe, tSelectStart, tSelectEnd
+    (sentences, nFind, nVisible, nEnt) = filterS(
+        web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
     )
 
-    if (selEKind or delEKind) and tSelectStart and tSelectEnd:
+    report = None
+
+    if (savEKind or delEKind) and tSelectStart and tSelectEnd:
         saveSentences = (
-            filterS(web, None, tSelectStart, tSelectEnd)[0]
-            if sFindRe and saveVisible == "a"
+            filterS(web, None, tSelectStart, tSelectEnd, eKindSelect)[0]
+            if sFindRe and scope == "a"
             else sentences
         )
-        if selEKind or delEKind:
-            if selEKind:
-                saveEntity(web, selEKind, saveSentences)
+        if savEKind or delEKind:
+            report = []
+
+            if savEKind:
+                report.append(saveEntity(web, savEKind, saveSentences))
             if delEKind:
-                delEntity(web, delEKind, saveSentences)
-            (sentences, nFind, nVisible, nQuery) = filterS(
-                web, sFindRe, tSelectStart, tSelectEnd
+                report.append(delEntity(web, delEKind, saveSentences))
+            (sentences, nFind, nVisible, nEnt) = filterS(
+                web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
             )
 
     templateData["q"] = composeQ(
@@ -152,17 +157,21 @@ def serveNer(web):
         tSelectEnd,
         eKindSelect,
         nFind,
-        nQuery,
+        nEnt,
         nVisible,
-        saveVisible,
+        scope,
+        report,
     )
 
-    templateData["entities"] = composeE(web, activeEntity, sortKey, sortDir)
+    hasEntity = tSelectStart and tSelectEnd
+    limited = not hasEntity
+
+    templateData["entities"] = composeE(web, activeEntity, activeKind, sortKey, sortDir)
     templateData["entitykinds"] = wrapEntityKinds(web)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
 
     web.console("start compose sentences")
-    templateData["sentences"] = composeS(web, sentences)
+    templateData["sentences"] = composeS(web, sentences, limited)
     web.console("end compose sentences")
     templateData["messages"] = wrapMessages(messages)
 

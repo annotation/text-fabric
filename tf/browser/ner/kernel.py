@@ -110,7 +110,9 @@ def loadData(web):
         *   `entityTextFreq`: the frequency list of entity texts
         *   `entityTextKind`: the set of kinds that the entities with a given text may
             have
-        *   `entitiesSlot`: the index of entities by slot
+        *   `entitiesSlotIndex`: the index of entities by slot
+        *   `entityIndex`: the index of entities by tuple of slot positions; the values
+            are the set of kinds of the entities at that position.
     """
     if not hasattr(web, "toolData"):
         setattr(web, "toolData", AttrDict())
@@ -189,6 +191,7 @@ def loadData(web):
     entityTextFreq = collections.Counter()
     entityTextKind = collections.defaultdict(set)
     entitiesSlotIndex = {}
+    entityIndex = {}
 
     dateLoaded = setData.dateLoaded
     dateProcessed = setData.dateProcessed
@@ -223,6 +226,7 @@ def loadData(web):
         or "entityTextFreq" not in setData
         or "entityTextKind" not in setData
         or "entitiesSlotIndex" not in setData
+        or "entityIndex" not in setData
         or dateLoaded is not None and dateProcessed < dateLoaded
     ):
         web.console(f"PROCESS '{annoSet}' START")
@@ -243,6 +247,8 @@ def loadData(web):
 
             for (e, eData) in setData.entities.items():
                 (kind, *slots) = eData
+                slots = tuple(slots)
+                entityIndex.setdefault(slots, set()).add(kind)
                 addToIndex(e, kind, slots)
 
             setData.entityKindFreq = sorted(entityKindFreq.items())
@@ -252,13 +258,15 @@ def loadData(web):
                 txt = WHITE_RE.sub(" ", T.text(e).strip())
 
                 entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
                 entityTextFreq[txt] += 1
                 entityTextKind[txt].add(kind)
 
+                entitiesByKind.setdefault((kind, txt), []).append(e)
+
             for e in F.otype.s("ent"):
                 kind = F.kind.v(e)
-                slots = L.d(e, otype=slotType)
+                slots = tuple(L.d(e, otype=slotType))
+                entityIndex.setdefault(slots, set()).add(kind)
                 addToIndex(e, kind, slots)
 
             setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={"ent"}))
@@ -268,6 +276,7 @@ def loadData(web):
         setData.entityTextFreq = entityTextFreq
         setData.entityTextKind = entityTextKind
         setData.entitiesSlotIndex = entitiesSlotIndex
+        setData.entityIndex = entityIndex
         setData.dateProcessed = time.time()
 
         web.console(f"PROCESS '{annoSet}' DONE")
