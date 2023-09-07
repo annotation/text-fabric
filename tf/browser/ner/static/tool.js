@@ -148,31 +148,38 @@ const entityControls = () => {
   }
 
   const entityListening = entries => {
+    //let appeared = 0
+    //let disappeared = 0
     entries.forEach(entry => {
-      const e = entry.target
-      const elem = $(e)
-      elem.off("click").click(e => {
-        e.preventDefault()
-        const { currentTarget } = e
-        const elem = $(currentTarget)
-        const tStart = elem.attr("tstart")
-        const tEnd = elem.attr("tend")
-        const kind = elem.attr("kind")
-        const enm = elem.attr("enm")
-        tSelectStart.val(tStart)
-        tSelectEnd.val(tEnd)
-        activeEntity.val(enm)
-        activeKind.val(kind)
-        form.submit()
-      })
+      const ratio = entry.intersectionRatio
+      const entryE = entry.target
+      const elem = $(entryE)
+      if (ratio > 0) {
+        //appeared += 1
+        elem.off("click").click(() => {
+          const tStart = elem.attr("tstart")
+          const tEnd = elem.attr("tend")
+          const kind = elem.attr("kind")
+          const enm = elem.attr("enm")
+          tSelectStart.val(tStart)
+          tSelectEnd.val(tEnd)
+          activeEntity.val(enm)
+          activeKind.val(kind)
+          form.submit()
+        })
+      }
+      else {
+        //disappeared += 1
+        elem.off("click")
+      }
     })
+    //console.warn(`Entities: ${appeared} appeared; ${disappeared} disappeared`)
   }
 
   const observer = new IntersectionObserver(entityListening, options)
   entities.each((i, elem) => {
     observer.observe(elem)
   })
-
 }
 
 const tokenControls = () => {
@@ -314,41 +321,52 @@ const tokenControls = () => {
   }
 
   const tokenListening = entries => {
+    //let appeared = 0
+    //let disappeared = 0
     entries.forEach(entry => {
-      const e = entry.target
-      const elem = $(e)
-      const tokens = elem.find("span[t]")
-      tokens.off("click").click(e => {
-        e.preventDefault()
-        const { currentTarget } = e
-        const elem = $(currentTarget)
-        const tWord = elem.attr("t")
-        const tWordInt = parseInt(tWord)
-        upToDate = false
-        if (tSelectRange.length == 0) {
-          tSelectRange = [tWordInt, tWordInt]
-        } else if (tSelectRange.length == 2) {
-          const start = tSelectRange[0]
-          const end = tSelectRange[1]
-          if (tWordInt < start - 5 || tWordInt > end + 5) {
+      const ratio = entry.intersectionRatio
+      const entryE = entry.target
+      const entryElem = $(entryE)
+      const tokens = entryElem.find("span[t]")
+      if (ratio > 0) {
+        //appeared += 1
+        tokens.off("click").click(e => {
+          e.preventDefault()
+          const { currentTarget } = e
+          const elem = $(currentTarget)
+          const tWord = elem.attr("t")
+          const tWordInt = parseInt(tWord)
+          upToDate = false
+          if (tSelectRange.length == 0) {
             tSelectRange = [tWordInt, tWordInt]
-          } else if (tWordInt <= start) {
-            tSelectRange = [tWordInt, tSelectRange[1]]
-          } else if (tWordInt >= end) {
-            tSelectRange = [tSelectRange[0], tWordInt]
-          } else if (end - tWordInt <= tWordInt - start) {
-            tSelectRange = [tSelectRange[0], tWordInt]
-          } else {
-            tSelectRange = [tWordInt, tSelectRange[1]]
+          } else if (tSelectRange.length == 2) {
+            const start = tSelectRange[0]
+            const end = tSelectRange[1]
+            if (tWordInt < start - 5 || tWordInt > end + 5) {
+              tSelectRange = [tWordInt, tWordInt]
+            } else if (tWordInt <= start) {
+              tSelectRange = [tWordInt, tSelectRange[1]]
+            } else if (tWordInt >= end) {
+              tSelectRange = [tSelectRange[0], tWordInt]
+            } else if (end - tWordInt <= tWordInt - start) {
+              tSelectRange = [tSelectRange[0], tWordInt]
+            } else {
+              tSelectRange = [tWordInt, tSelectRange[1]]
+            }
           }
-        }
-        tSelectStart.val(`${tSelectRange[0]}`)
-        tSelectEnd.val(`${tSelectRange[1]}`)
-        activeEntity.val("")
+          tSelectStart.val(`${tSelectRange[0]}`)
+          tSelectEnd.val(`${tSelectRange[1]}`)
+          activeEntity.val("")
 
-        presentQueryControls(true)
-      })
+          presentQueryControls(true)
+        })
+      }
+      else {
+        //disappeared += 1
+        tokens.off("click")
+      }
     })
+    //console.warn(`Sentences: ${appeared} appeared; ${disappeared} disappeared`)
   }
 
   const observer = new IntersectionObserver(tokenListening, options)
