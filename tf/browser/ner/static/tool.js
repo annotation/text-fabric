@@ -27,10 +27,12 @@ const storeForm = () => {
 
 const annoSetControls = () => {
   const annoseth = $("#annoseth")
+  const duannoseth = $("#duannoseth")
   const rannoseth = $("#rannoseth")
   const dannoseth = $("#dannoseth")
 
   const aNew = $("#anew")
+  const aDup = $("#adup")
   const aRename = $("#arename")
   const aDelete = $("#adelete")
   const aChange = $("#achange")
@@ -55,6 +57,17 @@ const annoSetControls = () => {
       return
     }
     annoseth.val(newName)
+    storeForm()
+  })
+
+  aDup.off("click").click(e => {
+    const annoSetName = annoseth.val()
+    const newName = suggestName(annoSetName, true)
+    if (newName == null) {
+      e.preventDefault()
+      return
+    }
+    duannoseth.val(newName)
     storeForm()
   })
 
@@ -88,6 +101,8 @@ const entityControls = () => {
   const tSelectEnd = $("#tSelectEnd")
   const activeEntity = $("#activeEntity")
   const activeKind = $("#activeKind")
+  const selectAll = $("#selectall")
+  const selectNone = $("#selectnone")
 
   const showAll = () => {
     entities.each((i, elem) => {
@@ -141,6 +156,16 @@ const entityControls = () => {
     show()
   })
 
+  selectAll.off("click").click(() => {
+    const endTokens = $("span[te]")
+    endTokens.attr("st", "v")
+  })
+
+  selectNone.off("click").click(() => {
+    const endTokens = $("span[te]")
+    endTokens.attr("st", "x")
+  })
+
   const options = {
     root: null,
     rootMargin: "0px",
@@ -167,8 +192,7 @@ const entityControls = () => {
           activeKind.val(kind)
           form.submit()
         })
-      }
-      else {
+      } else {
         //disappeared += 1
         elem.off("click")
       }
@@ -183,6 +207,7 @@ const entityControls = () => {
 }
 
 const tokenControls = () => {
+  const form = $("form")
   const sentences = $("div.s")
   const findBox = $("#sFind")
   const findClear = $("#findClear")
@@ -200,6 +225,8 @@ const tokenControls = () => {
   const tSelectEndVal = tSelectEnd.val()
   const activeEntity = $("#activeEntity")
   const activeKind = $("#activeKind")
+  const eKindSelect = $("#eKindSelect")
+  const eKindSel = $("button.ekindsel")
 
   let upToDate = true
   let tSelectRange = []
@@ -314,6 +341,21 @@ const tokenControls = () => {
     setScope("a")
   })
 
+  eKindSel.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const currentStatus = elem.attr("st")
+
+    elem.attr("st", currentStatus == "v" ? "x" : "v")
+    const ekinds = eKindSel
+      .get()
+      .filter(x => $(x).attr("st") == "v")
+      .map(x => $(x).attr("name"))
+      .join(",")
+    eKindSelect.val(ekinds)
+    form.submit()
+  })
+
   const options = {
     root: null,
     rootMargin: "0px",
@@ -328,6 +370,8 @@ const tokenControls = () => {
       const entryE = entry.target
       const entryElem = $(entryE)
       const tokens = entryElem.find("span[t]")
+      const endTokens = entryElem.find("span[te]")
+
       if (ratio > 0) {
         //appeared += 1
         tokens.off("click").click(e => {
@@ -360,10 +404,17 @@ const tokenControls = () => {
 
           presentQueryControls(true)
         })
-      }
-      else {
+        endTokens.off("click").click(e => {
+          e.preventDefault()
+          const { currentTarget } = e
+          const elem = $(currentTarget)
+          const currentValue = elem.attr("st")
+          elem.attr("st", currentValue == "v" ? "x" : "v")
+        })
+      } else {
         //disappeared += 1
         tokens.off("click")
+        endTokens.off("click")
       }
     })
     //console.warn(`Sentences: ${appeared} appeared; ${disappeared} disappeared`)
@@ -381,6 +432,19 @@ const tokenControls = () => {
     qWordShow.html("")
     activeEntity.val("")
     activeKind.val("")
+  })
+
+  const subMitter = $("#submitter")
+  form.off("submit").submit(e => {
+    const excludedTokens = $("#excludedTokens")
+    const endTokens = $(`span[te][st="x"]`)
+    const excl = endTokens
+      .get()
+      .map(elem => $(elem).attr("te"))
+      .join(",")
+    excludedTokens.val(excl)
+    const { originalEvent: { submitter } = {} } = e
+    subMitter.val(submitter && submitter.id)
   })
 }
 

@@ -16,6 +16,8 @@ a:link, a:visited {
 :root {
   --sent-header-height: 20rem;
   --ent-header-height: 20rem;
+  --ent-markup-color: #ddbb00;
+  --ent-markup-bg: #ffddbb;
 }
 
 /* COLUMNS */
@@ -148,7 +150,7 @@ span.es,span.ee {
   font-family: monospace;
   font-size: x-small;
   font-weight: bold;
-  color: #aaaaff;
+  color: var(--ent-markup-color);
 }
 span.es {
   padding-left: 0.1em;
@@ -164,6 +166,22 @@ span.sh {
   font-size: small;
   color: #bbbbbb;
   margin-left: -2rem;
+}
+span.lgb,span.lge {
+  font-weight: bold;
+  font-size: medium;
+  color: var(--ent-markup-color);
+  background-color: var(--ent-markup-bg);
+  border-radius: 1.5em;
+  padding: 0 0.2em;
+}
+span.lgb {
+  border-right: 0.5em solid white;
+  border-left: 0.2em solid var(--ent-markup-color);
+}
+span.lge {
+  border-left: 0.5em solid white;
+  border-right: 0.2em solid var(--ent-markup-color);
 }
 #sFind,#eFind {
   font-family: monospace;
@@ -187,26 +205,28 @@ p.e {
 }
 span.ekindw {
   border-radius: 0.5rem;
-  border: 2pt solid #aaaaff;
+  border: 2pt solid var(--ent-markup-color);
   background-color: white;
   padding: 0.3rem;
   margin: 0.1rem 0.5rem;
 }
 span.ekindw.active {
   border: 0;
-  background-color: #aaaaff;
+  background-color: var(--ent-markup-color);
 }
 
 button.ekindsel {
   font-family: monospace;
   font-size: large;
   font-weight: bold;
-  color: #aaaaff;
+  color: var(--ent-markup-color);
+  border-radius: 0.5rem;
+  border: 2pt solid var(--ent-markup-color);
   background-color: white;
 }
-button.ekindsel.active {
-  color: white;
-  background-color: #aaaaff;
+button.ekindsel[st=v] {
+  color: black;
+  background-color: var(--ent-markup-bg);
 }
 #scopeFiltered.active,#scopeAll.active {
   color: white;
@@ -237,4 +257,13 @@ button.ekindplus {
   color: #ffddbb;
   background-color: #333333;
 }
-
+span[st="x"]::after {
+  content: "⭕️";
+}
+span[st="v"]::after {
+  content: "🆗";
+}
+#selectall {
+}
+#selectnone {
+}

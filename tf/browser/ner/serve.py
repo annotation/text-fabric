@@ -8,7 +8,7 @@ import re
 
 from flask import render_template
 
-from ...core.files import initTree, annotateDir, dirMove, dirRemove, dirExists
+from ...core.files import initTree, annotateDir, dirCopy, dirMove, dirRemove, dirExists
 
 from .servelib import getFormData, annoSets
 from .kernel import loadData
@@ -60,6 +60,7 @@ def serveNer(web):
 
     eKindSelect = templateData["eKindSelect"]
     chosenAnnoSet = templateData["annoset"]
+    dupAnnoSet = templateData["duannoset"]
     renamedAnnoSet = templateData["rannoset"]
     deleteAnnoSet = templateData["dannoset"]
 
@@ -71,6 +72,19 @@ def serveNer(web):
         else:
             chosenAnnoSet = ""
             sets -= {deleteAnnoSet}
+        templateData["dannoset"] = ""
+
+    if dupAnnoSet and chosenAnnoSet:
+        if not dirCopy(
+            f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{dupAnnoSet}", noclobber=True
+        ):
+            messages.append(
+                ("error", f"""Could not copy {chosenAnnoSet} to {dupAnnoSet}""")
+            )
+        else:
+            sets = sets | {dupAnnoSet}
+            chosenAnnoSet = dupAnnoSet
+        templateData["duannoset"] = ""
 
     if renamedAnnoSet and chosenAnnoSet:
         if not dirMove(f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{renamedAnnoSet}"):
@@ -80,10 +94,11 @@ def serveNer(web):
         else:
             sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
             chosenAnnoSet = renamedAnnoSet
+        templateData["rannoset"] = ""
 
     if chosenAnnoSet and chosenAnnoSet not in sets:
         initTree(f"{annoDir}/{chosenAnnoSet}", fresh=False)
-        sets += {chosenAnnoSet}
+        sets |= {chosenAnnoSet}
 
     templateData["annoSets"] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
 
@@ -125,6 +140,8 @@ def serveNer(web):
     savEKind = templateData["savEKind"]
     delEKind = templateData["delEKind"]
 
+    excludedTokens = templateData["excludedTokens"]
+
     (sentences, nFind, nVisible, nEnt) = filterS(
         web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
     )
@@ -141,9 +158,9 @@ def serveNer(web):
             report = []
 
             if savEKind:
-                report.append(saveEntity(web, savEKind, saveSentences))
+                report.append(saveEntity(web, savEKind, saveSentences, excludedTokens))
             if delEKind:
-                report.append(delEntity(web, delEKind, saveSentences))
+                report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
             (sentences, nFind, nVisible, nEnt) = filterS(
                 web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
             )
@@ -171,9 +188,10 @@ def serveNer(web):
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
 
     web.console("start compose sentences")
-    templateData["sentences"] = composeS(web, sentences, limited)
+    templateData["sentences"] = composeS(web, sentences, limited, excludedTokens)
     web.console("end compose sentences")
     templateData["messages"] = wrapMessages(messages)
+    messages = []
 
     result = render_template(
         "ner/index.html",

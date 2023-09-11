@@ -512,14 +512,20 @@ def dirMove(pathSrc, pathDst):
     return True
 
 
-def dirCopy(pathSrc, pathDst):
+def dirCopy(pathSrc, pathDst, noclobber=False):
     """Copies a directory if it exists as directory.
 
     Wipes the destination directory, if it exists.
     """
     if dirExists(pathSrc):
+        if dirExists(pathDst):
+            if noclobber:
+                return False
         dirRemove(pathDst)
         copytree(pathSrc, pathDst)
+        return True
+    else:
+        return False
 
 
 def dirMake(path):

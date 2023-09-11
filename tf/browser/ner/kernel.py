@@ -208,11 +208,11 @@ def loadData(web):
             if isFirst or isLast:
                 if isFirst:
                     entitiesSlotIndex.setdefault(slot, []).append(
-                        [True, kind, textFreq]
+                        [True, firstSlot - lastSlot - 1, kind, textFreq]
                     )
                 if isLast:
                     entitiesSlotIndex.setdefault(slot, []).append(
-                        [False, kind, textFreq]
+                        [False, lastSlot - firstSlot + 1, kind, textFreq]
                     )
             else:
                 entitiesSlotIndex.setdefault(slot, []).append(None)
@@ -227,7 +227,8 @@ def loadData(web):
         or "entityTextKind" not in setData
         or "entitiesSlotIndex" not in setData
         or "entityIndex" not in setData
-        or dateLoaded is not None and dateProcessed < dateLoaded
+        or dateLoaded is not None
+        and dateProcessed < dateLoaded
     ):
         web.console(f"PROCESS '{annoSet}' START")
 

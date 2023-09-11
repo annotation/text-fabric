@@ -50,6 +50,11 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 id="annoseth"
             ><input
                 type="hidden"
+                name="duannoset"
+                value=""
+                id="duannoseth"
+            ><input
+                type="hidden"
                 name="rannoset"
                 value=""
                 id="rannoseth"
@@ -63,6 +68,10 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 type="submit" class="medium active" id="anew"
                 title="create a new annotation set"
             >+</button>
+            <button
+                type="submit" class="medium active" id="adup"
+                title="duplicate this annotation set"
+            >++</button>
             """
         )
     )
