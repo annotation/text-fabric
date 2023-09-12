@@ -5,7 +5,7 @@ import collections
 from itertools import chain
 from textwrap import dedent
 
-from .kernel import mergeEntities, weedEntities, WHITE_RE
+from .kernel import FEATURES, mergeEntities, weedEntities, WHITE_RE
 
 
 def composeE(web, activeEntity, activeKind, sortKey, sortDir):
@@ -19,8 +19,9 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
         Indicates how to sort the table:
 
         *   `freqsort`: by the frequency of the entities
+        *   `textsort`: by the text of the entities
+        *   `idsort`: by the kind of the entities
         *   `kindsort`: by the kind of the entities
-        *   `etxtsort`: by the text of the entities
 
     sortDir: string
         Indicates the direction of the sort:
@@ -39,42 +40,39 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
     html = []
 
     entities = setData.entities
-    entries = setData.entitiesByKind.items()
+    entries = setData.entityBy.items()
 
-    if sortKey == "freqsort":
-        if sortDir == "u":
-            entries = sorted(entries, key=lambda x: (len(x[1]), x[0][1], x[0][0]))
-        else:
-            entries = sorted(entries, key=lambda x: (-len(x[1]), x[0][1], x[0][0]))
-    elif sortKey == "kindsort":
-        entries = sorted(entries, key=lambda x: (x[0][0], x[0][1], -len(x[1])))
-        if sortDir == "d":
-            entries = reversed(entries)
-    elif sortKey == "etxtsort":
-        entries = sorted(entries, key=lambda x: (x[0][1], x[0][0], -len(x[1])))
-        if sortDir == "d":
-            entries = reversed(entries)
+    if sortKey == "sort":
+        entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
+    else:
+        index = int(sortKey[4:])
+        entries = sorted(entries, key=lambda x: (x[0][index], -len(x[1])))
 
-    for (i, ((kind, txt), es)) in enumerate(entries):
+    if sortDir == "d":
+        entries = reversed(entries)
+
+    for (i, (vals, es)) in enumerate(entries):
         x = len(es)
         e1 = es[0]
         ent1 = entities[e1]
-        (eFirst, eLast) = (ent1[1], ent1[-1])
+        (eFirst, eLast) = (ent1[2], ent1[-1])
 
         active = " queried " if activeEntity is not None and i == activeEntity else ""
 
+        eInfo = " ".join(
+            f"""<span class="{feat}">{val}</span>"""
+            for (feat, val) in zip(FEATURES[1:], vals)
+        )
         item = dedent(
             f"""
             <p
                 class="e {active}"
                 enm="{i}"
                 tstart="{eFirst}" tend="{eLast}"
-                kind="{kind}"
             >
                 <code class="w">{x:>5}</code>
                 x
-                <b>{kind}</b>
-                <span class="et">{txt}</span>
+                {eInfo}>
             </p>"""
         )
         html.append(item)
@@ -84,11 +82,10 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
 
 def composeQ(
     web,
+    templateData,
     sFind,
     sFindRe,
     sFindError,
-    tokenStart,
-    tokenEnd,
     eKindSelect,
     nFind,
     nEnt,
@@ -102,11 +99,6 @@ def composeQ(
     ----------
     web: object
         The web app object
-
-    tokenStart, tokenEnd: int or None
-        Specify the start slot number and the end slot number of a sequence of tokens.
-        Only sentences that contain this token sentence will be passed through,
-        all other sentences will be filtered out.
 
     Returns
     -------
@@ -124,6 +116,9 @@ def composeQ(
     setData = web.toolData.ner.sets[annoSet]
     nSent = len(setData.sentences)
 
+    tokenStart = templateData["tokenstart"]
+    tokenEnd = templateData["tokenend"]
+
     hasFind = sFindRe is not None
     hasEntity = tokenStart and tokenEnd
 
@@ -138,10 +133,10 @@ def composeQ(
             f"""
             <p>
                 <b>Filter:</b>
-                <input type="text" name="sfind" id="sFind" value="{sFind}">
+                <input type="text" name="sfind" id="sfind" value="{sFind}">
                 {findStat}
-                <button type="submit" id="findClear">✖️</button>
-                <span id="sFindError" class="error">{sFindError}</span>
+                <button type="submit" id="findclear">✖️</button>
+                <span id="sfinderror" class="error">{sFindError}</span>
                 <button type="submit" id="lookupf">🔎</button>
             </p>
             """
@@ -168,17 +163,17 @@ def composeQ(
             <p>
                 <b>Entity:</b>
                 <input type="hidden"
-                    name="tselectstart"
-                    id="tSelectStart"
+                    name="tokenstart"
+                    id="tokenstart"
                     value="{tokenStart or ""}"
                 >
                 <input type="hidden"
-                    name="tselectend"
-                    id="tSelectEnd"
+                    name="tokenend"
+                    id="tokenend"
                     value="{tokenEnd or ""}"
                 >
-                <span id="qWordShow">{wordHtml}</span>
-                <button type="submit" id="queryClear">✖️</button>
+                <span id="qwordshow">{wordHtml}</span>
+                <button type="submit" id="queryclear">✖️</button>
                 <button type="submit" id="lookupq">🔎</button>
             """
         )
@@ -192,47 +187,49 @@ def composeQ(
         if hasEntity
         else ""
     )
-    theseKinds = set(setData.entityTextKind[txt])
-
-    html.append(
-        dedent(
-            f"""
-            <input type="hidden"
-                name="ekindselect"
-                id="eKindSelect"
-                value="{",".join(eKindSelect)}"
-            >
-            """
-        )
-    )
-    for kind in ["⌀"] + sorted(theseKinds):
-        status = "v" if kind in eKindSelect else "x"
-        entityStat = composeEntityStat(kind, nVisible, nEnt, hasFind, hasEntity)
-        title = "not yet marked as entity" if kind == "⌀" else f"marked as {kind}"
+    features = setData.entityTextVal[txt]
+    for feat in FEATURES[1:]:
+        theseVals = features.get(feat, set())
 
         html.append(
             dedent(
                 f"""
-                <button type="button"
-                    name="{kind}"
-                    class="ekindsel"
-                    st="{status}"
-                    title="{title}"
+                <input type="hidden"
+                    name="{feat}select"
+                    id="{feat}select"
+                    value="{",".join(eKindSelect)}"
                 >
-                    {kind}
-                    {entityStat}
-                </button>
                 """
             )
         )
+        for kind in ["⌀"] + sorted(theseKinds):
+            status = "v" if kind in eKindSelect else "x"
+            entityStat = composeEntityStat(kind, nVisible, nEnt, hasFind, hasEntity)
+            title = "not yet marked as entity" if kind == "⌀" else f"marked as {kind}"
 
-    html.append(
-        dedent(
-            """
-            </p>
-            """
+            html.append(
+                dedent(
+                    f"""
+                    <button type="button"
+                        name="{kind}"
+                        class="ekindsel"
+                        st="{status}"
+                        title="{title}"
+                    >
+                        {kind}
+                        {entityStat}
+                    </button>
+                    """
+                )
+            )
+
+        html.append(
+            dedent(
+                """
+                </p>
+                """
+            )
         )
-    )
 
     # MODIFY SECTION
 
@@ -265,12 +262,12 @@ def composeQ(
                 dedent(
                     """
                     <button type="button"
-                        id="scopeFiltered"
+                        id="scopefiltered"
                         title="act on filtered sentences only"
                     >filtered
                     </button>
                     <button type="button"
-                        id="scopeAll"
+                        id="scopeall"
                         title="act on all sentences only"
                     >all
                     </button>
@@ -366,9 +363,9 @@ def composeQ(
         html.append(
             dedent(
                 """
-                <input type="text" id="eKindV" name="ekindv" value="">
+                <input type="text" id="ekindv" name="ekindv" value="">
                 <button type="submit"
-                    id="eKindSave"
+                    id="ekindsave"
                     name="ekindsave"
                     value="v"
                     class="ekindplus"
@@ -399,18 +396,17 @@ def composeQ(
                 )
             )
 
-    html = "\n".join(html)
-    return html
+    templateData["q"] = "\n".join(html)
 
 
-def entityMatch(entityIndex, L, F, T, s, sFindPatternRe, words, eKindSelect):
+def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect):
     """Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
 
     Parameters
     ----------
-    entityIndex: dict
+    entityIndexKind: dict
         Dictionary from tuples of slots to sets of kinds, being the kinds that
         entities occupying those slot tuples have
     L, F, T: object
@@ -472,7 +468,7 @@ def entityMatch(entityIndex, L, F, T, s, sFindPatternRe, words, eKindSelect):
             if match:
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
-                theseEKinds = entityIndex.get(slots, set())
+                theseEKinds = entityIndexKind.get(slots, set())
                 for ek in theseEKinds:
                     eKinds[ek] += 1
                 if len(theseEKinds) == 0:
@@ -556,11 +552,11 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
     nEnt = collections.Counter()
     nVisible = collections.Counter()
 
-    entityIndex = setData.entityIndex
+    entityIndexKind = setData.entityIndexKind
 
     for s in setData.sentences:
         (fits, eKinds, result) = entityMatch(
-            entityIndex, L, F, T, s, sFindPatternRe, words, eKindSelect
+            entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect
         )
         blocked = fits is not None and not fits
 
@@ -584,7 +580,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
     return (results, nFind, nVisible, nEnt)
 
 
-def saveEntity(web, kind, sentences, excludedTokens):
+def saveEntity(web, kind, eid, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
 
     oldEntities = setData.entities
@@ -594,7 +590,7 @@ def saveEntity(web, kind, sentences, excludedTokens):
 
     for (s, sTokens, allMatches, positions) in sentences:
         for matches in allMatches:
-            data = (kind, *matches)
+            data = (kind, eid, *matches)
             if data not in oldEntitySet:
                 if matches[-1] in excludedTokens:
                     excl += 1
@@ -606,7 +602,10 @@ def saveEntity(web, kind, sentences, excludedTokens):
 
     nEntities = len(newEntities)
     pl = "y" if nEntities == 1 else "ies"
-    return f"Added {nEntities} entit{pl} with kind '{kind}; {excl} excluded'"
+    return (
+        f"Added {nEntities} entit{pl} with kind '{kind}' and id '{eid}'; "
+        f"{excl} excluded"
+    )
 
 
 def delEntity(web, kind, sentences, excludedTokens):
@@ -676,7 +675,7 @@ def composeS(web, sentences, limited, excludedTokens):
     api = app.api
     F = api.F
 
-    entitiesSlotIndex = setData.entitiesSlotIndex
+    entitySlotIndex = setData.entitySlotIndex
 
     html = []
     html.append(
@@ -684,7 +683,7 @@ def composeS(web, sentences, limited, excludedTokens):
             f"""
             <input type="hidden"
                 name="excludedtokens"
-                id="excludedTokens"
+                id="excludedtokens"
                 value="{",".join(str(t) for t in excludedTokens)}"
             >
             """
@@ -719,7 +718,7 @@ def composeS(web, sentences, limited, excludedTokens):
             hlClasses = (" found " if found else "") + (" queried " if queried else "")
             excl = "x" if t in excludedTokens else "v"
             checkbox = f"""<span te="{t}" st="{excl}"></span>""" if endQueried else ""
-            info = entitiesSlotIndex.get(t, None)
+            info = entitySlotIndex.get(t, None)
             inEntity = False
 
             if info is not None:
@@ -727,9 +726,9 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, freq) = item
-                    lgRep = f"""<span class="lgb">{abs(lg)}</span>"""
+                    (status, lg, kind, eid, freq) = item
                     if status:
+                        lgRep = f"""<span class="lgb">{abs(lg)}</span>"""
                         ht.append(
                             dedent(
                                 f"""
@@ -747,9 +746,9 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, freq) = item
-                    lgRep = f"""<span class="lge">{abs(lg)}</span>"""
+                    (status, lg, kind, eid, freq) = item
                     if not status:
+                        lgRep = f"""<span class="lge">{abs(lg)}</span>"""
                         ht.append(dedent(f"""<span class="ee">{lgRep}</span>"""))
 
             charPos += lenWa

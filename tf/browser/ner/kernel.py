@@ -11,6 +11,12 @@ import time
 from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
 
+GENERIC = "any"
+FEATURES = ("txt", "eid", "kind")
+
+NF = len(FEATURES)
+
+
 WHITE_RE = re.compile(r"""\s{2,}""", re.S)
 
 
@@ -42,9 +48,9 @@ def weedEntities(web, delEntities):
     with open(dataFile) as fh:
         for line in fh:
             fields = tuple(line.rstrip("\n").split("\t"))
-            kind = fields[0]
-            matches = tuple(int(f) for f in fields[1:])
-            data = (kind, *matches)
+            (kind, eid) = fields[0:2]
+            matches = tuple(int(f) for f in fields[2:])
+            data = (kind, eid, *matches)
             if data in delEntities:
                 continue
             newEntities.append(line)
@@ -53,6 +59,35 @@ def weedEntities(web, delEntities):
         fh.write("".join(newEntities))
 
     loadData(web)
+
+
+def ucFirst(x):
+    return x[0].upper() + x[1:].lower()
+
+
+def getText(F, slots):
+    return WHITE_RE.sub(
+        " ",
+        "".join(f"{F.str.v(s)}{F.after.v(s)}" for s in slots).strip(),
+    )
+
+
+def getEid(F, slots):
+    return WHITE_RE.sub(
+        "",
+        "".join(ucFirst(x) for s in slots if (x := F.str.v(s).strip())).strip(),
+    )
+
+
+def getKind(F, slots):
+    return GENERIC
+
+
+featureDefault = {
+    "": getText,
+    FEATURES[0]: getKind,
+    FEATURES[1]: getEid,
+}
 
 
 def loadData(web):
@@ -105,14 +140,18 @@ def loadData(web):
 
         We then process this into the following data structures:
 
-        *   `entitiesByKind`: the dictionary of entities by kind
         *   `entityKindFreq`: the frequency list of entity kinds
         *   `entityTextFreq`: the frequency list of entity texts
         *   `entityTextKind`: the set of kinds that the entities with a given text may
             have
-        *   `entitiesSlotIndex`: the index of entities by slot
-        *   `entityIndex`: the index of entities by tuple of slot positions; the values
+        *   `entitySlotIndex`: the index of entities by slot
+        *   `entityIndexKind`: the index of entities by tuple of slot positions; the values
             are the set of kinds of the entities at that position.
+
+        *   `entityById`
+        *   `entityId`
+        *   `entityIdFreq`
+        *   `entityIndexId`
     """
     if not hasattr(web, "toolData"):
         setattr(web, "toolData", AttrDict())
@@ -140,7 +179,7 @@ def loadData(web):
     app = kernelApi.app
     api = app.api
     F = api.F
-    T = api.T
+    Fs = api.Fs
     L = api.L
     slotType = F.otype.slotType
 
@@ -171,7 +210,10 @@ def loadData(web):
                 with open(dataFile) as df:
                     for (e, line) in enumerate(df):
                         fields = tuple(line.rstrip("\n").split("\t"))
-                        entities[e] = (fields[0], *(int(f) for f in fields[1:]))
+                        entities[e] = (
+                            tuple(fields[0:NF]),
+                            tuple(int(f) for f in fields[NF:]),
+                        )
 
             setData.entities = entities
             setData.dateLoaded = time.time()
@@ -180,104 +222,89 @@ def loadData(web):
             web.console(f"LOAD '{annoSet}' REUSED")
     else:
         if "entities" not in setData:
-            setData.entities = {
-                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s("ent")
+            entities = {}
+            hasFeature = {
+                feat: api.isLoaded("entid")["entid"] is not None for feat in FEATURES
             }
 
-    # processing stage (a bit different for annoset == "")
+            for e in F.otype.s("ent"):
+                slots = L.d(e, otype=slotType)
+                entities[e]: (
+                    tuple(
+                        Fs(feat).v(e)
+                        if hasFeature[feat]
+                        else featureDefault[feat](F, slots)
+                        for feat in FEATURES
+                    ),
+                    tuple(slots),
+                )
 
-    entitiesByKind = {}
-    entityText = {}
-    entityTextFreq = collections.Counter()
-    entityTextKind = collections.defaultdict(set)
-    entitiesSlotIndex = {}
-    entityIndex = {}
+            setData.entities = entities
+
+    # processing stage (a bit different for annoset == "")
 
     dateLoaded = setData.dateLoaded
     dateProcessed = setData.dateProcessed
 
-    def addToIndex(e, kind, slots):
-        firstSlot = slots[0]
-        lastSlot = slots[-1]
-        txt = entityText[e]
-        textFreq = entityTextFreq[txt]
-
-        for slot in slots:
-            isFirst = slot == firstSlot
-            isLast = slot == lastSlot
-            if isFirst or isLast:
-                if isFirst:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [True, firstSlot - lastSlot - 1, kind, textFreq]
-                    )
-                if isLast:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [False, lastSlot - firstSlot + 1, kind, textFreq]
-                    )
-            else:
-                entitiesSlotIndex.setdefault(slot, []).append(None)
-
     if (
         changed
         or "dateProcessed" not in setData
-        or "entitiesByKind" not in setData
-        or "entityKindFreq" not in setData
-        or "entityText" not in setData
-        or "entityTextFreq" not in setData
-        or "entityTextKind" not in setData
-        or "entitiesSlotIndex" not in setData
-        or "entityIndex" not in setData
+        or "entityVal" not in setData
+        or "entityBy" not in setData
+        or "entityFreq" not in setData
+        or "entityTextVal" not in setData
+        or "entitySlotIndex" not in setData
         or dateLoaded is not None
         and dateProcessed < dateLoaded
     ):
         web.console(f"PROCESS '{annoSet}' START")
 
-        if annoSet:
-            entityKindFreq = collections.Counter()
+        entityItems = setData.entities.items()
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                txt = WHITE_RE.sub(" ", T.text(slots).strip())
+        entityVal = {feat: {} for feat in FEATURES}
+        entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES[1:]}
+        entityBy = {}
+        entityFreq = {feat: collections.Counter() for feat in FEATURES}
+        entityIndex = {feat: {} for feat in FEATURES}
 
-                entityText[e] = txt
-                entityKindFreq[kind] += 1
-                entityTextFreq[txt] += 1
-                entityTextKind[txt].add(kind)
+        entitySlotIndex = {}
 
-                entitiesByKind.setdefault((kind, txt), []).append(e)
+        for (e, (fVals, slots)) in entityItems:
+            txt = fVals[0]
+            for (feat, val) in zip(FEATURES, fVals):
+                entityVal[feat] = val
+                entityFreq[feat][val] += 1
+                entityIndex[feat].setdefault(slots, set()).add(val)
+                entityTextVal[feat][txt].add(val)
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                slots = tuple(slots)
-                entityIndex.setdefault(slots, set()).add(kind)
-                addToIndex(e, kind, slots)
+            for (i, feat) in enumerate(FEATURES):
+                entityBy.setdefault(fVals[1:], []).append(e)
 
-            setData.entityKindFreq = sorted(entityKindFreq.items())
-        else:
-            for e in F.otype.s("ent"):
-                kind = F.kind.v(e)
-                txt = WHITE_RE.sub(" ", T.text(e).strip())
+            firstSlot = slots[0]
+            lastSlot = slots[-1]
 
-                entityText[e] = txt
-                entityTextFreq[txt] += 1
-                entityTextKind[txt].add(kind)
+            for slot in slots:
+                isFirst = slot == firstSlot
+                isLast = slot == lastSlot
+                if isFirst or isLast:
+                    if isFirst:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [True, firstSlot - lastSlot - 1]
+                        )
+                    if isLast:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [False, lastSlot - firstSlot + 1]
+                        )
+                else:
+                    entitySlotIndex.setdefault(slot, []).append(None)
 
-                entitiesByKind.setdefault((kind, txt), []).append(e)
-
-            for e in F.otype.s("ent"):
-                kind = F.kind.v(e)
-                slots = tuple(L.d(e, otype=slotType))
-                entityIndex.setdefault(slots, set()).add(kind)
-                addToIndex(e, kind, slots)
-
-            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={"ent"}))
-
-        setData.entityText = entityText
-        setData.entitiesByKind = entitiesByKind
-        setData.entityTextFreq = entityTextFreq
-        setData.entityTextKind = entityTextKind
-        setData.entitiesSlotIndex = entitiesSlotIndex
+        setData.entityVal = entityVal
+        setData.entityBy = entityBy
+        setData.entityFreq = sorted(entityFreq.items())
         setData.entityIndex = entityIndex
+        setData.entityTextVal = entityTextVal
+        setData.entitySlotIndex = entitySlotIndex
+
         setData.dateProcessed = time.time()
 
         web.console(f"PROCESS '{annoSet}' DONE")

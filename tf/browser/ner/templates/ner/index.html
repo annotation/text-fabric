@@ -19,9 +19,9 @@
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
       <input type="hidden" id="submitter" name="submitter" value="{{submitter}}">
-      <input type="hidden" id="resetf" name="resetForm" value="{{resetForm}}">
-      <input type="hidden" id="appName" name="appName" value="{{appName}}"/>
-      <input type="hidden" id="slotType" name="slotType" value="{{slotType}}"/>
+      <input type="hidden" id="resetf" name="resetform" value="{{resetForm}}">
+      <input type="hidden" id="appname" name="appname" value="{{appName}}"/>
+      <input type="hidden" id="slottype" name="slottype" value="{{slotType}}"/>
       <div class="page">
         <div id="col1">
           <p><a href="/">back to TF browser</a></p>
@@ -35,16 +35,17 @@
             <h1>Entities</h1>
             {{entitykinds|safe}}
             {{entityheaders|safe}}
-            <p><input type="text" name="efind" id="eFind" value="{{efind}}">
-                <span class="stat" id="nEntityEntries"></span>
-                <button type="button" id="entityClear">✖️</button>
+            <p><input type="text" name="efind" id="efind" value="{{efind}}">
+                <span class="stat" id="nentityentries"></span>
+                <button type="button" id="entityclear">✖️</button>
                 <input type="hidden"
-                       id="activeEntity"
+                       id="activeentity"
                        name="activeentity"
                        value="{{activeentity or ''}}"
                 >
                 <input type="hidden"
-                       id="activeKind"
+
+                       id="activekind"
                        name="activekind"
                        value="{{activekind or ''}}"
                 >

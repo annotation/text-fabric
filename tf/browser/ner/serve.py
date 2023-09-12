@@ -133,24 +133,25 @@ def serveNer(web):
     templateData["appName"] = appName
     templateData["slotType"] = slotType
     templateData["resetForm"] = ""
-    tSelectStart = templateData["tselectstart"]
-    tSelectEnd = templateData["tselectend"]
+    tokenStart = templateData["tokenstart"]
+    tokenEnd = templateData["tokenend"]
     scope = templateData["scope"]
 
     savEKind = templateData["savEKind"]
+    savEId = templateData["savEId"]
     delEKind = templateData["delEKind"]
 
     excludedTokens = templateData["excludedTokens"]
 
     (sentences, nFind, nVisible, nEnt) = filterS(
-        web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
+        web, sFindRe, tokenStart, tokenEnd, eKindSelect
     )
 
     report = None
 
-    if (savEKind or delEKind) and tSelectStart and tSelectEnd:
+    if (savEKind or delEKind) and tokenStart and tokenEnd:
         saveSentences = (
-            filterS(web, None, tSelectStart, tSelectEnd, eKindSelect)[0]
+            filterS(web, None, tokenStart, tokenEnd, eKindSelect)[0]
             if sFindRe and scope == "a"
             else sentences
         )
@@ -158,20 +159,19 @@ def serveNer(web):
             report = []
 
             if savEKind:
-                report.append(saveEntity(web, savEKind, saveSentences, excludedTokens))
+                report.append(saveEntity(web, savEKind, savEId, saveSentences, excludedTokens))
             if delEKind:
                 report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
             (sentences, nFind, nVisible, nEnt) = filterS(
-                web, sFindRe, tSelectStart, tSelectEnd, eKindSelect
+                web, sFindRe, tokenStart, tokenEnd, eKindSelect
             )
 
-    templateData["q"] = composeQ(
+    composeQ(
         web,
+        templateData,
         sFind,
         sFindRe,
         errorMsg,
-        tSelectStart,
-        tSelectEnd,
         eKindSelect,
         nFind,
         nEnt,
@@ -180,7 +180,7 @@ def serveNer(web):
         report,
     )
 
-    hasEntity = tSelectStart and tSelectEnd
+    hasEntity = tokenStart and tokenEnd
     limited = not hasEntity
 
     templateData["entities"] = composeE(web, activeEntity, activeKind, sortKey, sortDir)

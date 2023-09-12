@@ -20,7 +20,7 @@ const storeForm = () => {
     formObj[key] = value
   }
   const formStr = JSON.stringify(formObj)
-  const appName = formData.get("appName")
+  const appName = formData.get("appname")
   const formKey = `tfner/${appName}`
   localStorage.setItem(formKey, formStr)
 }
@@ -93,14 +93,15 @@ const annoSetControls = () => {
 
 const entityControls = () => {
   const form = $("form")
-  const findBox = $("#eFind")
-  const eStat = $("#nEntityEntries")
-  const findClear = $("#entityClear")
+  const findBox = $("#efind")
+  const eStat = $("#nentityentries")
+  const findClear = $("#entityclear")
   const entities = $("p.e")
-  const tSelectStart = $("#tSelectStart")
-  const tSelectEnd = $("#tSelectEnd")
-  const activeEntity = $("#activeEntity")
-  const activeKind = $("#activeKind")
+  const tokenStart = $("#tokenstart")
+  const tokenEnd = $("#tokenend")
+  const activeEntity = $("#activeentity")
+  const activeKind = $("#activekind")
+  const eKindSelect = $("#ekindselect")
   const selectAll = $("#selectall")
   const selectNone = $("#selectnone")
 
@@ -186,10 +187,11 @@ const entityControls = () => {
           const tEnd = elem.attr("tend")
           const kind = elem.attr("kind")
           const enm = elem.attr("enm")
-          tSelectStart.val(tStart)
-          tSelectEnd.val(tEnd)
+          tokenStart.val(tStart)
+          tokenEnd.val(tEnd)
           activeEntity.val(enm)
           activeKind.val(kind)
+          eKindSelect.val(kind)
           form.submit()
         })
       } else {
@@ -209,36 +211,36 @@ const entityControls = () => {
 const tokenControls = () => {
   const form = $("form")
   const sentences = $("div.s")
-  const findBox = $("#sFind")
-  const findClear = $("#findClear")
-  const findError = $("#sFindError")
-  const tSelectStart = $("#tSelectStart")
-  const tSelectEnd = $("#tSelectEnd")
-  const qWordShow = $("#qWordShow")
+  const findBox = $("#sfind")
+  const findClear = $("#findclear")
+  const findError = $("#sfinderror")
+  const tokenStart = $("#tokenstart")
+  const tokenEnd = $("#tokenend")
+  const qWordShow = $("#qwordshow")
   const lookupf = $("#lookupf")
   const lookupq = $("#lookupq")
-  const queryClear = $("#queryClear")
+  const queryClear = $("#queryclear")
   const scope = $("#scope")
-  const scopeFiltered = $("#scopeFiltered")
-  const scopeAll = $("#scopeAll")
-  const tSelectStartVal = tSelectStart.val()
-  const tSelectEndVal = tSelectEnd.val()
-  const activeEntity = $("#activeEntity")
-  const activeKind = $("#activeKind")
-  const eKindSelect = $("#eKindSelect")
+  const scopeFiltered = $("#scopefiltered")
+  const scopeAll = $("#scopeall")
+  const tokenStartVal = tokenStart.val()
+  const tokenEndVal = tokenEnd.val()
+  const activeEntity = $("#activeentity")
+  const activeKind = $("#activekind")
+  const eKindSelect = $("#ekindselect")
   const eKindSel = $("button.ekindsel")
 
   let upToDate = true
-  let tSelectRange = []
+  let tokenRange = []
 
-  const tSelectInit = () => {
-    tSelectRange =
-      tSelectStartVal && tSelectEndVal
-        ? [parseInt(tSelectStartVal), parseInt(tSelectEndVal)]
+  const tokenInit = () => {
+    tokenRange =
+      tokenStartVal && tokenEndVal
+        ? [parseInt(tokenStartVal), parseInt(tokenEndVal)]
         : []
-    if (tSelectRange.length) {
-      if (tSelectRange[0] > tSelectRange[1]) {
-        tSelectRange = [tSelectRange[1], tSelectRange[0]]
+    if (tokenRange.length) {
+      if (tokenRange[0] > tokenRange[1]) {
+        tokenRange = [tokenRange[1], tokenRange[0]]
       }
     }
   }
@@ -247,7 +249,7 @@ const tokenControls = () => {
     if (update) {
       qWordShow.html("")
     }
-    const hasQuery = tSelectRange.length
+    const hasQuery = tokenRange.length
     const hasFind = findBox.val().length
     const findErrorStr = findError.html().length
 
@@ -282,7 +284,7 @@ const tokenControls = () => {
       if (hasQuery) {
         setQueryControls(true)
         if (update) {
-          for (let t = tSelectRange[0]; t <= tSelectRange[1]; t++) {
+          for (let t = tokenRange[0]; t <= tokenRange[1]; t++) {
             const elem = $(`span[t="${t}"]`)
             elem.addClass("queried")
             const qWord = elem.html()
@@ -300,7 +302,7 @@ const tokenControls = () => {
     }
   }
 
-  tSelectInit()
+  tokenInit()
   presentQueryControls(false)
 
   findBox.off("keyup").keyup(() => {
@@ -311,7 +313,7 @@ const tokenControls = () => {
       lookupf.show()
     } else {
       findClear.hide()
-      if (tSelectRange.length == 0) {
+      if (tokenRange.length == 0) {
         lookupf.hide()
       }
     }
@@ -381,25 +383,25 @@ const tokenControls = () => {
           const tWord = elem.attr("t")
           const tWordInt = parseInt(tWord)
           upToDate = false
-          if (tSelectRange.length == 0) {
-            tSelectRange = [tWordInt, tWordInt]
-          } else if (tSelectRange.length == 2) {
-            const start = tSelectRange[0]
-            const end = tSelectRange[1]
+          if (tokenRange.length == 0) {
+            tokenRange = [tWordInt, tWordInt]
+          } else if (tokenRange.length == 2) {
+            const start = tokenRange[0]
+            const end = tokenRange[1]
             if (tWordInt < start - 5 || tWordInt > end + 5) {
-              tSelectRange = [tWordInt, tWordInt]
+              tokenRange = [tWordInt, tWordInt]
             } else if (tWordInt <= start) {
-              tSelectRange = [tWordInt, tSelectRange[1]]
+              tokenRange = [tWordInt, tokenRange[1]]
             } else if (tWordInt >= end) {
-              tSelectRange = [tSelectRange[0], tWordInt]
+              tokenRange = [tokenRange[0], tWordInt]
             } else if (end - tWordInt <= tWordInt - start) {
-              tSelectRange = [tSelectRange[0], tWordInt]
+              tokenRange = [tokenRange[0], tWordInt]
             } else {
-              tSelectRange = [tWordInt, tSelectRange[1]]
+              tokenRange = [tWordInt, tokenRange[1]]
             }
           }
-          tSelectStart.val(`${tSelectRange[0]}`)
-          tSelectEnd.val(`${tSelectRange[1]}`)
+          tokenStart.val(`${tokenRange[0]}`)
+          tokenEnd.val(`${tokenRange[1]}`)
           activeEntity.val("")
 
           presentQueryControls(true)
@@ -426,9 +428,9 @@ const tokenControls = () => {
   })
 
   queryClear.off("click").click(() => {
-    tSelectRange.length = 0
-    tSelectStart.val("")
-    tSelectEnd.val("")
+    tokenRange.length = 0
+    tokenStart.val("")
+    tokenEnd.val("")
     qWordShow.html("")
     activeEntity.val("")
     activeKind.val("")
@@ -436,7 +438,7 @@ const tokenControls = () => {
 
   const subMitter = $("#submitter")
   form.off("submit").submit(e => {
-    const excludedTokens = $("#excludedTokens")
+    const excludedTokens = $("#excludedtokens")
     const endTokens = $(`span[te][st="x"]`)
     const excl = endTokens
       .get()

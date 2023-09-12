@@ -116,7 +116,7 @@ code.w {
   padding-left: 2rem;
 }
 
-p.queried,span.queried,#qWordShow>span {
+p.queried,span.queried,#qwordshow>span {
   border-radius: 0.2rem;
   background-color: yellow;
   padding: 0 0.3rem;
@@ -130,7 +130,7 @@ span.found {
 #lookupf,#lookupq {
   display: none;
 }
-#queryWords {
+#querywords {
   font-weight: bold;
 }
 
@@ -183,7 +183,7 @@ span.lge {
   border-left: 0.5em solid white;
   border-right: 0.2em solid var(--ent-markup-color);
 }
-#sFind,#eFind {
+#sfind,#efind {
   font-family: monospace;
   font-size: large;
   background-color: #aaddff;
@@ -228,7 +228,7 @@ button.ekindsel[st=v] {
   color: black;
   background-color: var(--ent-markup-bg);
 }
-#scopeFiltered.active,#scopeAll.active {
+#scopefiltered.active,#scopeall.active {
   color: white;
   background-color: black;
 }
@@ -245,7 +245,7 @@ button.ekindmin {
 button.ekindplus {
   background-color: #aaffaa;
 }
-#eKindV {
+#ekindv {
   font-family: monospace;
   font-size: medium;
   font-weight: bold;

@@ -43,10 +43,10 @@ def getFormData(web):
     form["activeentity"] = int(activeEntity) if activeEntity else None
     form["activekind"] = request.form.get("activekind", "")
     form["efind"] = request.form.get("efind", "")
-    tSelectStart = request.form.get("tselectstart", "")
-    form["tselectstart"] = int(tSelectStart) if tSelectStart else None
-    tSelectEnd = request.form.get("tselectend", "")
-    form["tselectend"] = int(tSelectEnd) if tSelectEnd else None
+    tokenStart = request.form.get("tokenstart", "")
+    form["tokenstart"] = int(tokenStart) if tokenStart else None
+    tokenEnd = request.form.get("tokenend", "")
+    form["tokenend"] = int(tokenEnd) if tokenEnd else None
     eKindSelect = request.form.get("ekindselect", "")
     form["eKindSelect"] = (
         set(eKindSelect.split(","))
@@ -56,12 +56,19 @@ def getFormData(web):
         else set()
     )
     eKindPButton = request.form.get("ekindpbutton", "")
+    eIdPButton = request.form.get("eidpbutton", "")
     eKindXButton = request.form.get("ekindxbutton", "")
+    eIdXButton = request.form.get("eidxbutton", "")
     eKindSave = request.form.get("ekindsave", "")
+    eIdSave = request.form.get("eidsave", "")
     eKindV = request.form.get("ekindv", "")
+    eIdV = request.form.get("eidv", "")
     savEKind = eKindV if eKindSave else eKindPButton
+    savEId = eIdV if eIdSave else eIdPButton
     form["savEKind"] = savEKind
+    form["savEId"] = savEId
     form["delEKind"] = eKindXButton
+    form["delEId"] = eIdXButton
     form["scope"] = request.form.get("scope", "a")
     excludedTokens = request.form.get("excludedtokens", "")
     form["excludedTokens"] = (
