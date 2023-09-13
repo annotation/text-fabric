@@ -29,7 +29,7 @@ and put it in various dedicated data structures.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/kernel.py#L1-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L1-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;TF backend processing.
 
@@ -39,12 +39,89 @@ and put it in various dedicated data structures.
 
 import collections
 import re
-from datetime import datetime
+import time
 
 from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
 
+GENERIC = &#34;any&#34;
+FEATURES = (&#34;txt&#34;, &#34;eid&#34;, &#34;kind&#34;)
+KEYWORD_FEATURES = set(FEATURES[2])
+
+NF = len(FEATURES)
+
+
 WHITE_RE = re.compile(r&#34;&#34;&#34;\s{2,}&#34;&#34;&#34;, re.S)
+
+
+def mergeEntities(web, newEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, &#34;ner&#34;)
+
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
+
+    for (fVals, matches) in newEntities:
+        with open(dataFile, &#34;a&#34;) as fh:
+            fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *matches)) + &#34;\n&#34;)
+
+    loadData(web)
+
+
+def weedEntities(web, delEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, &#34;ner&#34;)
+
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
+
+    newEntities = []
+
+    with open(dataFile) as fh:
+        for line in fh:
+            fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+            fVals = tuple(fields[0:NF])
+            matches = tuple(int(f) for f in fields[NF:])
+            data = (fVals, matches)
+            if data in delEntities:
+                continue
+            newEntities.append(line)
+
+    with open(dataFile, &#34;w&#34;) as fh:
+        fh.write(&#34;&#34;.join(newEntities))
+
+    loadData(web)
+
+
+def ucFirst(x):
+    return x[0].upper() + x[1:].lower()
+
+
+def getText(F, slots):
+    return WHITE_RE.sub(
+        &#34; &#34;,
+        &#34;&#34;.join(f&#34;{F.str.v(s)}{F.after.v(s)}&#34; for s in slots).strip(),
+    )
+
+
+def getEid(F, slots):
+    return WHITE_RE.sub(
+        &#34;&#34;,
+        &#34;&#34;.join(ucFirst(x) for s in slots if (x := F.str.v(s).strip())).strip(),
+    )
+
+
+def getKind(F, slots):
+    return GENERIC
+
+
+featureDefault = {
+    &#34;&#34;: getText,
+    FEATURES[0]: getKind,
+    FEATURES[1]: getEid,
+}
 
 
 def loadData(web):
@@ -52,7 +129,7 @@ def loadData(web):
 
     The data of an annotation set consists of:
 
-    *   a dict of entities, keyed by slots or line numbers;
+    *   a dict of entities, keyed by nodes or line numbers;
         each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
@@ -94,12 +171,21 @@ def loadData(web):
         *   `dateLoaded`: datetime when the data was last loaded from disk
         *   `dateProcessed`: datetime when the data was last processed
         *   `entities`: the list of entities as loaded from a tsv file
-        *   `entitiesByKind`: the dictionary of entities by kind, text as a result
-            of processing;
-        *   `entityKindFreq`: the frequency list of entity kinds as a result of processing
-        *   `entityTextFreq`: the frequency list of entity texts as a result
-            of processing
-        *   `entitiesSlot`: the index of entities by slot
+
+        We then process this into the following data structures:
+
+        *   `entityKindFreq`: the frequency list of entity kinds
+        *   `entityTextFreq`: the frequency list of entity texts
+        *   `entityTextKind`: the set of kinds that the entities with a given text may
+            have
+        *   `entitySlotIndex`: the index of entities by slot
+        *   `entityIndexKind`: the index of entities by tuple of slot positions; the values
+            are the set of kinds of the entities at that position.
+
+        *   `entityById`
+        *   `entityId`
+        *   `entityIdFreq`
+        *   `entityIndexId`
     &#34;&#34;&#34;
     if not hasattr(web, &#34;toolData&#34;):
         setattr(web, &#34;toolData&#34;, AttrDict())
@@ -127,7 +213,7 @@ def loadData(web):
     app = kernelApi.app
     api = app.api
     F = api.F
-    T = api.T
+    Fs = api.Fs
     L = api.L
     slotType = F.otype.slotType
 
@@ -157,101 +243,103 @@ def loadData(web):
             if fileExists(dataFile):
                 with open(dataFile) as df:
                     for (e, line) in enumerate(df):
-                        entities[e] = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                        fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+                        entities[e] = (
+                            tuple(fields[0:NF]),
+                            tuple(int(f) for f in fields[NF:]),
+                        )
 
             setData.entities = entities
-            setData.dateLoaded = datetime.utcnow()
+            setData.dateLoaded = time.time()
             web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
         else:
             web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
     else:
         if &#34;entities&#34; not in setData:
-            setData.entities = {
-                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s(&#34;ent&#34;)
+            entities = {}
+            hasFeature = {
+                feat: api.isLoaded(&#34;entid&#34;)[&#34;entid&#34;] is not None for feat in FEATURES
             }
 
-    # processing stage (a bit different for annoset == &#34;&#34;)
+            for e in F.otype.s(&#34;ent&#34;):
+                slots = L.d(e, otype=slotType)
+                entities[e] = (
+                    tuple(
+                        Fs(feat).v(e)
+                        if hasFeature[feat]
+                        else featureDefault[feat](F, slots)
+                        for feat in FEATURES
+                    ),
+                    tuple(slots),
+                )
 
-    entitiesByKind = {}
-    entityText = {}
-    entityTextFreq = collections.Counter()
-    entitiesSlotIndex = {}
+            setData.entities = entities
+
+    # processing stage (a bit different for annoset == &#34;&#34;)
 
     dateLoaded = setData.dateLoaded
     dateProcessed = setData.dateProcessed
 
-    def addToIndex(e, kind, slots):
-        firstSlot = slots[0]
-        lastSlot = slots[-1]
-        txt = entityText[e]
-        textFreq = entityTextFreq[txt]
-
-        for slot in slots:
-            isFirst = slot == firstSlot
-            isLast = slot == lastSlot
-            if isFirst or isLast:
-                if isFirst:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [True, kind, textFreq]
-                    )
-                if isLast:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [False, kind, textFreq]
-                    )
-            else:
-                entitiesSlotIndex.setdefault(slot, []).append(None)
-
     if (
         changed
         or &#34;dateProcessed&#34; not in setData
-        or &#34;entitiesByKind&#34; not in setData
-        or &#34;entityKindFreq&#34; not in setData
-        or &#34;entityText&#34; not in setData
-        or &#34;entityTextFreq&#34; not in setData
-        or &#34;entitiesSlotIndex&#34; not in setData
-        or dateLoaded is not None and dateProcessed &lt; dateLoaded
+        or &#34;entityVal&#34; not in setData
+        or &#34;entityBy&#34; not in setData
+        or &#34;entityFreq&#34; not in setData
+        or &#34;entityTextVal&#34; not in setData
+        or &#34;entitySlotIndex&#34; not in setData
+        or dateLoaded is not None
+        and dateProcessed &lt; dateLoaded
     ):
         web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
 
-        if annoSet:
-            entityKindFreq = collections.Counter()
+        entityItems = setData.entities.items()
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+        entityVal = {feat: {} for feat in FEATURES}
+        entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES[1:]}
+        entityBy = {}
+        entityFreq = {feat: collections.Counter() for feat in FEATURES}
+        entityIndex = {feat: {} for feat in FEATURES}
 
-                entityText[e] = txt
-                entityKindFreq[kind] += 1
-                entityTextFreq[txt] += 1
+        entitySlotIndex = {}
 
-                entitiesByKind.setdefault((kind, txt), []).append(e)
+        for (e, (fVals, slots)) in entityItems:
+            txt = fVals[0]
+            for (feat, val) in zip(FEATURES, fVals):
+                entityVal[feat] = val
+                entityFreq[feat][val] += 1
+                entityIndex[feat].setdefault(slots, set()).add(val)
+                entityTextVal[feat][txt].add(val)
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                addToIndex(e, kind, slots)
+            for (i, feat) in enumerate(FEATURES):
+                entityBy.setdefault(fVals[1:], []).append(e)
 
-            setData.entityKindFreq = sorted(entityKindFreq.items())
-        else:
-            for e in F.otype.s(&#34;ent&#34;):
-                kind = F.kind.v(e)
-                txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+            firstSlot = slots[0]
+            lastSlot = slots[-1]
 
-                entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
-                entityTextFreq[txt] += 1
+            for slot in slots:
+                isFirst = slot == firstSlot
+                isLast = slot == lastSlot
+                if isFirst or isLast:
+                    if isFirst:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [True, firstSlot - lastSlot - 1]
+                        )
+                    if isLast:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [False, lastSlot - firstSlot + 1]
+                        )
+                else:
+                    entitySlotIndex.setdefault(slot, []).append(None)
 
-            for e in F.otype.s(&#34;ent&#34;):
-                kind = F.kind.v(e)
-                slots = L.d(e, otype=slotType)
-                addToIndex(e, kind, slots)
+        setData.entityVal = entityVal
+        setData.entityBy = entityBy
+        setData.entityFreq = sorted(entityFreq.items())
+        setData.entityIndex = entityIndex
+        setData.entityTextVal = entityTextVal
+        setData.entitySlotIndex = entitySlotIndex
 
-            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
-
-        setData.entityText = entityText
-        setData.entitiesByKind = entitiesByKind
-        setData.entityTextFreq = entityTextFreq
-        setData.entitiesSlotIndex = entitiesSlotIndex
-        setData.dateProcessed = datetime.utcnow()
+        setData.dateProcessed = time.time()
 
         web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
 
@@ -266,6 +354,54 @@ def loadData(web):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="tf.browser.ner.kernel.getEid"><code class="name flex">
+<span>def <span class="ident">getEid</span></span>(<span>F, slots)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L76-L80" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getEid(F, slots):
+    return WHITE_RE.sub(
+        &#34;&#34;,
+        &#34;&#34;.join(ucFirst(x) for s in slots if (x := F.str.v(s).strip())).strip(),
+    )</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.getKind"><code class="name flex">
+<span>def <span class="ident">getKind</span></span>(<span>F, slots)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L83-L84" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getKind(F, slots):
+    return GENERIC</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.getText"><code class="name flex">
+<span>def <span class="ident">getText</span></span>(<span>F, slots)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L69-L73" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def getText(F, slots):
+    return WHITE_RE.sub(
+        &#34; &#34;,
+        &#34;&#34;.join(f&#34;{F.str.v(s)}{F.after.v(s)}&#34; for s in slots).strip(),
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.kernel.loadData"><code class="name flex">
 <span>def <span class="ident">loadData</span></span>(<span>web)</span>
 </code></dt>
@@ -273,7 +409,7 @@ def loadData(web):
 <div class="desc"><p>Loads data of the given annotation set from disk into memory.</p>
 <p>The data of an annotation set consists of:</p>
 <ul>
-<li>a dict of entities, keyed by slots or line numbers;
+<li>a dict of entities, keyed by nodes or line numbers;
 each entity specifies a kind and a list of slots that are part of the entity.</li>
 </ul>
 <p>If <code>annoSet</code> is empty, the annotation data is already in the TF data, and we do not
@@ -314,26 +450,38 @@ annotation set.</p>
 <li><code>dateLoaded</code>: datetime when the data was last loaded from disk</li>
 <li><code>dateProcessed</code>: datetime when the data was last processed</li>
 <li><code>entities</code>: the list of entities as loaded from a tsv file</li>
-<li><code>entitiesByKind</code>: the dictionary of entities by kind, text as a result
-of processing;</li>
-<li><code>entityKindFreq</code>: the frequency list of entity kinds as a result of processing</li>
-<li><code>entityTextFreq</code>: the frequency list of entity texts as a result
-of processing</li>
-<li><code>entitiesSlot</code>: the index of entities by slot</li>
+</ul>
+<p>We then process this into the following data structures:</p>
+<ul>
+<li><code>entityKindFreq</code>: the frequency list of entity kinds</li>
+<li><code>entityTextFreq</code>: the frequency list of entity texts</li>
+<li><code>entityTextKind</code>: the set of kinds that the entities with a given text may
+have</li>
+<li><code>entitySlotIndex</code>: the index of entities by slot</li>
+<li>
+<p><code>entityIndexKind</code>: the index of entities by tuple of slot positions; the values
+are the set of kinds of the entities at that position.</p>
+</li>
+<li>
+<p><code>entityById</code></p>
+</li>
+<li><code>entityId</code></li>
+<li><code>entityIdFreq</code></li>
+<li><code>entityIndexId</code></li>
 </ul>
 </dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/kernel.py#L17-L226" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L94-L314" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def loadData(web):
     &#34;&#34;&#34;Loads data of the given annotation set from disk into memory.
 
     The data of an annotation set consists of:
 
-    *   a dict of entities, keyed by slots or line numbers;
+    *   a dict of entities, keyed by nodes or line numbers;
         each entity specifies a kind and a list of slots that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
@@ -375,12 +523,21 @@ of processing</li>
         *   `dateLoaded`: datetime when the data was last loaded from disk
         *   `dateProcessed`: datetime when the data was last processed
         *   `entities`: the list of entities as loaded from a tsv file
-        *   `entitiesByKind`: the dictionary of entities by kind, text as a result
-            of processing;
-        *   `entityKindFreq`: the frequency list of entity kinds as a result of processing
-        *   `entityTextFreq`: the frequency list of entity texts as a result
-            of processing
-        *   `entitiesSlot`: the index of entities by slot
+
+        We then process this into the following data structures:
+
+        *   `entityKindFreq`: the frequency list of entity kinds
+        *   `entityTextFreq`: the frequency list of entity texts
+        *   `entityTextKind`: the set of kinds that the entities with a given text may
+            have
+        *   `entitySlotIndex`: the index of entities by slot
+        *   `entityIndexKind`: the index of entities by tuple of slot positions; the values
+            are the set of kinds of the entities at that position.
+
+        *   `entityById`
+        *   `entityId`
+        *   `entityIdFreq`
+        *   `entityIndexId`
     &#34;&#34;&#34;
     if not hasattr(web, &#34;toolData&#34;):
         setattr(web, &#34;toolData&#34;, AttrDict())
@@ -408,7 +565,7 @@ of processing</li>
     app = kernelApi.app
     api = app.api
     F = api.F
-    T = api.T
+    Fs = api.Fs
     L = api.L
     slotType = F.otype.slotType
 
@@ -438,106 +595,183 @@ of processing</li>
             if fileExists(dataFile):
                 with open(dataFile) as df:
                     for (e, line) in enumerate(df):
-                        entities[e] = line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;)
+                        fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+                        entities[e] = (
+                            tuple(fields[0:NF]),
+                            tuple(int(f) for f in fields[NF:]),
+                        )
 
             setData.entities = entities
-            setData.dateLoaded = datetime.utcnow()
+            setData.dateLoaded = time.time()
             web.console(f&#34;LOAD &#39;{annoSet}&#39; DONE&#34;)
         else:
             web.console(f&#34;LOAD &#39;{annoSet}&#39; REUSED&#34;)
     else:
         if &#34;entities&#34; not in setData:
-            setData.entities = {
-                e: (F.kind.v(e),) + L.d(e, otype=slotType) for e in F.otype.s(&#34;ent&#34;)
+            entities = {}
+            hasFeature = {
+                feat: api.isLoaded(&#34;entid&#34;)[&#34;entid&#34;] is not None for feat in FEATURES
             }
 
-    # processing stage (a bit different for annoset == &#34;&#34;)
+            for e in F.otype.s(&#34;ent&#34;):
+                slots = L.d(e, otype=slotType)
+                entities[e] = (
+                    tuple(
+                        Fs(feat).v(e)
+                        if hasFeature[feat]
+                        else featureDefault[feat](F, slots)
+                        for feat in FEATURES
+                    ),
+                    tuple(slots),
+                )
 
-    entitiesByKind = {}
-    entityText = {}
-    entityTextFreq = collections.Counter()
-    entitiesSlotIndex = {}
+            setData.entities = entities
+
+    # processing stage (a bit different for annoset == &#34;&#34;)
 
     dateLoaded = setData.dateLoaded
     dateProcessed = setData.dateProcessed
 
-    def addToIndex(e, kind, slots):
-        firstSlot = slots[0]
-        lastSlot = slots[-1]
-        txt = entityText[e]
-        textFreq = entityTextFreq[txt]
-
-        for slot in slots:
-            isFirst = slot == firstSlot
-            isLast = slot == lastSlot
-            if isFirst or isLast:
-                if isFirst:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [True, kind, textFreq]
-                    )
-                if isLast:
-                    entitiesSlotIndex.setdefault(slot, []).append(
-                        [False, kind, textFreq]
-                    )
-            else:
-                entitiesSlotIndex.setdefault(slot, []).append(None)
-
     if (
         changed
         or &#34;dateProcessed&#34; not in setData
-        or &#34;entitiesByKind&#34; not in setData
-        or &#34;entityKindFreq&#34; not in setData
-        or &#34;entityText&#34; not in setData
-        or &#34;entityTextFreq&#34; not in setData
-        or &#34;entitiesSlotIndex&#34; not in setData
-        or dateLoaded is not None and dateProcessed &lt; dateLoaded
+        or &#34;entityVal&#34; not in setData
+        or &#34;entityBy&#34; not in setData
+        or &#34;entityFreq&#34; not in setData
+        or &#34;entityTextVal&#34; not in setData
+        or &#34;entitySlotIndex&#34; not in setData
+        or dateLoaded is not None
+        and dateProcessed &lt; dateLoaded
     ):
         web.console(f&#34;PROCESS &#39;{annoSet}&#39; START&#34;)
 
-        if annoSet:
-            entityKindFreq = collections.Counter()
+        entityItems = setData.entities.items()
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                txt = WHITE_RE.sub(&#34; &#34;, T.text(slots).strip())
+        entityVal = {feat: {} for feat in FEATURES}
+        entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES[1:]}
+        entityBy = {}
+        entityFreq = {feat: collections.Counter() for feat in FEATURES}
+        entityIndex = {feat: {} for feat in FEATURES}
 
-                entityText[e] = txt
-                entityKindFreq[kind] += 1
-                entityTextFreq[txt] += 1
+        entitySlotIndex = {}
 
-                entitiesByKind.setdefault((kind, txt), []).append(e)
+        for (e, (fVals, slots)) in entityItems:
+            txt = fVals[0]
+            for (feat, val) in zip(FEATURES, fVals):
+                entityVal[feat] = val
+                entityFreq[feat][val] += 1
+                entityIndex[feat].setdefault(slots, set()).add(val)
+                entityTextVal[feat][txt].add(val)
 
-            for (e, eData) in setData.entities.items():
-                (kind, *slots) = eData
-                addToIndex(e, kind, slots)
+            for (i, feat) in enumerate(FEATURES):
+                entityBy.setdefault(fVals[1:], []).append(e)
 
-            setData.entityKindFreq = sorted(entityKindFreq.items())
-        else:
-            for e in F.otype.s(&#34;ent&#34;):
-                kind = F.kind.v(e)
-                txt = WHITE_RE.sub(&#34; &#34;, T.text(e).strip())
+            firstSlot = slots[0]
+            lastSlot = slots[-1]
 
-                entityText[e] = txt
-                entitiesByKind.setdefault((kind, txt), []).append(e)
-                entityTextFreq[txt] += 1
+            for slot in slots:
+                isFirst = slot == firstSlot
+                isLast = slot == lastSlot
+                if isFirst or isLast:
+                    if isFirst:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [True, firstSlot - lastSlot - 1]
+                        )
+                    if isLast:
+                        entitySlotIndex.setdefault(slot, []).append(
+                            [False, lastSlot - firstSlot + 1]
+                        )
+                else:
+                    entitySlotIndex.setdefault(slot, []).append(None)
 
-            for e in F.otype.s(&#34;ent&#34;):
-                kind = F.kind.v(e)
-                slots = L.d(e, otype=slotType)
-                addToIndex(e, kind, slots)
+        setData.entityVal = entityVal
+        setData.entityBy = entityBy
+        setData.entityFreq = sorted(entityFreq.items())
+        setData.entityIndex = entityIndex
+        setData.entityTextVal = entityTextVal
+        setData.entitySlotIndex = entitySlotIndex
 
-            setData.entityKindFreq = sorted(F.kind.freqList(nodeTypes={&#34;ent&#34;}))
-
-        setData.entityText = entityText
-        setData.entitiesByKind = entitiesByKind
-        setData.entityTextFreq = entityTextFreq
-        setData.entitiesSlotIndex = entitiesSlotIndex
-        setData.dateProcessed = datetime.utcnow()
+        setData.dateProcessed = time.time()
 
         web.console(f&#34;PROCESS &#39;{annoSet}&#39; DONE&#34;)
 
     else:
         web.console(f&#34;PROCESS &#39;{annoSet}&#39; REUSED&#34;)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.mergeEntities"><code class="name flex">
+<span>def <span class="ident">mergeEntities</span></span>(<span>web, newEntities)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L24-L36" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def mergeEntities(web, newEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, &#34;ner&#34;)
+
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
+
+    for (fVals, matches) in newEntities:
+        with open(dataFile, &#34;a&#34;) as fh:
+            fh.write(&#34;\t&#34;.join(str(x) for x in (*fVals, *matches)) + &#34;\n&#34;)
+
+    loadData(web)</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.ucFirst"><code class="name flex">
+<span>def <span class="ident">ucFirst</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L65-L66" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def ucFirst(x):
+    return x[0].upper() + x[1:].lower()</code></pre>
+</details>
+</dd>
+<dt id="tf.browser.ner.kernel.weedEntities"><code class="name flex">
+<span>def <span class="ident">weedEntities</span></span>(<span>web, delEntities)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/kernel.py#L39-L62" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def weedEntities(web, delEntities):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoSet = web.annoSet
+    annoDir = annotateDir(app, &#34;ner&#34;)
+
+    dataFile = f&#34;{annoDir}/{annoSet}/entities.tsv&#34;
+
+    newEntities = []
+
+    with open(dataFile) as fh:
+        for line in fh:
+            fields = tuple(line.rstrip(&#34;\n&#34;).split(&#34;\t&#34;))
+            fVals = tuple(fields[0:NF])
+            matches = tuple(int(f) for f in fields[NF:])
+            data = (fVals, matches)
+            if data in delEntities:
+                continue
+            newEntities.append(line)
+
+    with open(dataFile, &#34;w&#34;) as fh:
+        fh.write(&#34;&#34;.join(newEntities))
+
+    loadData(web)</code></pre>
 </details>
 </dd>
 </dl>
@@ -608,8 +842,14 @@ setTimeout(() => input.focus(), 100);
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="tf.browser.ner.kernel.getEid" href="#tf.browser.ner.kernel.getEid">getEid</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.getKind" href="#tf.browser.ner.kernel.getKind">getKind</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.getText" href="#tf.browser.ner.kernel.getText">getText</a></code></li>
 <li><code><a title="tf.browser.ner.kernel.loadData" href="#tf.browser.ner.kernel.loadData">loadData</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.mergeEntities" href="#tf.browser.ner.kernel.mergeEntities">mergeEntities</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.ucFirst" href="#tf.browser.ner.kernel.ucFirst">ucFirst</a></code></li>
+<li><code><a title="tf.browser.ner.kernel.weedEntities" href="#tf.browser.ner.kernel.weedEntities">weedEntities</a></code></li>
 </ul>
 </li>
 </ul>

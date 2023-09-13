@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/servelib.py#L1-L64" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L1-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
 &#34;&#34;&#34;
@@ -35,6 +35,7 @@
 from flask import request
 
 from ...core.files import dirContents
+from .kernel import FEATURES
 
 
 def getFormData(web):
@@ -54,26 +55,59 @@ def getFormData(web):
 
     form = {}
 
-    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
-    form[&#34;resetForm&#34;] = resetForm
+    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    submitter = request.form.get(&#34;submitter&#34;, &#34;&#34;)
+    form[&#34;submitter&#34;] = submitter
 
     form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;annoset&#34;] = request.form.get(&#34;annoset&#34;, &#34;&#34;)
+    form[&#34;duannoset&#34;] = request.form.get(&#34;duannoset&#34;, &#34;&#34;)
     form[&#34;rannoset&#34;] = request.form.get(&#34;rannoset&#34;, &#34;&#34;)
     form[&#34;dannoset&#34;] = request.form.get(&#34;dannoset&#34;, &#34;&#34;)
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
     form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
+    form[&#34;sfinderror&#34;] = request.form.get(&#34;sfinderror&#34;, &#34;&#34;)
     activeEntity = request.form.get(&#34;activeentity&#34;, &#34;&#34;)
     form[&#34;activeentity&#34;] = int(activeEntity) if activeEntity else None
+    form[&#34;activekind&#34;] = request.form.get(&#34;activekind&#34;, &#34;&#34;)
     form[&#34;efind&#34;] = request.form.get(&#34;efind&#34;, &#34;&#34;)
-    tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
-    form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
-    tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)
-    form[&#34;tselectend&#34;] = int(tSelectEnd) if tSelectEnd else None
+    tokenStart = request.form.get(&#34;tokenstart&#34;, &#34;&#34;)
+    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
+    tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
+    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
+    valSelectProto = {
+        feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;)
+        for feat in FEATURES
+    }
+    valSelect = {}
+    for (feat, valProto) in valSelectProto.items():
+        valSelect[feat] = set(valProto.split(&#34;,&#34;)) if valProto else {&#34;⌀&#34;} if submitter == &#34;lookupq&#34; else set()
+
+    form[&#34;valselect&#34;] = valSelect
+    # eKindSelect
+    eKindPButton = request.form.get(&#34;ekindpbutton&#34;, &#34;&#34;)
+    eIdPButton = request.form.get(&#34;eidpbutton&#34;, &#34;&#34;)
+    eKindXButton = request.form.get(&#34;ekindxbutton&#34;, &#34;&#34;)
+    eIdXButton = request.form.get(&#34;eidxbutton&#34;, &#34;&#34;)
+    eKindSave = request.form.get(&#34;ekindsave&#34;, &#34;&#34;)
+    eIdSave = request.form.get(&#34;eidsave&#34;, &#34;&#34;)
+    eKindV = request.form.get(&#34;ekindv&#34;, &#34;&#34;)
+    eIdV = request.form.get(&#34;eidv&#34;, &#34;&#34;)
+    savEKind = eKindV if eKindSave else eKindPButton
+    savEId = eIdV if eIdSave else eIdPButton
+    form[&#34;savEKind&#34;] = savEKind
+    form[&#34;savEId&#34;] = savEId
+    form[&#34;delEKind&#34;] = eKindXButton
+    form[&#34;delEId&#34;] = eIdXButton
+    form[&#34;scope&#34;] = request.form.get(&#34;scope&#34;, &#34;a&#34;)
+    excludedTokens = request.form.get(&#34;excludedtokens&#34;, &#34;&#34;)
+    form[&#34;excludedTokens&#34;] = (
+        {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
+    )
 
     return form
 
@@ -121,7 +155,7 @@ The names of these subdirectories are the names of the annotation sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/servelib.py#L50-L64" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L84-L98" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annoSets(annoDir):
     &#34;&#34;&#34;Get the existing annotation sets.
@@ -156,7 +190,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/servelib.py#L9-L47" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L10-L81" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFormData(web):
     &#34;&#34;&#34;Get form data.
@@ -175,26 +209,59 @@ but there is also a list of webapp dependent options.</p></div>
 
     form = {}
 
-    resetForm = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
-    form[&#34;resetForm&#34;] = resetForm
+    form[&#34;resetForm&#34;] = request.form.get(&#34;resetForm&#34;, &#34;&#34;)
+    submitter = request.form.get(&#34;submitter&#34;, &#34;&#34;)
+    form[&#34;submitter&#34;] = submitter
 
     form[&#34;sec0&#34;] = request.form.get(&#34;sec0&#34;, &#34;&#34;)
     form[&#34;sec1&#34;] = request.form.get(&#34;sec1&#34;, &#34;&#34;)
     form[&#34;sec2&#34;] = request.form.get(&#34;sec2&#34;, &#34;&#34;)
     form[&#34;annoset&#34;] = request.form.get(&#34;annoset&#34;, &#34;&#34;)
+    form[&#34;duannoset&#34;] = request.form.get(&#34;duannoset&#34;, &#34;&#34;)
     form[&#34;rannoset&#34;] = request.form.get(&#34;rannoset&#34;, &#34;&#34;)
     form[&#34;dannoset&#34;] = request.form.get(&#34;dannoset&#34;, &#34;&#34;)
     form[&#34;freqsort&#34;] = request.form.get(&#34;freqsort&#34;, &#34;&#34;)
     form[&#34;kindsort&#34;] = request.form.get(&#34;kindsort&#34;, &#34;&#34;)
     form[&#34;etxtsort&#34;] = request.form.get(&#34;etxtsort&#34;, &#34;&#34;)
     form[&#34;sfind&#34;] = request.form.get(&#34;sfind&#34;, &#34;&#34;)
+    form[&#34;sfinderror&#34;] = request.form.get(&#34;sfinderror&#34;, &#34;&#34;)
     activeEntity = request.form.get(&#34;activeentity&#34;, &#34;&#34;)
     form[&#34;activeentity&#34;] = int(activeEntity) if activeEntity else None
+    form[&#34;activekind&#34;] = request.form.get(&#34;activekind&#34;, &#34;&#34;)
     form[&#34;efind&#34;] = request.form.get(&#34;efind&#34;, &#34;&#34;)
-    tSelectStart = request.form.get(&#34;tselectstart&#34;, &#34;&#34;)
-    form[&#34;tselectstart&#34;] = int(tSelectStart) if tSelectStart else None
-    tSelectEnd = request.form.get(&#34;tselectend&#34;, &#34;&#34;)
-    form[&#34;tselectend&#34;] = int(tSelectEnd) if tSelectEnd else None
+    tokenStart = request.form.get(&#34;tokenstart&#34;, &#34;&#34;)
+    form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
+    tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
+    form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
+    valSelectProto = {
+        feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;)
+        for feat in FEATURES
+    }
+    valSelect = {}
+    for (feat, valProto) in valSelectProto.items():
+        valSelect[feat] = set(valProto.split(&#34;,&#34;)) if valProto else {&#34;⌀&#34;} if submitter == &#34;lookupq&#34; else set()
+
+    form[&#34;valselect&#34;] = valSelect
+    # eKindSelect
+    eKindPButton = request.form.get(&#34;ekindpbutton&#34;, &#34;&#34;)
+    eIdPButton = request.form.get(&#34;eidpbutton&#34;, &#34;&#34;)
+    eKindXButton = request.form.get(&#34;ekindxbutton&#34;, &#34;&#34;)
+    eIdXButton = request.form.get(&#34;eidxbutton&#34;, &#34;&#34;)
+    eKindSave = request.form.get(&#34;ekindsave&#34;, &#34;&#34;)
+    eIdSave = request.form.get(&#34;eidsave&#34;, &#34;&#34;)
+    eKindV = request.form.get(&#34;ekindv&#34;, &#34;&#34;)
+    eIdV = request.form.get(&#34;eidv&#34;, &#34;&#34;)
+    savEKind = eKindV if eKindSave else eKindPButton
+    savEId = eIdV if eIdSave else eIdPButton
+    form[&#34;savEKind&#34;] = savEKind
+    form[&#34;savEId&#34;] = savEId
+    form[&#34;delEKind&#34;] = eKindXButton
+    form[&#34;delEId&#34;] = eIdXButton
+    form[&#34;scope&#34;] = request.form.get(&#34;scope&#34;, &#34;a&#34;)
+    excludedTokens = request.form.get(&#34;excludedtokens&#34;, &#34;&#34;)
+    form[&#34;excludedTokens&#34;] = (
+        {int(t) for t in excludedTokens.split(&#34;,&#34;)} if excludedTokens else set()
+    )
 
     return form</code></pre>
 </details>

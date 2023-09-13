@@ -27,17 +27,18 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L1-L176" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/wrap.py#L1-L191" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Wraps various pieces into HTML.
 &#34;&#34;&#34;
 
 from textwrap import dedent
 
+from .kernel import FEATURES
+
 
 def wrapMessages(messages):
-    &#34;&#34;&#34;HTML for messages.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
     html = []
     html.append(&#34;&lt;p&gt;&#34;)
 
@@ -81,6 +82,11 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 id=&#34;annoseth&#34;
             &gt;&lt;input
                 type=&#34;hidden&#34;
+                name=&#34;duannoset&#34;
+                value=&#34;&#34;
+                id=&#34;duannoseth&#34;
+            &gt;&lt;input
+                type=&#34;hidden&#34;
                 name=&#34;rannoset&#34;
                 value=&#34;&#34;
                 id=&#34;rannoseth&#34;
@@ -94,6 +100,10 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;anew&#34;
                 title=&#34;create a new annotation set&#34;
             &gt;+&lt;/button&gt;
+            &lt;button
+                type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;adup&#34;
+                title=&#34;duplicate this annotation set&#34;
+            &gt;++&lt;/button&gt;
             &#34;&#34;&#34;
         )
     )
@@ -175,8 +185,8 @@ def wrapEntityHeaders(sortKey, sortDir):
     return &#34;&#34;.join(html)
 
 
-def wrapEntityKinds(web):
-    &#34;&#34;&#34;HTML for the kinds of entities.
+def wrapEntityFeats(web):
+    &#34;&#34;&#34;HTML for the feature values of entities.
 
     Parameters
     ----------
@@ -192,12 +202,17 @@ def wrapEntityKinds(web):
     setData = web.toolData.ner.sets[web.annoSet]
     html = []
 
-    for (kind, freq) in setData.entityKindFreq:
+    for (fVals, es) in setData.entityBy:
+        freq = len(es)
+        fValsRep = &#34; &#34;.join(
+            f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
+            for (feat, val) in zip(FEATURES[1:], fVals)
+        )
         html.append(
             dedent(
                 f&#34;&#34;&#34;
                 &lt;span&gt;&lt;code class=&#34;w&#34;&gt;{freq:&gt;5}&lt;/code&gt; x
-                &lt;button type=&#34;submit&#34; value=&#34;v&#34;&gt;{kind}&lt;/button&gt;
+                &lt;button type=&#34;submit&#34; value=&#34;v&#34;&gt;{fValsRep}&lt;/button&gt;
                 &lt;/span&gt;&lt;br&gt;
                 &#34;&#34;&#34;
             )
@@ -237,7 +252,7 @@ and features.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L20-L104" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/wrap.py#L21-L114" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     &#34;&#34;&#34;HTML for the annoset chooser.
@@ -272,6 +287,11 @@ and features.</dd>
                 id=&#34;annoseth&#34;
             &gt;&lt;input
                 type=&#34;hidden&#34;
+                name=&#34;duannoset&#34;
+                value=&#34;&#34;
+                id=&#34;duannoseth&#34;
+            &gt;&lt;input
+                type=&#34;hidden&#34;
                 name=&#34;rannoset&#34;
                 value=&#34;&#34;
                 id=&#34;rannoseth&#34;
@@ -285,6 +305,10 @@ and features.</dd>
                 type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;anew&#34;
                 title=&#34;create a new annotation set&#34;
             &gt;+&lt;/button&gt;
+            &lt;button
+                type=&#34;submit&#34; class=&#34;medium active&#34; id=&#34;adup&#34;
+                title=&#34;duplicate this annotation set&#34;
+            &gt;++&lt;/button&gt;
             &#34;&#34;&#34;
         )
     )
@@ -326,6 +350,64 @@ and features.</dd>
     return &#34;\n&#34;.join(html)</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.wrap.wrapEntityFeats"><code class="name flex">
+<span>def <span class="ident">wrapEntityFeats</span></span>(<span>web)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>HTML for the feature values of entities.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The entity data for the chosen set. We only need the member <code>entityKindFreq</code>,
+which is a tuple of tuples representing the frequency list of entity kinds.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>HTML string</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/wrap.py#L157-L191" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def wrapEntityFeats(web):
+    &#34;&#34;&#34;HTML for the feature values of entities.
+
+    Parameters
+    ----------
+    setData: dict
+        The entity data for the chosen set. We only need the member `entityKindFreq`,
+        which is a tuple of tuples representing the frequency list of entity kinds.
+
+    Returns
+    -------
+    HTML string
+    &#34;&#34;&#34;
+
+    setData = web.toolData.ner.sets[web.annoSet]
+    html = []
+
+    for (fVals, es) in setData.entityBy:
+        freq = len(es)
+        fValsRep = &#34; &#34;.join(
+            f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
+            for (feat, val) in zip(FEATURES[1:], fVals)
+        )
+        html.append(
+            dedent(
+                f&#34;&#34;&#34;
+                &lt;span&gt;&lt;code class=&#34;w&#34;&gt;{freq:&gt;5}&lt;/code&gt; x
+                &lt;button type=&#34;submit&#34; value=&#34;v&#34;&gt;{fValsRep}&lt;/button&gt;
+                &lt;/span&gt;&lt;br&gt;
+                &#34;&#34;&#34;
+            )
+        )
+
+    html.append(&#34;&lt;/span&gt;&lt;br&gt;\n&#34;)
+    return &#34;&#34;.join(html)</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.wrap.wrapEntityHeaders"><code class="name flex">
 <span>def <span class="ident">wrapEntityHeaders</span></span>(<span>sortKey, sortDir)</span>
 </code></dt>
@@ -347,7 +429,7 @@ Indicator of the direction of the sorting.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L107-L144" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/wrap.py#L117-L154" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapEntityHeaders(sortKey, sortDir):
     &#34;&#34;&#34;HTML for the header of the entity table.
@@ -389,59 +471,6 @@ Indicator of the direction of the sorting.</p>
     return &#34;&#34;.join(html)</code></pre>
 </details>
 </dd>
-<dt id="tf.browser.ner.wrap.wrapEntityKinds"><code class="name flex">
-<span>def <span class="ident">wrapEntityKinds</span></span>(<span>web)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>HTML for the kinds of entities.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>setData</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The entity data for the chosen set. We only need the member <code>entityKindFreq</code>,
-which is a tuple of tuples representing the frequency list of entity kinds.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>HTML string</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L147-L176" class="git-link">Browse git</a>
-</summary>
-<pre><code class="python">def wrapEntityKinds(web):
-    &#34;&#34;&#34;HTML for the kinds of entities.
-
-    Parameters
-    ----------
-    setData: dict
-        The entity data for the chosen set. We only need the member `entityKindFreq`,
-        which is a tuple of tuples representing the frequency list of entity kinds.
-
-    Returns
-    -------
-    HTML string
-    &#34;&#34;&#34;
-
-    setData = web.toolData.ner.sets[web.annoSet]
-    html = []
-
-    for (kind, freq) in setData.entityKindFreq:
-        html.append(
-            dedent(
-                f&#34;&#34;&#34;
-                &lt;span&gt;&lt;code class=&#34;w&#34;&gt;{freq:&gt;5}&lt;/code&gt; x
-                &lt;button type=&#34;submit&#34; value=&#34;v&#34;&gt;{kind}&lt;/button&gt;
-                &lt;/span&gt;&lt;br&gt;
-                &#34;&#34;&#34;
-            )
-        )
-
-    html.append(&#34;&lt;/span&gt;&lt;br&gt;\n&#34;)
-    return &#34;&#34;.join(html)</code></pre>
-</details>
-</dd>
 <dt id="tf.browser.ner.wrap.wrapMessages"><code class="name flex">
 <span>def <span class="ident">wrapMessages</span></span>(<span>messages)</span>
 </code></dt>
@@ -450,11 +479,10 @@ which is a tuple of tuples representing the frequency list of entity kinds.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/ner/wrap.py#L7-L17" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/wrap.py#L9-L18" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def wrapMessages(messages):
-    &#34;&#34;&#34;HTML for messages.
-    &#34;&#34;&#34;
+    &#34;&#34;&#34;HTML for messages.&#34;&#34;&#34;
     html = []
     html.append(&#34;&lt;p&gt;&#34;)
 
@@ -535,8 +563,8 @@ setTimeout(() => input.focus(), 100);
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="tf.browser.ner.wrap.wrapAnnoSets" href="#tf.browser.ner.wrap.wrapAnnoSets">wrapAnnoSets</a></code></li>
+<li><code><a title="tf.browser.ner.wrap.wrapEntityFeats" href="#tf.browser.ner.wrap.wrapEntityFeats">wrapEntityFeats</a></code></li>
 <li><code><a title="tf.browser.ner.wrap.wrapEntityHeaders" href="#tf.browser.ner.wrap.wrapEntityHeaders">wrapEntityHeaders</a></code></li>
-<li><code><a title="tf.browser.ner.wrap.wrapEntityKinds" href="#tf.browser.ner.wrap.wrapEntityKinds">wrapEntityKinds</a></code></li>
 <li><code><a title="tf.browser.ner.wrap.wrapMessages" href="#tf.browser.ner.wrap.wrapMessages">wrapMessages</a></code></li>
 </ul>
 </li>

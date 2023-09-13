@@ -3419,7 +3419,7 @@ INDEX=[
 {
 "ref":"tf.about.releases",
 "url":68,
-"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the Text-Fabric repo and in its top-level directory run the command:   pip install -e .    12  12.0  12.1 (upcoming) 2023-08-  New stuff  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognititon  In the Text-Fabric browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently. These tools will let you save your work as files on your own computer, maybe even feature files, so that you can explore the result by means of queries in the text-fabric browser as you go.  Fixes  in the TEI converter.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the Text-Fabric browser.  12.0.0-4 2023-07-05  Simplification  The Text-Fabric browser no longer works with a separate process that holds the TF corpus data. Instead, the webserver (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  Text-Fabric no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the autoloading of data from GitHub/GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
+"doc":" Release notes  ! hint \"Consult the tutorials after changes\" When we change the API, we make sure that the tutorials show off all possibilities. See the app-specific tutorials via  tf.about.corpora .  -  The TEI converter is still in active development. If you need the latest version, clone the Text-Fabric repo and in its top-level directory run the command:   pip install -e .    12  12.0  12.1 (upcoming) 2023-09-  New stuff  In  tf.convert.addnlp we can now extract more NLP information besides tokens and sentences: part-of-speech, morphological tagging, lemmatisation, named entity recognititon  In the Text-Fabric browser there will be a new tab in the vertical sidebar:  Annotate , which will give access to manual annotation tools. I'm developing the first one, a tool to annotate named entities efficiently. These tools will let you save your work as files on your own computer, maybe even feature files, so that you can explore the result by means of queries in the text-fabric browser as you go.  Fixes  in the TEI converter.  12.0.6 2023-09-13 Trivial fix in code that exports the data from a job in the Text-Fabric browser. In the meanwhile there is unfinished business in the  Annotate tab in the TF-browser, that will come into production in the upcoming 12.1 release.  12.0.5 2023-07-10 Fixed references to static files that still went to  /server instead of  /browser . This has to do with the new approach to the Text-Fabric browser.  12.0.0-4 2023-07-05  Simplification  The Text-Fabric browser no longer works with a separate process that holds the TF corpus data. Instead, the webserver (flask) loads the corpus itself. This will restrict the usage of the TF browser to local-single-user scenarios.  Text-Fabric no longer exposes the installation options  [browser, pandas]  pip install 'text-fabric[browser]' pip install 'text-fabric[pandas]'  If you work with Pandas (like exporting to Pandas) you have to install it yourself:  pip install pandas pyarrow  The TF browser is always supported. The reason to have these distinct capabilities was that there are python libraries involved that do not install on the iPad. The simplification of the TF browser makes it possible to be no longer dependent on these modules. Hence, TF can be installed on the iPad, although the TF browser works is not working there yet. But the autoloading of data from GitHub/GitLab works.  Minor things  Header. After loading a dataset, a header is shown with shows all kinds of information about the corpus. But so far, it did not show the TF app settings. Now they are included in the header. There are two kinds: the explicitly given settings and the derived and computed settings. The latter ones will be suppressed when loading a dataset in a Jupyter notebook, because these settings can become quite big. You can still get them with  A.showContext() . In the TF browser they will be always included, you find it in the  Corpus tab.  -  Older releases See  tf.about.releasesold ."
 },
 {
 "ref":"tf.about.clientmanual",
@@ -3876,9 +3876,45 @@ INDEX=[
 "doc":"TF backend processing. This module is for functions that extract data from the corpus and put it in various dedicated data structures."
 },
 {
+"ref":"tf.browser.ner.kernel.mergeEntities",
+"url":94,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.weedEntities",
+"url":94,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.ucFirst",
+"url":94,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.getText",
+"url":94,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.getEid",
+"url":94,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.kernel.getKind",
+"url":94,
+"doc":"",
+"func":1
+},
+{
 "ref":"tf.browser.ner.kernel.loadData",
 "url":94,
-"doc":"Loads data of the given annotation set from disk into memory. The data of an annotation set consists of:  a dict of entities, keyed by slots or line numbers; each entity specifies a kind and a list of slots that are part of the entity. If  annoSet is empty, the annotation data is already in the TF data, and we do not do anything. After loading we process the data into a sligthly other shape:  a dictionary keyed by pairs of kind and text and valued by the sequence numbers of the entities that have that kind and text  a frequency list of the entity kinds  a frequency list of the entity texts  a dictionary, keyed by slot number, and valued by the following information:  If the slot is outside any entity, it is not in the dictionary  Otherwise, the value is a list of items, each item holds information about a specific entity wrt to that slot:  If an entity starts or ends there, the item is a tuple (status, kind, number of occurrences)  If the slot is inside an entity, the item is True We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. Likewise, we only process the data if the data has been loaded again. Parameters      web: object The web application object, which has a handle to the TF app object. Returns    - void The resulting data is stored on the  web object, under the key  toolData and then under the key  ner and then  sets and then the name of the annotation set. For each set we produce the keys:   dateLoaded : datetime when the data was last loaded from disk   dateProcessed : datetime when the data was last processed   entities : the list of entities as loaded from a tsv file   entitiesByKind : the dictionary of entities by kind, text as a result of processing;   entityKindFreq : the frequency list of entity kinds as a result of processing   entityTextFreq : the frequency list of entity texts as a result of processing   entitiesSlot : the index of entities by slot",
+"doc":"Loads data of the given annotation set from disk into memory. The data of an annotation set consists of:  a dict of entities, keyed by nodes or line numbers; each entity specifies a kind and a list of slots that are part of the entity. If  annoSet is empty, the annotation data is already in the TF data, and we do not do anything. After loading we process the data into a sligthly other shape:  a dictionary keyed by pairs of kind and text and valued by the sequence numbers of the entities that have that kind and text  a frequency list of the entity kinds  a frequency list of the entity texts  a dictionary, keyed by slot number, and valued by the following information:  If the slot is outside any entity, it is not in the dictionary  Otherwise, the value is a list of items, each item holds information about a specific entity wrt to that slot:  If an entity starts or ends there, the item is a tuple (status, kind, number of occurrences)  If the slot is inside an entity, the item is True We try to be lazy. We only load data from disk if the data is not already in memory, or the data on disk has been updated since the last load. Likewise, we only process the data if the data has been loaded again. Parameters      web: object The web application object, which has a handle to the TF app object. Returns    - void The resulting data is stored on the  web object, under the key  toolData and then under the key  ner and then  sets and then the name of the annotation set. For each set we produce the keys:   dateLoaded : datetime when the data was last loaded from disk   dateProcessed : datetime when the data was last processed   entities : the list of entities as loaded from a tsv file We then process this into the following data structures:   entityKindFreq : the frequency list of entity kinds   entityTextFreq : the frequency list of entity texts   entityTextKind : the set of kinds that the entities with a given text may have   entitySlotIndex : the index of entities by slot   entityIndexKind : the index of entities by tuple of slot positions; the values are the set of kinds of the entities at that position.   entityById   entityId   entityIdFreq   entityIndexId ",
 "func":1
 },
 {
@@ -3917,25 +3953,55 @@ INDEX=[
 {
 "ref":"tf.browser.ner.tables.composeE",
 "url":97,
-"doc":"Compose a table of entities with selection and sort controls. Parameters      web: object The web app object sortKey: string Indicates how to sort the table:   freqsort : by the frequency of the entities   kindsort : by the kind of the entities   etxtsort : by the text of the entities sortDir: string Indicates the direction of the sort:   u : up, i.e. ascending   d : down, i.e. descending Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.tables.tokenMatch",
-"url":97,
-"doc":"Checks whether a sentence matches a sequence of words. When we do the checking, we ignore empty words in the sentence. Parameters      L, F, T: object The TF APIs  F and  L for feature lookup and level-switching, and text extraction s: integer The node of the sentence in question words: list of string The sequence of words that must be matched. They are all non-empty and stripped from white space.",
-"func":1
-},
-{
-"ref":"tf.browser.ner.tables.composeS",
-"url":97,
-"doc":"Compose a table of sentences. Will filter the sentences by tokens if the  tokenStart and  tokenEnd parameters are both filled in. In that case, we look up the text between those tokens and including. All sentences that contain that text of those slots will show up, all other sentences will be left out. The matching slots will be highlighted. Parameters      web: object The web app object sFindPattern: string A search string that filters the sentences, before applying the search for a word sequence. tokenStart, tokenEnd: int or None Specify the start slot number and the end slot number of a sequence of tokens. Only sentences that contain this token sentence will be passed through, all other sentences will be filtered out. Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
+"doc":"Compose a table of entities with selection and sort controls. Parameters      web: object The web app object sortKey: string Indicates how to sort the table:   freqsort : by the frequency of the entities   textsort : by the text of the entities   idsort : by the kind of the entities   kindsort : by the kind of the entities sortDir: string Indicates the direction of the sort:   u : up, i.e. ascending   d : down, i.e. descending Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
 "func":1
 },
 {
 "ref":"tf.browser.ner.tables.composeQ",
 "url":97,
-"doc":"HTML for the query tokens. Parameters      web: object The web app object tokenStart, tokenEnd: int or None Specify the start slot number and the end slot number of a sequence of tokens. Only sentences that contain this token sentence will be passed through, all other sentences will be filtered out. Returns    - html string The finished HTML of the query parameters",
+"doc":"HTML for the query line. Parameters      web: object The web app object Returns    - html string The finished HTML of the query parameters",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.entityMatch",
+"url":97,
+"doc":"Checks whether a sentence matches a sequence of words. When we do the checking, we ignore empty words in the sentence. Parameters      entityIndexKind: dict Dictionary from tuples of slots to sets of kinds, being the kinds that entities occupying those slot tuples have L, F, T: object The TF APIs  F and  L for feature lookup and level-switching, and text extraction s: integer The node of the sentence in question words: list of string The sequence of words that must be matched. They are all non-empty and stripped from white space. eKindSelect: string The entity kind that the matched words should have",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.filterS",
+"url":97,
+"doc":"Filter the sentences. Will filter the sentences by tokens if the  tokenStart and  tokenEnd parameters are both filled in. In that case, we look up the text between those tokens and including. All sentences that contain that text of those slots will show up, all other sentences will be left out. However, if  eKindSelect is non-empty, then there is a further filter: only if the text corresponds to an entity with that kind, the sentence is passed through. The matching slots will be highlighted. Parameters      web: object The web app object sFindPattern: string A search string that filters the sentences, before applying the search for a word sequence. tokenStart, tokenEnd: int or None Specify the start slot number and the end slot number of a sequence of tokens. Only sentences that contain this token sentence will be passed through, all other sentences will be filtered out. eKindSelect: set The entity kinds to filter on. Returns    - list of tuples For each sentence that passes the filter, a tuple with the following members is added to the list:  tokens: the tokens of the sentence  matches: the match positions of the found text  positions: the token positions where a targeted token sequence starts",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.saveEntity",
+"url":97,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.delEntity",
+"url":97,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.composeFindStat",
+"url":97,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.composeEntityStat",
+"url":97,
+"doc":"",
+"func":1
+},
+{
+"ref":"tf.browser.ner.tables.composeS",
+"url":97,
+"doc":"Compose a table of sentences. In that case, we look up the text between those tokens and including. All sentences that contain that text of those slots will show up, all other sentences will be left out. The matching slots will be highlighted. Parameters      web: object The web app object Returns    - html string The finished HTML of the table, ready to put into the Flask template.",
 "func":1
 },
 {
@@ -3962,9 +4028,9 @@ INDEX=[
 "func":1
 },
 {
-"ref":"tf.browser.ner.wrap.wrapEntityKinds",
+"ref":"tf.browser.ner.wrap.wrapEntityFeats",
 "url":98,
-"doc":"HTML for the kinds of entities. Parameters      setData: dict The entity data for the chosen set. We only need the member  entityKindFreq , which is a tuple of tuples representing the frequency list of entity kinds. Returns    - HTML string",
+"doc":"HTML for the feature values of entities. Parameters      setData: dict The entity data for the chosen set. We only need the member  entityKindFreq , which is a tuple of tuples representing the frequency list of entity kinds. Returns    - HTML string",
 "func":1
 },
 {

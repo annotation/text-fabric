@@ -77,7 +77,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/start.py#L1-L202" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/start.py#L1-L203" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -259,9 +259,10 @@ def main(cargs=sys.argv[1:]):
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
             console(&#34;Opening corpus in browser&#34;)
-            webbrowser.open(
+            controller = webbrowser.get(&#34;chrome&#34;)
+            controller.open(
                 f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
-                new=2,
+                new=0,
                 autoraise=True,
             )
 
@@ -298,7 +299,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/3af1a399c23b1087f636df2740ef430583daa40c/tf/browser/start.py#L137-L198" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/start.py#L137-L199" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -344,9 +345,10 @@ if __name__ == &#34;__main__&#34;:
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
             console(&#34;Opening corpus in browser&#34;)
-            webbrowser.open(
+            controller = webbrowser.get(&#34;chrome&#34;)
+            controller.open(
                 f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
-                new=2,
+                new=0,
                 autoraise=True,
             )
 
