@@ -251,9 +251,10 @@ def loadData(web):
         changed
         or "dateProcessed" not in setData
         or "entityVal" not in setData
+        or "entityTextVal" not in setData
         or "entityBy" not in setData
         or "entityFreq" not in setData
-        or "entityTextVal" not in setData
+        or "entityIndex" not in setData
         or "entitySlotIndex" not in setData
         or dateLoaded is not None
         and dateProcessed < dateLoaded
@@ -267,19 +268,19 @@ def loadData(web):
         entityBy = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
-
         entitySlotIndex = {}
 
         for (e, (fVals, slots)) in entityItems:
             txt = fVals[0]
+            ident = fVals[1:]
+
             for (feat, val) in zip(FEATURES, fVals):
-                entityVal[feat] = val
+                entityVal[feat][e] = val
                 entityFreq[feat][val] += 1
                 entityIndex[feat].setdefault(slots, set()).add(val)
                 entityTextVal[feat][txt].add(val)
 
-            for (i, feat) in enumerate(FEATURES):
-                entityBy.setdefault(fVals[1:], []).append(e)
+            entityBy.setdefault(ident, []).append(e)
 
             firstSlot = slots[0]
             lastSlot = slots[-1]
@@ -290,20 +291,20 @@ def loadData(web):
                 if isFirst or isLast:
                     if isFirst:
                         entitySlotIndex.setdefault(slot, []).append(
-                            [True, firstSlot - lastSlot - 1]
+                            [True, firstSlot - lastSlot - 1, ident]
                         )
                     if isLast:
                         entitySlotIndex.setdefault(slot, []).append(
-                            [False, lastSlot - firstSlot + 1]
+                            [False, lastSlot - firstSlot + 1, ident]
                         )
                 else:
                     entitySlotIndex.setdefault(slot, []).append(None)
 
         setData.entityVal = entityVal
+        setData.entityTextVal = entityTextVal
         setData.entityBy = entityBy
         setData.entityFreq = sorted(entityFreq.items())
         setData.entityIndex = entityIndex
-        setData.entityTextVal = entityTextVal
         setData.entitySlotIndex = entitySlotIndex
 
         setData.dateProcessed = time.time()

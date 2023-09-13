@@ -8,6 +8,13 @@ from textwrap import dedent
 from .kernel import FEATURES, KEYWORD_FEATURES, mergeEntities, weedEntities, WHITE_RE
 
 
+def repIdent(vals):
+    return " ".join(
+        f"""<span class="{feat}">{val}</span>"""
+        for (feat, val) in zip(FEATURES[1:], vals)
+    )
+
+
 def composeE(web, activeEntity, activeKind, sortKey, sortDir):
     """Compose a table of entities with selection and sort controls.
 
@@ -59,10 +66,6 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
 
         active = " queried " if activeEntity is not None and i == activeEntity else ""
 
-        eInfo = " ".join(
-            f"""<span class="{feat}">{val}</span>"""
-            for (feat, val) in zip(FEATURES[1:], vals)
-        )
         item = dedent(
             f"""
             <p
@@ -72,7 +75,7 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
             >
                 <code class="w">{x:>5}</code>
                 x
-                {eInfo}>
+                {repIdent(vals)}>
             </p>"""
         )
         html.append(item)
@@ -206,7 +209,9 @@ def composeQ(
         )
         for val in ["⌀"] + sorted(theseVals):
             status = "v" if val in thisValSelect else "x"
-            entityStat = composeEntityStat(feat, val, nVisible, nEnt, hasFind, hasEntity)
+            entityStat = composeEntityStat(
+                val, nVisible[feat], nEnt[feat], hasFind, hasEntity
+            )
             title = f"{feat} not marked" if val == "⌀" else f"{feat} marked as {val}"
 
             html.append(
@@ -407,14 +412,14 @@ def composeQ(
     templateData["q"] = "\n".join(html)
 
 
-def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect):
+def entityMatch(entityIndex, L, F, T, s, sFindPatternRe, words, valSelect):
     """Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
 
     Parameters
     ----------
-    entityIndexKind: dict
+    entityIndex: dict
         Dictionary from tuples of slots to sets of kinds, being the kinds that
         entities occupying those slot tuples have
     L, F, T: object
@@ -425,7 +430,7 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
     words: list of string
         The sequence of words that must be matched. They are all non-empty and stripped
         from white space.
-    eKindSelect: string
+    valSelect: string
         The entity kind that the matched words should have
     """
     nWords = len(words)
@@ -454,16 +459,16 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
             return (fits, {}, None)
 
         nSTokens = len(sTokens)
-        eKinds = collections.Counter()
+        fValStats = {feat: collections.Counter() for feat in FEATURES[1:]}
 
         for (i, (t, w)) in enumerate(sTokens):
             if w != words[0]:
                 continue
             if i + nWords - 1 >= nSTokens:
                 return (
-                    (fits, eKinds, None)
+                    (fits, fValStats, None)
                     if len(matches) == 0
-                    else (fits, eKinds, (sTokensAll, matches, positions))
+                    else (fits, fValStats, (sTokensAll, matches, positions))
                 )
 
             match = True
@@ -476,27 +481,40 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
             if match:
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
-                theseEKinds = entityIndexKind.get(slots, set())
-                for ek in theseEKinds:
-                    eKinds[ek] += 1
-                if len(theseEKinds) == 0:
-                    eKinds["⌀"] += 1
-                if (
-                    "⌀" in eKindSelect
-                    and len(theseEKinds) == 0
-                    or len(eKindSelect & theseEKinds) != 0
-                ):
+
+                valOK = True
+
+                for feat in FEATURES[1:]:
+                    theseVals = entityIndex[feat].get(slots, set())
+                    theseStats = fValStats[feat]
+                    theseValSelect = valSelect[feat]
+
+                    for val in theseVals:
+                        theseStats[val] += 1
+
+                    if len(theseVals) == 0:
+                        theseStats["⌀"] += 1
+                    if (
+                        "⌀" in theseValSelect
+                        and len(theseVals) == 0
+                        or len(theseValSelect & theseVals) != 0
+                    ):
+                        continue
+
+                    valOK = False
+
+                if valOK:
                     matches.append(slots)
 
         if len(matches) == 0:
-            return (fits, eKinds, None)
+            return (fits, fValStats, None)
     else:
         eKinds = {}
 
     return (fits, eKinds, (sTokensAll, matches, positions))
 
 
-def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
+def filterS(web, sFindPatternRe, tokenStart, tokenEnd, valSelect):
     """Filter the sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -504,7 +522,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
     In that case, we look up the text between those tokens and including.
     All sentences that contain that text of those slots will show up,
     all other sentences will be left out.
-    However, if `eKindSelect` is non-empty, then there is a further filter: only if the
+    However, if `valSelect` is non-empty, then there is a further filter: only if the
     text corresponds to an entity with that kind, the sentence is passed through.
     The matching slots will be highlighted.
 
@@ -522,7 +540,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
         Only sentences that contain this token sentence will be passed through,
         all other sentences will be filtered out.
 
-    eKindSelect: set
+    valSelect: set
         The entity kinds to filter on.
 
     Returns
@@ -557,25 +575,30 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
                 words.append(word)
 
     nFind = 0
-    nEnt = collections.Counter()
-    nVisible = collections.Counter()
+    nEnt = {feat: collections.Counter() for feat in FEATURES[1:]}
+    nVisible = {feat: collections.Counter() for feat in FEATURES[1:]}
 
-    entityIndexKind = setData.entityIndexKind
+    entityIndex = setData.entityIndex
 
     for s in setData.sentences:
-        (fits, eKinds, result) = entityMatch(
-            entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect
+        (fits, fValStats, result) = entityMatch(
+            entityIndex, L, F, T, s, sFindPatternRe, words, valSelect
         )
         blocked = fits is not None and not fits
 
         if not blocked:
             nFind += 1
 
-        if len(eKinds):
-            for (ek, n) in eKinds.items():
-                nEnt[ek] += n
-                if not blocked:
-                    nVisible[ek] += n
+        for feat in FEATURES[1:]:
+            theseStats = fValStats[feat]
+            if len(theseStats):
+                theseNEnt = nEnt[feat]
+                theseNVisible = nVisible[feat]
+
+                for (ek, n) in theseStats.items():
+                    theseNEnt[ek] += n
+                    if not blocked:
+                        theseNVisible[ek] += n
 
         if result is None:
             continue
@@ -612,10 +635,7 @@ def saveEntity(web, fVals, sentences, excludedTokens):
     pl = "y" if nEntities == 1 else "ies"
     valRep = ", ".join(f"{feat}={val}" for (feat, val) in zip(FEATURES[1:], fVals))
 
-    return (
-        f"Added {nEntities} entit{pl} with {valRep}; "
-        f"{excl} excluded"
-    )
+    return f"Added {nEntities} entit{pl} with {valRep}; " f"{excl} excluded"
 
 
 def delEntity(web, fVals, sentences, excludedTokens):
@@ -650,10 +670,10 @@ def composeFindStat(nSent, nFind, hasFind):
     return f"""<span class="stat">{n}</span>"""
 
 
-def composeEntityStat(feat, val, nVisible, nEnt, hasPattern, hasQuery):
+def composeEntityStat(val, thisNVisible, thisNEnt, hasPattern, hasQuery):
     if hasQuery:
-        na = nEnt[feat][val]
-        n = f"{nVisible[feat][val]} of {na}" if hasPattern else f"{na}"
+        na = thisNEnt[val]
+        n = f"{thisNVisible[val]} of {na}" if hasPattern else f"{na}"
         entityStat = f"""<span class="stat">{n}</span>"""
     else:
         entityStat = ""
@@ -688,6 +708,7 @@ def composeS(web, sentences, limited, excludedTokens):
     api = app.api
     F = api.F
 
+    entityBy = setData.entityBy
     entitySlotIndex = setData.entitySlotIndex
 
     html = []
@@ -720,7 +741,6 @@ def composeS(web, sentences, limited, excludedTokens):
         else:
             allMatches = set(chain.from_iterable(matches))
 
-        web.console(allMatches)
         for (t, w) in sTokens:
             after = F.after.v(t) or ""
             lenW = len(w)
@@ -739,14 +759,17 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
+                    freq = len(entityBy[ident])
+                    eInfo = repIdent(ident)
+
                     if status:
                         lgRep = f"""<span class="lgb">{abs(lg)}</span>"""
                         ht.append(
                             dedent(
                                 f"""
                                 <span class="es"
-                                >{lgRep}{kind} <span class="n">{freq}</span
+                                >{lgRep}{eInfo} <span class="n">{freq}</span
                                 ></span>"""
                             )
                         )
@@ -759,7 +782,7 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
                     if not status:
                         lgRep = f"""<span class="lge">{abs(lg)}</span>"""
                         ht.append(dedent(f"""<span class="ee">{lgRep}</span>"""))
@@ -770,6 +793,7 @@ def composeS(web, sentences, limited, excludedTokens):
         html.append(f"""<div class="s">{ht}</div>""")
 
         i += 1
+
         if limited and i > 100:
             html.append(
                 dedent(

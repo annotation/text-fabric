@@ -106,6 +106,17 @@ where all args are optional and args have one of these forms:
   --locations=locations-string
   --version=version
 
+Additional options
+
+  --chrome
+    Prefer to open the TF interface in the Google Chrome browser. If Chrome is not
+    installed, it opens in the default browser.
+    If this option is not passed, the interface opens in the default browser.
+  debug
+    The webserver runs in debug mode: if the TF code is modified, the webserver
+    reloads itself automatically.
+    Only relevant for TF developers.
+
 EFFECT
 
 See https://annotation.github.io/text-fabric/tf/browser/start.html
@@ -144,6 +155,12 @@ def main(cargs=sys.argv[1:]):
     if len(cargs) >= 1 and any(arg == "-v" for arg in cargs):
         return
 
+    forceChrome = False
+
+    if "--chrome" in cargs:
+        forceChrome = True
+        cargs = [c for c in cargs if c != "--chrome"]
+
     portWeb = getPort(argApp(cargs, True))
     noweb = argNoweb(cargs)
 
@@ -177,13 +194,42 @@ def main(cargs=sys.argv[1:]):
         sleep(2)
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
-            console("Opening corpus in browser")
-            controller = webbrowser.get("chrome")
-            controller.open(
-                f"{PROTOCOL}{HOST}:{portWeb}",
-                new=0,
-                autoraise=True,
-            )
+            opened = False
+            new = 0
+            autoraise = True
+            title = "Opening corpus in "
+            marker = "\no-o-o\n"
+
+            if forceChrome:
+                browser = "Chrome browser"
+                try:
+                    controller = webbrowser.get("chrome")
+                    console(f"{marker}{title}{browser}{marker}")
+                    opened = controller.open(
+                        f"{PROTOCOL}{HOST}:{portWeb}",
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                browser = "default browser"
+                extra = " instead" if forceChrome else ""
+                try:
+                    console(f"{marker}{title}{browser}{extra}{marker}")
+                    opened = webbrowser.open(
+                        f"{PROTOCOL}{HOST}:{portWeb}",
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                if processWeb:
+                    processWeb.terminate()
+                console("TF web server has stopped")
 
     stopped = (not portWeb or (processWeb and processWeb.poll()))
 

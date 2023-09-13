@@ -42,13 +42,28 @@ pip install -e .
 
 *   in the TEI converter.
 
-#### 12.0.6
+#### 12.0.6,7
 
 2023-09-13
 
 Trivial fix in code that exports the data from a job in the Text-Fabric browser.
 In the meanwhile there is unfinished business in the `Annotate` tab in the TF-browser,
 that will come into production in the upcoming 12.1 release.
+
+The Chrome browser has an attractive feature that other browsers such as Safari lack:
+It supports the CSS property
+[content-visibility](https://developer.mozilla.org/en-US/docs/Web/CSS/content-visibility).
+With this property you can prevent
+the browser to do the expensive rendering of content that is not visible on the screen.
+That makes it possible to load a lot of content in a single page without tripping up
+the browser. You also need the
+[IntersectionObserver API])https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API),
+but that is generally supported by browsers. With the help of that API you can
+restrict the binding of event listeners to elements that are visible on the screen.
+
+So, you can open the Text-Fabric browser in Chrome by passing the option `--chrome`.
+But if Chrome is not installed, it will open in the default browser anyway.
+Also, when the opening of the browser fails somehow, the webserver is stopped.
 
 #### 12.0.5
 

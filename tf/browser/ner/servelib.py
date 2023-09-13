@@ -48,13 +48,16 @@ def getFormData(web):
     form["tokenstart"] = int(tokenStart) if tokenStart else None
     tokenEnd = request.form.get("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {
-        feat: request.form.get(f"{feat}_select", "")
-        for feat in FEATURES
-    }
+    valSelectProto = {feat: request.form.get(f"{feat}_select", "") for feat in FEATURES}
     valSelect = {}
     for (feat, valProto) in valSelectProto.items():
-        valSelect[feat] = set(valProto.split(",")) if valProto else {"⌀"} if submitter == "lookupq" else set()
+        valSelect[feat] = (
+            set(valProto.split(","))
+            if valProto
+            else {"⌀"}
+            if submitter == "lookupq"
+            else set()
+        )
 
     form["valselect"] = valSelect
     # eKindSelect
