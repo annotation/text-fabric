@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L1-L786" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L1-L810" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Module to compose tables of result data.
 &#34;&#34;&#34;
@@ -37,6 +37,13 @@ from itertools import chain
 from textwrap import dedent
 
 from .kernel import FEATURES, KEYWORD_FEATURES, mergeEntities, weedEntities, WHITE_RE
+
+
+def repIdent(vals):
+    return &#34; &#34;.join(
+        f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
+        for (feat, val) in zip(FEATURES[1:], vals)
+    )
 
 
 def composeE(web, activeEntity, activeKind, sortKey, sortDir):
@@ -90,10 +97,6 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
 
         active = &#34; queried &#34; if activeEntity is not None and i == activeEntity else &#34;&#34;
 
-        eInfo = &#34; &#34;.join(
-            f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
-            for (feat, val) in zip(FEATURES[1:], vals)
-        )
         item = dedent(
             f&#34;&#34;&#34;
             &lt;p
@@ -103,7 +106,7 @@ def composeE(web, activeEntity, activeKind, sortKey, sortDir):
             &gt;
                 &lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt;
                 x
-                {eInfo}&gt;
+                {repIdent(vals)}&gt;
             &lt;/p&gt;&#34;&#34;&#34;
         )
         html.append(item)
@@ -237,7 +240,9 @@ def composeQ(
         )
         for val in [&#34;⌀&#34;] + sorted(theseVals):
             status = &#34;v&#34; if val in thisValSelect else &#34;x&#34;
-            entityStat = composeEntityStat(feat, val, nVisible, nEnt, hasFind, hasEntity)
+            entityStat = composeEntityStat(
+                val, nVisible[feat], nEnt[feat], hasFind, hasEntity
+            )
             title = f&#34;{feat} not marked&#34; if val == &#34;⌀&#34; else f&#34;{feat} marked as {val}&#34;
 
             html.append(
@@ -438,14 +443,14 @@ def composeQ(
     templateData[&#34;q&#34;] = &#34;\n&#34;.join(html)
 
 
-def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect):
+def entityMatch(entityIndex, L, F, T, s, sFindPatternRe, words, valSelect):
     &#34;&#34;&#34;Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
 
     Parameters
     ----------
-    entityIndexKind: dict
+    entityIndex: dict
         Dictionary from tuples of slots to sets of kinds, being the kinds that
         entities occupying those slot tuples have
     L, F, T: object
@@ -456,7 +461,7 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
     words: list of string
         The sequence of words that must be matched. They are all non-empty and stripped
         from white space.
-    eKindSelect: string
+    valSelect: string
         The entity kind that the matched words should have
     &#34;&#34;&#34;
     nWords = len(words)
@@ -485,16 +490,16 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
             return (fits, {}, None)
 
         nSTokens = len(sTokens)
-        eKinds = collections.Counter()
+        fValStats = {feat: collections.Counter() for feat in FEATURES[1:]}
 
         for (i, (t, w)) in enumerate(sTokens):
             if w != words[0]:
                 continue
             if i + nWords - 1 &gt;= nSTokens:
                 return (
-                    (fits, eKinds, None)
+                    (fits, fValStats, None)
                     if len(matches) == 0
-                    else (fits, eKinds, (sTokensAll, matches, positions))
+                    else (fits, fValStats, (sTokensAll, matches, positions))
                 )
 
             match = True
@@ -507,27 +512,40 @@ def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)
             if match:
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
-                theseEKinds = entityIndexKind.get(slots, set())
-                for ek in theseEKinds:
-                    eKinds[ek] += 1
-                if len(theseEKinds) == 0:
-                    eKinds[&#34;⌀&#34;] += 1
-                if (
-                    &#34;⌀&#34; in eKindSelect
-                    and len(theseEKinds) == 0
-                    or len(eKindSelect &amp; theseEKinds) != 0
-                ):
+
+                valOK = True
+
+                for feat in FEATURES[1:]:
+                    theseVals = entityIndex[feat].get(slots, set())
+                    theseStats = fValStats[feat]
+                    theseValSelect = valSelect[feat]
+
+                    for val in theseVals:
+                        theseStats[val] += 1
+
+                    if len(theseVals) == 0:
+                        theseStats[&#34;⌀&#34;] += 1
+                    if (
+                        &#34;⌀&#34; in theseValSelect
+                        and len(theseVals) == 0
+                        or len(theseValSelect &amp; theseVals) != 0
+                    ):
+                        continue
+
+                    valOK = False
+
+                if valOK:
                     matches.append(slots)
 
         if len(matches) == 0:
-            return (fits, eKinds, None)
+            return (fits, fValStats, None)
     else:
         eKinds = {}
 
     return (fits, eKinds, (sTokensAll, matches, positions))
 
 
-def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
+def filterS(web, sFindPatternRe, tokenStart, tokenEnd, valSelect):
     &#34;&#34;&#34;Filter the sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -535,7 +553,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
     In that case, we look up the text between those tokens and including.
     All sentences that contain that text of those slots will show up,
     all other sentences will be left out.
-    However, if `eKindSelect` is non-empty, then there is a further filter: only if the
+    However, if `valSelect` is non-empty, then there is a further filter: only if the
     text corresponds to an entity with that kind, the sentence is passed through.
     The matching slots will be highlighted.
 
@@ -553,7 +571,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
         Only sentences that contain this token sentence will be passed through,
         all other sentences will be filtered out.
 
-    eKindSelect: set
+    valSelect: set
         The entity kinds to filter on.
 
     Returns
@@ -588,25 +606,30 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
                 words.append(word)
 
     nFind = 0
-    nEnt = collections.Counter()
-    nVisible = collections.Counter()
+    nEnt = {feat: collections.Counter() for feat in FEATURES[1:]}
+    nVisible = {feat: collections.Counter() for feat in FEATURES[1:]}
 
-    entityIndexKind = setData.entityIndexKind
+    entityIndex = setData.entityIndex
 
     for s in setData.sentences:
-        (fits, eKinds, result) = entityMatch(
-            entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect
+        (fits, fValStats, result) = entityMatch(
+            entityIndex, L, F, T, s, sFindPatternRe, words, valSelect
         )
         blocked = fits is not None and not fits
 
         if not blocked:
             nFind += 1
 
-        if len(eKinds):
-            for (ek, n) in eKinds.items():
-                nEnt[ek] += n
-                if not blocked:
-                    nVisible[ek] += n
+        for feat in FEATURES[1:]:
+            theseStats = fValStats[feat]
+            if len(theseStats):
+                theseNEnt = nEnt[feat]
+                theseNVisible = nVisible[feat]
+
+                for (ek, n) in theseStats.items():
+                    theseNEnt[ek] += n
+                    if not blocked:
+                        theseNVisible[ek] += n
 
         if result is None:
             continue
@@ -643,10 +666,7 @@ def saveEntity(web, fVals, sentences, excludedTokens):
     pl = &#34;y&#34; if nEntities == 1 else &#34;ies&#34;
     valRep = &#34;, &#34;.join(f&#34;{feat}={val}&#34; for (feat, val) in zip(FEATURES[1:], fVals))
 
-    return (
-        f&#34;Added {nEntities} entit{pl} with {valRep}; &#34;
-        f&#34;{excl} excluded&#34;
-    )
+    return f&#34;Added {nEntities} entit{pl} with {valRep}; &#34; f&#34;{excl} excluded&#34;
 
 
 def delEntity(web, fVals, sentences, excludedTokens):
@@ -681,10 +701,10 @@ def composeFindStat(nSent, nFind, hasFind):
     return f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{n}&lt;/span&gt;&#34;&#34;&#34;
 
 
-def composeEntityStat(feat, val, nVisible, nEnt, hasPattern, hasQuery):
+def composeEntityStat(val, thisNVisible, thisNEnt, hasPattern, hasQuery):
     if hasQuery:
-        na = nEnt[feat][val]
-        n = f&#34;{nVisible[feat][val]} of {na}&#34; if hasPattern else f&#34;{na}&#34;
+        na = thisNEnt[val]
+        n = f&#34;{thisNVisible[val]} of {na}&#34; if hasPattern else f&#34;{na}&#34;
         entityStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{n}&lt;/span&gt;&#34;&#34;&#34;
     else:
         entityStat = &#34;&#34;
@@ -719,6 +739,7 @@ def composeS(web, sentences, limited, excludedTokens):
     api = app.api
     F = api.F
 
+    entityBy = setData.entityBy
     entitySlotIndex = setData.entitySlotIndex
 
     html = []
@@ -751,7 +772,6 @@ def composeS(web, sentences, limited, excludedTokens):
         else:
             allMatches = set(chain.from_iterable(matches))
 
-        web.console(allMatches)
         for (t, w) in sTokens:
             after = F.after.v(t) or &#34;&#34;
             lenW = len(w)
@@ -770,14 +790,17 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
+                    freq = len(entityBy[ident])
+                    eInfo = repIdent(ident)
+
                     if status:
                         lgRep = f&#34;&#34;&#34;&lt;span class=&#34;lgb&#34;&gt;{abs(lg)}&lt;/span&gt;&#34;&#34;&#34;
                         ht.append(
                             dedent(
                                 f&#34;&#34;&#34;
                                 &lt;span class=&#34;es&#34;
-                                &gt;{lgRep}{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                &gt;{lgRep}{eInfo} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
                                 &gt;&lt;/span&gt;&#34;&#34;&#34;
                             )
                         )
@@ -790,7 +813,7 @@ def composeS(web, sentences, limited, excludedTokens):
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
                     if not status:
                         lgRep = f&#34;&#34;&#34;&lt;span class=&#34;lge&#34;&gt;{abs(lg)}&lt;/span&gt;&#34;&#34;&#34;
                         ht.append(dedent(f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{lgRep}&lt;/span&gt;&#34;&#34;&#34;))
@@ -801,6 +824,7 @@ def composeS(web, sentences, limited, excludedTokens):
         html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
 
         i += 1
+
         if limited and i &gt; 100:
             html.append(
                 dedent(
@@ -860,7 +884,7 @@ def composeS(web, sentences, limited, excludedTokens):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L11-L80" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L18-L83" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeE(web, activeEntity, activeKind, sortKey, sortDir):
     &#34;&#34;&#34;Compose a table of entities with selection and sort controls.
@@ -913,10 +937,6 @@ def composeS(web, sentences, limited, excludedTokens):
 
         active = &#34; queried &#34; if activeEntity is not None and i == activeEntity else &#34;&#34;
 
-        eInfo = &#34; &#34;.join(
-            f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
-            for (feat, val) in zip(FEATURES[1:], vals)
-        )
         item = dedent(
             f&#34;&#34;&#34;
             &lt;p
@@ -926,7 +946,7 @@ def composeS(web, sentences, limited, excludedTokens):
             &gt;
                 &lt;code class=&#34;w&#34;&gt;{x:&gt;5}&lt;/code&gt;
                 x
-                {eInfo}&gt;
+                {repIdent(vals)}&gt;
             &lt;/p&gt;&#34;&#34;&#34;
         )
         html.append(item)
@@ -935,19 +955,19 @@ def composeS(web, sentences, limited, excludedTokens):
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.composeEntityStat"><code class="name flex">
-<span>def <span class="ident">composeEntityStat</span></span>(<span>feat, val, nVisible, nEnt, hasPattern, hasQuery)</span>
+<span>def <span class="ident">composeEntityStat</span></span>(<span>val, thisNVisible, thisNEnt, hasPattern, hasQuery)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L653-L661" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L673-L681" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def composeEntityStat(feat, val, nVisible, nEnt, hasPattern, hasQuery):
+<pre><code class="python">def composeEntityStat(val, thisNVisible, thisNEnt, hasPattern, hasQuery):
     if hasQuery:
-        na = nEnt[feat][val]
-        n = f&#34;{nVisible[feat][val]} of {na}&#34; if hasPattern else f&#34;{na}&#34;
+        na = thisNEnt[val]
+        n = f&#34;{thisNVisible[val]} of {na}&#34; if hasPattern else f&#34;{na}&#34;
         entityStat = f&#34;&#34;&#34;&lt;span class=&#34;stat&#34;&gt;{n}&lt;/span&gt;&#34;&#34;&#34;
     else:
         entityStat = &#34;&#34;
@@ -963,7 +983,7 @@ def composeS(web, sentences, limited, excludedTokens):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L648-L650" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L668-L670" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeFindStat(nSent, nFind, hasFind):
     n = f&#34;{nFind} of {nSent}&#34; if hasFind else nSent
@@ -988,7 +1008,7 @@ def composeS(web, sentences, limited, excludedTokens):
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L83-L407" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L86-L412" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeQ(
     web,
@@ -1116,7 +1136,9 @@ def composeS(web, sentences, limited, excludedTokens):
         )
         for val in [&#34;⌀&#34;] + sorted(theseVals):
             status = &#34;v&#34; if val in thisValSelect else &#34;x&#34;
-            entityStat = composeEntityStat(feat, val, nVisible, nEnt, hasFind, hasEntity)
+            entityStat = composeEntityStat(
+                val, nVisible[feat], nEnt[feat], hasFind, hasEntity
+            )
             title = f&#34;{feat} not marked&#34; if val == &#34;⌀&#34; else f&#34;{feat} marked as {val}&#34;
 
             html.append(
@@ -1339,7 +1361,7 @@ The matching slots will be highlighted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L664-L786" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L684-L810" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def composeS(web, sentences, limited, excludedTokens):
     &#34;&#34;&#34;Compose a table of sentences.
@@ -1368,6 +1390,7 @@ The matching slots will be highlighted.</p>
     api = app.api
     F = api.F
 
+    entityBy = setData.entityBy
     entitySlotIndex = setData.entitySlotIndex
 
     html = []
@@ -1400,7 +1423,6 @@ The matching slots will be highlighted.</p>
         else:
             allMatches = set(chain.from_iterable(matches))
 
-        web.console(allMatches)
         for (t, w) in sTokens:
             after = F.after.v(t) or &#34;&#34;
             lenW = len(w)
@@ -1419,14 +1441,17 @@ The matching slots will be highlighted.</p>
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
+                    freq = len(entityBy[ident])
+                    eInfo = repIdent(ident)
+
                     if status:
                         lgRep = f&#34;&#34;&#34;&lt;span class=&#34;lgb&#34;&gt;{abs(lg)}&lt;/span&gt;&#34;&#34;&#34;
                         ht.append(
                             dedent(
                                 f&#34;&#34;&#34;
                                 &lt;span class=&#34;es&#34;
-                                &gt;{lgRep}{kind} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
+                                &gt;{lgRep}{eInfo} &lt;span class=&#34;n&#34;&gt;{freq}&lt;/span
                                 &gt;&lt;/span&gt;&#34;&#34;&#34;
                             )
                         )
@@ -1439,7 +1464,7 @@ The matching slots will be highlighted.</p>
                 for item in sorted(
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
-                    (status, lg, kind, eid, freq) = item
+                    (status, lg, ident) = item
                     if not status:
                         lgRep = f&#34;&#34;&#34;&lt;span class=&#34;lge&#34;&gt;{abs(lg)}&lt;/span&gt;&#34;&#34;&#34;
                         ht.append(dedent(f&#34;&#34;&#34;&lt;span class=&#34;ee&#34;&gt;{lgRep}&lt;/span&gt;&#34;&#34;&#34;))
@@ -1450,6 +1475,7 @@ The matching slots will be highlighted.</p>
         html.append(f&#34;&#34;&#34;&lt;div class=&#34;s&#34;&gt;{ht}&lt;/div&gt;&#34;&#34;&#34;)
 
         i += 1
+
         if limited and i &gt; 100:
             html.append(
                 dedent(
@@ -1474,7 +1500,7 @@ The matching slots will be highlighted.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L621-L645" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L641-L665" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def delEntity(web, fVals, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
@@ -1504,14 +1530,14 @@ The matching slots will be highlighted.</p>
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.entityMatch"><code class="name flex">
-<span>def <span class="ident">entityMatch</span></span>(<span>entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect)</span>
+<span>def <span class="ident">entityMatch</span></span>(<span>entityIndex, L, F, T, s, sFindPatternRe, words, valSelect)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Checks whether a sentence matches a sequence of words.</p>
 <p>When we do the checking, we ignore empty words in the sentence.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>entityIndexKind</code></strong> :&ensp;<code>dict</code></dt>
+<dt><strong><code>entityIndex</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Dictionary from tuples of slots to sets of kinds, being the kinds that
 entities occupying those slot tuples have</dd>
 <dt><strong><code>L</code></strong>, <strong><code>F</code></strong>, <strong><code>T</code></strong> :&ensp;<code>object</code></dt>
@@ -1522,22 +1548,22 @@ extraction</dd>
 <dt><strong><code>words</code></strong> :&ensp;<code>list</code> of <code>string</code></dt>
 <dd>The sequence of words that must be matched. They are all non-empty and stripped
 from white space.</dd>
-<dt><strong><code>eKindSelect</code></strong> :&ensp;<code>string</code></dt>
+<dt><strong><code>valSelect</code></strong> :&ensp;<code>string</code></dt>
 <dd>The entity kind that the matched words should have</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L410-L496" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L415-L514" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def entityMatch(entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect):
+<pre><code class="python">def entityMatch(entityIndex, L, F, T, s, sFindPatternRe, words, valSelect):
     &#34;&#34;&#34;Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
 
     Parameters
     ----------
-    entityIndexKind: dict
+    entityIndex: dict
         Dictionary from tuples of slots to sets of kinds, being the kinds that
         entities occupying those slot tuples have
     L, F, T: object
@@ -1548,7 +1574,7 @@ from white space.</dd>
     words: list of string
         The sequence of words that must be matched. They are all non-empty and stripped
         from white space.
-    eKindSelect: string
+    valSelect: string
         The entity kind that the matched words should have
     &#34;&#34;&#34;
     nWords = len(words)
@@ -1577,16 +1603,16 @@ from white space.</dd>
             return (fits, {}, None)
 
         nSTokens = len(sTokens)
-        eKinds = collections.Counter()
+        fValStats = {feat: collections.Counter() for feat in FEATURES[1:]}
 
         for (i, (t, w)) in enumerate(sTokens):
             if w != words[0]:
                 continue
             if i + nWords - 1 &gt;= nSTokens:
                 return (
-                    (fits, eKinds, None)
+                    (fits, fValStats, None)
                     if len(matches) == 0
-                    else (fits, eKinds, (sTokensAll, matches, positions))
+                    else (fits, fValStats, (sTokensAll, matches, positions))
                 )
 
             match = True
@@ -1599,20 +1625,33 @@ from white space.</dd>
             if match:
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
-                theseEKinds = entityIndexKind.get(slots, set())
-                for ek in theseEKinds:
-                    eKinds[ek] += 1
-                if len(theseEKinds) == 0:
-                    eKinds[&#34;⌀&#34;] += 1
-                if (
-                    &#34;⌀&#34; in eKindSelect
-                    and len(theseEKinds) == 0
-                    or len(eKindSelect &amp; theseEKinds) != 0
-                ):
+
+                valOK = True
+
+                for feat in FEATURES[1:]:
+                    theseVals = entityIndex[feat].get(slots, set())
+                    theseStats = fValStats[feat]
+                    theseValSelect = valSelect[feat]
+
+                    for val in theseVals:
+                        theseStats[val] += 1
+
+                    if len(theseVals) == 0:
+                        theseStats[&#34;⌀&#34;] += 1
+                    if (
+                        &#34;⌀&#34; in theseValSelect
+                        and len(theseVals) == 0
+                        or len(theseValSelect &amp; theseVals) != 0
+                    ):
+                        continue
+
+                    valOK = False
+
+                if valOK:
                     matches.append(slots)
 
         if len(matches) == 0:
-            return (fits, eKinds, None)
+            return (fits, fValStats, None)
     else:
         eKinds = {}
 
@@ -1620,7 +1659,7 @@ from white space.</dd>
 </details>
 </dd>
 <dt id="tf.browser.ner.tables.filterS"><code class="name flex">
-<span>def <span class="ident">filterS</span></span>(<span>web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect)</span>
+<span>def <span class="ident">filterS</span></span>(<span>web, sFindPatternRe, tokenStart, tokenEnd, valSelect)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Filter the sentences.</p>
@@ -1629,7 +1668,7 @@ are both filled in.
 In that case, we look up the text between those tokens and including.
 All sentences that contain that text of those slots will show up,
 all other sentences will be left out.
-However, if <code>eKindSelect</code> is non-empty, then there is a further filter: only if the
+However, if <code>valSelect</code> is non-empty, then there is a further filter: only if the
 text corresponds to an entity with that kind, the sentence is passed through.
 The matching slots will be highlighted.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1643,7 +1682,7 @@ for a word sequence.</dd>
 <dd>Specify the start slot number and the end slot number of a sequence of tokens.
 Only sentences that contain this token sentence will be passed through,
 all other sentences will be filtered out.</dd>
-<dt><strong><code>eKindSelect</code></strong> :&ensp;<code>set</code></dt>
+<dt><strong><code>valSelect</code></strong> :&ensp;<code>set</code></dt>
 <dd>The entity kinds to filter on.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -1662,9 +1701,9 @@ members is added to the list:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L499-L588" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L517-L611" class="git-link">Browse git</a>
 </summary>
-<pre><code class="python">def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
+<pre><code class="python">def filterS(web, sFindPatternRe, tokenStart, tokenEnd, valSelect):
     &#34;&#34;&#34;Filter the sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -1672,7 +1711,7 @@ members is added to the list:</p>
     In that case, we look up the text between those tokens and including.
     All sentences that contain that text of those slots will show up,
     all other sentences will be left out.
-    However, if `eKindSelect` is non-empty, then there is a further filter: only if the
+    However, if `valSelect` is non-empty, then there is a further filter: only if the
     text corresponds to an entity with that kind, the sentence is passed through.
     The matching slots will be highlighted.
 
@@ -1690,7 +1729,7 @@ members is added to the list:</p>
         Only sentences that contain this token sentence will be passed through,
         all other sentences will be filtered out.
 
-    eKindSelect: set
+    valSelect: set
         The entity kinds to filter on.
 
     Returns
@@ -1725,25 +1764,30 @@ members is added to the list:</p>
                 words.append(word)
 
     nFind = 0
-    nEnt = collections.Counter()
-    nVisible = collections.Counter()
+    nEnt = {feat: collections.Counter() for feat in FEATURES[1:]}
+    nVisible = {feat: collections.Counter() for feat in FEATURES[1:]}
 
-    entityIndexKind = setData.entityIndexKind
+    entityIndex = setData.entityIndex
 
     for s in setData.sentences:
-        (fits, eKinds, result) = entityMatch(
-            entityIndexKind, L, F, T, s, sFindPatternRe, words, eKindSelect
+        (fits, fValStats, result) = entityMatch(
+            entityIndex, L, F, T, s, sFindPatternRe, words, valSelect
         )
         blocked = fits is not None and not fits
 
         if not blocked:
             nFind += 1
 
-        if len(eKinds):
-            for (ek, n) in eKinds.items():
-                nEnt[ek] += n
-                if not blocked:
-                    nVisible[ek] += n
+        for feat in FEATURES[1:]:
+            theseStats = fValStats[feat]
+            if len(theseStats):
+                theseNEnt = nEnt[feat]
+                theseNVisible = nVisible[feat]
+
+                for (ek, n) in theseStats.items():
+                    theseNEnt[ek] += n
+                    if not blocked:
+                        theseNVisible[ek] += n
 
         if result is None:
             continue
@@ -1756,6 +1800,23 @@ members is added to the list:</p>
     return (results, nFind, nVisible, nEnt)</code></pre>
 </details>
 </dd>
+<dt id="tf.browser.ner.tables.repIdent"><code class="name flex">
+<span>def <span class="ident">repIdent</span></span>(<span>vals)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L11-L15" class="git-link">Browse git</a>
+</summary>
+<pre><code class="python">def repIdent(vals):
+    return &#34; &#34;.join(
+        f&#34;&#34;&#34;&lt;span class=&#34;{feat}&#34;&gt;{val}&lt;/span&gt;&#34;&#34;&#34;
+        for (feat, val) in zip(FEATURES[1:], vals)
+    )</code></pre>
+</details>
+</dd>
 <dt id="tf.browser.ner.tables.saveEntity"><code class="name flex">
 <span>def <span class="ident">saveEntity</span></span>(<span>web, fVals, sentences, excludedTokens)</span>
 </code></dt>
@@ -1764,7 +1825,7 @@ members is added to the list:</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/tables.py#L591-L618" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/tables.py#L614-L638" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def saveEntity(web, fVals, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
@@ -1790,10 +1851,7 @@ members is added to the list:</p>
     pl = &#34;y&#34; if nEntities == 1 else &#34;ies&#34;
     valRep = &#34;, &#34;.join(f&#34;{feat}={val}&#34; for (feat, val) in zip(FEATURES[1:], fVals))
 
-    return (
-        f&#34;Added {nEntities} entit{pl} with {valRep}; &#34;
-        f&#34;{excl} excluded&#34;
-    )</code></pre>
+    return f&#34;Added {nEntities} entit{pl} with {valRep}; &#34; f&#34;{excl} excluded&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -1873,6 +1931,7 @@ setTimeout(() => input.focus(), 100);
 <li><code><a title="tf.browser.ner.tables.delEntity" href="#tf.browser.ner.tables.delEntity">delEntity</a></code></li>
 <li><code><a title="tf.browser.ner.tables.entityMatch" href="#tf.browser.ner.tables.entityMatch">entityMatch</a></code></li>
 <li><code><a title="tf.browser.ner.tables.filterS" href="#tf.browser.ner.tables.filterS">filterS</a></code></li>
+<li><code><a title="tf.browser.ner.tables.repIdent" href="#tf.browser.ner.tables.repIdent">repIdent</a></code></li>
 <li><code><a title="tf.browser.ner.tables.saveEntity" href="#tf.browser.ner.tables.saveEntity">saveEntity</a></code></li>
 </ul>
 </li>

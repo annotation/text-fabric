@@ -27,7 +27,7 @@
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L1-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L1-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;Auxiliary functions for serving the web page.
 &#34;&#34;&#34;
@@ -79,13 +79,16 @@ def getFormData(web):
     form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
     tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
     form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {
-        feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;)
-        for feat in FEATURES
-    }
+    valSelectProto = {feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in FEATURES}
     valSelect = {}
     for (feat, valProto) in valSelectProto.items():
-        valSelect[feat] = set(valProto.split(&#34;,&#34;)) if valProto else {&#34;⌀&#34;} if submitter == &#34;lookupq&#34; else set()
+        valSelect[feat] = (
+            set(valProto.split(&#34;,&#34;))
+            if valProto
+            else {&#34;⌀&#34;}
+            if submitter == &#34;lookupq&#34;
+            else set()
+        )
 
     form[&#34;valselect&#34;] = valSelect
     # eKindSelect
@@ -155,7 +158,7 @@ The names of these subdirectories are the names of the annotation sets.</dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L84-L98" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L87-L101" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def annoSets(annoDir):
     &#34;&#34;&#34;Get the existing annotation sets.
@@ -190,7 +193,7 @@ but there is also a list of webapp dependent options.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/ner/servelib.py#L10-L81" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/ner/servelib.py#L10-L84" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def getFormData(web):
     &#34;&#34;&#34;Get form data.
@@ -233,13 +236,16 @@ but there is also a list of webapp dependent options.</p></div>
     form[&#34;tokenstart&#34;] = int(tokenStart) if tokenStart else None
     tokenEnd = request.form.get(&#34;tokenend&#34;, &#34;&#34;)
     form[&#34;tokenend&#34;] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {
-        feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;)
-        for feat in FEATURES
-    }
+    valSelectProto = {feat: request.form.get(f&#34;{feat}_select&#34;, &#34;&#34;) for feat in FEATURES}
     valSelect = {}
     for (feat, valProto) in valSelectProto.items():
-        valSelect[feat] = set(valProto.split(&#34;,&#34;)) if valProto else {&#34;⌀&#34;} if submitter == &#34;lookupq&#34; else set()
+        valSelect[feat] = (
+            set(valProto.split(&#34;,&#34;))
+            if valProto
+            else {&#34;⌀&#34;}
+            if submitter == &#34;lookupq&#34;
+            else set()
+        )
 
     form[&#34;valselect&#34;] = valSelect
     # eKindSelect

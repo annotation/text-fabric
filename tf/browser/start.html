@@ -77,7 +77,7 @@ provided the previous invocation has been terminated.</li>
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/start.py#L1-L203" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/start.py#L1-L249" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 # Start the TF browser
@@ -187,6 +187,17 @@ where all args are optional and args have one of these forms:
   --locations=locations-string
   --version=version
 
+Additional options
+
+  --chrome
+    Prefer to open the TF interface in the Google Chrome browser. If Chrome is not
+    installed, it opens in the default browser.
+    If this option is not passed, the interface opens in the default browser.
+  debug
+    The webserver runs in debug mode: if the TF code is modified, the webserver
+    reloads itself automatically.
+    Only relevant for TF developers.
+
 EFFECT
 
 See https://annotation.github.io/text-fabric/tf/browser/start.html
@@ -225,6 +236,12 @@ def main(cargs=sys.argv[1:]):
     if len(cargs) &gt;= 1 and any(arg == &#34;-v&#34; for arg in cargs):
         return
 
+    forceChrome = False
+
+    if &#34;--chrome&#34; in cargs:
+        forceChrome = True
+        cargs = [c for c in cargs if c != &#34;--chrome&#34;]
+
     portWeb = getPort(argApp(cargs, True))
     noweb = argNoweb(cargs)
 
@@ -258,13 +275,42 @@ def main(cargs=sys.argv[1:]):
         sleep(2)
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
-            console(&#34;Opening corpus in browser&#34;)
-            controller = webbrowser.get(&#34;chrome&#34;)
-            controller.open(
-                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
-                new=0,
-                autoraise=True,
-            )
+            opened = False
+            new = 0
+            autoraise = True
+            title = &#34;Opening corpus in &#34;
+            marker = &#34;\no-o-o\n&#34;
+
+            if forceChrome:
+                browser = &#34;Chrome browser&#34;
+                try:
+                    controller = webbrowser.get(&#34;chrome&#34;)
+                    console(f&#34;{marker}{title}{browser}{marker}&#34;)
+                    opened = controller.open(
+                        f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                browser = &#34;default browser&#34;
+                extra = &#34; instead&#34; if forceChrome else &#34;&#34;
+                try:
+                    console(f&#34;{marker}{title}{browser}{extra}{marker}&#34;)
+                    opened = webbrowser.open(
+                        f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                if processWeb:
+                    processWeb.terminate()
+                console(&#34;TF web server has stopped&#34;)
 
     stopped = (not portWeb or (processWeb and processWeb.poll()))
 
@@ -299,7 +345,7 @@ if __name__ == &#34;__main__&#34;:
 <details class="source">
 <summary>
 <span>Expand source code</span>
-<a href="https://github.com/annotation/text-fabric/blob/282844d02a43276fc8edec6605f2cdcc23756df2/tf/browser/start.py#L137-L199" class="git-link">Browse git</a>
+<a href="https://github.com/annotation/text-fabric/blob/b53beafcf8ce617a4d706304498dae56bbe4123d/tf/browser/start.py#L148-L245" class="git-link">Browse git</a>
 </summary>
 <pre><code class="python">def main(cargs=sys.argv[1:]):
     console(BANNER)
@@ -310,6 +356,12 @@ if __name__ == &#34;__main__&#34;:
         return
     if len(cargs) &gt;= 1 and any(arg == &#34;-v&#34; for arg in cargs):
         return
+
+    forceChrome = False
+
+    if &#34;--chrome&#34; in cargs:
+        forceChrome = True
+        cargs = [c for c in cargs if c != &#34;--chrome&#34;]
 
     portWeb = getPort(argApp(cargs, True))
     noweb = argNoweb(cargs)
@@ -344,13 +396,42 @@ if __name__ == &#34;__main__&#34;:
         sleep(2)
         stopped = not portWeb or (processWeb and processWeb.poll())
         if not stopped:
-            console(&#34;Opening corpus in browser&#34;)
-            controller = webbrowser.get(&#34;chrome&#34;)
-            controller.open(
-                f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
-                new=0,
-                autoraise=True,
-            )
+            opened = False
+            new = 0
+            autoraise = True
+            title = &#34;Opening corpus in &#34;
+            marker = &#34;\no-o-o\n&#34;
+
+            if forceChrome:
+                browser = &#34;Chrome browser&#34;
+                try:
+                    controller = webbrowser.get(&#34;chrome&#34;)
+                    console(f&#34;{marker}{title}{browser}{marker}&#34;)
+                    opened = controller.open(
+                        f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                browser = &#34;default browser&#34;
+                extra = &#34; instead&#34; if forceChrome else &#34;&#34;
+                try:
+                    console(f&#34;{marker}{title}{browser}{extra}{marker}&#34;)
+                    opened = webbrowser.open(
+                        f&#34;{PROTOCOL}{HOST}:{portWeb}&#34;,
+                        new=new,
+                        autoraise=autoraise,
+                    )
+                except Exception:
+                    opened = False
+
+            if not opened:
+                if processWeb:
+                    processWeb.terminate()
+                console(&#34;TF web server has stopped&#34;)
 
     stopped = (not portWeb or (processWeb and processWeb.poll()))
 
