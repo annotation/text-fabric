@@ -350,6 +350,7 @@ tf/browser/ner/kernel.py
 tf/browser/ner/serve.py
 tf/browser/ner/servelib.py
 tf/browser/ner/tables.py
+tf/browser/ner/web.py
 tf/browser/ner/wrap.py
 tf/browser/static/.DS_Store
 tf/browser/static/base.css
@@ -366,8 +367,6 @@ tf/browser/static/huc.png
 tf/browser/static/icon.png
 tf/browser/static/index.css
 tf/browser/static/jquery.js
-tf/browser/static/ner.css
-tf/browser/static/ner.js
 tf/browser/static/tf3.0.js
 tf/browser/static/fonts/.DS_Store
 tf/browser/static/fonts/AmiriQuran.ttf
@@ -485,7 +484,6 @@ tf/browser/static/mathjax/ui/.DS_Store
 tf/browser/static/mathjax/ui/lazy.js
 tf/browser/templates/export.html
 tf/browser/templates/index.html
-tf/browser/templates/ner.html
 tf/client/__init__.py
 tf/client/make/__init__.py
 tf/client/make/build-notebook.ipynb

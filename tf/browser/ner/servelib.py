@@ -4,6 +4,7 @@
 from flask import request
 
 from ...core.files import dirContents
+from .kernel import FEATURES
 
 
 def getFormData(web):
@@ -47,14 +48,16 @@ def getFormData(web):
     form["tokenstart"] = int(tokenStart) if tokenStart else None
     tokenEnd = request.form.get("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    eKindSelect = request.form.get("ekindselect", "")
-    form["eKindSelect"] = (
-        set(eKindSelect.split(","))
-        if eKindSelect
-        else {"⌀"}
-        if submitter == "lookupq"
-        else set()
-    )
+    valSelectProto = {
+        feat: request.form.get(f"{feat}_select", "")
+        for feat in FEATURES
+    }
+    valSelect = {}
+    for (feat, valProto) in valSelectProto.items():
+        valSelect[feat] = set(valProto.split(",")) if valProto else {"⌀"} if submitter == "lookupq" else set()
+
+    form["valselect"] = valSelect
+    # eKindSelect
     eKindPButton = request.form.get("ekindpbutton", "")
     eIdPButton = request.form.get("eidpbutton", "")
     eKindXButton = request.form.get("ekindxbutton", "")

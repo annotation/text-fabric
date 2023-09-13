@@ -20,7 +20,7 @@ from .tables import (
     delEntity,
     filterS,
 )
-from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityKinds, wrapMessages
+from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityFeats, wrapMessages
 
 
 def serveNer(web):
@@ -58,7 +58,7 @@ def serveNer(web):
         if not resetForm or k not in templateData:
             templateData[k] = v
 
-    eKindSelect = templateData["eKindSelect"]
+    valSelect = templateData["valselect"]
     chosenAnnoSet = templateData["annoset"]
     dupAnnoSet = templateData["duannoset"]
     renamedAnnoSet = templateData["rannoset"]
@@ -144,14 +144,14 @@ def serveNer(web):
     excludedTokens = templateData["excludedTokens"]
 
     (sentences, nFind, nVisible, nEnt) = filterS(
-        web, sFindRe, tokenStart, tokenEnd, eKindSelect
+        web, sFindRe, tokenStart, tokenEnd, valSelect
     )
 
     report = None
 
     if (savEKind or delEKind) and tokenStart and tokenEnd:
         saveSentences = (
-            filterS(web, None, tokenStart, tokenEnd, eKindSelect)[0]
+            filterS(web, None, tokenStart, tokenEnd, valSelect)[0]
             if sFindRe and scope == "a"
             else sentences
         )
@@ -163,7 +163,7 @@ def serveNer(web):
             if delEKind:
                 report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
             (sentences, nFind, nVisible, nEnt) = filterS(
-                web, sFindRe, tokenStart, tokenEnd, eKindSelect
+                web, sFindRe, tokenStart, tokenEnd, valSelect
             )
 
     composeQ(
@@ -172,7 +172,7 @@ def serveNer(web):
         sFind,
         sFindRe,
         errorMsg,
-        eKindSelect,
+        valSelect,
         nFind,
         nEnt,
         nVisible,
@@ -184,7 +184,7 @@ def serveNer(web):
     limited = not hasEntity
 
     templateData["entities"] = composeE(web, activeEntity, activeKind, sortKey, sortDir)
-    templateData["entitykinds"] = wrapEntityKinds(web)
+    templateData["entityfeats"] = wrapEntityFeats(web)
     templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
 
     web.console("start compose sentences")

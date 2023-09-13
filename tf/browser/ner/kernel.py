@@ -13,6 +13,7 @@ from ...core.files import mTime, fileExists, annotateDir
 
 GENERIC = "any"
 FEATURES = ("txt", "eid", "kind")
+KEYWORD_FEATURES = set(FEATURES[2])
 
 NF = len(FEATURES)
 
@@ -28,9 +29,9 @@ def mergeEntities(web, newEntities):
 
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
-    for entity in newEntities:
+    for (fVals, matches) in newEntities:
         with open(dataFile, "a") as fh:
-            fh.write("\t".join(str(x) for x in entity) + "\n")
+            fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")
 
     loadData(web)
 
@@ -48,9 +49,9 @@ def weedEntities(web, delEntities):
     with open(dataFile) as fh:
         for line in fh:
             fields = tuple(line.rstrip("\n").split("\t"))
-            (kind, eid) = fields[0:2]
-            matches = tuple(int(f) for f in fields[2:])
-            data = (kind, eid, *matches)
+            fVals = tuple(fields[0:NF])
+            matches = tuple(int(f) for f in fields[NF:])
+            data = (fVals, matches)
             if data in delEntities:
                 continue
             newEntities.append(line)
@@ -229,7 +230,7 @@ def loadData(web):
 
             for e in F.otype.s("ent"):
                 slots = L.d(e, otype=slotType)
-                entities[e]: (
+                entities[e] = (
                     tuple(
                         Fs(feat).v(e)
                         if hasFeature[feat]

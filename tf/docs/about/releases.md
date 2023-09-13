@@ -22,7 +22,7 @@ pip install -e .
 
 #### 12.1 (upcoming)
 
-2023-08-??
+2023-09-??
 
 ##### New stuff
 
@@ -41,6 +41,14 @@ pip install -e .
 ##### Fixes
 
 *   in the TEI converter.
+
+#### 12.0.6
+
+2023-09-13
+
+Trivial fix in code that exports the data from a job in the Text-Fabric browser.
+In the meanwhile there is unfinished business in the `Annotate` tab in the TF-browser,
+that will come into production in the upcoming 12.1 release.
 
 #### 12.0.5
 

@@ -5,7 +5,7 @@ import collections
 from itertools import chain
 from textwrap import dedent
 
-from .kernel import FEATURES, mergeEntities, weedEntities, WHITE_RE
+from .kernel import FEATURES, KEYWORD_FEATURES, mergeEntities, weedEntities, WHITE_RE
 
 
 def composeE(web, activeEntity, activeKind, sortKey, sortDir):
@@ -86,7 +86,7 @@ def composeQ(
     sFind,
     sFindRe,
     sFindError,
-    eKindSelect,
+    valSelect,
     nFind,
     nEnt,
     nVisible,
@@ -180,7 +180,7 @@ def composeQ(
     )
 
     # ENTITY SECTION
-    # The entity kind(s)
+    # The entity features
 
     txt = (
         WHITE_RE.sub(" ", T.text(range(tokenStart, tokenEnd + 1)).strip())
@@ -188,8 +188,10 @@ def composeQ(
         else ""
     )
     features = setData.entityTextVal[txt]
+
     for feat in FEATURES[1:]:
         theseVals = features.get(feat, set())
+        thisValSelect = valSelect[feat]
 
         html.append(
             dedent(
@@ -197,26 +199,26 @@ def composeQ(
                 <input type="hidden"
                     name="{feat}select"
                     id="{feat}select"
-                    value="{",".join(eKindSelect)}"
+                    value="{",".join(thisValSelect)}"
                 >
                 """
             )
         )
-        for kind in ["⌀"] + sorted(theseKinds):
-            status = "v" if kind in eKindSelect else "x"
-            entityStat = composeEntityStat(kind, nVisible, nEnt, hasFind, hasEntity)
-            title = "not yet marked as entity" if kind == "⌀" else f"marked as {kind}"
+        for val in ["⌀"] + sorted(theseVals):
+            status = "v" if val in thisValSelect else "x"
+            entityStat = composeEntityStat(feat, val, nVisible, nEnt, hasFind, hasEntity)
+            title = f"{feat} not marked" if val == "⌀" else f"{feat} marked as {val}"
 
             html.append(
                 dedent(
                     f"""
                     <button type="button"
-                        name="{kind}"
-                        class="ekindsel"
+                        name="{val}"
+                        class="{feat}sel"
                         st="{status}"
                         title="{title}"
                     >
-                        {kind}
+                        {val}
                         {entityStat}
                     </button>
                     """
@@ -246,8 +248,6 @@ def composeQ(
     )
 
     if annoSet and hasEntity:
-        allKinds = sorted(x[0] for x in setData.entityKindFreq)
-
         html.append(
             dedent(
                 """
@@ -268,7 +268,7 @@ def composeQ(
                     </button>
                     <button type="button"
                         id="scopeall"
-                        title="act on all sentences only"
+                        title="act on all sentences"
                     >all
                     </button>
                     """
@@ -302,79 +302,87 @@ def composeQ(
                 """
             )
         )
-        for kind in allKinds:
-            occurs = kind in theseKinds
-            occurCls = " occurs " if occurs else ""
 
-            html.append(
-                dedent(
-                    """
-                    <span class="ekindw">
-                    """
-                )
+        for feat in FEATURES[1:]:
+            theseVals = sorted(setData.entityTextVal[feat].get(txt, set()))
+            allVals = (
+                sorted(x[0] for x in setData.entityFreq[feat])
+                if feat in KEYWORD_FEATURES
+                else theseVals
             )
-            if occurs:
+            for kind in allVals:
+                occurs = kind in theseVals
+                occurCls = " occurs " if occurs else ""
+
+                html.append(
+                    dedent(
+                        f"""
+                        <span class="{feat}_w">
+                        """
+                    )
+                )
+                if occurs:
+                    html.append(
+                        dedent(
+                            f"""
+                            <button type="submit"
+                                name="{feat}_xbutton"
+                                value="{val}"
+                                class="{feat}_min"
+                            >
+                                -
+                            </button>
+                            """
+                        )
+                    )
+                html.append(
+                    dedent(
+                        f"""
+                        <span
+                            class="{feat}_sel {occurCls}"
+                        >
+                            {val}
+                        </span>
+                        """
+                    )
+                )
                 html.append(
                     dedent(
                         f"""
                         <button type="submit"
-                            name="ekindxbutton"
-                            value="{kind}"
-                            class="ekindmin"
+                            name="{feat}_pbutton"
+                            value="{val}"
+                            class="{feat}_plus"
                         >
-                            -
+                            +
                         </button>
                         """
                     )
                 )
-            html.append(
-                dedent(
-                    f"""
-                    <span
-                        class="ekindsel {occurCls}"
-                    >
-                        {kind}
-                    </span>
-                    """
+
+                html.append(
+                    dedent(
+                        """
+                        </span>
+                        """
+                    )
                 )
-            )
+
             html.append(
                 dedent(
-                    f"""
+                    """
+                    <input type="text" id="{feat}_v" name="{feat}_v" value="">
                     <button type="submit"
-                        name="ekindpbutton"
-                        value="{kind}"
-                        class="ekindplus"
+                        id="{feat}_save"
+                        name="{feat}_save"
+                        value="v"
+                        class="{feat}_plus"
                     >
                         +
                     </button>
                     """
                 )
             )
-
-            html.append(
-                dedent(
-                    """
-                    </span>
-                    """
-                )
-            )
-
-        html.append(
-            dedent(
-                """
-                <input type="text" id="ekindv" name="ekindv" value="">
-                <button type="submit"
-                    id="ekindsave"
-                    name="ekindsave"
-                    value="v"
-                    class="ekindplus"
-                >
-                    +
-                </button>
-                """
-            )
-        )
 
         html.append(
             dedent(
@@ -580,7 +588,7 @@ def filterS(web, sFindPatternRe, tokenStart, tokenEnd, eKindSelect):
     return (results, nFind, nVisible, nEnt)
 
 
-def saveEntity(web, kind, eid, sentences, excludedTokens):
+def saveEntity(web, fVals, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
 
     oldEntities = setData.entities
@@ -590,7 +598,7 @@ def saveEntity(web, kind, eid, sentences, excludedTokens):
 
     for (s, sTokens, allMatches, positions) in sentences:
         for matches in allMatches:
-            data = (kind, eid, *matches)
+            data = (fVals, matches)
             if data not in oldEntitySet:
                 if matches[-1] in excludedTokens:
                     excl += 1
@@ -602,23 +610,25 @@ def saveEntity(web, kind, eid, sentences, excludedTokens):
 
     nEntities = len(newEntities)
     pl = "y" if nEntities == 1 else "ies"
+    valRep = ", ".join(f"{feat}={val}" for (feat, val) in zip(FEATURES[1:], fVals))
+
     return (
-        f"Added {nEntities} entit{pl} with kind '{kind}' and id '{eid}'; "
+        f"Added {nEntities} entit{pl} with {valRep}; "
         f"{excl} excluded"
     )
 
 
-def delEntity(web, kind, sentences, excludedTokens):
+def delEntity(web, fVals, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
 
     oldEntities = setData.entities
-    oldEntitySet = [x for x in oldEntities.values() if x[0] == kind]
+    oldEntitySet = [x for x in oldEntities.values() if x[0] == fVals]
     delEntities = set()
     excl = 0
 
     for (s, sTokens, allMatches, positions) in sentences:
         for matches in allMatches:
-            data = (kind, *matches)
+            data = (fVals, matches)
             if data in oldEntitySet:
                 if matches[-1] in excludedTokens:
                     excl += 1
@@ -630,7 +640,9 @@ def delEntity(web, kind, sentences, excludedTokens):
 
     nEntities = len(delEntities)
     pl = "y" if nEntities == 1 else "ies"
-    return f"Deleted {nEntities} entit{pl} with kind '{kind}'; {excl} excluded'"
+    valRep = ", ".join(f"{feat}={val}" for (feat, val) in zip(FEATURES[1:], fVals))
+
+    return f"Deleted {nEntities} entit{pl} with {valRep}; {excl} excluded'"
 
 
 def composeFindStat(nSent, nFind, hasFind):
@@ -638,9 +650,10 @@ def composeFindStat(nSent, nFind, hasFind):
     return f"""<span class="stat">{n}</span>"""
 
 
-def composeEntityStat(kind, nVisible, nEnt, hasPattern, hasQuery):
+def composeEntityStat(feat, val, nVisible, nEnt, hasPattern, hasQuery):
     if hasQuery:
-        n = f"{nVisible[kind]} of {nEnt[kind]}" if hasPattern else f"{nEnt[kind]}"
+        na = nEnt[feat][val]
+        n = f"{nVisible[feat][val]} of {na}" if hasPattern else f"{na}"
         entityStat = f"""<span class="stat">{n}</span>"""
     else:
         entityStat = ""

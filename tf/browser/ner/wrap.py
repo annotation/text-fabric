@@ -3,10 +3,11 @@
 
 from textwrap import dedent
 
+from .kernel import FEATURES
+
 
 def wrapMessages(messages):
-    """HTML for messages.
-    """
+    """HTML for messages."""
     html = []
     html.append("<p>")
 
@@ -153,8 +154,8 @@ def wrapEntityHeaders(sortKey, sortDir):
     return "".join(html)
 
 
-def wrapEntityKinds(web):
-    """HTML for the kinds of entities.
+def wrapEntityFeats(web):
+    """HTML for the feature values of entities.
 
     Parameters
     ----------
@@ -170,12 +171,17 @@ def wrapEntityKinds(web):
     setData = web.toolData.ner.sets[web.annoSet]
     html = []
 
-    for (kind, freq) in setData.entityKindFreq:
+    for (fVals, es) in setData.entityBy:
+        freq = len(es)
+        fValsRep = " ".join(
+            f"""<span class="{feat}">{val}</span>"""
+            for (feat, val) in zip(FEATURES[1:], fVals)
+        )
         html.append(
             dedent(
                 f"""
                 <span><code class="w">{freq:>5}</code> x
-                <button type="submit" value="v">{kind}</button>
+                <button type="submit" value="v">{fValsRep}</button>
                 </span><br>
                 """
             )
