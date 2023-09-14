@@ -203,55 +203,24 @@ p.e {
   content-visible: auto;
   contain-intrinsic-size: 1rem 1rem;
 }
-span.ekindw {
-  border-radius: 0.5rem;
-  border: 2pt solid var(--ent-markup-color);
-  background-color: white;
-  padding: 0.3rem;
-  margin: 0.1rem 0.5rem;
-}
-span.ekindw.active {
-  border: 0;
-  background-color: var(--ent-markup-color);
-}
-
-button.ekindsel {
-  font-family: monospace;
-  font-size: large;
-  font-weight: bold;
-  color: var(--ent-markup-color);
-  border-radius: 0.5rem;
-  border: 2pt solid var(--ent-markup-color);
-  background-color: white;
-}
-button.ekindsel[st=v] {
-  color: black;
-  background-color: var(--ent-markup-bg);
-}
 #scopefiltered.active,#scopeall.active {
   color: white;
   background-color: black;
 }
 
-button.ekindmin,button.ekindplus {
+button.min,button.plus {
   font-size: small;
   color: black;
   border: 0;
   padding: 0 0.3rem;
 }
-button.ekindmin {
+button.min {
   background-color: #ffaaaa;
 }
-button.ekindplus {
+button.plus {
   background-color: #aaffaa;
 }
-#ekindv {
-  font-family: monospace;
-  font-size: medium;
-  font-weight: bold;
-  color: #8888ff;
-  background-color: white;
-}
+
 .report {
   font-family: monospace;
   color: #ffddbb;

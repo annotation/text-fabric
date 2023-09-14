@@ -8,19 +8,27 @@ import re
 
 from flask import render_template
 
+from ...core.generic import AttrDict
 from ...core.files import initTree, annotateDir, dirCopy, dirMove, dirRemove, dirExists
 
+from .settings import FEATURES, NF
 from .servelib import getFormData, annoSets
 from .kernel import loadData
+from .mutate import saveEntity, delEntity
 from .tables import (
     composeE,
     composeS,
-    composeQ,
-    saveEntity,
-    delEntity,
     filterS,
 )
-from .wrap import wrapAnnoSets, wrapEntityHeaders, wrapEntityFeats, wrapMessages
+from .wrap import (
+    wrapAnnoSets,
+    wrapEntityHeaders,
+    wrapEntityOverview,
+    wrapQ,
+    wrapMessages,
+    wrapActive,
+    wrapReport,
+)
 
 
 def serveNer(web):
@@ -33,36 +41,74 @@ def serveNer(web):
     """
 
     web.console("START controller")
-    aContext = web.context
-    appName = aContext.appName.replace("/", " / ")
 
     kernelApi = web.kernelApi
+
+    css = kernelApi.css()
+
+    templateData = initTemplate(web)
+    setHandling(web, templateData)
+    loadData(web)
+    sortSetup(templateData)
+    findSetup(templateData)
+    wrapActive(templateData)
+
+    (sentences, nFind, nVisible, nEnt) = filterS(web, templateData)
+
+    updateHandling(web, templateData, sentences)
+
+    wrapQ(web, templateData, nFind, nEnt, nVisible)
+
+    composeE(web, templateData)
+    wrapEntityOverview(web)
+    wrapEntityHeaders(templateData)
+
+    composeS(web, sentences)
+
+    return render_template("ner/index.html", css=css, **templateData)
+
+
+def initTemplate(web):
+    kernelApi = web.kernelApi
     app = kernelApi.app
+    aContext = web.context
+    appName = aContext.appName.replace("/", " / ")
     api = app.api
     F = api.F
     slotType = F.otype.slotType
 
-    annoDir = annotateDir(app, "ner")
-    initTree(annoDir, fresh=False)
-    sets = annoSets(annoDir)
-
     form = getFormData(web)
     resetForm = form["resetForm"]
 
-    css = kernelApi.css()
-
-    templateData = {}
-    messages = []
+    templateData = AttrDict()
+    templateData.featurelist = ",".join(FEATURES)
 
     for (k, v) in form.items():
         if not resetForm or k not in templateData:
             templateData[k] = v
 
-    valSelect = templateData["valselect"]
-    chosenAnnoSet = templateData["annoset"]
-    dupAnnoSet = templateData["duannoset"]
-    renamedAnnoSet = templateData["rannoset"]
-    deleteAnnoSet = templateData["dannoset"]
+    templateData.appname = appName
+    templateData.slottype = slotType
+    templateData.resetform = ""
+
+    return templateData
+
+
+def setHandling(web, templateData):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    annoDir = annotateDir(app, "ner")
+    web.annoDir = annoDir
+
+    initTree(annoDir, fresh=False)
+    sets = annoSets(annoDir)
+
+    chosenAnnoSet = templateData.annoset
+    dupAnnoSet = templateData.duannoset
+    renamedAnnoSet = templateData.rannoset
+    deleteAnnoSet = templateData.dannoset
+
+    messages = []
 
     if deleteAnnoSet:
         annoPath = f"{annoDir}/{deleteAnnoSet}"
@@ -72,7 +118,7 @@ def serveNer(web):
         else:
             chosenAnnoSet = ""
             sets -= {deleteAnnoSet}
-        templateData["dannoset"] = ""
+        templateData.dannoset = ""
 
     if dupAnnoSet and chosenAnnoSet:
         if not dirCopy(
@@ -84,7 +130,7 @@ def serveNer(web):
         else:
             sets = sets | {dupAnnoSet}
             chosenAnnoSet = dupAnnoSet
-        templateData["duannoset"] = ""
+        templateData.duannoset = ""
 
     if renamedAnnoSet and chosenAnnoSet:
         if not dirMove(f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{renamedAnnoSet}"):
@@ -94,29 +140,67 @@ def serveNer(web):
         else:
             sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
             chosenAnnoSet = renamedAnnoSet
-        templateData["rannoset"] = ""
+        templateData.rannoset = ""
 
     if chosenAnnoSet and chosenAnnoSet not in sets:
         initTree(f"{annoDir}/{chosenAnnoSet}", fresh=False)
         sets |= {chosenAnnoSet}
 
-    templateData["annoSets"] = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
+    templateData.annosets = wrapAnnoSets(annoDir, chosenAnnoSet, sets)
+    templateData.messages = wrapMessages(messages)
 
     web.annoSet = chosenAnnoSet
 
-    loadData(web)
 
+def updateHandling(web, templateData, sentences):
+    savDo = templateData.savdo
+    delDo = templateData.deldo
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    excludedTokens = templateData.excludedtokens
+    sFindRe = templateData.sfindre
+    scope = templateData.scope
+
+    savDoAny = any(savDo)
+    delDoAny = any(delDo)
+
+    report = []
+
+    if (savDoAny or delDoAny) and tokenStart and tokenEnd:
+        saveSentences = (
+            filterS(web, templateData, noFind=True)[0]
+            if sFindRe and scope == "a"
+            else sentences
+        )
+
+        if savDoAny:
+            report.append(saveEntity(web, savDo, saveSentences, excludedTokens))
+        if delDoAny:
+            report.append(delEntity(web, delDo, saveSentences, excludedTokens))
+
+        (sentences, nFind, nVisible, nEnt) = filterS(web, templateData)
+
+    wrapReport(templateData, report)
+    templateData.report = report
+
+
+def sortSetup(templateData):
     sortKey = None
     sortDir = None
 
-    for key in ("freqsort", "kindsort", "etxtsort"):
+    for key in ("freqsort", *(f"sort_{i}" for i in range(NF))):
         currentState = templateData[key]
         if currentState:
             sortDir = "u" if currentState == "d" else "d"
             sortKey = key
             break
 
-    sFind = templateData["sfind"]
+    templateData.sortkey = sortKey
+    templateData.sortdir = sortDir
+
+
+def findSetup(templateData):
+    sFind = templateData.sfind
     sFind = (sFind or "").strip()
     sFindRe = None
     errorMsg = ""
@@ -127,78 +211,6 @@ def serveNer(web):
         except Exception as e:
             errorMsg = str(e)
 
-    activeEntity = templateData["activeentity"]
-    activeKind = templateData["activekind"]
-
-    templateData["appName"] = appName
-    templateData["slotType"] = slotType
-    templateData["resetForm"] = ""
-    tokenStart = templateData["tokenstart"]
-    tokenEnd = templateData["tokenend"]
-    scope = templateData["scope"]
-
-    savEKind = templateData["savEKind"]
-    savEId = templateData["savEId"]
-    delEKind = templateData["delEKind"]
-
-    excludedTokens = templateData["excludedTokens"]
-
-    (sentences, nFind, nVisible, nEnt) = filterS(
-        web, sFindRe, tokenStart, tokenEnd, valSelect
-    )
-
-    report = None
-
-    if (savEKind or delEKind) and tokenStart and tokenEnd:
-        saveSentences = (
-            filterS(web, None, tokenStart, tokenEnd, valSelect)[0]
-            if sFindRe and scope == "a"
-            else sentences
-        )
-        if savEKind or delEKind:
-            report = []
-
-            if savEKind:
-                report.append(saveEntity(web, savEKind, savEId, saveSentences, excludedTokens))
-            if delEKind:
-                report.append(delEntity(web, delEKind, saveSentences, excludedTokens))
-            (sentences, nFind, nVisible, nEnt) = filterS(
-                web, sFindRe, tokenStart, tokenEnd, valSelect
-            )
-
-    composeQ(
-        web,
-        templateData,
-        sFind,
-        sFindRe,
-        errorMsg,
-        valSelect,
-        nFind,
-        nEnt,
-        nVisible,
-        scope,
-        report,
-    )
-
-    hasEntity = tokenStart and tokenEnd
-    limited = not hasEntity
-
-    templateData["entities"] = composeE(web, activeEntity, activeKind, sortKey, sortDir)
-    templateData["entityfeats"] = wrapEntityFeats(web)
-    templateData["entityheaders"] = wrapEntityHeaders(sortKey, sortDir)
-
-    web.console("start compose sentences")
-    templateData["sentences"] = composeS(web, sentences, limited, excludedTokens)
-    web.console("end compose sentences")
-    templateData["messages"] = wrapMessages(messages)
-    messages = []
-
-    result = render_template(
-        "ner/index.html",
-        css=css,
-        **templateData,
-    )
-    web.console("END controller")
-    with open("/Users/me/Downloads/test.html", "w") as fh:
-        fh.write(result)
-    return result
+    templateData.sfind = sFind
+    templateData.sfindre = sFindRe
+    templateData.errormsg = errorMsg

@@ -5,90 +5,12 @@ and put it in various dedicated data structures.
 """
 
 import collections
-import re
 import time
 
 from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
 
-GENERIC = "any"
-FEATURES = ("txt", "eid", "kind")
-KEYWORD_FEATURES = set(FEATURES[2])
-
-NF = len(FEATURES)
-
-
-WHITE_RE = re.compile(r"""\s{2,}""", re.S)
-
-
-def mergeEntities(web, newEntities):
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    annoSet = web.annoSet
-    annoDir = annotateDir(app, "ner")
-
-    dataFile = f"{annoDir}/{annoSet}/entities.tsv"
-
-    for (fVals, matches) in newEntities:
-        with open(dataFile, "a") as fh:
-            fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")
-
-    loadData(web)
-
-
-def weedEntities(web, delEntities):
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    annoSet = web.annoSet
-    annoDir = annotateDir(app, "ner")
-
-    dataFile = f"{annoDir}/{annoSet}/entities.tsv"
-
-    newEntities = []
-
-    with open(dataFile) as fh:
-        for line in fh:
-            fields = tuple(line.rstrip("\n").split("\t"))
-            fVals = tuple(fields[0:NF])
-            matches = tuple(int(f) for f in fields[NF:])
-            data = (fVals, matches)
-            if data in delEntities:
-                continue
-            newEntities.append(line)
-
-    with open(dataFile, "w") as fh:
-        fh.write("".join(newEntities))
-
-    loadData(web)
-
-
-def ucFirst(x):
-    return x[0].upper() + x[1:].lower()
-
-
-def getText(F, slots):
-    return WHITE_RE.sub(
-        " ",
-        "".join(f"{F.str.v(s)}{F.after.v(s)}" for s in slots).strip(),
-    )
-
-
-def getEid(F, slots):
-    return WHITE_RE.sub(
-        "",
-        "".join(ucFirst(x) for s in slots if (x := F.str.v(s).strip())).strip(),
-    )
-
-
-def getKind(F, slots):
-    return GENERIC
-
-
-featureDefault = {
-    "": getText,
-    FEATURES[0]: getKind,
-    FEATURES[1]: getEid,
-}
+from .settings import FEATURES, NF, featureDefault, getText
 
 
 def loadData(web):
@@ -97,24 +19,13 @@ def loadData(web):
     The data of an annotation set consists of:
 
     *   a dict of entities, keyed by nodes or line numbers;
-        each entity specifies a kind and a list of slots that are part of the entity.
+        each entity specifies a tuple of feature values and a list of slots
+        that are part of the entity.
 
     If `annoSet` is empty, the annotation data is already in the TF data, and we do not
     do anything.
 
-    After loading we process the data into a sligthly other shape:
-
-    *   a dictionary keyed by pairs of kind and text and valued by the sequence numbers
-        of the entities that have that kind and text
-    *   a frequency list of the entity kinds
-    *   a frequency list of the entity texts
-    *   a dictionary, keyed by slot number, and valued by the following information:
-        *   If the slot is outside any entity, it is not in the dictionary
-        *   Otherwise, the value is a list of items, each item holds information
-            about a specific entity wrt to that slot:
-        *   If an entity starts or ends there, the item is a tuple
-            (status, kind, number of occurrences)
-        *   If the slot is inside an entity, the item is True
+    After loading we process the data into derived datastructures.
 
     We try to be lazy. We only load data from disk if the data is not already in memory,
     or the data on disk has been updated since the last load.
@@ -133,26 +44,14 @@ def loadData(web):
         and then under the key `ner` and then `sets` and then the name of the
         annotation set.
 
-        For each set we produce the keys:
+        For each such set we produce the following keys:
 
         *   `dateLoaded`: datetime when the data was last loaded from disk
         *   `dateProcessed`: datetime when the data was last processed
         *   `entities`: the list of entities as loaded from a tsv file
 
-        We then process this into the following data structures:
-
-        *   `entityKindFreq`: the frequency list of entity kinds
-        *   `entityTextFreq`: the frequency list of entity texts
-        *   `entityTextKind`: the set of kinds that the entities with a given text may
-            have
-        *   `entitySlotIndex`: the index of entities by slot
-        *   `entityIndexKind`: the index of entities by tuple of slot positions; the values
-            are the set of kinds of the entities at that position.
-
-        *   `entityById`
-        *   `entityId`
-        *   `entityIdFreq`
-        *   `entityIndexId`
+        We then process this into several data structures, each identified
+        by a different key.
     """
     if not hasattr(web, "toolData"):
         setattr(web, "toolData", AttrDict())
@@ -174,25 +73,30 @@ def loadData(web):
     if annoSet not in setsData:
         setsData[annoSet] = AttrDict()
 
-    setData = setsData[annoSet]
+    # load sentence nodes
 
+    changed = fromSource(web)
+    process(web, changed)
+
+
+def fromSource(web):
+    annoSet = web.annoSet
+    setData = web.toolData.ner.sets[annoSet]
     kernelApi = web.kernelApi
+
     app = kernelApi.app
     api = app.api
     F = api.F
     Fs = api.Fs
     L = api.L
+
     slotType = F.otype.slotType
 
     annoDir = annotateDir(app, "ner")
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
-    # load sentence nodes
-
     if "sentences" not in setData:
         setData.sentences = F.otype.s("sentence")
-
-    # loading stage (only for real annosets)
 
     changed = False
 
@@ -225,7 +129,8 @@ def loadData(web):
         if "entities" not in setData:
             entities = {}
             hasFeature = {
-                feat: api.isLoaded("entid")["entid"] is not None for feat in FEATURES
+                feat: api.isLoaded(feat, pretty=False)[feat] is not None
+                for feat in FEATURES
             }
 
             for e in F.otype.s("ent"):
@@ -242,7 +147,17 @@ def loadData(web):
 
             setData.entities = entities
 
-    # processing stage (a bit different for annoset == "")
+    return changed
+
+
+def process(web, changed):
+    annoSet = web.annoSet
+    setData = web.toolData.ner.sets[annoSet]
+    kernelApi = web.kernelApi
+
+    app = kernelApi.app
+    api = app.api
+    F = api.F
 
     dateLoaded = setData.dateLoaded
     dateProcessed = setData.dateProcessed
@@ -250,6 +165,7 @@ def loadData(web):
     if (
         changed
         or "dateProcessed" not in setData
+        or "entityText" not in setData
         or "entityVal" not in setData
         or "entityTextVal" not in setData
         or "entityBy" not in setData
@@ -263,16 +179,19 @@ def loadData(web):
 
         entityItems = setData.entities.items()
 
+        entityText = {}
         entityVal = {feat: {} for feat in FEATURES}
-        entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES[1:]}
+        entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES}
         entityBy = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
         entitySlotIndex = {}
 
         for (e, (fVals, slots)) in entityItems:
-            txt = fVals[0]
+            txt = getText(F, slots)
             ident = fVals[1:]
+
+            entityText[e] = txt
 
             for (feat, val) in zip(FEATURES, fVals):
                 entityVal[feat][e] = val
@@ -300,6 +219,7 @@ def loadData(web):
                 else:
                     entitySlotIndex.setdefault(slot, []).append(None)
 
+        setData.entityText = entityText
         setData.entityVal = entityVal
         setData.entityTextVal = entityTextVal
         setData.entityBy = entityBy
@@ -308,7 +228,6 @@ def loadData(web):
         setData.entitySlotIndex = entitySlotIndex
 
         setData.dateProcessed = time.time()
-
         web.console(f"PROCESS '{annoSet}' DONE")
 
     else:

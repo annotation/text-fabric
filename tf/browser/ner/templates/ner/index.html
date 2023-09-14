@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-		<title>TF-NER {{appName}}</title>
+		<title>TF-NER {{appname}}</title>
 		<meta name="application-name" content="Text-Fabric Named Entities"/>
 		<link rel="shortcut icon" href="/browser/static/favicon.ico">
 		<link rel="stylesheet" href="/browser/static/colors.css"/>
@@ -12,28 +12,30 @@
     <link rel="stylesheet" href="/browser/static/fonts.css"/>
 		<link rel="stylesheet" href="/browser/static/index.css"/>
 		<link rel="stylesheet" href="/ner/static/index.css"/>
+		<link rel="stylesheet" href="/ner/static/features.css"/>
     {{css|safe}}
 		<script defer src="/browser/static/jquery.js"></script>
 		<script defer src="/ner/static/tool.js"></script>
 	</head>
 	<body>
 		<form id="go" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="featurelist" value="{{featurelist}}">
       <input type="hidden" id="submitter" name="submitter" value="{{submitter}}">
-      <input type="hidden" id="resetf" name="resetform" value="{{resetForm}}">
-      <input type="hidden" id="appname" name="appname" value="{{appName}}"/>
-      <input type="hidden" id="slottype" name="slottype" value="{{slotType}}"/>
+      <input type="hidden" id="resetf" name="resetform" value="{{resetform}}">
+      <input type="hidden" id="appname" name="appname" value="{{appname}}"/>
+      <input type="hidden" id="slottype" name="slottype" value="{{slottype}}"/>
       <div class="page">
         <div id="col1">
           <p><a href="/">back to TF browser</a></p>
-          <h1>{{appName}}</h1>
+          <h1>{{appname}}</h1>
           <h2>Named Entity Editing</h2>
           {{messages|safe}}
-          {{annoSets|safe}}
+          {{annosets|safe}}
         </div>
         <div id="col2">
           <div id="entitiesq">
             <h1>Entities</h1>
-            {{entityfeats|safe}}
+            {{entityoverview|safe}}
             {{entityheaders|safe}}
             <p><input type="text" name="efind" id="efind" value="{{efind}}">
                 <span class="stat" id="nentityentries"></span>
@@ -43,12 +45,7 @@
                        name="activeentity"
                        value="{{activeentity or ''}}"
                 >
-                <input type="hidden"
-
-                       id="activekind"
-                       name="activekind"
-                       value="{{activekind or ''}}"
-                >
+                {{activevalrep|safe}}
             </p>
           </div>
           <hr width="100%">
@@ -59,7 +56,11 @@
         <div id="col3">
           <div id="sentencesq">
             <h1>Sentences</h1>
-            {{q|safe}}
+            {{find|safe}}
+            {{entityinit|safe}}
+            <p>{{entitytext|safe}} {{entityfeats|safe}}</p>
+            {{entitymodify|safe}}
+            {{report|safe}}
           </div>
           <hr width="100%">
           <div id="sentences">

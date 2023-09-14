@@ -93,6 +93,7 @@ const annoSetControls = () => {
 
 const entityControls = () => {
   const form = $("form")
+  const { features } = globalThis
   const findBox = $("#efind")
   const eStat = $("#nentityentries")
   const findClear = $("#entityclear")
@@ -100,8 +101,6 @@ const entityControls = () => {
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
   const activeEntity = $("#activeentity")
-  const activeKind = $("#activekind")
-  const eKindSelect = $("#ekindselect")
   const selectAll = $("#selectall")
   const selectNone = $("#selectnone")
 
@@ -185,13 +184,15 @@ const entityControls = () => {
         elem.off("click").click(() => {
           const tStart = elem.attr("tstart")
           const tEnd = elem.attr("tend")
-          const kind = elem.attr("kind")
           const enm = elem.attr("enm")
           tokenStart.val(tStart)
           tokenEnd.val(tEnd)
           activeEntity.val(enm)
-          activeKind.val(kind)
-          eKindSelect.val(kind)
+          for (const feat of features) {
+            const val = elem.find(`span.${feat}`).html()
+            $(`#${feat}_active`).val(val)
+            $(`#${feat}_select`).val(val)
+          }
           form.submit()
         })
       } else {
@@ -210,6 +211,7 @@ const entityControls = () => {
 
 const tokenControls = () => {
   const form = $("form")
+  const { features } = globalThis
   const sentences = $("div.s")
   const findBox = $("#sfind")
   const findClear = $("#findclear")
@@ -226,9 +228,6 @@ const tokenControls = () => {
   const tokenStartVal = tokenStart.val()
   const tokenEndVal = tokenEnd.val()
   const activeEntity = $("#activeentity")
-  const activeKind = $("#activekind")
-  const eKindSelect = $("#ekindselect")
-  const eKindSel = $("button.ekindsel")
 
   let upToDate = true
   let tokenRange = []
@@ -343,20 +342,25 @@ const tokenControls = () => {
     setScope("a")
   })
 
-  eKindSel.off("click").click(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const currentStatus = elem.attr("st")
+  for (const feat of features) {
+    const sel = $(`button.${feat}_sel`)
+    const select = $(`#${feat}_select`)
 
-    elem.attr("st", currentStatus == "v" ? "x" : "v")
-    const ekinds = eKindSel
-      .get()
-      .filter(x => $(x).attr("st") == "v")
-      .map(x => $(x).attr("name"))
-      .join(",")
-    eKindSelect.val(ekinds)
-    form.submit()
-  })
+    sel.off("click").click(e => {
+      const { currentTarget } = e
+      const elem = $(currentTarget)
+      const currentStatus = elem.attr("st")
+
+      elem.attr("st", currentStatus == "v" ? "x" : "v")
+      const vals = sel
+        .get()
+        .filter(x => $(x).attr("st") == "v")
+        .map(x => $(x).attr("name"))
+        .join(",")
+      select.val(vals)
+      form.submit()
+    })
+  }
 
   const options = {
     root: null,
@@ -433,7 +437,9 @@ const tokenControls = () => {
     tokenEnd.val("")
     qWordShow.html("")
     activeEntity.val("")
-    activeKind.val("")
+    for (const feat of features) {
+      $(`#${feat}_active`).val("")
+    }
   })
 
   const subMitter = $("#submitter")
@@ -452,6 +458,7 @@ const tokenControls = () => {
 
 const initForm = () => {
   storeForm()
+  globalThis.features = $("#featurelist").val().split(",")
 }
 
 /* main

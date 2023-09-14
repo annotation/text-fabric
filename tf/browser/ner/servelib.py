@@ -4,7 +4,7 @@
 from flask import request
 
 from ...core.files import dirContents
-from .kernel import FEATURES
+from .settings import FEATURES
 
 
 def getFormData(web):
@@ -36,13 +36,10 @@ def getFormData(web):
     form["rannoset"] = request.form.get("rannoset", "")
     form["dannoset"] = request.form.get("dannoset", "")
     form["freqsort"] = request.form.get("freqsort", "")
-    form["kindsort"] = request.form.get("kindsort", "")
-    form["etxtsort"] = request.form.get("etxtsort", "")
     form["sfind"] = request.form.get("sfind", "")
     form["sfinderror"] = request.form.get("sfinderror", "")
     activeEntity = request.form.get("activeentity", "")
     form["activeentity"] = int(activeEntity) if activeEntity else None
-    form["activekind"] = request.form.get("activekind", "")
     form["efind"] = request.form.get("efind", "")
     tokenStart = request.form.get("tokenstart", "")
     form["tokenstart"] = int(tokenStart) if tokenStart else None
@@ -50,7 +47,12 @@ def getFormData(web):
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
     valSelectProto = {feat: request.form.get(f"{feat}_select", "") for feat in FEATURES}
     valSelect = {}
-    for (feat, valProto) in valSelectProto.items():
+    savDo = []
+    delDo = []
+    activeVal = []
+
+    for (i, feat) in enumerate(FEATURES):
+        valProto = valSelectProto[feat]
         valSelect[feat] = (
             set(valProto.split(","))
             if valProto
@@ -58,23 +60,21 @@ def getFormData(web):
             if submitter == "lookupq"
             else set()
         )
+        pButton = request.form.get(f"{feat}_pbutton", "")
+        xButton = request.form.get(f"{feat}_xbutton", "")
+        save = request.form.get(f"{feat}_save", "")
+        v = request.form.get(f"{feat}_v", "")
+        sav = v if save else pButton
+        savDo.append(sav)
+        delDo.append(xButton)
+        activeVal.append((feat, request.form.get(f"{feat}_active", "")))
+        form[f"sort_{i}"] = request.form.get(f"sort_{i}", "")
 
     form["valselect"] = valSelect
-    # eKindSelect
-    eKindPButton = request.form.get("ekindpbutton", "")
-    eIdPButton = request.form.get("eidpbutton", "")
-    eKindXButton = request.form.get("ekindxbutton", "")
-    eIdXButton = request.form.get("eidxbutton", "")
-    eKindSave = request.form.get("ekindsave", "")
-    eIdSave = request.form.get("eidsave", "")
-    eKindV = request.form.get("ekindv", "")
-    eIdV = request.form.get("eidv", "")
-    savEKind = eKindV if eKindSave else eKindPButton
-    savEId = eIdV if eIdSave else eIdPButton
-    form["savEKind"] = savEKind
-    form["savEId"] = savEId
-    form["delEKind"] = eKindXButton
-    form["delEId"] = eIdXButton
+    form["savdo"] = tuple(savDo)
+    form["deldo"] = tuple(delDo)
+    form["activeval"] = tuple(activeVal)
+
     form["scope"] = request.form.get("scope", "a")
     excludedTokens = request.form.get("excludedtokens", "")
     form["excludedTokens"] = (
