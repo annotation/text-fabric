@@ -103,3 +103,14 @@ def deepAttrDict(info):
         if type(info) is set
         else info
     )
+
+
+def isIterable(value):
+    """Whether a value is a non-string iterable.
+
+    !!! note
+        Strings are iterables.
+        But for this purpose we regard strings as non-iterable scalars.
+    """
+
+    return type(value) is not str and hasattr(value, "__iter__")

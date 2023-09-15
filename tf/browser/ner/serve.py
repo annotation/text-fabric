@@ -4,27 +4,33 @@ This module contains the main controller that Flask invokes when serving
 the annotation tool.
 """
 
-import re
-
 from flask import render_template
 
-from ...core.generic import AttrDict
-from ...core.files import initTree, annotateDir, dirCopy, dirMove, dirRemove, dirExists
+from ...core.files import (
+    initTree,
+    annotateDir,
+    dirCopy,
+    dirMove,
+    dirRemove,
+    dirExists,
+    dirMake,
+    fileExists,
+)
 
-from .settings import FEATURES, NF
-from .servelib import getFormData, annoSets
+from .servelib import annoSets, initTemplate, findSetup
 from .kernel import loadData
-from .mutate import saveEntity, delEntity
+from .mutate import saveEntity, delEntity, saveEntitiesAs
 from .tables import (
     composeE,
     composeS,
     filterS,
 )
 from .wrap import (
+    wrapCss,
     wrapAnnoSets,
     wrapEntityHeaders,
     wrapEntityOverview,
-    wrapQ,
+    wrapQuery,
     wrapMessages,
     wrapActive,
     wrapReport,
@@ -44,54 +50,26 @@ def serveNer(web):
 
     kernelApi = web.kernelApi
 
-    css = kernelApi.css()
-
     templateData = initTemplate(web)
+    wrapCss(web, templateData, kernelApi.css())
     setHandling(web, templateData)
     loadData(web)
-    sortSetup(templateData)
-    findSetup(templateData)
-    wrapActive(templateData)
+    findSetup(web, templateData)
+    wrapActive(web, templateData)
 
     (sentences, nFind, nVisible, nEnt) = filterS(web, templateData)
 
     updateHandling(web, templateData, sentences)
 
-    wrapQ(web, templateData, nFind, nEnt, nVisible)
+    wrapQuery(web, templateData, nFind, nEnt, nVisible)
 
     composeE(web, templateData)
-    wrapEntityOverview(web)
-    wrapEntityHeaders(templateData)
+    wrapEntityOverview(web, templateData)
+    wrapEntityHeaders(web, templateData)
 
-    composeS(web, sentences)
+    composeS(web, templateData, sentences)
 
-    return render_template("ner/index.html", css=css, **templateData)
-
-
-def initTemplate(web):
-    kernelApi = web.kernelApi
-    app = kernelApi.app
-    aContext = web.context
-    appName = aContext.appName.replace("/", " / ")
-    api = app.api
-    F = api.F
-    slotType = F.otype.slotType
-
-    form = getFormData(web)
-    resetForm = form["resetForm"]
-
-    templateData = AttrDict()
-    templateData.featurelist = ",".join(FEATURES)
-
-    for (k, v) in form.items():
-        if not resetForm or k not in templateData:
-            templateData[k] = v
-
-    templateData.appname = appName
-    templateData.slottype = slotType
-    templateData.resetform = ""
-
-    return templateData
+    return render_template("ner/index.html", **templateData)
 
 
 def setHandling(web, templateData):
@@ -120,26 +98,48 @@ def setHandling(web, templateData):
             sets -= {deleteAnnoSet}
         templateData.dannoset = ""
 
-    if dupAnnoSet and chosenAnnoSet:
-        if not dirCopy(
-            f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{dupAnnoSet}", noclobber=True
-        ):
-            messages.append(
-                ("error", f"""Could not copy {chosenAnnoSet} to {dupAnnoSet}""")
-            )
+    if dupAnnoSet:
+        if dupAnnoSet in sets:
+            messages.append(("error", f"""Set {dupAnnoSet} already exists"""))
         else:
-            sets = sets | {dupAnnoSet}
-            chosenAnnoSet = dupAnnoSet
-        templateData.duannoset = ""
+            if chosenAnnoSet:
+                if not dirCopy(
+                    f"{annoDir}/{chosenAnnoSet}",
+                    f"{annoDir}/{dupAnnoSet}",
+                    noclobber=True,
+                ):
+                    messages.append(
+                        ("error", f"""Could not copy {chosenAnnoSet} to {dupAnnoSet}""")
+                    )
+                else:
+                    sets = sets | {dupAnnoSet}
+                    chosenAnnoSet = dupAnnoSet
+            else:
+                annoPath = f"{annoDir}/{dupAnnoSet}"
+                dataFile = f"{annoPath}/entities.tsv"
+
+                if fileExists(dataFile):
+                    messages.append(("error", f"""Set {dupAnnoSet} already exists"""))
+                else:
+                    dirMake(annoPath)
+                    saveEntitiesAs(web, dataFile)
+                    chosenAnnoSet = dupAnnoSet
+            templateData.duannoset = ""
 
     if renamedAnnoSet and chosenAnnoSet:
-        if not dirMove(f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{renamedAnnoSet}"):
-            messages.append(
-                ("error", f"""Could not rename {chosenAnnoSet} to {renamedAnnoSet}""")
-            )
+        if renamedAnnoSet in sets:
+            messages.append(("error", f"""Set {renamedAnnoSet} already exists"""))
         else:
-            sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
-            chosenAnnoSet = renamedAnnoSet
+            if not dirMove(f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{renamedAnnoSet}"):
+                messages.append(
+                    (
+                        "error",
+                        f"""Could not rename {chosenAnnoSet} to {renamedAnnoSet}""",
+                    )
+                )
+            else:
+                sets = (sets | {renamedAnnoSet}) - {chosenAnnoSet}
+                chosenAnnoSet = renamedAnnoSet
         templateData.rannoset = ""
 
     if chosenAnnoSet and chosenAnnoSet not in sets:
@@ -181,36 +181,3 @@ def updateHandling(web, templateData, sentences):
         (sentences, nFind, nVisible, nEnt) = filterS(web, templateData)
 
     wrapReport(templateData, report)
-    templateData.report = report
-
-
-def sortSetup(templateData):
-    sortKey = None
-    sortDir = None
-
-    for key in ("freqsort", *(f"sort_{i}" for i in range(NF))):
-        currentState = templateData[key]
-        if currentState:
-            sortDir = "u" if currentState == "d" else "d"
-            sortKey = key
-            break
-
-    templateData.sortkey = sortKey
-    templateData.sortdir = sortDir
-
-
-def findSetup(templateData):
-    sFind = templateData.sfind
-    sFind = (sFind or "").strip()
-    sFindRe = None
-    errorMsg = ""
-
-    if sFind:
-        try:
-            sFindRe = re.compile(sFind)
-        except Exception as e:
-            errorMsg = str(e)
-
-    templateData.sfind = sFind
-    templateData.sfindre = sFindRe
-    templateData.errormsg = errorMsg

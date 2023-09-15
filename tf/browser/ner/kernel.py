@@ -10,7 +10,13 @@ import time
 from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
 
-from .settings import FEATURES, NF, featureDefault, getText
+from .settings import (
+    FEATURES,
+    SUMMARY_INDICES,
+    NF,
+    featureDefault,
+    getText,
+)
 
 
 def loadData(web):
@@ -168,7 +174,8 @@ def process(web, changed):
         or "entityText" not in setData
         or "entityVal" not in setData
         or "entityTextVal" not in setData
-        or "entityBy" not in setData
+        or "entitySummary" not in setData
+        or "entityIdent" not in setData
         or "entityFreq" not in setData
         or "entityIndex" not in setData
         or "entitySlotIndex" not in setData
@@ -182,14 +189,16 @@ def process(web, changed):
         entityText = {}
         entityVal = {feat: {} for feat in FEATURES}
         entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES}
-        entityBy = {}
+        entitySummary = {}
+        entityIdent = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
         entitySlotIndex = {}
 
         for (e, (fVals, slots)) in entityItems:
             txt = getText(F, slots)
-            ident = fVals[1:]
+            ident = fVals
+            summary = tuple(fVals[i] for i in SUMMARY_INDICES)
 
             entityText[e] = txt
 
@@ -199,7 +208,8 @@ def process(web, changed):
                 entityIndex[feat].setdefault(slots, set()).add(val)
                 entityTextVal[feat][txt].add(val)
 
-            entityBy.setdefault(ident, []).append(e)
+            entityIdent.setdefault(ident, []).append(e)
+            entitySummary.setdefault(summary, []).append(e)
 
             firstSlot = slots[0]
             lastSlot = slots[-1]
@@ -222,8 +232,11 @@ def process(web, changed):
         setData.entityText = entityText
         setData.entityVal = entityVal
         setData.entityTextVal = entityTextVal
-        setData.entityBy = entityBy
-        setData.entityFreq = sorted(entityFreq.items())
+        setData.entitySummary = entitySummary
+        setData.entityIdent = entityIdent
+        setData.entityFreq = {
+            feat: sorted(entityFreq[feat].items()) for feat in FEATURES
+        }
         setData.entityIndex = entityIndex
         setData.entitySlotIndex = entitySlotIndex
 

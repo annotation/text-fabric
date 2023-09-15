@@ -1,8 +1,65 @@
 """Wraps various pieces into HTML.
 """
 
-from .settings import FEATURES, KEYWORD_FEATURES, getText
+from .settings import (
+    FEATURES,
+    KEYWORD_FEATURES,
+    SUMMARY_FEATURES,
+    STYLES,
+    getText,
+    featureDefault,
+)
 from .html import H
+
+
+def wrapCss(web, templateData, genericCss):
+    propMap = dict(
+        ff="font-family",
+        fz="font-size",
+        fw="font-weight",
+        fg="color",
+        bg="background-color",
+        bw="border-width",
+        bs="border-style",
+        bc="border-color",
+        br="border-radius",
+        p="padding",
+        m="margin",
+    )
+
+    def makeBlock(manner):
+        props = STYLES[manner]
+        defs = [f"\t{propMap[abb]}: {val};\n" for (abb, val) in props.items()]
+        return H.join(defs)
+
+    def makeCssDef(selector, *blocks):
+        return selector + " {\n" + H.join(blocks) + "}\n"
+
+    css = []
+
+    for feat in FEATURES:
+        manner = "keyword" if feat in KEYWORD_FEATURES else "free"
+
+        plain = makeBlock(manner)
+        bordered = makeBlock(f"{manner}_bordered")
+        active = makeBlock(f"{manner}_active")
+        borderedActive = makeBlock(f"{manner}_bordered_active")
+
+        css.extend(
+            [
+                makeCssDef(f".{feat}", plain),
+                makeCssDef(f".{feat}.active", active),
+                makeCssDef(f"#{feat}_v", plain),
+                makeCssDef(f"span.{feat}_w", plain, bordered),
+                makeCssDef(f"span.{feat}_w.active", borderedActive, active),
+                makeCssDef(f"button.{feat}_sel", plain, bordered),
+                makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
+            ]
+        )
+
+    featureCss = H.join(css, sep="\n")
+    allCss = genericCss + H.style(featureCss, type="text/css")
+    templateData.css = allCss
 
 
 def wrapMessages(messages):
@@ -57,6 +114,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             id="anew",
             title="create a new annotation set",
         ),
+        " ",
         H.button(
             "++",
             type="submit",
@@ -64,6 +122,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             id="adup",
             title="duplicate this annotation set",
         ),
+        " ",
         H.select(
             (
                 H.option(
@@ -93,6 +152,7 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
                 id="arename",
                 title="rename current annotation set",
             ),
+            " ",
             H.button(
                 "-",
                 type="submit",
@@ -124,17 +184,14 @@ def wrapEntityOverview(web, templateData):
     setData = web.toolData.ner.sets[web.annoSet]
 
     templateData.entityoverview = H.p(
-        H.span(
-            H.code(f"{len(es):>5}"),
-            " x ",
-            H.button(repIdent(fVals), type="submit", value="v"),
+        H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
+        for (fVals, es) in sorted(
+            setData.entitySummary.items(), key=lambda x: (-len(x[1]), x[0])
         )
-        + H.br()
-        for (fVals, es) in setData.entityBy
     )
 
 
-def wrapEntityHeaders(templateData):
+def wrapEntityHeaders(web, templateData):
     """HTML for the header of the entity table.
 
     Dependent on the state of sorting.
@@ -155,19 +212,34 @@ def wrapEntityHeaders(templateData):
     sortDir = templateData.sortdir
     sortKeys = ((feat, f"sort_{i}") for (i, feat) in enumerate(FEATURES))
 
-    content = []
+    content = [
+        H.input(type="hidden", name="sortkey", id="sortkey", value=sortKey),
+        H.input(type="hidden", name="sortdir", id="sortdir", value=sortDir),
+    ]
 
     for (label, key) in (("frequency", "freqsort"), *sortKeys):
+        web.console(f"{key=} {sortKey=} {sortDir=}")
+        hl = " active " if key == sortKey else ""
         theDir = sortDir if key == sortKey else "u"
         theArrow = "↑" if theDir == "u" else "↓"
-        content.append(
-            H.span(label, H.button(theArrow, type="submit", name=key, value=theDir))
+        content.extend(
+            [
+                H.button(
+                    f"{label} {theArrow}",
+                    type="button",
+                    tp="sort",
+                    sk=key,
+                    sd=theDir,
+                    cls=f"medium{hl}",
+                ),
+                " ",
+            ]
         )
 
     templateData.entityheaders = H.p(content)
 
 
-def wrapQ(web, templateData, nFind, nEnt, nVisible):
+def wrapQuery(web, templateData, nFind, nEnt, nVisible):
     """HTML for the query line.
 
     Parameters
@@ -184,8 +256,8 @@ def wrapQ(web, templateData, nFind, nEnt, nVisible):
     hasFind = wrapFilter(web, templateData, nFind)
     txt = wrapEntityInit(web, templateData)
     wrapEntityText(templateData, txt)
-    wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt)
-    wrapEntityFeats(web, templateData, hasFind, txt)
+    features = wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt)
+    wrapEntityModify(web, templateData, hasFind, txt, features)
 
 
 def wrapFilter(web, templateData, nFind):
@@ -203,9 +275,13 @@ def wrapFilter(web, templateData, nFind):
     templateData["find"] = H.p(
         H.b("Filter:"),
         H.input(type="text", name="sfind", id="sfind", value=sFind),
+        " ",
         wrapFindStat(nSent, nFind, hasFind),
+        " ",
         H.button("✖️", type="submit", id="findclear"),
+        " ",
         H.span(sFindError, id="sfinderror", cls="error"),
+        " ",
         H.button("🔎", type="submit", id="lookupf"),
     )
     return hasFind
@@ -236,7 +312,9 @@ def wrapEntityText(templateData, txt):
     templateData.entitytext = H.join(
         H.b("Entity:"),
         H.span(txt, id="qwordshow"),
+        " ",
         H.button("✖️", type="submit", id="queryclear"),
+        " ",
         H.button("🔎", type="submit", id="lookupq"),
     )
 
@@ -251,21 +329,24 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
 
     valSelect = templateData.valselect
 
-    features = setData.entityTextVal[txt]
+    features = {feat: setData.entityTextVal[feat].get(txt, set()) for feat in FEATURES}
 
     html = []
 
-    for feat in FEATURES:
-        theseVals = features.get(feat, set())
+    for (feat, theseVals) in features.items():
         thisValSelect = valSelect[feat]
 
-        html.append(
-            H.input(
-                type="hidden",
-                name=f"{feat}_select",
-                id=f"{feat}_select",
-                value=",".join(thisValSelect),
-            )
+        html.extend(
+            [
+                H.input(
+                    type="hidden",
+                    name=f"{feat}_select",
+                    id=f"{feat}_select",
+                    value=",".join(thisValSelect),
+                ),
+                H.i(feat),
+                ": ",
+            ]
         )
         for val in ["⌀"] + sorted(theseVals):
             html.append(
@@ -283,13 +364,21 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
             )
 
     templateData.entityfeats = H.join(html, sep=" ")
+    return features
 
 
-def wrapEntityModify(web, templateData, hasFind, txt):
+def wrapEntityModify(web, templateData, hasFind, txt, features):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    api = app.api
+    F = api.F
+
     annoSet = web.annoSet
     setData = web.toolData.ner.sets[annoSet]
-    scope = templateData.scope
 
+    tokenStart = templateData.tokenstart
+    tokenEnd = templateData.tokenend
+    scope = templateData.scope
     scope = templateData.scope
 
     hasEntity = txt != ""
@@ -313,6 +402,7 @@ def wrapEntityModify(web, templateData, hasFind, txt):
                         id="scopefiltered",
                         title="act on filtered sentences only",
                     ),
+                    " ",
                     H.button(
                         "all",
                         type="button",
@@ -329,6 +419,7 @@ def wrapEntityModify(web, templateData, hasFind, txt):
                     id="selectall",
                     title="select all occurences in filtered sentences",
                 ),
+                " ",
                 H.button(
                     "⭕️",
                     type="button",
@@ -350,6 +441,8 @@ def wrapEntityModify(web, templateData, hasFind, txt):
                 if feat in KEYWORD_FEATURES
                 else theseVals
             )
+            content.extend([H.i(feat), ": "])
+
             for val in allVals:
                 occurs = val in theseVals
                 occurCls = " occurs " if occurs else ""
@@ -379,9 +472,17 @@ def wrapEntityModify(web, templateData, hasFind, txt):
 
                 content.append(H.span(subContent, cls=f"{feat}_w"))
 
+            default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+            init = "" if default in theseVals else default
+
             content.extend(
                 [
-                    H.input(type="text", id=f"{feat}_v", name=f"{feat}_v", value=""),
+                    H.input(
+                        type="text",
+                        id=f"{feat}_v",
+                        name=f"{feat}_v",
+                        value=init,
+                    ),
                     H.button(
                         "+",
                         type="submit",
@@ -403,13 +504,13 @@ def wrapFindStat(nSent, nFind, hasFind):
     return H.span(n, cls="stat")
 
 
-def wrapEntityStat(val, thisNVisible, thisNEnt, hasPattern, hasQuery):
+def wrapEntityStat(val, thisNVisible, thisNEnt, hasPattern):
     na = thisNEnt[val]
     n = f"{thisNVisible[val]} of {na}" if hasPattern else f"{na}"
     return H.span(n, cls="stat")
 
 
-def wrapActive(templateData):
+def wrapActive(web, templateData):
     activeVal = templateData.activeval
 
     templateData.activevalrep = H.join(
@@ -424,7 +525,18 @@ def wrapReport(templateData, report):
     templateData.report = H.join(H.p(H.span(line, cls="report")) for line in report)
 
 
-def repIdent(vals):
+def repIdent(vals, active=""):
     return H.join(
-        (H.span(val, cls=feat) for (feat, val) in zip(FEATURES, vals)), sep=" "
+        (H.span(val, cls=f"{feat} {active}") for (feat, val) in zip(FEATURES, vals)),
+        sep=" ",
+    )
+
+
+def repSummary(vals, active=""):
+    return H.join(
+        (
+            H.span(val, cls=f"{feat} {active}")
+            for (feat, val) in zip(SUMMARY_FEATURES, vals)
+        ),
+        sep=" ",
     )

@@ -97,6 +97,9 @@ const entityControls = () => {
   const findBox = $("#efind")
   const eStat = $("#nentityentries")
   const findClear = $("#entityclear")
+  const sortControls = $(`button[tp="sort"]`)
+  const sortKeyInput = $("#sortkey")
+  const sortDirInput = $("#sortdir")
   const entities = $("p.e")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
@@ -116,7 +119,7 @@ const entityControls = () => {
     let n = 0
     entities.each((i, elem) => {
       const el = $(elem)
-      const et = el.find("span.et")
+      const et = el.find("span")
       const text = et.html()
       if (text.toLowerCase().includes(ss)) {
         el.show()
@@ -154,6 +157,16 @@ const entityControls = () => {
   findClear.off("click").click(() => {
     findBox.val("")
     show()
+  })
+
+  sortControls.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const sortKey = elem.attr("sk")
+    const sortDir = elem.attr("sd")
+    sortKeyInput.val(sortKey)
+    sortDirInput.val(sortDir == "u" ? "d" : "u")
+    form.submit()
   })
 
   selectAll.off("click").click(() => {

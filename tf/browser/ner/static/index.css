@@ -20,6 +20,10 @@ a:link, a:visited {
   --ent-markup-bg: #ffddbb;
 }
 
+code {
+  white-space: pre-wrap;
+}
+
 /* COLUMNS */
 
 #col1 {
@@ -116,7 +120,7 @@ code.w {
   padding-left: 2rem;
 }
 
-p.queried,span.queried,#qwordshow>span {
+p.queried,span.queried,#qwordshow {
   border-radius: 0.2rem;
   background-color: yellow;
   padding: 0 0.3rem;
@@ -196,7 +200,9 @@ span.stat {
   font-family: monospace;
   font-weight: bold;
   font-size: small;
-  color: #0000bb;
+  color: #aaaaff;
+  background-color: white;
+  padding-left: 0.5rem;
 }
 p.e {
   margin: 0.1rem 0;
@@ -219,6 +225,13 @@ button.min {
 }
 button.plus {
   background-color: #aaffaa;
+}
+button[tp=sort].active {
+  background-color: yellow;
+}
+button[tp=sort].active:hover {
+  color: white;
+  background-color: blue;
 }
 
 .report {

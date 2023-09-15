@@ -1,3 +1,6 @@
+from ...core.generic import isIterable
+
+
 H_ELEMENT_DEFS = """
     b
     br>
@@ -10,6 +13,7 @@ H_ELEMENT_DEFS = """
     p
     select
     span
+    style
 """.strip().split()
 
 H_ELEMENTS = tuple(
@@ -23,9 +27,10 @@ def dig(*content, sep=""):
     if len(content) == 1:
         content = content[0]
         return (
+            sep.join(dig(c) for c in content)
+            if isIterable(content)
+            else
             str(content)
-            if type(content) in {str, int}
-            else sep.join(dig(c) for c in content)
         )
     return sep.join(dig(c) for c in content)
 
@@ -78,3 +83,5 @@ if __name__ == "__main__":
     print(H.button(["aap", "noot", "mies", range(10)], type="hidden"))
     messages = [("error", "wrong!"), ("info", "succeeded!")]
     print(H.p((H.span(text, cls=lev) + H.br() for (lev, text) in messages)))
+    print(H.join(range(10)))
+    print(H.join([]))

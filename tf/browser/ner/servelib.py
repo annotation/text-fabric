@@ -1,8 +1,11 @@
 """Auxiliary functions for serving the web page.
 """
 
+import re
+
 from flask import request
 
+from ...core.generic import AttrDict
 from ...core.files import dirContents
 from .settings import FEATURES
 
@@ -35,7 +38,8 @@ def getFormData(web):
     form["duannoset"] = request.form.get("duannoset", "")
     form["rannoset"] = request.form.get("rannoset", "")
     form["dannoset"] = request.form.get("dannoset", "")
-    form["freqsort"] = request.form.get("freqsort", "")
+    form["sortkey"] = request.form.get("sortkey", "") or "freqsort"
+    form["sortdir"] = request.form.get("sortdir", "") or "u"
     form["sfind"] = request.form.get("sfind", "")
     form["sfinderror"] = request.form.get("sfinderror", "")
     activeEntity = request.form.get("activeentity", "")
@@ -68,7 +72,6 @@ def getFormData(web):
         savDo.append(sav)
         delDo.append(xButton)
         activeVal.append((feat, request.form.get(f"{feat}_active", "")))
-        form[f"sort_{i}"] = request.form.get(f"sort_{i}", "")
 
     form["valselect"] = valSelect
     form["savdo"] = tuple(savDo)
@@ -77,7 +80,7 @@ def getFormData(web):
 
     form["scope"] = request.form.get("scope", "a")
     excludedTokens = request.form.get("excludedtokens", "")
-    form["excludedTokens"] = (
+    form["excludedtokens"] = (
         {int(t) for t in excludedTokens.split(",")} if excludedTokens else set()
     )
 
@@ -99,3 +102,46 @@ def annoSets(annoDir):
         The annotation sets, sorted by name.
     """
     return set(dirContents(annoDir)[1])
+
+
+def initTemplate(web):
+    kernelApi = web.kernelApi
+    app = kernelApi.app
+    aContext = web.context
+    appName = aContext.appName.replace("/", " / ")
+    api = app.api
+    F = api.F
+    slotType = F.otype.slotType
+
+    form = getFormData(web)
+    resetForm = form["resetForm"]
+
+    templateData = AttrDict()
+    templateData.featurelist = ",".join(FEATURES)
+
+    for (k, v) in form.items():
+        if not resetForm or k not in templateData:
+            templateData[k] = v
+
+    templateData.appname = appName
+    templateData.slottype = slotType
+    templateData.resetform = ""
+
+    return templateData
+
+
+def findSetup(web, templateData):
+    sFind = templateData.sfind
+    sFind = (sFind or "").strip()
+    sFindRe = None
+    errorMsg = ""
+
+    if sFind:
+        try:
+            sFindRe = re.compile(sFind)
+        except Exception as e:
+            errorMsg = str(e)
+
+    templateData.sfind = sFind
+    templateData.sfindre = sFindRe
+    templateData.errormsg = errorMsg

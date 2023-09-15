@@ -62,8 +62,8 @@ def mergeEntities(web, newEntities):
 
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
-    for (fVals, matches) in newEntities:
-        with open(dataFile, "a") as fh:
+    with open(dataFile, "a") as fh:
+        for (fVals, matches) in newEntities:
             fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")
 
     loadData(web)
@@ -91,3 +91,11 @@ def weedEntities(web, delEntities):
         fh.write("".join(newEntities))
 
     loadData(web)
+
+
+def saveEntitiesAs(web, dataFile):
+    entities = web.toolData.ner.sets[""].entities
+
+    with open(dataFile, "a") as fh:
+        for (fVals, matches) in entities.values():
+            fh.write("\t".join(str(x) for x in (*fVals, *matches)) + "\n")

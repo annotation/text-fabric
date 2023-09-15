@@ -40,7 +40,7 @@ def composeE(web, templateData):
     sortDir = templateData.sortdir
 
     entities = setData.entities
-    entries = setData.entityBy.items()
+    entries = setData.entityIdent.items()
 
     if sortKey == "freqsort":
         entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
@@ -53,27 +53,27 @@ def composeE(web, templateData):
 
     content = []
 
-    for (i, (vals, es)) in enumerate(entries):
+    for (vals, es) in entries:
         x = len(es)
         e1 = es[0]
-        ent1 = entities[e1]
-        (eFirst, eLast) = (ent1[2], ent1[-1])
+        slots = entities[e1][1]
+        (eFirst, eLast) = (slots[0], slots[-1])
 
-        active = " queried " if activeEntity is not None and i == activeEntity else ""
+        active = " queried " if activeEntity is not None and e1 == activeEntity else ""
 
         content.append(
             H.p(
                 H.code(f"{x:>5}", cls="w"),
                 " x ",
-                repIdent(vals),
+                repIdent(vals, active=active),
                 cls=f"e {active}",
-                enm=i,
+                enm=e1,
                 tstart=eFirst,
                 tend=eLast,
             )
         )
 
-    templateData.entities = H.join(content)
+    templateData.entitytable = H.join(content)
 
 
 def composeS(web, templateData, sentences):
@@ -103,7 +103,7 @@ def composeS(web, templateData, sentences):
     api = app.api
     F = api.F
 
-    entityBy = setData.entityBy
+    entityIdent = setData.entityIdent
     entitySlotIndex = setData.entitySlotIndex
 
     tokenStart = templateData.tokenstart
@@ -154,7 +154,7 @@ def composeS(web, templateData, sentences):
                                 H.span(abs(lg), cls="lgb"),
                                 repIdent(ident),
                                 " ",
-                                H.span(len(entityBy[ident]), cls="n"),
+                                H.span(len(entityIdent[ident]), cls="n"),
                                 cls="es",
                             )
                         )
@@ -252,7 +252,7 @@ def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
         sWords = {w for (t, w) in sTokens}
 
         if any(w not in sWords for w in words):
-            return (fits, {}, None)
+            return (fits, fValStats, None)
 
         nSTokens = len(sTokens)
 
@@ -277,7 +277,7 @@ def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
 
-                valOK = True
+                valOK = False
 
                 for feat in FEATURES:
                     theseVals = entityIndex[feat].get(slots, set())
@@ -294,9 +294,7 @@ def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
                         and len(theseVals) == 0
                         or len(theseValSelect & theseVals) != 0
                     ):
-                        continue
-
-                    valOK = False
+                        valOK = True
 
                 if valOK:
                     matches.append(slots)
@@ -335,7 +333,7 @@ def filterS(web, templateData, noFind=False):
         all other sentences will be filtered out.
 
     valSelect: set
-        The feature valuesto filter on.
+        The feature values to filter on.
 
     Returns
     -------
@@ -382,6 +380,7 @@ def filterS(web, templateData, noFind=False):
         (fits, fValStats, result) = entityMatch(
             entityIndex, L, F, T, s, sFindRe, words, valSelect
         )
+
         blocked = fits is not None and not fits
 
         if not blocked:
