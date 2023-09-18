@@ -14,14 +14,29 @@ a:link, a:visited {
 }
 
 :root {
-  --sent-header-height: 20rem;
   --ent-header-height: 20rem;
+  --sent-header-height: 24rem;
   --ent-markup-color: #ddbb00;
   --ent-markup-bg: #ffddbb;
+  --button-fg: #ffffff;
+  --button-bg: #000000;
+  --button-bd: #000000;
+  --button-active-fg: #ffff00;
+  --button-active-bg: #4444ff;
+  --button-active-bd: #0000ff;
 }
 
 code {
   white-space: pre-wrap;
+}
+
+div.page {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+	width: 99vw;
+	height: 99vh;
 }
 
 /* COLUMNS */
@@ -214,38 +229,96 @@ p.e {
   background-color: black;
 }
 
-button.min,button.plus {
+.neutral {
   font-size: small;
-  color: black;
   border: 0;
   padding: 0 0.3rem;
 }
-button.min {
-  background-color: #ffaaaa;
+input[st=minus],span[st=minus] {
+  background-color: #ffaaaa ! important;
 }
-button.plus {
-  background-color: #aaffaa;
+input[st=plus],span[st=plus] {
+  background-color: #aaffaa ! important;
 }
-button[tp=sort].active {
-  background-color: yellow;
+button.active {
+  color: var(--button-active-fg);
+  background-color: var(--button-active-bg);
+  border: 0.1rem solid var(--button-active-bd);
 }
-button[tp=sort].active:hover {
-  color: white;
-  background-color: blue;
+button {
+  border-radius: 0.3rem;
+  color: var(--button-fg);
+  background-color: var(--button-bg);
+  border: 0.1rem solid var(--button-bd);
+  font-size: small;
+  font-weight: medium;
+  margin: 0.1rem;
+  padding: 0.2rem;
 }
-
 .report {
   font-family: monospace;
   color: #ffddbb;
   background-color: #333333;
 }
-span[st="x"]::after {
-  content: "⭕️";
+span[te][st="x"]::after {
+  content: "❌";
 }
-span[st="v"]::after {
-  content: "🆗";
+span[te][st="v"]::after {
+  content: "✅";
 }
 #selectall {
 }
 #selectnone {
+}
+
+#selectwidget {
+  display: inline-flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+}
+.featwidget {
+  border-radius: 0.5rem;
+  border: 0.2rem solid #eeeeee;
+  padding: 0.5rem 0.5rem;
+}
+#assignwidget {
+  display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-items: flex-end;
+	width: 100%;
+}
+#assign1 {
+  display: flex;
+	flex-flow: column nowrap;
+  border-radius: 0.5rem;
+  border: 0.2rem solid #eeeeee;
+  padding: 0.5rem 0.5rem;
+}
+.modifyfeat {
+  display: inline-flex;
+	flex-flow: column nowrap;
+	justify-content: space-between;
+  border-radius: 0.5rem;
+  border: 0.2rem solid #eeeeee;
+  padding: 0.2rem; 0.2rem;
+}
+.feattitle {
+  display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+}
+.modifyvalues {
+  display: inline-flex;
+	flex-flow: row wrap;
+  padding: 0;
+}
+.modval {
+  display: flex;
+	flex-flow: column nowrap;
+	justify-content: stretch;
+  align-items: center;
+  margin: 0 0.2rem;
 }

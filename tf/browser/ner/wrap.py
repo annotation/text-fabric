@@ -50,9 +50,9 @@ def wrapCss(web, templateData, genericCss):
                 makeCssDef(f".{feat}", plain),
                 makeCssDef(f".{feat}.active", active),
                 makeCssDef(f"#{feat}_v", plain),
-                makeCssDef(f"span.{feat}_w", plain, bordered),
-                makeCssDef(f"span.{feat}_w.active", borderedActive, active),
-                makeCssDef(f"button.{feat}_sel", plain, bordered),
+                # makeCssDef(f"span.{feat}_w", plain, bordered),
+                # makeCssDef(f"span.{feat}_w.active", borderedActive, active),
+                makeCssDef(f"span.{feat}_sel,button.{feat}_sel", plain, bordered),
                 makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
             ]
         )
@@ -110,7 +110,6 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
         H.button(
             "+",
             type="submit",
-            cls="medium active",
             id="anew",
             title="create a new annotation set",
         ),
@@ -118,7 +117,6 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
         H.button(
             "++",
             type="submit",
-            cls="medium active",
             id="adup",
             title="duplicate this annotation set",
         ),
@@ -148,7 +146,6 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             H.button(
                 "→",
                 type="submit",
-                cls="medium active",
                 id="arename",
                 title="rename current annotation set",
             ),
@@ -156,7 +153,6 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
             H.button(
                 "-",
                 type="submit",
-                cls="medium active",
                 id="adelete",
                 title="delete current annotation set",
             ),
@@ -272,13 +268,12 @@ def wrapFilter(web, templateData, nFind):
 
     nSent = len(setData.sentences)
 
-    templateData["find"] = H.p(
-        H.b("Filter:"),
+    templateData["find"] = H.join(
         H.input(type="text", name="sfind", id="sfind", value=sFind),
         " ",
         wrapFindStat(nSent, nFind, hasFind),
         " ",
-        H.button("✖️", type="submit", id="findclear"),
+        H.button("❌", type="submit", id="findclear"),
         " ",
         H.span(sFindError, id="sfinderror", cls="error"),
         " ",
@@ -310,10 +305,9 @@ def wrapEntityInit(web, templateData):
 
 def wrapEntityText(templateData, txt):
     templateData.entitytext = H.join(
-        H.b("Entity:"),
         H.span(txt, id="qwordshow"),
         " ",
-        H.button("✖️", type="submit", id="queryclear"),
+        H.button("❌", type="submit", id="queryclear"),
         " ",
         H.button("🔎", type="submit", id="lookupq"),
     )
@@ -330,26 +324,26 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
     valSelect = templateData.valselect
 
     features = {feat: setData.entityTextVal[feat].get(txt, set()) for feat in FEATURES}
-
-    html = []
+    content = []
 
     for (feat, theseVals) in features.items():
         thisValSelect = valSelect[feat]
 
-        html.extend(
-            [
-                H.input(
-                    type="hidden",
-                    name=f"{feat}_select",
-                    id=f"{feat}_select",
-                    value=",".join(thisValSelect),
-                ),
-                H.i(feat),
-                ": ",
-            ]
+        titleContent = H.div(H.i(f"{feat}:"), cls="feattitle")
+
+        valuesContent = []
+
+        valuesContent.append(
+            H.input(
+                type="hidden",
+                name=f"{feat}_select",
+                id=f"{feat}_select",
+                value=",".join(thisValSelect),
+            )
         )
+
         for val in ["⌀"] + sorted(theseVals):
-            html.append(
+            valuesContent.append(
                 H.button(
                     val,
                     wrapEntityStat(val, nVisible[feat], nEnt[feat], hasFind),
@@ -363,7 +357,9 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
                 )
             )
 
-    templateData.entityfeats = H.join(html, sep=" ")
+        content.append(H.div(titleContent, valuesContent, cls="featwidget"))
+
+    templateData.entityfeats = H.div(content, id="selectwidget")
     return features
 
 
@@ -379,19 +375,17 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     scope = templateData.scope
-    scope = templateData.scope
 
     hasEntity = txt != ""
 
-    html1 = H.input(type="hidden", id="scope", name="scope", value=scope)
-
-    html2 = ""
-    html3 = ""
+    scopeHtml = [H.input(type="hidden", id="scope", name="scope", value=scope)]
+    headingHtml = []
+    contentHtml = []
 
     if annoSet and hasEntity:
         # Scope of modification
 
-        content = [H.b("Target:")]
+        content = []
 
         if hasFind:
             content.extend(
@@ -414,25 +408,23 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
         content.extend(
             [
                 H.button(
-                    "🆗",
+                    "✅",
                     type="button",
                     id="selectall",
                     title="select all occurences in filtered sentences",
                 ),
                 " ",
                 H.button(
-                    "⭕️",
+                    "❌",
                     type="button",
                     id="selectnone",
                     title="deselect all occurences in filtered sentences",
                 ),
             ]
         )
-        html2 = H.p(content)
+        scopeHtml.extend(content)
 
         # Assigment of feature values
-
-        content = [H.b("Assignment:")]
 
         for feat in FEATURES:
             theseVals = sorted(setData.entityTextVal[feat].get(txt, set()))
@@ -441,62 +433,67 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                 if feat in KEYWORD_FEATURES
                 else theseVals
             )
-            content.extend([H.i(feat), ": "])
+            default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
+
+            titleContent = H.div(
+                H.i(f"{feat}:"),
+                H.button("↩️", type="button", cls="resetb"),
+                cls="feattitle",
+            )
+            valuesContent = []
 
             for val in allVals:
                 occurs = val in theseVals
-                occurCls = " occurs " if occurs else ""
+                st = "plus" if val == default else "x"
 
-                subContent = []
-
-                if occurs:
-                    subContent.append(
-                        H.button(
-                            "-",
-                            type="submit",
-                            name=f"{feat}_xbutton",
-                            value=val,
-                            cls="min",
-                        )
-                    )
-                subContent.append(H.span(val, cls=f"{feat}_sel {occurCls}"))
-                subContent.append(
-                    H.button(
-                        "+",
-                        type="submit",
-                        name=f"{feat}_pbutton",
-                        value=val,
-                        cls="plus",
+                valuesContent.append(
+                    H.div(
+                        [
+                            H.span(
+                                val or H.nb,
+                                cls=f"{feat}_sel",
+                                st=st,
+                                origst=st,
+                                val=val,
+                                occurs="v" if occurs else "x",
+                            ),
+                        ],
+                        cls=f"{feat}_w modval",
                     )
                 )
 
-                content.append(H.span(subContent, cls=f"{feat}_w"))
-
-            default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
             init = "" if default in theseVals else default
+            st = "plus" if init and len(theseVals) == 0 else "x"
 
-            content.extend(
-                [
-                    H.input(
-                        type="text",
-                        id=f"{feat}_v",
-                        name=f"{feat}_v",
-                        value=init,
-                    ),
-                    H.button(
-                        "+",
-                        type="submit",
-                        id=f"{feat}_save",
-                        name=f"{feat}_save",
-                        value="v",
-                        cls="plus",
-                    ),
-                ]
+            valuesContent.append(
+                H.div(
+                    [H.input(type="text", st=st, origst=st, value=init, origval=init)],
+                    cls="modval",
+                )
             )
 
-        html3 = H.p(content)
+            contentHtml.append(
+                H.div(
+                    titleContent,
+                    H.div(valuesContent, cls="modifyvalues"),
+                    cls="modifyfeat",
+                    feat=feat,
+                )
+            )
 
-    templateData.entitymodify = html1 + html2 + html3
+        headingHtml = [
+            H.b("Add/del:"),
+            H.span(scopeHtml),
+            H.button("⚙️", type="submit", id="modifygo", value="v"),
+            H.input(type="hidden", id="modifydata", name="modifydata", value="")
+        ]
+
+    templateData.entitymodify = H.div(
+        H.div(headingHtml, id="assign1"),
+        contentHtml,
+        H.div("", id="modfeedback", cls="report"),
+        id="assignwidget"
+    )
 
 
 def wrapFindStat(nSent, nFind, hasFind):

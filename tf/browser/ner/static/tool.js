@@ -355,9 +355,11 @@ const tokenControls = () => {
     setScope("a")
   })
 
+  const selectWidget = $("#selectwidget")
+
   for (const feat of features) {
-    const sel = $(`button.${feat}_sel`)
-    const select = $(`#${feat}_select`)
+    const sel = selectWidget.find(`button.${feat}_sel`)
+    const select = selectWidget.find(`#${feat}_select`)
 
     sel.off("click").click(e => {
       const { currentTarget } = e
@@ -469,6 +471,141 @@ const tokenControls = () => {
   })
 }
 
+const modifyControls = () => {
+  const { features } = globalThis
+  const form = $("form")
+  const modifyWidget = $(".modifyfeat")
+  const control = modifyWidget.find(`span`)
+  const input = modifyWidget.find(`input[type="text"]`)
+  const reset = modifyWidget.find(`button.resetb`)
+  const go = $("#modifygo")
+  const goData = $("modifydata")
+
+  control.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const occurs = elem.attr("occurs")
+
+    const noMinus = occurs == "x"
+    const currentStatus = elem.attr("st")
+
+    const newStatus = noMinus
+      ? currentStatus == "plus"
+        ? "x"
+        : "plus"
+      : currentStatus == "plus"
+      ? "minus"
+      : currentStatus == "minus"
+      ? "x"
+      : "plus"
+
+    elem.attr("st", newStatus)
+  })
+  input.off("keyup").keyup(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const val = elem.val()
+    if (val == "") {
+      elem.attr("st", "x")
+    } else {
+      elem.attr("st", "plus")
+    }
+  })
+  input.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const val = elem.val()
+    if (val == "") {
+      elem.attr("st", "x")
+    } else {
+      const currentStatus = elem.attr("st")
+      elem.attr("st", currentStatus == "x" ? "plus" : "x")
+    }
+  })
+  reset.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const mparent = elem.closest("div.modifyfeat")
+    const span = mparent.find("span[origst]")
+    const inp = mparent.find("input[origst]")
+    span.each((i, elem) => {
+      const el = $(elem)
+      el.attr("st", el.attr("origst"))
+    })
+    inp.each((i, elem) => {
+      const el = $(elem)
+      el.attr("st", el.attr("origst"))
+      el.val(el.attr("origval"))
+    })
+  })
+
+  const makeGoData = () => {
+    const data = {}
+
+    for (const feat of features) {
+      const widget = $(`div.modifyfeat[feat="${feat}"]`)
+      const span = widget.find("span[st]")
+      const inp = widget.find("inp[st]")
+
+      const deletions = []
+      const additions = []
+
+      for (const elem of span.get()) {
+        const el = $(elem)
+        const st = el.attr("st")
+        const val = el.attr("val")
+        if (st == "minus") {
+          deletions.push(val)
+        } else if (st == "plus") {
+          additions.push(val)
+        }
+      }
+      for (const elem of inp.get()) {
+        const el = $(elem)
+        const st = el.attr("st")
+        const val = el.val()
+        if (st == "plus") {
+          additions.push(val)
+        }
+      }
+      const hasDeletions = deletions.length != 0
+      const hasAdditions = additions.length != 0
+      if (hasDeletions || hasAdditions) {
+        data[feat] = {}
+        if (hasDeletions) {
+          data[feat]["deletions"] = deletions
+        }
+        if (hasAdditions) {
+          data[feat]["additions"] = additions
+        }
+      }
+    }
+    const hasAdditions = feat => data[feat] && data[feat].additions
+    const hasDeletions = feat => data[feat] && data[feat].deletions
+    const anyHasAdditions = features.some(hasAdditions)
+    const allHaveAdditions = features.every(hasAdditions)
+    const anyHasDeletions = features.some(hasDeletions)
+    const allOrNothingAdditions = !anyHasAdditions || allHaveAdditions
+
+    if (anyHasDeletions || anyHasAdditions) {
+      if (allOrNothingAdditions) {
+        return { data: JSON.stringify({ data }) }
+      } else {
+        const missingAdditions = features.map(
+          feat => !data[feat] || !data[feat].additions
+        )
+        return { report: missingAdditions }
+      }
+    } else {
+      return { report: ["nothing to do"] }
+    }
+  }
+
+  go.off("click").click(() => {
+    form.submit()
+  })
+}
+
 const initForm = () => {
   storeForm()
   globalThis.features = $("#featurelist").val().split(",")
@@ -483,4 +620,5 @@ $(window).on("load", () => {
   annoSetControls()
   entityControls()
   tokenControls()
+  modifyControls()
 })

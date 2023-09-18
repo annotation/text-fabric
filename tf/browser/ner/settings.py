@@ -10,6 +10,15 @@ SUMMARY_INDICES = tuple(i for i in range(NF) if FEATURES[i] in KEYWORD_FEATURES)
 SUMMARY_FEATURES = tuple(FEATURES[i] for i in SUMMARY_INDICES)
 
 STYLES = dict(
+    minus=dict(
+        bg="#ffaaaa;"
+    ),
+    plus=dict(
+        bg="#aaffaa;"
+    ),
+    replace=dict(
+        bg="#ffff88;"
+    ),
     free=dict(
         ff="monospace",
         fz="small",

@@ -67,7 +67,7 @@ def elemFunc(close, elem):
 
 
 class H:
-    pass
+    nb = "\u00a0"
 
 
 setattr(H, "join", dig)

@@ -10,7 +10,6 @@
 		<link rel="stylesheet" href="/browser/static/display.css"/>
 		<link rel="stylesheet" href="/browser/static/highlight.css"/>
     <link rel="stylesheet" href="/browser/static/fonts.css"/>
-		<link rel="stylesheet" href="/browser/static/index.css"/>
 		<link rel="stylesheet" href="/ner/static/index.css"/>
     {{css|safe}}
 		<script defer src="/browser/static/jquery.js"></script>
@@ -55,9 +54,15 @@
         <div id="col3">
           <div id="sentencesq">
             <h1>Sentences</h1>
-            {{find|safe}}
             {{entityinit|safe}}
-            <p>{{entitytext|safe}} {{entityfeats|safe}}</p>
+            <p>
+              <b>Filter sentences:</b> {{find|safe}}
+              <b>Entity:</b> {{entitytext|safe}}
+            </p>
+            <p>
+              <b>Select occurrences</b>:
+              {{entityfeats|safe}}
+            </p>
             {{entitymodify|safe}}
             {{report|safe}}
           </div>
