@@ -49,9 +49,6 @@ def wrapCss(web, templateData, genericCss):
             [
                 makeCssDef(f".{feat}", plain),
                 makeCssDef(f".{feat}.active", active),
-                makeCssDef(f"#{feat}_v", plain),
-                # makeCssDef(f"span.{feat}_w", plain, bordered),
-                # makeCssDef(f"span.{feat}_w.active", borderedActive, active),
                 makeCssDef(f"span.{feat}_sel,button.{feat}_sel", plain, bordered),
                 makeCssDef(f"button.{feat}_sel[st=v]", borderedActive, active),
             ]
@@ -214,7 +211,6 @@ def wrapEntityHeaders(web, templateData):
     ]
 
     for (label, key) in (("frequency", "freqsort"), *sortKeys):
-        web.console(f"{key=} {sortKey=} {sortDir=}")
         hl = " active " if key == sortKey else ""
         theDir = sortDir if key == sortKey else "u"
         theArrow = "↑" if theDir == "u" else "↓"
@@ -484,7 +480,7 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
         headingHtml = [
             H.b("Add/del:"),
             H.span(scopeHtml),
-            H.button("⚙️", type="submit", id="modifygo", value="v"),
+            H.button("⚙️", type="button", id="modifygo", value="v"),
             H.input(type="hidden", id="modifydata", name="modifydata", value="")
         ]
 
@@ -519,7 +515,8 @@ def wrapActive(web, templateData):
 
 
 def wrapReport(templateData, report):
-    templateData.report = H.join(H.p(H.span(line, cls="report")) for line in report)
+    templateData.report = H.join(H.span(line, cls="report") + H.br() for line in report)
+    report.clear()
 
 
 def repIdent(vals, active=""):

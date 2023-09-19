@@ -19,7 +19,7 @@ from ...core.files import (
 
 from .servelib import annoSets, initTemplate, findSetup
 from .kernel import loadData
-from .mutate import saveEntity, delEntity, saveEntitiesAs
+from .mutate import saveEntity, saveEntitiesAs
 from .tables import (
     composeE,
     composeS,
@@ -153,30 +153,23 @@ def setHandling(web, templateData):
 
 
 def updateHandling(web, templateData, sentences):
-    savDo = templateData.savdo
-    delDo = templateData.deldo
+    modifyData = templateData.modifydata
+
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     excludedTokens = templateData.excludedtokens
     sFindRe = templateData.sfindre
     scope = templateData.scope
 
-    savDoAny = any(savDo)
-    delDoAny = any(delDo)
-
     report = []
 
-    if (savDoAny or delDoAny) and tokenStart and tokenEnd:
+    if modifyData and tokenStart and tokenEnd:
         saveSentences = (
             filterS(web, templateData, noFind=True)[0]
             if sFindRe and scope == "a"
             else sentences
         )
-
-        if savDoAny:
-            report.append(saveEntity(web, savDo, saveSentences, excludedTokens))
-        if delDoAny:
-            report.append(delEntity(web, delDo, saveSentences, excludedTokens))
+        report.extend(saveEntity(web, modifyData, saveSentences, excludedTokens))
 
         (sentences, nFind, nVisible, nEnt) = filterS(web, templateData)
 

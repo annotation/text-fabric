@@ -3067,8 +3067,8 @@ class TEI:
                 )
                 inPage = cur["inPage"]
 
+                pbAtTop = pageProperties["pbAtTop"]
                 if isPageContainer:
-                    pbAtTop = pageProperties["pbAtTop"]
                     cur["inPage"] = True
 
                     if pbAtTop:
@@ -3167,7 +3167,7 @@ class TEI:
                         cur[NODE][pageType] = cv.node(pageType)
                         cur["pageAtts"] = atts
 
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 cur["afterSpace"] = False
                 cur[NODE][tag] = cv.node(tag)
                 curNode = cur[NODE][tag]
@@ -3256,7 +3256,7 @@ class TEI:
 
             if makePageElems and inPage and tag == "pb":
                 pass
-            elif tag not in PASS_THROUGH:
+            if tag not in PASS_THROUGH:
                 curNode = cur[TNEST][-1]
                 slots = cv.linked(curNode)
                 empty = len(slots) == 0

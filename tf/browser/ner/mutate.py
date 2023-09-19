@@ -1,59 +1,115 @@
+import collections
+
 from .settings import FEATURES, NF
 from .kernel import loadData
 
 
-def saveEntity(web, fVals, sentences, excludedTokens):
+def valRep(fVals):
+    return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))
+
+
+def saveEntity(web, modifyData, sentences, excludedTokens):
     setData = web.toolData.ner.sets[web.annoSet]
+    deletions = modifyData.deletions
+    additions = modifyData.additions
 
     oldEntities = setData.entities
-    oldEntitySet = oldEntities.values()
-    newEntities = []
-    excl = 0
 
-    for (s, sTokens, allMatches, positions) in sentences:
-        for matches in allMatches:
-            data = (fVals, matches)
-            if data not in oldEntitySet:
-                if matches[-1] in excludedTokens:
-                    excl += 1
-                    continue
-                newEntities.append(data)
+    report = []
 
-    if len(newEntities):
-        mergeEntities(web, newEntities)
+    # deletions
 
-    nEntities = len(newEntities)
-    pl = "y" if nEntities == 1 else "ies"
-    valRep = ", ".join(f"{feat}={val}" for (feat, val) in zip(FEATURES, fVals))
-
-    return f"Added {nEntities} entit{pl} with {valRep}; " f"{excl} excluded"
-
-
-def delEntity(web, fVals, sentences, excludedTokens):
-    setData = web.toolData.ner.sets[web.annoSet]
-
-    oldEntities = setData.entities
-    oldEntitySet = [x for x in oldEntities.values() if x[0] == fVals]
     delEntities = set()
-    excl = 0
+    delEntitiesByE = set()
 
-    for (s, sTokens, allMatches, positions) in sentences:
-        for matches in allMatches:
-            data = (fVals, matches)
-            if data in oldEntitySet:
+    if any(len(x) > 0 for x in deletions):
+        oldEntitiesBySlots = collections.defaultdict(set)
+
+        for (e, data) in oldEntities.items():
+            oldEntitiesBySlots[data[1]].add(e)
+
+        excl = 0
+
+        stats = collections.Counter()
+
+        for (s, sTokens, allMatches, positions) in sentences:
+            for matches in allMatches:
                 if matches[-1] in excludedTokens:
                     excl += 1
                     continue
-                delEntities.add(data)
+
+                candidates = oldEntitiesBySlots.get(matches, set())
+
+                for e in candidates:
+                    toBeDeleted = False
+                    fVals = oldEntities[e][0]
+
+                    for (fVal, delVals) in zip(fVals, deletions):
+                        if fVal in delVals:
+                            toBeDeleted = True
+                            break
+
+                    if toBeDeleted:
+                        if e not in delEntitiesByE:
+                            delEntitiesByE.add(e)
+                            delEntities.add((fVals, matches))
+                            stats[fVals] += 1
+
+        report.extend([f"Deletion: {n} x {valRep(fVal)}" for (fVal, n) in sorted(stats.items())])
+        if excl:
+            report.append(f"Deletion: occurences excluded: {excl}")
+
+    # additions
+
+    addEntities = set()
+
+    if all(len(x) > 0 for x in additions):
+        oldEntitiesBySlots = collections.defaultdict(set)
+
+        for (e, (fVals, slots)) in oldEntities.items():
+            if e not in delEntitiesByE:
+                oldEntitiesBySlots[slots].add(fVals)
+
+        excl = 0
+
+        fValTuples = [()]
+
+        for vals in additions:
+            newTuples = []
+            for val in vals:
+                newTuples.extend([ft + (val,) for ft in fValTuples])
+            fValTuples = newTuples
+
+        stats = collections.Counter()
+
+        for (s, sTokens, allMatches, positions) in sentences:
+            for matches in allMatches:
+                if matches[-1] in excludedTokens:
+                    excl += 1
+                    continue
+
+                existing = oldEntitiesBySlots.get(matches, set())
+
+                for fVals in fValTuples:
+                    if fVals in existing:
+                        continue
+                    data = (fVals, matches)
+                    if data not in addEntities:
+                        addEntities.add(data)
+                        stats[fVals] += 1
+
+        report.extend([f"Addition: {n} x {valRep(fVal)}" for (fVal, n) in sorted(stats.items())])
+        if excl:
+            report.append(f"Addition: occurences excluded: {excl}")
+
+    return report
 
     if len(delEntities):
         weedEntities(web, delEntities)
+    if len(addEntities):
+        mergeEntities(web, addEntities)
 
-    nEntities = len(delEntities)
-    pl = "y" if nEntities == 1 else "ies"
-    valRep = ", ".join(f"{feat}={val}" for (feat, val) in zip(FEATURES, fVals))
-
-    return f"Deleted {nEntities} entit{pl} with {valRep}; {excl} excluded'"
+    return report
 
 
 def mergeEntities(web, newEntities):

@@ -479,7 +479,8 @@ const modifyControls = () => {
   const input = modifyWidget.find(`input[type="text"]`)
   const reset = modifyWidget.find(`button.resetb`)
   const go = $("#modifygo")
-  const goData = $("modifydata")
+  const feedback = $("#modfeedback")
+  const goData = $("#modifydata")
 
   control.off("click").click(e => {
     const { currentTarget } = e
@@ -540,24 +541,25 @@ const modifyControls = () => {
   })
 
   const makeGoData = () => {
-    const data = {}
+    const deletions = []
+    const additions = []
 
     for (const feat of features) {
       const widget = $(`div.modifyfeat[feat="${feat}"]`)
       const span = widget.find("span[st]")
       const inp = widget.find("inp[st]")
 
-      const deletions = []
-      const additions = []
+      const theseAdds = []
+      const theseDels = []
 
       for (const elem of span.get()) {
         const el = $(elem)
         const st = el.attr("st")
         const val = el.attr("val")
         if (st == "minus") {
-          deletions.push(val)
+          theseDels.push(val)
         } else if (st == "plus") {
-          additions.push(val)
+          theseAdds.push(val)
         }
       }
       for (const elem of inp.get()) {
@@ -565,46 +567,51 @@ const modifyControls = () => {
         const st = el.attr("st")
         const val = el.val()
         if (st == "plus") {
-          additions.push(val)
+          theseAdds.push(val)
         }
       }
-      const hasDeletions = deletions.length != 0
-      const hasAdditions = additions.length != 0
-      if (hasDeletions || hasAdditions) {
-        data[feat] = {}
-        if (hasDeletions) {
-          data[feat]["deletions"] = deletions
-        }
-        if (hasAdditions) {
-          data[feat]["additions"] = additions
-        }
-      }
+      deletions.push(theseDels)
+      additions.push(theseAdds)
     }
-    const hasAdditions = feat => data[feat] && data[feat].additions
-    const hasDeletions = feat => data[feat] && data[feat].deletions
-    const anyHasAdditions = features.some(hasAdditions)
-    const allHaveAdditions = features.every(hasAdditions)
-    const anyHasDeletions = features.some(hasDeletions)
+    const anyHasAdditions = additions.some(x => x.length > 0)
+    const allHaveAdditions = additions.every(x => x.length > 0)
+    const anyHasDeletions = deletions.some(x => x.length > 0)
     const allOrNothingAdditions = !anyHasAdditions || allHaveAdditions
+
+    let result = {}
 
     if (anyHasDeletions || anyHasAdditions) {
       if (allOrNothingAdditions) {
-        return { data: JSON.stringify({ data }) }
+        return { data: { deletions, additions } }
       } else {
-        const missingAdditions = features.map(
-          feat => !data[feat] || !data[feat].additions
-        )
-        return { report: missingAdditions }
+        const missingAdditions = additions.filter(x => x.length == 0)
+        result = {
+          report: `provide at least one green value for ${missingAdditions.join(
+            " and "
+          )}`,
+        }
       }
     } else {
-      return { report: ["nothing to do"] }
+      result = { report: "nothing to do" }
     }
+    return result
   }
 
   go.off("click").click(() => {
-    form.submit()
+    const { data, report } = makeGoData()
+
+    feedback.html("")
+
+    if (data) {
+      goData.val(encodeURIComponent(JSON.stringify(data)))
+      form.submit()
+    } else {
+      goData.val("")
+      feedback.html(report)
+    }
   })
 }
+
 
 const initForm = () => {
   storeForm()

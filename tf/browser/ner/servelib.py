@@ -2,10 +2,12 @@
 """
 
 import re
+import json
+from urllib.parse import unquote
 
 from flask import request
 
-from ...core.generic import AttrDict
+from ...core.generic import AttrDict, deepAttrDict
 from ...core.files import dirContents
 from .settings import FEATURES
 
@@ -51,8 +53,6 @@ def getFormData(web):
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
     valSelectProto = {feat: request.form.get(f"{feat}_select", "") for feat in FEATURES}
     valSelect = {}
-    savDo = []
-    delDo = []
     activeVal = []
 
     for (i, feat) in enumerate(FEATURES):
@@ -64,18 +64,9 @@ def getFormData(web):
             if submitter == "lookupq"
             else set()
         )
-        pButton = request.form.get(f"{feat}_pbutton", "")
-        xButton = request.form.get(f"{feat}_xbutton", "")
-        save = request.form.get(f"{feat}_save", "")
-        v = request.form.get(f"{feat}_v", "")
-        sav = v if save else pButton
-        savDo.append(sav)
-        delDo.append(xButton)
         activeVal.append((feat, request.form.get(f"{feat}_active", "")))
 
     form["valselect"] = valSelect
-    form["savdo"] = tuple(savDo)
-    form["deldo"] = tuple(delDo)
     form["activeval"] = tuple(activeVal)
 
     form["scope"] = request.form.get("scope", "a")
@@ -83,6 +74,13 @@ def getFormData(web):
     form["excludedtokens"] = (
         {int(t) for t in excludedTokens.split(",")} if excludedTokens else set()
     )
+    modifyData = request.form.get("modifydata", "")
+    form["modifydata"] = (
+        AttrDict()
+        if modifyData == ""
+        else deepAttrDict(json.loads(unquote(modifyData)))
+    )
+    web.console(f"{unquote(modifyData)}")
 
     return form
 

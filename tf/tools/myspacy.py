@@ -79,6 +79,10 @@ class Spacy:
         langModels = {}
         languages = {}
 
+        self.canTag = False
+        self.canMorph = False
+        self.canLemma = False
+
         for spec in LANG_MODELS:
             (lng, model, language) = spec.split(maxsplit=2)
             langModels[lng] = f"{lng}_{model}_sm"

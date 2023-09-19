@@ -1231,7 +1231,7 @@ class NLPipeline:
                 None,
             ),
         ):
-            if len(data) == 0:
+            if data is None or len(data) == 0:
                 continue
             ingestResult = self.ingest(
                 isTk,

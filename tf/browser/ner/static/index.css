@@ -15,7 +15,7 @@ a:link, a:visited {
 
 :root {
   --ent-header-height: 20rem;
-  --sent-header-height: 24rem;
+  --sent-header-height: 26rem;
   --ent-markup-color: #ddbb00;
   --ent-markup-bg: #ffddbb;
   --button-fg: #ffffff;
