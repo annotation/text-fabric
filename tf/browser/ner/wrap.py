@@ -371,6 +371,11 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     scope = templateData.scope
+    modifyData = templateData.modifydata
+    deletions = modifyData.deletions
+    additions = modifyData.additions
+    freeVals = modifyData.freeVals
+    web.console(f"{freeVals=}")
 
     hasEntity = txt != ""
 
@@ -422,13 +427,20 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
 
         # Assigment of feature values
 
-        for feat in FEATURES:
+        for (i, feat) in enumerate(FEATURES):
             theseVals = sorted(setData.entityTextVal[feat].get(txt, set()))
             allVals = (
                 sorted(x[0] for x in setData.entityFreq[feat])
                 if feat in KEYWORD_FEATURES
                 else theseVals
             )
+            addVals = (
+                additions[i] if additions is not None and len(additions) > 0 else set()
+            )
+            delVals = (
+                deletions[i] if deletions is not None and len(deletions) > 0 else set()
+            )
+            freeVal = freeVals[i] if freeVals is not None and len(freeVals) > 0 else None
             default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
 
             titleContent = H.div(
@@ -440,7 +452,15 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
 
             for val in allVals:
                 occurs = val in theseVals
-                st = "plus" if val == default else "x"
+                st = (
+                    "minus"
+                    if val in delVals
+                    else "plus"
+                    if val in addVals
+                    else "plus"
+                    if val == default and freeVal is None
+                    else "x"
+                )
 
                 valuesContent.append(
                     H.div(
@@ -459,11 +479,19 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                 )
 
             init = "" if default in theseVals else default
-            st = "plus" if init and len(theseVals) == 0 else "x"
+            val = freeVal if freeVal is not None else init
+            st = (
+                "plus"
+                if val == freeVal
+                else "plus"
+                if init and len(theseVals) == 0
+                else "x"
+            )
+            web.console(f"{feat=} {freeVal=}")
 
             valuesContent.append(
                 H.div(
-                    [H.input(type="text", st=st, origst=st, value=init, origval=init)],
+                    [H.input(type="text", st=st, origst=st, value=val, origval=val)],
                     cls="modval",
                 )
             )
@@ -481,14 +509,14 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
             H.b("Add/del:"),
             H.span(scopeHtml),
             H.button("⚙️", type="button", id="modifygo", value="v"),
-            H.input(type="hidden", id="modifydata", name="modifydata", value="")
+            H.input(type="hidden", id="modifydata", name="modifydata", value=""),
         ]
 
     templateData.entitymodify = H.div(
         H.div(headingHtml, id="assign1"),
         contentHtml,
         H.div("", id="modfeedback", cls="report"),
-        id="assignwidget"
+        id="assignwidget",
     )
 
 

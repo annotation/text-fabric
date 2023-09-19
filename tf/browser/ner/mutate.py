@@ -55,7 +55,10 @@ def saveEntity(web, modifyData, sentences, excludedTokens):
                             delEntities.add((fVals, matches))
                             stats[fVals] += 1
 
-        report.extend([f"Deletion: {n} x {valRep(fVal)}" for (fVal, n) in sorted(stats.items())])
+        report.extend(
+            [f"Deletion: {n} x {valRep(fVals)}" for (fVals, n) in sorted(stats.items())]
+            if len(stats) else ["nothing to delete"]
+        )
         if excl:
             report.append(f"Deletion: occurences excluded: {excl}")
 
@@ -98,7 +101,10 @@ def saveEntity(web, modifyData, sentences, excludedTokens):
                         addEntities.add(data)
                         stats[fVals] += 1
 
-        report.extend([f"Addition: {n} x {valRep(fVal)}" for (fVal, n) in sorted(stats.items())])
+        report.extend(
+            [f"Addition: {n} x {valRep(fVals)}" for (fVals, n) in sorted(stats.items())]
+            if len(stats) else ["nothing to add"]
+        )
         if excl:
             report.append(f"Addition: occurences excluded: {excl}")
 

@@ -543,11 +543,12 @@ const modifyControls = () => {
   const makeGoData = () => {
     const deletions = []
     const additions = []
+    const freeVals = []
 
     for (const feat of features) {
       const widget = $(`div.modifyfeat[feat="${feat}"]`)
       const span = widget.find("span[st]")
-      const inp = widget.find("inp[st]")
+      const inp = widget.find("input[st]")
 
       const theseAdds = []
       const theseDels = []
@@ -568,6 +569,7 @@ const modifyControls = () => {
         const val = el.val()
         if (st == "plus") {
           theseAdds.push(val)
+          freeVals.push(val)
         }
       }
       deletions.push(theseDels)
@@ -582,7 +584,7 @@ const modifyControls = () => {
 
     if (anyHasDeletions || anyHasAdditions) {
       if (allOrNothingAdditions) {
-        return { data: { deletions, additions } }
+        return { data: { deletions, additions, freeVals } }
       } else {
         const missingAdditions = additions.filter(x => x.length == 0)
         result = {
