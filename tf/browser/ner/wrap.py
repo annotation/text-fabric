@@ -6,6 +6,7 @@ from .settings import (
     KEYWORD_FEATURES,
     SUMMARY_FEATURES,
     STYLES,
+    EMPTY,
     getText,
     featureDefault,
 )
@@ -222,7 +223,7 @@ def wrapEntityHeaders(web, templateData):
                     tp="sort",
                     sk=key,
                     sd=theDir,
-                    cls=f"medium{hl}",
+                    cls=hl,
                 ),
                 " ",
             ]
@@ -264,16 +265,16 @@ def wrapFilter(web, templateData, nFind):
 
     nSent = len(setData.sentences)
 
-    templateData["find"] = H.join(
+    templateData.find = H.join(
         H.input(type="text", name="sfind", id="sfind", value=sFind),
         " ",
         wrapFindStat(nSent, nFind, hasFind),
         " ",
-        H.button("❌", type="submit", id="findclear"),
+        H.button("❌", type="submit", id="findclear", cls="altm"),
         " ",
         H.span(sFindError, id="sfinderror", cls="error"),
         " ",
-        H.button("🔎", type="submit", id="lookupf"),
+        H.button("🔎", type="submit", id="lookupf", cls="altm"),
     )
     return hasFind
 
@@ -303,17 +304,13 @@ def wrapEntityText(templateData, txt):
     templateData.entitytext = H.join(
         H.span(txt, id="qwordshow"),
         " ",
-        H.button("❌", type="submit", id="queryclear"),
+        H.button("❌", type="submit", id="queryclear", cls="altm"),
         " ",
-        H.button("🔎", type="submit", id="lookupq"),
+        H.button("🔎", type="submit", id="lookupq", cls="altm"),
     )
 
 
 def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
-    if txt == "":
-        templateData.entityfeats = ""
-        return
-
     annoSet = web.annoSet
     setData = web.toolData.ner.sets[annoSet]
 
@@ -324,8 +321,7 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
 
     for (feat, theseVals) in features.items():
         thisValSelect = valSelect[feat]
-
-        titleContent = H.div(H.i(f"{feat}:"), cls="feattitle")
+        web.console(f"{feat=} {theseVals=}")
 
         valuesContent = []
 
@@ -338,24 +334,28 @@ def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt):
             )
         )
 
-        for val in ["⌀"] + sorted(theseVals):
-            valuesContent.append(
-                H.button(
-                    val,
-                    wrapEntityStat(val, nVisible[feat], nEnt[feat], hasFind),
-                    type="button",
-                    name=val,
-                    cls=f"{feat}_sel",
-                    st="v" if val in thisValSelect else "x",
-                    title=f"{feat} not marked"
-                    if val == "⌀"
-                    else f"{feat} marked as {val}",
+        if txt != "":
+            for val in ["⌀"] + sorted(theseVals):
+                valuesContent.append(
+                    H.button(
+                        val,
+                        wrapEntityStat(val, nVisible[feat], nEnt[feat], hasFind),
+                        type="button",
+                        name=val or EMPTY,
+                        cls=f"{feat}_sel",
+                        st="v" if val in thisValSelect else "x",
+                        title=f"{feat} not marked"
+                        if val == "⌀"
+                        else f"{feat} marked as {val}",
+                    )
                 )
-            )
+            titleContent = H.div(H.i(f"{feat}:"), cls="feattitle")
+        else:
+            titleContent = ""
 
         content.append(H.div(titleContent, valuesContent, cls="featwidget"))
 
-    templateData.entityfeats = H.div(content, id="selectwidget")
+    templateData.entityfeats = H.div(H.b("Select"), content, id="selectwidget")
     return features
 
 
@@ -375,12 +375,11 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     deletions = modifyData.deletions
     additions = modifyData.additions
     freeVals = modifyData.freeVals
-    web.console(f"{freeVals=}")
 
     hasEntity = txt != ""
 
     scopeHtml = [H.input(type="hidden", id="scope", name="scope", value=scope)]
-    headingHtml = []
+    buttonHtml = ""
     contentHtml = []
 
     if annoSet and hasEntity:
@@ -389,8 +388,8 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
         content = []
 
         if hasFind:
-            content.extend(
-                [
+            content.append(
+                H.span(
                     H.button(
                         "filtered",
                         type="button",
@@ -404,15 +403,18 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                         id="scopeall",
                         title="act on all sentences",
                     ),
-                ]
+                )
             )
-        content.extend(
-            [
+        content.append(
+            H.span(
+                H.i("exceptions:"),
+                H.nb,
                 H.button(
                     "✅",
                     type="button",
                     id="selectall",
                     title="select all occurences in filtered sentences",
+                    cls="alt",
                 ),
                 " ",
                 H.button(
@@ -420,8 +422,9 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                     type="button",
                     id="selectnone",
                     title="deselect all occurences in filtered sentences",
+                    cls="alt",
                 ),
-            ]
+            )
         )
         scopeHtml.extend(content)
 
@@ -440,7 +443,9 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
             delVals = (
                 deletions[i] if deletions is not None and len(deletions) > 0 else set()
             )
-            freeVal = freeVals[i] if freeVals is not None and len(freeVals) > 0 else None
+            freeVal = (
+                freeVals[i] if freeVals is not None and len(freeVals) > 0 else None
+            )
             default = featureDefault[feat](F, range(tokenStart, tokenEnd + 1))
 
             titleContent = H.div(
@@ -487,7 +492,6 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                 if init and len(theseVals) == 0
                 else "x"
             )
-            web.console(f"{feat=} {freeVal=}")
 
             valuesContent.append(
                 H.div(
@@ -505,18 +509,19 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                 )
             )
 
-        headingHtml = [
-            H.b("Add/del:"),
-            H.span(scopeHtml),
-            H.button("⚙️", type="button", id="modifygo", value="v"),
+        buttonHtml = H.span(
+            H.button("apply", type="button", id="modifygo", value="v", cls="special"),
             H.input(type="hidden", id="modifydata", name="modifydata", value=""),
-        ]
+        )
 
-    templateData.entitymodify = H.div(
-        H.div(headingHtml, id="assign1"),
-        contentHtml,
-        H.div("", id="modfeedback", cls="report"),
-        id="assignwidget",
+    templateData.modifyentity = H.div(
+        H.p(H.b("Add / del"), scopeHtml, buttonHtml, id="modifyhead"),
+        H.div(
+            contentHtml,
+            H.div("", id="modfeedback", cls="report"),
+            id="assignwidget",
+        ),
+        id="modifywidget",
     )
 
 
@@ -525,9 +530,13 @@ def wrapFindStat(nSent, nFind, hasFind):
     return H.span(n, cls="stat")
 
 
-def wrapEntityStat(val, thisNVisible, thisNEnt, hasPattern):
+def wrapEntityStat(val, thisNVisible, thisNEnt, hasFind):
     na = thisNEnt[val]
-    n = f"{thisNVisible[val]} of {na}" if hasPattern else f"{na}"
+    n = (
+        (H.span(f"{thisNVisible[val]} of ", cls="filted") + f"{na}")
+        if hasFind
+        else f"{na}"
+    )
     return H.span(n, cls="stat")
 
 

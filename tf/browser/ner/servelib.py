@@ -9,7 +9,7 @@ from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
 from ...core.files import dirContents
-from .settings import FEATURES
+from .settings import FEATURES, EMPTY
 
 
 def getFormData(web):
@@ -51,14 +51,17 @@ def getFormData(web):
     form["tokenstart"] = int(tokenStart) if tokenStart else None
     tokenEnd = request.form.get("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {feat: request.form.get(f"{feat}_select", "") for feat in FEATURES}
+    valSelectProto = {
+        feat: request.form.get(f"{feat}_select", "") for feat in FEATURES
+    }
+    web.console(f"{valSelectProto=}")
     valSelect = {}
     activeVal = []
 
     for (i, feat) in enumerate(FEATURES):
         valProto = valSelectProto[feat]
         valSelect[feat] = (
-            set(valProto.split(","))
+            set("" if x == EMPTY else x for x in valProto.split(","))
             if valProto
             else {"⌀"}
             if submitter == "lookupq"
@@ -80,7 +83,6 @@ def getFormData(web):
         if modifyData == ""
         else deepAttrDict(json.loads(unquote(modifyData)))
     )
-    web.console(f"{unquote(modifyData)}")
 
     return form
 

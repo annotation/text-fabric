@@ -191,6 +191,7 @@ def process(web, changed):
         entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES}
         entitySummary = {}
         entityIdent = {}
+        entityIdentFirst = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
         entitySlotIndex = {}
@@ -209,6 +210,8 @@ def process(web, changed):
                 entityTextVal[feat][txt].add(val)
 
             entityIdent.setdefault(ident, []).append(e)
+            if ident not in entityIdentFirst:
+                entityIdentFirst[ident] = e
             entitySummary.setdefault(summary, []).append(e)
 
             firstSlot = slots[0]
@@ -234,6 +237,7 @@ def process(web, changed):
         setData.entityTextVal = entityTextVal
         setData.entitySummary = entitySummary
         setData.entityIdent = entityIdent
+        setData.entityIdentFirst = entityIdentFirst
         setData.entityFreq = {
             feat: sorted(entityFreq[feat].items()) for feat in FEATURES
         }

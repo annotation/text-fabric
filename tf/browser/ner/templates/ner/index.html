@@ -37,7 +37,7 @@
             {{entityheaders|safe}}
             <p><input type="text" name="efind" id="efind" value="{{efind}}">
                 <span class="stat" id="nentityentries"></span>
-                <button type="button" id="entityclear">✖️</button>
+                <button type="button" id="entityclear" class="altm">❌</button>
                 <input type="hidden"
                        id="activeentity"
                        name="activeentity"
@@ -53,17 +53,15 @@
         </div>
         <div id="col3">
           <div id="sentencesq">
-            <h1>Sentences</h1>
             {{entityinit|safe}}
-            <p>
-              <b>Filter sentences:</b> {{find|safe}}
-              <b>Entity:</b> {{entitytext|safe}}
+            <p id="filterwidget">
+            <b>Filter</b> <i>sentences</i>: {{find|safe}}
+              <i>occurrence:</i> {{entitytext|safe}}
             </p>
             <p>
-              <b>Select occurrences</b>:
               {{entityfeats|safe}}
             </p>
-            {{entitymodify|safe}}
+            {{modifyentity|safe}}
             {{report|safe}}
           </div>
           <hr width="100%">

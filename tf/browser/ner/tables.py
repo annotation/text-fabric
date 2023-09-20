@@ -41,6 +41,7 @@ def composeE(web, templateData):
 
     entities = setData.entities
     entries = setData.entityIdent.items()
+    eFirst = setData.entityIdentFirst
 
     if sortKey == "freqsort":
         entries = sorted(entries, key=lambda x: (len(x[1]), x[0]))
@@ -55,9 +56,9 @@ def composeE(web, templateData):
 
     for (vals, es) in entries:
         x = len(es)
-        e1 = es[0]
+        e1 = eFirst[vals]
         slots = entities[e1][1]
-        (eFirst, eLast) = (slots[0], slots[-1])
+        (tFirst, tLast) = (slots[0], slots[-1])
 
         active = " queried " if activeEntity is not None and e1 == activeEntity else ""
 
@@ -68,8 +69,8 @@ def composeE(web, templateData):
                 repIdent(vals, active=active),
                 cls=f"e {active}",
                 enm=e1,
-                tstart=eFirst,
-                tend=eLast,
+                tstart=tFirst,
+                tend=tLast,
             )
         )
 
@@ -104,11 +105,13 @@ def composeS(web, templateData, sentences):
     F = api.F
 
     entityIdent = setData.entityIdent
+    eFirst = setData.entityIdentFirst
     entitySlotIndex = setData.entitySlotIndex
 
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     hasEntity = tokenStart and tokenEnd
+    activeEntity = templateData.activeentity
     limited = not hasEntity
     excludedTokens = templateData.excludedtokens
 
@@ -147,15 +150,22 @@ def composeS(web, templateData, sentences):
                     (x for x in info if x is not None), key=lambda z: z[1]
                 ):
                     (status, lg, ident) = item
+                    e = eFirst[ident]
 
                     if status:
+                        active = (
+                            " queried "
+                            if activeEntity is not None and e == activeEntity
+                            else ""
+                        )
                         subContent.append(
                             H.span(
                                 H.span(abs(lg), cls="lgb"),
-                                repIdent(ident),
+                                repIdent(ident, active=active),
                                 " ",
                                 H.span(len(entityIdent[ident]), cls="n"),
                                 cls="es",
+                                enm=e,
                             )
                         )
 

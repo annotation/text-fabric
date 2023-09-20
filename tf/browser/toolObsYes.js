@@ -91,31 +91,6 @@ const annoSetControls = () => {
   })
 }
 
-const updateScope = () => {
-  const selectAll = $("#selectall")
-  const selectNone = $("#selectnone")
-  const endTokensX = $(`span[te][st="x"],span[te][st=""]`)
-  const endTokensV = $(`span[te][st="v"]`)
-  const nx = endTokensX.length
-  const nv = endTokensV.length
-  const nt = nx + nv
-  const labx = nx && !nv ? " (all)" : ` of ${nt}`
-  const labv = nv && !nx ? " (all)" : ` of ${nt}`
-
-  if (nx && !nv) {
-    selectNone.addClass("active")
-  } else {
-    selectNone.removeClass("active")
-  }
-  if (nv && !nx) {
-    selectAll.addClass("active")
-  } else {
-    selectAll.removeClass("active")
-  }
-  selectNone.html(`❌ ${nx}${labx}`)
-  selectAll.html(`✅ ${nv}${labv}`)
-}
-
 const entityControls = () => {
   const form = $("form")
   const { features } = globalThis
@@ -126,20 +101,11 @@ const entityControls = () => {
   const sortKeyInput = $("#sortkey")
   const sortDirInput = $("#sortdir")
   const entities = $("p.e")
-  const entitiesDiv = $("#entities")
   const tokenStart = $("#tokenstart")
   const tokenEnd = $("#tokenend")
   const activeEntity = $("#activeentity")
   const selectAll = $("#selectall")
   const selectNone = $("#selectnone")
-
-  const gotoFocus = () => {
-    const ea = activeEntity.val()
-    const rTarget = entitiesDiv.find(`p.e[enm="${ea}"]`)
-    if (rTarget != null && rTarget[0] != null) {
-      rTarget[0].scrollIntoView({ block: "center" })
-    }
-  }
 
   const showAll = () => {
     entities.each((i, elem) => {
@@ -147,32 +113,15 @@ const entityControls = () => {
       el.show()
     })
     eStat.html(entities.length)
-    gotoFocus()
   }
 
-  const showSelected = (ss, always) => {
+  const showSelected = ss => {
     let n = 0
     entities.each((i, elem) => {
       const el = $(elem)
-
-      let show = false
-
-      if (always) {
-        const enm = el.attr("enm")
-        if (enm == always) {
-          show = true
-        }
-      }
-
-      if (!show) {
-        const et = el.find("span")
-        const text = et.html()
-        if (text.toLowerCase().includes(ss)) {
-          show = true
-        }
-      }
-
-      if (show) {
+      const et = el.find("span")
+      const text = et.html()
+      if (text.toLowerCase().includes(ss)) {
         el.show()
         n += 1
       } else {
@@ -180,22 +129,20 @@ const entityControls = () => {
       }
     })
     eStat.html(n)
-    gotoFocus()
   }
 
-  const showIt = () => {
+  const show = () => {
     const ss = findBox.val().trim().toLowerCase()
     if (ss.length == 0) {
       findClear.hide()
       showAll()
     } else {
       findClear.show()
-      const always = activeEntity.val()
-      showSelected(ss, always)
+      showSelected(ss)
     }
   }
 
-  showIt()
+  show()
 
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
@@ -204,12 +151,12 @@ const entityControls = () => {
     } else {
       findClear.hide()
     }
-    showIt()
+    show()
   })
 
   findClear.off("click").click(() => {
     findBox.val("")
-    showIt()
+    show()
   })
 
   sortControls.off("click").click(e => {
@@ -225,43 +172,60 @@ const entityControls = () => {
   selectAll.off("click").click(() => {
     const endTokens = $("span[te]")
     endTokens.attr("st", "v")
-    updateScope()
   })
 
   selectNone.off("click").click(() => {
     const endTokens = $("span[te]")
     endTokens.attr("st", "x")
-    updateScope()
   })
 
-  entitiesDiv.off("click").click(e => {
-    e.preventDefault()
-    const { target } = e
-    const elem = $(target)
-    const tag = elem[0].localName
-    const elem1 = tag != "p" || !elem.hasClass("e") ? elem.closest("p.e") : elem
-    if (elem1.length) {
-      const tStart = elem1.attr("tstart")
-      const tEnd = elem1.attr("tend")
-      const enm = elem1.attr("enm")
-      tokenStart.val(tStart)
-      tokenEnd.val(tEnd)
-      activeEntity.val(enm)
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }
 
-      for (const feat of features) {
-        const val = elem1.find(`span.${feat}`).html()
-        $(`#${feat}_active`).val(val)
-        $(`#${feat}_select`).val(val)
+  const entityListening = entries => {
+    //let appeared = 0
+    //let disappeared = 0
+    entries.forEach(entry => {
+      const ratio = entry.intersectionRatio
+      const entryE = entry.target
+      const elem = $(entryE)
+      if (ratio > 0) {
+        //appeared += 1
+        elem.off("click").click(() => {
+          const tStart = elem.attr("tstart")
+          const tEnd = elem.attr("tend")
+          const enm = elem.attr("enm")
+          tokenStart.val(tStart)
+          tokenEnd.val(tEnd)
+          activeEntity.val(enm)
+          for (const feat of features) {
+            const val = elem.find(`span.${feat}`).html()
+            $(`#${feat}_active`).val(val)
+            $(`#${feat}_select`).val(val)
+          }
+          form.submit()
+        })
+      } else {
+        //disappeared += 1
+        elem.off("click")
       }
-      form.submit()
-    }
+    })
+    //console.warn(`Entities: ${appeared} appeared; ${disappeared} disappeared`)
+  }
+
+  const observer = new IntersectionObserver(entityListening, options)
+  entities.each((i, elem) => {
+    observer.observe(elem)
   })
 }
 
 const tokenControls = () => {
   const form = $("form")
   const { features } = globalThis
-  const sentences = $("#sentences")
+  const sentences = $("div.s")
   const findBox = $("#sfind")
   const findClear = $("#findclear")
   const findError = $("#sfinderror")
@@ -277,8 +241,6 @@ const tokenControls = () => {
   const tokenStartVal = tokenStart.val()
   const tokenEndVal = tokenEnd.val()
   const activeEntity = $("#activeentity")
-  const entitiesDiv = $("#entities")
-  const filted = $("span.filted")
 
   let upToDate = true
   let tokenRange = []
@@ -312,10 +274,8 @@ const tokenControls = () => {
     const setQueryControls = onoff => {
       if (onoff) {
         queryClear.show()
-        qWordShow.show()
       } else {
         queryClear.hide()
-        qWordShow.hide()
       }
     }
 
@@ -380,11 +340,9 @@ const tokenControls = () => {
     if (val == "a") {
       scopeAll.addClass("active")
       scopeFiltered.removeClass("active")
-      filted.hide()
     } else {
       scopeFiltered.addClass("active")
       scopeAll.removeClass("active")
-      filted.show()
     }
   }
 
@@ -419,72 +377,73 @@ const tokenControls = () => {
     })
   }
 
-  sentences.off("click").click(e => {
-    e.preventDefault()
-    const { target } = e
-    const elem = $(target)
-    const tag = elem[0].localName
-    const t = elem.attr("t")
-    const te = elem.attr("te")
-    const enm = elem.attr("enm")
-    const elem1 =
-      tag != "span" || t == null || t === false ? elem.closest("span[t]") : elem
-    const elem2 =
-      tag != "span" || te == null || t === false ? elem.closest("span[te]") : elem
-    const elem3 =
-      tag != "span" || !elem.hasClass("es") || enm == null || enm === false
-        ? elem.closest("span.es[enm]")
-        : elem
+  const options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }
 
-    if (elem1.length) {
-      const tWord = elem1.attr("t")
-      const tWordInt = parseInt(tWord)
-      upToDate = false
-      if (tokenRange.length == 0) {
-        tokenRange = [tWordInt, tWordInt]
-      } else if (tokenRange.length == 2) {
-        const start = tokenRange[0]
-        const end = tokenRange[1]
-        if (tWordInt < start - 5 || tWordInt > end + 5) {
-          tokenRange = [tWordInt, tWordInt]
-        } else if (tWordInt <= start) {
-          tokenRange = [tWordInt, tokenRange[1]]
-        } else if (tWordInt >= end) {
-          tokenRange = [tokenRange[0], tWordInt]
-        } else if (end - tWordInt <= tWordInt - start) {
-          tokenRange = [tokenRange[0], tWordInt]
-        } else {
-          tokenRange = [tWordInt, tokenRange[1]]
-        }
+  const tokenListening = entries => {
+    //let appeared = 0
+    //let disappeared = 0
+    entries.forEach(entry => {
+      const ratio = entry.intersectionRatio
+      const entryE = entry.target
+      const entryElem = $(entryE)
+      const tokens = entryElem.find("span[t]")
+      const endTokens = entryElem.find("span[te]")
+
+      if (ratio > 0) {
+        //appeared += 1
+        tokens.off("click").click(e => {
+          e.preventDefault()
+          const { currentTarget } = e
+          const elem = $(currentTarget)
+          const tWord = elem.attr("t")
+          const tWordInt = parseInt(tWord)
+          upToDate = false
+          if (tokenRange.length == 0) {
+            tokenRange = [tWordInt, tWordInt]
+          } else if (tokenRange.length == 2) {
+            const start = tokenRange[0]
+            const end = tokenRange[1]
+            if (tWordInt < start - 5 || tWordInt > end + 5) {
+              tokenRange = [tWordInt, tWordInt]
+            } else if (tWordInt <= start) {
+              tokenRange = [tWordInt, tokenRange[1]]
+            } else if (tWordInt >= end) {
+              tokenRange = [tokenRange[0], tWordInt]
+            } else if (end - tWordInt <= tWordInt - start) {
+              tokenRange = [tokenRange[0], tWordInt]
+            } else {
+              tokenRange = [tWordInt, tokenRange[1]]
+            }
+          }
+          tokenStart.val(`${tokenRange[0]}`)
+          tokenEnd.val(`${tokenRange[1]}`)
+          activeEntity.val("")
+
+          presentQueryControls(true)
+        })
+        endTokens.off("click").click(e => {
+          e.preventDefault()
+          const { currentTarget } = e
+          const elem = $(currentTarget)
+          const currentValue = elem.attr("st")
+          elem.attr("st", currentValue == "v" ? "x" : "v")
+        })
+      } else {
+        //disappeared += 1
+        tokens.off("click")
+        endTokens.off("click")
       }
-      tokenStart.val(`${tokenRange[0]}`)
-      tokenEnd.val(`${tokenRange[1]}`)
-      activeEntity.val("")
+    })
+    //console.warn(`Sentences: ${appeared} appeared; ${disappeared} disappeared`)
+  }
 
-      presentQueryControls(true)
-    }
-
-    if (elem2.length) {
-      const currentValue = elem2.attr("st")
-      elem2.attr("st", currentValue == "v" ? "x" : "v")
-      updateScope()
-    }
-
-    if (elem3.length) {
-      const ea = elem3.attr("enm")
-      activeEntity.val(ea)
-
-      const eEntry = entitiesDiv.find(`p.e[enm="${ea}"]`)
-      tokenStart.val(eEntry.attr("tstart"))
-      tokenEnd.val(eEntry.attr("tend"))
-
-      for (const feat of features) {
-        const val = elem3.find(`span.${feat}`).html()
-        $(`#${feat}_active`).val(val)
-        $(`#${feat}_select`).val(val)
-      }
-      form.submit()
-    }
+  const observer = new IntersectionObserver(tokenListening, options)
+  sentences.each((i, elem) => {
+    observer.observe(elem)
   })
 
   queryClear.off("click").click(() => {
@@ -522,6 +481,64 @@ const modifyControls = () => {
   const go = $("#modifygo")
   const feedback = $("#modfeedback")
   const goData = $("#modifydata")
+
+  control.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const occurs = elem.attr("occurs")
+
+    const noMinus = occurs == "x"
+    const currentStatus = elem.attr("st")
+
+    const newStatus = noMinus
+      ? currentStatus == "plus"
+        ? "x"
+        : "plus"
+      : currentStatus == "plus"
+      ? "minus"
+      : currentStatus == "minus"
+      ? "x"
+      : "plus"
+
+    elem.attr("st", newStatus)
+  })
+  input.off("keyup").keyup(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const val = elem.val()
+    if (val == "") {
+      elem.attr("st", "x")
+    } else {
+      elem.attr("st", "plus")
+    }
+  })
+  input.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const val = elem.val()
+    if (val == "") {
+      elem.attr("st", "x")
+    } else {
+      const currentStatus = elem.attr("st")
+      elem.attr("st", currentStatus == "x" ? "plus" : "x")
+    }
+  })
+  reset.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const mparent = elem.closest("div.modifyfeat")
+    const span = mparent.find("span[origst]")
+    const inp = mparent.find("input[origst]")
+    span.each((i, elem) => {
+      const el = $(elem)
+      el.attr("st", el.attr("origst"))
+    })
+    inp.each((i, elem) => {
+      const el = $(elem)
+      el.attr("st", el.attr("origst"))
+      el.val(el.attr("origval"))
+    })
+  })
 
   const makeGoData = () => {
     const deletions = []
@@ -567,22 +584,8 @@ const modifyControls = () => {
 
     if (anyHasDeletions || anyHasAdditions) {
       if (allOrNothingAdditions) {
-        const actionCls =
-          anyHasDeletions && anyHasAdditions ? "repl" : anyHasAdditions ? "add" : "del"
-        const actionLabel =
-          anyHasDeletions && anyHasAdditions
-            ? "delete and add"
-            : anyHasAdditions
-            ? "add"
-            : "delete"
-        go.removeClass("disabled")
-        go.addClass(actionCls)
-        go.html(actionLabel)
         return { data: { deletions, additions, freeVals } }
       } else {
-        go.addClass("disabled")
-        go.removeClass(["add", "del", "repl"])
-        go.html("cannot add")
         const missingAdditions = additions.filter(x => x.length == 0)
         result = {
           report: `provide at least one green value for ${missingAdditions.join(
@@ -591,77 +594,12 @@ const modifyControls = () => {
         }
       }
     } else {
-      go.addClass("disabled")
-      go.removeClass(["add", "del", "repl"])
-      go.html("nothing to do")
-      result = {}
+      result = { report: "nothing to do" }
     }
     return result
   }
 
-  control.off("click").click(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const occurs = elem.attr("occurs")
-
-    const noMinus = occurs == "x"
-    const currentStatus = elem.attr("st")
-
-    const newStatus = noMinus
-      ? currentStatus == "plus"
-        ? "x"
-        : "plus"
-      : currentStatus == "plus"
-      ? "minus"
-      : currentStatus == "minus"
-      ? "x"
-      : "plus"
-
-    elem.attr("st", newStatus)
-    makeGoData()
-  })
-  input.off("keyup").keyup(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const val = elem.val()
-    if (val == "") {
-      elem.attr("st", "x")
-    } else {
-      elem.attr("st", "plus")
-    }
-    makeGoData()
-  })
-  input.off("click").click(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const val = elem.val()
-    if (val == "") {
-      elem.attr("st", "x")
-    } else {
-      const currentStatus = elem.attr("st")
-      elem.attr("st", currentStatus == "x" ? "plus" : "x")
-    }
-    makeGoData()
-  })
-  reset.off("click").click(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const mparent = elem.closest("div.modifyfeat")
-    const span = mparent.find("span[origst]")
-    const inp = mparent.find("input[origst]")
-    span.each((i, elem) => {
-      const el = $(elem)
-      el.attr("st", el.attr("origst"))
-    })
-    inp.each((i, elem) => {
-      const el = $(elem)
-      el.attr("st", el.attr("origst"))
-      el.val(el.attr("origval"))
-    })
-  })
-
   go.off("click").click(() => {
-    console.warn("GO")
     const { data, report } = makeGoData()
 
     feedback.html("")
@@ -674,10 +612,8 @@ const modifyControls = () => {
       feedback.html(report)
     }
   })
-
-  updateScope()
-  makeGoData()
 }
+
 
 const initForm = () => {
   storeForm()

@@ -108,8 +108,6 @@ def saveEntity(web, modifyData, sentences, excludedTokens):
         if excl:
             report.append(f"Addition: occurences excluded: {excl}")
 
-    return report
-
     if len(delEntities):
         weedEntities(web, delEntities)
     if len(addEntities):

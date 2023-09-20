@@ -1,6 +1,7 @@
 import re
 
 
+EMPTY = "␀"
 GENERIC = "PER"
 
 FEATURES = ("eid", "kind")
