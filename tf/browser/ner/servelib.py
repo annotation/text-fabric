@@ -9,7 +9,7 @@ from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
 from ...core.files import dirContents
-from .settings import FEATURES, EMPTY
+from .settings import FEATURES, EMPTY, NONE
 
 
 def getFormData(web):
@@ -28,33 +28,31 @@ def getFormData(web):
     """
 
     form = {}
+    fget = request.form.get
 
-    form["resetForm"] = request.form.get("resetForm", "")
-    submitter = request.form.get("submitter", "")
+    form["resetForm"] = fget("resetForm", "")
+    submitter = fget("submitter", "")
     form["submitter"] = submitter
 
-    form["sec0"] = request.form.get("sec0", "")
-    form["sec1"] = request.form.get("sec1", "")
-    form["sec2"] = request.form.get("sec2", "")
-    form["annoset"] = request.form.get("annoset", "")
-    form["duannoset"] = request.form.get("duannoset", "")
-    form["rannoset"] = request.form.get("rannoset", "")
-    form["dannoset"] = request.form.get("dannoset", "")
-    form["sortkey"] = request.form.get("sortkey", "") or "freqsort"
-    form["sortdir"] = request.form.get("sortdir", "") or "u"
-    form["sfind"] = request.form.get("sfind", "")
-    form["sfinderror"] = request.form.get("sfinderror", "")
-    activeEntity = request.form.get("activeentity", "")
+    form["sec0"] = fget("sec0", "")
+    form["sec1"] = fget("sec1", "")
+    form["sec2"] = fget("sec2", "")
+    form["annoset"] = fget("annoset", "")
+    form["duannoset"] = fget("duannoset", "")
+    form["rannoset"] = fget("rannoset", "")
+    form["dannoset"] = fget("dannoset", "")
+    form["sortkey"] = fget("sortkey", "") or "freqsort"
+    form["sortdir"] = fget("sortdir", "") or "u"
+    form["sfind"] = fget("sfind", "")
+    form["sfinderror"] = fget("sfinderror", "")
+    activeEntity = fget("activeentity", "")
     form["activeentity"] = int(activeEntity) if activeEntity else None
-    form["efind"] = request.form.get("efind", "")
-    tokenStart = request.form.get("tokenstart", "")
+    form["efind"] = fget("efind", "")
+    tokenStart = fget("tokenstart", "")
     form["tokenstart"] = int(tokenStart) if tokenStart else None
-    tokenEnd = request.form.get("tokenend", "")
+    tokenEnd = fget("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {
-        feat: request.form.get(f"{feat}_select", "") for feat in FEATURES
-    }
-    web.console(f"{valSelectProto=}")
+    valSelectProto = {feat: fget(f"{feat}_select", "") for feat in FEATURES}
     valSelect = {}
     activeVal = []
 
@@ -63,26 +61,32 @@ def getFormData(web):
         valSelect[feat] = (
             set("" if x == EMPTY else x for x in valProto.split(","))
             if valProto
-            else {"⌀"}
+            else {NONE}
             if submitter == "lookupq"
             else set()
         )
-        activeVal.append((feat, request.form.get(f"{feat}_active", "")))
+        activeVal.append((feat, fget(f"{feat}_active", "")))
 
     form["valselect"] = valSelect
     form["activeval"] = tuple(activeVal)
 
-    form["scope"] = request.form.get("scope", "a")
-    excludedTokens = request.form.get("excludedtokens", "")
+    form["scope"] = fget("scope", "a")
+    excludedTokens = fget("excludedtokens", "")
     form["excludedtokens"] = (
         {int(t) for t in excludedTokens.split(",")} if excludedTokens else set()
     )
-    modifyData = request.form.get("modifydata", "")
-    form["modifydata"] = (
-        AttrDict()
-        if modifyData == ""
-        else deepAttrDict(json.loads(unquote(modifyData)))
+    addData = fget("adddata", "")
+    form["adddata"] = (
+        AttrDict() if addData == "" else deepAttrDict(json.loads(unquote(addData)))
     )
+    delData = fget("deldata", "")
+    form["deldata"] = (
+        AttrDict() if delData == "" else deepAttrDict(json.loads(unquote(delData)))
+    )
+    form["reportdel"] = fget("reportdel", "")
+    form["reportadd"] = fget("reportadd", "")
+    form["deldetailstate"] = fget("deldetailstate", "x")
+    form["adddetailstate"] = fget("adddetailstate", "v")
 
     return form
 

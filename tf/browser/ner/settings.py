@@ -1,6 +1,7 @@
 import re
 
 
+NONE = "⌀"
 EMPTY = "␀"
 GENERIC = "PER"
 

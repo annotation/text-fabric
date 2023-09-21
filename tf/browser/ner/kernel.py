@@ -172,12 +172,12 @@ def process(web, changed):
         changed
         or "dateProcessed" not in setData
         or "entityText" not in setData
-        or "entityVal" not in setData
         or "entityTextVal" not in setData
         or "entitySummary" not in setData
         or "entityIdent" not in setData
         or "entityFreq" not in setData
         or "entityIndex" not in setData
+        or "entitySlotVal" not in setData
         or "entitySlotIndex" not in setData
         or dateLoaded is not None
         and dateProcessed < dateLoaded
@@ -187,13 +187,13 @@ def process(web, changed):
         entityItems = setData.entities.items()
 
         entityText = {}
-        entityVal = {feat: {} for feat in FEATURES}
         entityTextVal = {feat: collections.defaultdict(set) for feat in FEATURES}
         entitySummary = {}
         entityIdent = {}
         entityIdentFirst = {}
         entityFreq = {feat: collections.Counter() for feat in FEATURES}
         entityIndex = {feat: {} for feat in FEATURES}
+        entitySlotVal = {}
         entitySlotIndex = {}
 
         for (e, (fVals, slots)) in entityItems:
@@ -204,7 +204,6 @@ def process(web, changed):
             entityText[e] = txt
 
             for (feat, val) in zip(FEATURES, fVals):
-                entityVal[feat][e] = val
                 entityFreq[feat][val] += 1
                 entityIndex[feat].setdefault(slots, set()).add(val)
                 entityTextVal[feat][txt].add(val)
@@ -212,7 +211,9 @@ def process(web, changed):
             entityIdent.setdefault(ident, []).append(e)
             if ident not in entityIdentFirst:
                 entityIdentFirst[ident] = e
+
             entitySummary.setdefault(summary, []).append(e)
+            entitySlotVal.setdefault(slots, set()).add(fVals)
 
             firstSlot = slots[0]
             lastSlot = slots[-1]
@@ -233,7 +234,6 @@ def process(web, changed):
                     entitySlotIndex.setdefault(slot, []).append(None)
 
         setData.entityText = entityText
-        setData.entityVal = entityVal
         setData.entityTextVal = entityTextVal
         setData.entitySummary = entitySummary
         setData.entityIdent = entityIdent
@@ -242,6 +242,7 @@ def process(web, changed):
             feat: sorted(entityFreq[feat].items()) for feat in FEATURES
         }
         setData.entityIndex = entityIndex
+        setData.entitySlotVal = entitySlotVal
         setData.entitySlotIndex = entitySlotIndex
 
         setData.dateProcessed = time.time()

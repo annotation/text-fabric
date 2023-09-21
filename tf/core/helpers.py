@@ -185,13 +185,18 @@ def mdhtmlEsc(val, math=False):
         ""
         if val is None
         else (
-            str(val).replace("&", "&amp;").replace("<", "&lt;").replace("|", "&#124;")
+            str(val)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("|", "&#124;")
         )
         if math
         else (
             str(val)
             .replace("&", "&amp;")
             .replace("<", "&lt;")
+            .replace(">", "&gt;")
             .replace("|", "&#124;")
             .replace("$", "<span>$</span>")
         )

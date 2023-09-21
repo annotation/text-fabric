@@ -276,10 +276,6 @@ button.special.del {
   color: black;
   background-color: #ffaaaa;
 }
-button.special.repl {
-  color: black;
-  background-color: #ffdd44;
-}
 button {
   border-radius: 0.3rem;
   color: var(--button-fg);
@@ -290,10 +286,21 @@ button {
   margin: 0.1rem;
   padding: 0.2rem;
 }
+#delreport,#addreport {
+  display: inline-flex;
+  flex-flow: column nowrap;
+  margin: 0.1rem 0.3rem;
+}
 .report {
   font-family: monospace;
   color: #ffddbb;
   background-color: #333333;
+}
+.feedback {
+  padding: 0.2rem 0.1rem;
+  margin: 0.1rem 0.3rem;
+  background-color: #ffddaa;
+  border-radius: 0.3rem;
 }
 span[te][st="x"]::after {
   content: "❌";
@@ -306,7 +313,7 @@ span[te][st="v"]::after {
 #selectnone {
 }
 
-#filterwidget,#selectwidget,#modifywidget {
+#filterwidget,#selectwidget,#delwidget, #addwidget {
   border: 0.2rem solid #e8e8e8;
   border-radius: 0.5rem;
   background-color: #eeeeee;
@@ -314,11 +321,17 @@ span[te][st="v"]::after {
 }
 
 #selectwidget {
-  display: inline-flex;
-	flex-flow: row wrap;
+  display: flex;
+	flex-flow: row nowrap;
 	justify-content: start;
 	align-items: flex-start;
 	width: 100%;
+}
+#selectsubwidget {
+  display: flex;
+	flex-flow: row nowrap;
+	justify-content: start;
+	align-items: flex-start;
 }
 .featwidget {
   border-radius: 0.5rem;
@@ -326,7 +339,7 @@ span[te][st="v"]::after {
   padding: 0.5rem 0.5rem;
   margin: 0 0.5rem;
 }
-#assignwidget {
+.assignwidget {
   display: flex;
 	flex-flow: row wrap;
 	justify-content: space-between;
@@ -338,7 +351,7 @@ span[te][st="v"]::after {
 	flex-flow: row wrap;
 	justify-content: space-between;
 }
-.modifyfeat {
+.delfeat,.addfeat {
   display: inline-flex;
 	flex-flow: column nowrap;
 	justify-content: start;

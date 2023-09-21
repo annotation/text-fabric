@@ -4,7 +4,7 @@
 import collections
 from itertools import chain
 
-from .settings import FEATURES
+from .settings import FEATURES, NONE
 from .html import H
 from .wrap import repIdent
 
@@ -216,14 +216,14 @@ def composeS(web, templateData, sentences):
     templateData.sentences = H.join(content)
 
 
-def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
+def entityMatch(entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelect):
     """Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
 
     Parameters
     ----------
-    entityIndex: dict
+    entitySlotVal: dict
         Dictionary from tuples of slots to sets of feature values that such
         entities can have.
     L, F, T: object
@@ -256,7 +256,7 @@ def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
 
     matches = []
 
-    fValStats = {feat: collections.Counter() for feat in FEATURES}
+    fValStats = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
     if nWords:
         sWords = {w for (t, w) in sTokens}
@@ -287,24 +287,36 @@ def entityMatch(entityIndex, L, F, T, s, sFindRe, words, valSelect):
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
 
-                valOK = False
-
                 for feat in FEATURES:
-                    theseVals = entityIndex[feat].get(slots, set())
-                    theseStats = fValStats[feat]
-                    theseValSelect = valSelect[feat]
+                    vals = entityIndex[feat].get(slots, set())
+                    stats = fValStats[feat]
 
-                    for val in theseVals:
-                        theseStats[val] += 1
+                    if len(vals) == 0:
+                        stats[NONE] += 1
+                    else:
+                        for val in vals:
+                            stats[val] += 1
 
-                    if len(theseVals) == 0:
-                        theseStats["⌀"] += 1
-                    if (
-                        "⌀" in theseValSelect
-                        and len(theseVals) == 0
-                        or len(theseValSelect & theseVals) != 0
-                    ):
-                        valOK = True
+                valTuples = entitySlotVal.get(slots, set())
+
+                if len(valTuples):
+                    valOK = False
+
+                    for valTuple in valTuples:
+                        thisOK = True
+
+                        for (feat, val) in zip(FEATURES, valTuple):
+                            selectedVals = valSelect[feat]
+                            if val not in selectedVals:
+                                thisOK = False
+                                break
+
+                        if thisOK:
+                            valOK = True
+                            fValStats[""][None] += 1
+                            break
+                else:
+                    valOK = all(NONE in valSelect[feat] for feat in FEATURES)
 
                 if valOK:
                     matches.append(slots)
@@ -381,14 +393,15 @@ def filterS(web, templateData, noFind=False):
                 words.append(word)
 
     nFind = 0
-    nEnt = {feat: collections.Counter() for feat in FEATURES}
-    nVisible = {feat: collections.Counter() for feat in FEATURES}
+    nEnt = {feat: collections.Counter() for feat in ("",) + FEATURES}
+    nVisible = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
     entityIndex = setData.entityIndex
+    entitySlotVal = setData.entitySlotVal
 
     for s in setData.sentences:
         (fits, fValStats, result) = entityMatch(
-            entityIndex, L, F, T, s, sFindRe, words, valSelect
+            entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelect
         )
 
         blocked = fits is not None and not fits
@@ -396,7 +409,7 @@ def filterS(web, templateData, noFind=False):
         if not blocked:
             nFind += 1
 
-        for feat in FEATURES:
+        for feat in ("",) + FEATURES:
             theseStats = fValStats[feat]
             if len(theseStats):
                 theseNEnt = nEnt[feat]

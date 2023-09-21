@@ -260,6 +260,7 @@ const entityControls = () => {
 
 const tokenControls = () => {
   const form = $("form")
+  const subMitter = $("#submitter")
   const { features } = globalThis
   const sentences = $("#sentences")
   const findBox = $("#sfind")
@@ -498,7 +499,6 @@ const tokenControls = () => {
     }
   })
 
-  const subMitter = $("#submitter")
   form.off("submit").submit(e => {
     const excludedTokens = $("#excludedtokens")
     const endTokens = $(`span[te][st="x"]`)
@@ -508,32 +508,46 @@ const tokenControls = () => {
       .join(",")
     excludedTokens.val(excl)
     const { originalEvent: { submitter } = {} } = e
-    subMitter.val(submitter && submitter.id)
+    if (submitter) {
+      subMitter.val(submitter.id)
+    }
   })
 }
 
 const modifyControls = () => {
   const { features } = globalThis
   const form = $("form")
-  const modifyWidget = $(".modifyfeat")
-  const control = modifyWidget.find(`span`)
-  const input = modifyWidget.find(`input[type="text"]`)
-  const reset = modifyWidget.find(`button.resetb`)
-  const go = $("#modifygo")
-  const feedback = $("#modfeedback")
-  const goData = $("#modifydata")
+  const subMitter = $("#submitter")
+  const delWidget = $("#delwidget")
+  const delWidgetD = delWidget.get(0)
+  const delWidgetState = $("#deldetailstate")
+  const delAssign = delWidget.find(".assignwidget")
+  const addWidget = $("#addwidget")
+  const addWidgetD = addWidget.get(0)
+  const addWidgetState = $("#adddetailstate")
+  const addAssign = addWidget.find(".assignwidget")
+  const delControl = delAssign.find(`span`)
+  const addControl = addAssign.find(`span`)
+  const input = addAssign.find(`input[type="text"]`)
+  const delResetButton = $(`#delresetbutton`)
+  const addResetButton = $(`#addresetbutton`)
+  const delGo = $("#delgo")
+  const addGo = $("#addgo")
+  const delFeedback = $("#delfeedback")
+  const addFeedback = $("#addfeedback")
+  const delReport = $("#delreport")
+  const addReport = $("#addreport")
+  const delData = $("#deldata")
+  const addData = $("#adddata")
 
-  const makeGoData = () => {
+  const makeDelData = () => {
     const deletions = []
-    const additions = []
-    const freeVals = []
+    const missingDeletions = []
 
     for (const feat of features) {
-      const widget = $(`div.modifyfeat[feat="${feat}"]`)
+      const widget = $(`div.delfeat[feat="${feat}"]`)
       const span = widget.find("span[st]")
-      const inp = widget.find("input[st]")
 
-      const theseAdds = []
       const theseDels = []
 
       for (const elem of span.get()) {
@@ -542,7 +556,57 @@ const modifyControls = () => {
         const val = el.attr("val")
         if (st == "minus") {
           theseDels.push(val)
-        } else if (st == "plus") {
+        }
+      }
+      deletions.push(theseDels)
+      if (theseDels.length == 0) {
+        missingDeletions.push(feat)
+      }
+    }
+    const anyHasDeletions = deletions.some(x => x.length > 0)
+    const allHaveDeletions = deletions.every(x => x.length > 0)
+    const allOrNothingDeletions = !anyHasDeletions || allHaveDeletions
+
+    let good = false
+
+    if (anyHasDeletions) {
+      if (allOrNothingDeletions) {
+        delGo.removeClass("disabled")
+        delGo.addClass("del")
+        delFeedback.html("")
+        good = true
+      } else {
+        delGo.removeClass("del")
+        delGo.addClass("disabled")
+        delFeedback.html(
+          `provide at least one red value for ${missingDeletions.join(" and ")}`
+        )
+      }
+    } else {
+      delGo.addClass("disabled")
+      delGo.removeClass("del")
+      delFeedback.html("click values ...")
+    }
+    delData.val(encodeURIComponent(JSON.stringify({ deletions })))
+    return { good, data: { deletions } }
+  }
+  const makeAddData = () => {
+    const missingAdditions = []
+    const additions = []
+    const freeVals = []
+
+    for (const feat of features) {
+      const widget = $(`div.addfeat[feat="${feat}"]`)
+      const span = widget.find("span[st]")
+      const inp = widget.find("input[st]")
+
+      const theseAdds = []
+
+      for (const elem of span.get()) {
+        const el = $(elem)
+        const st = el.attr("st")
+        const val = el.attr("val")
+        if (st == "plus") {
           theseAdds.push(val)
         }
       }
@@ -555,70 +619,58 @@ const modifyControls = () => {
           freeVals.push(val)
         }
       }
-      deletions.push(theseDels)
       additions.push(theseAdds)
+      if (theseAdds.length == 0) {
+        missingAdditions.push(feat)
+      }
     }
     const anyHasAdditions = additions.some(x => x.length > 0)
     const allHaveAdditions = additions.every(x => x.length > 0)
-    const anyHasDeletions = deletions.some(x => x.length > 0)
     const allOrNothingAdditions = !anyHasAdditions || allHaveAdditions
 
-    let result = {}
+    let good = false
 
-    if (anyHasDeletions || anyHasAdditions) {
+    if (anyHasAdditions) {
       if (allOrNothingAdditions) {
-        const actionCls =
-          anyHasDeletions && anyHasAdditions ? "repl" : anyHasAdditions ? "add" : "del"
-        const actionLabel =
-          anyHasDeletions && anyHasAdditions
-            ? "delete and add"
-            : anyHasAdditions
-            ? "add"
-            : "delete"
-        go.removeClass("disabled")
-        go.addClass(actionCls)
-        go.html(actionLabel)
-        return { data: { deletions, additions, freeVals } }
+        addGo.removeClass("disabled")
+        addGo.addClass("add")
+        addFeedback.html("")
+        good = true
       } else {
-        go.addClass("disabled")
-        go.removeClass(["add", "del", "repl"])
-        go.html("cannot add")
-        const missingAdditions = additions.filter(x => x.length == 0)
-        result = {
-          report: `provide at least one green value for ${missingAdditions.join(
-            " and "
-          )}`,
-        }
+        addGo.addClass("disabled")
+        addGo.removeClass("add")
+        addFeedback.html(
+          `provide at least one red value for ${missingAdditions.join(" and ")}`
+        )
       }
     } else {
-      go.addClass("disabled")
-      go.removeClass(["add", "del", "repl"])
-      go.html("nothing to do")
-      result = {}
+      addGo.addClass("disabled")
+      addGo.removeClass("add")
+      addFeedback.html("click values ...")
     }
-    return result
+    addData.val(encodeURIComponent(JSON.stringify({ additions, freeVals })))
+    return { good, data: { additions, freeVals } }
   }
 
-  control.off("click").click(e => {
+  delControl.off("click").click(e => {
     const { currentTarget } = e
     const elem = $(currentTarget)
-    const occurs = elem.attr("occurs")
-
-    const noMinus = occurs == "x"
     const currentStatus = elem.attr("st")
 
-    const newStatus = noMinus
-      ? currentStatus == "plus"
-        ? "x"
-        : "plus"
-      : currentStatus == "plus"
-      ? "minus"
-      : currentStatus == "minus"
-      ? "x"
-      : "plus"
+    const newStatus = currentStatus == "minus" ? "x" : "minus"
+    elem.attr("st", newStatus)
+    makeDelData()
+  })
+
+  addControl.off("click").click(e => {
+    const { currentTarget } = e
+    const elem = $(currentTarget)
+    const currentStatus = elem.attr("st")
+
+    const newStatus = currentStatus == "plus" ? "x" : "plus"
 
     elem.attr("st", newStatus)
-    makeGoData()
+    makeAddData()
   })
   input.off("keyup").keyup(e => {
     const { currentTarget } = e
@@ -629,7 +681,7 @@ const modifyControls = () => {
     } else {
       elem.attr("st", "plus")
     }
-    makeGoData()
+    makeAddData()
   })
   input.off("click").click(e => {
     const { currentTarget } = e
@@ -641,42 +693,69 @@ const modifyControls = () => {
       const currentStatus = elem.attr("st")
       elem.attr("st", currentStatus == "x" ? "plus" : "x")
     }
-    makeGoData()
+    makeAddData()
   })
-  reset.off("click").click(e => {
-    const { currentTarget } = e
-    const elem = $(currentTarget)
-    const mparent = elem.closest("div.modifyfeat")
-    const span = mparent.find("span[origst]")
-    const inp = mparent.find("input[origst]")
+  delResetButton.off("click").click(() => {
+    const span = delWidget.find("span[st]")
     span.each((i, elem) => {
       const el = $(elem)
-      el.attr("st", el.attr("origst"))
+      el.attr("st", "")
+    })
+  })
+  addResetButton.off("click").click(() => {
+    const span = addWidget.find("span[st]")
+    const inp = addWidget.find("input[st]")
+    span.each((i, elem) => {
+      const el = $(elem)
+      el.attr("st", "")
     })
     inp.each((i, elem) => {
       const el = $(elem)
-      el.attr("st", el.attr("origst"))
-      el.val(el.attr("origval"))
+      el.attr("st", "")
+      el.val("")
     })
   })
 
-  go.off("click").click(() => {
-    console.warn("GO")
-    const { data, report } = makeGoData()
+  delGo.off("click").click(() => {
+    const { good, data } = makeDelData()
 
-    feedback.html("")
+    delReport.html("")
+    delFeedback.html("")
 
-    if (data) {
-      goData.val(encodeURIComponent(JSON.stringify(data)))
+    if (good) {
+      delData.val(encodeURIComponent(JSON.stringify(data)))
+      subMitter.val("delgo")
       form.submit()
     } else {
-      goData.val("")
-      feedback.html(report)
+      delData.val("")
     }
   })
 
+  addGo.off("click").click(() => {
+    const { good, data } = makeAddData()
+
+    addReport.html("")
+    addFeedback.html("")
+
+    if (good) {
+      addData.val(encodeURIComponent(JSON.stringify(data)))
+      subMitter.val("addgo")
+      form.submit()
+    } else {
+      addData.val("")
+    }
+  })
+
+  delWidgetD.addEventListener("toggle", () => {
+    delWidgetState.val(delWidgetD.open ? "v" : "x")
+  })
+  addWidgetD.addEventListener("toggle", () => {
+    addWidgetState.val(addWidgetD.open ? "v" : "x")
+  })
+
   updateScope()
-  makeGoData()
+  makeDelData()
+  makeAddData()
 }
 
 const initForm = () => {

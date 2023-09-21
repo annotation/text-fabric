@@ -6,6 +6,7 @@ H_ELEMENT_DEFS = """
     br>
     button
     code
+    details
     div
     i
     input>
@@ -14,6 +15,7 @@ H_ELEMENT_DEFS = """
     select
     span
     style
+    summary
 """.strip().split()
 
 H_ELEMENTS = tuple(
