@@ -6,7 +6,7 @@ the annotation tool.
 
 from flask import render_template
 
-from .servelib import initTemplate, findSetup
+from .servelib import initTemplate, findSetup, adaptValSelect
 from .mutate import delEntity, addEntity, setHandling
 from .tables import (
     composeE,
@@ -79,15 +79,13 @@ class Serve:
                 self.getSentences(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = delEntity(
-                    web, delData.deletions, self.sentences, excludedTokens
-                )
+                report = delEntity(web, delData.deletions, self.sentences, excludedTokens)
                 wrapReport(templateData, report, "del")
             if submitter == "addgo" and addData:
-                report = addEntity(
-                    web, addData.additions, self.sentences, excludedTokens
-                )
+                report = addEntity(web, addData.additions, self.sentences, excludedTokens)
                 wrapReport(templateData, report, "add")
+
+            adaptValSelect(templateData)
 
             self.getSentences()
 

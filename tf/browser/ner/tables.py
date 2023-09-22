@@ -216,7 +216,19 @@ def composeS(web, templateData, sentences):
     templateData.sentences = H.join(content)
 
 
-def entityMatch(entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelect):
+def entityMatch(
+    entityIndex,
+    entitySlotVal,
+    entitySlotIndex,
+    L,
+    F,
+    T,
+    s,
+    sFindRe,
+    words,
+    valSelect,
+    requireFree,
+):
     """Checks whether a sentence matches a sequence of words.
 
     When we do the checking, we ignore empty words in the sentence.
@@ -287,6 +299,15 @@ def entityMatch(entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelec
                 lastT = sTokens[i + nWords - 1][0]
                 slots = tuple(range(t, lastT + 1))
 
+                if requireFree is None:
+                    freeOK = True
+                else:
+                    bound = any(slot in entitySlotIndex for slot in slots)
+                    freeOK = requireFree and not bound or not requireFree and bound
+
+                if not freeOK:
+                    continue
+
                 for feat in FEATURES:
                     vals = entityIndex[feat].get(slots, set())
                     stats = fValStats[feat]
@@ -313,13 +334,13 @@ def entityMatch(entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelec
 
                         if thisOK:
                             valOK = True
-                            fValStats[""][None] += 1
                             break
                 else:
                     valOK = all(NONE in valSelect[feat] for feat in FEATURES)
 
                 if valOK:
                     matches.append(slots)
+                    fValStats[""][None] += 1
 
         if len(matches) == 0:
             return (fits, fValStats, None)
@@ -380,6 +401,7 @@ def filterS(web, templateData, noFind=False):
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     valSelect = templateData.valselect
+    freeState = templateData.freestate
 
     results = []
     words = []
@@ -397,11 +419,24 @@ def filterS(web, templateData, noFind=False):
     nVisible = {feat: collections.Counter() for feat in ("",) + FEATURES}
 
     entityIndex = setData.entityIndex
+    entitySlotIndex = setData.entitySlotIndex
     entitySlotVal = setData.entitySlotVal
+
+    requireFree = True if freeState == "free" else False if freeState == "bound" else None
 
     for s in setData.sentences:
         (fits, fValStats, result) = entityMatch(
-            entityIndex, entitySlotVal, L, F, T, s, sFindRe, words, valSelect
+            entityIndex,
+            entitySlotVal,
+            entitySlotIndex,
+            L,
+            F,
+            T,
+            s,
+            sFindRe,
+            words,
+            valSelect,
+            requireFree,
         )
 
         blocked = fits is not None and not fits

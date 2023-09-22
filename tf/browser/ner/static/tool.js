@@ -26,6 +26,7 @@ const storeForm = () => {
 }
 
 const annoSetControls = () => {
+  const subMitter = $("#submitter")
   const annoseth = $("#annoseth")
   const duannoseth = $("#duannoseth")
   const rannoseth = $("#rannoseth")
@@ -47,7 +48,8 @@ const annoSetControls = () => {
     }
     annoseth.val(e.target.value)
     storeForm()
-    form.submit()
+    subMitter.val("achange")
+    form.trigger("submit")
   })
 
   aNew.off("click").click(e => {
@@ -118,6 +120,7 @@ const updateScope = () => {
 
 const entityControls = () => {
   const form = $("form")
+  const subMitter = $("#submitter")
   const { features } = globalThis
   const findBox = $("#efind")
   const eStat = $("#nentityentries")
@@ -219,7 +222,8 @@ const entityControls = () => {
     const sortDir = elem.attr("sd")
     sortKeyInput.val(sortKey)
     sortDirInput.val(sortDir == "u" ? "d" : "u")
-    form.submit()
+    subMitter.val(`${sortKey}-${sortDir}`)
+    form.trigger("submit")
   })
 
   selectAll.off("click").click(() => {
@@ -253,7 +257,8 @@ const entityControls = () => {
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
-      form.submit()
+      subMitter.val(`entity-${enm}`)
+      form.trigger("submit")
     }
   })
 }
@@ -264,6 +269,8 @@ const tokenControls = () => {
   const { features } = globalThis
   const sentences = $("#sentences")
   const findBox = $("#sfind")
+  const findC = $("#sfindc")
+  const findCButton = $("#sfindb")
   const findClear = $("#findclear")
   const findError = $("#sfinderror")
   const tokenStart = $("#tokenstart")
@@ -271,6 +278,9 @@ const tokenControls = () => {
   const qWordShow = $("#qwordshow")
   const lookupf = $("#lookupf")
   const lookupq = $("#lookupq")
+  const lookupn = $("#lookupn")
+  const freeState = $("#freestate")
+  const freeButton = $("#freebutton")
   const queryClear = $("#queryclear")
   const scope = $("#scope")
   const scopeFiltered = $("#scopefiltered")
@@ -312,11 +322,14 @@ const tokenControls = () => {
 
     const setQueryControls = onoff => {
       if (onoff) {
+        lookupq.show()
         queryClear.show()
         qWordShow.show()
+        freeButton.show()
       } else {
         queryClear.hide()
         qWordShow.hide()
+        freeButton.hide()
       }
     }
 
@@ -327,6 +340,7 @@ const tokenControls = () => {
         }
         if (hasQuery) {
           lookupq.show()
+          lookupn.show()
         }
       }
       if (hasFind) {
@@ -351,6 +365,7 @@ const tokenControls = () => {
       findClear.hide()
       lookupf.hide()
       lookupq.hide()
+      lookupn.hide()
       setQueryControls(false)
     }
   }
@@ -372,8 +387,20 @@ const tokenControls = () => {
     }
   })
 
+  findCButton.off("click").click(() => {
+    const val = findC.val()
+    const newVal = val == "v" ? "x" : "v"
+    findC.val(newVal)
+  })
+
   findClear.off("click").click(() => {
     findBox.val("")
+  })
+
+  freeButton.off("click").click(() => {
+    const free = freeState.val()
+    const newFree = free == "bound" ? "all" : free == "free" ? "bound" : "free"
+    freeState.val(newFree)
   })
 
   const setScope = val => {
@@ -416,7 +443,8 @@ const tokenControls = () => {
         .map(x => $(x).attr("name"))
         .join(",")
       select.val(vals)
-      form.submit()
+      subMitter.val(`${feat}_sel`)
+      form.trigger("submit")
     })
   }
 
@@ -484,7 +512,8 @@ const tokenControls = () => {
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
-      form.submit()
+      subMitter.val(`entity-in-sentence-${ea}`)
+      form.trigger("submit")
     }
   })
 
@@ -499,7 +528,7 @@ const tokenControls = () => {
     }
   })
 
-  form.off("submit").submit(e => {
+  form.on("submit", e => {
     const excludedTokens = $("#excludedtokens")
     const endTokens = $(`span[te][st="x"]`)
     const excl = endTokens
@@ -518,13 +547,12 @@ const modifyControls = () => {
   const { features } = globalThis
   const form = $("form")
   const subMitter = $("#submitter")
+  const modWidgetState = $("#modwidgetstate")
+  const delWidgetSwitch = $("#delwidgetswitch")
+  const addWidgetSwitch = $("#addwidgetswitch")
   const delWidget = $("#delwidget")
-  const delWidgetD = delWidget.get(0)
-  const delWidgetState = $("#deldetailstate")
   const delAssign = delWidget.find(".assignwidget")
   const addWidget = $("#addwidget")
-  const addWidgetD = addWidget.get(0)
-  const addWidgetState = $("#adddetailstate")
   const addAssign = addWidget.find(".assignwidget")
   const delControl = delAssign.find(`span`)
   const addControl = addAssign.find(`span`)
@@ -539,6 +567,33 @@ const modifyControls = () => {
   const addReport = $("#addreport")
   const delData = $("#deldata")
   const addData = $("#adddata")
+
+  const switchToAddDel = toggle => {
+    let val = modWidgetState.val() || "add"
+    if (toggle) {
+      const newVal = val == "add" ? "del" : "add"
+      modWidgetState.val(newVal)
+      val = newVal
+    }
+    if (val == "add") {
+      delWidget.hide()
+      addWidget.show()
+    }
+    else {
+      delWidget.show()
+      addWidget.hide()
+    }
+  }
+
+  switchToAddDel()
+
+  delWidgetSwitch.off("click").click(() => {
+    switchToAddDel(true)
+  })
+
+  addWidgetSwitch.off("click").click(() => {
+    switchToAddDel(true)
+  })
 
   const makeDelData = () => {
     const deletions = []
@@ -618,6 +673,9 @@ const modifyControls = () => {
           theseAdds.push(val)
           freeVals.push(val)
         }
+        else {
+          freeVals.push(null)
+        }
       }
       additions.push(theseAdds)
       if (theseAdds.length == 0) {
@@ -640,7 +698,7 @@ const modifyControls = () => {
         addGo.addClass("disabled")
         addGo.removeClass("add")
         addFeedback.html(
-          `provide at least one red value for ${missingAdditions.join(" and ")}`
+          `provide at least one green value for ${missingAdditions.join(" and ")}`
         )
       }
     } else {
@@ -725,7 +783,7 @@ const modifyControls = () => {
     if (good) {
       delData.val(encodeURIComponent(JSON.stringify(data)))
       subMitter.val("delgo")
-      form.submit()
+      form.trigger("submit")
     } else {
       delData.val("")
     }
@@ -740,17 +798,10 @@ const modifyControls = () => {
     if (good) {
       addData.val(encodeURIComponent(JSON.stringify(data)))
       subMitter.val("addgo")
-      form.submit()
+      form.trigger("submit")
     } else {
       addData.val("")
     }
-  })
-
-  delWidgetD.addEventListener("toggle", () => {
-    delWidgetState.val(delWidgetD.open ? "v" : "x")
-  })
-  addWidgetD.addEventListener("toggle", () => {
-    addWidgetState.val(addWidgetD.open ? "v" : "x")
   })
 
   updateScope()

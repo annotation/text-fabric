@@ -1,5 +1,10 @@
 /* OVERALL */
 
+html {
+	width: 100vw;
+	height: 100vh;
+}
+
 body,td {
 	font-family: sans-serif;
 }
@@ -14,19 +19,17 @@ a:link, a:visited {
 }
 
 :root {
-  --ent-header-height: 20rem;
-  --sent-header-height: 26rem;
   --ent-markup-color: #ddbb00;
   --ent-markup-bg: #ffddbb;
   --button-fg: #ffffff;
   --button-bg: #666666;
-  --button-bd: #222222;
+  --button-bd: #666666;
   --button-active-fg: #000000;
   --button-active-bg: #ccccff;
-  --button-active-bd: #0000ff;
+  --button-active-bd: #ccccff;
   --button-disabled-fg: #dddddd;
   --button-disabled-bg: #999999;
-  --button-disabled-bd: #aaaaaa;
+  --button-disabled-bd: #999999;
 }
 
 code {
@@ -38,8 +41,8 @@ div.page {
 	flex-flow: row nowrap;
 	justify-content: flex-start;
 	align-items: flex-start;
-	width: 99vw;
-	height: 99vh;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* COLUMNS */
@@ -53,6 +56,10 @@ div.page {
 }
 #col2 {
 	flex: 1 0 auto;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
 	border-right: 1pt solid var(--fog-rim);
 	padding-left: 4px;
 	padding-right: 8px;
@@ -71,69 +78,31 @@ div.page {
 	border-left: 1pt solid var(--fog-rim);
 	padding-left: 8px;
 	padding-right: 4px;
-	width: 48vh;
+	height: 99vh;
+	width: 49vh;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
-/* OUTPUTS */
-
-div.messages {
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: flex-start;
-	align-items: stretch;
-	width: 100%;
-  max-width: 45vw;
-}
-.eline {
-	font-size: medium;
-	color: var(--red-haze-fore);
-	background-color: var(--red-haze-back);
-}
-.tline {
-	font-size: large;
-	font-family: monospace;
-	color: var(-query-fore);
-	background-color: var(--query-back);
-	white-space: pre;
-}
-
 /* RIGHT-COL: TABLES */
-
-div.table {
-	width: 100%;
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: flex-start;
-	align-items: stretch;
-}
-
-div.pretty {
-	width: 100%;
-	margin: 4px 0 10px 0;
-	background-color: var(--haze-back);
-}
 
 code.w {
   white-space: pre;
 }
 
 #entitiesq {
-  height: var(--ent-header-height);
-  overflow: auto;
+  flex: 0 0 auto;
 }
 
 #entities {
-  height: calc(99vh - var(--ent-header-height) - 1.5rem);
+  flex: 1 1 auto;
   overflow: auto;
 }
 #sentencesq {
-  height: var(--sent-header-height);
-  overflow: auto;
+  flex: 0 0 auto;
 }
 
 #sentences {
-  height: calc(99vh - var(--sent-header-height) - 1.5rem);
+  flex: 1 1 auto;
   overflow: auto;
   padding-left: 2rem;
 }
@@ -149,7 +118,7 @@ span.found {
   padding: 0 0.3rem;
 }
 
-#lookupf,#lookupq {
+#lookupf,#lookupq,#lookupn {
   display: none;
 }
 #querywords {
@@ -233,9 +202,11 @@ p.e {
   padding: 0 0.3rem;
 }
 input[st=minus],span[st=minus] {
+  border-color: #ffaaaa ! important;
   background-color: #ffaaaa ! important;
 }
 input[st=plus],span[st=plus] {
+  border-color: #aaffaa ! important;
   background-color: #aaffaa ! important;
 }
 button.active {
@@ -267,13 +238,16 @@ button.special {
   font-weight: bold;
   border-width: 0.3rem;
   padding: 0.1rem 0.8rem;
+  border-radius: 0.6rem;
 }
 button.special.add {
   color: black;
+  border-color: #00ff00;
   background-color: #aaffaa;
 }
 button.special.del {
   color: black;
+  border-color: #ff0000;
   background-color: #ffaaaa;
 }
 button {
@@ -287,9 +261,7 @@ button {
   padding: 0.2rem;
 }
 #delreport,#addreport {
-  display: inline-flex;
-  flex-flow: column nowrap;
-  margin: 0.1rem 0.3rem;
+  margin: 0.1rem 0.5rem;
 }
 .report {
   font-family: monospace;
@@ -313,7 +285,7 @@ span[te][st="v"]::after {
 #selectnone {
 }
 
-#filterwidget,#selectwidget,#delwidget, #addwidget {
+#filterwidget,#selectwidget,#delwidget,#addwidget {
   border: 0.2rem solid #e8e8e8;
   border-radius: 0.5rem;
   background-color: #eeeeee;
@@ -333,7 +305,7 @@ span[te][st="v"]::after {
 	justify-content: start;
 	align-items: flex-start;
 }
-.featwidget {
+#findwidget,#etextwidget,.featwidget {
   border-radius: 0.5rem;
   border: 0.2rem solid #dddddd;
   padding: 0.5rem 0.5rem;
@@ -342,14 +314,14 @@ span[te][st="v"]::after {
 .assignwidget {
   display: flex;
 	flex-flow: row wrap;
-	justify-content: space-between;
+	justify-content: start;
 	align-items: flex-end;
 	width: 100%;
 }
 #modifyhead {
   display: flex;
 	flex-flow: row wrap;
-	justify-content: space-between;
+	justify-content: start;
 }
 .delfeat,.addfeat {
   display: inline-flex;

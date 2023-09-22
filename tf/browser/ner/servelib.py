@@ -27,12 +27,14 @@ def getFormData(web):
     but there is also a list of webapp dependent options.
     """
 
-    form = {}
     fget = request.form.get
+
+    form = {}
 
     form["resetForm"] = fget("resetForm", "")
     submitter = fget("submitter", "")
     form["submitter"] = submitter
+    web.console(f"{submitter=}")
 
     form["sec0"] = fget("sec0", "")
     form["sec1"] = fget("sec1", "")
@@ -44,7 +46,9 @@ def getFormData(web):
     form["sortkey"] = fget("sortkey", "") or "freqsort"
     form["sortdir"] = fget("sortdir", "") or "u"
     form["sfind"] = fget("sfind", "")
+    form["sfindc"] = fget("sfindc", "x") == "v"
     form["sfinderror"] = fget("sfinderror", "")
+    form["freestate"] = fget("freestate", "all")
     activeEntity = fget("activeentity", "")
     form["activeentity"] = int(activeEntity) if activeEntity else None
     form["efind"] = fget("efind", "")
@@ -52,23 +56,8 @@ def getFormData(web):
     form["tokenstart"] = int(tokenStart) if tokenStart else None
     tokenEnd = fget("tokenend", "")
     form["tokenend"] = int(tokenEnd) if tokenEnd else None
-    valSelectProto = {feat: fget(f"{feat}_select", "") for feat in FEATURES}
-    valSelect = {}
-    activeVal = []
-
-    for (i, feat) in enumerate(FEATURES):
-        valProto = valSelectProto[feat]
-        valSelect[feat] = (
-            set("" if x == EMPTY else x for x in valProto.split(","))
-            if valProto
-            else {NONE}
-            if submitter == "lookupq"
-            else set()
-        )
-        activeVal.append((feat, fget(f"{feat}_active", "")))
-
-    form["valselect"] = valSelect
-    form["activeval"] = tuple(activeVal)
+    form["activeval"] = tuple((feat, fget(f"{feat}_active", "")) for feat in FEATURES)
+    makeValSelect(form)
 
     form["scope"] = fget("scope", "a")
     excludedTokens = fget("excludedtokens", "")
@@ -85,10 +74,58 @@ def getFormData(web):
     )
     form["reportdel"] = fget("reportdel", "")
     form["reportadd"] = fget("reportadd", "")
-    form["deldetailstate"] = fget("deldetailstate", "x")
-    form["adddetailstate"] = fget("adddetailstate", "v")
+    form["modwidgetstate"] = fget("modwidgetstate", "add")
 
     return form
+
+
+def makeValSelect(form):
+    fget = request.form.get
+
+    submitter = form["submitter"]
+    valSelectProto = {feat: fget(f"{feat}_select", "") for feat in FEATURES}
+    valSelect = {}
+
+    startSearch = submitter in {"lookupq", "lookupn", "freebutton"}
+
+    for feat in FEATURES:
+        valProto = valSelectProto[feat]
+        valSelect[feat] = (
+            set("" if x == EMPTY else x for x in valProto.split(","))
+            if valProto
+            else set()
+        )
+        if startSearch:
+            valSelect[feat].add(NONE)
+
+    form["valselect"] = valSelect
+
+
+def adaptValSelect(templateData):
+    submitter = templateData.submitter
+    valSelect = templateData.valselect
+
+    if submitter == "addgo":
+        addData = templateData.adddata
+        additions = addData.additions
+        freeVals = addData.freeVals
+
+        freeState = templateData.freestate
+
+        for (i, (feat, values)) in enumerate(zip(FEATURES, additions)):
+            for val in values:
+                valSelect.setdefault(feat, set()).add(val)
+                if val == freeVals[i]:
+                    freeVals[i] = None
+
+        if freeState == "free":
+            templateData.freestate = "all"
+
+    elif submitter == "delgo":
+        for feat in FEATURES:
+            valSelect.setdefault(feat, set()).add(NONE)
+
+    templateData.submitter = ""
 
 
 def annoSets(annoDir):
@@ -136,13 +173,16 @@ def initTemplate(web):
 
 def findSetup(web, templateData):
     sFind = templateData.sfind
+    sFindC = templateData.sfindc
+
     sFind = (sFind or "").strip()
+    sFindFlag = [] if sFindC else [re.I]
     sFindRe = None
     errorMsg = ""
 
     if sFind:
         try:
-            sFindRe = re.compile(sFind)
+            sFindRe = re.compile(sFind, *sFindFlag)
         except Exception as e:
             errorMsg = str(e)
 

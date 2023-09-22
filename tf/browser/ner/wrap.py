@@ -260,6 +260,7 @@ def wrapFilter(web, templateData, nFind):
     setData = web.toolData.ner.sets[annoSet]
 
     sFind = templateData.sfind
+    sFindC = templateData.sfindc
     sFindRe = templateData.sfindre
     sFindError = templateData.sfinderror
 
@@ -269,6 +270,18 @@ def wrapFilter(web, templateData, nFind):
 
     templateData.find = H.join(
         H.input(type="text", name="sfind", id="sfind", value=sFind),
+        H.input(
+            type="hidden", name="sfindc", id="sfindc", value="v" if sFindC else "x"
+        ),
+        H.button(
+            "C" if sFindC else "¢",
+            type="submit",
+            id="sfindb",
+            title="using case SENSITIVE search"
+            if sFindC
+            else "using case INSENSITIVE search",
+            cls="alt",
+        ),
         " ",
         wrapFindStat(nSent, nFind, hasFind),
         " ",
@@ -303,12 +316,39 @@ def wrapEntityInit(web, templateData):
 
 
 def wrapEntityText(templateData, txt):
+    freeState = templateData.freestate
+    title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
         H.span(txt, id="qwordshow"),
         " ",
         H.button("❌", type="submit", id="queryclear", cls="altm"),
         " ",
-        H.button("🔎", type="submit", id="lookupq", cls="altm"),
+        H.button(
+            "✅",
+            type="submit",
+            id="lookupq",
+            cls="altm",
+            title="look up and fill in green fields",
+        ),
+        H.button(
+            "❎",
+            type="submit",
+            id="lookupn",
+            cls="altm",
+            title="look up and keep green fields as is",
+        ),
+        H.input(type="hidden", name="freestate", id="freestate", value=freeState),
+        H.button(
+            "⚭ intersecting"
+            if freeState == "bound"
+            else "⚯ free"
+            if freeState == "free"
+            else "⚬ all",
+            type="submit",
+            id="freebutton",
+            cls="alt",
+            title=title,
+        ),
     )
 
 
@@ -432,14 +472,14 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     annoSet = web.annoSet
     setData = web.toolData.ner.sets[annoSet]
 
+    submitter = templateData.submitter
     tokenStart = templateData.tokenstart
     tokenEnd = templateData.tokenend
     delData = templateData.adddata
     addData = templateData.adddata
     reportDel = templateData.reportdel
     reportAdd = templateData.reportadd
-    delDetailState = templateData.deldetailstate
-    addDetailState = templateData.adddetailstate
+    modWidgetState = templateData.modwidgetstate
 
     deletions = delData.deletions
     additions = addData.additions
@@ -513,9 +553,17 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
                 )
 
             init = "" if default in theseVals else default
-            val = freeVal if freeVal is not None and freeVal not in theseVals else init
+            val = (
+                init
+                if submitter == "lookupq"
+                else freeVal
+                if freeVal is not None and freeVal not in theseVals
+                else init
+            )
             addSt = (
                 "plus"
+                if submitter == "lookupq" and val
+                else "plus"
                 if val == freeVal
                 else "plus"
                 if init and len(theseVals) == 0
@@ -548,69 +596,72 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
 
         delButtonHtml = H.span(
             H.button("Delete", type="button", id="delgo", value="v", cls="special"),
-            H.button(
-                "⌫",
-                type="button",
-                id="delresetbutton",
-                title="clear values in form",
-                cls="altm",
-            ),
             H.input(type="hidden", id="deldata", name="deldata", value=""),
         )
         addButtonHtml = H.span(
             H.button("Add", type="button", id="addgo", value="v", cls="special"),
-            H.button(
-                "⌫",
-                type="button",
-                id="addresetbutton",
-                title="clear values in form",
-                cls="altm",
-            ),
             H.input(type="hidden", id="adddata", name="adddata", value=""),
         )
-
-        openAdd = addDetailState == "v"
-        openDel = delDetailState == "v"
 
         templateData.modifyentity = H.join(
             H.input(
                 type="hidden",
-                id="deldetailstate",
-                name="deldetailstate",
-                value=delDetailState,
+                id="modwidgetstate",
+                name="modwidgetstate",
+                value=modWidgetState,
             ),
-            H.details(
-                H.summary(
+            H.div(
+                H.div(reportDel, id="delreport", cls="report"),
+                H.div(
+                    H.button(
+                        "↓",
+                        type="button",
+                        id="delwidgetswitch",
+                        title="show controls for adding items",
+                        cls="altm",
+                    ),
                     delButtonHtml,
-                    H.span(reportDel, id="delreport", cls="report"),
                     H.span("", id="delfeedback", cls="feedback"),
+                    H.button(
+                        "⌫",
+                        type="button",
+                        id="delresetbutton",
+                        title="clear values in form",
+                        cls="altm",
+                    ),
                     id="modifyhead",
                 ),
                 H.div(
                     delContentHtml,
                     cls="assignwidget",
                 ),
-                open=openDel,
                 id="delwidget",
             ),
-            H.input(
-                type="hidden",
-                id="adddetailstate",
-                name="adddetailstate",
-                value=addDetailState,
-            ),
-            H.details(
-                H.summary(
+            H.div(
+                H.div(reportAdd, id="addreport", cls="report"),
+                H.div(
+                    H.button(
+                        "↑",
+                        type="button",
+                        id="addwidgetswitch",
+                        title="show controls for deleting items",
+                        cls="altm",
+                    ),
                     addButtonHtml,
-                    H.span(reportAdd, id="addreport", cls="report"),
                     H.span("", id="addfeedback", cls="feedback"),
+                    H.button(
+                        "⌫",
+                        type="button",
+                        id="addresetbutton",
+                        title="clear values in form",
+                        cls="altm",
+                    ),
                     id="modifyhead",
                 ),
                 H.div(
                     addContentHtml,
                     cls="assignwidget",
                 ),
-                open=openAdd,
                 id="addwidget",
             ),
         )
