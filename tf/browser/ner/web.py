@@ -7,6 +7,8 @@ from .serve import serveNer, serveNerContext
 
 MY_DIR = dirNm(abspath(__file__))
 
+METHODS = ["GET", "POST"]
+
 
 def factory(web):
     app = Blueprint(
@@ -21,15 +23,15 @@ def factory(web):
         theFile = f"{MY_DIR}/static/{filepath}"
         return send_file(theFile) if fileExists(theFile) else ""
 
-    @app.route("/index", methods=["GET", "POST"])
+    @app.route("/index", methods=METHODS)
     def serveNerX():
         return serveNer(web)
 
-    @app.route("/context/<int:node>", methods=["GET", "POST"])
+    @app.route("/context/<int:node>", methods=METHODS)
     def serveNerContextX(node):
         return serveNerContext(web, node)
 
-    @app.route("/<path:anything>", methods=["GET", "POST"])
+    @app.route("/<path:anything>", methods=METHODS)
     def serveAllX(anything=None):
         return f"path={anything}"
 

@@ -75,7 +75,8 @@ def wrapAnnoSets(annoDir, chosenAnnoSet, annoSets):
     There is also a control to delete the annoset.
 
     Apart from these buttons there is a button to switch to the entities that are
-    present in the TF dataset as nodes of type "ent" with corresponding features.
+    present in the TF dataset as nodes of type `ENTITY_TYPE` with corresponding
+    features.
 
     Finally, it is possible to create a new, empty annoset.
 
@@ -301,7 +302,7 @@ def wrapAppearance(web, templateData):
                 )
                 for feat in FEATURES + ("_stat_", "_entity_")
             ],
-            id="decoratewidget"
+            id="decoratewidget",
         ),
         sep=" ",
     )
@@ -369,9 +370,21 @@ def wrapEntityInit(web, templateData):
 
 def wrapEntityText(templateData, txt):
     freeState = templateData.freestate
+    filterBy = templateData.filterby
+
     title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
-        H.i("occurrence") if txt else "",
+        H.button(
+            H.i("occurrence" if filterBy == "t" else "entity"),
+            type="submit",
+            name="filterby",
+            id="filterby",
+            value=filterBy,
+            title="filter by textual occurrence"
+            if filterBy == "t"
+            else "filter by the underlying entities",
+            cls="alt active",
+        ) if txt else "",
         H.span(txt, id="qwordshow"),
         " ",
         H.button("❌", type="submit", id="queryclear", cls="altm"),
@@ -607,7 +620,9 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
 
             init = "" if default in theseVals else default
             val = (
-                init
+                addVals[0]
+                if len(addVals) and submitter in {"lookupn", "freebutton"}
+                else init
                 if submitter == "lookupq"
                 else freeVal
                 if freeVal is not None and freeVal not in theseVals
@@ -615,6 +630,8 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
             )
             addSt = (
                 "plus"
+                if val and len(addVals) and submitter in {"lookupn", "freebutton"}
+                else "plus"
                 if submitter == "lookupq" and val
                 else "plus"
                 if val == freeVal

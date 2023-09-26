@@ -8,11 +8,15 @@ GENERIC = "PER"
 
 SENTENCE = "sentence"
 
+ENTITY_TYPE = "ent"
+
 FEATURES = ("eid", "kind")
 NF = len(FEATURES)
 KEYWORD_FEATURES = {FEATURES[-1]}
 SUMMARY_INDICES = tuple(i for i in range(NF) if FEATURES[i] in KEYWORD_FEATURES)
 SUMMARY_FEATURES = tuple(FEATURES[i] for i in SUMMARY_INDICES)
+
+ERROR = "error"
 
 STYLES = dict(
     minus=dict(

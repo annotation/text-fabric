@@ -52,6 +52,14 @@ def getFormData(web):
     form["sfind"] = fget("sfind", "")
     form["sfindc"] = fget("sfindc", "x") == "v"
     form["sfinderror"] = fget("sfinderror", "")
+
+    filterBy = fget("filterby", "t")
+
+    if submitter == "filterby":
+        filterBy = "t" if filterBy == "e" else "e"
+
+    form["filterby"] = filterBy
+
     form["freestate"] = fget("freestate", "all")
     activeEntity = fget("activeentity", "")
     form["activeentity"] = int(activeEntity) if activeEntity else None

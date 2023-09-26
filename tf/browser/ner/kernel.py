@@ -12,6 +12,7 @@ from ...core.files import mTime, fileExists, annotateDir
 
 from .settings import (
     TOOLKEY,
+    ENTITY_TYPE,
     FEATURES,
     SUMMARY_INDICES,
     NF,
@@ -141,7 +142,7 @@ def fromSource(web):
                 for feat in FEATURES
             }
 
-            for e in F.otype.s("ent"):
+            for e in F.otype.s(ENTITY_TYPE):
                 slots = L.d(e, otype=slotType)
                 entities[e] = (
                     tuple(

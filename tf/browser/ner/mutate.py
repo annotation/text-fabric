@@ -11,7 +11,7 @@ from ...core.files import (
     dirRemove,
 )
 
-from .settings import TOOLKEY, FEATURES, NF
+from .settings import TOOLKEY, FEATURES, NF, ERROR
 from .kernel import loadData
 from .servelib import annoSets
 from .wrap import wrapMessages, wrapAnnoSets
@@ -47,7 +47,7 @@ def setHandling(web, templateData):
         annoPath = f"{annoDir}/{deleteAnnoSet}"
         dirRemove(annoPath)
         if dirExists(annoPath):
-            messages.append(("error", f"""Could not remove {deleteAnnoSet}"""))
+            messages.append((ERROR, f"""Could not remove {deleteAnnoSet}"""))
         else:
             chosenAnnoSet = ""
             sets -= {deleteAnnoSet}
@@ -55,7 +55,7 @@ def setHandling(web, templateData):
 
     if dupAnnoSet:
         if dupAnnoSet in sets:
-            messages.append(("error", f"""Set {dupAnnoSet} already exists"""))
+            messages.append((ERROR, f"""Set {dupAnnoSet} already exists"""))
         else:
             if chosenAnnoSet:
                 if not dirCopy(
@@ -64,7 +64,7 @@ def setHandling(web, templateData):
                     noclobber=True,
                 ):
                     messages.append(
-                        ("error", f"""Could not copy {chosenAnnoSet} to {dupAnnoSet}""")
+                        (ERROR, f"""Could not copy {chosenAnnoSet} to {dupAnnoSet}""")
                     )
                 else:
                     sets = sets | {dupAnnoSet}
@@ -74,7 +74,7 @@ def setHandling(web, templateData):
                 dataFile = f"{annoPath}/entities.tsv"
 
                 if fileExists(dataFile):
-                    messages.append(("error", f"""Set {dupAnnoSet} already exists"""))
+                    messages.append((ERROR, f"""Set {dupAnnoSet} already exists"""))
                 else:
                     dirMake(annoPath)
                     saveEntitiesAs(web, dataFile)
@@ -83,12 +83,12 @@ def setHandling(web, templateData):
 
     if renamedAnnoSet and chosenAnnoSet:
         if renamedAnnoSet in sets:
-            messages.append(("error", f"""Set {renamedAnnoSet} already exists"""))
+            messages.append((ERROR, f"""Set {renamedAnnoSet} already exists"""))
         else:
             if not dirMove(f"{annoDir}/{chosenAnnoSet}", f"{annoDir}/{renamedAnnoSet}"):
                 messages.append(
                     (
-                        "error",
+                        ERROR,
                         f"""Could not rename {chosenAnnoSet} to {renamedAnnoSet}""",
                     )
                 )

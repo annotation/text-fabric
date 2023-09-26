@@ -379,7 +379,6 @@ const tokenControls = () => {
     const decorateWidget = $("#decoratewidget")
     const appearanceControl = widget.find("button[main]")
     const appearanceButtons = widget.find("button[feat]")
-    console.warn({ appearanceButtons })
 
     const controlAppearance = toggle => {
       const inputElem = appearanceControl.closest("span").find("input")
