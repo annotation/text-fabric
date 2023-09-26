@@ -6,13 +6,10 @@ the annotation tool.
 
 from flask import render_template
 
+from .settings import TOOLKEY
 from .servelib import initTemplate, findSetup, adaptValSelect
-from .mutate import delEntity, addEntity, setHandling
-from .tables import (
-    composeE,
-    composeS,
-    filterS,
-)
+from .mutate import delEntity, addEntity, setHandling, setSetup
+from .tables import composeE, composeS, filterS
 from .wrap import (
     wrapCss,
     wrapEntityHeaders,
@@ -25,21 +22,36 @@ from .wrap import (
 
 class Serve:
     def __init__(self, web):
+        self.web = web
         web.console("START controller")
 
-        kernelApi = web.kernelApi
+    def setupLean(self):
+        web = self.web
+        templateData = initTemplate(web)
+        self.templateData = templateData
 
-        self.web = web
+        wrapActive(web, templateData)
+
+    def setupFull(self):
+        web = self.web
 
         templateData = initTemplate(web)
+        self.templateData = templateData
+
         findSetup(web, templateData)
         wrapActive(web, templateData)
 
-        self.templateData = templateData
-
+        kernelApi = web.kernelApi
         wrapCss(web, templateData, kernelApi.css())
 
-    def actions(self):
+    def actionsLean(self, node):
+        web = self.web
+        templateData = self.templateData
+
+        setSetup(web, templateData)
+        self.getSentences(node=node)
+
+    def actionsFull(self):
         web = self.web
         templateData = self.templateData
 
@@ -48,12 +60,35 @@ class Serve:
         self.getSentences()
         self.updateHandling()
 
-    def getSentences(self, noFind=False):
+    def wrapLean(self):
+        web = self.web
+        templateData = self.templateData
+        sentences = self.sentences
+
+        return composeS(web, templateData, sentences, asHtml=True)
+
+    def wrapFull(self):
+        web = self.web
+        templateData = self.templateData
+        nFind = self.nFind
+        nEnt = self.nEnt
+        nVisible = self.nVisible
+        sentences = self.sentences
+
+        wrapQuery(web, templateData, nFind, nEnt, nVisible)
+        composeE(web, templateData)
+        wrapEntityOverview(web, templateData)
+        wrapEntityHeaders(web, templateData)
+        composeS(web, templateData, sentences)
+
+        return render_template(f"{TOOLKEY}/index.html", **templateData)
+
+    def getSentences(self, noFind=False, node=None):
         web = self.web
         templateData = self.templateData
 
         (self.sentences, self.nFind, self.nVisible, self.nEnt) = filterS(
-            web, templateData, noFind=noFind
+            web, templateData, noFind=noFind, node=node
         )
 
     def updateHandling(self):
@@ -79,31 +114,19 @@ class Serve:
                 self.getSentences(noFind=True)
 
             if submitter == "delgo" and delData:
-                report = delEntity(web, delData.deletions, self.sentences, excludedTokens)
+                report = delEntity(
+                    web, delData.deletions, self.sentences, excludedTokens
+                )
                 wrapReport(templateData, report, "del")
             if submitter == "addgo" and addData:
-                report = addEntity(web, addData.additions, self.sentences, excludedTokens)
+                report = addEntity(
+                    web, addData.additions, self.sentences, excludedTokens
+                )
                 wrapReport(templateData, report, "add")
 
             adaptValSelect(templateData)
 
             self.getSentences()
-
-    def wrap(self):
-        web = self.web
-        templateData = self.templateData
-        nFind = self.nFind
-        nEnt = self.nEnt
-        nVisible = self.nVisible
-        sentences = self.sentences
-
-        wrapQuery(web, templateData, nFind, nEnt, nVisible)
-        composeE(web, templateData)
-        wrapEntityOverview(web, templateData)
-        wrapEntityHeaders(web, templateData)
-        composeS(web, templateData, sentences)
-
-        return render_template("ner/index.html", **templateData)
 
 
 def serveNer(web):
@@ -116,5 +139,13 @@ def serveNer(web):
     """
 
     serve = Serve(web)
-    serve.actions()
-    return serve.wrap()
+    serve.setupFull()
+    serve.actionsFull()
+    return serve.wrapFull()
+
+
+def serveNerContext(web, node):
+    serve = Serve(web)
+    serve.setupLean()
+    serve.actionsLean(node)
+    return serve.wrapLean()

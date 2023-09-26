@@ -2,6 +2,7 @@
 """
 
 from .settings import (
+    TOOLKEY,
     FEATURES,
     KEYWORD_FEATURES,
     SUMMARY_FEATURES,
@@ -176,7 +177,7 @@ def wrapEntityOverview(web, templateData):
     HTML string
     """
 
-    setData = web.toolData.ner.sets[web.annoSet]
+    setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     templateData.entityoverview = H.p(
         H.span(H.code(f"{len(es):>5}"), " x ", H.span(repSummary(fVals))) + H.br()
@@ -247,6 +248,7 @@ def wrapQuery(web, templateData, nFind, nEnt, nVisible):
         The finished HTML of the query parameters
     """
 
+    wrapAppearance(web, templateData)
     hasFind = wrapFilter(web, templateData, nFind)
     txt = wrapEntityInit(web, templateData)
     wrapEntityText(templateData, txt)
@@ -255,9 +257,59 @@ def wrapQuery(web, templateData, nFind, nEnt, nVisible):
     wrapEntityModify(web, templateData, hasFind, txt, features)
 
 
+def wrapAppearance(web, templateData):
+    formattingDo = templateData.formattingdo
+    formattingState = templateData.formattingstate
+    templateData.formattingButtons = H.join(
+        H.span(
+            H.input(
+                type="hidden",
+                name="formattingdo",
+                value="v" if formattingDo else "x",
+            ),
+            H.button(
+                "decorated" if formattingDo else "plain",
+                type="button",
+                main="v",
+                title="toggle plain or decorated formatting of entities",
+                cls="alt active",
+            ),
+        ),
+        H.span(
+            [
+                H.span(
+                    H.input(
+                        type="hidden",
+                        name=f"{feat}_appearance",
+                        value="v" if formattingState[feat] else "x",
+                    ),
+                    H.button(
+                        "stats"
+                        if feat == "_stat_"
+                        else "underlining"
+                        if feat == "_entity_"
+                        else feat,
+                        feat=feat,
+                        type="button",
+                        title="toggle display of statistics"
+                        if feat == "_stat_"
+                        else "toggle formatting of entities"
+                        if feat == "_entity"
+                        else f"toggle formatting for feature {feat}",
+                        cls="alt " + ("active" if formattingState[feat] else ""),
+                    ),
+                )
+                for feat in FEATURES + ("_stat_", "_entity_")
+            ],
+            id="decoratewidget"
+        ),
+        sep=" ",
+    )
+
+
 def wrapFilter(web, templateData, nFind):
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
 
     sFind = templateData.sfind
     sFindC = templateData.sfindc
@@ -319,6 +371,7 @@ def wrapEntityText(templateData, txt):
     freeState = templateData.freestate
     title = "choose: free, intersecting with other entities, or all"
     templateData.entitytext = H.join(
+        H.i("occurrence") if txt else "",
         H.span(txt, id="qwordshow"),
         " ",
         H.button("❌", type="submit", id="queryclear", cls="altm"),
@@ -354,7 +407,7 @@ def wrapEntityText(templateData, txt):
 
 def wrapEntityFeats(web, templateData, nEnt, nVisible, hasFind, txt, scope):
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
 
     valSelect = templateData.valselect
     (scopeInit, scopeFilter, scopeExceptions) = scope
@@ -470,7 +523,7 @@ def wrapEntityModify(web, templateData, hasFind, txt, features):
     F = api.F
 
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
 
     submitter = templateData.submitter
     tokenStart = templateData.tokenstart

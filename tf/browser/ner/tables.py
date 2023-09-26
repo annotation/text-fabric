@@ -4,7 +4,7 @@
 import collections
 from itertools import chain
 
-from .settings import FEATURES, NONE
+from .settings import FEATURES, NONE, SENTENCE, TOOLKEY
 from .html import H
 from .wrap import repIdent
 
@@ -34,7 +34,7 @@ def composeE(web, templateData):
         The finished HTML of the table, ready to put into the Flask template.
     """
 
-    setData = web.toolData.ner.sets[web.annoSet]
+    setData = web.toolData[TOOLKEY].sets[web.annoSet]
     activeEntity = templateData.activeentity
     sortKey = templateData.sortkey
     sortDir = templateData.sortdir
@@ -77,7 +77,7 @@ def composeE(web, templateData):
     templateData.entitytable = H.join(content)
 
 
-def composeS(web, templateData, sentences):
+def composeS(web, templateData, sentences, asHtml=False):
     """Compose a table of sentences.
 
     In that case, we look up the text between those tokens and including.
@@ -97,7 +97,7 @@ def composeS(web, templateData, sentences):
     """
 
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
 
     kernelApi = web.kernelApi
     app = kernelApi.app
@@ -115,14 +115,17 @@ def composeS(web, templateData, sentences):
     limited = not hasEntity
     excludedTokens = templateData.excludedtokens
 
-    content = [
-        H.input(
-            type="hidden",
-            name="excludedtokens",
-            id="excludedtokens",
-            value=",".join(str(t) for t in excludedTokens),
+    content = []
+
+    if not asHtml:
+        content.append(
+            H.input(
+                type="hidden",
+                name="excludedtokens",
+                id="excludedtokens",
+                value=",".join(str(t) for t in excludedTokens),
+            )
         )
-    ]
 
     i = 0
 
@@ -138,7 +141,9 @@ def composeS(web, templateData, sentences):
         else:
             allMatches = set(chain.from_iterable(matches))
 
-        subContent = [H.span(app.sectionStrFromNode(s), cls="sh")]
+        subContent = [
+            H.span(app.sectionStrFromNode(s), node=s, cls="sh", title="show context")
+        ]
 
         for (t, w) in sTokens:
             info = entitySlotIndex.get(t, None)
@@ -214,6 +219,8 @@ def composeS(web, templateData, sentences):
             break
 
     templateData.sentences = H.join(content)
+    if asHtml:
+        return templateData.sentences
 
 
 def entityMatch(
@@ -274,7 +281,7 @@ def entityMatch(
         sWords = {w for (t, w) in sTokens}
 
         if any(w not in sWords for w in words):
-            return (fits, fValStats, None)
+            return (fits, fValStats, (sTokensAll, matches, positions), False)
 
         nSTokens = len(sTokens)
 
@@ -283,9 +290,10 @@ def entityMatch(
                 continue
             if i + nWords - 1 >= nSTokens:
                 return (
-                    (fits, fValStats, None)
-                    if len(matches) == 0
-                    else (fits, fValStats, (sTokensAll, matches, positions))
+                    fits,
+                    fValStats,
+                    (sTokensAll, matches, positions),
+                    len(matches) != 0,
                 )
 
             match = True
@@ -343,12 +351,12 @@ def entityMatch(
                     fValStats[""][None] += 1
 
         if len(matches) == 0:
-            return (fits, fValStats, None)
+            return (fits, fValStats, (sTokensAll, matches, positions), False)
 
-    return (fits, fValStats, (sTokensAll, matches, positions))
+    return (fits, fValStats, (sTokensAll, matches, positions), True)
 
 
-def filterS(web, templateData, noFind=False):
+def filterS(web, templateData, noFind=False, node=None):
     """Filter the sentences.
 
     Will filter the sentences by tokens if the `tokenStart` and `tokenEnd` parameters
@@ -388,7 +396,7 @@ def filterS(web, templateData, noFind=False):
         *   matches: the match positions of the found text
         *   positions: the token positions where a targeted token sequence starts
     """
-    setData = web.toolData.ner.sets[web.annoSet]
+    setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     kernelApi = web.kernelApi
     app = kernelApi.app
@@ -422,10 +430,18 @@ def filterS(web, templateData, noFind=False):
     entitySlotIndex = setData.entitySlotIndex
     entitySlotVal = setData.entitySlotVal
 
-    requireFree = True if freeState == "free" else False if freeState == "bound" else None
+    requireFree = (
+        True if freeState == "free" else False if freeState == "bound" else None
+    )
 
-    for s in setData.sentences:
-        (fits, fValStats, result) = entityMatch(
+    sentences = (
+        setData.sentences
+        if node is None
+        else L.d(T.sectionTuple(node)[1], otype=SENTENCE)
+    )
+
+    for s in sentences:
+        (fits, fValStats, result, occurs) = entityMatch(
             entityIndex,
             entitySlotVal,
             entitySlotIndex,
@@ -455,11 +471,12 @@ def filterS(web, templateData, noFind=False):
                     if not blocked:
                         theseNVisible[ek] += n
 
-        if result is None:
-            continue
+        if node is None:
+            if not occurs:
+                continue
 
-        if fits is not None and not fits:
-            continue
+            if fits is not None and not fits:
+                continue
 
         results.append((s, *result))
 

@@ -102,7 +102,7 @@ code.w {
 }
 
 #sentences {
-  flex: 1 1 auto;
+  flex: 2 1 auto;
   overflow: auto;
   padding-left: 2rem;
 }
@@ -125,6 +125,12 @@ span.found {
   font-weight: bold;
 }
 
+div.viewercontrol {
+  position: relative;
+  left: -2rem;
+  height: 0;
+  overflow: visible;
+}
 div.s {
   padding: 0.2rem 0.1rem;
   border-bottom: 2pt solid #eeeeee;
@@ -136,6 +142,9 @@ div.s {
 
 span.ei {
   border-bottom: 0.3rem solid orange ! important;
+}
+span.ei.noformat {
+  border-bottom: 0 ! important;
 }
 span.es,span.ee {
   font-family: monospace;
@@ -155,8 +164,28 @@ span.sh {
   font-family: monospace;
   font-weight: bold;
   font-size: small;
-  color: #bbbbbb;
+  color: #0000ee;
+  text-decoration: underline;
   margin-left: -2rem;
+}
+.viewer {
+  min-height: 5rem;
+  max-height: 20rem;
+  overflow: auto;
+  font-size:small;
+  background-color: #f2f2f2;
+  padding-left: 2rem;
+}
+.viewer span.sh {
+  color: #888888;
+  text-decoration: none;
+}
+.center {
+  background-color: #ddddff;
+}
+.viewer div.center span.sh
+  color: #0000ff;
+  text-decoration: none;
 }
 span.lgb,span.lge {
   font-weight: bold;
@@ -218,6 +247,12 @@ button.disabled {
   color: var(--button-disabled-fg);
   background-color: var(--button-disabled-bg);
   border: 0.1rem solid var(--button-disabled-bd);
+}
+button.altv {
+  color: black;
+  background-color: white;
+  padding: 0;
+  border: 0;
 }
 button.altm {
   color: black;
@@ -285,7 +320,12 @@ span[te][st="v"]::after {
 #selectnone {
 }
 
-#filterwidget,#selectwidget,#delwidget,#addwidget {
+#decoratewidget {
+  display: none;
+}
+
+#decoratewidget, #filterwidget,
+#selectwidget,#delwidget,#addwidget {
   border: 0.2rem solid #e8e8e8;
   border-radius: 0.5rem;
   background-color: #eeeeee;

@@ -9,7 +9,7 @@ from flask import request
 
 from ...core.generic import AttrDict, deepAttrDict
 from ...core.files import dirContents
-from .settings import FEATURES, EMPTY, NONE
+from .settings import TOOLKEY, FEATURES, EMPTY, NONE
 
 
 def getFormData(web):
@@ -34,7 +34,6 @@ def getFormData(web):
     form["resetForm"] = fget("resetForm", "")
     submitter = fget("submitter", "")
     form["submitter"] = submitter
-    web.console(f"{submitter=}")
 
     form["sec0"] = fget("sec0", "")
     form["sec1"] = fget("sec1", "")
@@ -45,6 +44,11 @@ def getFormData(web):
     form["dannoset"] = fget("dannoset", "")
     form["sortkey"] = fget("sortkey", "") or "freqsort"
     form["sortdir"] = fget("sortdir", "") or "u"
+    form["formattingdo"] = fget("formattingdo", "x") == "v"
+    form["formattingstate"] = {
+        feat: fget(f"{feat}_appearance", "v") == "v"
+        for feat in FEATURES + ("_stat_", "_entity_")
+    }
     form["sfind"] = fget("sfind", "")
     form["sfindc"] = fget("sfindc", "x") == "v"
     form["sfinderror"] = fget("sfinderror", "")
@@ -158,6 +162,7 @@ def initTemplate(web):
     resetForm = form["resetForm"]
 
     templateData = AttrDict()
+    templateData.toolkey = TOOLKEY
     templateData.featurelist = ",".join(FEATURES)
 
     for (k, v) in form.items():

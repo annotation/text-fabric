@@ -1,9 +1,12 @@
 import re
 
+TOOLKEY = "ner"
 
 NONE = "⌀"
 EMPTY = "␀"
 GENERIC = "PER"
+
+SENTENCE = "sentence"
 
 FEATURES = ("eid", "kind")
 NF = len(FEATURES)

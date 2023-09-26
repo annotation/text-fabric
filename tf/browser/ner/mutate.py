@@ -11,7 +11,7 @@ from ...core.files import (
     dirRemove,
 )
 
-from .settings import FEATURES, NF
+from .settings import TOOLKEY, FEATURES, NF
 from .kernel import loadData
 from .servelib import annoSets
 from .wrap import wrapMessages, wrapAnnoSets
@@ -21,10 +21,16 @@ def valRep(fVals):
     return ", ".join(f"<i>{feat}</i>={val}" for (feat, val) in zip(FEATURES, fVals))
 
 
+def setSetup(web, templateData):
+    chosenAnnoSet = templateData.annoset
+    web.annoSet = chosenAnnoSet
+    loadData(web)
+
+
 def setHandling(web, templateData):
     kernelApi = web.kernelApi
     app = kernelApi.app
-    annoDir = annotateDir(app, "ner")
+    annoDir = annotateDir(app, TOOLKEY)
     web.annoDir = annoDir
 
     initTree(annoDir, fresh=False)
@@ -103,7 +109,7 @@ def setHandling(web, templateData):
 
 
 def delEntity(web, deletions, sentences, excludedTokens):
-    setData = web.toolData.ner.sets[web.annoSet]
+    setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     oldEntities = setData.entities
 
@@ -166,7 +172,7 @@ def delEntity(web, deletions, sentences, excludedTokens):
 
 
 def addEntity(web, additions, sentences, excludedTokens):
-    setData = web.toolData.ner.sets[web.annoSet]
+    setData = web.toolData[TOOLKEY].sets[web.annoSet]
 
     oldEntities = setData.entities
 
@@ -258,7 +264,7 @@ def mergeEntities(web, newEntities):
 
 
 def saveEntitiesAs(web, dataFile):
-    entities = web.toolData.ner.sets[""].entities
+    entities = web.toolData[TOOLKEY].sets[""].entities
 
     with open(dataFile, "a") as fh:
         for (fVals, matches) in entities.values():

@@ -11,9 +11,11 @@ from ...core.generic import AttrDict
 from ...core.files import mTime, fileExists, annotateDir
 
 from .settings import (
+    TOOLKEY,
     FEATURES,
     SUMMARY_INDICES,
     NF,
+    SENTENCE,
     featureDefault,
     getText,
 )
@@ -47,7 +49,7 @@ def loadData(web):
     -------
     void
         The resulting data is stored on the `web` object, under the key `toolData`
-        and then under the key `ner` and then `sets` and then the name of the
+        and then under the key `TOOLKEY` and then `sets` and then the name of the
         annotation set.
 
         For each such set we produce the following keys:
@@ -64,10 +66,10 @@ def loadData(web):
 
     toolData = web.toolData
 
-    if "ner" not in toolData:
-        toolData.ner = AttrDict()
+    if TOOLKEY not in toolData:
+        toolData[TOOLKEY] = AttrDict()
 
-    nerData = toolData.ner
+    nerData = toolData[TOOLKEY]
 
     if "sets" not in nerData:
         nerData.sets = AttrDict()
@@ -87,7 +89,7 @@ def loadData(web):
 
 def fromSource(web):
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
     kernelApi = web.kernelApi
 
     app = kernelApi.app
@@ -98,11 +100,11 @@ def fromSource(web):
 
     slotType = F.otype.slotType
 
-    annoDir = annotateDir(app, "ner")
+    annoDir = annotateDir(app, TOOLKEY)
     dataFile = f"{annoDir}/{annoSet}/entities.tsv"
 
     if "sentences" not in setData:
-        setData.sentences = F.otype.s("sentence")
+        setData.sentences = F.otype.s(SENTENCE)
 
     changed = False
 
@@ -158,7 +160,7 @@ def fromSource(web):
 
 def process(web, changed):
     annoSet = web.annoSet
-    setData = web.toolData.ner.sets[annoSet]
+    setData = web.toolData[TOOLKEY].sets[annoSet]
     kernelApi = web.kernelApi
 
     app = kernelApi.app

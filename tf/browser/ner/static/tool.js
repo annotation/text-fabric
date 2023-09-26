@@ -13,6 +13,7 @@ const suggestName = oldName => {
 }
 
 const storeForm = () => {
+  const { toolkey } = globalThis
   const go = document.querySelector("form")
   const formData = new FormData(go)
   const formObj = {}
@@ -21,7 +22,7 @@ const storeForm = () => {
   }
   const formStr = JSON.stringify(formObj)
   const appName = formData.get("appname")
-  const formKey = `tfner/${appName}`
+  const formKey = `tf${toolkey}/${appName}`
   localStorage.setItem(formKey, formStr)
 }
 
@@ -243,17 +244,17 @@ const entityControls = () => {
     const { target } = e
     const elem = $(target)
     const tag = elem[0].localName
-    const elem1 = tag != "p" || !elem.hasClass("e") ? elem.closest("p.e") : elem
-    if (elem1.length) {
-      const tStart = elem1.attr("tstart")
-      const tEnd = elem1.attr("tend")
-      const enm = elem1.attr("enm")
+    const eEntity = tag == "p" && elem.hasClass("e") ? elem : elem.closest("p.e")
+    if (eEntity.length) {
+      const tStart = eEntity.attr("tstart")
+      const tEnd = eEntity.attr("tend")
+      const enm = eEntity.attr("enm")
       tokenStart.val(tStart)
       tokenEnd.val(tEnd)
       activeEntity.val(enm)
 
       for (const feat of features) {
-        const val = elem1.find(`span.${feat}`).html()
+        const val = eEntity.find(`span.${feat}`).html()
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
@@ -266,7 +267,7 @@ const entityControls = () => {
 const tokenControls = () => {
   const form = $("form")
   const subMitter = $("#submitter")
-  const { features } = globalThis
+  const { features, toolkey } = globalThis
   const sentences = $("#sentences")
   const findBox = $("#sfind")
   const findC = $("#sfindc")
@@ -373,6 +374,90 @@ const tokenControls = () => {
   tokenInit()
   presentQueryControls(false)
 
+  const doAppearance = () => {
+    const widget = $("#appearancewidget")
+    const decorateWidget = $("#decoratewidget")
+    const appearanceControl = widget.find("button[main]")
+    const appearanceButtons = widget.find("button[feat]")
+    console.warn({ appearanceButtons })
+
+    const controlAppearance = toggle => {
+      const inputElem = appearanceControl.closest("span").find("input")
+      const currentState = inputElem.val()
+      const newState = toggle ? (currentState == "v" ? "x" : "v") : currentState
+
+      inputElem.val(newState)
+      appearanceControl.html(newState == "v" ? "decorated" : "plain")
+
+      if (newState == "v") {
+        decorateWidget.show()
+        setAll(true)
+      }
+      else {
+        decorateWidget.hide()
+        setAll(false)
+      }
+    }
+
+    const setAppearance = (elem, toggle, enable) => {
+      const inputElem = elem.closest("span").find("input")
+      const currentState = inputElem.val()
+      const newState = toggle ? (currentState == "v" ? "x" : "v") : currentState
+      const feat = elem.attr("feat")
+      const eTarget = $("span.es")
+      const targetElems =
+        feat == "_stat_"
+          ? eTarget.find(`.n`)
+          : feat == "_entity_"
+          ? $("span.ei")
+          : eTarget.find(`.${feat}`)
+      const lgbElems = $(".lgb")
+      const lgeElems = $(".lge")
+
+      inputElem.val(newState)
+      if (enable && newState == "v") {
+        elem.addClass("active")
+        if (feat == "_entity_") {
+          targetElems.removeClass("noformat")
+          lgbElems.show()
+          lgeElems.show()
+        } else {
+          targetElems.show()
+        }
+      } else {
+        elem.removeClass("active")
+        if (feat == "_entity_") {
+          targetElems.addClass("noformat")
+          lgbElems.hide()
+          lgeElems.hide()
+        } else {
+          targetElems.hide()
+        }
+      }
+    }
+
+    const setAll = enable => {
+      appearanceButtons.each((i, e) => {
+        const elem = $(e)
+        setAppearance(elem, false, enable)
+      })
+    }
+
+    appearanceControl.off("click").click(() => {
+      controlAppearance(true)
+    })
+
+    appearanceButtons.off("click").click(e => {
+      const { currentTarget } = e
+      const elem = $(currentTarget)
+      setAppearance(elem, true, true)
+    })
+
+    controlAppearance(false)
+  }
+
+  doAppearance(false)
+
   findBox.off("keyup").keyup(() => {
     const pat = findBox.val()
     upToDate = false
@@ -452,21 +537,30 @@ const tokenControls = () => {
     e.preventDefault()
     const { target } = e
     const elem = $(target)
+    const viewer = elem.closest("div.viewer")
+    if (viewer.length) {
+      return
+    }
     const tag = elem[0].localName
     const t = elem.attr("t")
     const te = elem.attr("te")
     const enm = elem.attr("enm")
-    const elem1 =
-      tag != "span" || t == null || t === false ? elem.closest("span[t]") : elem
-    const elem2 =
-      tag != "span" || te == null || t === false ? elem.closest("span[te]") : elem
-    const elem3 =
-      tag != "span" || !elem.hasClass("es") || enm == null || enm === false
-        ? elem.closest("span.es[enm]")
-        : elem
+    const node = elem.attr("node")
+    const eToken =
+      tag == "span" && t != null && t !== false ? elem : elem.closest("span[t]")
+    const eTokenEnd =
+      tag == "span" && te != null && te !== false ? elem : elem.closest("span[te]")
+    const eMarkedEntity =
+      tag == "span" && elem.hasClass("es") && enm != null && enm !== false
+        ? elem
+        : elem.closest("span.es[enm]")
+    const eSectionHeading =
+      tag == "span" && elem.hasClass("sh") && node != null && node !== false
+        ? elem
+        : elem.closest("span.sh[node]")
 
-    if (elem1.length) {
-      const tWord = elem1.attr("t")
+    if (eToken.length) {
+      const tWord = eToken.attr("t")
       const tWordInt = parseInt(tWord)
       upToDate = false
       if (tokenRange.length == 0) {
@@ -493,14 +587,14 @@ const tokenControls = () => {
       presentQueryControls(true)
     }
 
-    if (elem2.length) {
-      const currentValue = elem2.attr("st")
-      elem2.attr("st", currentValue == "v" ? "x" : "v")
+    if (eTokenEnd.length) {
+      const currentValue = eTokenEnd.attr("st")
+      eTokenEnd.attr("st", currentValue == "v" ? "x" : "v")
       updateScope()
     }
 
-    if (elem3.length) {
-      const ea = elem3.attr("enm")
+    if (eMarkedEntity.length) {
+      const ea = eMarkedEntity.attr("enm")
       activeEntity.val(ea)
 
       const eEntry = entitiesDiv.find(`p.e[enm="${ea}"]`)
@@ -508,12 +602,72 @@ const tokenControls = () => {
       tokenEnd.val(eEntry.attr("tend"))
 
       for (const feat of features) {
-        const val = elem3.find(`span.${feat}`).html()
+        const val = eMarkedEntity.find(`span.${feat}`).html()
         $(`#${feat}_active`).val(val)
         $(`#${feat}_select`).val(val)
       }
       subMitter.val(`entity-in-sentence-${ea}`)
       form.trigger("submit")
+    }
+
+    if (eSectionHeading.length) {
+      const nd = eSectionHeading.attr("node")
+      const sent = eSectionHeading.closest("div")
+      let viewerControls = sent.next()
+
+      if (viewerControls.length == 0 || viewerControls.hasClass("s")) {
+        eSectionHeading.attr("title", "hide context")
+        eSectionHeading.addClass("center")
+        sent.after(`
+        <div class="viewercontrol">
+          <button
+            type="button"
+            name="center"
+            class="altv"
+            title="scroll to center sentence in context viewer"
+          >🔵</button>
+        </div>
+        `)
+        viewerControls = sent.next()
+        viewerControls.after(`<div class="viewer"></div>`)
+        const viewer = viewerControls.next()
+        viewer.before("<hr>")
+        viewer.after("<hr>")
+        const go = document.querySelector("form")
+        const formData = new FormData(go)
+        const url = `/${toolkey}/context/${nd}`
+        $.ajax({
+          type: "POST",
+          url,
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: data => {
+            viewer.html(data)
+            const centerViewer = viewer.find(`span.sh[node="${nd}"]`)
+            const centerMain = sentences.find(`span.sh[node="${nd}"]`)
+            const targets = [centerViewer, centerMain]
+            for (const tgt of targets) {
+              if (tgt != null && tgt[0] != null) {
+                tgt[0].scrollIntoView({ block: "center" })
+              }
+              const s = tgt.closest("div")
+              s.addClass("center")
+            }
+            viewerControls.find(`button[name="center"]`).click(() => {
+              centerViewer[0].scrollIntoView({ block: "center" })
+            })
+            doAppearance(true)
+          },
+        })
+      } else {
+        viewerControls.next().next().next().remove()
+        viewerControls.next().next().remove()
+        viewerControls.next().remove()
+        viewerControls.remove()
+        sent.removeClass("center")
+        eSectionHeading.removeClass("center")
+      }
     }
   })
 
@@ -578,8 +732,7 @@ const modifyControls = () => {
     if (val == "add") {
       delWidget.hide()
       addWidget.show()
-    }
-    else {
+    } else {
       delWidget.show()
       addWidget.hide()
     }
@@ -672,8 +825,7 @@ const modifyControls = () => {
         if (st == "plus") {
           theseAdds.push(val)
           freeVals.push(val)
-        }
-        else {
+        } else {
           freeVals.push(null)
         }
       }
@@ -811,6 +963,7 @@ const modifyControls = () => {
 
 const initForm = () => {
   storeForm()
+  globalThis.toolkey = $("#toolkey").val()
   globalThis.features = $("#featurelist").val().split(",")
 }
 
